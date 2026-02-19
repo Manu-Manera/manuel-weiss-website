@@ -398,6 +398,28 @@ export class WebsiteApiStack extends cdk.Stack {
       memorySize: 256
     });
 
+    // HR-Leads API Lambda (HR-Selbsttest Lead-Erfassung)
+    const hrLeadsLambda = new lambda.Function(this, 'HrLeadsFunction', {
+      functionName: 'website-hr-leads',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('../lambda/hr-leads-api'),
+      role: lambdaRole,
+      timeout: cdk.Duration.seconds(30),
+      memorySize: 256,
+      environment: {
+        S3_BUCKET: 'manuel-weiss-website',
+        ADMIN_PASSWORD: 'mw-admin-2024'
+      }
+    });
+
+    // S3 Permissions für HR-Leads (manuel-weiss-website bucket)
+    hrLeadsLambda.addToRolePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['s3:GetObject', 's3:PutObject'],
+      resources: ['arn:aws:s3:::manuel-weiss-website/data/*']
+    }));
+
     // ========================================
     // BEWERBUNGSPROFIL LAMBDA (Phase 2 Migration)
     // ========================================
@@ -625,6 +647,17 @@ export class WebsiteApiStack extends cdk.Stack {
     // /text-to-bpmn-gpt (Admin: BPMN-Generierung mit GPT-5.2)
     const textToBpmnGptResource = this.api.root.addResource('text-to-bpmn-gpt');
     textToBpmnGptResource.addMethod('POST', new apigateway.LambdaIntegration(textToBpmnGpt52Lambda));
+
+    // /hr-leads (HR-Selbsttest Lead-Erfassung)
+    const hrLeadsResource = this.api.root.addResource('hr-leads');
+    const hrLeadsSaveResource = hrLeadsResource.addResource('save');
+    hrLeadsSaveResource.addMethod('POST', new apigateway.LambdaIntegration(hrLeadsLambda));
+    const hrLeadsListResource = hrLeadsResource.addResource('list');
+    hrLeadsListResource.addMethod('GET', new apigateway.LambdaIntegration(hrLeadsLambda));
+    const hrLeadsDeleteResource = hrLeadsResource.addResource('delete');
+    hrLeadsDeleteResource.addMethod('DELETE', new apigateway.LambdaIntegration(hrLeadsLambda));
+    const hrLeadsClearResource = hrLeadsResource.addResource('clear');
+    hrLeadsClearResource.addMethod('DELETE', new apigateway.LambdaIntegration(hrLeadsLambda));
 
     // ========================================
     // BEWERBUNGSPROFIL ROUTES (Phase 2 Migration)

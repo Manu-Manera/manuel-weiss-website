@@ -199,7 +199,19 @@
                 background: rgba(15, 23, 42, 0.95);
                 backdrop-filter: blur(20px);
                 border-top: 1px solid rgba(255, 255, 255, 0.1);
-                z-index: 1000;
+                z-index: 999;
+                transition: opacity 0.2s, visibility 0.2s;
+            }
+            /* Hide mobile export footer when any modal is open */
+            .modal-overlay.active ~ .mobile-export-footer,
+            body:has(.modal-overlay.active) .mobile-export-footer,
+            body:has(.lead-capture-modal.active) .mobile-export-footer {
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+            }
+            .lead-capture-modal.active ~ .mobile-export-footer {
+                display: none !important;
             }
             .mobile-export-btn {
                 width: 100%;
@@ -1340,6 +1352,276 @@
             color: rgba(165, 180, 252, 0.6);
         }
         
+        /* BPMN Workflow Viewer Styles */
+        .workflow-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .workflow-generate-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #a5b4fc;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: color 0.2s;
+            margin-top: 0.75rem;
+        }
+        .workflow-generate-link:hover {
+            color: #6366f1;
+        }
+        .workflow-generate-link.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .workflow-loading {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #a5b4fc;
+            font-size: 0.9rem;
+            margin-top: 0.75rem;
+        }
+        .workflow-loading .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .bpmn-viewer-container {
+            margin-top: 1rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            overflow: hidden;
+            display: none;
+        }
+        .bpmn-viewer-container.active {
+            display: block;
+        }
+        .bpmn-viewer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(99, 102, 241, 0.1);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        .bpmn-viewer-title {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.9rem;
+        }
+        .bpmn-viewer-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .bpmn-viewer-btn {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.8rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+        }
+        .bpmn-viewer-btn.primary {
+            background: #6366f1;
+            color: white;
+        }
+        .bpmn-viewer-btn.primary:hover {
+            background: #4f46e5;
+        }
+        .bpmn-viewer-btn.secondary {
+            background: rgba(99, 102, 241, 0.15);
+            color: #4f46e5;
+        }
+        .bpmn-viewer-btn.secondary:hover {
+            background: rgba(99, 102, 241, 0.25);
+        }
+        #bpmnViewerCanvas {
+            width: 100%;
+            height: 300px;
+            background: white;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        @media (max-width: 768px) {
+            .bpmn-viewer-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            #bpmnViewerCanvas {
+                min-width: 500px;
+                height: 250px;
+            }
+        }
+        .workflow-error {
+            color: #ef4444;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Workflow Dashboard Styles */
+        .workflow-dashboard {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.08));
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            border-radius: 20px;
+            padding: 1.75rem;
+            margin: 2rem 0;
+        }
+        .dashboard-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .dashboard-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+        }
+        .dashboard-icon i {
+            color: white;
+            font-size: 1.5rem;
+        }
+        .dashboard-title {
+            color: #fff;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        .dashboard-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            margin: 0.25rem 0 0 0;
+        }
+        .workflow-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.25rem;
+        }
+        .workflow-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .workflow-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.2);
+        }
+        .workflow-card-preview {
+            background: linear-gradient(145deg, #f8fafc, #e2e8f0);
+            height: 160px;
+            position: relative;
+            overflow: hidden;
+        }
+        .workflow-card-preview canvas,
+        .workflow-card-preview .bpmn-preview {
+            width: 100%;
+            height: 100%;
+        }
+        .workflow-card-body {
+            padding: 1rem 1.25rem;
+        }
+        .workflow-card-title {
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .workflow-card-title i {
+            color: #6366f1;
+            font-size: 0.9rem;
+        }
+        .workflow-card-desc {
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin: 0 0 1rem 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .workflow-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .workflow-card-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.3rem 0.6rem;
+            background: rgba(99, 102, 241, 0.15);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: #a5b4fc;
+        }
+        .workflow-card-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+        .workflow-card-btn {
+            padding: 0.4rem 0.65rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.2s;
+        }
+        .workflow-card-btn.primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+        .workflow-card-btn.primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+        .workflow-card-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .workflow-card-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        @media (max-width: 768px) {
+            .workflow-cards {
+                grid-template-columns: 1fr;
+            }
+            .workflow-card-preview {
+                height: 140px;
+            }
+        }
+        
         /* Enhanced Modal Rating Scale */
         .modal-body .rating-scale {
             display: grid;
@@ -1813,36 +2095,25 @@
                         <p>Wo werden in Ihrem Umfeld die Weichen gestellt – eher bei der Führung oder bei den Menschen, die die Arbeit machen?</p>
                     </div>
                 </div>
-                <div class="slider-container">
-                    <div class="slider-labels">
-                        <span>Führung entscheidet</span>
-                        <span>Teams entscheiden mit</span>
-                    </div>
-                    <div class="slider-track" data-question="kultur-leadership-1">
-                        <div class="slider-fill" style="width: 50%"></div>
-                        <div class="slider-thumb" style="left: 50%"></div>
-                    </div>
-                    <div class="slider-value">Heute: 3 / Ziel: 4</div>
-                </div>
                 <div class="rating-row">
                     <div class="rating-column">
                         <div class="rating-column-label">Aktueller Stand (Heute)</div>
                         <div class="rating-scale" data-question="kultur-leadership-1-ist">
-                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
-                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
-                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
-                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
-                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div><div class="rating-label">Führung entscheidet</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div><div class="rating-label">Eher Führung</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div><div class="rating-label">Teils/teils</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div><div class="rating-label">Eher Teams</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div><div class="rating-label">Teams entscheiden</div></div>
                         </div>
                     </div>
                     <div class="rating-column">
                         <div class="rating-column-label">Ziel</div>
                         <div class="rating-scale" data-question="kultur-leadership-1-soll">
-                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
-                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
-                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
-                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
-                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div><div class="rating-label">Führung entscheidet</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div><div class="rating-label">Eher Führung</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div><div class="rating-label">Teils/teils</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div><div class="rating-label">Eher Teams</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div><div class="rating-label">Teams entscheiden</div></div>
                         </div>
                     </div>
                 </div>
@@ -1864,31 +2135,25 @@
                         <p>Wie erleben Sie die Führung Ihrer Teams – eher als klare Steuerung oder als Begleitung und Coaching?</p>
                     </div>
                 </div>
-                <div class="slider-container">
-                    <div class="slider-labels">
-                        <span>Klare Vorgaben & Steuerung</span>
-                        <span>Coaching & Begleitung</span>
-                    </div>
-                </div>
                 <div class="rating-row">
                     <div class="rating-column">
                         <div class="rating-column-label">Aktueller Stand (Heute)</div>
                         <div class="rating-scale" data-question="kultur-leadership-2-ist">
-                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
-                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
-                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
-                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
-                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div><div class="rating-label">Klare Steuerung</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div><div class="rating-label">Eher Steuerung</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div><div class="rating-label">Teils/teils</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div><div class="rating-label">Eher Coaching</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div><div class="rating-label">Coaching & Begleitung</div></div>
                         </div>
                     </div>
                     <div class="rating-column">
                         <div class="rating-column-label">Ziel</div>
                         <div class="rating-scale" data-question="kultur-leadership-2-soll">
-                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
-                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
-                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
-                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
-                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div><div class="rating-label">Klare Steuerung</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div><div class="rating-label">Eher Steuerung</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div><div class="rating-label">Teils/teils</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div><div class="rating-label">Eher Coaching</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div><div class="rating-label">Coaching & Begleitung</div></div>
                         </div>
                     </div>
                 </div>
@@ -1900,12 +2165,6 @@
                     <div class="question-content">
                         <h3>Ziele: einzeln oder im Team?</h3>
                         <p>Woran orientieren Sie sich bei der Zielsetzung – eher an individuellen oder an gemeinsamen Teamzielen?</p>
-                    </div>
-                </div>
-                <div class="slider-container">
-                    <div class="slider-labels">
-                        <span>Individuelle Ziele</span>
-                        <span>Teamziele</span>
                     </div>
                 </div>
                 <div class="rating-row">
@@ -2503,10 +2762,23 @@
                     <p style="color: #fbbf24; font-size: 0.9rem; margin-bottom: 0.5rem;"><i class="fas fa-exclamation-triangle"></i> Noch nicht bewertete Prozesse:</p>
                     <div id="notRatedList" style="color: rgba(255,255,255,0.7); font-size: 0.85rem;"></div>
                 </div>
-                <a href="hr-automation-workflow.html" style="display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1rem; color: #fbbf24; text-decoration: none; font-size: 0.9rem;">
-                    <i class="fas fa-pencil-alt"></i> Prozesse im Detail zeichnen und automatisieren
-                    <i class="fas fa-arrow-right"></i>
-                </a>
+            </div>
+            
+            <!-- BPMN Workflow Dashboard -->
+            <div id="workflowDashboard" class="workflow-dashboard" style="display: none;">
+                <div class="dashboard-header">
+                    <div class="dashboard-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <div>
+                        <h3 class="dashboard-title">Ihre Prozess-Workflows</h3>
+                        <p class="dashboard-subtitle">Automatisch generierte Ablaufdiagramme Ihrer HR-Prozesse</p>
+                    </div>
+                </div>
+                
+                <div class="workflow-cards" id="workflowCards">
+                    <!-- Wird dynamisch befüllt -->
+                </div>
             </div>
             
             <div class="results-overview" id="resultsOverview">
@@ -2557,6 +2829,13 @@
     <!-- PDF Export Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <!-- BPMN Viewer Library -->
+    <link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.4.0/dist/assets/diagram-js.css">
+    <link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.4.0/dist/assets/bpmn-font/css/bpmn-embedded.css">
+    <script src="https://unpkg.com/bpmn-js@17.4.0/dist/bpmn-viewer.development.js"></script>
+    <!-- AWS API Configuration -->
+    <script src="js/aws-app-config.js"></script>
+    <script src="js/aws-api-settings.js"></script>
     <script>
         // HR Selbsttest Data - 8 Kategorien mit je 4 Prozessen = 32 Prozesse
         const hrCategories = [
@@ -2950,11 +3229,46 @@
                         <i class="fas fa-align-left" style="color: #8b5cf6;"></i>
                         Kurzbeschreibung Prozess
                     </div>
-                    <textarea class="wizard-textarea" id="modalProcessDescription" placeholder="Wer macht was, womit, wann, warum?">${data.description || ''}</textarea>
+                    <textarea class="wizard-textarea" id="modalProcessDescription" placeholder="Wer macht was, womit, wann, warum?" oninput="updateWorkflowLinkVisibility()">${data.description || ''}</textarea>
+                    
+                    <div class="workflow-section">
+                        <div id="workflowGenerateLink" class="workflow-generate-link ${data.description ? '' : 'disabled'}" onclick="generateWorkflow('${processId}')">
+                            <i class="fas fa-project-diagram"></i>
+                            <span>Workflow zeichnen</span>
+                        </div>
+                        <div id="workflowLoading" class="workflow-loading" style="display: none;">
+                            <div class="spinner"></div>
+                            <span>Workflow wird generiert...</span>
+                        </div>
+                        <div id="workflowError" class="workflow-error" style="display: none;"></div>
+                        
+                        <div id="bpmnViewerContainer" class="bpmn-viewer-container ${data.bpmnXml ? 'active' : ''}">
+                            <div class="bpmn-viewer-header">
+                                <span class="bpmn-viewer-title"><i class="fas fa-sitemap"></i> Prozess-Workflow</span>
+                                <div class="bpmn-viewer-actions">
+                                    <button class="bpmn-viewer-btn secondary" onclick="generateWorkflow('${processId}')">
+                                        <i class="fas fa-sync-alt"></i> Neu generieren
+                                    </button>
+                                    <button class="bpmn-viewer-btn primary" onclick="downloadBpmn('${processId}')">
+                                        <i class="fas fa-download"></i> .bpmn
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="bpmnViewerCanvas"></div>
+                        </div>
+                    </div>
                 </div>
             `;
             
             document.getElementById('processModal').classList.add('active');
+            
+            // Initialize BPMN viewer if there's existing XML
+            if (data.bpmnXml) {
+                setTimeout(() => initBpmnViewer(data.bpmnXml), 100);
+            }
+            // Hide mobile export footer when modal is open
+            const mobileFooter = document.querySelector('.mobile-export-footer');
+            if (mobileFooter) mobileFooter.style.display = 'none';
         }
 
         // Select modal rating
@@ -2967,6 +3281,9 @@
         // Close modal
         function closeModal() {
             document.getElementById('processModal').classList.remove('active');
+            // Show mobile export footer again
+            const mobileFooter = document.querySelector('.mobile-export-footer');
+            if (mobileFooter) mobileFooter.style.display = '';
         }
 
         // Save process rating
@@ -2978,15 +3295,29 @@
                 return selected ? parseInt(selected.dataset.value) : null;
             };
             
+            // Preserve existing data if present
+            const existingData = assessmentData.prozesse[processId] || {};
+            
+            // Get values from form, fallback to existing values if empty
+            const descriptionField = document.getElementById('modalProcessDescription');
+            const toolsField = document.getElementById('modalTools');
+            const notesField = document.getElementById('modalNotes');
+            
+            const newDescription = descriptionField?.value?.trim() || '';
+            const newTools = toolsField?.value?.trim() || '';
+            const newNotes = notesField?.value?.trim() || '';
+            
             assessmentData.prozesse[processId] = {
                 digiIst: getSelectedValue('modal-digi-ist'),
                 digiSoll: getSelectedValue('modal-digi-soll'),
                 qualIst: getSelectedValue('modal-qual-ist'),
                 qualSoll: getSelectedValue('modal-qual-soll'),
                 wichtigkeit: getSelectedValue('modal-wichtigkeit'),
-                description: document.getElementById('modalProcessDescription').value,
-                tools: document.getElementById('modalTools').value,
-                notes: document.getElementById('modalNotes').value
+                // Behalte bestehende Werte, wenn Felder leer sind
+                description: newDescription || existingData.description || '',
+                tools: newTools || existingData.tools || '',
+                notes: newNotes || existingData.notes || '',
+                bpmnXml: existingData.bpmnXml || null
             };
             
             saveData();
@@ -3061,6 +3392,9 @@
             
             // Update process statistics
             updateProcessStats();
+            
+            // Render workflow dashboard
+            renderWorkflowDashboard();
         }
         
         // Prozess-Statistik aktualisieren
@@ -3641,6 +3975,14 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             const margin = 15;
             const contentWidth = pageWidth - (2 * margin);
             let yPos = 0;
+            
+            // Pre-render BPMN diagrams
+            let bpmnImages = {};
+            try {
+                bpmnImages = await preRenderBpmnImages();
+            } catch (err) {
+                console.warn('Could not pre-render BPMN images:', err);
+            }
 
             // Profilbild laden (asynchron)
             let profileImageData = null;
@@ -4076,16 +4418,19 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                     const procPct = (procScore / 5) * 100;
                     const procColor = isRated ? getScoreColor(procScore) : [200, 200, 200];
                     
-                    // Berechne Box-Höhe basierend auf Kurzbeschreibung, Tools und Notes
+                    // Berechne Box-Höhe basierend auf Kurzbeschreibung, Tools, Notes und BPMN
                     const descStr = procData && procData.description ? String(procData.description).trim() : '';
                     const toolsStr = procData && procData.tools ? String(procData.tools).trim() : '';
                     const notesStr = procData && procData.notes ? String(procData.notes).trim() : '';
+                    const bpmnData = bpmnImages[proc.id];
+                    const hasBpmn = bpmnData ? true : false;
                     let boxHeight = 10;
-                    if (descStr || toolsStr || notesStr) {
+                    let bpmnImgHeight = 0;
+                    if (descStr || toolsStr || notesStr || hasBpmn) {
                         if (descStr) {
                             doc.setFontSize(7);
                             const dl = doc.splitTextToSize(descStr, contentWidth - 55);
-                            boxHeight += 6 + Math.min(dl.length, 2) * 3.5;
+                            boxHeight += 6 + Math.min(dl.length, 20) * 3.5;
                         }
                         if (toolsStr) {
                             doc.setFontSize(7);
@@ -4096,6 +4441,14 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                             doc.setFontSize(7);
                             const nl = doc.splitTextToSize(notesStr, contentWidth - 55);
                             boxHeight += 6 + Math.min(nl.length, 3) * 3.5;
+                        }
+                        if (hasBpmn) {
+                            // Calculate actual image height based on aspect ratio
+                            const aspectRatio = bpmnData.aspectRatio || 2;
+                            const maxWidth = contentWidth - 30;
+                            const maxHeight = 38;
+                            bpmnImgHeight = Math.min(maxWidth / aspectRatio, maxHeight);
+                            boxHeight += 8 + bpmnImgHeight; // Label + image + padding
                         }
                     }
                     
@@ -4164,20 +4517,53 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                             });
                             detailY += 6 + (Math.min(noteLines.length, 3) * 3.5);
                         }
-                        // Kurzbeschreibung Prozess (ganz unten)
+                        // Kurzbeschreibung Prozess
                         const descStr = (procData.description && String(procData.description).trim()) || '';
                         if (descStr) {
                             doc.setFillColor(139, 92, 246);
                             doc.setTextColor(255, 255, 255);
                             doc.setFontSize(6);
-                            doc.roundedRect(margin + 20, detailY - 2, 38, 5, 1, 1, 'F');
+                            doc.roundedRect(margin + 20, detailY - 2, 28, 5, 1, 1, 'F');
                             doc.text('Kurzbeschr.:', margin + 22, detailY + 1.5);
                             doc.setTextColor(...colors.dark);
                             doc.setFontSize(7);
                             const descLines = doc.splitTextToSize(descStr, contentWidth - 55);
-                            descLines.slice(0, 2).forEach((line, idx) => {
+                            descLines.slice(0, 20).forEach((line, idx) => {
                                 doc.text(line, margin + 50, detailY + 1.5 + (idx * 3.5));
                             });
+                            detailY += 6 + (Math.min(descLines.length, 20) * 3.5);
+                        }
+                        
+                        // BPMN Workflow Diagramm (wenn vorhanden)
+                        if (bpmnImages[proc.id]) {
+                            doc.setFillColor(16, 185, 129);
+                            doc.setTextColor(255, 255, 255);
+                            doc.setFontSize(6);
+                            doc.roundedRect(margin + 20, detailY - 2, 28, 5, 1, 1, 'F');
+                            doc.text('Workflow:', margin + 22, detailY + 1.5);
+                            
+                            try {
+                                const bpmnData = bpmnImages[proc.id];
+                                const imgDataUrl = bpmnData.dataUrl || bpmnData;
+                                const aspectRatio = bpmnData.aspectRatio || 2;
+                                
+                                // Calculate dimensions maintaining aspect ratio
+                                const maxWidth = contentWidth - 30;
+                                const maxHeight = 38;
+                                
+                                let imgWidth, imgHeight;
+                                if (maxWidth / aspectRatio <= maxHeight) {
+                                    imgWidth = maxWidth;
+                                    imgHeight = maxWidth / aspectRatio;
+                                } else {
+                                    imgHeight = maxHeight;
+                                    imgWidth = maxHeight * aspectRatio;
+                                }
+                                
+                                doc.addImage(imgDataUrl, 'PNG', margin + 20, detailY + 4, imgWidth, imgHeight);
+                            } catch (imgErr) {
+                                console.warn('Could not add BPMN image to PDF:', imgErr);
+                            }
                         }
                     } else {
                         doc.setTextColor(...colors.muted);
@@ -4428,27 +4814,84 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             const email = document.getElementById('leadEmail').value.trim();
             const wantsConsultation = document.getElementById('leadConsultation').checked;
             
-            // Lead-Daten speichern und an API senden
+            // Scores berechnen
             const scores = calculateScores();
+            
+            // PDF generieren (vor dem Speichern, um Base64 zu bekommen)
+            let pdfBase64 = null;
+            let doc = null;
+            try {
+                doc = await generatePDFReport(name, email, scores);
+                // PDF als Base64 extrahieren
+                pdfBase64 = doc.output('datauristring').split(',')[1];
+            } catch (pdfError) {
+                console.warn('PDF konnte nicht generiert werden:', pdfError);
+            }
+            
+            // Prozess-Details aufbereiten (ohne zu große BPMN-XMLs für die Übersicht)
+            const prozessDetails = {};
+            for (const [processId, data] of Object.entries(assessmentData.prozesse || {})) {
+                if (data) {
+                    // Prozessname finden
+                    let processName = processId;
+                    let categoryName = '';
+                    for (const cat of hrCategories) {
+                        const proc = cat.processes.find(p => p.id === processId);
+                        if (proc) {
+                            processName = proc.name;
+                            categoryName = cat.name;
+                            break;
+                        }
+                    }
+                    
+                    prozessDetails[processId] = {
+                        name: processName,
+                        category: categoryName,
+                        digiIst: data.digiIst,
+                        digiSoll: data.digiSoll,
+                        qualIst: data.qualIst,
+                        qualSoll: data.qualSoll,
+                        wichtigkeit: data.wichtigkeit,
+                        description: data.description || '',
+                        tools: data.tools || '',
+                        notes: data.notes || '',
+                        hasBpmn: !!data.bpmnXml,
+                        bpmnXml: data.bpmnXml || null
+                    };
+                }
+            }
+            
+            // Vollständige Lead-Daten
             const leadData = {
                 name: name,
                 email: email,
                 wantsConsultation: wantsConsultation,
                 scores: {
-                    total: scores.total.toFixed(2),
-                    vision: scores.vision.toFixed(2),
-                    kultur: scores.kultur.toFixed(2),
-                    organisation: scores.organisation.toFixed(2),
-                    prozesse: scores.prozesse.toFixed(2)
+                    total: parseFloat(scores.total.toFixed(2)),
+                    vision: parseFloat(scores.vision.toFixed(2)),
+                    kultur: parseFloat(scores.kultur.toFixed(2)),
+                    organisation: parseFloat(scores.organisation.toFixed(2)),
+                    prozesse: parseFloat(scores.prozesse.toFixed(2))
                 },
+                // Alle Antworten speichern
+                answers: {
+                    vision: assessmentData.vision || {},
+                    kultur: assessmentData.kultur || {},
+                    organisation: assessmentData.organisation || {}
+                },
+                // Prozess-Details
+                prozessDetails: prozessDetails,
                 prozesseBewertet: Object.keys(assessmentData.prozesse || {}).length,
                 prozesseGesamt: 32,
+                // PDF als Base64
+                pdfBase64: pdfBase64,
                 timestamp: new Date().toISOString()
             };
 
             // Lead zentral in AWS S3 speichern (über API)
+            const apiBaseUrl = window.AWS_API_URL || 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
             try {
-                const response = await fetch('/api/hr-leads/save', {
+                const response = await fetch(`${apiBaseUrl}/hr-leads/save`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(leadData)
@@ -4456,40 +4899,28 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 const result = await response.json();
                 if (result.success) {
                     console.log('✅ Lead in AWS gespeichert:', result.leadId);
+                } else {
+                    throw new Error(result.error || 'Speichern fehlgeschlagen');
                 }
             } catch (e) {
-                console.log('HR-Leads API nicht verfügbar, speichere lokal:', e);
-                // Fallback: Lokal speichern
+                console.log('HR-Leads API Fehler, speichere lokal:', e);
+                // Fallback: Lokal speichern (ohne PDF wegen Größe)
+                const localLeadData = { ...leadData };
+                delete localLeadData.pdfBase64; // Zu groß für localStorage
+                delete localLeadData.prozessDetails; // Kompakte Version
+                localLeadData.prozesseBewertet = Object.keys(assessmentData.prozesse || {}).length;
+                
                 let savedLeads = JSON.parse(localStorage.getItem('hrSelbsttestLeads') || '[]');
-                savedLeads.unshift(leadData);
+                savedLeads.unshift(localLeadData);
                 if (savedLeads.length > 100) savedLeads = savedLeads.slice(0, 100);
                 localStorage.setItem('hrSelbsttestLeads', JSON.stringify(savedLeads));
             }
-
-            // E-Mail-Benachrichtigung senden
-            try {
-                const leadMessage = `Neuer HR-Selbsttest Lead!\n\nName: ${name}\nE-Mail: ${email}\nBeratungsgespräch: ${wantsConsultation ? 'JA' : 'Nein'}\n\nScores:\n- Gesamt: ${scores.total.toFixed(1)}/5.0 (${((scores.total/5)*100).toFixed(0)}%)\n- Vision: ${scores.vision.toFixed(1)}\n- Kultur: ${scores.kultur.toFixed(1)}\n- Organisation: ${scores.organisation.toFixed(1)}\n- Prozesse: ${scores.prozesse.toFixed(1)}\n\nBewertete Prozesse: ${Object.keys(assessmentData.prozesse || {}).length}/32`;
-                
-                await fetch('/api/contact/send', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: name,
-                        email: email,
-                        message: leadMessage,
-                        rental: 'HR-Selbsttest Lead'
-                    })
-                });
-                console.log('✅ Lead E-Mail gesendet');
-            } catch (e) {
-                console.log('E-Mail API nicht verfügbar:', e);
-            }
             
-            // PDF generieren und herunterladen
+            // PDF herunterladen
             try {
-                const scores = calculateScores();
-                const doc = await generatePDFReport(name, email, scores);
-                doc.save(`HR-Digital-Readiness-Report-${name.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`);
+                if (doc) {
+                    doc.save(`HR-Digital-Readiness-Report-${name.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`);
+                }
                 
                 // Modal schließen
                 document.getElementById('leadCaptureModal').classList.remove('active');
@@ -4593,9 +5024,495 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             document.body.appendChild(modal);
         }
 
+        // ========================================
+        // BPMN Workflow Generation Functions
+        // ========================================
+        
+        let bpmnViewer = null;
+        let currentWorkflowProcessId = null;
+        
+        // Update workflow link visibility based on description input
+        function updateWorkflowLinkVisibility() {
+            const description = document.getElementById('modalProcessDescription')?.value?.trim();
+            const link = document.getElementById('workflowGenerateLink');
+            if (link) {
+                if (description && description.length > 10) {
+                    link.classList.remove('disabled');
+                } else {
+                    link.classList.add('disabled');
+                }
+            }
+        }
+        
+        // Get API URL for BPMN generation
+        function getBpmnApiUrl() {
+            return (window.getApiUrl && window.getApiUrl('TEXT_TO_BPMN_GPT')) ||
+                (window.AWS_APP_CONFIG && window.AWS_APP_CONFIG.API_BASE ? window.AWS_APP_CONFIG.API_BASE + '/text-to-bpmn-gpt' : '');
+        }
+        
+        // Get OpenAI API Key from admin settings
+        async function getOpenAIApiKey() {
+            if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
+                try {
+                    const key = await window.awsAPISettings.getFullApiKey('openai');
+                    if (key && typeof key === 'string' && key.length > 10) return key;
+                } catch (e) {
+                    console.warn('OpenAI-Key nicht geladen:', e);
+                }
+            }
+            return '';
+        }
+        
+        // Generate workflow from process description
+        async function generateWorkflow(processId) {
+            const description = document.getElementById('modalProcessDescription')?.value?.trim();
+            if (!description || description.length < 10) {
+                showWorkflowError('Bitte geben Sie zuerst eine Kurzbeschreibung ein.');
+                return;
+            }
+            
+            currentWorkflowProcessId = processId;
+            
+            // Show loading state
+            document.getElementById('workflowGenerateLink').style.display = 'none';
+            document.getElementById('workflowLoading').style.display = 'flex';
+            document.getElementById('workflowError').style.display = 'none';
+            
+            // Clear the viewer canvas but keep container visible for smooth transition
+            const viewerCanvas = document.getElementById('bpmnViewerCanvas');
+            if (viewerCanvas) viewerCanvas.innerHTML = '';
+            
+            try {
+                const apiKey = await getOpenAIApiKey();
+                const apiUrl = getBpmnApiUrl();
+                
+                if (!apiUrl) {
+                    throw new Error('API-URL ist nicht konfiguriert.');
+                }
+                
+                if (!apiKey) {
+                    throw new Error('OpenAI API-Key nicht konfiguriert. Bitte im Admin-Panel unter API Keys hinterlegen.');
+                }
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: description,
+                        openaiApiKey: apiKey,
+                        processId: processId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || response.statusText || 'Unbekannter Fehler');
+                }
+                
+                if (!data.success || !data.bpmnXml) {
+                    throw new Error(data.error || 'Kein gültiges BPMN-XML erhalten.');
+                }
+                
+                // Store BPMN XML AND description in assessment data
+                if (!assessmentData.prozesse[processId]) {
+                    assessmentData.prozesse[processId] = {};
+                }
+                assessmentData.prozesse[processId].bpmnXml = data.bpmnXml;
+                // Speichere auch die Beschreibung, die für den Workflow verwendet wurde
+                assessmentData.prozesse[processId].description = description;
+                saveData();
+                
+                // Hide loading before showing viewer
+                document.getElementById('workflowLoading').style.display = 'none';
+                
+                // Show the viewer container first to ensure it has dimensions
+                document.getElementById('bpmnViewerContainer').classList.add('active');
+                
+                // Wait for CSS transition and container to be visible
+                await new Promise(resolve => setTimeout(resolve, 150));
+                
+                // Now initialize the viewer
+                await initBpmnViewer(data.bpmnXml);
+                
+            } catch (error) {
+                console.error('Workflow generation error:', error);
+                showWorkflowError(error.message);
+                document.getElementById('workflowLoading').style.display = 'none';
+            } finally {
+                document.getElementById('workflowGenerateLink').style.display = 'flex';
+            }
+        }
+        
+        // Initialize BPMN viewer with XML
+        async function initBpmnViewer(xml) {
+            const container = document.getElementById('bpmnViewerCanvas');
+            const viewerContainer = document.getElementById('bpmnViewerContainer');
+            if (!container) return;
+            
+            // Hide error message
+            const errorEl = document.getElementById('workflowError');
+            if (errorEl) errorEl.style.display = 'none';
+            
+            // Clear previous viewer
+            container.innerHTML = '';
+            
+            // Make sure container is visible before rendering
+            if (viewerContainer) {
+                viewerContainer.classList.add('active');
+            }
+            
+            // Wait for container to be visible and have dimensions
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Create new viewer
+            bpmnViewer = new BpmnJS({
+                container: container
+            });
+            
+            try {
+                await bpmnViewer.importXML(xml);
+                
+                // Wait a bit more for the diagram to be fully rendered
+                await new Promise(resolve => setTimeout(resolve, 50));
+                
+                // Fit to viewport with error handling
+                const canvas = bpmnViewer.get('canvas');
+                
+                // Check if container has valid dimensions
+                const rect = container.getBoundingClientRect();
+                if (rect.width > 0 && rect.height > 0) {
+                    try {
+                        canvas.zoom('fit-viewport');
+                    } catch (zoomErr) {
+                        console.warn('Zoom error, using fallback:', zoomErr);
+                        // Fallback: set a fixed zoom level
+                        canvas.zoom(0.8);
+                    }
+                } else {
+                    // Container not visible yet, retry after a delay
+                    setTimeout(() => {
+                        try {
+                            const newRect = container.getBoundingClientRect();
+                            if (newRect.width > 0 && newRect.height > 0) {
+                                canvas.zoom('fit-viewport');
+                            } else {
+                                canvas.zoom(0.8);
+                            }
+                        } catch (e) {
+                            console.warn('Delayed zoom failed:', e);
+                        }
+                    }, 300);
+                }
+            } catch (err) {
+                console.error('BPMN import error:', err);
+                showWorkflowError('Diagramm konnte nicht geladen werden: ' + (err.message || err));
+            }
+        }
+        
+        // Show workflow error message
+        function showWorkflowError(message) {
+            const errorEl = document.getElementById('workflowError');
+            if (errorEl) {
+                errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + message;
+                errorEl.style.display = 'flex';
+            }
+        }
+        
+        // Render Workflow Dashboard in Results Section
+        function renderWorkflowDashboard() {
+            const dashboard = document.getElementById('workflowDashboard');
+            const cardsContainer = document.getElementById('workflowCards');
+            
+            if (!dashboard || !cardsContainer) return;
+            
+            // Find all processes with BPMN workflows
+            const workflowProcesses = [];
+            const prozesse = assessmentData.prozesse || {};
+            
+            for (const [processId, data] of Object.entries(prozesse)) {
+                if (data && data.bpmnXml) {
+                    // Find process name from hrCategories
+                    let processName = processId;
+                    let categoryName = '';
+                    for (const cat of hrCategories) {
+                        const proc = cat.processes.find(p => p.id === processId);
+                        if (proc) {
+                            processName = proc.name;
+                            categoryName = cat.name;
+                            break;
+                        }
+                    }
+                    workflowProcesses.push({
+                        id: processId,
+                        name: processName,
+                        category: categoryName,
+                        description: data.description || '',
+                        bpmnXml: data.bpmnXml
+                    });
+                }
+            }
+            
+            // Hide dashboard if no workflows
+            if (workflowProcesses.length === 0) {
+                dashboard.style.display = 'none';
+                return;
+            }
+            
+            dashboard.style.display = 'block';
+            
+            // Generate cards HTML
+            cardsContainer.innerHTML = workflowProcesses.map(proc => `
+                <div class="workflow-card" data-process-id="${proc.id}">
+                    <div class="workflow-card-preview">
+                        <div class="bpmn-preview" id="preview-${proc.id}"></div>
+                    </div>
+                    <div class="workflow-card-body">
+                        <h4 class="workflow-card-title">
+                            <i class="fas fa-sitemap"></i>
+                            ${escapeHtml(proc.name)}
+                        </h4>
+                        <p class="workflow-card-desc">
+                            ${proc.description ? escapeHtml(proc.description) : '<em>Automatisch generierter Workflow basierend auf Ihrer Prozessbeschreibung</em>'}
+                        </p>
+                        <div class="workflow-card-meta">
+                            <span class="workflow-card-badge">
+                                <i class="fas fa-folder"></i> ${escapeHtml(proc.category)}
+                            </span>
+                            <div class="workflow-card-actions">
+                                <button class="workflow-card-btn secondary" onclick="downloadBpmnFromDashboard('${proc.id}')" title="BPMN herunterladen">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="workflow-card-btn primary" onclick="openWorkflowDetail('${proc.id}')" title="Details anzeigen">
+                                    <i class="fas fa-expand"></i> Öffnen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Render BPMN previews
+            setTimeout(() => {
+                workflowProcesses.forEach(proc => {
+                    renderBpmnPreview(proc.id, proc.bpmnXml);
+                });
+            }, 100);
+        }
+        
+        // Render BPMN preview in a card
+        async function renderBpmnPreview(processId, bpmnXml) {
+            const container = document.getElementById(`preview-${processId}`);
+            if (!container || !bpmnXml) return;
+            
+            try {
+                const viewer = new BpmnJS({
+                    container: container
+                });
+                
+                await viewer.importXML(bpmnXml);
+                
+                const canvas = viewer.get('canvas');
+                canvas.zoom('fit-viewport');
+            } catch (err) {
+                console.warn('Could not render preview for', processId, err);
+                container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #94a3b8; font-size: 0.85rem;"><i class="fas fa-exclamation-circle" style="margin-right: 0.5rem;"></i> Vorschau nicht verfügbar</div>';
+            }
+        }
+        
+        // Download BPMN from dashboard
+        function downloadBpmnFromDashboard(processId) {
+            const data = assessmentData.prozesse[processId];
+            if (!data || !data.bpmnXml) {
+                alert('Kein Workflow vorhanden.');
+                return;
+            }
+            
+            // Find process name
+            let processName = processId;
+            for (const cat of hrCategories) {
+                const proc = cat.processes.find(p => p.id === processId);
+                if (proc) {
+                    processName = proc.name.replace(/[^a-zA-Z0-9äöüÄÖÜß]/g, '-');
+                    break;
+                }
+            }
+            
+            const blob = new Blob([data.bpmnXml], { type: 'application/xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `workflow-${processName}.bpmn`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Open workflow detail modal
+        function openWorkflowDetail(processId) {
+            // Open the process modal to show the workflow
+            openProcessModal(processId);
+        }
+        
+        // Download BPMN file
+        function downloadBpmn(processId) {
+            const data = assessmentData.prozesse[processId];
+            if (!data || !data.bpmnXml) {
+                alert('Kein Workflow vorhanden.');
+                return;
+            }
+            
+            const blob = new Blob([data.bpmnXml], { type: 'application/xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `workflow-${processId}-${Date.now()}.bpmn`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Convert BPMN XML to PNG image (base64)
+        async function bpmnToImage(bpmnXml) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    // Create temporary container - larger for better quality
+                    const tempContainer = document.createElement('div');
+                    tempContainer.style.cssText = 'position: absolute; left: -9999px; top: -9999px; width: 1200px; height: 600px;';
+                    document.body.appendChild(tempContainer);
+                    
+                    // Create viewer
+                    const viewer = new BpmnJS({ container: tempContainer });
+                    
+                    await viewer.importXML(bpmnXml);
+                    
+                    // Fit to viewport to get proper bounds
+                    const canvas = viewer.get('canvas');
+                    canvas.zoom('fit-viewport');
+                    
+                    // Get SVG with viewBox for proper scaling
+                    const { svg } = await viewer.saveSVG();
+                    
+                    // Parse SVG to get dimensions
+                    const parser = new DOMParser();
+                    const svgDoc = parser.parseFromString(svg, 'image/svg+xml');
+                    const svgEl = svgDoc.documentElement;
+                    
+                    // Get viewBox or width/height
+                    let svgWidth = 800;
+                    let svgHeight = 400;
+                    const viewBox = svgEl.getAttribute('viewBox');
+                    if (viewBox) {
+                        const parts = viewBox.split(' ').map(Number);
+                        if (parts.length === 4) {
+                            svgWidth = parts[2];
+                            svgHeight = parts[3];
+                        }
+                    }
+                    
+                    // Scale factor for high quality (2x for retina)
+                    const scale = 2;
+                    const outputWidth = Math.max(svgWidth * scale, 1600);
+                    const outputHeight = Math.max(svgHeight * scale, 800);
+                    
+                    // Set explicit dimensions on SVG for proper rendering
+                    svgEl.setAttribute('width', outputWidth);
+                    svgEl.setAttribute('height', outputHeight);
+                    
+                    const modifiedSvg = new XMLSerializer().serializeToString(svgDoc);
+                    
+                    // Convert SVG to PNG via canvas
+                    const imgCanvas = document.createElement('canvas');
+                    const ctx = imgCanvas.getContext('2d');
+                    const img = new Image();
+                    
+                    img.onload = () => {
+                        // Set canvas size to match image
+                        imgCanvas.width = img.width;
+                        imgCanvas.height = img.height;
+                        
+                        // White background
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, imgCanvas.width, imgCanvas.height);
+                        
+                        // Draw image
+                        ctx.drawImage(img, 0, 0);
+                        
+                        // Get base64 with high quality
+                        const dataUrl = imgCanvas.toDataURL('image/png', 1.0);
+                        
+                        // Store aspect ratio for PDF
+                        const aspectRatio = img.width / img.height;
+                        
+                        // Cleanup
+                        viewer.destroy();
+                        document.body.removeChild(tempContainer);
+                        URL.revokeObjectURL(img.src);
+                        
+                        resolve({ dataUrl, aspectRatio, width: img.width, height: img.height });
+                    };
+                    
+                    img.onerror = (err) => {
+                        viewer.destroy();
+                        document.body.removeChild(tempContainer);
+                        reject(err);
+                    };
+                    
+                    // Create blob URL from modified SVG
+                    const svgBlob = new Blob([modifiedSvg], { type: 'image/svg+xml;charset=utf-8' });
+                    img.src = URL.createObjectURL(svgBlob);
+                    
+                } catch (err) {
+                    reject(err);
+                }
+            });
+        }
+        
+        // Pre-render all BPMN diagrams for PDF export
+        async function preRenderBpmnImages() {
+            const images = {};
+            const prozesse = assessmentData.prozesse || {};
+            
+            for (const [processId, data] of Object.entries(prozesse)) {
+                if (data && data.bpmnXml) {
+                    try {
+                        images[processId] = await bpmnToImage(data.bpmnXml);
+                    } catch (err) {
+                        console.warn('Could not render BPMN for', processId, err);
+                    }
+                }
+            }
+            
+            return images;
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             loadSavedData();
             initProcessGrid();
+            
+            // Remove all slider-container elements (they are redundant with rating labels)
+            document.querySelectorAll('.slider-container').forEach(el => el.remove());
+            
+            // Add rating labels to all rating-options that don't have them
+            const defaultLabels = {
+                1: 'Trifft gar nicht zu',
+                2: 'Trifft wenig zu',
+                3: 'Teils/teils',
+                4: 'Trifft zu',
+                5: 'Trifft voll zu'
+            };
+            
+            document.querySelectorAll('.rating-option').forEach(option => {
+                if (!option.querySelector('.rating-label')) {
+                    const value = option.dataset.value;
+                    const label = document.createElement('div');
+                    label.className = 'rating-label';
+                    label.textContent = defaultLabels[value] || '';
+                    option.appendChild(label);
+                }
+            });
             
             // Restore selected ratings
             Object.entries(assessmentData.vision).forEach(([question, value]) => {

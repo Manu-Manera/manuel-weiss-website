@@ -1,4 +1,7 @@
 <!-- HR-Leads Section -->
+<!-- BPMN.js für Workflow-Anzeige -->
+<script src="https://unpkg.com/bpmn-js@17.2.1/dist/bpmn-viewer.production.min.js"></script>
+
 <div class="section-header">
     <h1><i class="fas fa-clipboard-check"></i> HR-Selbsttest Leads</h1>
     <p>Übersicht aller Leads aus dem HR-Selbsttest</p>
@@ -93,21 +96,25 @@
 </div>
 
 <!-- Lead Detail Modal -->
-<div id="leadDetailModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 10000; justify-content: center; align-items: center;">
-    <div style="background: white; border-radius: 16px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 2rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-            <h2 style="margin: 0; color: #1e293b;">Lead Details</h2>
-            <button onclick="closeLeadModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #94a3b8;">&times;</button>
+<div id="leadDetailModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10000; justify-content: center; align-items: flex-start; overflow-y: auto; padding: 2rem;">
+    <div style="background: white; border-radius: 16px; max-width: 900px; width: 95%; margin: 0 auto; padding: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; position: sticky; top: 0; background: white; padding-bottom: 1rem; border-bottom: 1px solid #e2e8f0;">
+            <h2 style="margin: 0; color: #1e293b;"><i class="fas fa-user-circle"></i> Lead Details</h2>
+            <button onclick="closeLeadModal()" style="background: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 1rem;">
+                <i class="fas fa-times"></i> Schließen
+            </button>
         </div>
         <div id="leadDetailContent"></div>
     </div>
 </div>
 
 <script>
-// HR Leads Management - AWS S3 Direct Integration
+// HR Leads Management - AWS API Integration
 let allHRLeads = [];
+const HR_LEADS_API = (window.AWS_APP_CONFIG && window.AWS_APP_CONFIG.API_BASE) || 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
 const S3_LEADS_URL = 'https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/hr-leads.json';
 const ADMIN_PASSWORD = 'mw-admin-2024';
+console.log('📊 HR-Leads API URL:', HR_LEADS_API);
 
 function initHRLeadsSection() {
     console.log('HR-Leads Section initialisiert');
@@ -117,22 +124,59 @@ function initHRLeadsSection() {
 async function refreshHRLeads() {
     const tableBody = document.getElementById('hrLeadsTableBody');
     if (tableBody) {
-        tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;"><i class="fas fa-spinner fa-spin"></i> Lade Leads aus AWS S3...</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;"><i class="fas fa-spinner fa-spin"></i> Lade Leads aus AWS...</td></tr>';
     }
     
+    console.log('🔄 Lade HR-Leads...');
+    console.log('📡 API URL:', HR_LEADS_API);
+    console.log('📦 S3 URL:', S3_LEADS_URL);
+    
+    // Versuche zuerst direkt aus S3 zu laden (schneller und zuverlässiger)
     try {
-        // Leads direkt aus S3 laden (mit Cache-Buster)
-        const response = await fetch(`${S3_LEADS_URL}?t=${Date.now()}`);
-        if (response.ok) {
-            allHRLeads = await response.json();
-            console.log('✅ S3 Leads geladen:', allHRLeads.length);
+        console.log('📦 Versuche S3 direkt...');
+        const s3Response = await fetch(`${S3_LEADS_URL}?t=${Date.now()}`);
+        console.log('📦 S3 Response Status:', s3Response.status);
+        if (s3Response.ok) {
+            const data = await s3Response.json();
+            if (Array.isArray(data)) {
+                allHRLeads = data;
+                console.log('✅ S3 Leads geladen:', allHRLeads.length);
+            } else {
+                throw new Error('S3 data is not an array');
+            }
         } else {
-            throw new Error('S3 nicht erreichbar');
+            throw new Error(`S3 HTTP ${s3Response.status}`);
         }
-    } catch (error) {
-        console.log('⚠️ S3 Fehler, verwende localStorage:', error);
-        allHRLeads = JSON.parse(localStorage.getItem('hrSelbsttestLeads') || '[]');
+    } catch (s3Error) {
+        console.log('⚠️ S3 Fehler:', s3Error.message);
+        
+        // Fallback: API versuchen
+        try {
+            console.log('📡 Versuche API...');
+            const apiUrl = `${HR_LEADS_API}/hr-leads/list`;
+            console.log('📡 API URL:', apiUrl);
+            const response = await fetch(apiUrl);
+            console.log('📡 API Response Status:', response.status);
+            if (response.ok) {
+                const result = await response.json();
+                console.log('📡 API Result:', result);
+                if (result.success && result.leads) {
+                    allHRLeads = result.leads;
+                    console.log('✅ API Leads geladen:', allHRLeads.length);
+                } else {
+                    throw new Error('API returned no leads');
+                }
+            } else {
+                throw new Error(`API HTTP ${response.status}`);
+            }
+        } catch (apiError) {
+            console.log('⚠️ API Fehler:', apiError.message);
+            console.log('📱 Verwende localStorage als Fallback');
+            allHRLeads = JSON.parse(localStorage.getItem('hrSelbsttestLeads') || '[]');
+        }
     }
+    
+    console.log('📊 Finale Leads:', allHRLeads.length);
     
     // Stats aktualisieren
     updateHRLeadsStats();
@@ -229,6 +273,105 @@ function showLeadDetail(index) {
     const lead = allHRLeads[index];
     if (!lead) return;
     
+    // PDF Download Button (nur wenn PDF vorhanden)
+    const pdfButton = lead.pdfBase64 ? `
+        <button onclick="downloadLeadPDF(${index})" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 600;">
+            <i class="fas fa-file-pdf"></i> PDF herunterladen
+        </button>
+    ` : '<span style="color: #94a3b8; font-size: 0.9rem;"><i class="fas fa-info-circle"></i> Kein PDF verfügbar</span>';
+    
+    // Antworten aufbereiten
+    const answersHtml = lead.answers ? `
+        <div style="background: #f0fdf4; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+            <h3 style="margin: 0 0 1rem 0; color: #166534;"><i class="fas fa-clipboard-list"></i> Antworten im Detail</h3>
+            
+            ${lead.answers.vision && Object.keys(lead.answers.vision).length > 0 ? `
+                <div style="margin-bottom: 1rem;">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #15803d; font-size: 0.95rem;">Vision</h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        ${Object.entries(lead.answers.vision).map(([key, val]) => `
+                            <span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem;">
+                                ${key}: <strong>${val}</strong>
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : ''}
+            
+            ${lead.answers.kultur && Object.keys(lead.answers.kultur).length > 0 ? `
+                <div style="margin-bottom: 1rem;">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #15803d; font-size: 0.95rem;">Kultur</h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        ${Object.entries(lead.answers.kultur).map(([key, val]) => `
+                            <span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem;">
+                                ${key}: <strong>${val}</strong>
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : ''}
+            
+            ${lead.answers.organisation && Object.keys(lead.answers.organisation).length > 0 ? `
+                <div>
+                    <h4 style="margin: 0 0 0.5rem 0; color: #15803d; font-size: 0.95rem;">Organisation</h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        ${Object.entries(lead.answers.organisation).map(([key, val]) => `
+                            <span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem;">
+                                ${key}: <strong>${val}</strong>
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : ''}
+        </div>
+    ` : '';
+    
+    // Prozess-Details aufbereiten
+    const prozessHtml = lead.prozessDetails && Object.keys(lead.prozessDetails).length > 0 ? `
+        <div style="background: #faf5ff; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+            <h3 style="margin: 0 0 1rem 0; color: #7c3aed;"><i class="fas fa-cogs"></i> Bewertete Prozesse (${Object.keys(lead.prozessDetails).length})</h3>
+            <div style="max-height: 400px; overflow-y: auto;">
+                ${Object.entries(lead.prozessDetails).map(([processId, proc]) => `
+                    <div style="background: white; border-radius: 10px; padding: 1rem; margin-bottom: 0.75rem; border-left: 4px solid ${proc.hasBpmn ? '#10b981' : '#e2e8f0'};">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                            <div>
+                                <div style="font-weight: 600; color: #1e293b;">${escapeHtml(proc.name || processId)}</div>
+                                <div style="font-size: 0.8rem; color: #64748b;">${escapeHtml(proc.category || '')}</div>
+                            </div>
+                            ${proc.hasBpmn ? '<span style="background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;"><i class="fas fa-sitemap"></i> Workflow</span>' : ''}
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; font-size: 0.8rem; margin-bottom: 0.5rem;">
+                            <div style="text-align: center;">
+                                <div style="color: #94a3b8;">Digi-Ist</div>
+                                <div style="font-weight: 600; color: #6366f1;">${proc.digiIst || '-'}</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="color: #94a3b8;">Digi-Soll</div>
+                                <div style="font-weight: 600; color: #8b5cf6;">${proc.digiSoll || '-'}</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="color: #94a3b8;">Qual-Ist</div>
+                                <div style="font-weight: 600; color: #f59e0b;">${proc.qualIst || '-'}</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="color: #94a3b8;">Qual-Soll</div>
+                                <div style="font-weight: 600; color: #f97316;">${proc.qualSoll || '-'}</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="color: #94a3b8;">Wichtig</div>
+                                <div style="font-weight: 600; color: #ec4899;">${proc.wichtigkeit || '-'}</div>
+                            </div>
+                        </div>
+                        ${proc.description ? `<div style="background: #f8fafc; padding: 0.5rem; border-radius: 6px; font-size: 0.85rem; color: #475569; margin-top: 0.5rem;"><strong>Beschreibung:</strong> ${escapeHtml(proc.description)}</div>` : ''}
+                        ${proc.tools ? `<div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;"><strong>Tools:</strong> ${escapeHtml(proc.tools)}</div>` : ''}
+                        ${proc.notes ? `<div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;"><strong>Notizen:</strong> ${escapeHtml(proc.notes)}</div>` : ''}
+                        ${proc.hasBpmn ? `<button onclick="showBpmnModal(${JSON.stringify(proc.bpmnXml).replace(/"/g, '&quot;')})" style="background: #10b981; color: white; border: none; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; margin-top: 0.5rem;"><i class="fas fa-project-diagram"></i> BPMN anzeigen</button>` : ''}
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    ` : '';
+    
     const content = document.getElementById('leadDetailContent');
     content.innerHTML = `
         <div style="margin-bottom: 1.5rem;">
@@ -252,8 +395,13 @@ function showLeadDetail(index) {
             </div>
         </div>
         
+        <!-- PDF Download -->
+        <div style="margin-bottom: 1.5rem; display: flex; justify-content: center;">
+            ${pdfButton}
+        </div>
+        
         <div style="background: #f8fafc; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
-            <h3 style="margin: 0 0 1rem 0; color: #1e293b;">Scores</h3>
+            <h3 style="margin: 0 0 1rem 0; color: #1e293b;"><i class="fas fa-chart-bar"></i> Scores</h3>
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
                 ${['vision', 'kultur', 'organisation', 'prozesse'].map(dim => {
                     const score = parseFloat(lead.scores?.[dim] || 0);
@@ -272,6 +420,10 @@ function showLeadDetail(index) {
             </div>
         </div>
         
+        ${answersHtml}
+        
+        ${prozessHtml}
+        
         <div style="background: #fef3c7; border-radius: 12px; padding: 1rem;">
             <div style="color: #92400e; font-size: 0.85rem;">Prozesse bewertet</div>
             <div style="font-size: 1.25rem; font-weight: 700; color: #78350f;">${lead.prozesseBewertet || 0} von ${lead.prozesseGesamt || 32}</div>
@@ -283,6 +435,104 @@ function showLeadDetail(index) {
 
 function closeLeadModal() {
     document.getElementById('leadDetailModal').style.display = 'none';
+}
+
+// PDF aus Lead herunterladen
+function downloadLeadPDF(index) {
+    const lead = allHRLeads[index];
+    if (!lead || !lead.pdfBase64) {
+        alert('Kein PDF für diesen Lead verfügbar.');
+        return;
+    }
+    
+    try {
+        // Base64 zu Blob konvertieren
+        const byteCharacters = atob(lead.pdfBase64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/pdf' });
+        
+        // Download
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `HR-Report-${lead.name.replace(/\s+/g, '-')}-${new Date(lead.timestamp).toISOString().split('T')[0]}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        console.log('✅ PDF heruntergeladen für:', lead.name);
+    } catch (error) {
+        console.error('PDF Download Fehler:', error);
+        alert('Fehler beim PDF-Download: ' + error.message);
+    }
+}
+
+// BPMN Modal anzeigen
+function showBpmnModal(bpmnXml) {
+    // Modal erstellen falls nicht vorhanden
+    let modal = document.getElementById('bpmnViewerModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'bpmnViewerModal';
+        modal.innerHTML = `
+            <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 20000; display: flex; justify-content: center; align-items: center; padding: 2rem;">
+                <div style="background: white; border-radius: 16px; width: 90%; max-width: 1200px; height: 80vh; display: flex; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid #e2e8f0;">
+                        <h3 style="margin: 0; color: #1e293b;"><i class="fas fa-project-diagram"></i> BPMN Workflow</h3>
+                        <button onclick="closeBpmnModal()" style="background: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">
+                            <i class="fas fa-times"></i> Schließen
+                        </button>
+                    </div>
+                    <div id="bpmnViewerContainer" style="flex: 1; overflow: hidden;"></div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    
+    modal.style.display = 'block';
+    
+    // BPMN Viewer laden (falls bpmn-js verfügbar)
+    const container = document.getElementById('bpmnViewerContainer');
+    
+    // Prüfen ob bpmn-js geladen ist
+    if (typeof BpmnJS !== 'undefined') {
+        const viewer = new BpmnJS({ container: container });
+        viewer.importXML(bpmnXml).then(() => {
+            const canvas = viewer.get('canvas');
+            canvas.zoom('fit-viewport');
+        }).catch(err => {
+            console.error('BPMN Render Fehler:', err);
+            container.innerHTML = `<div style="padding: 2rem; text-align: center; color: #ef4444;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                <p>Fehler beim Rendern des BPMN-Diagramms</p>
+                <pre style="text-align: left; background: #f8fafc; padding: 1rem; border-radius: 8px; overflow: auto; max-height: 300px; font-size: 0.8rem;">${escapeHtml(bpmnXml)}</pre>
+            </div>`;
+        });
+    } else {
+        // bpmn-js nicht verfügbar - XML anzeigen
+        container.innerHTML = `<div style="padding: 2rem;">
+            <div style="background: #fef3c7; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; color: #92400e;">
+                <i class="fas fa-info-circle"></i> BPMN-Viewer nicht geladen. XML-Ansicht:
+            </div>
+            <pre style="background: #f8fafc; padding: 1rem; border-radius: 8px; overflow: auto; max-height: 60vh; font-size: 0.85rem; white-space: pre-wrap;">${escapeHtml(bpmnXml)}</pre>
+        </div>`;
+    }
+}
+
+function closeBpmnModal() {
+    const modal = document.getElementById('bpmnViewerModal');
+    if (modal) {
+        modal.style.display = 'none';
+        // Container leeren
+        const container = document.getElementById('bpmnViewerContainer');
+        if (container) container.innerHTML = '';
+    }
 }
 
 async function deleteLead(index) {
@@ -457,10 +707,25 @@ function handleJSONImport(event) {
     event.target.value = '';
 }
 
-// Auto-Init
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initHRLeadsSection);
-} else {
-    initHRLeadsSection();
-}
+// Sofortige Initialisierung
+(function() {
+    console.log('🚀 HR-Leads Script geladen');
+    
+    // Prüfe ob DOM-Elemente vorhanden sind
+    function tryInit() {
+        const tableBody = document.getElementById('hrLeadsTableBody');
+        console.log('🔍 Suche hrLeadsTableBody:', tableBody ? 'GEFUNDEN' : 'NICHT GEFUNDEN');
+        
+        if (tableBody) {
+            console.log('✅ HR-Leads DOM ready, starte Initialisierung...');
+            initHRLeadsSection();
+        } else {
+            console.log('⏳ Warte auf HR-Leads DOM...');
+            setTimeout(tryInit, 200);
+        }
+    }
+    
+    // Starte sofort
+    tryInit();
+})();
 </script>

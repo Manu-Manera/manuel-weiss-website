@@ -371,6 +371,26 @@ class AdminNavigation {
                         }
                     }
                 }
+                
+                // HR-Leads Section spezifische Initialisierung
+                if (sectionId === 'hr-leads') {
+                    console.log('📋 Initializing HR-Leads Section...');
+                    // Führe die inline Scripts aus dem Template aus
+                    const container = document.getElementById('admin-content');
+                    if (container) {
+                        const scripts = container.querySelectorAll('script');
+                        scripts.forEach(script => {
+                            const newScript = document.createElement('script');
+                            if (script.src) {
+                                newScript.src = script.src;
+                            } else {
+                                newScript.textContent = script.textContent;
+                            }
+                            document.head.appendChild(newScript);
+                            console.log('📋 HR-Leads Script ausgeführt');
+                        });
+                    }
+                }
             } catch (error) {
                 console.error(`Error in initializeSection for ${sectionId}:`, error);
             }
