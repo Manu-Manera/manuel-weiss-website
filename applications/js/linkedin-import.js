@@ -358,7 +358,7 @@ class LinkedInImporter {
         
         try {
             // Use API proxy to avoid CORS
-            const apiUrl = window.getApiUrl ? window.getApiUrl('LINKEDIN_SCRAPE') : '/.netlify/functions/linkedin-scrape';
+            const apiUrl = window.getApiUrl ? window.getApiUrl('LINKEDIN_SCRAPE') : (window.AWS_APP_CONFIG?.API_BASE ? window.AWS_APP_CONFIG.API_BASE + '/linkedin-scrape' : '');
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

@@ -1,6 +1,6 @@
 /**
  * AWS Lambda: Hero Video Upload
- * Migrated from Netlify Function
+ * AWS Lambda
  * Generiert Pre-Signed URLs für direkten Upload zu AWS S3
  * 
  * 🔒 ALLE Endpoints erfordern Authentifizierung (Admin-only)

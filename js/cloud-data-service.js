@@ -6,8 +6,8 @@
 
 class CloudDataService {
     constructor() {
-        // Verwende zentrale API-Konfiguration
-        this.apiEndpoint = window.getApiUrl ? window.getApiUrl('USER_DATA') : '/.netlify/functions/user-data';
+        // API-Endpoint wird lazy evaluiert (beim ersten Request)
+        this._apiEndpoint = null;
         this.cache = {
             profile: null,
             resumes: null,
@@ -19,6 +19,17 @@ class CloudDataService {
         this.cacheExpiry = {};
         this.CACHE_DURATION = 5 * 60 * 1000; // 5 Minuten
         this.syncInProgress = false;
+    }
+    
+    /**
+     * Lazy API Endpoint Getter - evaluiert erst beim ersten Zugriff
+     */
+    get apiEndpoint() {
+        if (!this._apiEndpoint) {
+            this._apiEndpoint = window.getApiUrl ? window.getApiUrl('USER_DATA') : (window.AWS_APP_CONFIG?.API_BASE ? window.AWS_APP_CONFIG.API_BASE + '/user-data' : '');
+            console.log('📡 CloudDataService API Endpoint:', this._apiEndpoint);
+        }
+        return this._apiEndpoint;
     }
 
     /**
@@ -73,13 +84,20 @@ class CloudDataService {
      * API Request Helper
      */
     async apiRequest(path, method = 'GET', body = null) {
+        console.log('📡 CloudDataService.apiRequest:', method, path);
+        
         if (!this.isUserLoggedIn()) {
             console.log('⚠️ User nicht eingeloggt - verwende localStorage');
+            console.log('  - awsAuth:', !!window.awsAuth, window.awsAuth?.isLoggedIn?.());
+            console.log('  - realUserAuth:', !!window.realUserAuth, window.realUserAuth?.isLoggedIn?.());
             return null;
         }
 
         try {
             const token = await this.getAuthToken();
+            const fullUrl = `${this.apiEndpoint}${path}`;
+            console.log('📡 API Request URL:', fullUrl);
+            
             const options = {
                 method,
                 headers: {
@@ -92,16 +110,25 @@ class CloudDataService {
                 options.body = JSON.stringify(body);
             }
             
-            const response = await fetch(`${this.apiEndpoint}${path}`, options);
+            const response = await fetch(fullUrl, options);
+            console.log('📡 API Response Status:', response.status);
             
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'API Error');
+                const errorText = await response.text();
+                console.error('📡 API Error Response:', errorText);
+                try {
+                    const error = JSON.parse(errorText);
+                    throw new Error(error.error || 'API Error');
+                } catch (e) {
+                    throw new Error(`API Error: ${response.status} ${errorText}`);
+                }
             }
             
-            return await response.json();
+            const data = await response.json();
+            console.log('📡 API Response Data Keys:', Object.keys(data || {}));
+            return data;
         } catch (error) {
-            console.error('Cloud API Error:', error);
+            console.error('❌ Cloud API Error:', error);
             throw error;
         }
     }

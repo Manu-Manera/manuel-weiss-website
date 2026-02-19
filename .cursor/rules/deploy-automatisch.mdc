@@ -1,0 +1,11 @@
+---
+description: Nach Änderungen an der Website immer automatisch zu AWS deployen
+alwaysApply: true
+---
+
+# Deploy automatisch ausführen
+
+- **Nach jeder Änderung** an Inhalten, die live gehen sollen (HTML, CSS, JS, Bilder, Konfiguration der Website), **deploye automatisch** – ohne dass der Nutzer extra danach fragen muss.
+- Deploy-Befehl: `./deploy-aws-website.sh --quick` (im Projektroot).
+- Optional: Nach dem Deploy kurz bestätigen (z. B. „Deploy durchgeführt, in 2–5 Min live unter https://manuel-weiss.ch“).
+- Wenn der Nutzer explizit sagt „nicht deployen“ oder „noch nicht deployen“, dann nicht ausführen.

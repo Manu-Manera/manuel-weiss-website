@@ -142,19 +142,37 @@
                     <i class="fas fa-chevron-left"></i>
                 </button>
             <div class="services-grid">
-                <div class="service-card" onclick="window.location.href='ai-digitalisierung.html'">
+                <div class="service-card" onclick="window.location.href='ki-strategieentwicklung.html'">
                     <div class="service-icon">
-                        <i class="fas fa-robot"></i>
+                        <i class="fas fa-brain"></i>
                     </div>
-                    <h3 data-de="AI & Digitalisierung" data-en="AI & Digitalization">AI & Digitalisierung</h3>
-                    <p data-de="Strategische Beratung für die Integration von KI in HR-Prozesse und Unternehmensabläufe." data-en="Strategic consulting for the integration of AI into HR processes and business workflows.">Strategische Beratung für die Integration von KI in HR-Prozesse und Unternehmensabläufe.</p>
+                    <h3 data-de="KI-Strategieentwicklung" data-en="AI Strategy Development">KI-Strategieentwicklung</h3>
+                    <p data-de="Entwickeln Sie eine maßgeschneiderte KI-Strategie für Ihr HR mit bewährten Harvard & MIT Methoden." data-en="Develop a customized AI strategy for your HR with proven Harvard & MIT methods.">Entwickeln Sie eine maßgeschneiderte KI-Strategie für Ihr HR mit bewährten Harvard & MIT Methoden.</p>
                     <ul class="service-features">
-                        <li data-de="KI-Strategieentwicklung" data-en="AI Strategy Development">KI-Strategieentwicklung</li>
-                        <li data-de="Prozessautomatisierung" data-en="Process Automation">Prozessautomatisierung</li>
-                        <li data-de="Digital Workplace" data-en="Digital Workplace">Digital Workplace</li>
+                        <li data-de="KI Vision entwickeln" data-en="Develop AI Vision">KI Vision entwickeln</li>
+                        <li data-de="HR Use Cases entdecken" data-en="Discover HR Use Cases">HR Use Cases entdecken</li>
+                        <li data-de="Datenschutz & Vertrauen stärken" data-en="Strengthen Data Protection & Trust">Datenschutz & Vertrauen stärken</li>
                     </ul>
                     <div class="service-cta">
-                        <span class="cta-text" data-de="Mehr erfahren" data-en="Learn more">Mehr erfahren</span>
+                        <span class="cta-text" data-de="Online Analyse ausprobieren" data-en="Try Online Analysis">Online Analyse ausprobieren</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                
+                <div class="service-card" onclick="window.location.href='hr-selbsttest.html'" style="position: relative;">
+                    <span style="position: absolute; top: -8px; right: -8px; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4); animation: pulse 2s infinite;">NEU</span>
+                    <div class="service-icon" style="background: linear-gradient(135deg, #fbbf24, #f59e0b);">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <h3 data-de="HR Selbsttest" data-en="HR Self-Assessment">HR Selbsttest</h3>
+                    <p data-de="Analysieren Sie Ihre HR-Organisation in 4 Dimensionen und erhalten Sie personalisierte Empfehlungen." data-en="Analyze your HR organization in 4 dimensions and get personalized recommendations.">Analysieren Sie Ihre HR-Organisation in 4 Dimensionen und erhalten Sie personalisierte Empfehlungen.</p>
+                    <ul class="service-features">
+                        <li data-de="Vision & Strategie" data-en="Vision & Strategy">Vision & Strategie</li>
+                        <li data-de="Kultur & Organisation" data-en="Culture & Organization">Kultur & Organisation</li>
+                        <li data-de="Prozesse & Digitalisierung" data-en="Processes & Digitalization">Prozesse & Digitalisierung</li>
+                    </ul>
+                    <div class="service-cta">
+                        <span class="cta-text" data-de="Jetzt HR analysieren" data-en="Analyze HR Now">Jetzt HR analysieren</span>
                         <i class="fas fa-arrow-right"></i>
                     </div>
                 </div>
@@ -213,7 +231,7 @@
                         <h2 data-de="Schneeflocken Highscores" data-en="Snowflake Highscores">Schneeflocken Highscores</h2>
                     </div>
                     <div class="highscore-body">
-                        <p class="highscore-description" data-de="Fange die Schneeflocken und werde zur Legende! Der High Score zum letzten Tag im Monat gewinnt einen HR Healthcheck (4 Std. Online Analyse) mit anschliessender Empfehlung für eine Digitalisierungsroadmap." data-en="Catch the snowflakes and become a legend! The high score at the end of the month wins an HR Healthcheck (4 hours online analysis) with a recommendation for a digitalization roadmap.">
+                        <p class="highscore-description" data-de="Fange die Schneeflocken und werde zur Legende! Der High Score zum letzten Tag im Monat gewinnt eine HR-Standortbestimmung (4 Std. Online Analyse) mit anschliessender Empfehlung für eine Digitalisierungsroadmap." data-en="Catch the snowflakes and become a legend! The high score at the end of the month wins an HR location assessment (4 hours online analysis) with a recommendation for a digitalization roadmap.">
                         </p>
                         <div id="highscoresList" class="highscores-list">
                             <p class="no-highscores">Noch keine Highscores. Fange Schneeflocken!</p>
@@ -320,6 +338,11 @@
             .highscore-header h2 {
                 font-size: 1.5rem;
             }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
         }
     </style>
 
@@ -515,13 +538,13 @@
                 phone: '+41 79 838 55 90',
                 location: 'Pilatusstrasse 40, 8330 Pfäffikon ZH',
                 website: 'https://manuel-weiss.ch',
-                linkedin: 'https://linkedin.com/in/manuel-weiss',
+                linkedin: 'https://www.linkedin.com/in/manuel-alexander-weiss',
                 experience: [
                     {
                         position: 'HR Consultant',
                         company: 'HR Campus AG, Zürich',
                         period: '12.2021 - 06.2025',
-                        description: 'End-to-end UKG HRSD Implementierungen für SME und Enterprise Kunden. Design, Automatisierung und Integration von HR-Prozessen über SAP SuccessFactors/HCM, DocuSign. ADONIS BPMN 2.0 Modellierung und HR Health Checks.'
+                        description: 'End-to-end UKG HRSD Implementierungen für SME und Enterprise Kunden. Design, Automatisierung und Integration von HR-Prozessen über SAP SuccessFactors/HCM, DocuSign. ADONIS BPMN 2.0 Modellierung und HR-Standortbestimmung.'
                     },
                     {
                         position: 'Process Consultant',
@@ -574,7 +597,7 @@
                 ],
                 skills: {
                     'HR-Tech & Process Expertise (9/10)': [
-                        'UKG HRSD', 'SAP SuccessFactors/HCM', 'ADONIS BPMN 2.0', 'HR Data Migration', 'Interface Design', 'HR Health Checks'
+                        'UKG HRSD', 'SAP SuccessFactors/HCM', 'ADONIS BPMN 2.0', 'HR Data Migration', 'Interface Design', 'HR-Standortbestimmung'
                     ],
                     'Project Governance & Delivery (9/10)': [
                         'PRINCE2 Practitioner', 'Scrum Master', 'Agile/Waterfall', 'Hybrid Approaches', 'Project Tailoring'
@@ -1509,7 +1532,7 @@
                         <p data-de="© 2024 Manuel Weiss. Alle Rechte vorbehalten." data-en="© 2024 Manuel Weiss. All rights reserved.">&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
                     </div>
                     <div class="social-media">
-                        <a href="https://linkedin.com/in/manuel-weiss" target="_blank" rel="noopener">
+                        <a href="https://www.linkedin.com/in/manuel-alexander-weiss" target="_blank" rel="noopener">
                             <i class="fab fa-linkedin"></i>
                         </a>
                         <a href="https://twitter.com/manuelweiss" target="_blank" rel="noopener">

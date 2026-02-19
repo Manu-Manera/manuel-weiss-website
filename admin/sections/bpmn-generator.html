@@ -1,0 +1,39 @@
+<div class="bpmn-generator-container">
+    <div class="section-header">
+        <h2><i class="fas fa-project-diagram"></i> BPMN mit GPT 5.2 generieren</h2>
+        <p>Prozessbeschreibung eingeben – KI erzeugt gültiges BPMN 2.0 XML</p>
+    </div>
+
+    <div class="bpmn-input-section" style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+        <label for="bpmn-process-text" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #1e293b;">Prozessbeschreibung</label>
+        <textarea id="bpmn-process-text" rows="6" placeholder="z. B.: Der Kunde bestellt online. Die Bestellung wird geprüft. Bei Genehmigung wird die Rechnung erstellt und versendet. Gleichzeitig geht die Bestellung an den Versand. Nach Versand wird der Kunde per E-Mail benachrichtigt." style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; resize: vertical; font-family: inherit;"></textarea>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem; color: #64748b;">
+            <i class="fas fa-info-circle"></i> OpenAI-Key wird aus den API Keys (Admin) geholt und nur für diesen Aufruf verwendet.
+        </p>
+    </div>
+
+    <div style="margin-bottom: 1.5rem;">
+        <button type="button" id="bpmn-generate-btn" class="btn btn-primary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem;">
+            <i class="fas fa-magic"></i> BPMN mit GPT 5.2 generieren
+        </button>
+        <span id="bpmn-status" style="margin-left: 1rem; color: #64748b; font-size: 0.9rem;"></span>
+    </div>
+
+    <div id="bpmn-result-area" style="display: none; margin-top: 1.5rem;">
+        <h3 style="color: #1e293b; margin-bottom: 0.75rem;">BPMN 2.0 XML</h3>
+        <pre id="bpmn-xml-output" style="background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 8px; overflow: auto; max-height: 400px; font-size: 0.85rem; white-space: pre-wrap; word-break: break-all;"></pre>
+        <div class="bpmn-actions" style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem;">
+            <button type="button" id="bpmn-copy-btn" class="btn btn-secondary" style="background: #64748b; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-copy"></i> Kopieren
+            </button>
+            <button type="button" id="bpmn-download-btn" class="btn btn-secondary" style="background: #0ea5e9; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-download"></i> Download (.bpmn)
+            </button>
+            <button type="button" id="bpmn-open-demo-btn" class="btn btn-secondary" style="background: #059669; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-external-link-alt"></i> In demo.bpmn.io öffnen
+            </button>
+        </div>
+    </div>
+
+    <div id="bpmn-error" style="display: none; margin-top: 1rem; padding: 1rem; background: #fee2e2; color: #991b1b; border-radius: 8px;"></div>
+</div>

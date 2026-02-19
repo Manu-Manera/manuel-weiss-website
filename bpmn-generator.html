@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BPMN aus Text generieren – Manuel Weiss</title>
+    <meta name="description" content="Prozessbeschreibung eingeben – KI erzeugt gültiges BPMN 2.0 XML. Download, Kopieren oder in demo.bpmn.io öffnen.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/starry-background.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- bpmn-js Modeler (Editor wie bpmn.io – Prozess anpassbar) -->
+    <link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.4.0/dist/assets/diagram-js.css">
+    <link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.4.0/dist/assets/bpmn-font/css/bpmn-embedded.css">
+    <style>
+        body { padding-top: 70px; min-height: 100vh; }
+        .bpmn-page { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        .bpmn-hero {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .bpmn-hero h1 { font-size: 1.75rem; margin-bottom: 0.5rem; color: #ffffff; }
+        .bpmn-hero p { opacity: 0.9; font-size: 1rem; color: #ffffff; }
+        .bpmn-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .bpmn-card label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #1e293b; }
+        #bpmnProcessText {
+            width: 100%; min-height: 140px; padding: 0.75rem;
+            border: 2px solid #e2e8f0; border-radius: 8px;
+            font-size: 1rem; resize: vertical; font-family: inherit;
+        }
+        #bpmnGenerateBtn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; padding: 0.75rem 1.5rem;
+            border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+        }
+        #bpmnGenerateBtn:disabled { opacity: 0.7; cursor: not-allowed; }
+        #bpmnStatus { margin-left: 1rem; color: #64748b; font-size: 0.9rem; }
+        #bpmnResultArea { display: none; margin-top: 1.5rem; }
+        #bpmnXmlOutput {
+            background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 8px;
+            overflow: auto; max-height: 400px; font-size: 0.85rem; white-space: pre-wrap; word-break: break-all;
+        }
+        .bpmn-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; }
+        .bpmn-actions button {
+            border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+        }
+        #bpmnError { display: none; margin-top: 1rem; padding: 1rem; background: #fee2e2; color: #991b1b; border-radius: 8px; }
+        .bpmn-result-tabs { display: flex; gap: 0; margin-bottom: 0.75rem; border-bottom: 2px solid #e2e8f0; }
+        .bpmn-result-tabs button { padding: 0.5rem 1rem; border: none; background: none; cursor: pointer; font-weight: 600; color: #64748b; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+        .bpmn-result-tabs button.active { color: #667eea; border-bottom-color: #667eea; }
+        #bpmnDiagramContainer { height: 500px; background: #fafafa; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1rem; }
+        #bpmnDiagramContainer .bjs-container { border-radius: 8px; }
+        .bpmn-editor-hint { font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem; }
+        .bpmn-xml-wrap { display: none; }
+        .bpmn-xml-wrap.show { display: block; }
+        /* RACI */
+        .bpmn-raci-wrap { display: none; }
+        .bpmn-raci-wrap.show { display: block; }
+        .bpmn-raci-hint { font-size: 0.85rem; color: #64748b; margin-bottom: 0.75rem; }
+        .bpmn-task-form { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+        .bpmn-task-form label { display: block; margin-top: 0.5rem; font-weight: 600; color: #334155; font-size: 0.9rem; }
+        .bpmn-task-form input, .bpmn-task-form textarea { width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem; margin-top: 0.25rem; }
+        .bpmn-task-form textarea { min-height: 60px; resize: vertical; }
+        .bpmn-raci-table-wrap { overflow-x: auto; }
+        .bpmn-raci-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .bpmn-raci-table th, .bpmn-raci-table td { border: 1px solid #e2e8f0; padding: 0.5rem 0.75rem; text-align: left; }
+        .bpmn-raci-table th { background: #f1f5f9; font-weight: 600; color: #1e293b; }
+        .bpmn-raci-table tr:hover { background: #f8fafc; }
+        .raci-badge { display: inline-block; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+        .raci-r { background: #dbeafe; color: #1e40af; }
+        .raci-a { background: #d1fae5; color: #065f46; }
+        .raci-c { background: #fef3c7; color: #92400e; }
+        .raci-i { background: #e0e7ff; color: #3730a3; }
+    </style>
+</head>
+<body class="starry-theme">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="hr-prozessautomatisierung.html" class="nav-link">HR-Automatisierung</a>
+                <a href="hr-automation-workflow.html" class="nav-link">Prozess-Workflow</a>
+                <a href="index.html#about" class="nav-link">Über mich</a>
+                <a href="index.html#contact" class="nav-link">Kontakt</a>
+            </div>
+            <div class="nav-toggle" id="navToggle"><span></span></div>
+        </div>
+    </nav>
+
+    <main class="bpmn-page">
+        <div class="bpmn-hero">
+            <h1><i class="fas fa-project-diagram"></i> BPMN aus Text generieren</h1>
+            <p>Prozessbeschreibung eingeben – KI erzeugt gültiges BPMN 2.0 XML (mit GPT 5.2, falls API-Key hinterlegt).</p>
+        </div>
+
+        <div class="bpmn-card">
+            <label for="bpmnProcessText">Prozessbeschreibung</label>
+            <textarea id="bpmnProcessText" placeholder="z. B.: Mitarbeiter füllt Ferienantrag aus, Teamleitung und Bereichsleitung genehmigen oder lehnen ab, HR bucht Urlaub und Payroll zahlt Urlaubsgeld aus."></textarea>
+            <p style="margin-top: 0.5rem; font-size: 0.875rem; color: #64748b;">
+                <i class="fas fa-info-circle"></i> OpenAI-Key erforderlich (im <a href="admin.html#api-keys" style="color: #667eea;">Admin unter API Keys</a> hinterlegen). Die KI (GPT 5.2) erzeugt daraus das BPMN – ohne Key wird kein Diagramm erzeugt.
+                <br><i class="fas fa-comment"></i> <strong>BPMN per ChatGPT:</strong> Du kannst die Prozessbeschreibung auch in <a href="docs/BPMN-CHATGPT-PROMPT.md" target="_blank" rel="noopener" style="color: #667eea;">ChatGPT</a> verwenden – dort steht ein optimierter Prompt (mehrere Tasks pro Rolle/Aktion). Das erzeugte XML hier unter „XML“ einfügen und im Editor anpassen.
+            </p>
+            <p id="bpmnKeyStatus" style="margin-top: 0.5rem; font-size: 0.875rem;"></p>
+        </div>
+
+        <div class="bpmn-card">
+            <button type="button" id="bpmnGenerateBtn">
+                <i class="fas fa-magic"></i> BPMN mit GPT 5.2 generieren
+            </button>
+            <span id="bpmnStatus"></span>
+        </div>
+
+        <div class="bpmn-card" id="bpmnResultArea">
+            <h3 style="color: #1e293b; margin-bottom: 0.75rem;">Ergebnis</h3>
+            <div id="bpmnInterpretationWrap" style="display: none; margin-bottom: 1rem; padding: 0.75rem; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #0ea5e9;">
+                <strong style="color: #0369a1;"><i class="fas fa-lightbulb"></i> Kurz-Interpretation</strong>
+                <pre id="bpmnInterpretation" style="margin: 0.5rem 0 0; white-space: pre-wrap; font-size: 0.9rem; color: #1e293b;"></pre>
+            </div>
+            <div id="bpmnAssumptionsWrap" style="display: none; margin-bottom: 1rem; padding: 0.75rem; background: #fffbeb; border-radius: 8px; border-left: 4px solid #d97706;">
+                <strong style="color: #92400e;"><i class="fas fa-info-circle"></i> Annahmen & offene Punkte</strong>
+                <pre id="bpmnAssumptions" style="margin: 0.5rem 0 0; white-space: pre-wrap; font-size: 0.9rem; color: #1e293b;"></pre>
+            </div>
+            <div class="bpmn-result-tabs">
+                <button type="button" id="bpmnTabDiagram" class="active"><i class="fas fa-project-diagram"></i> Diagramm</button>
+                <button type="button" id="bpmnTabRaci"><i class="fas fa-users-cog"></i> Rollen & RACI</button>
+                <button type="button" id="bpmnTabXml"><i class="fas fa-code"></i> XML</button>
+            </div>
+            <div id="bpmnDiagramWrap">
+                <p class="bpmn-editor-hint"><i class="fas fa-edit"></i> Prozess im Diagramm anpassen: Elemente verschieben, umbenennen, neue Tasks/Flows aus der Palette links hinzufügen. Kopieren/Download liefert den aktuellen Stand.</p>
+                <div id="bpmnDiagramContainer"></div>
+            </div>
+            <div class="bpmn-raci-wrap" id="bpmnRaciWrap">
+                <p class="bpmn-raci-hint"><i class="fas fa-mouse-pointer"></i> Task im Diagramm anklicken, dann unten Rolle, IT-System, Beschreibung und RACI (R = Responsible, A = Accountable, C = Consulted, I = Informed) erfassen.</p>
+                <div class="bpmn-task-form" id="bpmnTaskForm" style="display: none;">
+                    <strong id="bpmnTaskFormTitle">Task auswählen</strong>
+                    <input type="hidden" id="bpmnTaskFormId">
+                    <label>Rolle</label>
+                    <input type="text" id="bpmnMetaRolle" placeholder="z. B. HR, Fachabteilung">
+                    <label>IT-System</label>
+                    <input type="text" id="bpmnMetaItSystem" placeholder="z. B. SAP HR, Workflow-Tool">
+                    <label>Beschreibung</label>
+                    <textarea id="bpmnMetaBeschreibung" placeholder="Kurze Beschreibung des Schritts"></textarea>
+                    <label>RACI – Responsible (R)</label>
+                    <input type="text" id="bpmnMetaR" placeholder="Wer führt aus?">
+                    <label>RACI – Accountable (A)</label>
+                    <input type="text" id="bpmnMetaA" placeholder="Wer ist verantwortlich?">
+                    <label>RACI – Consulted (C)</label>
+                    <input type="text" id="bpmnMetaC" placeholder="Wer wird konsultiert?">
+                    <label>RACI – Informed (I)</label>
+                    <input type="text" id="bpmnMetaI" placeholder="Wer wird informiert?">
+                    <button type="button" id="bpmnMetaSave" style="margin-top: 0.75rem; padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;"><i class="fas fa-save"></i> Speichern</button>
+                </div>
+                <div class="bpmn-raci-table-wrap">
+                    <table class="bpmn-raci-table" id="bpmnRaciTable">
+                        <thead>
+                            <tr>
+                                <th>Task</th>
+                                <th>R (Responsible)</th>
+                                <th>A (Accountable)</th>
+                                <th>C (Consulted)</th>
+                                <th>I (Informed)</th>
+                                <th>Rolle</th>
+                                <th>IT-System</th>
+                                <th>Beschreibung</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bpmnRaciTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="bpmn-xml-wrap" id="bpmnXmlWrap">
+                <pre id="bpmnXmlOutput"></pre>
+            </div>
+            <div class="bpmn-actions">
+                <button type="button" id="bpmnCopyBtn" style="background: #64748b; color: white;"><i class="fas fa-copy"></i> Kopieren</button>
+                <button type="button" id="bpmnDownloadBtn" style="background: #0ea5e9; color: white;"><i class="fas fa-download"></i> Download (.bpmn)</button>
+                <button type="button" id="bpmnOpenDemoBtn" style="background: #059669; color: white;"><i class="fas fa-external-link-alt"></i> In demo.bpmn.io öffnen</button>
+            </div>
+        </div>
+
+        <div id="bpmnError"></div>
+
+        <p style="text-align: center; margin-top: 2rem;">
+            <a href="hr-automation-workflow.html" style="color: #667eea;">← Zurück zum HR-Prozess-Workflow</a>
+        </p>
+    </main>
+
+    <!-- Development-Build: BpmnModeler global zuverlässig; Production-Build setzt den Global teils anders -->
+    <script src="https://unpkg.com/bpmn-js@17.4.0/dist/bpmn-modeler.development.js"></script>
+    <script src="js/aws-app-config.js"></script>
+    <script src="js/aws-api-settings.js"></script>
+    <script>
+(function() {
+    var currentBpmnXml = null;
+    var bpmnModeler = null;
+    var taskMeta = {}; // taskId -> { rolle, itSystem, beschreibung, raciR, raciA, raciC, raciI }
+
+    var MW_NS = 'http://manuel-weiss.ch/bpmn/ext';
+
+    // Beispiel-Text wird initial vorausgefüllt und beim ersten Klick in das Feld geleert.
+    var EXAMPLE_PROCESS_TEXT =
+        'Mitarbeiter füllt Ferien Antrag aus\n' +
+        'Teamleitung bestätigt oder lehnt ab\n' +
+        'Bereichsleitung bestätigt oder lehnt ab\n' +
+        'HR hinterlegt Urlaub in Zeitsystem und erstellt Bestätigung die im Dossier abgelegt wird\n' +
+        'Payroll veranlasst Auszahlung Urlaubsgeld\n' +
+        'Ende';
+
+    function extractRaciFromXml(xml) {
+        taskMeta = {};
+        if (!xml || typeof xml !== 'string') return;
+        try {
+            var parser = new DOMParser();
+            var doc = parser.parseFromString(xml, 'application/xml');
+            var tasks = [];
+            var q = doc.querySelectorAll('bpmn\\:task');
+            for (var qi = 0; qi < q.length; qi++) tasks.push(q[qi]);
+            if (!tasks.length) {
+                var any = doc.getElementsByTagName('*');
+                for (var k = 0; k < any.length; k++) {
+                    if (any[k].localName === 'task' || (any[k].tagName && any[k].tagName.indexOf('task') >= 0)) tasks.push(any[k]);
+                }
+            }
+            for (var i = 0; i < tasks.length; i++) {
+                var task = tasks[i];
+                var id = task.getAttribute('id');
+                if (!id) continue;
+                var ext = task.querySelector('bpmn\\:extensionElements') || task.getElementsByTagName('extensionElements')[0];
+                if (!ext) continue;
+                var meta = ext.querySelector('mw\\:taskMeta') || ext.getElementsByTagNameNS(MW_NS, 'taskMeta')[0];
+                if (!meta) {
+                    var list = ext.getElementsByTagName('*');
+                    for (var j = 0; j < list.length; j++) { if (list[j].localName === 'taskMeta') { meta = list[j]; break; } }
+                }
+                if (!meta) continue;
+                function text(m, tag) {
+                    var n = m.getElementsByTagNameNS ? m.getElementsByTagNameNS(MW_NS, tag)[0] : m.querySelector(tag + ', mw\\:' + tag);
+                    return n ? n.textContent.trim() : '';
+                }
+                taskMeta[id] = {
+                    rolle: text(meta, 'rolle'),
+                    itSystem: text(meta, 'itSystem'),
+                    beschreibung: text(meta, 'beschreibung'),
+                    raciR: text(meta, 'raciR'),
+                    raciA: text(meta, 'raciA'),
+                    raciC: text(meta, 'raciC'),
+                    raciI: text(meta, 'raciI')
+                };
+            }
+        } catch (e) { console.warn('extractRaciFromXml:', e); }
+    }
+
+    function injectRaciIntoXml(xml) {
+        if (!xml) return xml;
+        if (Object.keys(taskMeta).length === 0) return xml;
+        try {
+            var parser = new DOMParser();
+            var doc = parser.parseFromString(xml, 'application/xml');
+            var taskList = [];
+            var t1 = doc.getElementsByTagName('bpmn:task');
+            for (var ti = 0; ti < t1.length; ti++) taskList.push(t1[ti]);
+            if (!taskList.length) {
+                var t2 = doc.querySelectorAll('bpmn\\:task');
+                for (ti = 0; ti < t2.length; ti++) taskList.push(t2[ti]);
+            }
+            if (!taskList.length) {
+                var all = doc.getElementsByTagName('*');
+                for (var q = 0; q < all.length; q++) { if (all[q].localName === 'task') taskList.push(all[q]); }
+            }
+            for (var i = 0; i < taskList.length; i++) {
+                var task = taskList[i];
+                var id = task.getAttribute('id');
+                var m = taskMeta[id];
+                if (!m || (!m.rolle && !m.itSystem && !m.beschreibung && !m.raciR && !m.raciA && !m.raciC && !m.raciI)) continue;
+                var ext = task.getElementsByTagName('extensionElements')[0] || task.querySelector('bpmn\\:extensionElements');
+                if (!ext) {
+                    ext = doc.createElementNS('http://www.omg.org/spec/BPMN/20100524/MODEL', 'extensionElements');
+                    ext.prefix = 'bpmn';
+                    task.insertBefore(ext, task.firstChild);
+                }
+                var existing = ext.getElementsByTagNameNS(MW_NS, 'taskMeta');
+                for (var r = existing.length - 1; r >= 0; r--) ext.removeChild(existing[r]);
+                var meta = doc.createElementNS(MW_NS, 'taskMeta');
+                meta.prefix = 'mw';
+                function add(el, val) { if (val) { var c = doc.createElementNS(MW_NS, el); c.prefix = 'mw'; c.textContent = val; meta.appendChild(c); } }
+                add('rolle', m.rolle);
+                add('itSystem', m.itSystem);
+                add('beschreibung', m.beschreibung);
+                add('raciR', m.raciR);
+                add('raciA', m.raciA);
+                add('raciC', m.raciC);
+                add('raciI', m.raciI);
+                ext.appendChild(meta);
+            }
+            if (!doc.documentElement.getAttribute('xmlns:mw')) doc.documentElement.setAttribute('xmlns:mw', MW_NS);
+            return new XMLSerializer().serializeToString(doc);
+        } catch (e) { console.warn('injectRaciIntoXml:', e); return xml; }
+    }
+
+    function refreshRaciTable() {
+        var tbody = document.getElementById('bpmnRaciTableBody');
+        if (!tbody || !bpmnModeler) return;
+        tbody.innerHTML = '';
+        var registry = bpmnModeler.get('elementRegistry');
+        var all = registry.getAll();
+        var tasks = all.filter(function(el) { return el.type === 'bpmn:Task' || (el.businessObject && el.businessObject.$type === 'bpmn:Task'); });
+        tasks.forEach(function(el) {
+            var id = el.id;
+            var name = (el.businessObject && el.businessObject.name) || id;
+            var m = taskMeta[id] || {};
+            var tr = document.createElement('tr');
+            tr.innerHTML =
+                '<td><strong>' + escapeHtml(name) + '</strong></td>' +
+                '<td>' + (m.raciR ? '<span class="raci-badge raci-r">' + escapeHtml(m.raciR) + '</span>' : '–') + '</td>' +
+                '<td>' + (m.raciA ? '<span class="raci-badge raci-a">' + escapeHtml(m.raciA) + '</span>' : '–') + '</td>' +
+                '<td>' + (m.raciC ? '<span class="raci-badge raci-c">' + escapeHtml(m.raciC) + '</span>' : '–') + '</td>' +
+                '<td>' + (m.raciI ? '<span class="raci-badge raci-i">' + escapeHtml(m.raciI) + '</span>' : '–') + '</td>' +
+                '<td>' + escapeHtml(m.rolle || '') + '</td>' +
+                '<td>' + escapeHtml(m.itSystem || '') + '</td>' +
+                '<td>' + escapeHtml((m.beschreibung || '').slice(0, 80)) + ((m.beschreibung || '').length > 80 ? '…' : '') + '</td>';
+            tbody.appendChild(tr);
+        });
+        if (tasks.length === 0) tbody.innerHTML = '<tr><td colspan="8">Keine Tasks im Diagramm. Bitte zuerst BPMN generieren.</td></tr>';
+    }
+
+    function escapeHtml(s) {
+        if (!s) return '';
+        var d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
+    }
+
+    function setupSelectionListener() {
+        if (!bpmnModeler) return;
+        var eventBus = bpmnModeler.get('eventBus');
+        var form = document.getElementById('bpmnTaskForm');
+        var formTitle = document.getElementById('bpmnTaskFormTitle');
+        var formId = document.getElementById('bpmnTaskFormId');
+        eventBus.on('selection.changed', function(e) {
+            var sel = e.newSelection || [];
+            var task = sel.length === 1 && (sel[0].type === 'bpmn:Task' || (sel[0].businessObject && sel[0].businessObject.$type === 'bpmn:Task')) ? sel[0] : null;
+            if (!task) {
+                form.style.display = 'none';
+                return;
+            }
+            var id = task.id;
+            formId.value = id;
+            formTitle.textContent = 'Task: ' + ((task.businessObject && task.businessObject.name) || id);
+            var m = taskMeta[id] || {};
+            document.getElementById('bpmnMetaRolle').value = m.rolle || '';
+            document.getElementById('bpmnMetaItSystem').value = m.itSystem || '';
+            document.getElementById('bpmnMetaBeschreibung').value = m.beschreibung || '';
+            document.getElementById('bpmnMetaR').value = m.raciR || '';
+            document.getElementById('bpmnMetaA').value = m.raciA || '';
+            document.getElementById('bpmnMetaC').value = m.raciC || '';
+            document.getElementById('bpmnMetaI').value = m.raciI || '';
+            form.style.display = 'block';
+        });
+    }
+
+    function saveTaskMeta() {
+        var id = document.getElementById('bpmnTaskFormId').value;
+        if (!id) return;
+        taskMeta[id] = {
+            rolle: document.getElementById('bpmnMetaRolle').value.trim(),
+            itSystem: document.getElementById('bpmnMetaItSystem').value.trim(),
+            beschreibung: document.getElementById('bpmnMetaBeschreibung').value.trim(),
+            raciR: document.getElementById('bpmnMetaR').value.trim(),
+            raciA: document.getElementById('bpmnMetaA').value.trim(),
+            raciC: document.getElementById('bpmnMetaC').value.trim(),
+            raciI: document.getElementById('bpmnMetaI').value.trim()
+        };
+        refreshRaciTable();
+    }
+
+    /** Entfernt Zeilenumbrüche in XML-Attributen (z. B. name="..."), die den Parser brechen. */
+    function sanitizeBpmnXml(xml) {
+        if (!xml || typeof xml !== 'string') return xml;
+        return xml.replace(/\s+name="([^"]*)"/g, function(m, val) {
+            var clean = val.replace(/\r?\n/g, ' ').replace(/\s+/g, ' ').trim();
+            return ' name="' + clean + '"';
+        });
+    }
+
+    function renderBpmnEditor(xml) {
+        var container = document.getElementById('bpmnDiagramContainer');
+        if (!container || !xml) return;
+        xml = sanitizeBpmnXml(xml);
+        extractRaciFromXml(xml);
+        var ModelerClass = window.BpmnModeler || window.BpmnJS;
+        if (!ModelerClass) {
+            container.innerHTML = '<div style="padding:2rem;text-align:center;color:#b91c1c;">BPMN-Editor konnte nicht geladen werden (BpmnModeler nicht gefunden). Bitte Seite neu laden.</div>';
+            return;
+        }
+        if (!bpmnModeler) {
+            container.innerHTML = '';
+            bpmnModeler = new ModelerClass({ container: container });
+            setupSelectionListener();
+        }
+        bpmnModeler.importXML(xml).then(function() {
+            var canvas = bpmnModeler.get('canvas');
+            if (canvas && canvas.zoom) {
+                setTimeout(function() { canvas.zoom('fit-viewport'); }, 100);
+            }
+            refreshRaciTable();
+        }).catch(function(err) {
+            console.error('BPMN import failed:', err);
+            var msg = '<div style="padding:2rem;text-align:center;color:#b91c1c;">Diagramm konnte nicht geladen werden: ' + (err && err.message ? err.message : 'Siehe Konsole') + '. <a href="#" id="bpmnShowXmlTab" style="color:#667eea;">XML-Ansicht</a> prüfen.</div>';
+            container.innerHTML = msg;
+            container.querySelector('#bpmnShowXmlTab') && container.querySelector('#bpmnShowXmlTab').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('bpmnTabXml').click();
+            });
+        });
+    }
+
+    function getCurrentXmlFromEditor(cb) {
+        if (!bpmnModeler || typeof bpmnModeler.saveXML !== 'function') {
+            if (cb) cb(null, currentBpmnXml);
+            return;
+        }
+        bpmnModeler.saveXML({ format: true }).then(function(result) {
+            var xml = result && result.xml ? result.xml : null;
+            if (xml) xml = injectRaciIntoXml(xml);
+            if (xml) currentBpmnXml = xml;
+            if (cb) cb(null, xml);
+        }).catch(function(err) {
+            if (cb) cb(err, currentBpmnXml);
+        });
+    }
+
+    function autoDownloadBpmnFromXml(xml) {
+        if (!xml || typeof xml !== 'string') return;
+        try {
+            var blob = new Blob([xml], { type: 'application/xml' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'prozess.bpmn';
+            // Für automatische Downloads nicht zum DOM anhängen – direkt klicken reicht
+            a.click();
+            setStatus('Download der .bpmn-Datei gestartet.');
+            setTimeout(function() { setStatus(''); }, 2000);
+        } catch (e) {
+            console.warn('Automatischer BPMN-Download fehlgeschlagen:', e);
+        }
+    }
+
+    function showResult(xml, interpretation, assumptions) {
+        currentBpmnXml = xml;
+        var area = document.getElementById('bpmnResultArea');
+        var pre = document.getElementById('bpmnXmlOutput');
+        var err = document.getElementById('bpmnError');
+        if (area) area.style.display = 'block';
+        if (pre) pre.textContent = xml;
+        if (err) { err.style.display = 'none'; err.textContent = ''; }
+        var iWrap = document.getElementById('bpmnInterpretationWrap');
+        var iPre = document.getElementById('bpmnInterpretation');
+        var aWrap = document.getElementById('bpmnAssumptionsWrap');
+        var aPre = document.getElementById('bpmnAssumptions');
+        if (iWrap && iPre) {
+            if (interpretation && interpretation.trim()) { iPre.textContent = interpretation.trim(); iWrap.style.display = 'block'; }
+            else { iWrap.style.display = 'none'; iPre.textContent = ''; }
+        }
+        if (aWrap && aPre) {
+            if (assumptions && assumptions.trim()) { aPre.textContent = assumptions.trim(); aWrap.style.display = 'block'; }
+            else { aWrap.style.display = 'none'; aPre.textContent = ''; }
+        }
+        document.getElementById('bpmnTabDiagram').classList.add('active');
+        document.getElementById('bpmnTabXml').classList.remove('active');
+        document.getElementById('bpmnDiagramWrap').classList.add('show');
+        document.getElementById('bpmnXmlWrap').classList.remove('show');
+
+        // Diagramm im Editor versuchen zu rendern (falls DI vollständig genug ist)
+        renderBpmnEditor(xml);
+
+        // Unabhängig vom Editor das von GPT erzeugte BPMN sofort als .bpmn-Datei bereitstellen
+        autoDownloadBpmnFromXml(xml);
+    }
+
+    function apiUrl() {
+        return (window.getApiUrl && window.getApiUrl('TEXT_TO_BPMN_GPT')) ||
+            (window.AWS_APP_CONFIG && window.AWS_APP_CONFIG.API_BASE ? window.AWS_APP_CONFIG.API_BASE + '/text-to-bpmn-gpt' : '');
+    }
+
+    function setStatus(t) {
+        var el = document.getElementById('bpmnStatus');
+        if (el) el.textContent = t;
+    }
+
+    function setBusy(busy) {
+        var btn = document.getElementById('bpmnGenerateBtn');
+        if (btn) {
+            btn.disabled = busy;
+            btn.innerHTML = busy ? '<i class="fas fa-spinner fa-spin"></i> Generiere…' : '<i class="fas fa-magic"></i> BPMN mit GPT 5.2 generieren';
+        }
+        if (!busy) setStatus('');
+    }
+
+    function showError(msg) {
+        document.getElementById('bpmnResultArea').style.display = 'none';
+        var err = document.getElementById('bpmnError');
+        if (err) { err.style.display = 'block'; err.textContent = msg; }
+    }
+
+    async function generateBpmn() {
+        var text = (document.getElementById('bpmnProcessText') || {}).value || '';
+        if (!text.trim()) {
+            showError('Bitte eine Prozessbeschreibung eingeben.');
+            return;
+        }
+
+        var openaiApiKey = '';
+        if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
+            try {
+                var key = await window.awsAPISettings.getFullApiKey('openai');
+                if (key && typeof key === 'string' && key.length > 10) openaiApiKey = key;
+            } catch (e) { console.warn('OpenAI-Key nicht geladen, Fallback:', e); }
+        }
+
+        var url = apiUrl();
+        if (!url) {
+            showError('API-URL ist nicht konfiguriert.');
+            return;
+        }
+
+        setBusy(true);
+        setStatus('Rufe API auf…');
+
+        try {
+            var res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: text.trim(), openaiApiKey: openaiApiKey })
+            });
+            var data = await res.json().catch(function() { return {}; });
+
+            if (!res.ok) {
+                showError(data.error || res.statusText || 'Unbekannter Fehler');
+                return;
+            }
+            if (data.success && data.bpmnXml) {
+                showResult(data.bpmnXml, data.interpretation, data.assumptions);
+            } else {
+                showError(data.error || 'Kein BPMN-XML in der Antwort.');
+            }
+        } catch (e) {
+            showError(e.message || 'Netzwerk- oder Fehler beim Aufruf.');
+        } finally {
+            setBusy(false);
+        }
+    }
+
+    function copyXml() {
+        getCurrentXmlFromEditor(function(err, xml) {
+            var toCopy = xml || currentBpmnXml;
+            if (!toCopy) return;
+            navigator.clipboard.writeText(toCopy).then(function() {
+                setStatus('In Zwischenablage kopiert (aktueller Editor-Stand).');
+                setTimeout(function() { setStatus(''); }, 2000);
+            }).catch(function() { showError('Kopieren fehlgeschlagen.'); });
+        });
+    }
+
+    function downloadBpmn() {
+        getCurrentXmlFromEditor(function(err, xml) {
+            var toSave = xml || currentBpmnXml;
+            if (!toSave) return;
+            var blob = new Blob([toSave], { type: 'application/xml' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'prozess.bpmn';
+            a.click();
+            URL.revokeObjectURL(a.href);
+            setStatus('Download gestartet (aktueller Editor-Stand).');
+            setTimeout(function() { setStatus(''); }, 2000);
+        });
+    }
+
+    function openInDemoBpmnIo() {
+        getCurrentXmlFromEditor(function(err, xml) {
+            var toCopy = xml || currentBpmnXml;
+            if (!toCopy) return;
+            navigator.clipboard.writeText(toCopy).then(function() {
+                window.open('https://demo.bpmn.io/new', '_blank');
+                setStatus('XML kopiert (Editor-Stand). In demo.bpmn.io mit Strg+V einfügen.');
+                setTimeout(function() { setStatus(''); }, 4000);
+            }).catch(function() { showError('Kopieren fehlgeschlagen.'); });
+        });
+    }
+
+    // Beispieltext initial setzen und beim ersten Klick leeren
+    var processTextEl = document.getElementById('bpmnProcessText');
+    if (processTextEl) {
+        processTextEl.value = EXAMPLE_PROCESS_TEXT;
+        processTextEl.dataset.example = 'true';
+        processTextEl.addEventListener('focus', function() {
+            if (processTextEl.dataset.example === 'true') {
+                processTextEl.value = '';
+                processTextEl.dataset.example = 'false';
+            }
+        });
+        processTextEl.addEventListener('input', function() {
+            processTextEl.dataset.example = 'false';
+        });
+    }
+
+    document.getElementById('bpmnGenerateBtn').addEventListener('click', generateBpmn);
+    document.getElementById('bpmnCopyBtn').addEventListener('click', copyXml);
+    document.getElementById('bpmnDownloadBtn').addEventListener('click', downloadBpmn);
+    document.getElementById('bpmnOpenDemoBtn').addEventListener('click', openInDemoBpmnIo);
+
+    document.getElementById('bpmnTabDiagram').addEventListener('click', function() {
+        document.getElementById('bpmnTabDiagram').classList.add('active');
+        document.getElementById('bpmnTabRaci').classList.remove('active');
+        document.getElementById('bpmnTabXml').classList.remove('active');
+        document.getElementById('bpmnDiagramWrap').classList.add('show');
+        document.getElementById('bpmnRaciWrap').classList.remove('show');
+        document.getElementById('bpmnXmlWrap').classList.remove('show');
+    });
+    document.getElementById('bpmnTabRaci').addEventListener('click', function() {
+        document.getElementById('bpmnTabRaci').classList.add('active');
+        document.getElementById('bpmnTabDiagram').classList.remove('active');
+        document.getElementById('bpmnTabXml').classList.remove('active');
+        document.getElementById('bpmnRaciWrap').classList.add('show');
+        document.getElementById('bpmnDiagramWrap').classList.remove('show');
+        document.getElementById('bpmnXmlWrap').classList.remove('show');
+        refreshRaciTable();
+    });
+    document.getElementById('bpmnTabXml').addEventListener('click', function() {
+        document.getElementById('bpmnTabXml').classList.add('active');
+        document.getElementById('bpmnTabDiagram').classList.remove('active');
+        document.getElementById('bpmnTabRaci').classList.remove('active');
+        document.getElementById('bpmnXmlWrap').classList.add('show');
+        document.getElementById('bpmnDiagramWrap').classList.remove('show');
+        document.getElementById('bpmnRaciWrap').classList.remove('show');
+        getCurrentXmlFromEditor(function(err, xml) {
+            if (xml && document.getElementById('bpmnXmlOutput')) document.getElementById('bpmnXmlOutput').textContent = xml;
+        });
+    });
+    document.getElementById('bpmnMetaSave').addEventListener('click', saveTaskMeta);
+
+    // Beim Laden prüfen, ob OpenAI-Key aus Admin/API-Settings verfügbar ist
+    (function checkKeyStatus() {
+        var el = document.getElementById('bpmnKeyStatus');
+        if (!el) return;
+        if (!window.awsAPISettings || typeof window.awsAPISettings.getFullApiKey !== 'function') {
+            el.innerHTML = '<span style="color:#64748b;">OpenAI-Key: wird aus API-Settings geladen… (Key im <a href="admin.html#api-keys" style="color:#667eea;">Admin</a> hinterlegen)</span>';
+            setTimeout(checkKeyStatus, 500);
+            return;
+        }
+        window.awsAPISettings.getFullApiKey('openai').then(function(key) {
+            if (key && typeof key === 'string' && key.length > 10) {
+                el.innerHTML = '<span style="color:#059669;"><i class="fas fa-check-circle"></i> OpenAI-Key aus Admin/API-Settings geladen – GPT 5.2 wird genutzt.</span>';
+            } else {
+                el.innerHTML = '<span style="color:#64748b;"><i class="fas fa-info-circle"></i> Kein OpenAI-Key – BPMN-Generierung nur mit Key möglich. Key im <a href="admin.html#api-keys" style="color:#667eea;">Admin unter API Keys</a> eintragen.</span>';
+            }
+        }).catch(function() {
+            el.innerHTML = '<span style="color:#64748b;"><i class="fas fa-info-circle"></i> Kein OpenAI-Key – BPMN-Generierung nicht möglich.</span>';
+        });
+    })();
+})();
+    </script>
+</body>
+</html>

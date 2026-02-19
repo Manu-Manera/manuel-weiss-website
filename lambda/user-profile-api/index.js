@@ -1,6 +1,6 @@
 /**
  * AWS Lambda: User Profile API
- * Migrated from Netlify Function
+ * AWS Lambda
  * Endpunkte für alle Profile-Tabs
  * 
  * 🔒 ALLE Endpoints erfordern Authentifizierung

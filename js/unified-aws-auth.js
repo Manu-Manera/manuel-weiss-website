@@ -539,6 +539,73 @@ class UnifiedAWSAuth {
         
         this.currentUser = null;
         localStorage.removeItem(window.AWS_AUTH_CONFIG.token.storageKey);
+        
+        // WICHTIG: Lösche ALLE benutzerspezifischen Daten aus localStorage
+        const userDataKeys = [
+            // Bewerbungsmanager Daten
+            'user_photos',
+            'user_certificates',
+            'user_resumes',
+            'user_portfolios',
+            'bewerbungsmanager_resume',
+            'bewerbungsmanager_resumes',
+            'bewerbungsmanager_profile',
+            'bewerbungsmanager_applications',
+            'cover_letter_versions',
+            'cover_letter_content',
+            'resume_versions',
+            'resume_design_settings',
+            'selected_photo_id',
+            'applications_data',
+            'documents_data',
+            'shared_documents',
+            // Profildaten
+            'user_profile',
+            'unified_profile',
+            'aws_user_profile',
+            // Workflow Daten
+            'coaching_workflow_data',
+            'fachlicheEntwicklungStep1',
+            'fachlicheEntwicklungStep2',
+            'fachlicheEntwicklungStep3',
+            'fachlicheEntwicklungStep4',
+            'fachlicheEntwicklungStep5',
+            'fachlicheEntwicklungStep6',
+            'fachlicheEntwicklungStep7',
+            'fachlicheEntwicklungFinalAnalysis',
+            // HR Selbsttest
+            'hr_selftest_results',
+            'hr_selftest_progress',
+            // Sonstige
+            'awsUserSession',
+            'awsAuthTokens',
+            'forgotPasswordEmail'
+        ];
+        
+        userDataKeys.forEach(key => {
+            try {
+                localStorage.removeItem(key);
+            } catch (e) {
+                console.warn(`⚠️ Could not remove ${key}:`, e);
+            }
+        });
+        
+        console.log('🗑️ Alle Benutzerdaten aus localStorage gelöscht');
+        
+        // CloudDataService Cache leeren falls vorhanden
+        if (window.cloudDataService) {
+            window.cloudDataService.cache = {
+                profile: null,
+                resumes: null,
+                documents: null,
+                coverLetters: null,
+                applications: null,
+                photos: null
+            };
+            window.cloudDataService.cacheExpiry = {};
+            console.log('🗑️ CloudDataService Cache geleert');
+        }
+        
         this.updateUI(false);
         this.showNotification('Erfolgreich abgemeldet!', 'success');
         

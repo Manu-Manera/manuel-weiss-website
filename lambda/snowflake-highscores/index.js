@@ -1,6 +1,6 @@
 /**
  * AWS Lambda: Snowflake Game Highscores
- * Migrated from Netlify Function
+ * AWS Lambda
  */
 
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');

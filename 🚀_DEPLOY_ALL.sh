@@ -27,33 +27,12 @@ if [ -n "$(git status --porcelain)" ]; then
     echo -e "${GREEN}✅ Frontend-Änderungen committed und gepusht${NC}"
     echo -e "${BLUE}📤 Führe AWS S3 Sync aus...${NC}"
     
-    # AWS S3 Sync
+    # AWS Deploy (nutzt deploy-aws-website.sh = eine Config für alle)
     if command -v aws &> /dev/null && aws sts get-caller-identity &> /dev/null; then
-        aws s3 sync . s3://manuel-weiss-website \
-            --exclude "*.git/*" \
-            --exclude "node_modules/*" \
-            --exclude "infrastructure/*" \
-            --exclude "lambda/*" \
-            --exclude "netlify/*" \
-            --exclude ".github/*" \
-            --exclude "docs/archive/*" \
-            --exclude "scripts/archive/*" \
-            --region eu-central-1
-        
-        echo -e "${GREEN}✅ S3 Sync abgeschlossen${NC}"
-        
-        # CloudFront Invalidation
-        echo -e "${BLUE}🔄 Invalidiere CloudFront Cache...${NC}"
-        aws cloudfront create-invalidation \
-            --distribution-id E305V0ATIXMNNG \
-            --paths "/*" \
-            --region eu-central-1
-        
-        echo -e "${GREEN}✅ CloudFront Cache invalidiert (2-5 Min bis live)${NC}"
+        ./deploy-aws-website.sh
     else
         echo -e "${YELLOW}⚠️ AWS CLI nicht verfügbar - manuelles Deployment erforderlich${NC}"
-        echo -e "${YELLOW}   Führe aus: aws s3 sync . s3://manuel-weiss-website --exclude '*.git/*' --exclude 'node_modules/*' --exclude 'infrastructure/*' --exclude 'lambda/*' --exclude 'netlify/*' --region eu-central-1${NC}"
-        echo -e "${YELLOW}   Dann: aws cloudfront create-invalidation --distribution-id E305V0ATIXMNNG --paths '/*' --region eu-central-1${NC}"
+        echo -e "${YELLOW}   Führe aus: ./deploy-aws-website.sh${NC}"
     fi
 else
     echo -e "${YELLOW}ℹ️ Keine Frontend-Änderungen${NC}"

@@ -355,6 +355,22 @@ class AdminNavigation {
                         console.warn('⚠️ window.HeroVideoSection not found');
                     }
                 }
+
+                // BPMN-Generator Section spezifische Initialisierung
+                if (sectionId === 'bpmn-generator') {
+                    if (window.BpmnGeneratorSection) {
+                        if (!window.bpmnGeneratorSection) {
+                            window.bpmnGeneratorSection = new window.BpmnGeneratorSection();
+                        }
+                        if (typeof window.bpmnGeneratorSection.init === 'function') {
+                            try {
+                                window.bpmnGeneratorSection.init();
+                            } catch (err) {
+                                console.error('❌ Error initializing BpmnGeneratorSection:', err);
+                            }
+                        }
+                    }
+                }
             } catch (error) {
                 console.error(`Error in initializeSection for ${sectionId}:`, error);
             }

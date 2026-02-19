@@ -1,6 +1,6 @@
 /**
  * AWS Lambda: Bewerbungsprofil API
- * Migrated from Netlify Function
+ * AWS Lambda
  * Verwaltet Bewerbungsprofile (Lebenslauf, Anschreiben, etc.)
  * 
  * 🔒 ALLE Endpoints erfordern Authentifizierung

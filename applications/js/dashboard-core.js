@@ -219,7 +219,7 @@ async function loadAWSProfile() {
             }
         }
         
-        // PRIORITÄT 1: cloudDataService (Netlify Function) - falls UnifiedProfile leer
+        // PRIORITÄT 1: cloudDataService (AWS) - falls UnifiedProfile leer
         if (!awsProfile || Object.keys(awsProfile).length === 0) {
             if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
                 console.log('📡 Lade Profil aus cloudDataService...');
@@ -885,7 +885,7 @@ async function saveProfile(event) {
         if (auth?.isLoggedIn() && window.cloudDataService) {
             console.log('☁️ Speichere Bewerbungsmanager-Profil in AWS...');
             
-            // Nur die relevanten Felder senden - die Netlify Function merged automatisch
+            // Nur die relevanten Felder senden - Backend merged automatisch
             const awsProfileData = {
                 firstName: formData.firstName,
                 lastName: formData.lastName,
@@ -971,8 +971,50 @@ function setupAuth() {
     checkAuthStatus();
     
     // Listen for auth changes
-    window.addEventListener('authStateChanged', () => {
+    window.addEventListener('authStateChanged', async (event) => {
+        console.log('🔔 Auth-State geändert');
         checkAuthStatus();
+        
+        // Bei Login: Daten aus Cloud laden
+        const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
+        if (isLoggedIn) {
+            console.log('📡 Login erkannt - lade Daten aus Cloud...');
+            
+            // Cache leeren damit frische Daten geladen werden
+            if (window.cloudDataService) {
+                window.cloudDataService.clearCache();
+            }
+            
+            // Alle Daten neu laden
+            await loadAWSProfile();
+            await updateDashboardStats();
+            updateStatsBar();
+            updateProfileForm();
+            
+            // Aktuellen Tab neu laden
+            const activeTab = document.querySelector('.tab-item.active');
+            if (activeTab) {
+                const tabId = activeTab.dataset.tab;
+                if (tabId === 'photos') {
+                    await loadPhotos();
+                } else if (tabId === 'resume') {
+                    initResumeTab();
+                }
+            }
+            
+            console.log('✅ Cloud-Daten nach Login geladen');
+        }
+    });
+    
+    // Auch auf userLogin Event hören
+    document.addEventListener('userLogin', async () => {
+        console.log('📡 userLogin Event - lade Cloud-Daten...');
+        if (window.cloudDataService) {
+            window.cloudDataService.clearCache();
+        }
+        await loadAWSProfile();
+        await updateDashboardStats();
+        updateStatsBar();
     });
 }
 

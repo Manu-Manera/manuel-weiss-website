@@ -12,13 +12,13 @@
 
 > **⚠️ BEVOR DU ÄNDERUNGEN MACHST: Lese die finale Deployment-Anleitung!**
 
-**📖 [🚀_DEPLOYMENT_FINAL.md](./🚀_DEPLOYMENT_FINAL.md)** - Vollständige Anleitung für das echte Setup
+**📖 [🚀_DEPLOYMENT_FINAL.md](./🚀_DEPLOYMENT_FINAL.md)** - Vollständige Anleitung für das echte Setup  
+**📖 [docs/DEPLOY_SKRIPTE_UEBERSICHT.md](./docs/DEPLOY_SKRIPTE_UEBERSICHT.md)** - Alle Deploy-Skripte im Überblick
 
 **Kurzfassung:**
 1. Änderungen in Cursor/IDE machen
-2. AWS S3 Sync ausführen: `aws s3 sync . s3://manuel-weiss-website --exclude "*.git/*" --exclude "node_modules/*" --exclude "infrastructure/*" --exclude "lambda/*" --exclude "netlify/*" --region eu-central-1`
-3. CloudFront Cache invalidiert: `aws cloudfront create-invalidation --distribution-id E305V0ATIXMNNG --paths "/*" --region eu-central-1`
-4. Website testen: https://manuel-weiss.ch
+2. **Nur deployen:** `./deploy-aws-website.sh` (S3 + CloudFront, kein Git)
+3. Website testen: https://manuel-weiss.ch
 
 **Repository:** `Manu-Manera/manuel-weiss-website`  
 **Deployment:** AWS S3 + CloudFront (manuell via AWS CLI)
@@ -303,7 +303,7 @@ const apiConfig = {
 ### 📋 **Voraussetzungen**
 - **GitHub Desktop** für Version Control
 - **Cursor IDE** für Entwicklung
-- **Netlify Account** für Deployment
+- **AWS Account** für Deployment (S3, CloudFront, API Gateway)
 - **OpenAI API Key** für KI-Features
 
 ### 🔧 **Entwicklungsworkflow**
@@ -321,7 +321,7 @@ const apiConfig = {
 
 #### 3. Deployment über AWS CLI
 1. **Änderungen committen** in GitHub Desktop (optional, für Versionskontrolle)
-2. **AWS S3 Sync** ausführen: `aws s3 sync . s3://manuel-weiss-website --exclude "*.git/*" --exclude "node_modules/*" --exclude "infrastructure/*" --exclude "lambda/*" --exclude "netlify/*" --region eu-central-1`
+2. **AWS S3 Sync** ausführen: `aws s3 sync . s3://manuel-weiss-website --exclude "*.git/*" --exclude "node_modules/*" --exclude "infrastructure/*" --exclude "lambda/*" --exclude "netlify/*"  # optional, Ordner existiert nicht mehr --region eu-central-1`
 3. **CloudFront Cache invalidiert**: `aws cloudfront create-invalidation --distribution-id E305V0ATIXMNNG --paths "/*" --region eu-central-1`
 4. **Live Website** unter [https://manuel-weiss.ch](https://manuel-weiss.ch) (2-5 Minuten)
 
@@ -569,7 +569,7 @@ const secureStorage = {
 
 ### 📱 **Deployment-Workflow**
 1. **Änderungen in Cursor** → Dateien werden automatisch erkannt
-2. **AWS S3 Sync** → `aws s3 sync . s3://manuel-weiss-website --exclude "*.git/*" --exclude "node_modules/*" --exclude "infrastructure/*" --exclude "lambda/*" --exclude "netlify/*" --region eu-central-1`
+2. **AWS S3 Sync** → `aws s3 sync . s3://manuel-weiss-website --exclude "*.git/*" --exclude "node_modules/*" --exclude "infrastructure/*" --exclude "lambda/*" --exclude "netlify/*"  # optional, Ordner existiert nicht mehr --region eu-central-1`
 3. **CloudFront Invalidation** → `aws cloudfront create-invalidation --distribution-id E305V0ATIXMNNG --paths "/*" --region eu-central-1`
 4. **Live Website** → Verfügbar nach 2-5 Minuten (Cache-Invalidation)
 
@@ -591,7 +591,7 @@ amplify push
 ### 🌐 **GitHub Pages (Backup)**
 - **URL**: [https://manu-manera.github.io/manuel-weiss-website](https://manu-manera.github.io/manuel-weiss-website)
 - **Automatisches Deployment**: Über GitHub Actions
-- **Fallback**: Falls Netlify nicht verfügbar ist
+- **Fallback**: Lokale Entwicklung mit API_BASE
 
 ---
 
@@ -700,11 +700,11 @@ Diese Website bietet eine **vollständige Business-Lösung** mit:
 - ✅ **Performance-optimiert** (Lighthouse 95+)
 - ✅ **Sicher** und barrierefrei
 - ✅ **Fallback-Systeme** für maximale Verfügbarkeit
-- ✅ **Netlify Deployment** - Automatisches Deployment
+- ✅ **AWS Deployment** – S3 + CloudFront
 - ✅ **GitHub Desktop Workflow** - Einfache Entwicklung
 
 ### 🌐 **Live URLs**
-- **Primär**: [https://mawps.netlify.app](https://mawps.netlify.app)
+- **Primär**: [https://manuel-weiss.ch](https://manuel-weiss.ch)
 - **Backup**: [https://manu-manera.github.io/manuel-weiss-website](https://manu-manera.github.io/manuel-weiss-website)
 
 **Entwickelt mit ❤️ von Manuel Weiss**

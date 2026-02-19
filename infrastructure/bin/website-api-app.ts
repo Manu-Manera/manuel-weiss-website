@@ -12,16 +12,16 @@ const env = {
 };
 
 // ========================================
-// WEBSITE API STACK (Netlify Migration)
+// WEBSITE API STACK
 // ========================================
 const websiteApiStack = new WebsiteApiStack(app, 'manuel-weiss-website-api', {
   env,
-  description: 'Website API für manuel-weiss.ch (ersetzt Netlify Functions)'
+  description: 'Website API für manuel-weiss.ch'
 });
 
 new cdk.CfnOutput(websiteApiStack, 'WebsiteApiEndpoint', {
   value: websiteApiStack.api.url,
-  description: 'Website API URL - Ersetze /.netlify/functions/ mit dieser URL'
+  description: 'Website API Gateway URL'
 });
 
 // Tags

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BPMN-Stories Test – typische HR-Prozesse</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: Inter, system-ui, sans-serif; max-width: 1000px; margin: 0 auto; padding: 2rem; background: #f8fafc; }
+        h1 { color: #1e293b; }
+        .intro { color: #64748b; margin-bottom: 1.5rem; }
+        button { background: #667eea; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        #log { margin-top: 1.5rem; }
+        .story-row { background: white; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-left: 4px solid #e2e8f0; }
+        .story-row.ok { border-left-color: #10b981; }
+        .story-row.fail { border-left-color: #ef4444; }
+        .story-row.running { border-left-color: #f59e0b; }
+        .story-title { font-weight: 600; color: #1e293b; margin-bottom: 0.25rem; }
+        .story-text { font-size: 0.9rem; color: #64748b; margin-bottom: 0.5rem; }
+        .story-meta { font-size: 0.85rem; color: #64748b; }
+        .story-meta strong { color: #334155; }
+        .story-actions { margin-top: 0.5rem; }
+        .story-actions a { margin-right: 0.75rem; font-size: 0.85rem; color: #667eea; }
+        pre.bpmn-snippet { background: #1e293b; color: #e2e8f0; padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.75rem; overflow-x: auto; max-height: 120px; }
+    </style>
+</head>
+<body>
+    <h1><i class="fas fa-vial"></i> BPMN-Stories Test</h1>
+    <p class="intro">Typische HR-Prozessgeschichten werden an die BPMN-API geschickt. Es wird geprüft, ob gültiges BPMN 2.0 XML mit Prozess, Tasks und Flows zurückkommt.</p>
+    <button id="runBtn"><i class="fas fa-play"></i> Alle Stories testen</button>
+    <div id="log"></div>
+
+    <script src="js/aws-app-config.js"></script>
+    <script src="js/aws-api-settings.js"></script>
+    <script>
+(function() {
+    var API_BASE = window.AWS_APP_CONFIG && window.AWS_APP_CONFIG.API_BASE ? window.AWS_APP_CONFIG.API_BASE.replace(/\/$/, '') : '';
+    var endpoint = API_BASE ? API_BASE + '/text-to-bpmn-gpt' : '';
+
+    var hrStories = [
+        {
+            id: 'onboarding',
+            title: 'Onboarding neuer Mitarbeiter',
+            text: 'Der neue Mitarbeiter erhält den Arbeitsvertrag per E-Mail. Nach Unterzeichnung meldet sich HR im System an und erstellt den Benutzeraccount. IT richtet Laptop und Zugänge ein. Am ersten Tag findet die Einführungsveranstaltung statt. Anschliessend erhält der Mitarbeiter die Zugangsdaten und kann arbeiten.'
+        },
+        {
+            id: 'urlaubsantrag',
+            title: 'Urlaubsantrag',
+            text: 'Der Mitarbeiter stellt einen Urlaubsantrag im System. Der Vorgesetzte prüft den Antrag und genehmigt oder lehnt ab. Bei Genehmigung wird der Urlaub in der Zeiterfassung gebucht und der Mitarbeiter erhält eine Bestätigung. Bei Ablehnung wird der Mitarbeiter benachrichtigt.'
+        },
+        {
+            id: 'reisekosten',
+            title: 'Reisekostenabrechnung',
+            text: 'Mitarbeiter reicht Belege und Reisekostenformular ein. Die Abrechnung geht an den Vorgesetzten zur Freigabe. Nach Freigabe prüft Finanzbuchhaltung die Belege. Bei Unstimmigkeiten wird rückgefragt. Nach Prüfung wird die Zahlung ausgelöst.'
+        },
+        {
+            id: 'bewerbung',
+            title: 'Bewerbungsprozess',
+            text: 'Bewerber sendet Lebenslauf und Anschreiben. HR prüft die Unterlagen und leitet sie an die Fachabteilung weiter. Bei Eignung wird zum Vorstellungsgespräch eingeladen. Nach dem Gespräch entscheidet die Abteilung. Bei Zusage erhält der Bewerber den Vertragsentwurf.'
+        },
+        {
+            id: 'gehaltsabschluss',
+            title: 'Gehaltsabschluss / Lohnrunden',
+            text: 'HR bereitet die Lohnrunde vor und sammelt Vorschläge der Vorgesetzten. Die Vorschläge werden mit dem Budget abgeglichen. Nach Freigabe durch die Geschäftsleitung werden die Gehälter angepasst und die Mitarbeiter schriftlich informiert.'
+        },
+        {
+            id: 'offboarding',
+            title: 'Offboarding / Austritt',
+            text: 'Mitarbeiter kündigt. HR bestätigt den Austrittstermin und startet die Checkliste. IT sperrt Zugänge zum Austrittsdatum. Rückgabe von Geräten und Ausweis. Letzte Lohnabrechnung und Arbeitszeugnis werden erstellt. Abschlussgespräch mit Vorgesetztem.'
+        },
+        {
+            id: 'schulung',
+            title: 'Schulungsanmeldung',
+            text: 'Mitarbeiter meldet sich für eine Schulung an. Der Vorgesetzte genehmigt die Teilnahme. Nach Genehmigung wird die Anmeldung an den Schulungsanbieter übermittelt. Der Mitarbeiter erhält eine Bestätigung und erinnert sich selbst an den Termin.'
+        }
+    ];
+
+    function isValidBpmnXml(xml) {
+        if (!xml || typeof xml !== 'string') return { ok: false, reason: 'Kein XML' };
+        var s = xml.trim();
+        var hasDefinitions = /bpmn:definitions|definitions\s+xmlns:bpmn/.test(s);
+        var hasProcess = /bpmn:process|bpmn:process\s+id=/.test(s);
+        var hasStart = /bpmn:startEvent|startEvent/.test(s);
+        var hasEnd = /bpmn:endEvent|endEvent/.test(s);
+        var hasTask = /bpmn:task|bpmn:task\s+id=/.test(s);
+        var hasFlow = /bpmn:sequenceFlow|sequenceFlow/.test(s);
+        var taskCount = (s.match(/bpmn:task\s+id=/g) || []).length;
+        var flowCount = (s.match(/bpmn:sequenceFlow\s+id=/g) || []).length;
+        if (!hasDefinitions || !hasProcess) return { ok: false, reason: 'Fehlende definitions/process' };
+        if (!hasStart || !hasEnd) return { ok: false, reason: 'Fehlendes startEvent oder endEvent' };
+        if (!hasFlow) return { ok: false, reason: 'Keine sequenceFlow' };
+        return {
+            ok: true,
+            tasks: taskCount,
+            flows: flowCount
+        };
+    }
+
+    function getSnippet(xml, maxLen) {
+        if (!xml) return '';
+        var s = xml.replace(/\s+/g, ' ').trim();
+        return s.length > (maxLen || 200) ? s.substring(0, maxLen) + '…' : s;
+    }
+
+    function renderRow(story, result) {
+        var row = document.createElement('div');
+        row.className = 'story-row ' + (result ? (result.ok ? 'ok' : 'fail') : 'running');
+        var statusIcon = result ? (result.ok ? '<i class="fas fa-check-circle" style="color:#10b981;"></i>' : '<i class="fas fa-times-circle" style="color:#ef4444;"></i>') : '<i class="fas fa-spinner fa-spin" style="color:#f59e0b;"></i>';
+        var meta = '';
+        var actions = '';
+        if (result) {
+            if (result.ok) {
+                meta = 'Tasks: <strong>' + (result.tasks || 0) + '</strong>, Flows: <strong>' + (result.flows || 0) + '</strong>';
+                if (result.bpmnXml) {
+                    actions = '<span class="story-actions"><a href="#" data-copy="' + story.id + '">Kopieren</a><a href="https://demo.bpmn.io/new" target="_blank" rel="noopener">In demo.bpmn.io öffnen</a></span>';
+                }
+            } else {
+                meta = 'Grund: ' + (result.reason || result.error || 'Unbekannt');
+            }
+        } else {
+            meta = 'Läuft…';
+        }
+        row.innerHTML =
+            '<div class="story-title">' + statusIcon + ' ' + story.title + '</div>' +
+            '<div class="story-text">' + story.text.substring(0, 180) + (story.text.length > 180 ? '…' : '') + '</div>' +
+            '<div class="story-meta">' + meta + '</div>' +
+            (result && result.bpmnXml ? '<pre class="bpmn-snippet">' + getSnippet(result.bpmnXml, 300).replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</pre>' : '') +
+            actions;
+        if (result && result.bpmnXml) row.dataset.bpmn = result.bpmnXml;
+        return row;
+    }
+
+    function runTests() {
+        var log = document.getElementById('log');
+        var btn = document.getElementById('runBtn');
+        log.innerHTML = '';
+        btn.disabled = true;
+
+        var openaiKeyPromise = (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function')
+            ? window.awsAPISettings.getFullApiKey('openai').catch(function() { return ''; })
+            : Promise.resolve('');
+
+        openaiKeyPromise.then(function(openaiApiKey) {
+            var key = (openaiApiKey && typeof openaiApiKey === 'string' && openaiApiKey.length > 10) ? openaiApiKey : '';
+            if (!endpoint) {
+                log.innerHTML = '<div class="story-row fail"><div class="story-title">Fehler</div><div class="story-meta">API_BASE nicht konfiguriert. Bitte aws-app-config.js laden (gleiche Origin wie die Website).</div></div>';
+                btn.disabled = false;
+                return;
+            }
+
+            var rows = {};
+            hrStories.forEach(function(story) {
+                var row = renderRow(story, null);
+                rows[story.id] = { row: row, story: story };
+                log.appendChild(row);
+            });
+
+            var index = 0;
+            function runNext() {
+                if (index >= hrStories.length) {
+                    btn.disabled = false;
+                    return;
+                }
+                var story = hrStories[index];
+                fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: story.text, openaiApiKey: key })
+                })
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        var result = { ok: false };
+                        if (data && data.success && data.bpmnXml) {
+                            var valid = isValidBpmnXml(data.bpmnXml);
+                            result = valid.ok ? { ok: true, tasks: valid.tasks, flows: valid.flows, bpmnXml: data.bpmnXml } : { ok: false, reason: valid.reason };
+                        } else {
+                            result.reason = (data && data.error) ? data.error : 'Kein BPMN-XML in der Antwort';
+                        }
+                        var newRow = renderRow(story, result);
+                        rows[story.id].row.replaceWith(newRow);
+                        if (result.bpmnXml) newRow.dataset.bpmn = result.bpmnXml;
+                        var copyLink = newRow.querySelector('[data-copy]');
+                        if (copyLink) {
+                            copyLink.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                var bpmn = newRow.dataset.bpmn;
+                                if (bpmn) navigator.clipboard.writeText(bpmn).then(function() { alert('BPMN-XML kopiert.'); });
+                            });
+                        }
+                    })
+                    .catch(function(err) {
+                        var newRow = renderRow(story, { ok: false, reason: err.message || 'Netzwerkfehler' });
+                        rows[story.id].row.replaceWith(newRow);
+                    })
+                    .finally(function() {
+                        index++;
+                        runNext();
+                    });
+            }
+            runNext();
+        });
+    }
+
+    document.getElementById('runBtn').addEventListener('click', runTests);
+})();
+    </script>
+</body>
+</html>

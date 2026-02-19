@@ -1,9 +1,54 @@
 /* Resume Editor Styles */
+
+/* CSS-Variablen für dynamische Abstände */
+:root {
+    --resume-section-gap: 24px;
+    --resume-item-gap: 12px;
+    --resume-paragraph-gap: 6px;
+}
+
 .resume-editor-container {
     max-width: 1200px;
     margin: 2rem auto;
     padding: 0 1rem;
     padding-top: 80px; /* Platz für fixed navbar */
+}
+
+/* Dynamische Abstände aus Design-Editor */
+.resume-preview-section {
+    margin-bottom: var(--resume-section-gap, 24px) !important;
+}
+
+.resume-preview-item {
+    margin-bottom: var(--resume-item-gap, 12px) !important;
+}
+
+.resume-preview-description p,
+.resume-preview-item-description p {
+    margin-bottom: var(--resume-paragraph-gap, 6px) !important;
+}
+
+/* Sidebar Resize Handle */
+.sidebar-resize-handle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: transparent;
+    cursor: ew-resize;
+    z-index: 100;
+    transition: background 0.2s;
+}
+
+.sidebar-resize-handle:hover,
+.sidebar-resize-handle.active {
+    background: linear-gradient(180deg, #6366f1, #8b5cf6);
+}
+
+.design-sidebar {
+    position: relative;
+    transition: width 0.1s ease-out;
 }
 
 /* Zurück Button Navigation */

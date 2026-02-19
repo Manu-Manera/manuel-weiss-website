@@ -298,10 +298,22 @@ class AdminSidebar extends HTMLElement {
                                 <span>Bewerbungen</span>
                             </a>
                         </li>
+                        <li class="nav-item" data-section="hr-leads" data-tooltip="HR-Selbsttest Leads">
+                            <a href="#hr-leads">
+                                <i class="fas fa-clipboard-check"></i>
+                                <span>HR-Leads</span>
+                            </a>
+                        </li>
                         <li class="nav-item" data-section="api-keys" data-tooltip="API Keys">
                             <a href="#api-keys">
                                 <i class="fas fa-key"></i>
                                 <span>API Keys</span>
+                            </a>
+                        </li>
+                        <li class="nav-item" data-section="bpmn-generator" data-tooltip="BPMN mit KI generieren">
+                            <a href="#bpmn-generator">
+                                <i class="fas fa-project-diagram"></i>
+                                <span>BPMN-Generator</span>
                             </a>
                         </li>
                         <li class="nav-item" data-section="user-management" data-tooltip="Admin-User Verwaltung">
@@ -529,6 +541,16 @@ class AdminSidebar extends HTMLElement {
                     console.log('Initializing HeroAboutSection manually');
                     window.heroAboutSection = new window.HeroAboutSection();
                     window.heroAboutSection.init();
+                }
+            }, 200);
+        }
+        if (sectionId === 'bpmn-generator') {
+            setTimeout(() => {
+                if (window.BpmnGeneratorSection && !window.bpmnGeneratorSection) {
+                    window.bpmnGeneratorSection = new window.BpmnGeneratorSection();
+                }
+                if (window.bpmnGeneratorSection && typeof window.bpmnGeneratorSection.init === 'function') {
+                    window.bpmnGeneratorSection.init();
                 }
             }, 200);
         }

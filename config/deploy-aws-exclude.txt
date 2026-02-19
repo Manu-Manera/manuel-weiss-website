@@ -1,0 +1,55 @@
+# Exclude-Liste für AWS S3 Sync (deploy-aws-website.sh)
+# Eine Zeile = ein Muster. Leerzeilen und Zeilen mit # werden ignoriert.
+# Mehr Excludes = weniger Dateien = schnellerer Sync, ohne Qualitätsverlust.
+
+.git/*
+node_modules/*
+infrastructure/*
+lambda/*
+# netlify/ entfernt – nur noch AWS
+.github/*
+docs/archive/*
+scripts/archive/*
+backend/*
+packages/*
+cdk.out/*
+hr-demo/*
+apps/*
+
+# Kein Website-Content (schnellerer Sync)
+*.md
+*.sh
+postman/*
+improvements/*
+amplify/*
+api/*
+production-placeholder/*
+*.disabled
+*.backup
+env.example
+amplify.yml
+cdk.json
+tsconfig.json
+
+# Sensibel / Build
+.env
+.env.*
+keys/*
+*.pem
+*.key
+dist/*
+build/*
+*.zip
+*.log
+
+# IDE / OS / Temp
+.vscode/*
+.idea/*
+.DS_Store
+Thumbs.db
+tmp/*
+temp/*
+*.tmp
+# .netlify/ nicht mehr verwendet
+.cursor/*
+backup-*

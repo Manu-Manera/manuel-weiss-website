@@ -770,7 +770,7 @@ async function analyzeJobUrl() {
     }
     
     try {
-        const apiUrl = window.getApiUrl ? window.getApiUrl('JOB_PARSER') : '/.netlify/functions/job-parser';
+        const apiUrl = window.getApiUrl ? window.getApiUrl('JOB_PARSER') : (window.AWS_APP_CONFIG?.API_BASE ? window.AWS_APP_CONFIG.API_BASE + '/job-parser' : '');
         const response = await fetch(apiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

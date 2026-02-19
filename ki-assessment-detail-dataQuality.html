@@ -1616,15 +1616,15 @@
                     }
                 });
             } else {
-                // Initialize sub-criteria values if not present
-                dataQualityCriteria.forEach(criterion => {
-                    criterion.subCriteria.forEach(subCriterion => {
-                        const key = `${criterion.id}_${subCriterion.id}`;
-                        if (!assessmentValues[key]) {
-                            assessmentValues[key] = 1;
-                        }
-                    });
+            // Initialize sub-criteria values if not present
+            dataQualityCriteria.forEach(criterion => {
+                criterion.subCriteria.forEach(subCriterion => {
+                    const key = `${criterion.id}_${subCriterion.id}`;
+                    if (!assessmentValues[key]) {
+                        assessmentValues[key] = 1;
+                    }
                 });
+            });
             }
             
             renderCriteria();

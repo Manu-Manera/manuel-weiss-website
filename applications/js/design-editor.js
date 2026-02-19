@@ -42,10 +42,75 @@ class DesignEditor {
         this.setupResumeTitlePosition();
         this.setupLanguage();
         this.setupMobile();
+        this.setupSidebarResize();
         this.applySettings();
         this.updatePreview();
         
         console.log('🎨 Design Editor initialized (Extended + Mobile + DateFormat + ImageCrop + CompanyLogo)');
+    }
+    
+    setupSidebarResize() {
+        const handle = document.getElementById('sidebarResizeHandle');
+        const sidebar = document.querySelector('.design-sidebar');
+        if (!handle || !sidebar) return;
+        
+        let isResizing = false;
+        let startX, startWidth;
+        
+        // Rechte Sidebar: Ziehen nach LINKS = grösser, nach RECHTS = kleiner
+        handle.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            startX = e.clientX;
+            startWidth = sidebar.offsetWidth;
+            handle.classList.add('active');
+            document.body.style.cursor = 'ew-resize';
+            document.body.style.userSelect = 'none';
+            e.preventDefault();
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            // Für rechte Sidebar: Links ziehen (clientX kleiner) = Breite grösser
+            const diff = startX - e.clientX;
+            const newWidth = Math.max(320, Math.min(700, startWidth + diff));
+            sidebar.style.width = newWidth + 'px';
+            sidebar.style.minWidth = newWidth + 'px';
+            sidebar.style.maxWidth = newWidth + 'px';
+        });
+        
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                handle.classList.remove('active');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+            }
+        });
+        
+        // Touch support
+        handle.addEventListener('touchstart', (e) => {
+            isResizing = true;
+            startX = e.touches[0].clientX;
+            startWidth = sidebar.offsetWidth;
+            handle.classList.add('active');
+            e.preventDefault();
+        }, { passive: false });
+        
+        document.addEventListener('touchmove', (e) => {
+            if (!isResizing) return;
+            const diff = startX - e.touches[0].clientX;
+            const newWidth = Math.max(320, Math.min(700, startWidth + diff));
+            sidebar.style.width = newWidth + 'px';
+            sidebar.style.minWidth = newWidth + 'px';
+            sidebar.style.maxWidth = newWidth + 'px';
+        });
+        
+        document.addEventListener('touchend', () => {
+            if (isResizing) {
+                isResizing = false;
+                handle.classList.remove('active');
+            }
+        });
     }
     
     setupMobile() {
@@ -127,6 +192,8 @@ class DesignEditor {
             // Page Breaks
             enableManualPageBreaks: false,
             pageBreakSection: '',
+            pageBreakBeforeEachExperience: false,
+            experiencePageBreaks: [], // Array von Indizes
             
             // Template
             template: 'modern',
@@ -908,6 +975,68 @@ class DesignEditor {
                 this.saveSettings();
             });
         }
+        
+        // Seitenumbruch vor jeder Arbeitserfahrung
+        const pageBreakBeforeEachExp = document.getElementById('pageBreakBeforeEachExperience');
+        if (pageBreakBeforeEachExp) {
+            pageBreakBeforeEachExp.checked = this.settings.pageBreakBeforeEachExperience || false;
+            pageBreakBeforeEachExp.addEventListener('change', (e) => {
+                this.settings.pageBreakBeforeEachExperience = e.target.checked;
+                this.applySettings();
+                this.saveSettings();
+            });
+        }
+        
+        // Dynamische Liste der Arbeitserfahrungen für einzelne Umbrüche
+        this.updateExperiencePageBreaksList();
+    }
+    
+    updateExperiencePageBreaksList() {
+        const container = document.getElementById('experiencePageBreaksList');
+        if (!container) return;
+        
+        // Hole Arbeitserfahrungen aus dem Formular
+        const experienceItems = document.querySelectorAll('.experience-item, [data-section="experience"]');
+        const experiences = [];
+        
+        // Sammle aus Resume-Form
+        document.querySelectorAll('#experienceList .experience-entry, #experienceList > div').forEach((item, idx) => {
+            const titleEl = item.querySelector('[name*="title"], [name*="position"], .experience-title input');
+            const companyEl = item.querySelector('[name*="company"], .experience-company input');
+            const title = titleEl?.value || `Position ${idx + 1}`;
+            const company = companyEl?.value || '';
+            experiences.push({ idx, title, company });
+        });
+        
+        if (experiences.length === 0) {
+            container.innerHTML = '<small style="color: #64748b;">Keine Arbeitserfahrungen vorhanden</small>';
+            return;
+        }
+        
+        container.innerHTML = experiences.map(exp => `
+            <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0; font-size: 0.8rem;">
+                <input type="checkbox" class="experience-page-break-checkbox" data-exp-idx="${exp.idx}"
+                    ${(this.settings.experiencePageBreaks || []).includes(exp.idx) ? 'checked' : ''}>
+                <span>${exp.title}${exp.company ? ' @ ' + exp.company : ''}</span>
+            </label>
+        `).join('');
+        
+        // Event-Listener für Checkboxen
+        container.querySelectorAll('.experience-page-break-checkbox').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                const idx = parseInt(e.target.dataset.expIdx);
+                if (!this.settings.experiencePageBreaks) this.settings.experiencePageBreaks = [];
+                if (e.target.checked) {
+                    if (!this.settings.experiencePageBreaks.includes(idx)) {
+                        this.settings.experiencePageBreaks.push(idx);
+                    }
+                } else {
+                    this.settings.experiencePageBreaks = this.settings.experiencePageBreaks.filter(i => i !== idx);
+                }
+                this.applySettings();
+                this.saveSettings();
+            });
+        });
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -4102,7 +4231,11 @@ Antworte NUR mit dem übersetzten JSON im exakt gleichen Format.`;
         }
         
         // Unterschrift IMMER ganz unten, nach allen anderen Sections
-        if (signatureSection) {
+        // Zeige Unterschrift wenn showSignature aktiviert ist (unabhängig von sections.visible)
+        if (this.settings.showSignature) {
+            const sigSection = signatureSection || { id: 'signature', name: 'Unterschrift', visible: true };
+            html += this.renderSectionById(sigSection, resumeData);
+        } else if (signatureSection) {
             html += this.renderSectionById(signatureSection, resumeData);
         }
         
@@ -4976,7 +5109,8 @@ Antworte NUR mit dem übersetzten JSON im exakt gleichen Format.`;
                                 height: auto; 
                                 width: ${width}px; 
                                 max-width: 100%;
-                                transform: ${this.settings.signatureSkew ? `skew(${this.settings.signatureSkew}deg)` : 'none'};
+                                transform: ${this.settings.signatureSkew ? `rotate(${this.settings.signatureSkew}deg)` : 'none'};
+                                transform-origin: center center;
                                 pointer-events: none;
                             ">
                         </div>
@@ -6745,6 +6879,39 @@ Antworte NUR mit dem übersetzten JSON im exakt gleichen Format.`;
             header.style.setProperty('text-align', headerAlign, 'important');
         });
         
+        // LEBENSLAUF Titel (mit letter-spacing)
+        const resumeTitle = element.querySelector('.resume-preview-title-label, .resume-title-label');
+        if (resumeTitle) {
+            resumeTitle.style.setProperty('letter-spacing', (this.settings.resumeTitleSpacing || 3) + 'px', 'important');
+            resumeTitle.style.setProperty('color', mutedColor, 'important');
+            resumeTitle.style.setProperty('font-weight', '300', 'important');
+            resumeTitle.style.setProperty('text-transform', 'uppercase', 'important');
+        }
+        
+        // Name explizit mit Akzentfarbe
+        const nameElements = element.querySelectorAll('.resume-preview-name, h1.resume-preview-name');
+        nameElements.forEach(name => {
+            const useTextColor = (headerBackground && headerBackground !== 'transparent' && headerBackground !== '#ffffff') 
+                ? headerTextColor 
+                : accentColor;
+            name.style.setProperty('color', useTextColor, 'important');
+            name.style.setProperty('font-weight', '600', 'important');
+        });
+        
+        // Berufsbezeichnung
+        const titleElements = element.querySelectorAll('.resume-preview-title:not(.resume-preview-title-label)');
+        titleElements.forEach(title => {
+            title.style.setProperty('color', textColor, 'important');
+        });
+        
+        // Kontakt-Icons
+        const contactIcons = element.querySelectorAll('.resume-preview-contact i, .fa, .fas, .far');
+        contactIcons.forEach(icon => {
+            icon.style.setProperty('color', 'inherit', 'important');
+            icon.style.setProperty('font-family', '"Font Awesome 6 Free"', 'important');
+            icon.style.setProperty('font-weight', '900', 'important');
+        });
+        
         // Header-Kontakt-Infos bei dunklem Hintergrund
         if (headerBackground && headerBackground !== 'transparent' && headerBackground !== '#ffffff') {
             const headerContacts = element.querySelectorAll('.resume-preview-header-section .resume-preview-contact, .resume-preview-header-section .resume-preview-birthdate');
@@ -7209,15 +7376,20 @@ Antworte NUR mit dem übersetzten JSON im exakt gleichen Format.`;
         
         /* WICHTIG: Aufzählungszeichen innerhalb des Randes halten */
         ul, ol {
-            list-style-position: inside !important;
-            padding-left: 0 !important;
+            list-style-position: outside !important;
+            padding-left: 1.5em !important;
             margin-left: 0 !important;
         }
         
         li {
-            padding-left: 0 !important;
+            padding-left: 0.25em !important;
             margin-left: 0 !important;
             text-indent: 0 !important;
+        }
+        
+        .resume-preview-bullets {
+            padding-left: 1.5em !important;
+            list-style-position: outside !important;
         }
         
         /* Beschreibungs-Text mit Stichpunkten */
@@ -7225,6 +7397,36 @@ Antworte NUR mit dem übersetzten JSON im exakt gleichen Format.`;
         .resume-preview-description {
             padding-left: 0 !important;
             margin-left: 0 !important;
+        }
+        
+        /* PDF Export: Header-Formatierungen */
+        .resume-preview-name {
+            color: ${this.settings.accentColor || '#6366f1'} !important;
+            font-weight: 600 !important;
+        }
+        
+        .resume-preview-title-label,
+        .resume-title-label {
+            letter-spacing: ${this.settings.resumeTitleSpacing || 3}px !important;
+            color: ${this.settings.mutedColor || '#64748b'} !important;
+            font-weight: 300 !important;
+            text-transform: uppercase !important;
+        }
+        
+        .resume-preview-section-title {
+            color: ${this.settings.accentColor || '#6366f1'} !important;
+        }
+        
+        /* Skill-Balken Farbe */
+        .resume-skill-bar-fill {
+            background: ${this.settings.accentColor || '#6366f1'} !important;
+        }
+        
+        /* Kontakt-Icons */
+        .resume-preview-contact i,
+        .fa, .fas, .far, .fab {
+            font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
+            font-weight: 900 !important;
         }
         
         /* Stichpunkte als inline-Elemente behandeln */

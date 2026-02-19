@@ -9,8 +9,8 @@
  * 2. API URL aus Output kopieren und hier eintragen
  */
 
-// API Base URL - AWS API Gateway (vollständig migriert von Netlify)
-const USE_AWS_API = true; // ✅ Vollständig auf AWS migriert
+// API Base URL - AWS API Gateway
+const USE_AWS_API = true;
 
 window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
   // ========================================
@@ -68,7 +68,11 @@ window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
     
     // Snowflake Game
     SNOWFLAKE_HIGHSCORES: '/snowflake-highscores',
-    
+
+    // HR-Automation (BPMN)
+    TEXT_TO_BPMN: '/text-to-bpmn',
+    TEXT_TO_BPMN_GPT: '/text-to-bpmn-gpt',
+
     // Contact
     CONTACT_EMAIL: '/contact-email',
     
@@ -89,8 +93,7 @@ window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
   // ========================================
   
   /**
-   * Gibt die vollständige URL für einen Endpoint zurück
-   * Verwendet AWS API Gateway (vollständig migriert von Netlify)
+   * Gibt die vollständige URL für einen Endpoint zurück (AWS API Gateway)
    */
   getEndpointUrl: function(endpoint) {
     if (!this.API_BASE || this.API_BASE.length === 0) {

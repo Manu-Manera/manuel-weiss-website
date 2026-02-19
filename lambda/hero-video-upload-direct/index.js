@@ -1,6 +1,6 @@
 /**
  * AWS Lambda: Hero Video Upload Direct
- * Migrated from Netlify Function
+ * AWS Lambda
  * Lädt Videos direkt über den Server zu S3 hoch (umgeht CORS-Probleme)
  * 
  * 🔒 ALLE Endpoints erfordern Authentifizierung (Admin-only)

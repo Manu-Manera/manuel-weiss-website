@@ -128,7 +128,15 @@ async function loadResume() {
                     if (resume) {
                         resumeData = resume;
                         populateForm(resume);
-                        // Keine Benachrichtigung - wird automatisch beim Laden angezeigt
+                        
+                        // Design-Settings laden wenn vorhanden
+                        if (resume.designSettings && Object.keys(resume.designSettings).length > 0) {
+                            localStorage.setItem('resume_design_settings', JSON.stringify(resume.designSettings));
+                            if (window.designEditor && typeof window.designEditor.loadSettings === 'function') {
+                                window.designEditor.loadSettings();
+                                window.designEditor.applySettings();
+                            }
+                        }
                         return;
                     }
                 }
@@ -144,7 +152,16 @@ async function loadResume() {
             if (resume) {
                 resumeData = resume;
                 populateForm(resume);
-                // Keine Benachrichtigung - wird automatisch beim Laden angezeigt
+                
+                // Design-Settings laden wenn vorhanden
+                if (resume.designSettings && Object.keys(resume.designSettings).length > 0) {
+                    localStorage.setItem('resume_design_settings', JSON.stringify(resume.designSettings));
+                    // Design-Editor aktualisieren wenn vorhanden
+                    if (window.designEditor && typeof window.designEditor.loadSettings === 'function') {
+                        window.designEditor.loadSettings();
+                        window.designEditor.applySettings();
+                    }
+                }
                 
                 // PDF-Export-Modus?
                 if (action === 'pdf' || action === 'export') {
@@ -362,10 +379,14 @@ document.getElementById('resumeForm').addEventListener('submit', async (e) => {
         const versionNameInput = document.getElementById('resumeVersionName');
         const versionName = versionNameInput?.value?.trim() || null;
         
+        // Design-Settings mit speichern
+        const designSettings = JSON.parse(localStorage.getItem('resume_design_settings') || '{}');
+        
         const resumeData = {
             id: resumeId,
             ...formData,
             name: versionName || formData.name || `${formData.firstName || ''} ${formData.lastName || ''}`.trim() || 'Unbenannter Lebenslauf',
+            designSettings: designSettings,
             createdAt: formData.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
@@ -389,9 +410,36 @@ document.getElementById('resumeForm').addEventListener('submit', async (e) => {
             console.log('✅ Lebenslauf in localStorage gespeichert:', resumeId);
         }
         
-        showNotification('✅ Lebenslauf gespeichert!', 'success');
+        // Automatische Versionierung (wie beim Anschreiben)
+        try {
+            const versions = JSON.parse(localStorage.getItem('resume_versions') || '[]');
+            const versionNumber = versions.filter(v => v.resumeId === resumeId).length + 1;
+            const newVersion = {
+                id: `${resumeId}_v${versionNumber}_${Date.now()}`,
+                resumeId: resumeId,
+                version: `${versionNumber}.0`,
+                name: resumeData.name,
+                data: resumeData,
+                design: designSettings,
+                createdAt: new Date().toISOString()
+            };
+            versions.unshift(newVersion);
+            // Behalte nur die letzten 20 Versionen pro Lebenslauf
+            const filteredVersions = [];
+            const countPerResume = {};
+            for (const v of versions) {
+                countPerResume[v.resumeId] = (countPerResume[v.resumeId] || 0) + 1;
+                if (countPerResume[v.resumeId] <= 20) {
+                    filteredVersions.push(v);
+                }
+            }
+            localStorage.setItem('resume_versions', JSON.stringify(filteredVersions));
+            console.log(`✅ Version ${versionNumber}.0 erstellt`);
+        } catch (vErr) {
+            console.warn('Versionierung fehlgeschlagen:', vErr);
+        }
         
-        // Nur speichern, nicht zur Übersicht zurückkehren
+        showNotification(`✅ Lebenslauf gespeichert (Version ${new Date().toLocaleTimeString('de-DE')})!`, 'success');
         
     } catch (error) {
         console.error('Error saving resume:', error);
@@ -1218,63 +1266,60 @@ function applyOCRData() {
     const technicalSkills = parsed.skills?.technical || parsed.technicalSkills || [];
     const softSkills = parsed.skills?.soft || parsed.softSkills || [];
     
-    // Technical skills - verwende die korrekte Funktion addTechnicalSkillWithRating
+    // Technical skills - IMMER als bewertbare Skill-Objekte hinzufügen
     if (technicalSkills.length > 0) {
         const techContainer = document.getElementById('technicalSkillsContainer');
         if (techContainer) {
             techContainer.innerHTML = '';
+            
+            // Sammle alle Skills in ein einheitliches Format: {name, level, category}
+            let allSkillsFlat = [];
             
             // Prüfe ob es kategorisierte Skills sind (Format: [{category, skills}])
             const isCategorized = technicalSkills[0]?.category !== undefined || technicalSkills[0]?.skills !== undefined;
             
             if (isCategorized) {
                 // Kategorisierte Skills (Format aus OCR: [{category: "IT", skills: ["Python", "Java"]}])
-                console.log('📂 Verarbeite kategorisierte Skills:', technicalSkills);
+                console.log('📂 Verarbeite kategorisierte Skills als bewertbare Objekte:', technicalSkills);
                 
-                setTimeout(() => {
-                    technicalSkills.forEach(category => {
-                        const categoryName = category.category || 'Fähigkeiten';
-                        const categorySkills = category.skills || [];
-                        
-                        if (typeof addTechnicalSkillCategory === 'function') {
-                            addTechnicalSkillCategory(categoryName, categorySkills);
-                            console.log(`✅ Kategorie "${categoryName}" mit ${categorySkills.length} Skills hinzugefügt`);
-                        }
+                technicalSkills.forEach(category => {
+                    const categoryName = category.category || 'Fähigkeiten';
+                    const categorySkills = category.skills || [];
+                    
+                    categorySkills.forEach(skill => {
+                        const skillName = typeof skill === 'object' ? skill.name : String(skill);
+                        const skillLevel = typeof skill === 'object' ? (skill.level || 5) : 5;
+                        allSkillsFlat.push({ name: skillName, level: skillLevel, category: categoryName });
                     });
-                }, 100);
+                });
             } else {
                 // Flache Liste von Skills (mit oder ohne Level)
-                const skillsWithRating = technicalSkills.map(skill => {
-                    // Neues Format: {name: "Skill", level: 8}
+                allSkillsFlat = technicalSkills.map(skill => {
                     if (typeof skill === 'object' && skill.name) {
-                        return { name: skill.name, level: skill.level || 5 };
+                        return { name: skill.name, level: skill.level || 5, category: skill.category || '' };
                     }
-                    // Altes Format: "Skill" als String
-                    return { name: String(skill), level: 5 };
+                    return { name: String(skill), level: 5, category: '' };
                 });
-                
-                // Warte kurz, damit die Funktionen verfügbar sind
-                setTimeout(() => {
-                    if (typeof addTechnicalSkillWithRating === 'function') {
-                        skillsWithRating.forEach(skill => {
-                            addTechnicalSkillWithRating(skill.name, skill.level || 5, '');
-                        });
-                        console.log('✅ Technische Skills mit Level hinzugefügt:', skillsWithRating);
-                    } else if (typeof window.addTechnicalSkillWithRating === 'function') {
-                        skillsWithRating.forEach(skill => {
-                            window.addTechnicalSkillWithRating(skill.name, skill.level || 5, '');
-                        });
-                        console.log('✅ Technische Skills mit Level hinzugefügt (window):', skillsWithRating);
-                    } else if (typeof addTechnicalSkillCategory === 'function') {
-                        // Fallback auf alte Funktion (ohne Level)
-                        console.warn('⚠️ addTechnicalSkillWithRating nicht verfügbar, verwende Fallback ohne Level');
-                        const skillNames = skillsWithRating.map(s => s.name);
-                        addTechnicalSkillCategory('Technische Fähigkeiten', skillNames);
-                    } else {
-                        console.error('❌ Keine Skill-Funktion verfügbar!');
-                    }
-                }, 100);
             }
+            
+            console.log('📊 Alle technischen Skills für bewertbare Darstellung:', allSkillsFlat);
+            
+            // Warte kurz, damit die Funktionen verfügbar sind
+            setTimeout(() => {
+                if (typeof addTechnicalSkillWithRating === 'function') {
+                    allSkillsFlat.forEach(skill => {
+                        addTechnicalSkillWithRating(skill.name, skill.level, skill.category);
+                    });
+                    console.log(`✅ ${allSkillsFlat.length} technische Skills als bewertbare Objekte hinzugefügt`);
+                } else if (typeof window.addTechnicalSkillWithRating === 'function') {
+                    allSkillsFlat.forEach(skill => {
+                        window.addTechnicalSkillWithRating(skill.name, skill.level, skill.category);
+                    });
+                    console.log(`✅ ${allSkillsFlat.length} technische Skills als bewertbare Objekte hinzugefügt (window)`);
+                } else {
+                    console.error('❌ addTechnicalSkillWithRating nicht verfügbar!');
+                }
+            }, 100);
         }
     }
     

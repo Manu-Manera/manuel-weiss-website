@@ -15,7 +15,7 @@
     <meta property="og:title" content="Manuel Weiss - Professional Services">
     <meta property="og:description" content="HR Berater für AI, Transformation und Geschäftsprozesse">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://mawps.netlify.app">
+    <meta property="og:url" content="https://manuel-weiss.ch">
     
     <!-- Styles -->
     <link rel="stylesheet" href="../styles.css">
@@ -627,13 +627,13 @@
                 phone: '+41 79 838 55 90',
                 location: 'Pilatusstrasse 40, 8330 Pfäffikon ZH',
                 website: 'https://manuel-weiss.ch',
-                linkedin: 'https://linkedin.com/in/manuel-weiss',
+                linkedin: 'https://www.linkedin.com/in/manuel-alexander-weiss',
                 experience: [
                     {
                         position: 'HR Consultant',
                         company: 'HR Campus AG, Zürich',
                         period: '12.2021 - 06.2025',
-                        description: 'End-to-end UKG HRSD Implementierungen für SME und Enterprise Kunden. Design, Automatisierung und Integration von HR-Prozessen über SAP SuccessFactors/HCM, DocuSign. ADONIS BPMN 2.0 Modellierung und HR Health Checks.'
+                        description: 'End-to-end UKG HRSD Implementierungen für SME und Enterprise Kunden. Design, Automatisierung und Integration von HR-Prozessen über SAP SuccessFactors/HCM, DocuSign. ADONIS BPMN 2.0 Modellierung und HR-Standortbestimmung.'
                     },
                     {
                         position: 'Process Consultant',
@@ -686,7 +686,7 @@
                 ],
                 skills: {
                     'HR-Tech & Process Expertise (9/10)': [
-                        'UKG HRSD', 'SAP SuccessFactors/HCM', 'ADONIS BPMN 2.0', 'HR Data Migration', 'Interface Design', 'HR Health Checks'
+                        'UKG HRSD', 'SAP SuccessFactors/HCM', 'ADONIS BPMN 2.0', 'HR Data Migration', 'Interface Design', 'HR-Standortbestimmung'
                     ],
                     'Project Governance & Delivery (9/10)': [
                         'PRINCE2 Practitioner', 'Scrum Master', 'Agile/Waterfall', 'Hybrid Approaches', 'Project Tailoring'
@@ -1401,7 +1401,7 @@
             }
             
             // PRIORITÄT: Profilbild SOFORT aus AWS laden (vor allem anderen)
-            // WICHTIG: Dies funktioniert domain-unabhängig (mawps.netlify.app und manuel-weiss.ch)
+            // WICHTIG: Funktioniert mit manuel-weiss.ch und AWS API
             console.log('🌐 WEBSITE: Loading profile image from AWS (works on all domains)...');
             const awsImage = await loadProfileImageFromAWS();
             if (!awsImage) {
@@ -1624,7 +1624,7 @@
                         <p data-de="© 2024 Manuel Weiss. Alle Rechte vorbehalten." data-en="© 2024 Manuel Weiss. All rights reserved.">&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
                     </div>
                     <div class="social-media">
-                        <a href="https://linkedin.com/in/manuel-weiss" target="_blank" rel="noopener">
+                        <a href="https://www.linkedin.com/in/manuel-alexander-weiss" target="_blank" rel="noopener">
                             <i class="fab fa-linkedin"></i>
                         </a>
                         <a href="https://twitter.com/manuelweiss" target="_blank" rel="noopener">
@@ -2103,7 +2103,7 @@
                 }, 10000);
                 
                 try {
-                    const apiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : '/.netlify/functions/hero-video-settings';
+                    const apiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : (window.AWS_APP_CONFIG?.API_BASE ? window.AWS_APP_CONFIG.API_BASE + '/hero-video-settings' : '');
                     const response = await fetch(apiUrl);
                     if (!response.ok) {
                         throw new Error(`HTTP ${response.status}: ${response.statusText}`);

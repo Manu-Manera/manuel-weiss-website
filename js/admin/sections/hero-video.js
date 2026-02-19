@@ -145,7 +145,7 @@ class HeroVideoSection {
 
     async loadCurrentVideo() {
         try {
-            const apiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : '/.netlify/functions/hero-video-settings';
+            const apiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : (window.AWS_APP_CONFIG?.API_BASE ? window.AWS_APP_CONFIG.API_BASE + '/hero-video-settings' : '');
             const token = await this.getAuthToken();
             const response = await fetch(apiUrl, {
                 headers: {
@@ -232,7 +232,7 @@ class HeroVideoSection {
                 console.log('🚀 Versuche direkten S3-Upload (Pre-Signed URL)...');
                 
                 // Schritt 1: Hole Pre-Signed URL
-                const uploadApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_UPLOAD') : '/.netlify/functions/hero-video-upload';
+                const uploadApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_UPLOAD') : (window.AWS_APP_CONFIG?.API_BASE ? window.AWS_APP_CONFIG.API_BASE + '/hero-video-upload' : '');
                 const token = await this.getAuthToken();
                 const uploadUrlResponse = await fetch(uploadApiUrl, {
                     method: 'POST',
@@ -307,7 +307,7 @@ class HeroVideoSection {
                         throw new Error('publicUrl wurde nicht gesetzt');
                     }
 
-                    const settingsApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : '/.netlify/functions/hero-video-settings';
+                    const settingsApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : (window.AWS_APP_CONFIG?.API_BASE ? window.AWS_APP_CONFIG.API_BASE + '/hero-video-settings' : '');
                     const settingsToken = await this.getAuthToken();
                     const settingsResponse = await fetch(settingsApiUrl, {
                         method: 'POST',
@@ -382,11 +382,11 @@ class HeroVideoSection {
                         reader.readAsDataURL(file);
                     });
 
-                    // Prüfe Größe (Netlify Function Limit: 6MB)
+                    // Prüfe Größe (Lambda Payload-Limit)
                     const base64SizeInBytes = (fileData.length * 3) / 4;
                     const NETLIFY_FUNCTION_PAYLOAD_LIMIT = 6 * 1024 * 1024; // 6MB
                     if (base64SizeInBytes > NETLIFY_FUNCTION_PAYLOAD_LIMIT) {
-                        throw new Error(`Die Datei ist nach Base64-Kodierung zu groß für die Netlify Function (${(base64SizeInBytes / 1024 / 1024).toFixed(2)}MB). Max. Payload ist 6MB. Bitte komprimiere das Video oder wähle ein kleineres.`);
+                        throw new Error(`Die Datei ist nach Base64-Kodierung zu groß (${(base64SizeInBytes / 1024 / 1024).toFixed(2)}MB). Max. Payload 6MB. Bitte komprimiere das Video oder wähle ein kleineres.`);
                     }
 
                     // Upload zu S3 über Server
@@ -394,7 +394,7 @@ class HeroVideoSection {
                     if (progressFill) progressFill.style.width = '30%';
                     if (progressPercentage) progressPercentage.textContent = '30%';
 
-                    const directUploadApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_UPLOAD_DIRECT') : '/.netlify/functions/hero-video-upload-direct';
+                    const directUploadApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_UPLOAD_DIRECT') : (window.AWS_APP_CONFIG?.API_BASE ? window.AWS_APP_CONFIG.API_BASE + '/hero-video-upload-direct' : '');
                     const directUploadToken = await this.getAuthToken();
                     const uploadResponse = await fetch(directUploadApiUrl, {
                         method: 'POST',
@@ -436,7 +436,7 @@ class HeroVideoSection {
                     // WICHTIG: Speichere URL auch manuell in Settings, falls DynamoDB-Speicherung fehlgeschlagen ist
                     console.log('💾 Speichere Video-URL in Settings...');
                     try {
-                        const saveSettingsApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : '/.netlify/functions/hero-video-settings';
+                        const saveSettingsApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : (window.AWS_APP_CONFIG?.API_BASE ? window.AWS_APP_CONFIG.API_BASE + '/hero-video-settings' : '');
                         const saveSettingsToken = await this.getAuthToken();
                         const settingsResponse = await fetch(saveSettingsApiUrl, {
                             method: 'POST',

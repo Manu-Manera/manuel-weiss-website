@@ -20,8 +20,7 @@ class WorkflowAPI {
             // Fallback auf AWS API Base
             this.apiBaseUrl = `${window.AWS_APP_CONFIG.API_BASE}/user-data`;
         } else {
-            // Letzter Fallback auf Netlify Functions (nur für Entwicklung)
-            this.apiBaseUrl = '/.netlify/functions/user-data';
+            this.apiBaseUrl = (window.AWS_APP_CONFIG?.API_BASE ? window.AWS_APP_CONFIG.API_BASE + '/user-data' : '');
         }
     }
 

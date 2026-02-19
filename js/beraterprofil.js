@@ -17,13 +17,13 @@
             phone: '+41 79 838 55 90',
             location: 'Pilatusstrasse 40, 8330 Pfäffikon ZH',
             website: 'https://manuel-weiss.ch',
-            linkedin: 'https://linkedin.com/in/manuel-weiss',
+            linkedin: 'https://www.linkedin.com/in/manuel-alexander-weiss',
             experience: [
                 {
                     position: 'HR Consultant',
                     company: 'HR Campus AG, Zürich',
                     period: '12.2021 - 06.2025',
-                    description: 'End-to-end UKG HRSD Implementierungen für SME und Enterprise Kunden. Design, Automatisierung und Integration von HR-Prozessen über SAP SuccessFactors/HCM, DocuSign. ADONIS BPMN 2.0 Modellierung und HR Health Checks.'
+                    description: 'End-to-end UKG HRSD Implementierungen für SME und Enterprise Kunden. Design, Automatisierung und Integration von HR-Prozessen über SAP SuccessFactors/HCM, DocuSign. ADONIS BPMN 2.0 Modellierung und HR-Standortbestimmung.'
                 },
                 {
                     position: 'Process Consultant',
@@ -76,7 +76,7 @@
             ],
             skills: {
                 'HR-Tech & Process Expertise (9/10)': [
-                    'UKG HRSD', 'SAP SuccessFactors/HCM', 'ADONIS BPMN 2.0', 'HR Data Migration', 'Interface Design', 'HR Health Checks'
+                    'UKG HRSD', 'SAP SuccessFactors/HCM', 'ADONIS BPMN 2.0', 'HR Data Migration', 'Interface Design', 'HR-Standortbestimmung'
                 ],
                 'Project Governance & Delivery (9/10)': [
                     'PRINCE2 Practitioner', 'Scrum Master', 'Agile/Waterfall', 'Hybrid Approaches', 'Project Tailoring'

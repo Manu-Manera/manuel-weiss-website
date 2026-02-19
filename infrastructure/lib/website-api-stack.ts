@@ -8,7 +8,7 @@ import { Construct } from 'constructs';
 
 /**
  * Website API Stack
- * Ersetzt alle Netlify Functions mit AWS Lambda + API Gateway
+ * Website API: AWS Lambda + API Gateway für manuel-weiss.ch
  */
 export class WebsiteApiStack extends cdk.Stack {
   public readonly api: apigateway.RestApi;
@@ -90,7 +90,7 @@ export class WebsiteApiStack extends cdk.Stack {
     // ========================================
     this.api = new apigateway.RestApi(this, 'WebsiteAPI', {
       restApiName: 'Manuel Weiss Website API',
-      description: 'API für manuel-weiss.ch (ersetzt Netlify Functions)',
+      description: 'API für manuel-weiss.ch',
       defaultCorsPreflightOptions: {
         allowOrigins: [
           'https://manuel-weiss.ch',
@@ -376,6 +376,28 @@ export class WebsiteApiStack extends cdk.Stack {
       }
     });
 
+    // Text-to-BPMN Lambda (HR-Automation-Workflow)
+    const textToBpmnLambda = new lambda.Function(this, 'TextToBpmnFunction', {
+      functionName: 'website-text-to-bpmn',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('../lambda/text-to-bpmn'),
+      role: lambdaRole,
+      timeout: cdk.Duration.seconds(30),
+      memorySize: 256
+    });
+
+    // Text-to-BPMN mit GPT-5.2 (Admin: KI-BPMN-Generierung)
+    const textToBpmnGpt52Lambda = new lambda.Function(this, 'TextToBpmnGpt52Function', {
+      functionName: 'website-text-to-bpmn-gpt52',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('../lambda/text-to-bpmn-gpt52'),
+      role: lambdaRole,
+      timeout: cdk.Duration.seconds(60),
+      memorySize: 256
+    });
+
     // ========================================
     // BEWERBUNGSPROFIL LAMBDA (Phase 2 Migration)
     // ========================================
@@ -595,6 +617,14 @@ export class WebsiteApiStack extends cdk.Stack {
     // /hero-video-upload-direct
     const heroVideoUploadDirectResource = this.api.root.addResource('hero-video-upload-direct');
     heroVideoUploadDirectResource.addMethod('POST', new apigateway.LambdaIntegration(heroVideoUploadDirectLambda));
+
+    // /text-to-bpmn (HR-Automation-Workflow)
+    const textToBpmnResource = this.api.root.addResource('text-to-bpmn');
+    textToBpmnResource.addMethod('POST', new apigateway.LambdaIntegration(textToBpmnLambda));
+
+    // /text-to-bpmn-gpt (Admin: BPMN-Generierung mit GPT-5.2)
+    const textToBpmnGptResource = this.api.root.addResource('text-to-bpmn-gpt');
+    textToBpmnGptResource.addMethod('POST', new apigateway.LambdaIntegration(textToBpmnGpt52Lambda));
 
     // ========================================
     // BEWERBUNGSPROFIL ROUTES (Phase 2 Migration)

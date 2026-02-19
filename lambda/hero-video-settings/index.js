@@ -1,6 +1,6 @@
 /**
  * AWS Lambda: Hero Video Settings
- * Migrated from Netlify Function
+ * AWS Lambda
  * Speichert und lädt die aktuelle Hero-Video-URL aus DynamoDB
  * 
  * 🔓 GET: Öffentlich (für Startseite)

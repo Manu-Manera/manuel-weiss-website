@@ -674,6 +674,42 @@ a:hover {
     background: #ffffff;
 }
 
+/* Navbar auf dunklem Hintergrund (starry-theme Seiten) */
+.starry-theme .navbar,
+.dark-page .navbar {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(20px);
+}
+
+.starry-theme .nav-link,
+.dark-page .nav-link {
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-shadow: none;
+}
+
+.starry-theme .nav-link:hover,
+.starry-theme .nav-link.active,
+.dark-page .nav-link:hover,
+.dark-page .nav-link.active {
+    color: #ffffff !important;
+}
+
+.starry-theme .nav-link.active::after,
+.dark-page .nav-link.active::after {
+    background: #ffffff;
+}
+
+.starry-theme .nav-name,
+.dark-page .nav-name {
+    color: white !important;
+}
+
+/* Anmelden Button bleibt immer gleich */
+.btn-login {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+    color: white !important;
+}
+
 .admin-link {
     display: flex;
     align-items: center;
@@ -1614,15 +1650,16 @@ a:hover {
     display: -webkit-flex !important; /* Safari */
     flex-direction: row !important; /* Explizit horizontal */
     -webkit-flex-direction: row !important; /* Safari */
-    flex-wrap: nowrap !important; /* Horizontal scrollen - wird in Mobile-Media-Queries überschrieben */
-    -webkit-flex-wrap: nowrap !important; /* Safari */
+    flex-wrap: wrap !important; /* Umbruch erlauben für bessere Lesbarkeit */
+    -webkit-flex-wrap: wrap !important; /* Safari */
+    justify-content: center !important; /* Zentriert */
     gap: var(--spacing-xl);
-    max-width: 100%;
+    max-width: 1400px;
     width: 100%; /* Explizit 100% Breite */
-    margin: 0;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
     position: relative;
     z-index: 50; /* Über den Schneeflocken (z-index: 9) */
-    position: relative;
     z-index: 12; /* Über Container (z-index 11) */
     align-items: stretch;
     -webkit-align-items: stretch; /* Safari */
@@ -1651,34 +1688,22 @@ a:hover {
         }
         
         .services-grid .service-card {
-            flex: none !important;
-            -webkit-flex: none !important;
-            flex-grow: 0 !important;
-            -webkit-flex-grow: 0 !important;
-            flex-shrink: 0 !important;
-            -webkit-flex-shrink: 0 !important;
-            flex-basis: auto !important;
-            -webkit-flex-basis: auto !important;
-            width: calc((100% - 2 * var(--spacing-xl)) / 3) !important;
-            min-width: 280px !important;
-            max-width: 400px !important;
+            flex: 0 0 380px !important;
+            -webkit-flex: 0 0 380px !important;
+            width: 380px !important;
+            min-width: 340px !important;
+            max-width: 420px !important;
             box-sizing: border-box !important;
         }
     }
     
     @media (max-width: 1200px) and (min-width: 769px) {
         .services-grid .service-card {
-            flex: none !important;
-            -webkit-flex: none !important;
-            flex-grow: 0 !important;
-            -webkit-flex-grow: 0 !important;
-            flex-shrink: 0 !important;
-            -webkit-flex-shrink: 0 !important;
-            flex-basis: auto !important;
-            -webkit-flex-basis: auto !important;
-            width: calc((100% - var(--spacing-xl)) / 2) !important;
-            min-width: 280px !important;
-            max-width: 380px !important;
+            flex: 0 0 360px !important;
+            -webkit-flex: 0 0 360px !important;
+            width: 360px !important;
+            min-width: 320px !important;
+            max-width: 400px !important;
             box-sizing: border-box !important;
         }
     }
@@ -1765,39 +1790,26 @@ a:hover {
     }
     
     .services-grid .service-card {
-        /* Safari-kompatible Lösung: width statt calc() in flex */
-        flex: none !important;
-        -webkit-flex: none !important; /* Safari */
-        flex-grow: 0 !important;
-        -webkit-flex-grow: 0 !important; /* Safari */
-        flex-shrink: 0 !important;
-        -webkit-flex-shrink: 0 !important; /* Safari */
-        flex-basis: auto !important;
-        -webkit-flex-basis: auto !important; /* Safari */
-        /* Breite wird über width gesetzt für Safari-Kompatibilität */
-        width: calc((100% - 2 * var(--spacing-xl)) / 3) !important;
-        min-width: 280px !important;
-        max-width: 400px !important;
+        /* Safari-kompatible Lösung */
+        flex: 0 0 380px !important;
+        -webkit-flex: 0 0 380px !important; /* Safari */
+        width: 380px !important;
+        min-width: 340px !important;
+        max-width: 420px !important;
         scroll-snap-align: start;
         box-sizing: border-box !important; /* Padding in Breite einrechnen */
     }
 }
 
-/* Tablet: 2-3 Kacheln sichtbar (je nach Breite) */
+/* Tablet: 2 Kacheln sichtbar */
 @media (max-width: 1200px) {
     .services-grid .service-card {
-        /* Auf Tablet: 2 Kacheln + 1 Gap - Safari-kompatible Lösung */
-        flex: none !important;
-        -webkit-flex: none !important; /* Safari */
-        flex-grow: 0 !important;
-        -webkit-flex-grow: 0 !important; /* Safari */
-        flex-shrink: 0 !important;
-        -webkit-flex-shrink: 0 !important; /* Safari */
-        flex-basis: auto !important;
-        -webkit-flex-basis: auto !important; /* Safari */
-        width: calc((100% - var(--spacing-xl)) / 2) !important;
-        min-width: 280px !important;
-        max-width: 380px !important;
+        /* Auf Tablet: breitere Kacheln */
+        flex: 0 0 360px !important;
+        -webkit-flex: 0 0 360px !important; /* Safari */
+        width: 360px !important;
+        min-width: 320px !important;
+        max-width: 400px !important;
         box-sizing: border-box !important;
     }
     
@@ -1810,70 +1822,67 @@ a:hover {
     }
 }
 
-/* Kleine Tablets: Sicherstellen, dass 2 Kacheln passen */
+/* Kleine Tablets: 2 Kacheln */
 @media (max-width: 900px) and (min-width: 769px) {
     .services-grid .service-card {
-        flex: none !important;
-        -webkit-flex: none !important; /* Safari */
-        flex-grow: 0 !important;
-        -webkit-flex-grow: 0 !important; /* Safari */
-        flex-shrink: 0 !important;
-        -webkit-flex-shrink: 0 !important; /* Safari */
-        flex-basis: auto !important;
-        -webkit-flex-basis: auto !important; /* Safari */
-        width: calc((100% - var(--spacing-xl)) / 2) !important;
-        min-width: 260px !important;
-        max-width: 350px !important;
+        flex: 0 0 340px !important;
+        -webkit-flex: 0 0 340px !important; /* Safari */
+        width: 340px !important;
+        min-width: 300px !important;
+        max-width: 380px !important;
         box-sizing: border-box !important;
     }
 }
 
-/* Mobile: 1-2 Kacheln sichtbar */
+/* Mobile: Volle Breite, vertikal gestapelt */
 @media (max-width: 768px) {
     .services-grid {
         display: flex !important;
         display: -webkit-flex !important; /* Safari */
-        flex-wrap: nowrap !important; /* Horizontal scrollen auf Mobile */
+        flex-direction: column !important; /* Vertikal auf Mobile */
+        -webkit-flex-direction: column !important; /* Safari */
+        flex-wrap: nowrap !important;
         -webkit-flex-wrap: nowrap !important; /* Safari */
-        overflow-x: auto !important;
-        -webkit-overflow-scrolling: touch !important;
+        align-items: center !important;
+        gap: var(--spacing-lg) !important;
         padding: var(--spacing-md) !important;
+        overflow-x: visible !important;
     }
     
     .services-grid .service-card {
-        /* Auf Mobile: 1-2 Kacheln je nach Bildschirmbreite */
-        flex: none !important;
-        -webkit-flex: none !important; /* Safari */
-        flex-grow: 0 !important;
-        -webkit-flex-grow: 0 !important; /* Safari */
-        flex-shrink: 0 !important;
-        -webkit-flex-shrink: 0 !important; /* Safari */
-        width: calc(100vw - 2 * var(--spacing-md) - 2 * var(--spacing-sm)) !important;
-        min-width: 260px !important;
-        max-width: 320px !important;
+        /* Volle Breite auf Mobile für bessere Lesbarkeit */
+        flex: 0 0 auto !important;
+        -webkit-flex: 0 0 auto !important; /* Safari */
+        width: calc(100vw - 2rem) !important;
+        min-width: 280px !important;
+        max-width: 100% !important;
+        min-height: auto !important;
         box-sizing: border-box !important;
     }
     
     .scroll-arrow {
-        width: 40px;
-        height: 40px;
-        font-size: 1rem;
+        display: none !important; /* Keine Pfeile auf Mobile nötig */
     }
 }
 
-/* Sehr kleine Mobile-Geräte: 1 Kachel */
+/* Sehr kleine Mobile-Geräte: volle Breite */
 @media (max-width: 480px) {
     .services-grid .service-card {
-        flex: none !important;
-        -webkit-flex: none !important; /* Safari */
-        flex-grow: 0 !important;
-        -webkit-flex-grow: 0 !important; /* Safari */
-        flex-shrink: 0 !important;
-        -webkit-flex-shrink: 0 !important; /* Safari */
-        width: calc(100vw - 2 * var(--spacing-md)) !important;
-        min-width: 240px !important;
+        flex: 0 0 auto !important;
+        -webkit-flex: 0 0 auto !important; /* Safari */
+        width: calc(100vw - 1.5rem) !important;
+        min-width: 260px !important;
         max-width: 100% !important;
+        padding: var(--spacing-lg) !important;
         box-sizing: border-box !important;
+    }
+    
+    .service-card h3 {
+        font-size: 1.25rem !important;
+    }
+    
+    .service-card p {
+        font-size: 0.9rem !important;
     }
 }
 
@@ -1887,8 +1896,12 @@ a:hover {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
-    min-height: 440px; /* Mindesthöhe, kann wachsen wenn mehr Inhalt */
+    min-height: 480px; /* Mehr Höhe für alle Bulletpoints */
     height: auto; /* Automatische Höhe basierend auf Inhalt */
+    width: 380px; /* Feste Breite für Desktop */
+    min-width: 340px;
+    max-width: 420px;
+    flex: 0 0 380px; /* Nicht schrumpfen, feste Basis */
     position: relative;
     z-index: 200 !important; /* Über den Schneeflocken (z-index: 100) */
     cursor: pointer;
@@ -3074,27 +3087,7 @@ a:hover {
         }
     }
     
-    .services-grid {
-        display: flex !important;
-        display: -webkit-flex !important; /* Safari */
-        flex-wrap: nowrap !important;
-        -webkit-flex-wrap: nowrap !important; /* Safari */
-        overflow-x: auto !important;
-        gap: var(--spacing-md) !important;
-    }
-    
-    .services-grid .service-card {
-        flex: none !important;
-        -webkit-flex: none !important; /* Safari */
-        flex-grow: 0 !important;
-        -webkit-flex-grow: 0 !important; /* Safari */
-        flex-shrink: 0 !important;
-        -webkit-flex-shrink: 0 !important; /* Safari */
-        width: calc(100vw - 2 * var(--spacing-md) - 2 * var(--spacing-sm)) !important;
-        min-width: 260px !important;
-        max-width: 320px !important;
-        box-sizing: border-box !important;
-    }
+    /* Services Grid wird bereits oben für Mobile definiert */
     
     .activities-grid {
         grid-template-columns: 1fr;
@@ -3130,34 +3123,7 @@ a:hover {
         justify-content: center;
     }
     
-    /* Service Cards Mobile Optimization */
-    .services-grid {
-        display: flex !important;
-        display: -webkit-flex !important; /* Safari */
-        flex-wrap: nowrap !important;
-        -webkit-flex-wrap: nowrap !important; /* Safari */
-        overflow-x: auto !important;
-        gap: var(--spacing-md) !important;
-        -webkit-overflow-scrolling: touch !important;
-    }
-    
-    .services-grid .service-card {
-        flex: none !important;
-        -webkit-flex: none !important; /* Safari */
-        flex-grow: 0 !important;
-        -webkit-flex-grow: 0 !important; /* Safari */
-        flex-shrink: 0 !important;
-        -webkit-flex-shrink: 0 !important; /* Safari */
-        width: calc(100vw - 2 * var(--spacing-md)) !important;
-        min-width: 240px !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-    }
-    
-    .service-card {
-        min-height: auto;
-        padding: var(--spacing-lg);
-    }
+    /* Service Cards werden bereits oben für 480px definiert */
     
     .service-card .btn {
         min-height: 44px;
@@ -4084,29 +4050,24 @@ a:hover {
         padding: var(--spacing-lg);
     }
     
-    /* Services Section Mobile - Horizontal Scroll */
+    /* Services Section Mobile - Vertikal gestapelt für bessere Lesbarkeit */
     .services-grid {
         display: flex !important;
         display: -webkit-flex !important; /* Safari */
-        flex-wrap: nowrap !important;
-        -webkit-flex-wrap: nowrap !important; /* Safari */
-        overflow-x: auto !important;
-        -webkit-overflow-scrolling: touch !important;
-        gap: var(--spacing-md) !important;
+        flex-direction: column !important;
+        -webkit-flex-direction: column !important; /* Safari */
+        align-items: center !important;
+        gap: var(--spacing-lg) !important;
         padding: var(--spacing-md) !important;
-        scroll-behavior: smooth;
     }
     
     .services-grid .service-card {
-        flex: none !important;
-        -webkit-flex: none !important; /* Safari */
-        flex-grow: 0 !important;
-        -webkit-flex-grow: 0 !important; /* Safari */
-        flex-shrink: 0 !important;
-        -webkit-flex-shrink: 0 !important; /* Safari */
-        width: calc(100vw - 2 * var(--spacing-md) - 2 * var(--spacing-sm)) !important;
+        flex: 0 0 auto !important;
+        -webkit-flex: 0 0 auto !important; /* Safari */
+        width: calc(100vw - 2rem) !important;
         min-width: 280px !important;
-        max-width: 320px !important;
+        max-width: 100% !important;
+        min-height: auto !important;
         box-sizing: border-box !important;
     }
     
@@ -4115,11 +4076,11 @@ a:hover {
     }
     
     .service-card h3 {
-        font-size: var(--text-xl);
+        font-size: 1.3rem;
     }
     
     .service-card p {
-        font-size: var(--text-sm);
+        font-size: 0.95rem;
     }
     
     .service-card .btn {
@@ -4319,14 +4280,15 @@ a:hover {
     
     .services-grid {
         display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
+        flex-wrap: wrap;
+        justify-content: center;
         gap: var(--spacing-lg);
     }
     
     .services-grid .service-card {
-        flex: 0 0 300px;
-        min-width: 300px;
+        flex: 0 0 340px;
+        min-width: 320px;
+        max-width: 380px;
     }
     
     .highlights-grid {
@@ -4675,14 +4637,14 @@ a:hover {
 @supports not (grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))) {
     .services-grid {
         display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
+        flex-wrap: wrap;
+        justify-content: center;
     }
     
     .service-card {
-        flex: 0 0 320px;
-        min-width: 320px;
-        max-width: 320px;
+        flex: 0 0 380px;
+        min-width: 340px;
+        max-width: 420px;
     }
 }
 
@@ -4720,8 +4682,8 @@ a:hover {
 /* Firefox: Container Queries Fallback */
 @supports not (container-type: inline-size) {
     .service-card {
-        width: 100%;
-        max-width: 400px;
+        width: 380px;
+        max-width: 420px;
     }
 }
 

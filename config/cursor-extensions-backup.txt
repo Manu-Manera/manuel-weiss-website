@@ -1,0 +1,21 @@
+# Cursor Extensions – Backup (zum Neu-Einrichten)
+# Eine Zeile pro Extension-ID. Leerzeilen und Zeilen mit # werden ignoriert.
+
+anysphere.cursorpyright
+christian-kohler.path-intellisense
+dbaeumer.vscode-eslint
+eamodio.gitlens
+esbenp.prettier-vscode
+firefox-devtools.vscode-firefox-debug
+formulahendry.auto-close-tag
+formulahendry.auto-rename-tag
+github.vscode-github-actions
+ms-azuretools.vscode-containers
+ms-azuretools.vscode-docker
+ms-python.debugpy
+ms-python.python
+ms-vscode.vscode-typescript-next
+ritwickdey.liveserver
+streetsidesoftware.code-spell-checker
+streetsidesoftware.code-spell-checker-german
+tomoki1207.pdf

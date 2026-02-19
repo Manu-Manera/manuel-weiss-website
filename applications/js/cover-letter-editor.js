@@ -2302,9 +2302,9 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         const input = contactPerson.trim();
         const lower = input.toLowerCase();
         
-        // Erkenne Geschlecht
-        const isFemale = lower.includes('frau') || lower.includes('ms.') || lower.includes('miss') || lower.includes('mrs.');
-        const isMale = lower.includes('herr') || lower.includes('mr.');
+        // Erkenne Geschlecht aus Titel
+        let isFemale = lower.includes('frau') || lower.includes('ms.') || lower.includes('miss') || lower.includes('mrs.');
+        let isMale = lower.includes('herr') || lower.includes('mr.');
         
         // Entferne Titel und Anredeformen
         let cleanName = input
@@ -2322,6 +2322,32 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             lastName = parts.slice(1).join(' ');
         } else if (parts.length === 1) {
             lastName = parts[0];
+        }
+        
+        // Geschlechtserkennung via Vornamen wenn kein Titel
+        if (!isFemale && !isMale && firstName) {
+            const fn = firstName.toLowerCase();
+            // Häufige weibliche Vornamen (DE/CH/AT/International)
+            const femaleNames = ['anna','maria','julia','sarah','laura','lisa','lena','sophie','emma','marie',
+                'katharina','sandra','nicole','stefanie','christina','andrea','petra','sabine','claudia','susanne',
+                'monika','martina','barbara','eva','birgit','gabriele','ursula','karin','heike','silke','melanie',
+                'nadine','jennifer','jessica','michelle','vanessa','michaela','alexandra','daniela','simone','sonja',
+                'angela','manuela','anja','tanja','christine','brigitte','renate','elisabeth','franziska','johanna',
+                'caroline','carolina','linda','carina','jasmin','tamara','verena','carmen','katrin','cornelia',
+                'bettina','anne','anke','ines','ingrid','ruth','hanna','hannah','emily','amelie','charlotte','luisa'];
+            // Häufige männliche Vornamen
+            const maleNames = ['max','alexander','michael','thomas','christian','daniel','stefan','andreas','markus','martin',
+                'peter','hans','wolfgang','klaus','werner','günter','helmut','manfred','frank','bernd','jürgen','uwe',
+                'ralf','dieter','heinz','horst','karl','walter','gerhard','josef','friedrich','paul','simon','david',
+                'tobias','florian','sebastian','jan','jonas','felix','tim','nico','niklas','lukas','leon','philipp',
+                'benjamin','marco','patrick','dominik','kevin','marcel','matthias','christoph','johannes','moritz',
+                'oliver','sven','lars','jan','kai','marc','robert','bernhard','christoph','erik','fabian','julian'];
+            
+            if (femaleNames.includes(fn)) isFemale = true;
+            else if (maleNames.includes(fn)) isMale = true;
+            // Endungen als Fallback
+            else if (fn.endsWith('a') || fn.endsWith('e') || fn.endsWith('ine') || fn.endsWith('ia')) isFemale = true;
+            else if (fn.endsWith('o') || fn.endsWith('us') || fn.endsWith('er')) isMale = true;
         }
         
         return {
@@ -3156,7 +3182,17 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
     // ═══════════════════════════════════════════════════════════════════════════
 
     async saveCoverLetter() {
-        if (!this.generatedContent) {
+        // Hole Content aus DOM falls generatedContent leer
+        if (!this.generatedContent || this.generatedContent.trim() === '') {
+            const letterText = document.getElementById('letterText');
+            if (letterText) {
+                this.generatedContent = letterText.tagName === 'TEXTAREA'
+                    ? (letterText.value || '')
+                    : (letterText.textContent || letterText.innerText || '');
+            }
+        }
+        
+        if (!this.generatedContent || this.generatedContent.trim() === '') {
             this.showToast('Kein Anschreiben zum Speichern', 'error');
             return;
         }
@@ -3246,17 +3282,24 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
     }
 
     async exportToPDF() {
-        // Prüfe Content
-        if (!this.generatedContent || this.generatedContent.trim() === '') {
+        // Prüfe DOM-Element (unterstütze sowohl TEXTAREA als auch DIV)
+        const letterText = document.getElementById('letterText');
+        let textContent = '';
+        if (letterText) {
+            textContent = letterText.tagName === 'TEXTAREA' 
+                ? (letterText.value || '') 
+                : (letterText.textContent || letterText.innerText || '');
+        }
+        
+        // Prüfe Content - nutze generatedContent oder DOM-Inhalt
+        if ((!this.generatedContent || this.generatedContent.trim() === '') && textContent.trim() === '') {
             this.showToast('Kein Anschreiben zum Exportieren. Bitte zuerst ein Anschreiben generieren.', 'error');
             return;
         }
         
-        // Prüfe DOM-Element
-        const letterText = document.getElementById('letterText');
-        if (!letterText || !letterText.value || letterText.value.trim() === '') {
-            this.showToast('Anschreiben ist leer. Bitte zuerst ein Anschreiben generieren.', 'error');
-            return;
+        // Falls generatedContent leer aber DOM hat Content, synchronisiere
+        if (!this.generatedContent && textContent.trim()) {
+            this.generatedContent = textContent;
         }
         
         // Option: Vorschau oder Direkt-Download
@@ -3270,22 +3313,138 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
     }
     
     async generatePDFBytes() {
-        // Versuche zuerst Lambda-basierte PDF-Generierung (wie Resume-Editor)
+        // Versuche zuerst die einfache jsPDF-Generierung (am zuverlässigsten)
         try {
-            return await this.generatePDFWithLambda();
-        } catch (lambdaError) {
-            console.warn('⚠️ Lambda PDF-Generierung fehlgeschlagen, verwende jsPDF-Fallback:', lambdaError);
-            // Fallback zu jsPDF
-            return await this.generatePDFBytesWithJsPDF();
+            return await this.generatePDFBytesSimple();
+        } catch (simpleError) {
+            console.warn('⚠️ Einfache PDF-Generierung fehlgeschlagen:', simpleError);
+            // Fallback zu Lambda
+            try {
+                return await this.generatePDFWithLambda();
+            } catch (lambdaError) {
+                console.warn('⚠️ Lambda PDF-Generierung fehlgeschlagen:', lambdaError);
+                throw new Error('PDF-Generierung fehlgeschlagen. Bitte später erneut versuchen.');
+            }
         }
     }
     
+    async generatePDFBytesSimple() {
+        // Einfache jsPDF-Generierung ohne externen Service
+        if (!window.jspdf && !window.jsPDF) {
+            // Lade jsPDF falls nicht vorhanden
+            await new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+        
+        const { jsPDF } = window.jspdf || { jsPDF: window.jsPDF };
+        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+        
+        const margin = this.design.margin || 25;
+        const pageWidth = 210;
+        const contentWidth = pageWidth - (margin * 2);
+        let y = margin;
+        
+        // Hole Text aus dem DOM
+        const letterText = document.getElementById('letterText');
+        const text = letterText ? (letterText.value || letterText.textContent || '') : this.generatedContent || '';
+        
+        if (!text.trim()) {
+            throw new Error('Kein Inhalt zum Exportieren');
+        }
+        
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(this.design.fontSize || 11);
+        
+        // Header
+        const senderName = document.getElementById('senderName')?.textContent || '';
+        if (senderName) {
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(12);
+            doc.text(senderName, margin, y);
+            y += 6;
+        }
+        
+        const senderCity = document.getElementById('senderCity')?.textContent || '';
+        const senderContact = document.getElementById('senderContact')?.textContent || '';
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        if (senderCity) { doc.text(senderCity, margin, y); y += 4; }
+        if (senderContact) { doc.text(senderContact, margin, y); y += 4; }
+        
+        // Datum
+        const dateText = document.getElementById('letterDate')?.textContent || new Date().toLocaleDateString('de-DE');
+        doc.text(dateText, pageWidth - margin, margin, { align: 'right' });
+        
+        y += 10;
+        doc.setTextColor(0);
+        
+        // Empfänger
+        doc.setFontSize(11);
+        const companyName = document.getElementById('companyNameDisplay')?.textContent || '';
+        const companyLocation = document.getElementById('companyLocationDisplay')?.textContent || '';
+        if (companyName) { doc.text(companyName, margin, y); y += 5; }
+        if (companyLocation) { doc.text(companyLocation, margin, y); y += 5; }
+        
+        y += 10;
+        
+        // Betreff
+        const subject = document.querySelector('.subject-input')?.value || document.getElementById('subjectText')?.textContent || '';
+        if (subject) {
+            doc.setFont('helvetica', 'bold');
+            doc.text('Betreff: ' + subject, margin, y);
+            y += 10;
+        }
+        
+        // Anrede
+        const salutation = document.getElementById('greetingSalutation')?.value || 'Sehr geehrte Damen und Herren,';
+        doc.setFont('helvetica', 'normal');
+        doc.text(salutation, margin, y);
+        y += 8;
+        
+        // Haupttext
+        doc.setFontSize(this.design.fontSize || 11);
+        const lines = doc.splitTextToSize(text, contentWidth);
+        const lineHeight = (this.design.lineHeight || 1.6) * (this.design.fontSize || 11) * 0.35;
+        
+        for (const line of lines) {
+            if (y > 270) {
+                doc.addPage();
+                y = margin;
+            }
+            doc.text(line, margin, y);
+            y += lineHeight;
+        }
+        
+        y += 10;
+        
+        // Grußformel
+        const greeting = document.getElementById('greetingText')?.value || 'Mit freundlichen Grüßen';
+        doc.text(greeting, margin, y);
+        y += 15;
+        
+        // Unterschrift
+        const signatureName = document.querySelector('.signature-name-input')?.textContent || senderName;
+        doc.text(signatureName, margin, y);
+        
+        return doc.output('arraybuffer');
+    }
+    
     async generatePDFBytesWithJsPDF() {
-        // Neuer verbesserter PDF-Export mit jsPDF (Vektor-Text)
+        // Erweiterte jsPDF-Generierung mit pdfService
         try {
             // Lade pdfService wenn nicht vorhanden
             if (!window.pdfService) {
                 await this.loadScript('js/pdf-service.js');
+            }
+            
+            if (!window.pdfService?.createDocument) {
+                throw new Error('pdfService nicht verfügbar');
             }
             
             const jobData = this.collectJobData();

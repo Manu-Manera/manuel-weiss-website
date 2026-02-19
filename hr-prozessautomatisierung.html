@@ -58,14 +58,39 @@
     <section class="hr-hero">
         <div class="container">
             <span class="badge"><i class="fas fa-graduation-cap"></i> Harvard & MIT Methodologie</span>
-            <h1>HR-Prozessautomatisierung</h1>
+            <h1>HR-Prozess-<br class="mobile-break">Automatisierung</h1>
             <p style="color: white;">KI-gestützte Automatisierung von HR-Prozessen für maximale Effizienz und Employee Experience. RPA, Self-Service und intelligente Workflows.</p>
             <div class="hero-actions">
-                <a class="btn btn-primary" href="#workflow"><i class="fas fa-rocket"></i> Workflow starten</a>
+                <a class="btn btn-primary btn-workflow" href="hr-automation-workflow.html"><i class="fas fa-rocket"></i> Prozess-Automatisierung starten</a>
+                <a class="btn btn-outline btn-workflow" href="bpmn-generator.html" style="background: transparent; border: 2px solid rgba(255,255,255,0.8); color: white;"><i class="fas fa-project-diagram"></i> BPMN aus Text erstellen</a>
                 <a class="btn btn-outline" href="index.html#services"><i class="fas fa-arrow-left"></i> Zurück zu Services</a>
             </div>
         </div>
     </section>
+    <style>
+        .btn-workflow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+        }
+        .btn-workflow:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.5);
+        }
+        .mobile-break { display: none; }
+        @media (max-width: 768px) {
+            .mobile-break { display: block; }
+            .hr-hero h1 { font-size: 1.75rem; }
+        }
+    </style>
 
     <!-- Säulen -->
     <section class="section light">

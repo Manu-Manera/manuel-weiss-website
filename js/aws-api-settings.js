@@ -25,8 +25,8 @@ class AWSAPISettingsService {
             return apiSettingsUrl.replace(/\/api-settings$/, '');
         }
         
-        // Fallback: Netlify Functions
-        return '/.netlify/functions';
+        // Kein Fallback – AWS API_BASE muss gesetzt sein
+        return (window.AWS_APP_CONFIG && window.AWS_APP_CONFIG.API_BASE) ? window.AWS_APP_CONFIG.API_BASE : null;
     }
 
     /**
@@ -208,10 +208,10 @@ class AWSAPISettingsService {
             }
             
             // AWS API Gateway: /api-settings/key?provider=openai&global=true
-            // Netlify Functions: /api-settings?action=key&provider=openai (Legacy)
+            // Legacy: /api-settings?action=key&provider=openai
             // Prüfe ob AWS API Gateway verwendet wird
             const apiSettingsUrl = window.getApiUrl ? window.getApiUrl('API_SETTINGS') : null;
-            const isAWS = apiSettingsUrl && !apiSettingsUrl.includes('/.netlify/functions');
+            const isAWS = !!apiSettingsUrl;
             
             // WICHTIG: Verwende IMMER das Legacy-Format (?action=key) für AWS API Gateway
             // Die Lambda-Funktion unterstützt jetzt beide Formate
@@ -220,7 +220,7 @@ class AWSAPISettingsService {
                 // AWS API Gateway: Legacy Format funktioniert jetzt auch
                 url = `${apiSettingsUrl}?action=key&provider=${provider}${useGlobal ? '&global=true' : ''}`;
             } else {
-                // Netlify Functions: Legacy Format
+                // Legacy Format
                 url = `${this.apiEndpoint}/api-settings?action=key&provider=${provider}`;
             }
             
@@ -276,7 +276,7 @@ class AWSAPISettingsService {
                     `${baseUrl}/api-settings/key?provider=${provider}${useGlobal ? '&global=true' : ''}`,
                     // Format 2: Mit trailing slash
                     `${baseUrl}/api-settings/key/?provider=${provider}${useGlobal ? '&global=true' : ''}`,
-                    // Format 3: Legacy Netlify Format
+                    // Format 3: Legacy
                     `${this.apiEndpoint}/api-settings?action=key&provider=${provider}${useGlobal ? '&global=true' : ''}`
                 ];
                 

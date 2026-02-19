@@ -1,6 +1,6 @@
 /**
  * AWS Lambda: User Data Storage
- * Migrated from Netlify Function
+ * AWS Lambda
  * Speichert ALLE Benutzerdaten in DynamoDB
  */
 

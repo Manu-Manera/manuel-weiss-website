@@ -469,11 +469,11 @@
     100% { transform: translateX(350%); }
 }
 
-/* Generated Letter - DIN A4 Ansicht */
+/* Generated Letter - DIN A4 Ansicht (dynamische Höhe) */
 .generated-letter {
     width: 210mm;
     min-height: 297mm;
-    max-height: 297mm;
+    /* max-height entfernt - Anschreiben kann mehrere Seiten sein */
     background: white;
     box-shadow: 
         0 0 0 1px rgba(0, 0, 0, 0.1),
@@ -486,7 +486,7 @@
     color: var(--cl-text);
     position: relative;
     margin: 0 auto;
-    overflow: hidden; /* Kein Scrollbalken im Anschreiben selbst */
+    overflow: visible; /* Inhalt kann überlaufen für mehrere Seiten */
     display: flex;
     flex-direction: column;
     page-break-after: always;

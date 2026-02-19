@@ -11,10 +11,17 @@
     <meta name="author" content="Manuel Weiss">
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/starry-background.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Custom Styles for Digital Workplace Workflow -->
     <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
         .workflow-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -25,9 +32,11 @@
             text-align: center;
             margin-bottom: 2rem;
             padding: 2rem 2rem;
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
             color: white;
             border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
         .workflow-header h1 {
             font-size: 2rem;
             font-weight: 800;
@@ -46,26 +55,44 @@
         .progress-step {
             gap: 0.5rem;
             padding: 0.75rem 1.5rem;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 25px;
             font-weight: 500;
             transition: all 0.3s ease;
             font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         .progress-step.active {
-            background: white;
-            color: #f59e0b;
+            background: rgba(99, 102, 241, 0.4);
+            color: white;
+            border: 1px solid rgba(99, 102, 241, 0.6);
         .progress-step.completed {
-            background: #d97706;
+            background: rgba(99, 102, 241, 0.3);
+            color: white;
         .workflow-step {
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e5e7eb;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
             display: none;
         .workflow-step.active {
             display: block;
+        .workflow-step h2,
+        .workflow-step h3,
+        .workflow-step label {
+            color: white !important;
+        }
+        .workflow-step p,
+        .workflow-step .description {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
         .step-header {
             padding-bottom: 1rem;
-            border-bottom: 2px solid #f3f4f6;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
         .step-number {
             width: 48px;
             height: 48px;
@@ -77,10 +104,10 @@
             flex: 1;
         .step-title h2 {
             font-size: 1.8rem;
-            color: #1f2937;
+            color: white !important;
             margin: 0;
         .step-title p {
-            color: #6b7280;
+            color: rgba(255, 255, 255, 0.8) !important;
             margin: 0.5rem 0 0;
         .step-content {
             margin-top: 2rem;
@@ -88,14 +115,16 @@
             margin-bottom: 1.5rem;
         .form-group label {
             font-weight: 600;
-            color: #374151;
+            color: white !important;
             margin-bottom: 0.5rem;
         .form-group input,
         .form-group textarea,
         .form-group select {
             width: 100%;
             padding: 0.75rem;
-            border: 2px solid #e5e7eb;
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: white !important;
             border-radius: 8px;
             transition: border-color 0.3s ease;
         .form-group input:focus,
@@ -106,6 +135,13 @@
         .form-group textarea {
             min-height: 120px;
             resize: vertical;
+        }
+        input::placeholder, textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5) !important;
+        }
+        .slider-labels {
+            color: rgba(255, 255, 255, 0.85) !important;
+        }
         .checkbox-group {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -115,30 +151,38 @@
             padding: 1rem;
             cursor: pointer;
         .checkbox-item:hover {
-            background: #fef3c7;
+            background: rgba(255, 255, 255, 0.1);
         .checkbox-item input[type="checkbox"] {
             width: auto;
         .checkbox-item.checked {
         .use-case-card {
             padding: 1.5rem;
             margin-bottom: 1rem;
-            border-left: 4px solid #f59e0b;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid rgba(99, 102, 241, 0.6);
+            color: rgba(255, 255, 255, 0.9);
         .use-case-card h4 {
+            color: white !important;
         .use-case-card p {
+            color: rgba(255, 255, 255, 0.8) !important;
         .kpi-grid {
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         .kpi-item {
-            background: #f8fafc;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
         .kpi-item input {
             padding: 0.5rem;
-            border: 1px solid #d1d5db;
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: white !important;
             border-radius: 4px;
         .kpi-item label {
             font-size: 0.875rem;
+            color: white !important;
         .workflow-navigation {
             justify-content: space-between;
             padding-top: 2rem;
-            border-top: 2px solid #f3f4f6;
+            border-top: 2px solid rgba(255, 255, 255, 0.2);
         .btn {
             border: none;
             text-decoration: none;
@@ -155,15 +199,33 @@
             opacity: 0.5;
             cursor: not-allowed;
         .summary-card {
-            border: 2px solid #f59e0b;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
         .summary-card h4 {
+            color: white !important;
         .summary-item {
             padding: 0.5rem 0;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.9);
         .summary-item:last-child {
             border-bottom: none;
         .summary-item strong {
+            color: white !important;
         .summary-item span {
+            color: rgba(255, 255, 255, 0.9) !important;
+        /* Slider Mobile-Optimierung */
+        @media (max-width: 768px) {
+            input[type="range"] {
+                width: 100% !important;
+                height: 10px !important;
+            }
+            input[type="range"]::-webkit-slider-thumb {
+                width: 32px !important;
+                height: 32px !important;
+            }
+        }
         @media (max-width: 768px) {
             .workflow-container {
                 padding: 1rem;
@@ -252,16 +314,19 @@
             position: fixed;
             top: 80px;
             right: 20px;
-            background: white;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
             border-radius: 8px;
             padding: 12px 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             z-index: 100;
             display: flex;
             flex-direction: column;
             gap: 8px;
             font-size: 14px;
             min-width: 200px;
+            color: white;
         }
         
         .user-progress-badge .user-info,
@@ -269,12 +334,12 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            color: #4a5568;
+            color: rgba(255, 255, 255, 0.9);
         }
         
         .user-progress-badge i {
             font-size: 16px;
-            color: #667eea;
+            color: rgba(99, 102, 241, 0.8);
         }
         
         @media (max-width: 768px) {
@@ -288,7 +353,7 @@
         }
     </style>
 </head>
-<body data-page-id="digital-workplace-workflow">
+<body class="starry-theme" data-page-id="digital-workplace-workflow">
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
