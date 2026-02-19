@@ -1453,45 +1453,36 @@
             overflow: hidden;
             position: relative;
         }
-        .bpmn-zoom-controls {
+        .bpmn-hint {
             position: absolute;
-            bottom: 10px;
-            right: 10px;
-            display: flex;
-            gap: 5px;
-            z-index: 10;
+            bottom: 8px;
+            left: 8px;
+            right: 8px;
             background: rgba(255, 255, 255, 0.95);
-            padding: 5px;
+            padding: 8px 12px;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        }
-        .bpmn-zoom-btn {
-            width: 32px;
-            height: 32px;
-            border: 1px solid #e2e8f0;
-            background: white;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            color: #4f46e5;
-            transition: all 0.2s;
-        }
-        .bpmn-zoom-btn:hover {
-            background: #f1f5f9;
-            border-color: #4f46e5;
-        }
-        .bpmn-zoom-btn:active {
-            transform: scale(0.95);
-        }
-        .bpmn-zoom-level {
             font-size: 11px;
-            color: #64748b;
-            min-width: 40px;
+            color: #475569;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            z-index: 10;
+            pointer-events: none;
             text-align: center;
-            line-height: 32px;
+            line-height: 1.4;
+        }
+        .bpmn-hint i {
+            margin-right: 4px;
+            color: #4f46e5;
+        }
+        .bpmn-hint-desktop { display: inline; }
+        .bpmn-hint-mobile { display: none; }
+        #bpmnViewerCanvas {
+            cursor: grab;
+        }
+        #bpmnViewerCanvas:active {
+            cursor: grabbing;
+        }
+        #bpmnViewerCanvas.dragging {
+            cursor: grabbing;
         }
         @media (max-width: 768px) {
             .bpmn-viewer-container {
@@ -1502,16 +1493,15 @@
                 min-width: 500px;
                 height: 250px;
             }
-            .bpmn-zoom-controls {
-                bottom: 5px;
+            .bpmn-hint {
+                font-size: 10px;
+                padding: 6px 10px;
+                left: 5px;
                 right: 5px;
-                padding: 3px;
+                bottom: 5px;
             }
-            .bpmn-zoom-btn {
-                width: 28px;
-                height: 28px;
-                font-size: 12px;
-            }
+            .bpmn-hint-desktop { display: none; }
+            .bpmn-hint-mobile { display: inline; }
         }
         .workflow-error {
             color: #ef4444;
@@ -3305,12 +3295,9 @@
                                 </div>
                             </div>
                             <div id="bpmnViewerCanvas"></div>
-                            <div class="bpmn-zoom-controls">
-                                <button class="bpmn-zoom-btn" onclick="bpmnZoom('out')" title="Verkleinern"><i class="fas fa-minus"></i></button>
-                                <span id="bpmnZoomLevel" class="bpmn-zoom-level">100%</span>
-                                <button class="bpmn-zoom-btn" onclick="bpmnZoom('in')" title="Vergrößern"><i class="fas fa-plus"></i></button>
-                                <button class="bpmn-zoom-btn" onclick="bpmnZoom('fit')" title="Einpassen"><i class="fas fa-expand"></i></button>
-                                <button class="bpmn-zoom-btn" onclick="bpmnZoom('reset')" title="Zurücksetzen"><i class="fas fa-undo"></i></button>
+                            <div class="bpmn-hint">
+                                <span class="bpmn-hint-desktop"><i class="fas fa-search-plus"></i> Ctrl+Mausrad oder Shift+Mausrad zoomen &nbsp;|&nbsp; <i class="fas fa-hand-paper"></i> Leertaste+Ziehen verschieben</span>
+                                <span class="bpmn-hint-mobile"><i class="fas fa-hand-pointer"></i> Wischen zum Verschieben &nbsp;|&nbsp; <i class="fas fa-expand-arrows-alt"></i> Zwei Finger zoomen</span>
                             </div>
                         </div>
                     </div>
@@ -4441,9 +4428,16 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 const ratedInCat = catProcesses.filter(p => assessmentData.prozesse && assessmentData.prozesse[p.id]).length;
                 const catProgress = (ratedInCat / catProcesses.length) * 100;
 
-                // Neue Seite wenn nötig - Kategorie-Header braucht mind. 80mm Platz
-                // damit nicht nur die Überschrift am Ende der Seite steht
-                if (yPos > pageHeight - 80) {
+                // Berechne minimale Höhe für Kategorie-Header + ersten Prozess
+                // damit Überschrift nie alleine am Seitenende steht
+                let minHeightNeeded = 15; // Kategorie-Header
+                if (catProcesses.length > 0) {
+                    // Mindestens Platz für ersten Prozess (Basisgröße)
+                    minHeightNeeded += 25;
+                }
+                
+                // Neue Seite wenn nicht genug Platz für Header + mindestens einen Prozess
+                if (yPos > pageHeight - minHeightNeeded - 25) {
                     doc.addPage();
                     doc.setFillColor(...colors.primary);
                     doc.rect(0, 0, pageWidth, 12, 'F');
@@ -5224,9 +5218,17 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             // Wait for container to be visible and have dimensions
             await new Promise(resolve => setTimeout(resolve, 100));
             
-            // Create new viewer
+            // Create new viewer with zoom enabled
             bpmnViewer = new BpmnJS({
-                container: container
+                container: container,
+                // Aktiviere Zoom-Scroll Modul
+                zoomScroll: {
+                    enabled: true
+                },
+                // Aktiviere Move-Canvas für Drag
+                moveCanvas: {
+                    enabled: true
+                }
             });
             
             try {
@@ -5241,18 +5243,19 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 // Reset zoom level for new diagram
                 currentZoomLevel = 1;
                 
+                // Setup reactive interaction (drag & zoom)
+                setupBpmnInteraction(container);
+                
                 // Check if container has valid dimensions
                 const rect = container.getBoundingClientRect();
                 if (rect.width > 0 && rect.height > 0) {
                     try {
                         canvas.zoom('fit-viewport');
                         currentZoomLevel = canvas.zoom();
-                        updateZoomDisplay();
                     } catch (zoomErr) {
                         console.warn('Zoom error, using fallback:', zoomErr);
                         canvas.zoom(0.8);
                         currentZoomLevel = 0.8;
-                        updateZoomDisplay();
                     }
                 } else {
                     // Container not visible yet, retry after a delay
@@ -5284,7 +5287,7 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             }
         }
         
-        // BPMN Zoom Functions
+        // BPMN Zoom and Pan Functions
         let currentZoomLevel = 1;
         
         function bpmnZoom(action) {
@@ -5312,19 +5315,89 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                         canvas.scroll({ dx: 0, dy: 0 });
                         break;
                 }
-                
-                // Update zoom level display
-                updateZoomDisplay();
             } catch (e) {
                 console.warn('Zoom error:', e);
             }
         }
         
-        function updateZoomDisplay() {
-            const zoomEl = document.getElementById('bpmnZoomLevel');
-            if (zoomEl) {
-                zoomEl.textContent = Math.round(currentZoomLevel * 100) + '%';
-            }
+        // Reaktive BPMN-Interaktion: Zusätzlicher Shift+Mausrad Zoom als Alternative zu Ctrl+Mausrad
+        function setupBpmnInteraction(containerElement) {
+            if (!containerElement || !bpmnViewer) return;
+            
+            // bpmn-js hat eingebautes Zoom (Ctrl+Mausrad) und Drag (Leertaste+Drag)
+            // Wir fügen Shift+Mausrad als zusätzliche Zoom-Option hinzu
+            
+            containerElement.addEventListener('wheel', function(e) {
+                // Shift+Mausrad als Alternative zu Ctrl+Mausrad
+                if (!e.shiftKey) return;
+                if (!bpmnViewer) return;
+                
+                e.preventDefault();
+                e.stopPropagation();
+                
+                try {
+                    const canvas = bpmnViewer.get('canvas');
+                    const currentZoom = canvas.zoom();
+                    
+                    // deltaY > 0 = nach unten scrollen = rauszoomen
+                    // deltaY < 0 = nach oben scrollen = reinzoomen
+                    const factor = e.deltaY < 0 ? 1.15 : 0.87;
+                    const newZoom = Math.max(0.1, Math.min(5, currentZoom * factor));
+                    
+                    canvas.zoom(newZoom);
+                    currentZoomLevel = newZoom;
+                } catch (err) {
+                    console.warn('Zoom error:', err);
+                }
+            }, { passive: false, capture: true });
+            
+            // Touch-Support für Mobile (Pinch-Zoom)
+            let initialDistance = 0;
+            let lastTouchX = 0;
+            let lastTouchY = 0;
+            
+            containerElement.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    lastTouchX = e.touches[0].clientX;
+                    lastTouchY = e.touches[0].clientY;
+                } else if (e.touches.length === 2) {
+                    initialDistance = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+                }
+            }, { passive: true });
+            
+            containerElement.addEventListener('touchmove', (e) => {
+                if (!bpmnViewer) return;
+                
+                try {
+                    const canvas = bpmnViewer.get('canvas');
+                    
+                    if (e.touches.length === 1) {
+                        // Pan mit einem Finger
+                        const dx = e.touches[0].clientX - lastTouchX;
+                        const dy = e.touches[0].clientY - lastTouchY;
+                        lastTouchX = e.touches[0].clientX;
+                        lastTouchY = e.touches[0].clientY;
+                        canvas.scroll({ dx: dx, dy: dy });
+                        e.preventDefault();
+                    } else if (e.touches.length === 2 && initialDistance > 0) {
+                        // Pinch zoom mit zwei Fingern
+                        const newDistance = Math.hypot(
+                            e.touches[0].clientX - e.touches[1].clientX,
+                            e.touches[0].clientY - e.touches[1].clientY
+                        );
+                        const scale = newDistance / initialDistance;
+                        const currentZoom = canvas.zoom();
+                        const newZoom = Math.max(0.2, Math.min(4, currentZoom * scale));
+                        canvas.zoom(newZoom);
+                        currentZoomLevel = newZoom;
+                        initialDistance = newDistance;
+                        e.preventDefault();
+                    }
+                } catch (err) {}
+            }, { passive: false });
         }
         
         // Render Workflow Dashboard in Results Section

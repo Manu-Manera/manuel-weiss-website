@@ -129,16 +129,19 @@ async function saveLead(event, origin) {
             return createResponse(400, { error: 'Name und E-Mail sind erforderlich' }, origin);
         }
         
-        // Lead mit Metadaten anreichern
+        // Lead mit ALLEN Daten speichern
         const newLead = {
             id: `lead_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             name: leadData.name,
             email: leadData.email,
             wantsConsultation: leadData.wantsConsultation || false,
             scores: leadData.scores || {},
+            answers: leadData.answers || {},
+            prozessDetails: leadData.prozessDetails || {},
             prozesseBewertet: leadData.prozesseBewertet || 0,
             prozesseGesamt: leadData.prozesseGesamt || 32,
-            timestamp: new Date().toISOString(),
+            pdfBase64: leadData.pdfBase64 || null,
+            timestamp: leadData.timestamp || new Date().toISOString(),
             userAgent: event.headers?.['user-agent'] || 'unknown',
             ip: event.requestContext?.identity?.sourceIp || 'unknown'
         };

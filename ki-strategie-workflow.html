@@ -756,6 +756,12 @@
             color: rgba(255, 255, 255, 0.85) !important;
         }
         
+        /* Slider-Wert immer gut lesbar (weiß) */
+        .slider-value-display {
+            color: #ffffff !important;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        
         /* Schrittanzeige weiß */
         .step-indicator {
             color: rgba(255, 255, 255, 0.9) !important;
@@ -820,11 +826,40 @@
             
             .assessment-category {
                 padding: 1rem !important;
+                margin: 0 !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
             }
             
             .assessment-grid {
                 grid-template-columns: 1fr !important;
                 gap: 1rem !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+            }
+            
+            .category-header {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            .category-header h4 {
+                font-size: 0.95rem !important;
+            }
+            
+            .category-header > div:last-child {
+                display: none; /* Chevron auf Mobile ausblenden */
+            }
+            
+            .maturity-assessment-card {
+                padding: 1rem !important;
+                margin: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            .maturity-assessment-card h3 {
+                font-size: 1.1rem !important;
             }
             
             .workflow-header {
@@ -1257,7 +1292,7 @@
                             </div>
                             <div class="slider-container">
                                 <input type="range" min="1" max="5" value="1" class="slider" id="dataQualitySlider" oninput="updateAssessment('dataQuality', this.value)" onclick="event.stopPropagation();">
-                                <div class="slider-value-display" id="dataQualityValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; color: #764ba2; margin: 0.5rem 0;">1</div>
+                                <div class="slider-value-display" id="dataQualityValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; margin: 0.5rem 0;">1</div>
                                 <div class="slider-labels">
                                     <span>Mangelhaft</span>
                                     <span>Exzellent</span>
@@ -1280,7 +1315,7 @@
                             </div>
                             <div class="slider-container">
                                 <input type="range" min="1" max="5" value="1" class="slider" id="techInfraSlider" oninput="updateAssessment('techInfra', this.value)" onclick="event.stopPropagation();">
-                                <div class="slider-value-display" id="techInfraValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; color: #f5576c; margin: 0.5rem 0;">1</div>
+                                <div class="slider-value-display" id="techInfraValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; margin: 0.5rem 0;">1</div>
                                 <div class="slider-labels">
                                     <span>Veraltet</span>
                                     <span>State-of-the-Art</span>
@@ -1303,7 +1338,7 @@
                             </div>
                             <div class="slider-container">
                                 <input type="range" min="1" max="5" value="1" class="slider" id="orgReadinessSlider" oninput="updateAssessment('orgReadiness', this.value)" onclick="event.stopPropagation();">
-                                <div class="slider-value-display" id="orgReadinessValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; color: #00f2fe; margin: 0.5rem 0;">1</div>
+                                <div class="slider-value-display" id="orgReadinessValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; margin: 0.5rem 0;">1</div>
                                 <div class="slider-labels">
                                     <span>Widerstand</span>
                                     <span>Sehr bereit</span>
@@ -1326,7 +1361,7 @@
                             </div>
                             <div class="slider-container">
                                 <input type="range" min="1" max="5" value="1" class="slider" id="skillsSlider" oninput="updateAssessment('skills', this.value)" onclick="event.stopPropagation();">
-                                <div class="slider-value-display" id="skillsValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; color: #38f9d7; margin: 0.5rem 0;">1</div>
+                                <div class="slider-value-display" id="skillsValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; margin: 0.5rem 0;">1</div>
                                 <div class="slider-labels">
                                     <span>Grundlagen</span>
                                     <span>Expertenwissen</span>
@@ -1349,7 +1384,7 @@
                             </div>
                             <div class="slider-container">
                                 <input type="range" min="1" max="5" value="1" class="slider" id="governanceSlider" oninput="updateAssessment('governance', this.value)" onclick="event.stopPropagation();">
-                                <div class="slider-value-display" id="governanceValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; color: #fee140; margin: 0.5rem 0;">1</div>
+                                <div class="slider-value-display" id="governanceValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; margin: 0.5rem 0;">1</div>
                                 <div class="slider-labels">
                                     <span>Unvollständig</span>
                                     <span>Vollständig</span>
@@ -1372,7 +1407,7 @@
                             </div>
                             <div class="slider-container">
                                 <input type="range" min="1" max="5" value="1" class="slider" id="innovationSlider" oninput="updateAssessment('innovation', this.value)" onclick="event.stopPropagation();">
-                                <div class="slider-value-display" id="innovationValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; color: #fed6e3; margin: 0.5rem 0;">1</div>
+                                <div class="slider-value-display" id="innovationValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; margin: 0.5rem 0;">1</div>
                                 <div class="slider-labels">
                                     <span>Konservativ</span>
                                     <span>Innovativ</span>

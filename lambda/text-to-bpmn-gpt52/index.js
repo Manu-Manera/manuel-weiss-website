@@ -16,73 +16,64 @@ const CORS_HEADERS = {
   'Content-Type': 'application/json'
 };
 
-const SYSTEM_PROMPT = `Du bist ein erfahrener BPMN-2.0-Prozessmodellierer. Analysiere den Text GENAU und erstelle ein fachlich korrektes Prozessdiagramm.
+const SYSTEM_PROMPT = `Du bist ein erfahrener BPMN-2.0-Prozessmodellierer. Erstelle ÜBERSICHTLICHE, gut lesbare Prozessdiagramme.
 
 WICHTIG - TEXTANALYSE:
-1. Lies den Text SEHR SORGFÄLTIG und verstehe die Geschäftslogik
+1. Lies den Text SORGFÄLTIG und verstehe die Geschäftslogik
 2. Achte auf Bedingungen: "wenn X, dann Y" - was passiert bei X und was bei NICHT-X?
 3. Schwellenwerte verstehen: "unter 5000" bedeutet < 5000, "ab 5000" bedeutet >= 5000
-4. Unterscheide: Welche Schritte sind NUR bei bestimmten Bedingungen nötig?
 
-REGELN:
-1. Ein Schritt = ein Task. Rolle im Namen: "HR: Antrag prüfen", "Mitarbeiter: Formular ausfüllen"
-2. Entscheidungen → exclusiveGateway mit beschreibenden Labels (z.B. "< 5000 Fr.", ">= 5000 Fr.")
-3. Mindestens 3-5 Tasks pro Prozess
-4. Bei mehreren Schwellenwerten: Mehrere Gateways NACHEINANDER verwenden
+REGELN FÜR ÜBERSICHTLICHE PROZESSE:
+1. Ein Schritt = ein Task. Rolle im Namen: "HR: Antrag prüfen"
+2. Entscheidungen → exclusiveGateway NUR wenn wirklich nötig
+3. KEINE Zusammenführungs-Gateways am Ende! Pfade können direkt zusammenlaufen
+4. Halte den Prozess so einfach wie möglich - weniger ist mehr!
 
-LAYOUT (SEHR WICHTIG):
+LAYOUT (SEHR WICHTIG FÜR LESBARKEIT):
 - row = Zeile (0, 1, 2...), col = Spalte (0, 1, 2...)
-- Start IMMER bei row:0, col:0
-- Hauptpfad (häufigster Fall): row:0, col erhöht sich
-- Verzweigungen: VERSCHIEDENE ZEILEN (row) für verschiedene Pfade!
-- Gateway-Ausgänge: Ein Pfad geht RECHTS weiter (gleiche row), andere Pfade gehen NACH UNTEN (row+1, row+2...)
+- Start bei row:0, col:0
+- MAXIMAL 4-5 Elemente pro Zeile! Bei mehr: neue Zeile beginnen
+- Nach einem Gateway: Alternative Pfade auf VERSCHIEDENEN Zeilen (row+1, row+2)
+- Wenn ein Pfad lang wird (>4 Tasks): umbrechen auf neue Zeile
 - JEDE Position (row,col) nur EINMAL verwenden!
-- Pfade die wieder zusammenführen: Verwende ein weiteres Gateway zum Zusammenführen
+- Ziel: Kompaktes, gut lesbares Diagramm - nicht alles auf eine Zeile quetschen!
 
-BEISPIEL MIT SCHWELLENWERTEN:
+BEISPIEL (ÜBERSICHTLICH MIT MEHREREN ZEILEN):
 {
   "processId": "Process_1",
-  "processName": "Weiterbildungsantrag",
-  "interpretation": "Genehmigungsprozess abhängig von Kosten",
-  "assumptions": ["Unter 5000 Fr. keine Vereinbarung nötig"],
+  "processName": "Urlaubsantrag",
+  "interpretation": "Genehmigungsprozess mit Eskalation",
+  "assumptions": [],
   "elements": [
     {"id": "Start_1", "type": "startEvent", "name": "Start", "row": 0, "col": 0},
-    {"id": "Task_1", "type": "userTask", "name": "Mitarbeiter: Weiterbildung beantragen", "row": 0, "col": 1},
-    {"id": "Gateway_1", "type": "exclusiveGateway", "name": "Kosten?", "row": 0, "col": 2},
-    {"id": "Task_2", "type": "userTask", "name": "Teamleitung: Genehmigen", "row": 0, "col": 3},
-    {"id": "Gateway_2", "type": "exclusiveGateway", "name": "Kosten >= 5000?", "row": 1, "col": 3},
-    {"id": "Task_3", "type": "userTask", "name": "Bereichsleitung: Genehmigen", "row": 1, "col": 4},
-    {"id": "Task_4", "type": "userTask", "name": "HR: Vereinbarung erstellen", "row": 1, "col": 5},
-    {"id": "Task_5", "type": "userTask", "name": "Mitarbeiter: Vereinbarung unterschreiben", "row": 1, "col": 6},
-    {"id": "Gateway_3", "type": "exclusiveGateway", "name": "Zusammenführung", "row": 0, "col": 7},
-    {"id": "Task_6", "type": "userTask", "name": "HR: Skills eintragen", "row": 0, "col": 8},
-    {"id": "End_1", "type": "endEvent", "name": "Ende", "row": 0, "col": 9}
+    {"id": "Task_1", "type": "userTask", "name": "Mitarbeiter: Antrag stellen", "row": 0, "col": 1},
+    {"id": "Gateway_1", "type": "exclusiveGateway", "name": "Genehmigt?", "row": 0, "col": 2},
+    {"id": "Task_2", "type": "userTask", "name": "HR: Urlaub buchen", "row": 0, "col": 3},
+    {"id": "End_1", "type": "endEvent", "name": "Ende", "row": 0, "col": 4},
+    {"id": "Task_3", "type": "userTask", "name": "Teamleitung: Ablehnung begründen", "row": 1, "col": 3},
+    {"id": "Task_4", "type": "serviceTask", "name": "System: Benachrichtigung senden", "row": 1, "col": 4},
+    {"id": "End_2", "type": "endEvent", "name": "Abgelehnt", "row": 1, "col": 5}
   ],
   "flows": [
     {"id": "Flow_1", "source": "Start_1", "target": "Task_1"},
     {"id": "Flow_2", "source": "Task_1", "target": "Gateway_1"},
-    {"id": "Flow_3", "source": "Gateway_1", "target": "Task_2", "name": "< 5000 Fr."},
-    {"id": "Flow_4", "source": "Gateway_1", "target": "Gateway_2", "name": ">= 5000 Fr."},
-    {"id": "Flow_5", "source": "Gateway_2", "target": "Task_3", "name": "< 10000 Fr."},
-    {"id": "Flow_6", "source": "Gateway_2", "target": "Task_3", "name": ">= 10000 Fr."},
-    {"id": "Flow_7", "source": "Task_2", "target": "Gateway_3"},
-    {"id": "Flow_8", "source": "Task_3", "target": "Task_4"},
-    {"id": "Flow_9", "source": "Task_4", "target": "Task_5"},
-    {"id": "Flow_10", "source": "Task_5", "target": "Gateway_3"},
-    {"id": "Flow_11", "source": "Gateway_3", "target": "Task_6"},
-    {"id": "Flow_12", "source": "Task_6", "target": "End_1"}
+    {"id": "Flow_3", "source": "Gateway_1", "target": "Task_2", "name": "Ja"},
+    {"id": "Flow_4", "source": "Task_2", "target": "End_1"},
+    {"id": "Flow_5", "source": "Gateway_1", "target": "Task_3", "name": "Nein"},
+    {"id": "Flow_6", "source": "Task_3", "target": "Task_4"},
+    {"id": "Flow_7", "source": "Task_4", "target": "End_2"}
   ]
 }
 
-ELEMENT-TYPEN: startEvent, endEvent, task, userTask, serviceTask, manualTask, exclusiveGateway, parallelGateway
+ELEMENT-TYPEN: startEvent, endEvent, userTask, serviceTask, exclusiveGateway, parallelGateway
 
 KRITISCH:
-- Gib NUR das JSON aus, keinen anderen Text!
+- NUR JSON ausgeben, kein anderer Text!
 - JEDES Element MUSS row und col haben!
-- KEINE zwei Elemente dürfen gleiche row UND col haben!
-- Task-Namen MÜSSEN mit Rolle beginnen
-- Gateway-Ausgänge MÜSSEN auf VERSCHIEDENEN Zeilen (rows) liegen!
-- Verstehe die Geschäftslogik GENAU bevor du modellierst!`;
+- KEINE zwei Elemente mit gleicher row UND col!
+- Task-Namen mit Rolle beginnen
+- MAXIMAL 4-5 Elemente pro Zeile für gute Lesbarkeit!
+- Alternative Pfade IMMER auf separaten Zeilen modellieren!`;
 
 function normalizeProcessText(text) {
   if (!text || typeof text !== 'string') return '';
@@ -250,9 +241,11 @@ function generateDiXml(elements, flows, processId) {
       }
       
       // Label-Position für Flows mit Namen - intelligent positionieren
+      // Labels werden AUF dem Pfad platziert, nicht am Gateway
       if (flow.name && waypoints.length >= 2) {
         const wp0 = waypoints[0];
         const wp1 = waypoints[1];
+        const wp2 = waypoints.length > 2 ? waypoints[2] : null;
         
         // Bestimme Richtung des ersten Segments
         const goesRight = wp1.x > wp0.x;
@@ -260,27 +253,34 @@ function generateDiXml(elements, flows, processId) {
         const goesUp = wp1.y < wp0.y;
         
         let labelX, labelY;
+        const labelWidth = flow.name.length * 6;
         
-        if (goesDown) {
-          // Pfad geht nach unten (Nein-Pfad) - Label links neben dem vertikalen Segment
-          labelX = wp0.x - flow.name.length * 4 - 5;
-          labelY = wp0.y + 10;
+        if (goesDown && wp2) {
+          // Pfad geht nach unten dann horizontal - Label auf dem horizontalen Segment
+          // Platziere Label auf der Mitte des horizontalen Segments
+          const midX = (wp1.x + wp2.x) / 2;
+          labelX = midX - labelWidth / 2;
+          labelY = wp1.y - 16;
+        } else if (goesDown) {
+          // Nur vertikaler Pfad - Label rechts neben dem Pfad
+          labelX = wp0.x + 8;
+          labelY = (wp0.y + wp1.y) / 2 - 7;
         } else if (goesUp) {
-          // Pfad geht nach oben - Label links neben dem vertikalen Segment
-          labelX = wp0.x - flow.name.length * 4 - 5;
-          labelY = wp0.y - 20;
+          // Pfad geht nach oben - Label rechts neben dem vertikalen Segment
+          labelX = wp0.x + 8;
+          labelY = (wp0.y + wp1.y) / 2 - 7;
         } else if (goesRight) {
-          // Pfad geht nach rechts (Ja-Pfad) - Label über dem horizontalen Segment
-          labelX = wp0.x + 10;
-          labelY = wp0.y - 18;
+          // Pfad geht nach rechts - Label über dem horizontalen Segment, weiter vom Gateway weg
+          labelX = wp0.x + 30;
+          labelY = wp0.y - 16;
         } else {
-          // Fallback
-          labelX = wp0.x + 5;
-          labelY = wp0.y - 15;
+          // Fallback - Label auf der Mitte des ersten Segments
+          labelX = (wp0.x + wp1.x) / 2 - labelWidth / 2;
+          labelY = (wp0.y + wp1.y) / 2 - 7;
         }
         
         diXml += `        <bpmndi:BPMNLabel>
-          <dc:Bounds x="${Math.round(labelX)}" y="${Math.round(labelY)}" width="${flow.name.length * 7}" height="14"/>
+          <dc:Bounds x="${Math.round(labelX)}" y="${Math.round(labelY)}" width="${labelWidth}" height="14"/>
         </bpmndi:BPMNLabel>
 `;
       }
@@ -706,26 +706,25 @@ function calculateWaypointsWithAvoidance(src, tgt, positions, srcId, tgtId) {
       return directPath;
     }
     
-    // Alternative: Route außen herum
+    // Alternative: Mit etwas Abstand zum Ziel und dann von oben/unten rein
+    // Statt außen herum, lieber näher am Ziel mit Knick
     if (tgtIsBelow) {
-      const routeY = globalMaxY + ROUTE_GAP;
+      // Route: rechts raus, runter neben das Ziel, dann von oben rein
       return [
         { x: srcRight, y: srcCenterY },
-        { x: srcRight + 20, y: srcCenterY },
-        { x: srcRight + 20, y: routeY },
-        { x: tgtLeft - 20, y: routeY },
-        { x: tgtLeft - 20, y: tgtCenterY },
-        { x: tgtLeft, y: tgtCenterY }
+        { x: tgtLeft - 25, y: srcCenterY },
+        { x: tgtLeft - 25, y: tgtTop - 20 },
+        { x: tgtCenterX, y: tgtTop - 20 },
+        { x: tgtCenterX, y: tgtTop }
       ];
     } else {
-      const routeY = globalMinY - ROUTE_GAP;
+      // Route: rechts raus, hoch neben das Ziel, dann von unten rein
       return [
         { x: srcRight, y: srcCenterY },
-        { x: srcRight + 20, y: srcCenterY },
-        { x: srcRight + 20, y: routeY },
-        { x: tgtLeft - 20, y: routeY },
-        { x: tgtLeft - 20, y: tgtCenterY },
-        { x: tgtLeft, y: tgtCenterY }
+        { x: tgtLeft - 25, y: srcCenterY },
+        { x: tgtLeft - 25, y: tgtBottom + 20 },
+        { x: tgtCenterX, y: tgtBottom + 20 },
+        { x: tgtCenterX, y: tgtBottom }
       ];
     }
   }
@@ -936,7 +935,7 @@ async function generateBpmnWithGPT52(text, processId, apiKey) {
   }
   
   const bpmnXml = generateBpmnXmlFromJson(jsonData, processId);
-  
+
   return {
     bpmnXml,
     interpretation: jsonData.interpretation || undefined,

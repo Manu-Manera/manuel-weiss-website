@@ -3,86 +3,275 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BPMN aus Text generieren – Manuel Weiss</title>
+    <title>BPMN Workflow-Generator – Manuel Weiss</title>
     <meta name="description" content="Prozessbeschreibung eingeben – KI erzeugt gültiges BPMN 2.0 XML. Download, Kopieren oder in demo.bpmn.io öffnen.">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="css/starry-background.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- bpmn-js Modeler (Editor wie bpmn.io – Prozess anpassbar) -->
     <link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.4.0/dist/assets/diagram-js.css">
     <link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.4.0/dist/assets/bpmn-font/css/bpmn-embedded.css">
     <style>
         body { padding-top: 70px; min-height: 100vh; }
-        .bpmn-page { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        .bpmn-page { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+        
         .bpmn-hero {
             text-align: center;
-            padding: 2rem;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
-            border-radius: 20px;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .bpmn-hero h1 { font-size: 1.75rem; margin-bottom: 0.5rem; color: #ffffff; }
-        .bpmn-hero p { opacity: 0.9; font-size: 1rem; color: #ffffff; }
-        .bpmn-card {
-            background: rgba(255,255,255,0.95);
-            border-radius: 16px;
             padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(139, 92, 246, 0.25) 100%);
+            border-radius: 16px;
             margin-bottom: 1.5rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
         }
-        .bpmn-card label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #1e293b; }
+        .bpmn-hero h1 { font-size: 1.5rem; margin-bottom: 0.5rem; color: #ffffff; }
+        .bpmn-hero p { opacity: 0.9; font-size: 0.95rem; color: #ffffff; margin: 0; }
+        
+        .bpmn-main-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+        
+        .bpmn-input-panel {
+            background: rgba(255,255,255,0.97);
+            border-radius: 16px;
+            padding: 1.25rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 90px;
+        }
+        
+        .bpmn-input-panel label { 
+            display: block; 
+            margin-bottom: 0.5rem; 
+            font-weight: 600; 
+            color: #1e293b;
+            font-size: 0.95rem;
+        }
+        .bpmn-input-panel label i { margin-right: 0.35rem; color: #667eea; }
+        
         #bpmnProcessText {
-            width: 100%; min-height: 140px; padding: 0.75rem;
-            border: 2px solid #e2e8f0; border-radius: 8px;
-            font-size: 1rem; resize: vertical; font-family: inherit;
+            width: 100%; 
+            min-height: 200px; 
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0; 
+            border-radius: 10px;
+            font-size: 0.9rem; 
+            resize: vertical; 
+            font-family: inherit;
+            line-height: 1.5;
+            box-sizing: border-box;
         }
+        #bpmnProcessText:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+        
         #bpmnGenerateBtn {
+            width: 100%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; border: none; padding: 0.75rem 1.5rem;
-            border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer;
-            display: inline-flex; align-items: center; gap: 0.5rem;
+            color: white; 
+            border: none; 
+            padding: 0.875rem 1.5rem;
+            border-radius: 10px; 
+            font-size: 1rem; 
+            font-weight: 600; 
+            cursor: pointer;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            transition: all 0.2s;
+        }
+        #bpmnGenerateBtn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
         #bpmnGenerateBtn:disabled { opacity: 0.7; cursor: not-allowed; }
-        #bpmnStatus { margin-left: 1rem; color: #64748b; font-size: 0.9rem; }
-        #bpmnResultArea { display: none; margin-top: 1.5rem; }
+        
+        #bpmnStatus { 
+            display: block;
+            margin-top: 0.75rem; 
+            color: #64748b; 
+            font-size: 0.85rem; 
+            text-align: center;
+        }
+        
+        .bpmn-hint-text {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #f0f9ff;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: #0369a1;
+            line-height: 1.4;
+        }
+        .bpmn-hint-text i { margin-right: 0.25rem; }
+        
+        .bpmn-diagram-panel {
+            background: rgba(255,255,255,0.97);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .bpmn-diagram-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .bpmn-diagram-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .bpmn-diagram-header h3 i { margin-right: 0.5rem; }
+        .bpmn-diagram-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .bpmn-diagram-actions button {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: background 0.2s;
+        }
+        .bpmn-diagram-actions button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        #bpmnDiagramContainer { 
+            height: 500px; 
+            background: #fafafa; 
+        }
+        #bpmnDiagramContainer .bjs-container { border-radius: 0; }
+        
+        .bpmn-editor-hint { 
+            padding: 0.6rem 1rem;
+            background: #f8fafc;
+            font-size: 0.8rem; 
+            color: #64748b; 
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        .bpmn-editor-hint i { color: #667eea; margin-right: 0.25rem; }
+        
+        .bpmn-tabs-section {
+            margin-top: 1.5rem;
+        }
+        .bpmn-result-tabs { 
+            display: flex; 
+            gap: 0; 
+            border-bottom: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 12px 12px 0 0;
+            overflow: hidden;
+        }
+        .bpmn-result-tabs button { 
+            padding: 0.75rem 1.25rem; 
+            border: none; 
+            background: none; 
+            cursor: pointer; 
+            font-weight: 600; 
+            color: #64748b; 
+            border-bottom: 2px solid transparent; 
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        .bpmn-result-tabs button:hover { color: #667eea; background: #f8fafc; }
+        .bpmn-result-tabs button.active { color: #667eea; border-bottom-color: #667eea; background: white; }
+        
+        .bpmn-tab-content {
+            background: white;
+            border-radius: 0 0 12px 12px;
+            padding: 1rem;
+            display: none;
+        }
+        .bpmn-tab-content.show { display: block; }
+        
         #bpmnXmlOutput {
             background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 8px;
-            overflow: auto; max-height: 400px; font-size: 0.85rem; white-space: pre-wrap; word-break: break-all;
+            overflow: auto; max-height: 300px; font-size: 0.8rem; white-space: pre-wrap; word-break: break-all;
         }
-        .bpmn-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; }
-        .bpmn-actions button {
-            border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem;
-            display: inline-flex; align-items: center; gap: 0.5rem;
+        
+        #bpmnError { 
+            margin-top: 1rem; 
+            padding: 1rem; 
+            background: #fee2e2; 
+            color: #991b1b; 
+            border-radius: 8px;
+            display: none;
         }
-        #bpmnError { display: none; margin-top: 1rem; padding: 1rem; background: #fee2e2; color: #991b1b; border-radius: 8px; }
-        .bpmn-result-tabs { display: flex; gap: 0; margin-bottom: 0.75rem; border-bottom: 2px solid #e2e8f0; }
-        .bpmn-result-tabs button { padding: 0.5rem 1rem; border: none; background: none; cursor: pointer; font-weight: 600; color: #64748b; border-bottom: 2px solid transparent; margin-bottom: -2px; }
-        .bpmn-result-tabs button.active { color: #667eea; border-bottom-color: #667eea; }
-        #bpmnDiagramContainer { height: 500px; background: #fafafa; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1rem; }
-        #bpmnDiagramContainer .bjs-container { border-radius: 8px; }
-        .bpmn-editor-hint { font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem; }
-        .bpmn-xml-wrap { display: none; }
-        .bpmn-xml-wrap.show { display: block; }
-        /* RACI */
-        .bpmn-raci-wrap { display: none; }
-        .bpmn-raci-wrap.show { display: block; }
+        
         .bpmn-raci-hint { font-size: 0.85rem; color: #64748b; margin-bottom: 0.75rem; }
         .bpmn-task-form { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
-        .bpmn-task-form label { display: block; margin-top: 0.5rem; font-weight: 600; color: #334155; font-size: 0.9rem; }
-        .bpmn-task-form input, .bpmn-task-form textarea { width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem; margin-top: 0.25rem; }
-        .bpmn-task-form textarea { min-height: 60px; resize: vertical; }
+        .bpmn-task-form label { display: block; margin-top: 0.5rem; font-weight: 600; color: #334155; font-size: 0.85rem; }
+        .bpmn-task-form input, .bpmn-task-form textarea { width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.85rem; margin-top: 0.25rem; box-sizing: border-box; }
+        .bpmn-task-form textarea { min-height: 50px; resize: vertical; }
         .bpmn-raci-table-wrap { overflow-x: auto; }
-        .bpmn-raci-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        .bpmn-raci-table th, .bpmn-raci-table td { border: 1px solid #e2e8f0; padding: 0.5rem 0.75rem; text-align: left; }
+        .bpmn-raci-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        .bpmn-raci-table th, .bpmn-raci-table td { border: 1px solid #e2e8f0; padding: 0.4rem 0.6rem; text-align: left; }
         .bpmn-raci-table th { background: #f1f5f9; font-weight: 600; color: #1e293b; }
         .bpmn-raci-table tr:hover { background: #f8fafc; }
-        .raci-badge { display: inline-block; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+        .raci-badge { display: inline-block; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
         .raci-r { background: #dbeafe; color: #1e40af; }
         .raci-a { background: #d1fae5; color: #065f46; }
         .raci-c { background: #fef3c7; color: #92400e; }
         .raci-i { background: #e0e7ff; color: #3730a3; }
+        
+        .bpmn-info-box {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #fffbeb;
+            border-radius: 8px;
+            border-left: 3px solid #d97706;
+            font-size: 0.8rem;
+            color: #92400e;
+        }
+        .bpmn-info-box i { margin-right: 0.25rem; }
+        
+        @media (max-width: 900px) {
+            .bpmn-main-layout {
+                grid-template-columns: 1fr;
+            }
+            .bpmn-input-panel {
+                position: static;
+            }
+            #bpmnDiagramContainer {
+                height: 400px;
+            }
+            .bpmn-diagram-header {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            .bpmn-diagram-actions {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .bpmn-page { padding: 1rem; }
+            .bpmn-hero { padding: 1rem; }
+            .bpmn-hero h1 { font-size: 1.25rem; }
+            .bpmn-input-panel { padding: 1rem; }
+            #bpmnProcessText { min-height: 140px; font-size: 0.9rem; }
+            #bpmnDiagramContainer { height: 350px; }
+            .bpmn-result-tabs button { padding: 0.5rem 0.75rem; font-size: 0.85rem; }
+        }
     </style>
 </head>
 <body class="starry-theme">
@@ -95,7 +284,7 @@
             <div class="nav-menu" id="navMenu">
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="hr-prozessautomatisierung.html" class="nav-link">HR-Automatisierung</a>
-                <a href="hr-automation-workflow.html" class="nav-link">Prozess-Workflow</a>
+                <a href="hr-selbsttest.html" class="nav-link">HR-Selbsttest</a>
                 <a href="index.html#about" class="nav-link">Über mich</a>
                 <a href="index.html#contact" class="nav-link">Kontakt</a>
             </div>
@@ -105,103 +294,119 @@
 
     <main class="bpmn-page">
         <div class="bpmn-hero">
-            <h1><i class="fas fa-project-diagram"></i> BPMN aus Text generieren</h1>
-            <p>Prozessbeschreibung eingeben – KI erzeugt gültiges BPMN 2.0 XML (mit GPT 5.2, falls API-Key hinterlegt).</p>
+            <h1><i class="fas fa-project-diagram"></i> BPMN Workflow-Generator</h1>
+            <p>Beschreiben Sie Ihren Prozess – die KI erstellt ein bearbeitbares BPMN-Diagramm</p>
         </div>
 
-        <div class="bpmn-card">
-            <label for="bpmnProcessText">Prozessbeschreibung</label>
-            <textarea id="bpmnProcessText" placeholder="z. B.: Mitarbeiter füllt Ferienantrag aus, Teamleitung und Bereichsleitung genehmigen oder lehnen ab, HR bucht Urlaub und Payroll zahlt Urlaubsgeld aus."></textarea>
-            <p style="margin-top: 0.5rem; font-size: 0.875rem; color: #64748b;">
-                <i class="fas fa-info-circle"></i> OpenAI-Key erforderlich (im <a href="admin.html#api-keys" style="color: #667eea;">Admin unter API Keys</a> hinterlegen). Die KI (GPT 5.2) erzeugt daraus das BPMN – ohne Key wird kein Diagramm erzeugt.
-                <br><i class="fas fa-comment"></i> <strong>BPMN per ChatGPT:</strong> Du kannst die Prozessbeschreibung auch in <a href="docs/BPMN-CHATGPT-PROMPT.md" target="_blank" rel="noopener" style="color: #667eea;">ChatGPT</a> verwenden – dort steht ein optimierter Prompt (mehrere Tasks pro Rolle/Aktion). Das erzeugte XML hier unter „XML“ einfügen und im Editor anpassen.
-            </p>
-            <p id="bpmnKeyStatus" style="margin-top: 0.5rem; font-size: 0.875rem;"></p>
-        </div>
+        <div class="bpmn-main-layout">
+            <div class="bpmn-input-panel">
+                <label for="bpmnProcessText"><i class="fas fa-pen"></i> Prozessbeschreibung</label>
+                <textarea id="bpmnProcessText" placeholder="Beschreiben Sie Ihren Prozess...
 
-        <div class="bpmn-card">
-            <button type="button" id="bpmnGenerateBtn">
-                <i class="fas fa-magic"></i> BPMN mit GPT 5.2 generieren
-            </button>
-            <span id="bpmnStatus"></span>
-        </div>
-
-        <div class="bpmn-card" id="bpmnResultArea">
-            <h3 style="color: #1e293b; margin-bottom: 0.75rem;">Ergebnis</h3>
-            <div id="bpmnInterpretationWrap" style="display: none; margin-bottom: 1rem; padding: 0.75rem; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #0ea5e9;">
-                <strong style="color: #0369a1;"><i class="fas fa-lightbulb"></i> Kurz-Interpretation</strong>
-                <pre id="bpmnInterpretation" style="margin: 0.5rem 0 0; white-space: pre-wrap; font-size: 0.9rem; color: #1e293b;"></pre>
+Beispiel:
+Mitarbeiter stellt Urlaubsantrag.
+Teamleitung genehmigt oder lehnt ab.
+Bei Genehmigung: HR bucht Urlaub.
+Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
+                
+                <button type="button" id="bpmnGenerateBtn">
+                    <i class="fas fa-magic"></i> Workflow generieren
+                </button>
+                <span id="bpmnStatus"></span>
+                
+                <div class="bpmn-hint-text">
+                    <i class="fas fa-lightbulb"></i> <strong>Tipp:</strong> Beschreiben Sie Rollen, Entscheidungen und Systeme für bessere Ergebnisse.
+                </div>
+                
+                <p id="bpmnKeyStatus" style="margin-top: 0.75rem; font-size: 0.8rem; color: #64748b;"></p>
             </div>
-            <div id="bpmnAssumptionsWrap" style="display: none; margin-bottom: 1rem; padding: 0.75rem; background: #fffbeb; border-radius: 8px; border-left: 4px solid #d97706;">
-                <strong style="color: #92400e;"><i class="fas fa-info-circle"></i> Annahmen & offene Punkte</strong>
-                <pre id="bpmnAssumptions" style="margin: 0.5rem 0 0; white-space: pre-wrap; font-size: 0.9rem; color: #1e293b;"></pre>
-            </div>
-            <div class="bpmn-result-tabs">
-                <button type="button" id="bpmnTabDiagram" class="active"><i class="fas fa-project-diagram"></i> Diagramm</button>
-                <button type="button" id="bpmnTabRaci"><i class="fas fa-users-cog"></i> Rollen & RACI</button>
-                <button type="button" id="bpmnTabXml"><i class="fas fa-code"></i> XML</button>
-            </div>
-            <div id="bpmnDiagramWrap">
-                <p class="bpmn-editor-hint"><i class="fas fa-edit"></i> Prozess im Diagramm anpassen: Elemente verschieben, umbenennen, neue Tasks/Flows aus der Palette links hinzufügen. Kopieren/Download liefert den aktuellen Stand.</p>
+            
+            <div class="bpmn-diagram-panel">
+                <div class="bpmn-diagram-header">
+                    <h3><i class="fas fa-sitemap"></i> Prozess-Workflow</h3>
+                    <div class="bpmn-diagram-actions">
+                        <button type="button" id="bpmnCopyBtn"><i class="fas fa-copy"></i> Kopieren</button>
+                        <button type="button" id="bpmnDownloadBtn"><i class="fas fa-download"></i> .bpmn</button>
+                        <button type="button" id="bpmnOpenDemoBtn"><i class="fas fa-external-link-alt"></i> bpmn.io</button>
+                    </div>
+                </div>
                 <div id="bpmnDiagramContainer"></div>
+                <div class="bpmn-editor-hint">
+                    <i class="fas fa-edit"></i> Elemente anklicken zum Bearbeiten • <i class="fas fa-search-plus"></i> Ctrl/Shift+Mausrad zoomen • Palette links für neue Elemente
+                </div>
             </div>
-            <div class="bpmn-raci-wrap" id="bpmnRaciWrap">
-                <p class="bpmn-raci-hint"><i class="fas fa-mouse-pointer"></i> Task im Diagramm anklicken, dann unten Rolle, IT-System, Beschreibung und RACI (R = Responsible, A = Accountable, C = Consulted, I = Informed) erfassen.</p>
+        </div>
+        
+        <div class="bpmn-tabs-section">
+            <div class="bpmn-result-tabs">
+                <button type="button" id="bpmnTabRaci" class="active"><i class="fas fa-users-cog"></i> Rollen & RACI</button>
+                <button type="button" id="bpmnTabXml"><i class="fas fa-code"></i> XML-Code</button>
+            </div>
+            <div class="bpmn-tab-content show" id="bpmnRaciWrap">
+                <p class="bpmn-raci-hint"><i class="fas fa-mouse-pointer"></i> Task im Diagramm anklicken, dann Rolle, IT-System und RACI erfassen.</p>
                 <div class="bpmn-task-form" id="bpmnTaskForm" style="display: none;">
                     <strong id="bpmnTaskFormTitle">Task auswählen</strong>
                     <input type="hidden" id="bpmnTaskFormId">
-                    <label>Rolle</label>
-                    <input type="text" id="bpmnMetaRolle" placeholder="z. B. HR, Fachabteilung">
-                    <label>IT-System</label>
-                    <input type="text" id="bpmnMetaItSystem" placeholder="z. B. SAP HR, Workflow-Tool">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                        <div>
+                            <label>Rolle</label>
+                            <input type="text" id="bpmnMetaRolle" placeholder="z.B. HR">
+                        </div>
+                        <div>
+                            <label>IT-System</label>
+                            <input type="text" id="bpmnMetaItSystem" placeholder="z.B. SAP">
+                        </div>
+                    </div>
                     <label>Beschreibung</label>
-                    <textarea id="bpmnMetaBeschreibung" placeholder="Kurze Beschreibung des Schritts"></textarea>
-                    <label>RACI – Responsible (R)</label>
-                    <input type="text" id="bpmnMetaR" placeholder="Wer führt aus?">
-                    <label>RACI – Accountable (A)</label>
-                    <input type="text" id="bpmnMetaA" placeholder="Wer ist verantwortlich?">
-                    <label>RACI – Consulted (C)</label>
-                    <input type="text" id="bpmnMetaC" placeholder="Wer wird konsultiert?">
-                    <label>RACI – Informed (I)</label>
-                    <input type="text" id="bpmnMetaI" placeholder="Wer wird informiert?">
-                    <button type="button" id="bpmnMetaSave" style="margin-top: 0.75rem; padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;"><i class="fas fa-save"></i> Speichern</button>
+                    <textarea id="bpmnMetaBeschreibung" placeholder="Kurze Beschreibung"></textarea>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-top: 0.5rem;">
+                        <div><label>R</label><input type="text" id="bpmnMetaR" placeholder="Ausführend"></div>
+                        <div><label>A</label><input type="text" id="bpmnMetaA" placeholder="Verantwortl."></div>
+                        <div><label>C</label><input type="text" id="bpmnMetaC" placeholder="Konsultiert"></div>
+                        <div><label>I</label><input type="text" id="bpmnMetaI" placeholder="Informiert"></div>
+                    </div>
+                    <button type="button" id="bpmnMetaSave" style="margin-top: 0.75rem; padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; width: 100%;"><i class="fas fa-save"></i> Speichern</button>
                 </div>
                 <div class="bpmn-raci-table-wrap">
                     <table class="bpmn-raci-table" id="bpmnRaciTable">
                         <thead>
                             <tr>
                                 <th>Task</th>
-                                <th>R (Responsible)</th>
-                                <th>A (Accountable)</th>
-                                <th>C (Consulted)</th>
-                                <th>I (Informed)</th>
+                                <th>R</th>
+                                <th>A</th>
+                                <th>C</th>
+                                <th>I</th>
                                 <th>Rolle</th>
-                                <th>IT-System</th>
-                                <th>Beschreibung</th>
+                                <th>System</th>
                             </tr>
                         </thead>
                         <tbody id="bpmnRaciTableBody"></tbody>
                     </table>
                 </div>
             </div>
-            <div class="bpmn-xml-wrap" id="bpmnXmlWrap">
+            <div class="bpmn-tab-content" id="bpmnXmlWrap">
                 <pre id="bpmnXmlOutput"></pre>
             </div>
-            <div class="bpmn-actions">
-                <button type="button" id="bpmnCopyBtn" style="background: #64748b; color: white;"><i class="fas fa-copy"></i> Kopieren</button>
-                <button type="button" id="bpmnDownloadBtn" style="background: #0ea5e9; color: white;"><i class="fas fa-download"></i> Download (.bpmn)</button>
-                <button type="button" id="bpmnOpenDemoBtn" style="background: #059669; color: white;"><i class="fas fa-external-link-alt"></i> In demo.bpmn.io öffnen</button>
-            </div>
         </div>
-
+        
         <div id="bpmnError"></div>
+        
+        <div id="bpmnResultArea" style="display:none;"></div>
+        <div id="bpmnInterpretationWrap" style="display: none; margin-top: 1rem; padding: 0.75rem; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #0ea5e9;">
+            <strong style="color: #0369a1;"><i class="fas fa-lightbulb"></i> Interpretation</strong>
+            <pre id="bpmnInterpretation" style="margin: 0.5rem 0 0; white-space: pre-wrap; font-size: 0.85rem; color: #1e293b;"></pre>
+        </div>
+        <div id="bpmnAssumptionsWrap" style="display: none; margin-top: 0.75rem; padding: 0.75rem; background: #fffbeb; border-radius: 8px; border-left: 4px solid #d97706;">
+            <strong style="color: #92400e;"><i class="fas fa-info-circle"></i> Annahmen</strong>
+            <pre id="bpmnAssumptions" style="margin: 0.5rem 0 0; white-space: pre-wrap; font-size: 0.85rem; color: #1e293b;"></pre>
+        </div>
+        <div id="bpmnDiagramWrap" style="display:none;"></div>
 
         <p style="text-align: center; margin-top: 2rem;">
-            <a href="hr-automation-workflow.html" style="color: #667eea;">← Zurück zum HR-Prozess-Workflow</a>
+            <a href="hr-prozessautomatisierung.html" style="color: #667eea;">← Zurück zur HR-Prozessautomatisierung</a>
         </p>
     </main>
 
-    <!-- Development-Build: BpmnModeler global zuverlässig; Production-Build setzt den Global teils anders -->
     <script src="https://unpkg.com/bpmn-js@17.4.0/dist/bpmn-modeler.development.js"></script>
     <script src="js/aws-app-config.js"></script>
     <script src="js/aws-api-settings.js"></script>
@@ -209,11 +414,10 @@
 (function() {
     var currentBpmnXml = null;
     var bpmnModeler = null;
-    var taskMeta = {}; // taskId -> { rolle, itSystem, beschreibung, raciR, raciA, raciC, raciI }
+    var taskMeta = {};
 
     var MW_NS = 'http://manuel-weiss.ch/bpmn/ext';
 
-    // Beispiel-Text wird initial vorausgefüllt und beim ersten Klick in das Feld geleert.
     var EXAMPLE_PROCESS_TEXT =
         'Mitarbeiter füllt Ferien Antrag aus\n' +
         'Teamleitung bestätigt oder lehnt ab\n' +
@@ -332,11 +536,10 @@
                 '<td>' + (m.raciC ? '<span class="raci-badge raci-c">' + escapeHtml(m.raciC) + '</span>' : '–') + '</td>' +
                 '<td>' + (m.raciI ? '<span class="raci-badge raci-i">' + escapeHtml(m.raciI) + '</span>' : '–') + '</td>' +
                 '<td>' + escapeHtml(m.rolle || '') + '</td>' +
-                '<td>' + escapeHtml(m.itSystem || '') + '</td>' +
-                '<td>' + escapeHtml((m.beschreibung || '').slice(0, 80)) + ((m.beschreibung || '').length > 80 ? '…' : '') + '</td>';
+                '<td>' + escapeHtml(m.itSystem || '') + '</td>';
             tbody.appendChild(tr);
         });
-        if (tasks.length === 0) tbody.innerHTML = '<tr><td colspan="8">Keine Tasks im Diagramm. Bitte zuerst BPMN generieren.</td></tr>';
+        if (tasks.length === 0) tbody.innerHTML = '<tr><td colspan="7">Keine Tasks im Diagramm. Bitte zuerst BPMN generieren.</td></tr>';
     }
 
     function escapeHtml(s) {
@@ -389,7 +592,6 @@
         refreshRaciTable();
     }
 
-    /** Entfernt Zeilenumbrüche in XML-Attributen (z. B. name="..."), die den Parser brechen. */
     function sanitizeBpmnXml(xml) {
         if (!xml || typeof xml !== 'string') return xml;
         return xml.replace(/\s+name="([^"]*)"/g, function(m, val) {
@@ -410,8 +612,28 @@
         }
         if (!bpmnModeler) {
             container.innerHTML = '';
-            bpmnModeler = new ModelerClass({ container: container });
+            bpmnModeler = new ModelerClass({ 
+                container: container,
+                keyboard: { bindTo: document },
+                // Aktiviere direktes Mausrad-Zoomen ohne Ctrl-Taste
+                zoomScroll: {
+                    enabled: true
+                }
+            });
             setupSelectionListener();
+            
+            // Zusätzlich: Manuelles Zoom mit Shift+Mausrad als Fallback
+            container.addEventListener('wheel', function(e) {
+                if (!e.shiftKey) return;
+                e.preventDefault();
+                try {
+                    var canvas = bpmnModeler.get('canvas');
+                    var currentZoom = canvas.zoom();
+                    var factor = e.deltaY < 0 ? 1.1 : 0.9;
+                    var newZoom = Math.max(0.2, Math.min(4, currentZoom * factor));
+                    canvas.zoom(newZoom);
+                } catch(err) {}
+            }, { passive: false });
         }
         bpmnModeler.importXML(xml).then(function() {
             var canvas = bpmnModeler.get('canvas');
@@ -452,7 +674,6 @@
             var a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
             a.download = 'prozess.bpmn';
-            // Für automatische Downloads nicht zum DOM anhängen – direkt klicken reicht
             a.click();
             setStatus('Download der .bpmn-Datei gestartet.');
             setTimeout(function() { setStatus(''); }, 2000);
@@ -481,15 +702,8 @@
             if (assumptions && assumptions.trim()) { aPre.textContent = assumptions.trim(); aWrap.style.display = 'block'; }
             else { aWrap.style.display = 'none'; aPre.textContent = ''; }
         }
-        document.getElementById('bpmnTabDiagram').classList.add('active');
-        document.getElementById('bpmnTabXml').classList.remove('active');
-        document.getElementById('bpmnDiagramWrap').classList.add('show');
-        document.getElementById('bpmnXmlWrap').classList.remove('show');
 
-        // Diagramm im Editor versuchen zu rendern (falls DI vollständig genug ist)
         renderBpmnEditor(xml);
-
-        // Unabhängig vom Editor das von GPT erzeugte BPMN sofort als .bpmn-Datei bereitstellen
         autoDownloadBpmnFromXml(xml);
     }
 
@@ -507,13 +721,12 @@
         var btn = document.getElementById('bpmnGenerateBtn');
         if (btn) {
             btn.disabled = busy;
-            btn.innerHTML = busy ? '<i class="fas fa-spinner fa-spin"></i> Generiere…' : '<i class="fas fa-magic"></i> BPMN mit GPT 5.2 generieren';
+            btn.innerHTML = busy ? '<i class="fas fa-spinner fa-spin"></i> Generiere…' : '<i class="fas fa-magic"></i> Workflow generieren';
         }
         if (!busy) setStatus('');
     }
 
     function showError(msg) {
-        document.getElementById('bpmnResultArea').style.display = 'none';
         var err = document.getElementById('bpmnError');
         if (err) { err.style.display = 'block'; err.textContent = msg; }
     }
@@ -571,7 +784,7 @@
             var toCopy = xml || currentBpmnXml;
             if (!toCopy) return;
             navigator.clipboard.writeText(toCopy).then(function() {
-                setStatus('In Zwischenablage kopiert (aktueller Editor-Stand).');
+                setStatus('In Zwischenablage kopiert.');
                 setTimeout(function() { setStatus(''); }, 2000);
             }).catch(function() { showError('Kopieren fehlgeschlagen.'); });
         });
@@ -587,7 +800,7 @@
             a.download = 'prozess.bpmn';
             a.click();
             URL.revokeObjectURL(a.href);
-            setStatus('Download gestartet (aktueller Editor-Stand).');
+            setStatus('Download gestartet.');
             setTimeout(function() { setStatus(''); }, 2000);
         });
     }
@@ -598,13 +811,12 @@
             if (!toCopy) return;
             navigator.clipboard.writeText(toCopy).then(function() {
                 window.open('https://demo.bpmn.io/new', '_blank');
-                setStatus('XML kopiert (Editor-Stand). In demo.bpmn.io mit Strg+V einfügen.');
+                setStatus('XML kopiert. In demo.bpmn.io mit Strg+V einfügen.');
                 setTimeout(function() { setStatus(''); }, 4000);
             }).catch(function() { showError('Kopieren fehlgeschlagen.'); });
         });
     }
 
-    // Beispieltext initial setzen und beim ersten Klick leeren
     var processTextEl = document.getElementById('bpmnProcessText');
     if (processTextEl) {
         processTextEl.value = EXAMPLE_PROCESS_TEXT;
@@ -625,29 +837,17 @@
     document.getElementById('bpmnDownloadBtn').addEventListener('click', downloadBpmn);
     document.getElementById('bpmnOpenDemoBtn').addEventListener('click', openInDemoBpmnIo);
 
-    document.getElementById('bpmnTabDiagram').addEventListener('click', function() {
-        document.getElementById('bpmnTabDiagram').classList.add('active');
-        document.getElementById('bpmnTabRaci').classList.remove('active');
-        document.getElementById('bpmnTabXml').classList.remove('active');
-        document.getElementById('bpmnDiagramWrap').classList.add('show');
-        document.getElementById('bpmnRaciWrap').classList.remove('show');
-        document.getElementById('bpmnXmlWrap').classList.remove('show');
-    });
     document.getElementById('bpmnTabRaci').addEventListener('click', function() {
         document.getElementById('bpmnTabRaci').classList.add('active');
-        document.getElementById('bpmnTabDiagram').classList.remove('active');
         document.getElementById('bpmnTabXml').classList.remove('active');
         document.getElementById('bpmnRaciWrap').classList.add('show');
-        document.getElementById('bpmnDiagramWrap').classList.remove('show');
         document.getElementById('bpmnXmlWrap').classList.remove('show');
         refreshRaciTable();
     });
     document.getElementById('bpmnTabXml').addEventListener('click', function() {
         document.getElementById('bpmnTabXml').classList.add('active');
-        document.getElementById('bpmnTabDiagram').classList.remove('active');
         document.getElementById('bpmnTabRaci').classList.remove('active');
         document.getElementById('bpmnXmlWrap').classList.add('show');
-        document.getElementById('bpmnDiagramWrap').classList.remove('show');
         document.getElementById('bpmnRaciWrap').classList.remove('show');
         getCurrentXmlFromEditor(function(err, xml) {
             if (xml && document.getElementById('bpmnXmlOutput')) document.getElementById('bpmnXmlOutput').textContent = xml;
@@ -655,23 +855,22 @@
     });
     document.getElementById('bpmnMetaSave').addEventListener('click', saveTaskMeta);
 
-    // Beim Laden prüfen, ob OpenAI-Key aus Admin/API-Settings verfügbar ist
     (function checkKeyStatus() {
         var el = document.getElementById('bpmnKeyStatus');
         if (!el) return;
         if (!window.awsAPISettings || typeof window.awsAPISettings.getFullApiKey !== 'function') {
-            el.innerHTML = '<span style="color:#64748b;">OpenAI-Key: wird aus API-Settings geladen… (Key im <a href="admin.html#api-keys" style="color:#667eea;">Admin</a> hinterlegen)</span>';
+            el.innerHTML = '<span style="color:#64748b;">OpenAI-Key wird geladen…</span>';
             setTimeout(checkKeyStatus, 500);
             return;
         }
         window.awsAPISettings.getFullApiKey('openai').then(function(key) {
             if (key && typeof key === 'string' && key.length > 10) {
-                el.innerHTML = '<span style="color:#059669;"><i class="fas fa-check-circle"></i> OpenAI-Key aus Admin/API-Settings geladen – GPT 5.2 wird genutzt.</span>';
+                el.innerHTML = '<span style="color:#059669;"><i class="fas fa-check-circle"></i> API-Key geladen</span>';
             } else {
-                el.innerHTML = '<span style="color:#64748b;"><i class="fas fa-info-circle"></i> Kein OpenAI-Key – BPMN-Generierung nur mit Key möglich. Key im <a href="admin.html#api-keys" style="color:#667eea;">Admin unter API Keys</a> eintragen.</span>';
+                el.innerHTML = '<span style="color:#64748b;"><i class="fas fa-info-circle"></i> Kein API-Key – <a href="admin.html#api-keys" style="color:#667eea;">hier eintragen</a></span>';
             }
         }).catch(function() {
-            el.innerHTML = '<span style="color:#64748b;"><i class="fas fa-info-circle"></i> Kein OpenAI-Key – BPMN-Generierung nicht möglich.</span>';
+            el.innerHTML = '<span style="color:#64748b;"><i class="fas fa-info-circle"></i> Kein API-Key</span>';
         });
     })();
 })();
