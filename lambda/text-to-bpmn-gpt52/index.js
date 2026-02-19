@@ -16,56 +16,73 @@ const CORS_HEADERS = {
   'Content-Type': 'application/json'
 };
 
-const SYSTEM_PROMPT = `Du bist ein BPMN-2.0-Prozessmodellierer. Erstelle ein sauberes, übersichtliches Prozessdiagramm.
+const SYSTEM_PROMPT = `Du bist ein erfahrener BPMN-2.0-Prozessmodellierer. Analysiere den Text GENAU und erstelle ein fachlich korrektes Prozessdiagramm.
+
+WICHTIG - TEXTANALYSE:
+1. Lies den Text SEHR SORGFÄLTIG und verstehe die Geschäftslogik
+2. Achte auf Bedingungen: "wenn X, dann Y" - was passiert bei X und was bei NICHT-X?
+3. Schwellenwerte verstehen: "unter 5000" bedeutet < 5000, "ab 5000" bedeutet >= 5000
+4. Unterscheide: Welche Schritte sind NUR bei bestimmten Bedingungen nötig?
 
 REGELN:
 1. Ein Schritt = ein Task. Rolle im Namen: "HR: Antrag prüfen", "Mitarbeiter: Formular ausfüllen"
-2. Entscheidungen → exclusiveGateway mit "Ja"/"Nein" Pfaden
+2. Entscheidungen → exclusiveGateway mit beschreibenden Labels (z.B. "< 5000 Fr.", ">= 5000 Fr.")
 3. Mindestens 3-5 Tasks pro Prozess
+4. Bei mehreren Schwellenwerten: Mehrere Gateways NACHEINANDER verwenden
 
-LAYOUT (SEHR WICHTIG - sauberes Grid):
+LAYOUT (SEHR WICHTIG):
 - row = Zeile (0, 1, 2...), col = Spalte (0, 1, 2...)
 - Start IMMER bei row:0, col:0
-- Hauptpfad: row:0, col erhöht sich (0→1→2→3...)
-- Verzweigungen gehen NACH UNTEN (row erhöht sich)
+- Hauptpfad (häufigster Fall): row:0, col erhöht sich
+- Verzweigungen: VERSCHIEDENE ZEILEN (row) für verschiedene Pfade!
+- Gateway-Ausgänge: Ein Pfad geht RECHTS weiter (gleiche row), andere Pfade gehen NACH UNTEN (row+1, row+2...)
 - JEDE Position (row,col) nur EINMAL verwenden!
-- Elemente auf gleichem Pfad haben gleiche row
-- Nach Gateway: Ja-Pfad gleiche row, Nein-Pfad row+1
+- Pfade die wieder zusammenführen: Verwende ein weiteres Gateway zum Zusammenführen
 
-EINFACHES BEISPIEL:
+BEISPIEL MIT SCHWELLENWERTEN:
 {
   "processId": "Process_1",
-  "processName": "Urlaubsantrag",
-  "interpretation": "Mitarbeiter beantragt Urlaub",
-  "assumptions": [],
+  "processName": "Weiterbildungsantrag",
+  "interpretation": "Genehmigungsprozess abhängig von Kosten",
+  "assumptions": ["Unter 5000 Fr. keine Vereinbarung nötig"],
   "elements": [
     {"id": "Start_1", "type": "startEvent", "name": "Start", "row": 0, "col": 0},
-    {"id": "Task_1", "type": "userTask", "name": "Mitarbeiter: Urlaub beantragen", "row": 0, "col": 1},
-    {"id": "Task_2", "type": "userTask", "name": "Vorgesetzter: Antrag prüfen", "row": 0, "col": 2},
-    {"id": "Gateway_1", "type": "exclusiveGateway", "name": "Genehmigt?", "row": 0, "col": 3},
-    {"id": "Task_3", "type": "userTask", "name": "HR: Urlaub eintragen", "row": 0, "col": 4},
-    {"id": "Task_4", "type": "userTask", "name": "Mitarbeiter: Ablehnung erhalten", "row": 1, "col": 4},
-    {"id": "End_1", "type": "endEvent", "name": "Genehmigt", "row": 0, "col": 5},
-    {"id": "End_2", "type": "endEvent", "name": "Abgelehnt", "row": 1, "col": 5}
+    {"id": "Task_1", "type": "userTask", "name": "Mitarbeiter: Weiterbildung beantragen", "row": 0, "col": 1},
+    {"id": "Gateway_1", "type": "exclusiveGateway", "name": "Kosten?", "row": 0, "col": 2},
+    {"id": "Task_2", "type": "userTask", "name": "Teamleitung: Genehmigen", "row": 0, "col": 3},
+    {"id": "Gateway_2", "type": "exclusiveGateway", "name": "Kosten >= 5000?", "row": 1, "col": 3},
+    {"id": "Task_3", "type": "userTask", "name": "Bereichsleitung: Genehmigen", "row": 1, "col": 4},
+    {"id": "Task_4", "type": "userTask", "name": "HR: Vereinbarung erstellen", "row": 1, "col": 5},
+    {"id": "Task_5", "type": "userTask", "name": "Mitarbeiter: Vereinbarung unterschreiben", "row": 1, "col": 6},
+    {"id": "Gateway_3", "type": "exclusiveGateway", "name": "Zusammenführung", "row": 0, "col": 7},
+    {"id": "Task_6", "type": "userTask", "name": "HR: Skills eintragen", "row": 0, "col": 8},
+    {"id": "End_1", "type": "endEvent", "name": "Ende", "row": 0, "col": 9}
   ],
   "flows": [
     {"id": "Flow_1", "source": "Start_1", "target": "Task_1"},
-    {"id": "Flow_2", "source": "Task_1", "target": "Task_2"},
-    {"id": "Flow_3", "source": "Task_2", "target": "Gateway_1"},
-    {"id": "Flow_4", "source": "Gateway_1", "target": "Task_3", "name": "Ja"},
-    {"id": "Flow_5", "source": "Gateway_1", "target": "Task_4", "name": "Nein"},
-    {"id": "Flow_6", "source": "Task_3", "target": "End_1"},
-    {"id": "Flow_7", "source": "Task_4", "target": "End_2"}
+    {"id": "Flow_2", "source": "Task_1", "target": "Gateway_1"},
+    {"id": "Flow_3", "source": "Gateway_1", "target": "Task_2", "name": "< 5000 Fr."},
+    {"id": "Flow_4", "source": "Gateway_1", "target": "Gateway_2", "name": ">= 5000 Fr."},
+    {"id": "Flow_5", "source": "Gateway_2", "target": "Task_3", "name": "< 10000 Fr."},
+    {"id": "Flow_6", "source": "Gateway_2", "target": "Task_3", "name": ">= 10000 Fr."},
+    {"id": "Flow_7", "source": "Task_2", "target": "Gateway_3"},
+    {"id": "Flow_8", "source": "Task_3", "target": "Task_4"},
+    {"id": "Flow_9", "source": "Task_4", "target": "Task_5"},
+    {"id": "Flow_10", "source": "Task_5", "target": "Gateway_3"},
+    {"id": "Flow_11", "source": "Gateway_3", "target": "Task_6"},
+    {"id": "Flow_12", "source": "Task_6", "target": "End_1"}
   ]
 }
 
 ELEMENT-TYPEN: startEvent, endEvent, task, userTask, serviceTask, manualTask, exclusiveGateway, parallelGateway
 
-WICHTIG: 
+KRITISCH:
 - Gib NUR das JSON aus, keinen anderen Text!
 - JEDES Element MUSS row und col haben!
 - KEINE zwei Elemente dürfen gleiche row UND col haben!
-- Task-Namen MÜSSEN mit Rolle beginnen (z.B. "HR: Urlaub eintragen")`;
+- Task-Namen MÜSSEN mit Rolle beginnen
+- Gateway-Ausgänge MÜSSEN auf VERSCHIEDENEN Zeilen (rows) liegen!
+- Verstehe die Geschäftslogik GENAU bevor du modellierst!`;
 
 function normalizeProcessText(text) {
   if (!text || typeof text !== 'string') return '';
@@ -219,7 +236,7 @@ function generateDiXml(elements, flows, processId) {
     }
   }
   
-  // Edges - mit Kollisionsvermeidung
+  // Edges - mit Kollisionsvermeidung und Label-Positionierung
   for (const flow of flows) {
     const srcPos = positions[flow.source];
     const tgtPos = positions[flow.target];
@@ -231,6 +248,43 @@ function generateDiXml(elements, flows, processId) {
         diXml += `        <di:waypoint x="${Math.round(wp.x)}" y="${Math.round(wp.y)}"/>
 `;
       }
+      
+      // Label-Position für Flows mit Namen - intelligent positionieren
+      if (flow.name && waypoints.length >= 2) {
+        const wp0 = waypoints[0];
+        const wp1 = waypoints[1];
+        
+        // Bestimme Richtung des ersten Segments
+        const goesRight = wp1.x > wp0.x;
+        const goesDown = wp1.y > wp0.y;
+        const goesUp = wp1.y < wp0.y;
+        
+        let labelX, labelY;
+        
+        if (goesDown) {
+          // Pfad geht nach unten (Nein-Pfad) - Label links neben dem vertikalen Segment
+          labelX = wp0.x - flow.name.length * 4 - 5;
+          labelY = wp0.y + 10;
+        } else if (goesUp) {
+          // Pfad geht nach oben - Label links neben dem vertikalen Segment
+          labelX = wp0.x - flow.name.length * 4 - 5;
+          labelY = wp0.y - 20;
+        } else if (goesRight) {
+          // Pfad geht nach rechts (Ja-Pfad) - Label über dem horizontalen Segment
+          labelX = wp0.x + 10;
+          labelY = wp0.y - 18;
+        } else {
+          // Fallback
+          labelX = wp0.x + 5;
+          labelY = wp0.y - 15;
+        }
+        
+        diXml += `        <bpmndi:BPMNLabel>
+          <dc:Bounds x="${Math.round(labelX)}" y="${Math.round(labelY)}" width="${flow.name.length * 7}" height="14"/>
+        </bpmndi:BPMNLabel>
+`;
+      }
+      
       diXml += `      </bpmndi:BPMNEdge>
 `;
     }
@@ -510,212 +564,289 @@ function pathIntersectsElements(waypoints, positions, srcId, tgtId) {
 }
 
 /**
- * Berechnet Waypoints mit Kollisionsvermeidung.
- * Verwendet Routing-Kanäle zwischen den Grid-Zellen.
+ * Berechnet Waypoints für BPMN-konforme Verbindungen.
+ * 
+ * REGELN:
+ * 1. Tasks/Events: Immer LINKS rein, RECHTS raus
+ * 2. Gateways: 
+ *    - Hauptpfad (Ja): RECHTS raus
+ *    - Alternativpfad (Nein): UNTEN raus
+ *    - Eingang: LINKS rein
+ * 3. Pfeile dürfen NIEMALS durch Elemente gehen
+ * 4. Rechtwinklige Verbindungen (nur horizontal/vertikal)
  */
 function calculateWaypointsWithAvoidance(src, tgt, positions, srcId, tgtId) {
-  const ROUTING_GAP = 50; // Abstand für Routing-Kanäle (erhöht für bessere Sichtbarkeit)
-  
+  // Positionen berechnen
   const srcRight = src.x + src.width;
+  const srcLeft = src.x;
   const srcCenterX = src.x + src.width / 2;
   const srcCenterY = src.y + src.height / 2;
   const srcBottom = src.y + src.height;
   const srcTop = src.y;
   
-  const tgtLeft = tgt.x;
   const tgtRight = tgt.x + tgt.width;
+  const tgtLeft = tgt.x;
   const tgtCenterX = tgt.x + tgt.width / 2;
   const tgtCenterY = tgt.y + tgt.height / 2;
   const tgtTop = tgt.y;
   const tgtBottom = tgt.y + tgt.height;
   
-  const sameRow = src.row === tgt.row;
-  const sameCol = src.col === tgt.col;
-  const tgtIsRight = tgt.col > src.col;
-  const tgtIsBelow = tgt.row > src.row;
-  const tgtIsAbove = tgt.row < src.row;
-  const tgtIsLeft = tgt.col < src.col;
+  // Prüfe ob Source ein Gateway ist (darf von allen Seiten ausgehen)
+  const srcIsGateway = src.width === 50; // Gateways sind 50x50
+  const tgtIsGateway = tgt.width === 50;
   
-  // Berechne globale Grenzen aller Elemente für sichere Routing-Kanäle
-  let globalMinY = Infinity;
-  let globalMaxY = -Infinity;
-  let globalMinX = Infinity;
-  let globalMaxX = -Infinity;
+  // Prüfe ob Ziel ein Event ist (Start/End - 36x36)
+  const tgtIsEvent = tgt.width === 36;
   
+  // Richtungen bestimmen
+  const tgtIsRight = tgt.x > src.x;
+  const tgtIsLeft = tgt.x < src.x;
+  const tgtIsBelow = tgt.y > src.y;
+  const tgtIsAbove = tgt.y < src.y;
+  const sameRow = Math.abs(srcCenterY - tgtCenterY) < 30;
+  const sameCol = Math.abs(srcCenterX - tgtCenterX) < 30;
+  
+  // Berechne globale Grenzen für Routing-Kanäle
+  let globalMinY = Infinity, globalMaxY = -Infinity;
+  let globalMinX = Infinity, globalMaxX = -Infinity;
   for (const pos of Object.values(positions)) {
     globalMinY = Math.min(globalMinY, pos.y);
     globalMaxY = Math.max(globalMaxY, pos.y + pos.height);
     globalMinX = Math.min(globalMinX, pos.x);
     globalMaxX = Math.max(globalMaxX, pos.x + pos.width);
   }
+  const ROUTE_GAP = 50;
   
-  let waypoints = [];
+  // ============================================
+  // SPEZIALFALL: Ziel ist ein End-Event - IMMER von links rein!
+  // ============================================
+  if (tgtIsEvent) {
+    // End-Event muss immer von links angesteuert werden
+    if (sameRow && tgtIsRight) {
+      // Direkte horizontale Verbindung
+      return [
+        { x: srcRight, y: srcCenterY },
+        { x: tgtLeft, y: tgtCenterY }
+      ];
+    }
+    
+    // Event ist auf anderer Zeile - route so dass wir von links reinkommen
+    if (srcIsGateway) {
+      // Gateway: unten raus, dann horizontal zum Event
+      return [
+        { x: srcCenterX, y: srcBottom },
+        { x: srcCenterX, y: tgtCenterY },
+        { x: tgtLeft, y: tgtCenterY }
+      ];
+    }
+    
+    // Task/andere: rechts raus, dann zum Event von links
+    const midX = srcRight + 30;
+    return [
+      { x: srcRight, y: srcCenterY },
+      { x: midX, y: srcCenterY },
+      { x: midX, y: tgtCenterY },
+      { x: tgtLeft, y: tgtCenterY }
+    ];
+  }
   
-  // Fall 1: Ziel ist rechts auf gleicher Zeile → direkte horizontale Linie
-  if (sameRow && tgtIsRight) {
-    waypoints = [
+  // ============================================
+  // FALL 1: Ziel ist RECHTS auf gleicher Zeile (Hauptpfad)
+  // ============================================
+  if (tgtIsRight && sameRow) {
+    // Gateway oder Task: rechts raus, links rein
+    return [
       { x: srcRight, y: srcCenterY },
       { x: tgtLeft, y: tgtCenterY }
     ];
+  }
+  
+  // ============================================
+  // FALL 2: Gateway → Ziel ist UNTEN (Nein-Pfad)
+  // Gateway geht UNTEN raus, dann horizontal zum Ziel
+  // ============================================
+  if (srcIsGateway && tgtIsBelow) {
+    // Gateway: UNTEN raus für Alternativpfade
+    const directPath = [
+      { x: srcCenterX, y: srcBottom },
+      { x: srcCenterX, y: tgtCenterY },
+      { x: tgtLeft, y: tgtCenterY }
+    ];
     
-    // Prüfe auf Kollisionen
-    if (!pathIntersectsElements(waypoints, positions, srcId, tgtId)) {
-      return waypoints;
+    if (!pathIntersectsElements(directPath, positions, srcId, tgtId)) {
+      return directPath;
     }
     
-    // Alternative: Über Routing-Kanal oberhalb ALLER Elemente
-    const routeY = globalMinY - ROUTING_GAP;
+    // Alternative wenn blockiert: weiter unten routen
+    const routeY = Math.max(srcBottom + 30, tgtCenterY);
     return [
-      { x: srcCenterX, y: srcTop },
+      { x: srcCenterX, y: srcBottom },
       { x: srcCenterX, y: routeY },
-      { x: tgtCenterX, y: routeY },
+      { x: tgtLeft - 20, y: routeY },
+      { x: tgtLeft - 20, y: tgtCenterY },
+      { x: tgtLeft, y: tgtCenterY }
+    ];
+  }
+  
+  // ============================================
+  // FALL 3: Ziel ist RECHTS-UNTEN oder RECHTS-OBEN (kein Gateway)
+  // ============================================
+  if (tgtIsRight) {
+    // Task: rechts raus, Knick, links rein
+    const midX = srcRight + (tgtLeft - srcRight) / 2;
+    
+    const directPath = [
+      { x: srcRight, y: srcCenterY },
+      { x: midX, y: srcCenterY },
+      { x: midX, y: tgtCenterY },
+      { x: tgtLeft, y: tgtCenterY }
+    ];
+    
+    if (!pathIntersectsElements(directPath, positions, srcId, tgtId)) {
+      return directPath;
+    }
+    
+    // Alternative: Route außen herum
+    if (tgtIsBelow) {
+      const routeY = globalMaxY + ROUTE_GAP;
+      return [
+        { x: srcRight, y: srcCenterY },
+        { x: srcRight + 20, y: srcCenterY },
+        { x: srcRight + 20, y: routeY },
+        { x: tgtLeft - 20, y: routeY },
+        { x: tgtLeft - 20, y: tgtCenterY },
+        { x: tgtLeft, y: tgtCenterY }
+      ];
+    } else {
+      const routeY = globalMinY - ROUTE_GAP;
+      return [
+        { x: srcRight, y: srcCenterY },
+        { x: srcRight + 20, y: srcCenterY },
+        { x: srcRight + 20, y: routeY },
+        { x: tgtLeft - 20, y: routeY },
+        { x: tgtLeft - 20, y: tgtCenterY },
+        { x: tgtLeft, y: tgtCenterY }
+      ];
+    }
+  }
+  
+  // ============================================
+  // FALL 4: Ziel ist UNTEN (gleiche Spalte) - Gateway direkt runter
+  // ============================================
+  if (tgtIsBelow && sameCol && srcIsGateway) {
+    return [
+      { x: srcCenterX, y: srcBottom },
       { x: tgtCenterX, y: tgtTop }
     ];
   }
   
-  // Fall 2: Ziel ist rechts und unten → durch Routing-Kanal rechts von src
-  if (tgtIsRight && tgtIsBelow) {
-    // Routing-Kanal: rechts von src, zwischen den Spalten
-    const routeX = srcRight + ROUTING_GAP;
-    waypoints = [
+  // ============================================
+  // FALL 4: Ziel ist UNTEN (Gateway nach unten-rechts/links)
+  // ============================================
+  if (tgtIsBelow && srcIsGateway) {
+    // Gateway geht unten raus, dann horizontal zum Ziel
+    // Aber: Prüfe ob der Weg frei ist!
+    const directPath = [
+      { x: srcCenterX, y: srcBottom },
+      { x: srcCenterX, y: tgtCenterY },
+      { x: tgtLeft, y: tgtCenterY }
+    ];
+    
+    if (!pathIntersectsElements(directPath, positions, srcId, tgtId)) {
+      return directPath;
+    }
+    
+    // Alternative: Route UNTER allen Elementen
+    const routeY = globalMaxY + ROUTE_GAP;
+    return [
+      { x: srcCenterX, y: srcBottom },
+      { x: srcCenterX, y: routeY },
+      { x: tgtLeft - 20, y: routeY },
+      { x: tgtLeft - 20, y: tgtCenterY },
+      { x: tgtLeft, y: tgtCenterY }
+    ];
+  }
+  
+  // ============================================
+  // FALL 5: Ziel ist UNTEN (Task muss rechts raus)
+  // ============================================
+  if (tgtIsBelow) {
+    // Route RECHTS vom Diagramm
+    const routeX = globalMaxX + ROUTE_GAP;
+    return [
       { x: srcRight, y: srcCenterY },
       { x: routeX, y: srcCenterY },
       { x: routeX, y: tgtCenterY },
       { x: tgtLeft, y: tgtCenterY }
     ];
+  }
+  
+  // ============================================
+  // FALL 6: Ziel ist LINKS (Rückwärts-Flow)
+  // ============================================
+  if (tgtIsLeft) {
+    // Rückwärts-Flows gehen UNTER dem Diagramm
+    const routeY = globalMaxY + ROUTE_GAP;
     
-    if (!pathIntersectsElements(waypoints, positions, srcId, tgtId)) {
-      return waypoints;
+    if (srcIsGateway) {
+      return [
+        { x: srcCenterX, y: srcBottom },
+        { x: srcCenterX, y: routeY },
+        { x: tgtLeft - 20, y: routeY },
+        { x: tgtLeft - 20, y: tgtCenterY },
+        { x: tgtLeft, y: tgtCenterY }
+      ];
     }
     
-    // Alternative: Erst runter, dann rechts - UNTER allen Elementen
-    const routeY = globalMaxY + ROUTING_GAP;
-    return [
-      { x: srcCenterX, y: srcBottom },
-      { x: srcCenterX, y: routeY },
-      { x: tgtCenterX, y: routeY },
-      { x: tgtCenterX, y: tgtBottom }
-    ];
-  }
-  
-  // Fall 3: Ziel ist direkt unten (gleiche Spalte)
-  if (sameCol && tgtIsBelow) {
-    return [
-      { x: srcCenterX, y: srcBottom },
-      { x: tgtCenterX, y: tgtTop }
-    ];
-  }
-  
-  // Fall 4: Ziel ist unten und links → runter durch Routing-Kanal UNTER allen Elementen
-  if (tgtIsBelow && tgtIsLeft) {
-    const routeY = globalMaxY + ROUTING_GAP;
-    return [
-      { x: srcCenterX, y: srcBottom },
-      { x: srcCenterX, y: routeY },
-      { x: tgtCenterX, y: routeY },
-      { x: tgtCenterX, y: tgtBottom }
-    ];
-  }
-  
-  // Fall 5: Ziel ist oben und rechts → ÜBER alle Elemente routen
-  if (tgtIsAbove && tgtIsRight) {
-    // Route ÜBER alle Elemente (oberhalb der obersten Zeile)
-    const routeY = globalMinY - ROUTING_GAP;
-    waypoints = [
-      { x: srcCenterX, y: srcTop },
-      { x: srcCenterX, y: routeY },
-      { x: tgtCenterX, y: routeY },
-      { x: tgtCenterX, y: tgtTop }
-    ];
-    
-    // Prüfe ob dieser Pfad frei ist
-    if (!pathIntersectsElements(waypoints, positions, srcId, tgtId)) {
-      return waypoints;
-    }
-    
-    // Alternative: Rechts rum (außen herum)
-    const routeX = globalMaxX + ROUTING_GAP;
     return [
       { x: srcRight, y: srcCenterY },
-      { x: routeX, y: srcCenterY },
-      { x: routeX, y: tgtCenterY },
-      { x: tgtRight, y: tgtCenterY }
+      { x: srcRight + 20, y: srcCenterY },
+      { x: srcRight + 20, y: routeY },
+      { x: tgtLeft - 20, y: routeY },
+      { x: tgtLeft - 20, y: tgtCenterY },
+      { x: tgtLeft, y: tgtCenterY }
     ];
   }
   
-  // Fall 6: Ziel ist links auf gleicher Zeile (Rückwärts-Flow) → UNTER allen Elementen
-  if (sameRow && tgtIsLeft) {
-    const routeY = globalMaxY + ROUTING_GAP;
-    return [
-      { x: srcCenterX, y: srcBottom },
-      { x: srcCenterX, y: routeY },
-      { x: tgtCenterX, y: routeY },
-      { x: tgtCenterX, y: tgtBottom }
-    ];
-  }
-  
-  // Fall 7: Ziel ist oben und links → Route ÜBER alle Elemente, dann links
-  if (tgtIsAbove && tgtIsLeft) {
-    // Route oberhalb aller Elemente
-    const routeY = globalMinY - ROUTING_GAP;
-    waypoints = [
-      { x: srcCenterX, y: srcTop },
-      { x: srcCenterX, y: routeY },
-      { x: tgtCenterX, y: routeY },
-      { x: tgtCenterX, y: tgtTop }
-    ];
+  // ============================================
+  // FALL 7: Ziel ist OBEN
+  // ============================================
+  if (tgtIsAbove) {
+    // Route ÜBER allen Elementen
+    const routeY = globalMinY - ROUTE_GAP;
     
-    if (!pathIntersectsElements(waypoints, positions, srcId, tgtId)) {
-      return waypoints;
+    if (srcIsGateway) {
+      return [
+        { x: srcCenterX, y: srcTop },
+        { x: srcCenterX, y: routeY },
+        { x: tgtLeft - 20, y: routeY },
+        { x: tgtLeft - 20, y: tgtCenterY },
+        { x: tgtLeft, y: tgtCenterY }
+      ];
     }
     
-    // Alternative: Links außen herum
-    const routeX = globalMinX - ROUTING_GAP;
-    return [
-      { x: src.x, y: srcCenterY },
-      { x: routeX, y: srcCenterY },
-      { x: routeX, y: tgtCenterY },
-      { x: tgt.x, y: tgtCenterY }
-    ];
-  }
-  
-  // Fall 8: Ziel ist direkt oben (gleiche Spalte) → rechts außen herum
-  if (sameCol && tgtIsAbove) {
-    const routeX = globalMaxX + ROUTING_GAP;
     return [
       { x: srcRight, y: srcCenterY },
-      { x: routeX, y: srcCenterY },
-      { x: routeX, y: tgtCenterY },
-      { x: tgtRight, y: tgtCenterY }
+      { x: srcRight + 20, y: srcCenterY },
+      { x: srcRight + 20, y: routeY },
+      { x: tgtLeft - 20, y: routeY },
+      { x: tgtLeft - 20, y: tgtCenterY },
+      { x: tgtLeft, y: tgtCenterY }
     ];
   }
   
-  // Fallback: Routing über Kanal zwischen src und tgt
-  const midX = (srcRight + tgtLeft) / 2;
-  waypoints = [
+  // ============================================
+  // FALLBACK: Sichere Route außen herum
+  // ============================================
+  const routeY = globalMaxY + ROUTE_GAP;
+  return [
     { x: srcRight, y: srcCenterY },
-    { x: midX, y: srcCenterY },
-    { x: midX, y: tgtCenterY },
+    { x: srcRight + 20, y: srcCenterY },
+    { x: srcRight + 20, y: routeY },
+    { x: tgtLeft - 20, y: routeY },
+    { x: tgtLeft - 20, y: tgtCenterY },
     { x: tgtLeft, y: tgtCenterY }
   ];
-  
-  // Prüfe auf Kollisionen und route ggf. um
-  if (pathIntersectsElements(waypoints, positions, srcId, tgtId)) {
-    // Route ÜBER oder UNTER alle Elemente (nicht nur src/tgt)
-    const useTop = srcCenterY > tgtCenterY;
-    const routeY = useTop 
-      ? globalMinY - ROUTING_GAP 
-      : globalMaxY + ROUTING_GAP;
-    
-    return [
-      { x: srcCenterX, y: useTop ? srcTop : srcBottom },
-      { x: srcCenterX, y: routeY },
-      { x: tgtCenterX, y: routeY },
-      { x: tgtCenterX, y: useTop ? tgtTop : tgtBottom }
-    ];
-  }
-  
-  return waypoints;
 }
 
 /**

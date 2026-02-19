@@ -1450,8 +1450,48 @@
             width: 100%;
             height: 300px;
             background: white;
-            overflow: auto;
-            -webkit-overflow-scrolling: touch;
+            overflow: hidden;
+            position: relative;
+        }
+        .bpmn-zoom-controls {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 5px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .bpmn-zoom-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #4f46e5;
+            transition: all 0.2s;
+        }
+        .bpmn-zoom-btn:hover {
+            background: #f1f5f9;
+            border-color: #4f46e5;
+        }
+        .bpmn-zoom-btn:active {
+            transform: scale(0.95);
+        }
+        .bpmn-zoom-level {
+            font-size: 11px;
+            color: #64748b;
+            min-width: 40px;
+            text-align: center;
+            line-height: 32px;
         }
         @media (max-width: 768px) {
             .bpmn-viewer-container {
@@ -1461,6 +1501,16 @@
             #bpmnViewerCanvas {
                 min-width: 500px;
                 height: 250px;
+            }
+            .bpmn-zoom-controls {
+                bottom: 5px;
+                right: 5px;
+                padding: 3px;
+            }
+            .bpmn-zoom-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
             }
         }
         .workflow-error {
@@ -3255,6 +3305,13 @@
                                 </div>
                             </div>
                             <div id="bpmnViewerCanvas"></div>
+                            <div class="bpmn-zoom-controls">
+                                <button class="bpmn-zoom-btn" onclick="bpmnZoom('out')" title="Verkleinern"><i class="fas fa-minus"></i></button>
+                                <span id="bpmnZoomLevel" class="bpmn-zoom-level">100%</span>
+                                <button class="bpmn-zoom-btn" onclick="bpmnZoom('in')" title="Vergrößern"><i class="fas fa-plus"></i></button>
+                                <button class="bpmn-zoom-btn" onclick="bpmnZoom('fit')" title="Einpassen"><i class="fas fa-expand"></i></button>
+                                <button class="bpmn-zoom-btn" onclick="bpmnZoom('reset')" title="Zurücksetzen"><i class="fas fa-undo"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -4384,8 +4441,9 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 const ratedInCat = catProcesses.filter(p => assessmentData.prozesse && assessmentData.prozesse[p.id]).length;
                 const catProgress = (ratedInCat / catProcesses.length) * 100;
 
-                // Neue Seite wenn nötig
-                if (yPos > pageHeight - 60) {
+                // Neue Seite wenn nötig - Kategorie-Header braucht mind. 80mm Platz
+                // damit nicht nur die Überschrift am Ende der Seite steht
+                if (yPos > pageHeight - 80) {
                     doc.addPage();
                     doc.setFillColor(...colors.primary);
                     doc.rect(0, 0, pageWidth, 12, 'F');
@@ -4452,8 +4510,9 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                         }
                     }
                     
-                    // Prüfe ob neue Seite nötig
-                    if (yPos + boxHeight > pageHeight - 25) {
+                    // Prüfe ob neue Seite nötig (mit Sicherheitspuffer)
+                    const safetyMargin = 35; // Mehr Platz am Seitenende
+                    if (yPos + boxHeight > pageHeight - safetyMargin) {
                         doc.addPage();
                         doc.setFillColor(...colors.primary);
                         doc.rect(0, 0, pageWidth, 12, 'F');
@@ -5179,15 +5238,21 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 // Fit to viewport with error handling
                 const canvas = bpmnViewer.get('canvas');
                 
+                // Reset zoom level for new diagram
+                currentZoomLevel = 1;
+                
                 // Check if container has valid dimensions
                 const rect = container.getBoundingClientRect();
                 if (rect.width > 0 && rect.height > 0) {
                     try {
                         canvas.zoom('fit-viewport');
+                        currentZoomLevel = canvas.zoom();
+                        updateZoomDisplay();
                     } catch (zoomErr) {
                         console.warn('Zoom error, using fallback:', zoomErr);
-                        // Fallback: set a fixed zoom level
                         canvas.zoom(0.8);
+                        currentZoomLevel = 0.8;
+                        updateZoomDisplay();
                     }
                 } else {
                     // Container not visible yet, retry after a delay
@@ -5216,6 +5281,49 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             if (errorEl) {
                 errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + message;
                 errorEl.style.display = 'flex';
+            }
+        }
+        
+        // BPMN Zoom Functions
+        let currentZoomLevel = 1;
+        
+        function bpmnZoom(action) {
+            if (!bpmnViewer) return;
+            
+            try {
+                const canvas = bpmnViewer.get('canvas');
+                
+                switch(action) {
+                    case 'in':
+                        currentZoomLevel = Math.min(currentZoomLevel * 1.2, 4);
+                        canvas.zoom(currentZoomLevel);
+                        break;
+                    case 'out':
+                        currentZoomLevel = Math.max(currentZoomLevel / 1.2, 0.2);
+                        canvas.zoom(currentZoomLevel);
+                        break;
+                    case 'fit':
+                        canvas.zoom('fit-viewport');
+                        currentZoomLevel = canvas.zoom();
+                        break;
+                    case 'reset':
+                        currentZoomLevel = 1;
+                        canvas.zoom(1);
+                        canvas.scroll({ dx: 0, dy: 0 });
+                        break;
+                }
+                
+                // Update zoom level display
+                updateZoomDisplay();
+            } catch (e) {
+                console.warn('Zoom error:', e);
+            }
+        }
+        
+        function updateZoomDisplay() {
+            const zoomEl = document.getElementById('bpmnZoomLevel');
+            if (zoomEl) {
+                zoomEl.textContent = Math.round(currentZoomLevel * 100) + '%';
             }
         }
         
@@ -5376,15 +5484,27 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
         
         // Convert BPMN XML to PNG image (base64)
         async function bpmnToImage(bpmnXml) {
-            return new Promise(async (resolve, reject) => {
+            // Timeout wrapper to prevent hanging
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('BPMN rendering timeout')), 10000);
+            });
+            
+            const renderPromise = new Promise(async (resolve, reject) => {
+                let tempContainer = null;
+                let viewer = null;
+                
                 try {
-                    // Create temporary container - larger for better quality
-                    const tempContainer = document.createElement('div');
-                    tempContainer.style.cssText = 'position: absolute; left: -9999px; top: -9999px; width: 1200px; height: 600px;';
+                    // Create temporary container - smaller for mobile
+                    const isMobile = window.innerWidth < 768;
+                    const containerWidth = isMobile ? 800 : 1200;
+                    const containerHeight = isMobile ? 400 : 600;
+                    
+                    tempContainer = document.createElement('div');
+                    tempContainer.style.cssText = `position: absolute; left: -9999px; top: -9999px; width: ${containerWidth}px; height: ${containerHeight}px;`;
                     document.body.appendChild(tempContainer);
                     
                     // Create viewer
-                    const viewer = new BpmnJS({ container: tempContainer });
+                    viewer = new BpmnJS({ container: tempContainer });
                     
                     await viewer.importXML(bpmnXml);
                     
@@ -5412,10 +5532,12 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                         }
                     }
                     
-                    // Scale factor for high quality (2x for retina)
-                    const scale = 2;
-                    const outputWidth = Math.max(svgWidth * scale, 1600);
-                    const outputHeight = Math.max(svgHeight * scale, 800);
+                    // Scale factor for quality (reduced for mobile compatibility)
+                    const scale = isMobile ? 1 : 1.5;
+                    const maxWidth = isMobile ? 1200 : 2000;
+                    const maxHeight = isMobile ? 800 : 1200;
+                    const outputWidth = Math.min(Math.max(svgWidth * scale, 800), maxWidth);
+                    const outputHeight = Math.min(Math.max(svgHeight * scale, 400), maxHeight);
                     
                     // Set explicit dimensions on SVG for proper rendering
                     svgEl.setAttribute('width', outputWidth);
@@ -5455,8 +5577,10 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                     };
                     
                     img.onerror = (err) => {
-                        viewer.destroy();
-                        document.body.removeChild(tempContainer);
+                        if (viewer) viewer.destroy();
+                        if (tempContainer && tempContainer.parentNode) {
+                            document.body.removeChild(tempContainer);
+                        }
                         reject(err);
                     };
                     
@@ -5465,9 +5589,19 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                     img.src = URL.createObjectURL(svgBlob);
                     
                 } catch (err) {
+                    // Cleanup on error
+                    if (viewer) {
+                        try { viewer.destroy(); } catch (e) {}
+                    }
+                    if (tempContainer && tempContainer.parentNode) {
+                        try { document.body.removeChild(tempContainer); } catch (e) {}
+                    }
                     reject(err);
                 }
             });
+            
+            // Race between render and timeout
+            return Promise.race([renderPromise, timeoutPromise]);
         }
         
         // Pre-render all BPMN diagrams for PDF export
