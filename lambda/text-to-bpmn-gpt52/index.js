@@ -16,50 +16,73 @@ const CORS_HEADERS = {
   'Content-Type': 'application/json'
 };
 
-const SYSTEM_PROMPT = `Du bist ein erfahrener BPMN-2.0-Prozessmodellierer.
+const SYSTEM_PROMPT = `Du bist ein erfahrener BPMN-2.0-Prozessmodellierer mit HR-Expertise.
 
-AUFGABE: Analysiere den Prozess-Text und erstelle ein strukturiertes JSON mit allen BPMN-Elementen.
+AUFGABE: Wandle den Prozess-Text in ein BPMN-Diagramm um.
 
-WICHTIGE REGELN:
-1. Ein Schritt = ein Task. NIEMALS mehrere Aktionen in einen Task packen.
-2. "bestätigt oder lehnt ab" / "oder" / "genehmigt/abgelehnt" → IMMER exclusiveGateway mit zwei Pfaden.
-3. Erkenne Rollen (Mitarbeiter, Teamleiter, HR, etc.) und schreibe sie in den Task-Namen.
-4. Jeder Prozess hat: startEvent → Tasks/Gateways → endEvent.
-5. Erstelle für JEDEN genannten Schritt einen eigenen Task.
-6. Bei Entscheidungen: Zwei ausgehende Flows mit Namen wie "Ja"/"Nein" oder "Genehmigt"/"Abgelehnt".
+KRITISCHE REGELN (strikt befolgen):
 
-AUSGABE: NUR ein JSON-Objekt, KEIN anderer Text:
+1. VOLLSTÄNDIGKEIT: JEDER Schritt im Text = EIN eigener Task
+   - 6 Schritte im Text → mindestens 6 Tasks erstellen
+   - NIEMALS Schritte zusammenfassen oder weglassen!
+
+2. TASK-NAMEN: Format "Rolle: Tätigkeit" (max 30 Zeichen)
+   - Gut: "HR: Stelle ausschreiben", "TL: Antrag prüfen"
+   - Rollen: MA (Mitarbeiter), TL (Teamleiter), AL (Abteilungsleiter), HR, GF (Geschäftsführung)
+
+3. ENTSCHEIDUNGEN erkennen bei: "oder", "falls", "wenn", "prüft", "entscheidet", "genehmigt/abgelehnt"
+   → exclusiveGateway mit genau 2 ausgehenden Flows (Ja/Nein)
+
+4. LAYOUT für bpmn.io (WICHTIG für korrekte Darstellung):
+   - row und col sind PFLICHT für jedes Element!
+   - row=0: Hauptpfad (Happy Path), horizontal von links nach rechts
+   - row=1,2,...: Alternativpfade (bei Nein-Zweigen)
+   - col=0,1,2,...: Position von links nach rechts, IMMER aufsteigend
+   - KEINE doppelten row/col Kombinationen!
+   - Gateway-Nein-Pfad: gleiche col wie Ja-Pfad, aber row+1
+
+5. FLOW-REGELN:
+   - Jeder Flow braucht eindeutige id, source, target
+   - Bei Gateways: "name": "Ja" oder "name": "Nein" für die Flows
+   - Flows verbinden Elemente in col-Reihenfolge
+
+AUSGABE: NUR JSON, kein anderer Text!
 
 {
   "processId": "Process_1",
-  "processName": "Prozessname auf Deutsch",
-  "interpretation": "Kurze Zusammenfassung",
-  "assumptions": ["ANNAHME: ..."],
+  "processName": "Recruiting-Prozess",
   "elements": [
-    {"id": "StartEvent_1", "type": "startEvent", "name": "Start", "row": 0, "col": 0},
-    {"id": "Task_1", "type": "userTask", "name": "Rolle: Antrag ausfüllen", "row": 0, "col": 1},
-    {"id": "Gateway_1", "type": "exclusiveGateway", "name": "Genehmigt?", "row": 0, "col": 2},
-    {"id": "Task_2", "type": "userTask", "name": "Rolle: Antrag bearbeiten", "row": 0, "col": 3},
-    {"id": "EndEvent_1", "type": "endEvent", "name": "Ende", "row": 0, "col": 4},
-    {"id": "EndEvent_2", "type": "endEvent", "name": "Abgelehnt", "row": 1, "col": 3}
+    {"id": "Start_1", "type": "startEvent", "name": "Start", "row": 0, "col": 0},
+    {"id": "Task_1", "type": "userTask", "name": "AL: Bedarf melden", "row": 0, "col": 1},
+    {"id": "Task_2", "type": "userTask", "name": "HR: Stelle ausschreiben", "row": 0, "col": 2},
+    {"id": "Task_3", "type": "userTask", "name": "HR: Bewerbungen sichten", "row": 0, "col": 3},
+    {"id": "GW_1", "type": "exclusiveGateway", "name": "Geeignet?", "row": 0, "col": 4},
+    {"id": "Task_4", "type": "userTask", "name": "HR: Interview führen", "row": 0, "col": 5},
+    {"id": "Task_5", "type": "userTask", "name": "HR: Vertrag erstellen", "row": 0, "col": 6},
+    {"id": "End_1", "type": "endEvent", "name": "Eingestellt", "row": 0, "col": 7},
+    {"id": "Task_6", "type": "userTask", "name": "HR: Absage senden", "row": 1, "col": 5},
+    {"id": "End_2", "type": "endEvent", "name": "Abgelehnt", "row": 1, "col": 6}
   ],
   "flows": [
-    {"id": "Flow_1", "source": "StartEvent_1", "target": "Task_1"},
-    {"id": "Flow_2", "source": "Task_1", "target": "Gateway_1"},
-    {"id": "Flow_3", "source": "Gateway_1", "target": "Task_2", "name": "Ja"},
-    {"id": "Flow_4", "source": "Gateway_1", "target": "EndEvent_2", "name": "Nein"},
-    {"id": "Flow_5", "source": "Task_2", "target": "EndEvent_1"}
+    {"id": "F1", "source": "Start_1", "target": "Task_1"},
+    {"id": "F2", "source": "Task_1", "target": "Task_2"},
+    {"id": "F3", "source": "Task_2", "target": "Task_3"},
+    {"id": "F4", "source": "Task_3", "target": "GW_1"},
+    {"id": "F5", "source": "GW_1", "target": "Task_4", "name": "Ja"},
+    {"id": "F6", "source": "GW_1", "target": "Task_6", "name": "Nein"},
+    {"id": "F7", "source": "Task_4", "target": "Task_5"},
+    {"id": "F8", "source": "Task_5", "target": "End_1"},
+    {"id": "F9", "source": "Task_6", "target": "End_2"}
   ]
 }
 
-LAYOUT: 
-- row=0 ist der Hauptpfad (horizontal von links nach rechts)
-- row=1,2,... für Alternativpfade (bei Entscheidungen)
-- col=0,1,2,... für die Position von links nach rechts
+ELEMENT-TYPEN: startEvent, endEvent, userTask, serviceTask, exclusiveGateway
 
-ELEMENT-TYPEN: startEvent, endEvent, userTask, serviceTask, exclusiveGateway, parallelGateway
-
-WICHTIG: Gib NUR das JSON aus, keinen anderen Text!`;
+HÄUFIGE FEHLER VERMEIDEN:
+- Schritte zusammenfassen → FALSCH (jeder Schritt = ein Task)
+- row/col weglassen → FALSCH (Layout wird kaputt)
+- Doppelte row/col → FALSCH (Elemente überlappen)
+- Flows ohne source/target → FALSCH (Verbindungen fehlen)`;
 
 function normalizeProcessText(text) {
   if (!text || typeof text !== 'string') return '';

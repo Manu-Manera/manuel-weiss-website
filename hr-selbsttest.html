@@ -2309,10 +2309,17 @@
         }
         #bpmnViewerCanvas {
             width: 100%;
-            height: 300px;
+            height: 350px;
             background: white;
             overflow: hidden;
             position: relative;
+        }
+        #bpmnViewerCanvas .djs-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
         }
         .bpmn-hint {
             position: absolute;
@@ -2338,12 +2345,109 @@
         .bpmn-hint-mobile { display: none; }
         #bpmnViewerCanvas {
             cursor: grab;
+            position: relative;
         }
         #bpmnViewerCanvas:active {
             cursor: grabbing;
         }
         #bpmnViewerCanvas.dragging {
             cursor: grabbing;
+        }
+        
+        /* BPMN Zoom Controls (unten rechts wie bei bpmn.io) */
+        .bpmn-zoom-controls {
+            position: absolute;
+            bottom: 40px;
+            right: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            z-index: 100;
+        }
+        .bpmn-zoom-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #ccc;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #333;
+            transition: all 0.15s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .bpmn-zoom-btn:hover {
+            background: #f5f5f5;
+            border-color: #999;
+        }
+        .bpmn-zoom-btn:active {
+            background: #e5e5e5;
+        }
+        .bpmn-zoom-divider {
+            height: 1px;
+            background: #ddd;
+            margin: 2px 0;
+        }
+        
+        /* BPMN Toolbar (links wie bei bpmn.io) */
+        .bpmn-toolbar {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            z-index: 100;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 4px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .bpmn-tool-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: transparent;
+            border-radius: 3px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #555;
+            transition: all 0.15s ease;
+        }
+        .bpmn-tool-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .bpmn-tool-btn.active {
+            background: #e8f0fe;
+            color: #1a73e8;
+        }
+        .bpmn-tool-btn i {
+            font-size: 13px;
+        }
+        .bpmn-tool-divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 4px 0;
+        }
+        .bpmn-tool-btn[title]:hover::after {
+            content: attr(title);
+            position: absolute;
+            left: 36px;
+            background: #333;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            white-space: nowrap;
+            z-index: 1000;
         }
         @media (max-width: 768px) {
             .bpmn-viewer-container {
@@ -2352,7 +2456,7 @@
             }
             #bpmnViewerCanvas {
                 min-width: 500px;
-                height: 250px;
+                height: 280px;
             }
             .bpmn-hint {
                 font-size: 10px;
@@ -2360,6 +2464,17 @@
                 left: 5px;
                 right: 5px;
                 bottom: 5px;
+            }
+            .bpmn-toolbar {
+                padding: 2px;
+            }
+            .bpmn-tool-btn {
+                width: 24px;
+                height: 24px;
+            }
+            .bpmn-zoom-btn {
+                width: 28px;
+                height: 28px;
             }
             .bpmn-hint-desktop { display: none; }
             .bpmn-hint-mobile { display: inline; }
@@ -3815,10 +3930,11 @@
     <!-- PDF Export Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-    <!-- BPMN Viewer Library -->
+    <!-- BPMN Modeler Library (für Bearbeitung) -->
     <link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.4.0/dist/assets/diagram-js.css">
     <link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.4.0/dist/assets/bpmn-font/css/bpmn-embedded.css">
-    <script src="https://unpkg.com/bpmn-js@17.4.0/dist/bpmn-viewer.development.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.4.0/dist/assets/bpmn-js.css">
+    <script src="https://unpkg.com/bpmn-js@17.4.0/dist/bpmn-modeler.development.js"></script>
     <!-- AWS API Configuration -->
     <script src="js/aws-app-config.js"></script>
     <script src="js/aws-api-settings.js"></script>
@@ -4830,7 +4946,43 @@
                                     </button>
                                 </div>
                             </div>
-                            <div id="bpmnViewerCanvas"></div>
+                            <div id="bpmnViewerCanvas">
+                                <!-- Toolbar links -->
+                                <div class="bpmn-toolbar" id="bpmnToolbar">
+                                    <button class="bpmn-tool-btn active" onclick="setTool('hand')" title="Verschieben" id="toolHand">
+                                        <i class="fas fa-hand-paper"></i>
+                                    </button>
+                                    <button class="bpmn-tool-btn" onclick="setTool('lasso')" title="Auswählen" id="toolLasso">
+                                        <i class="fas fa-vector-square"></i>
+                                    </button>
+                                    <div class="bpmn-tool-divider"></div>
+                                    <button class="bpmn-tool-btn" onclick="addElement('bpmn:Task')" title="Aufgabe hinzufügen">
+                                        <i class="fas fa-square"></i>
+                                    </button>
+                                    <button class="bpmn-tool-btn" onclick="addElement('bpmn:ExclusiveGateway')" title="Entscheidung hinzufügen">
+                                        <i class="fas fa-diamond"></i>
+                                    </button>
+                                    <button class="bpmn-tool-btn" onclick="addElement('bpmn:EndEvent')" title="Ende hinzufügen">
+                                        <i class="fas fa-circle"></i>
+                                    </button>
+                                </div>
+                                <!-- Zoom Controls rechts unten -->
+                                <div class="bpmn-zoom-controls" id="bpmnZoomControls">
+                                    <button class="bpmn-zoom-btn" onclick="bpmnZoom('in')" title="Vergrößern">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                    <button class="bpmn-zoom-btn" onclick="bpmnZoom('out')" title="Verkleinern">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <div class="bpmn-zoom-divider"></div>
+                                    <button class="bpmn-zoom-btn" onclick="bpmnZoom('fit')" title="Einpassen">
+                                        <i class="fas fa-expand"></i>
+                                    </button>
+                                    <button class="bpmn-zoom-btn" onclick="bpmnZoom('reset')" title="Zurücksetzen">
+                                        <i class="fas fa-compress-arrows-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
                             <div class="bpmn-hint">
                                 <span class="bpmn-hint-desktop"><i class="fas fa-search-plus"></i> Mausrad zum Zoomen &nbsp;|&nbsp; <i class="fas fa-hand-paper"></i> Ziehen zum Verschieben</span>
                                 <span class="bpmn-hint-mobile"><i class="fas fa-hand-pointer"></i> Wischen zum Verschieben &nbsp;|&nbsp; <i class="fas fa-expand-arrows-alt"></i> Zwei Finger zoomen</span>
@@ -7164,9 +7316,13 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             document.getElementById('workflowLoading').style.display = 'flex';
             document.getElementById('workflowError').style.display = 'none';
             
-            // Clear the viewer canvas but keep container visible for smooth transition
+            // Clear the viewer canvas but keep toolbar and zoom controls
             const viewerCanvas = document.getElementById('bpmnViewerCanvas');
-            if (viewerCanvas) viewerCanvas.innerHTML = '';
+            if (viewerCanvas) {
+                // Nur den BPMN-Container leeren, nicht die Controls
+                const djsContainer = viewerCanvas.querySelector('.djs-container');
+                if (djsContainer) djsContainer.remove();
+            }
             
             try {
                 const apiKey = await getOpenAIApiKey();
@@ -7230,7 +7386,7 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             }
         }
         
-        // Initialize BPMN viewer with XML
+        // Initialize BPMN Modeler with XML
         async function initBpmnViewer(xml) {
             const container = document.getElementById('bpmnViewerCanvas');
             const viewerContainer = document.getElementById('bpmnViewerContainer');
@@ -7240,8 +7396,15 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             const errorEl = document.getElementById('workflowError');
             if (errorEl) errorEl.style.display = 'none';
             
-            // Clear previous viewer
-            container.innerHTML = '';
+            // Clear previous modeler (nur djs-container, nicht die Controls)
+            const existingDjs = container.querySelector('.djs-container');
+            if (existingDjs) existingDjs.remove();
+            
+            // Destroy previous modeler instance
+            if (bpmnViewer) {
+                try { bpmnViewer.destroy(); } catch(e) {}
+                bpmnViewer = null;
+            }
             
             // Make sure container is visible before rendering
             if (viewerContainer) {
@@ -7251,16 +7414,11 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             // Wait for container to be visible and have dimensions
             await new Promise(resolve => setTimeout(resolve, 100));
             
-            // Create new viewer with zoom enabled
+            // Create new MODELER (not viewer) for editing capabilities
             bpmnViewer = new BpmnJS({
                 container: container,
-                // Aktiviere Zoom-Scroll Modul
-                zoomScroll: {
-                    enabled: true
-                },
-                // Aktiviere Move-Canvas für Drag
-                moveCanvas: {
-                    enabled: true
+                keyboard: {
+                    bindTo: container
                 }
             });
             
@@ -7278,6 +7436,16 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 
                 // Setup reactive interaction (drag & zoom)
                 setupBpmnInteraction(container);
+                
+                // Event-Listener für automatisches Speichern bei Änderungen
+                const eventBus = bpmnViewer.get('eventBus');
+                eventBus.on('commandStack.changed', function() {
+                    // Debounce: Speichere nicht bei jeder kleinen Änderung
+                    clearTimeout(window.bpmnSaveTimeout);
+                    window.bpmnSaveTimeout = setTimeout(() => {
+                        saveBpmnChanges();
+                    }, 1000);
+                });
                 
                 // Check if container has valid dimensions
                 const rect = container.getBoundingClientRect();
@@ -7322,6 +7490,93 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
         
         // BPMN Zoom and Pan Functions
         let currentZoomLevel = 1;
+        let currentTool = 'hand';
+        
+        // Tool-Auswahl für BPMN-Bearbeitung
+        function setTool(tool) {
+            currentTool = tool;
+            
+            // Update UI
+            document.querySelectorAll('.bpmn-tool-btn').forEach(btn => btn.classList.remove('active'));
+            const toolBtn = document.getElementById('tool' + tool.charAt(0).toUpperCase() + tool.slice(1));
+            if (toolBtn) toolBtn.classList.add('active');
+            
+            if (!bpmnViewer) return;
+            
+            try {
+                const selection = bpmnViewer.get('selection');
+                const directEditing = bpmnViewer.get('directEditing');
+                
+                if (tool === 'hand') {
+                    // Hand-Tool: Deselektiere alles, aktiviere Pan
+                    selection.select([]);
+                    if (directEditing && directEditing.isActive()) {
+                        directEditing.cancel();
+                    }
+                } else if (tool === 'lasso') {
+                    // Lasso-Tool: Aktiviere Mehrfachauswahl
+                    // bpmn-js Modeler hat eingebaute Lasso-Auswahl mit Shift+Drag
+                }
+            } catch (e) {
+                console.warn('Tool switch error:', e);
+            }
+        }
+        
+        // Element zum Diagramm hinzufügen
+        function addElement(elementType) {
+            if (!bpmnViewer) return;
+            
+            try {
+                const modeling = bpmnViewer.get('modeling');
+                const elementFactory = bpmnViewer.get('elementFactory');
+                const canvas = bpmnViewer.get('canvas');
+                const elementRegistry = bpmnViewer.get('elementRegistry');
+                
+                // Finde den Prozess (Root-Element)
+                const rootElement = canvas.getRootElement();
+                
+                // Berechne Position (Mitte des sichtbaren Bereichs)
+                const viewbox = canvas.viewbox();
+                const x = viewbox.x + viewbox.width / 2;
+                const y = viewbox.y + viewbox.height / 2;
+                
+                // Erstelle das Element
+                let shape;
+                if (elementType === 'bpmn:Task') {
+                    shape = elementFactory.createShape({ type: 'bpmn:Task' });
+                } else if (elementType === 'bpmn:ExclusiveGateway') {
+                    shape = elementFactory.createShape({ type: 'bpmn:ExclusiveGateway' });
+                } else if (elementType === 'bpmn:EndEvent') {
+                    shape = elementFactory.createShape({ type: 'bpmn:EndEvent' });
+                }
+                
+                if (shape) {
+                    modeling.createShape(shape, { x: x, y: y }, rootElement);
+                    
+                    // Speichere geändertes XML
+                    saveBpmnChanges();
+                }
+            } catch (e) {
+                console.warn('Add element error:', e);
+            }
+        }
+        
+        // Speichere BPMN-Änderungen
+        async function saveBpmnChanges() {
+            if (!bpmnViewer || !currentWorkflowProcessId) return;
+            
+            try {
+                const { xml } = await bpmnViewer.saveXML({ format: true });
+                
+                if (!assessmentData.prozesse[currentWorkflowProcessId]) {
+                    assessmentData.prozesse[currentWorkflowProcessId] = {};
+                }
+                assessmentData.prozesse[currentWorkflowProcessId].bpmnXml = xml;
+                saveData();
+            } catch (e) {
+                console.warn('Save BPMN error:', e);
+            }
+        }
         
         function bpmnZoom(action) {
             if (!bpmnViewer) return;
