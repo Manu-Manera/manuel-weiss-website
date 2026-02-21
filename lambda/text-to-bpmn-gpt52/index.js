@@ -16,7 +16,11 @@ const CORS_HEADERS = {
   'Content-Type': 'application/json'
 };
 
-const SYSTEM_PROMPT = `BPMN-Generator. Ausgabe: NUR JSON, kein anderer Text.
+const SYSTEM_PROMPT = `Du bist ein BPMN-Prozess-Modellierer. Wandle den Text in ein BPMN-Diagramm um.
+
+WICHTIG: Erstelle für JEDEN Schritt/Tätigkeit im Text eine EIGENE Aufgabe (userTask). Fasse NICHT mehrere Schritte zusammen!
+
+AUSGABE: NUR JSON, kein anderer Text.
 
 FORMAT:
 {"n":"Prozessname","e":[Element,...],"f":[Flow,...]}
@@ -27,15 +31,15 @@ Element: {"i":"ID","t":"Typ","m":"Name","r":row,"c":col}
 
 Flow: {"i":"ID","s":"SourceID","t":"TargetID"} oder mit Label: {"i":"ID","s":"SourceID","t":"TargetID","l":"Ja/Nein"}
 
-LAYOUT-REGELN:
-1. Start bei r:0, c:0
-2. Hauptpfad IMMER horizontal auf r:0 von links nach rechts
-3. Bei Entscheidungen: Normalfall rechts (gleiche Zeile), Ausnahme nach unten (r:1,2...)
-4. Jede Position (r,c) nur einmal!
-5. Task-Namen: "Rolle: Tätigkeit" (kurz!)
+REGELN:
+1. JEDE Tätigkeit im Text = EINE userTask (u). Nicht zusammenfassen!
+2. Start bei r:0, c:0 - dann horizontal weiter (c:1, c:2, c:3...)
+3. Hauptpfad auf r:0, Alternativpfade auf r:1, r:2...
+4. Task-Namen: "Rolle: Tätigkeit" (max 40 Zeichen)
+5. Bei 6 Schritten im Text = mindestens 6 userTasks + Start + Ende
 
-BEISPIEL:
-{"n":"Antrag","e":[{"i":"S1","t":"s","m":"Start","r":0,"c":0},{"i":"T1","t":"u","m":"MA: Antrag","r":0,"c":1},{"i":"G1","t":"g","m":"OK?","r":0,"c":2},{"i":"T2","t":"u","m":"HR: Buchen","r":0,"c":3},{"i":"E1","t":"e","m":"Ende","r":0,"c":4},{"i":"T3","t":"u","m":"TL: Ablehnen","r":1,"c":3},{"i":"E2","t":"e","m":"Abgelehnt","r":1,"c":4}],"f":[{"i":"F1","s":"S1","t":"T1"},{"i":"F2","s":"T1","t":"G1"},{"i":"F3","s":"G1","t":"T2","l":"Ja"},{"i":"F4","s":"T2","t":"E1"},{"i":"F5","s":"G1","t":"T3","l":"Nein"},{"i":"F6","s":"T3","t":"E2"}]}`;
+BEISPIEL für 4 Schritte:
+{"n":"Antrag","e":[{"i":"S1","t":"s","m":"Start","r":0,"c":0},{"i":"T1","t":"u","m":"MA: Antrag stellen","r":0,"c":1},{"i":"T2","t":"u","m":"TL: Prüfen","r":0,"c":2},{"i":"T3","t":"u","m":"HR: Genehmigen","r":0,"c":3},{"i":"T4","t":"u","m":"MA: Bestätigung","r":0,"c":4},{"i":"E1","t":"e","m":"Ende","r":0,"c":5}],"f":[{"i":"F1","s":"S1","t":"T1"},{"i":"F2","s":"T1","t":"T2"},{"i":"F3","s":"T2","t":"T3"},{"i":"F4","s":"T3","t":"T4"},{"i":"F5","s":"T4","t":"E1"}]}`;
 
 function normalizeProcessText(text) {
   if (!text || typeof text !== 'string') return '';

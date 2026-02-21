@@ -4832,7 +4832,7 @@
                             </div>
                             <div id="bpmnViewerCanvas"></div>
                             <div class="bpmn-hint">
-                                <span class="bpmn-hint-desktop"><i class="fas fa-search-plus"></i> Ctrl+Mausrad oder Shift+Mausrad zoomen &nbsp;|&nbsp; <i class="fas fa-hand-paper"></i> Leertaste+Ziehen verschieben</span>
+                                <span class="bpmn-hint-desktop"><i class="fas fa-search-plus"></i> Mausrad zum Zoomen &nbsp;|&nbsp; <i class="fas fa-hand-paper"></i> Ziehen zum Verschieben</span>
                                 <span class="bpmn-hint-mobile"><i class="fas fa-hand-pointer"></i> Wischen zum Verschieben &nbsp;|&nbsp; <i class="fas fa-expand-arrows-alt"></i> Zwei Finger zoomen</span>
                             </div>
                         </div>
@@ -7353,21 +7353,22 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             }
         }
         
-        // Reaktive BPMN-Interaktion: Shift+Mausrad Zoom mit zoomScroll.stepZoom()
+        // Reaktive BPMN-Interaktion: Mausrad Zoom (wie auf bpmn.io)
         function setupBpmnInteraction(containerElement) {
             if (!containerElement || !bpmnViewer) return;
             
-            // Shift+Mausrad zum Zoomen - nutzt das eingebaute zoomScroll Modul
+            // Mausrad zum Zoomen - funktioniert mit Ctrl ODER Shift ODER direkt im Container
             containerElement.addEventListener('wheel', function(e) {
-                // Nur mit Shift-Taste (Ctrl wird von bpmn-js selbst behandelt)
-                if (!e.shiftKey) return;
                 if (!bpmnViewer) return;
+                
+                // Zoom bei Ctrl, Shift oder wenn Maus über dem BPMN-Canvas ist
+                const shouldZoom = e.ctrlKey || e.shiftKey || e.target.closest('.djs-container');
+                if (!shouldZoom) return;
                 
                 e.preventDefault();
                 e.stopPropagation();
                 
                 try {
-                    // Nutze das eingebaute zoomScroll Modul mit stepZoom()
                     const zoomScroll = bpmnViewer.get('zoomScroll');
                     if (!zoomScroll) {
                         console.warn('zoomScroll module not available');
