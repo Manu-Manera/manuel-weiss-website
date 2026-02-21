@@ -1136,6 +1136,448 @@
             padding: 1.5rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.2);
+        }
+        
+        .result-card:hover .result-expand-hint {
+            opacity: 1;
+        }
+        
+        .result-expand-hint {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            font-size: 0.75rem;
+            color: #a5b4fc;
+            opacity: 0;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* Aktive Kachel Styling */
+        .result-card.active {
+            border: 2px solid #6366f1;
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .result-card.active::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 12px solid #6366f1;
+        }
+        
+        /* Inline-Detail Container */
+        .category-detail-inline {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 1.5rem;
+            margin-bottom: 2rem;
+            display: none;
+        }
+        
+        .category-detail-inline.active {
+            display: block;
+            animation: fadeInUp 0.3s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .detail-header-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+        }
+        
+        .detail-header-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .detail-header-subtitle {
+            font-size: 0.9rem;
+            color: #a5b4fc;
+        }
+        
+        .detail-header-score {
+            margin-left: auto;
+            font-size: 2rem;
+            font-weight: 800;
+        }
+        
+        .detail-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .detail-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #a5b4fc;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* PDF Loading Overlay */
+        .pdf-loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .pdf-loading-overlay.active {
+            display: flex;
+        }
+        
+        .pdf-loading-content {
+            text-align: center;
+            max-width: 400px;
+            padding: 2rem;
+        }
+        
+        .pdf-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(99, 102, 241, 0.2);
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: pdfSpin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+        
+        @keyframes pdfSpin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .pdf-loading-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .pdf-loading-subtext {
+            font-size: 0.9rem;
+            color: #a5b4fc;
+            margin-bottom: 1.5rem;
+        }
+        
+        .pdf-progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .pdf-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        /* Category Detail Modal */
+        .category-detail-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .category-detail-modal.active {
+            display: flex;
+        }
+        
+        .category-detail-content {
+            background: rgba(30, 27, 75, 0.95);
+            border-radius: 24px;
+            max-width: 800px;
+            width: 100%;
+            margin: 2rem auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+        
+        .category-detail-header {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3));
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .category-detail-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .category-detail-title h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+        }
+        
+        .category-detail-score {
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+        
+        .category-detail-close {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: all 0.2s;
+        }
+        
+        .category-detail-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .category-detail-body {
+            padding: 2rem;
+        }
+        
+        .subcategory-section {
+            margin-bottom: 2rem;
+        }
+        
+        .subcategory-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #a5b4fc;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .subcategory-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .subcategory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subcategory-name {
+            font-weight: 500;
+            color: white;
+        }
+        
+        .subcategory-score {
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .subcategory-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .subcategory-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .recommendations-list {
+            margin-top: 1.5rem;
+        }
+        
+        .recommendations-list h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #a5b4fc;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .recommendation-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border-left: 3px solid #6366f1;
+        }
+        
+        .recommendation-item-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .recommendation-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+        }
+        
+        .recommendation-item-title {
+            font-weight: 600;
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .recommendation-item-desc {
+            font-size: 0.9rem;
+            color: #a5b4fc;
+            line-height: 1.5;
+        }
+        
+        .recommendation-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        
+        .recommendation-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        
+        .recommendation-btn.primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+        
+        .recommendation-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+        
+        .recommendation-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .recommendation-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .category-detail-modal {
+                padding: 1rem;
+            }
+            
+            .category-detail-content {
+                margin: 1rem auto;
+            }
+            
+            .category-detail-header {
+                padding: 1.5rem;
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .category-detail-title {
+                flex-direction: column;
+            }
+            
+            .category-detail-close {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+            }
+            
+            .recommendation-actions {
+                flex-direction: column;
+            }
         }
         
         .result-score {
@@ -1838,6 +2280,28 @@
 
     <!-- Main Container -->
     <div class="selftest-container">
+        <!-- Management Dashboard Kachel -->
+        <div class="dashboard-banner" onclick="showSection('results')" style="margin-bottom: 1.5rem; cursor: pointer;">
+            <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2)); border-radius: 16px; padding: 1.25rem 1.5rem; border: 1px solid rgba(99, 102, 241, 0.3); display: flex; align-items: center; justify-content: space-between; transition: all 0.3s ease;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-chart-pie" style="color: white; font-size: 1.5rem;"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 1.1rem; color: white;">Management Dashboard</div>
+                        <div style="font-size: 0.85rem; color: #a5b4fc;">Ergebnisse, Analysen & Handlungsempfehlungen</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div id="dashboardScorePreview" style="text-align: right;">
+                        <div style="font-size: 1.5rem; font-weight: 800; color: #fbbf24;" id="dashboardTotalScore">--%</div>
+                        <div style="font-size: 0.75rem; color: #a5b4fc;">Gesamtscore</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: #a5b4fc; font-size: 1.25rem;"></i>
+                </div>
+            </div>
+        </div>
+        
         <!-- Progress Overview -->
         <div class="progress-overview">
             <div class="progress-card active" onclick="showSection('vision')">
@@ -2765,46 +3229,17 @@
                 <p class="section-description">Übersicht über Ihre Standortbestimmung</p>
             </div>
             
-            <!-- Prozess-Statistik Box -->
-            <div id="processStatsBox" style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.1)); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem;">
-                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #fbbf24, #f59e0b); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-cogs" style="color: white; font-size: 1.25rem;"></i>
-                    </div>
-                    <div>
-                        <h4 style="color: #fde68a; font-size: 1.1rem; margin: 0;">Prozess-Digitalisierung</h4>
-                        <p style="color: rgba(255,255,255,0.7); margin: 0; font-size: 0.9rem;">Ihr aktueller Stand der HR-Prozessdigitalisierung</p>
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
-                    <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 1rem; text-align: center;">
-                        <div id="processesRatedCount" style="font-size: 2rem; font-weight: 800; color: #10b981;">0</div>
-                        <div style="color: rgba(255,255,255,0.7); font-size: 0.85rem;">Prozesse bewertet</div>
-                    </div>
-                    <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 1rem; text-align: center;">
-                        <div id="processesTotalCount" style="font-size: 2rem; font-weight: 800; color: #6366f1;">32</div>
-                        <div style="color: rgba(255,255,255,0.7); font-size: 0.85rem;">Prozesse gesamt</div>
-                    </div>
-                    <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 1rem; text-align: center;">
-                        <div id="digitalProcessesCount" style="font-size: 2rem; font-weight: 800; color: #22c55e;">0</div>
-                        <div style="color: rgba(255,255,255,0.7); font-size: 0.85rem;">digital (>60%)</div>
-                    </div>
-                    <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 1rem; text-align: center;">
-                        <div id="potentialProcessesCount" style="font-size: 2rem; font-weight: 800; color: #ef4444;">0</div>
-                        <div id="potentialProcessesLabel" style="color: rgba(255,255,255,0.7); font-size: 0.85rem;">Potenzial (<40%)</div>
-                    </div>
-                </div>
-                <div id="processManualEntriesBox" style="display: none; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(251, 191, 36, 0.2);">
-                    <h4 style="color: #fde68a; font-size: 1rem; margin: 0 0 0.75rem 0;"><i class="fas fa-edit"></i> Ihre Angaben zu den bewerteten Prozessen</h4>
-                    <div id="processManualEntriesList"></div>
-                </div>
-                <div id="notRatedProcessesList" style="margin-top: 1rem; display: none;">
-                    <p style="color: #fbbf24; font-size: 0.9rem; margin-bottom: 0.5rem;"><i class="fas fa-exclamation-triangle"></i> Noch nicht bewertete Prozesse:</p>
-                    <div id="notRatedList" style="color: rgba(255,255,255,0.7); font-size: 0.85rem;"></div>
-                </div>
+            <!-- Ergebnis-Kacheln und Inline-Detail -->
+            <div class="results-overview" id="resultsOverview">
+                <!-- Wird dynamisch von generateResults() befüllt -->
             </div>
             
-            <!-- BPMN Workflow Dashboard -->
+            <!-- Inline-Detail-Container für Kategorie-Details -->
+            <div id="categoryDetailInline" class="category-detail-inline">
+                <!-- Wird dynamisch befüllt wenn Kachel angeklickt -->
+            </div>
+            
+            <!-- BPMN Workflow Dashboard (wird bei Prozesse-Kategorie angezeigt) -->
             <div id="workflowDashboard" class="workflow-dashboard" style="display: none;">
                 <div class="dashboard-header">
                     <div class="dashboard-icon">
@@ -2818,18 +3253,6 @@
                 
                 <div class="workflow-cards" id="workflowCards">
                     <!-- Wird dynamisch befüllt -->
-                </div>
-            </div>
-            
-            <div class="results-overview" id="resultsOverview">
-                <!-- Will be populated by JavaScript -->
-            
-            <div class="recommendations-section" id="recommendationsSection">
-                <h3 style="font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 1.5rem;">
-                    <i class="fas fa-lightbulb" style="color: #fbbf24;"></i> Handlungsempfehlungen
-                </h3>
-                <div id="recommendationsList">
-                    <!-- Will be populated by JavaScript -->
                 </div>
             </div>
             
@@ -3396,6 +3819,33 @@
             
             // Auch die Prozess-Statistik Box in Results aktualisieren
             updateProcessStats();
+            
+            // Dashboard Gesamtscore aktualisieren
+            updateDashboardScore();
+        }
+        
+        // Dashboard-Score auf Startseite aktualisieren
+        function updateDashboardScore() {
+            const scoreEl = document.getElementById('dashboardTotalScore');
+            if (!scoreEl) return;
+            
+            const visionScore = calculateCategoryScore('vision', 4);
+            const kulturScore = calculateCategoryScore('kultur', 18);
+            const orgScore = calculateCategoryScore('organisation', 10);
+            const processScore = calculateProcessScore();
+            
+            const total = Math.round((visionScore + kulturScore + orgScore + processScore) / 4);
+            
+            scoreEl.textContent = total + '%';
+            
+            // Farbe basierend auf Score
+            if (total >= 70) {
+                scoreEl.style.color = '#10b981';
+            } else if (total >= 40) {
+                scoreEl.style.color = '#fbbf24';
+            } else {
+                scoreEl.style.color = '#ef4444';
+            }
         }
 
         // Generate results
@@ -3408,37 +3858,42 @@
             const orgScore = calculateCategoryScore('organisation', 10);
             const processScore = calculateProcessScore();
             
+            // Speichere Scores global für selectCategory()
+            window.categoryScores = {
+                vision: visionScore,
+                kultur: kulturScore,
+                organisation: orgScore,
+                prozesse: processScore
+            };
+            
             resultsOverview.innerHTML = `
-                <div class="result-card">
+                <div class="result-card" id="card-vision" onclick="selectCategory('vision')">
                     <div class="result-score ${getScoreClass(visionScore)}">${visionScore}%</div>
                     <div class="result-label">Vision</div>
                     <div class="result-description">Strategie & Ausrichtung</div>
                 </div>
-                <div class="result-card">
+                <div class="result-card" id="card-kultur" onclick="selectCategory('kultur')">
                     <div class="result-score ${getScoreClass(kulturScore)}">${kulturScore}%</div>
                     <div class="result-label">Kultur</div>
                     <div class="result-description">Leadership & Change</div>
                 </div>
-                <div class="result-card">
+                <div class="result-card" id="card-organisation" onclick="selectCategory('organisation')">
                     <div class="result-score ${getScoreClass(orgScore)}">${orgScore}%</div>
                     <div class="result-label">Organisation</div>
                     <div class="result-description">HR-Struktur</div>
                 </div>
-                <div class="result-card">
+                <div class="result-card" id="card-prozesse" onclick="selectCategory('prozesse')">
                     <div class="result-score ${getScoreClass(processScore)}">${processScore}%</div>
                     <div class="result-label">Prozesse</div>
                     <div class="result-description">Digitalisierungsgrad</div>
                 </div>
             `;
             
-            // Generate recommendations
-            generateRecommendations();
-            
-            // Update process statistics
-            updateProcessStats();
-            
-            // Render workflow dashboard
+            // Render workflow dashboard (wird bei Prozesse-Kategorie angezeigt)
             renderWorkflowDashboard();
+            
+            // Vision automatisch auswählen beim Laden
+            selectCategory('vision');
         }
         
         // Prozess-Statistik aktualisieren
@@ -4867,6 +5322,10 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             const email = document.getElementById('leadEmail').value.trim();
             const wantsConsultation = document.getElementById('leadConsultation').checked;
             
+            // Lead Modal schließen und Loading-Overlay zeigen
+            document.getElementById('leadCaptureModal').classList.remove('active');
+            showPdfLoading();
+            
             // Scores berechnen
             const scores = calculateScores();
             
@@ -4874,11 +5333,23 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             let pdfBase64 = null;
             let doc = null;
             try {
+                updatePdfProgress(20, 'Daten werden analysiert...', 'Ihre Ergebnisse werden aufbereitet');
+                await new Promise(r => setTimeout(r, 300));
+                
+                updatePdfProgress(40, 'PDF wird erstellt...', 'Layout und Design werden angewendet');
                 doc = await generatePDFReport(name, email, scores);
+                
+                updatePdfProgress(70, 'PDF wird finalisiert...', 'Grafiken und Diagramme werden eingefügt');
+                await new Promise(r => setTimeout(r, 200));
+                
                 // PDF als Base64 extrahieren
                 pdfBase64 = doc.output('datauristring').split(',')[1];
+                updatePdfProgress(85, 'Daten werden gespeichert...', 'Fast fertig');
             } catch (pdfError) {
                 console.warn('PDF konnte nicht generiert werden:', pdfError);
+                hidePdfLoading();
+                alert('Fehler bei der PDF-Generierung: ' + pdfError.message);
+                return;
             }
             
             // Prozess-Details aufbereiten (ohne zu große BPMN-XMLs für die Übersicht)
@@ -4971,21 +5442,386 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             
             // PDF herunterladen
             try {
+                updatePdfProgress(100, 'Download wird gestartet...', 'Ihr PDF ist bereit');
+                await new Promise(r => setTimeout(r, 300));
+                
                 if (doc) {
                     doc.save(`HR-Digital-Readiness-Report-${name.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`);
                 }
                 
-                // Modal schließen
-                document.getElementById('leadCaptureModal').classList.remove('active');
+                // Loading ausblenden
+                hidePdfLoading();
                 
                 // Danke-Nachricht
                 alert('Vielen Dank! Ihr PDF-Report wurde erfolgreich generiert und heruntergeladen.' + (wantsConsultation ? '\n\nWir melden uns zeitnah für ein Beratungsgespräch bei Ihnen.' : ''));
             } catch (error) {
                 console.error('PDF Export Fehler:', error);
+                hidePdfLoading();
                 alert('Fehler beim PDF-Export: ' + error.message + '\n\nBitte versuchen Sie es erneut oder kontaktieren Sie uns direkt.');
             }
         }
         
+        // PDF Loading Overlay Funktionen
+        function showPdfLoading() {
+            document.getElementById('pdfLoadingOverlay').classList.add('active');
+            document.getElementById('pdfProgressFill').style.width = '0%';
+        }
+        
+        function hidePdfLoading() {
+            document.getElementById('pdfLoadingOverlay').classList.remove('active');
+        }
+        
+        function updatePdfProgress(percent, text, subtext) {
+            document.getElementById('pdfProgressFill').style.width = percent + '%';
+            if (text) document.getElementById('pdfLoadingText').textContent = text;
+            if (subtext) document.getElementById('pdfLoadingSubtext').textContent = subtext;
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════════════
+        // HR EMPFEHLUNGEN - Basierend auf Persönlichkeitsentwicklungs-Workflows
+        // ═══════════════════════════════════════════════════════════════════════════
+        
+        const hrRecommendations = {
+            vision: {
+                title: 'Vision & Strategie',
+                icon: 'fa-eye',
+                subcategories: [
+                    { id: 'hr_strategie', name: 'HR-Strategie', keys: ['vision-1', 'vision-2'] },
+                    { id: 'digitalisierung', name: 'Digitalisierungsvision', keys: ['vision-3'] },
+                    { id: 'zukunft', name: 'Zukunftsausrichtung', keys: ['vision-4'] }
+                ],
+                recommendations: {
+                    low: [
+                        { title: 'Strategische Zielklärung (OKR)', desc: 'Definieren Sie klare, messbare HR-Ziele mit dem OKR-Framework. Verknüpfen Sie HR-Initiativen direkt mit Unternehmenszielen.', icon: 'fa-bullseye', link: '/methods/goal-setting.html', linkText: 'Ziel-Setting Workflow' },
+                        { title: 'Digital Roadmap erstellen', desc: 'Entwickeln Sie einen 3-Jahres-Digitalisierungsplan für HR. Priorisieren Sie Quick Wins und langfristige Transformationen.', icon: 'fa-road', link: null },
+                        { title: 'Stakeholder-Analyse', desc: 'Identifizieren Sie Key-Player und deren Erwartungen. Bauen Sie Allianzen für Ihre HR-Transformation auf.', icon: 'fa-users', link: '/methods/swot-analysis.html', linkText: 'SWOT-Analyse' },
+                        { title: 'Vision Workshop', desc: 'Entwickeln Sie gemeinsam mit dem Team eine inspirierende HR-Vision. Nutzen Sie kreative Methoden für Zukunftsbilder.', icon: 'fa-lightbulb', link: '/methods/vision-board.html', linkText: 'Vision Board Workflow' },
+                        { title: 'Quick Wins identifizieren', desc: 'Definieren Sie 3-5 sofort umsetzbare Massnahmen mit hoher Sichtbarkeit und geringem Aufwand.', icon: 'fa-rocket', link: null }
+                    ],
+                    medium: [
+                        { title: 'Strategie-Review', desc: 'Überprüfen Sie Ihre HR-Strategie auf Aktualität und Alignment mit Unternehmenszielen. Passen Sie Prioritäten an.', icon: 'fa-sync', link: null },
+                        { title: 'KPI-Dashboard aufbauen', desc: 'Implementieren Sie ein HR-Analytics-Dashboard mit den wichtigsten Kennzahlen für strategische Entscheidungen.', icon: 'fa-chart-line', link: null },
+                        { title: 'Change Roadmap', desc: 'Planen Sie Ihre Veränderungsinitiativen systematisch mit klaren Meilensteinen und Verantwortlichkeiten.', icon: 'fa-map', link: '/methods/change-stages.html', linkText: 'Change Stages Workflow' },
+                        { title: 'Benchmark-Analyse', desc: 'Vergleichen Sie Ihre HR-Praktiken mit Best Practices der Branche und identifizieren Sie Verbesserungspotenziale.', icon: 'fa-balance-scale', link: null }
+                    ],
+                    high: [
+                        { title: 'Innovation Lab', desc: 'Etablieren Sie einen Raum für HR-Innovationen. Testen Sie neue Technologien und Methoden in Pilotprojekten.', icon: 'fa-flask', link: null },
+                        { title: 'Thought Leadership', desc: 'Positionieren Sie Ihr HR-Team als Vorreiter. Teilen Sie Erfolge und Learnings intern und extern.', icon: 'fa-award', link: null },
+                        { title: 'Continuous Improvement', desc: 'Implementieren Sie einen systematischen Verbesserungsprozess mit regelmässigen Reviews und Anpassungen.', icon: 'fa-infinity', link: null }
+                    ]
+                }
+            },
+            kultur: {
+                title: 'Kultur & Leadership',
+                icon: 'fa-heart',
+                subcategories: [
+                    { id: 'leadership', name: 'Leadership & Führung', keys: ['kultur-leadership-1-ist', 'kultur-leadership-2-ist', 'kultur-leadership-3-ist'] },
+                    { id: 'kommunikation', name: 'Kommunikation', keys: ['kultur-comm-1-ist', 'kultur-comm-2-ist', 'kultur-comm-3-ist'] },
+                    { id: 'change', name: 'Change & Veränderung', keys: ['kultur-change-1-ist', 'kultur-change-2-ist', 'kultur-change-3-ist'] }
+                ],
+                recommendations: {
+                    low: [
+                        { title: 'Feedback-Kultur etablieren', desc: 'Führen Sie strukturiertes 360°-Feedback ein. Schaffen Sie psychologische Sicherheit für offene Kommunikation.', icon: 'fa-comments', link: '/methods/johari-window.html', linkText: 'Johari Window Workflow' },
+                        { title: 'Change Champions benennen', desc: 'Identifizieren Sie Veränderungsbotschafter in allen Bereichen. Schulen Sie diese als Multiplikatoren.', icon: 'fa-user-tie', link: '/methods/change-stages.html', linkText: 'Change Stages Workflow' },
+                        { title: 'Emotionale Intelligenz Training', desc: 'Entwickeln Sie EQ-Kompetenzen bei Führungskräften. Verbessern Sie Empathie und Selbstwahrnehmung.', icon: 'fa-brain', link: '/methods/emotional-intelligence.html', linkText: 'EQ Workflow' },
+                        { title: 'Konfliktmanagement aufbauen', desc: 'Etablieren Sie klare Prozesse für Konfliktlösung. Schulen Sie Mediatoren und definieren Sie Eskalationsstufen.', icon: 'fa-handshake', link: '/methods/conflict-escalation.html', linkText: 'Konflikt-Workflow' },
+                        { title: 'Werte-Alignment Workshop', desc: 'Verankern Sie Unternehmenswerte im Alltag. Übersetzen Sie abstrakte Werte in konkretes Verhalten.', icon: 'fa-gem', link: '/methods/values-clarification.html', linkText: 'Werte-Klärung' },
+                        { title: 'Team-Retrospektiven einführen', desc: 'Implementieren Sie regelmässige Team-Reflexionen. Lernen Sie aus Erfolgen und Misserfolgen.', icon: 'fa-users-cog', link: null }
+                    ],
+                    medium: [
+                        { title: 'Leadership Development', desc: 'Bauen Sie ein systematisches Führungskräfte-Entwicklungsprogramm auf. Kombinieren Sie Training, Coaching und Praxis.', icon: 'fa-graduation-cap', link: null },
+                        { title: 'Engagement Survey', desc: 'Führen Sie regelmässige Mitarbeiterbefragungen durch. Leiten Sie konkrete Massnahmen aus den Ergebnissen ab.', icon: 'fa-poll', link: null },
+                        { title: 'Lernkultur fördern', desc: 'Schaffen Sie Zeit und Raum für kontinuierliches Lernen. Etablieren Sie Wissensaustausch-Formate.', icon: 'fa-book-open', link: null },
+                        { title: 'Agile Methoden einführen', desc: 'Pilotieren Sie agile Arbeitsweisen in HR. Nutzen Sie Sprints und Stand-ups für mehr Flexibilität.', icon: 'fa-sync-alt', link: null }
+                    ],
+                    high: [
+                        { title: 'Culture Ambassadors', desc: 'Etablieren Sie ein Netzwerk von Kultur-Botschaftern. Stärken Sie die gelebte Unternehmenskultur.', icon: 'fa-star', link: null },
+                        { title: 'Innovation Challenges', desc: 'Organisieren Sie regelmässige Innovationswettbewerbe. Fördern Sie kreatives Denken und Eigeninitiative.', icon: 'fa-lightbulb', link: null },
+                        { title: 'Best Practice Sharing', desc: 'Teilen Sie Erfolgsgeschichten systematisch. Lernen Sie von den Besten im Unternehmen.', icon: 'fa-share-alt', link: null }
+                    ]
+                }
+            },
+            organisation: {
+                title: 'Organisation & Struktur',
+                icon: 'fa-sitemap',
+                subcategories: [
+                    { id: 'reaktiv', name: 'Reaktiv vs. Proaktiv', keys: ['org-reactive-ist'] },
+                    { id: 'inhouse', name: 'Inhouse vs. Extern', keys: ['org-inhouse-ist'] },
+                    { id: 'prozess', name: 'Prozess vs. Kunde', keys: ['org-process-ist'] },
+                    { id: 'generalist', name: 'Generalist vs. Spezialist', keys: ['org-generalist-ist'] },
+                    { id: 'gl', name: 'GL-Anbindung', keys: ['org-gl'] }
+                ],
+                recommendations: {
+                    low: [
+                        { title: 'RACI-Matrix erstellen', desc: 'Klären Sie Verantwortlichkeiten mit einer RACI-Matrix. Definieren Sie wer Responsible, Accountable, Consulted und Informed ist.', icon: 'fa-table', link: null },
+                        { title: 'Prozesslandkarte entwickeln', desc: 'Visualisieren Sie alle HR-Prozesse in einer übersichtlichen Landkarte. Identifizieren Sie Schnittstellen und Abhängigkeiten.', icon: 'fa-project-diagram', link: '/bpmn-generator.html', linkText: 'BPMN Generator' },
+                        { title: 'Skills-Matrix aufbauen', desc: 'Erfassen Sie systematisch die Kompetenzen Ihres HR-Teams. Identifizieren Sie Lücken und Entwicklungsbedarf.', icon: 'fa-th', link: '/methods/competence-map.html', linkText: 'Kompetenz-Map' },
+                        { title: 'Ressourcen-Analyse', desc: 'Analysieren Sie Ihre HR-Kapazitäten. Planen Sie Ressourcen basierend auf strategischen Prioritäten.', icon: 'fa-chart-pie', link: '/methods/resource-analysis.html', linkText: 'Ressourcen-Analyse' },
+                        { title: 'SWOT-Analyse HR', desc: 'Führen Sie eine ehrliche Stärken-Schwächen-Analyse Ihrer HR-Organisation durch.', icon: 'fa-chess', link: '/methods/swot-analysis.html', linkText: 'SWOT-Analyse' }
+                    ],
+                    medium: [
+                        { title: 'Service Level Agreements', desc: 'Definieren Sie klare SLAs für HR-Services. Messen Sie Qualität und Reaktionszeiten.', icon: 'fa-file-contract', link: null },
+                        { title: 'HR Operating Model', desc: 'Überprüfen Sie Ihr HR-Betriebsmodell. Optimieren Sie die Balance zwischen Shared Services, CoE und Business Partnering.', icon: 'fa-cogs', link: null },
+                        { title: 'Wissensmanagement', desc: 'Bauen Sie ein HR-Wissensmanagement-System auf. Dokumentieren Sie Prozesse und Best Practices.', icon: 'fa-database', link: null },
+                        { title: 'Governance Framework', desc: 'Etablieren Sie klare Governance-Strukturen für HR-Entscheidungen und Policies.', icon: 'fa-balance-scale', link: null }
+                    ],
+                    high: [
+                        { title: 'Center of Excellence', desc: 'Bauen Sie spezialisierte Expertise-Center für strategische HR-Themen auf.', icon: 'fa-medal', link: null },
+                        { title: 'Agile HR Organisation', desc: 'Transformieren Sie HR zu einer agilen Organisation mit cross-funktionalen Teams.', icon: 'fa-random', link: null },
+                        { title: 'HR Tech Stack Review', desc: 'Optimieren Sie Ihre HR-Technologie-Landschaft für maximale Effizienz und Integration.', icon: 'fa-layer-group', link: null }
+                    ]
+                }
+            },
+            prozesse: {
+                title: 'Prozesse & Digitalisierung',
+                icon: 'fa-cogs',
+                subcategories: [], // Dynamisch basierend auf bewerteten Prozessen
+                recommendations: {
+                    low: [
+                        { title: 'Automatisierungspotenzial identifizieren', desc: 'Analysieren Sie repetitive HR-Aufgaben. Priorisieren Sie Prozesse mit hohem Automatisierungspotenzial.', icon: 'fa-robot', link: null },
+                        { title: 'Workflow-Optimierung', desc: 'Nutzen Sie BPMN-Modellierung um Prozesse zu visualisieren und Ineffizienzen zu identifizieren.', icon: 'fa-project-diagram', link: '/bpmn-generator.html', linkText: 'BPMN Generator' },
+                        { title: 'Tool-Evaluation', desc: 'Vergleichen Sie HR-Software-Lösungen systematisch. Erstellen Sie eine Anforderungsmatrix.', icon: 'fa-search', link: null },
+                        { title: 'KPIs definieren', desc: 'Legen Sie messbare Prozess-KPIs fest. Etablieren Sie ein regelmässiges Monitoring.', icon: 'fa-tachometer-alt', link: null },
+                        { title: 'Pilotprojekte starten', desc: 'Wählen Sie 2-3 Prozesse für Digitalisierungs-Piloten. Lernen Sie aus ersten Erfahrungen.', icon: 'fa-flask', link: null }
+                    ],
+                    medium: [
+                        { title: 'End-to-End Digitalisierung', desc: 'Digitalisieren Sie komplette Prozessketten. Eliminieren Sie Medienbrüche.', icon: 'fa-link', link: null },
+                        { title: 'Self-Service Portal', desc: 'Implementieren Sie ein Mitarbeiter-Self-Service-Portal für häufige HR-Anfragen.', icon: 'fa-user-cog', link: null },
+                        { title: 'Prozess-Monitoring', desc: 'Etablieren Sie ein Dashboard zur Überwachung von Prozess-Performance und SLAs.', icon: 'fa-tv', link: null },
+                        { title: 'Integration optimieren', desc: 'Verbessern Sie die Integration zwischen HR-Systemen. Reduzieren Sie manuelle Dateneingaben.', icon: 'fa-plug', link: null }
+                    ],
+                    high: [
+                        { title: 'Predictive Analytics', desc: 'Nutzen Sie KI für vorausschauende HR-Analysen. Antizipieren Sie Trends und Risiken.', icon: 'fa-brain', link: null },
+                        { title: 'Process Mining', desc: 'Analysieren Sie tatsächliche Prozessabläufe mit Process Mining. Identifizieren Sie Optimierungspotenziale.', icon: 'fa-search-plus', link: null },
+                        { title: 'Continuous Automation', desc: 'Etablieren Sie einen kontinuierlichen Automatisierungsprozess. Nutzen Sie RPA für weitere Effizienzgewinne.', icon: 'fa-infinity', link: null }
+                    ]
+                }
+            }
+        };
+        
+        // Aktive Kategorie für Inline-Detail
+        let activeCategory = null;
+        
+        // Kategorie auswählen und Inline-Detail anzeigen
+        function selectCategory(category) {
+            const config = hrRecommendations[category];
+            if (!config) return;
+            
+            const score = window.categoryScores ? window.categoryScores[category] : 0;
+            
+            // Alte Kachel deaktivieren
+            if (activeCategory) {
+                const oldCard = document.getElementById('card-' + activeCategory);
+                if (oldCard) oldCard.classList.remove('active');
+            }
+            
+            // Neue Kachel aktivieren
+            activeCategory = category;
+            const newCard = document.getElementById('card-' + category);
+            if (newCard) newCard.classList.add('active');
+            
+            // Workflow-Dashboard nur bei Prozesse anzeigen
+            const workflowDashboard = document.getElementById('workflowDashboard');
+            if (workflowDashboard) {
+                workflowDashboard.style.display = category === 'prozesse' ? 'block' : 'none';
+            }
+            
+            // Inline-Detail Container befüllen
+            const container = document.getElementById('categoryDetailInline');
+            if (!container) return;
+            
+            // Score-Farbe bestimmen
+            const scoreColor = score >= 70 ? '#10b981' : score >= 40 ? '#fbbf24' : '#ef4444';
+            
+            container.innerHTML = `
+                <div class="detail-header">
+                    <div class="detail-header-icon">
+                        <i class="fas ${config.icon}"></i>
+                    </div>
+                    <div>
+                        <div class="detail-header-title">${config.title}</div>
+                        <div class="detail-header-subtitle">${getCategorySubtitle(category)}</div>
+                    </div>
+                    <div class="detail-header-score" style="color: ${scoreColor}">${score}%</div>
+                </div>
+                <div class="detail-section">
+                    ${generateSubcategoryScores(category, config)}
+                </div>
+                <div class="detail-section">
+                    ${generateCategoryRecommendations(category, score, config)}
+                </div>
+            `;
+            
+            container.classList.add('active');
+        }
+        
+        // Untertitel für Kategorien
+        function getCategorySubtitle(category) {
+            const subtitles = {
+                vision: 'Strategie & Ausrichtung',
+                kultur: 'Leadership & Change',
+                organisation: 'HR-Struktur',
+                prozesse: 'Digitalisierungsgrad'
+            };
+            return subtitles[category] || '';
+        }
+        
+        // Legacy-Funktion für Kompatibilität (leitet auf selectCategory um)
+        function showCategoryDetail(category, score) {
+            if (window.categoryScores) {
+                window.categoryScores[category] = score;
+            }
+            selectCategory(category);
+        }
+        
+        function closeCategoryDetail() {
+            // Nicht mehr benötigt für Inline-Ansicht, aber für Kompatibilität behalten
+            const container = document.getElementById('categoryDetailInline');
+            if (container) container.classList.remove('active');
+            
+            if (activeCategory) {
+                const card = document.getElementById('card-' + activeCategory);
+                if (card) card.classList.remove('active');
+                activeCategory = null;
+            }
+        }
+        
+        // Unterkategorie-Scores berechnen
+        function generateSubcategoryScores(category, config) {
+            let html = '<h3><i class="fas fa-chart-bar"></i> Unterbereiche</h3>';
+            
+            if (category === 'prozesse') {
+                // Dynamische Prozess-Kategorien
+                const processCategories = {};
+                for (const [processId, data] of Object.entries(assessmentData.prozesse || {})) {
+                    if (data) {
+                        let categoryName = 'Sonstige';
+                        for (const cat of hrCategories) {
+                            if (cat.processes.find(p => p.id === processId)) {
+                                categoryName = cat.name;
+                                break;
+                            }
+                        }
+                        if (!processCategories[categoryName]) {
+                            processCategories[categoryName] = { scores: [], count: 0 };
+                        }
+                        const avgScore = ((data.digiIst || 0) + (data.qualIst || 0)) / 2;
+                        processCategories[categoryName].scores.push(avgScore);
+                        processCategories[categoryName].count++;
+                    }
+                }
+                
+                for (const [catName, catData] of Object.entries(processCategories)) {
+                    const avgScore = catData.scores.reduce((a, b) => a + b, 0) / catData.scores.length;
+                    const percent = Math.round((avgScore / 5) * 100);
+                    html += generateSubcategoryItem(catName, percent, catData.count + ' Prozesse bewertet');
+                }
+                
+                if (Object.keys(processCategories).length === 0) {
+                    html += '<p style="color: #a5b4fc; font-style: italic;">Noch keine Prozesse bewertet. Bewerten Sie Prozesse im Prozesse-Tab für detaillierte Auswertungen.</p>';
+                }
+            } else {
+                // Statische Kategorien (Vision, Kultur, Organisation)
+                const data = assessmentData[category] || {};
+                
+                for (const subcat of config.subcategories) {
+                    let scores = [];
+                    // Verwende die definierten Keys direkt
+                    for (const key of (subcat.keys || [])) {
+                        const value = data[key];
+                        if (typeof value === 'number') {
+                            scores.push(value);
+                        }
+                    }
+                    
+                    if (scores.length > 0) {
+                        const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+                        const percent = Math.round((avgScore / 5) * 100);
+                        html += generateSubcategoryItem(subcat.name, percent, scores.length + ' von ' + subcat.keys.length + ' bewertet');
+                    } else {
+                        html += generateSubcategoryItem(subcat.name, 0, 'Noch nicht bewertet');
+                    }
+                }
+            }
+            
+            return html;
+        }
+        
+        function generateSubcategoryItem(name, percent, subtitle = null) {
+            const colorClass = percent >= 70 ? '#10b981' : percent >= 40 ? '#fbbf24' : '#ef4444';
+            return `
+                <div class="subcategory-item">
+                    <div class="subcategory-header">
+                        <span class="subcategory-name">${escapeHtml(name)}</span>
+                        <span class="subcategory-score" style="color: ${colorClass}">${percent}%</span>
+                    </div>
+                    ${subtitle ? `<div style="font-size: 0.8rem; color: #a5b4fc; margin-bottom: 0.5rem;">${escapeHtml(subtitle)}</div>` : ''}
+                    <div class="subcategory-bar">
+                        <div class="subcategory-fill" style="width: ${percent}%; background: ${colorClass};"></div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Empfehlungen basierend auf Score generieren
+        function generateCategoryRecommendations(category, score, config) {
+            let html = '<h3><i class="fas fa-lightbulb"></i> Empfohlene Massnahmen</h3>';
+            
+            // Score-Level bestimmen
+            let level = 'low';
+            if (score >= 70) level = 'high';
+            else if (score >= 40) level = 'medium';
+            
+            const recommendations = config.recommendations[level] || [];
+            
+            if (recommendations.length === 0) {
+                html += '<p style="color: #a5b4fc;">Keine spezifischen Empfehlungen für diesen Score-Bereich.</p>';
+                return html;
+            }
+            
+            recommendations.forEach((rec, idx) => {
+                html += `
+                    <div class="recommendation-item">
+                        <div class="recommendation-item-header">
+                            <div class="recommendation-icon">
+                                <i class="fas ${rec.icon}"></i>
+                            </div>
+                            <div>
+                                <div class="recommendation-item-title">${escapeHtml(rec.title)}</div>
+                                <div class="recommendation-item-desc">${escapeHtml(rec.desc)}</div>
+                            </div>
+                        </div>
+                        ${rec.link ? `
+                        <div class="recommendation-actions">
+                            <a href="${rec.link}" class="recommendation-btn primary" target="_blank">
+                                <i class="fas fa-play"></i> ${rec.linkText || 'Workflow starten'}
+                            </a>
+                            <button class="recommendation-btn secondary" onclick="alert('Detaillierte Anleitung wird in Kürze verfügbar sein.')">
+                                <i class="fas fa-info-circle"></i> Mehr erfahren
+                            </button>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            // Quick Win Hinweis
+            if (level === 'low' && recommendations.length > 0) {
+                html += `
+                    <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 1rem; margin-top: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem; color: #10b981; font-weight: 600; margin-bottom: 0.5rem;">
+                            <i class="fas fa-rocket"></i> Quick Win Empfehlung
+                        </div>
+                        <p style="color: #a5b4fc; margin: 0; font-size: 0.9rem;">
+                            Starten Sie mit "<strong>${escapeHtml(recommendations[0].title)}</strong>" - diese Massnahme bietet schnelle Erfolge bei überschaubarem Aufwand.
+                        </p>
+                    </div>
+                `;
+            }
+            
+            return html;
+        }
+
         // Scores berechnen
         function calculateScores() {
             const calcAvg = (obj) => {
@@ -5320,15 +6156,13 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             }
         }
         
-        // Reaktive BPMN-Interaktion: Zusätzlicher Shift+Mausrad Zoom als Alternative zu Ctrl+Mausrad
+        // Reaktive BPMN-Interaktion: Shift+Mausrad Zoom mit zoomScroll.stepZoom()
         function setupBpmnInteraction(containerElement) {
             if (!containerElement || !bpmnViewer) return;
             
-            // bpmn-js hat eingebautes Zoom (Ctrl+Mausrad) und Drag (Leertaste+Drag)
-            // Wir fügen Shift+Mausrad als zusätzliche Zoom-Option hinzu
-            
+            // Shift+Mausrad zum Zoomen - nutzt das eingebaute zoomScroll Modul
             containerElement.addEventListener('wheel', function(e) {
-                // Shift+Mausrad als Alternative zu Ctrl+Mausrad
+                // Nur mit Shift-Taste (Ctrl wird von bpmn-js selbst behandelt)
                 if (!e.shiftKey) return;
                 if (!bpmnViewer) return;
                 
@@ -5336,16 +6170,20 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 e.stopPropagation();
                 
                 try {
+                    // Nutze das eingebaute zoomScroll Modul mit stepZoom()
+                    const zoomScroll = bpmnViewer.get('zoomScroll');
+                    if (!zoomScroll) {
+                        console.warn('zoomScroll module not available');
+                        return;
+                    }
+                    // deltaY < 0 = Mausrad nach oben = reinzoomen = stepZoom(1)
+                    // deltaY > 0 = Mausrad nach unten = rauszoomen = stepZoom(-1)
+                    const delta = e.deltaY < 0 ? 1 : -1;
+                    zoomScroll.stepZoom(delta);
+                    
+                    // Update currentZoomLevel für Konsistenz
                     const canvas = bpmnViewer.get('canvas');
-                    const currentZoom = canvas.zoom();
-                    
-                    // deltaY > 0 = nach unten scrollen = rauszoomen
-                    // deltaY < 0 = nach oben scrollen = reinzoomen
-                    const factor = e.deltaY < 0 ? 1.15 : 0.87;
-                    const newZoom = Math.max(0.1, Math.min(5, currentZoom * factor));
-                    
-                    canvas.zoom(newZoom);
-                    currentZoomLevel = newZoom;
+                    currentZoomLevel = canvas.zoom();
                 } catch (err) {
                     console.warn('Zoom error:', err);
                 }
@@ -5355,6 +6193,7 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             let initialDistance = 0;
             let lastTouchX = 0;
             let lastTouchY = 0;
+            let lastPinchTime = 0;
             
             containerElement.addEventListener('touchstart', (e) => {
                 if (e.touches.length === 1) {
@@ -5365,6 +6204,7 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                         e.touches[0].clientX - e.touches[1].clientX,
                         e.touches[0].clientY - e.touches[1].clientY
                     );
+                    lastPinchTime = Date.now();
                 }
             }, { passive: true });
             
@@ -5389,14 +6229,39 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                             e.touches[0].clientY - e.touches[1].clientY
                         );
                         const scale = newDistance / initialDistance;
+                        
+                        // Throttle: Maximal alle 100ms zoomen
+                        const now = Date.now();
+                        if (now - lastPinchTime < 100) {
+                            e.preventDefault();
+                            return;
+                        }
+                        
+                        // Prüfe aktuelle Zoom-Stufe und verhindere zu extremes Zoomen
                         const currentZoom = canvas.zoom();
-                        const newZoom = Math.max(0.2, Math.min(4, currentZoom * scale));
-                        canvas.zoom(newZoom);
-                        currentZoomLevel = newZoom;
-                        initialDistance = newDistance;
+                        const minZoom = 0.2;
+                        const maxZoom = 4;
+                        
+                        if (scale > 1.08 && currentZoom < maxZoom) {
+                            // Reinzoomen - aber nur wenn nicht schon max
+                            const zoomScroll = bpmnViewer.get('zoomScroll');
+                            zoomScroll.stepZoom(1);
+                            initialDistance = newDistance;
+                            lastPinchTime = now;
+                            currentZoomLevel = canvas.zoom();
+                        } else if (scale < 0.92 && currentZoom > minZoom) {
+                            // Rauszoomen - aber nur wenn nicht schon min
+                            const zoomScroll = bpmnViewer.get('zoomScroll');
+                            zoomScroll.stepZoom(-1);
+                            initialDistance = newDistance;
+                            lastPinchTime = now;
+                            currentZoomLevel = canvas.zoom();
+                        }
                         e.preventDefault();
                     }
-                } catch (err) {}
+                } catch (err) {
+                    console.warn('Touch zoom error:', err);
+                }
             }, { passive: false });
         }
         
@@ -5845,6 +6710,42 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             <button class="btn-nav btn-back" onclick="closeLeadModal()" style="width: 100%; margin-top: 0.5rem;">
                 Abbrechen
             </button>
+        </div>
+    </div>
+    
+    <!-- PDF Loading Overlay -->
+    <div id="pdfLoadingOverlay" class="pdf-loading-overlay">
+        <div class="pdf-loading-content">
+            <div class="pdf-spinner"></div>
+            <p class="pdf-loading-text" id="pdfLoadingText">PDF wird generiert...</p>
+            <p class="pdf-loading-subtext" id="pdfLoadingSubtext">Ihre Ergebnisse werden aufbereitet</p>
+            <div class="pdf-progress-bar">
+                <div class="pdf-progress-fill" id="pdfProgressFill"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Category Detail Modal -->
+    <div id="categoryDetailModal" class="category-detail-modal">
+        <div class="category-detail-content">
+            <div class="category-detail-header">
+                <div class="category-detail-title">
+                    <i class="fas fa-chart-pie" id="categoryDetailIcon" style="font-size: 2rem; color: #a5b4fc;"></i>
+                    <h2 id="categoryDetailTitle">Kategorie</h2>
+                </div>
+                <div class="category-detail-score" id="categoryDetailScore">0%</div>
+                <button class="category-detail-close" onclick="closeCategoryDetail()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="category-detail-body">
+                <div class="subcategory-section" id="subcategorySection">
+                    <!-- Dynamisch befüllt -->
+                </div>
+                <div class="recommendations-list" id="categoryRecommendations">
+                    <!-- Dynamisch befüllt -->
+                </div>
+            </div>
         </div>
     </div>
 </body>

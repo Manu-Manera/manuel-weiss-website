@@ -33,10 +33,15 @@ LAYOUT (SEHR WICHTIG FÜR LESBARKEIT):
 - row = Zeile (0, 1, 2...), col = Spalte (0, 1, 2...)
 - Start bei row:0, col:0
 - MAXIMAL 4-5 Elemente pro Zeile! Bei mehr: neue Zeile beginnen
-- Nach einem Gateway: Alternative Pfade auf VERSCHIEDENEN Zeilen (row+1, row+2)
-- Wenn ein Pfad lang wird (>4 Tasks): umbrechen auf neue Zeile
 - JEDE Position (row,col) nur EINMAL verwenden!
-- Ziel: Kompaktes, gut lesbares Diagramm - nicht alles auf eine Zeile quetschen!
+- Ziel: Kompaktes, gut lesbares Diagramm
+
+KRITISCHE LAYOUT-REGEL FÜR ENTSCHEIDUNGEN:
+- Der HAUPTPFAD (häufigster/wahrscheinlichster Weg) bleibt IMMER auf row: 0 horizontal!
+- Bei Entscheidungen: "Ja" oder der Normalfall geht RECHTS weiter auf GLEICHER Zeile (row: 0)
+- "Nein" oder Ausnahmen/Sonderfälle gehen auf TIEFERE Zeilen (row: 1, 2, 3...)
+- Dadurch ist der Standardprozess oben als klare horizontale Linie lesbar
+- Beispiel: Gateway auf row:0 → "Ja"-Pfad bleibt row:0, "Nein"-Pfad geht auf row:1
 
 BEISPIEL (ÜBERSICHTLICH MIT MEHREREN ZEILEN):
 {
@@ -216,14 +221,30 @@ function generateDiXml(elements, flows, processId) {
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="${processId}">
 `;
   
-  // Shapes
+  // Shapes - mit Label für Gateways (Frage über der Raute)
   for (const el of elements) {
     const pos = positions[el.id];
     if (pos) {
-      diXml += `      <bpmndi:BPMNShape id="${el.id}_di" bpmnElement="${el.id}">
+      if (el.type === 'exclusiveGateway' && el.name) {
+        // Gateway mit Label ÜBER der Raute
+        const labelWidth = Math.max(el.name.length * 6, 60);
+        const labelX = pos.x + (pos.width / 2) - (labelWidth / 2);
+        const labelY = pos.y - 22;
+        
+        diXml += `      <bpmndi:BPMNShape id="${el.id}_di" bpmnElement="${el.id}">
+        <dc:Bounds x="${pos.x}" y="${pos.y}" width="${pos.width}" height="${pos.height}"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="${Math.round(labelX)}" y="${Math.round(labelY)}" width="${labelWidth}" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+`;
+      } else {
+        // Normale Shapes ohne Label
+        diXml += `      <bpmndi:BPMNShape id="${el.id}_di" bpmnElement="${el.id}">
         <dc:Bounds x="${pos.x}" y="${pos.y}" width="${pos.width}" height="${pos.height}"/>
       </bpmndi:BPMNShape>
 `;
+      }
     }
   }
   
@@ -255,28 +276,22 @@ function generateDiXml(elements, flows, processId) {
         let labelX, labelY;
         const labelWidth = flow.name.length * 6;
         
-        if (goesDown && wp2) {
-          // Pfad geht nach unten dann horizontal - Label auf dem horizontalen Segment
-          // Platziere Label auf der Mitte des horizontalen Segments
-          const midX = (wp1.x + wp2.x) / 2;
-          labelX = midX - labelWidth / 2;
-          labelY = wp1.y - 16;
-        } else if (goesDown) {
-          // Nur vertikaler Pfad - Label rechts neben dem Pfad
+        if (goesDown) {
+          // Pfad geht nach unten (Nein-Pfad) - Label direkt unter der Rauten-Ecke
           labelX = wp0.x + 8;
-          labelY = (wp0.y + wp1.y) / 2 - 7;
+          labelY = wp0.y + 8;
         } else if (goesUp) {
-          // Pfad geht nach oben - Label rechts neben dem vertikalen Segment
+          // Pfad geht nach oben - Label oben rechts neben dem Startpunkt
           labelX = wp0.x + 8;
-          labelY = (wp0.y + wp1.y) / 2 - 7;
+          labelY = wp0.y - 18;
         } else if (goesRight) {
-          // Pfad geht nach rechts - Label über dem horizontalen Segment, weiter vom Gateway weg
-          labelX = wp0.x + 30;
-          labelY = wp0.y - 16;
+          // Pfad geht nach rechts (Ja-Pfad) - Label direkt neben der Raute
+          labelX = wp0.x + 8;
+          labelY = wp0.y - 18;
         } else {
-          // Fallback - Label auf der Mitte des ersten Segments
-          labelX = (wp0.x + wp1.x) / 2 - labelWidth / 2;
-          labelY = (wp0.y + wp1.y) / 2 - 7;
+          // Fallback - Label direkt am Startpunkt
+          labelX = wp0.x + 8;
+          labelY = wp0.y - 18;
         }
         
         diXml += `        <bpmndi:BPMNLabel>
@@ -619,11 +634,14 @@ function calculateWaypointsWithAvoidance(src, tgt, positions, srcId, tgtId) {
   
   // ============================================
   // SPEZIALFALL: Ziel ist ein End-Event - IMMER von links rein!
+  // Der Pfeil muss am linken Rand des Events enden (tgt.x), nicht durch das Event gehen
   // ============================================
   if (tgtIsEvent) {
     // End-Event muss immer von links angesteuert werden
+    // Wichtig: Der letzte Waypoint muss bei tgtLeft (= tgt.x) enden, NICHT bei tgtCenterX
+    
     if (sameRow && tgtIsRight) {
-      // Direkte horizontale Verbindung
+      // Direkte horizontale Verbindung - von rechts der Source zum linken Rand des Events
       return [
         { x: srcRight, y: srcCenterY },
         { x: tgtLeft, y: tgtCenterY }
@@ -633,6 +651,8 @@ function calculateWaypointsWithAvoidance(src, tgt, positions, srcId, tgtId) {
     // Event ist auf anderer Zeile - route so dass wir von links reinkommen
     if (srcIsGateway) {
       // Gateway: unten raus, dann horizontal zum Event
+      // Wichtig: Zwischenpunkt vor dem Event, dann horizontal zum linken Rand
+      const approachX = tgtLeft - 20; // Punkt vor dem Event
       return [
         { x: srcCenterX, y: srcBottom },
         { x: srcCenterX, y: tgtCenterY },
@@ -641,7 +661,8 @@ function calculateWaypointsWithAvoidance(src, tgt, positions, srcId, tgtId) {
     }
     
     // Task/andere: rechts raus, dann zum Event von links
-    const midX = srcRight + 30;
+    // Sicherstellen dass der Pfeil nicht durch das Event geht
+    const midX = Math.min(srcRight + 30, tgtLeft - 20);
     return [
       { x: srcRight, y: srcCenterY },
       { x: midX, y: srcCenterY },

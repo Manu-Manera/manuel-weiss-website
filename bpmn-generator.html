@@ -622,18 +622,22 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             });
             setupSelectionListener();
             
-            // Zusätzlich: Manuelles Zoom mit Shift+Mausrad als Fallback
+            // Shift+Mausrad zum Zoomen - nutzt das eingebaute zoomScroll Modul
             container.addEventListener('wheel', function(e) {
                 if (!e.shiftKey) return;
                 e.preventDefault();
+                e.stopPropagation();
                 try {
-                    var canvas = bpmnModeler.get('canvas');
-                    var currentZoom = canvas.zoom();
-                    var factor = e.deltaY < 0 ? 1.1 : 0.9;
-                    var newZoom = Math.max(0.2, Math.min(4, currentZoom * factor));
-                    canvas.zoom(newZoom);
-                } catch(err) {}
-            }, { passive: false });
+                    // Nutze das eingebaute zoomScroll Modul mit stepZoom()
+                    var zoomScroll = bpmnModeler.get('zoomScroll');
+                    // deltaY < 0 = Mausrad nach oben = reinzoomen = stepZoom(1)
+                    // deltaY > 0 = Mausrad nach unten = rauszoomen = stepZoom(-1)
+                    var delta = e.deltaY < 0 ? 1 : -1;
+                    zoomScroll.stepZoom(delta);
+                } catch(err) {
+                    console.warn('Zoom error:', err);
+                }
+            }, { passive: false, capture: true });
         }
         bpmnModeler.importXML(xml).then(function() {
             var canvas = bpmnModeler.get('canvas');
