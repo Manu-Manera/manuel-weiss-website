@@ -1082,9 +1082,9 @@
             font-weight: 400;
         }
         .process-item-score {
-            margin-left: auto;
+            flex-shrink: 0;
         }
-        
+
         .score-badge {
             display: inline-block;
             padding: 0.25rem 0.6rem;
@@ -1350,11 +1350,21 @@
         }
 
         /* Edit/Delete Buttons für Kategorien und Prozesse */
-        .category-edit-btns, .process-edit-btns {
+        .category-edit-btns {
             display: flex;
             gap: 0.25rem;
             opacity: 0;
             transition: opacity 0.2s ease;
+            margin-right: 0.5rem;
+        }
+        .process-edit-btns {
+            display: flex;
+            gap: 0.25rem;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            margin-left: auto;
+            margin-right: 0.5rem;
+            flex-shrink: 0;
         }
         .category-header:hover .category-edit-btns,
         .process-item:hover .process-edit-btns {
@@ -4167,7 +4177,7 @@
                                 <div class="category-progress-bar">
                                     <div class="category-progress-fill" style="width: ${progressPercent}%; background: ${category.color};"></div>
                                 </div>
-                                <span class="category-progress-text">${ratedInCategory}/${totalInCategory} bewertet</span>
+                                <span class="category-progress-text">${ratedInCategory}/${totalInCategory} ${ratedInCategory === 1 ? 'Prozess' : 'Prozesse'} bewertet</span>
                             </div>
                         </div>
                         <div class="category-edit-btns">
@@ -6901,7 +6911,7 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 for (const [catName, catData] of Object.entries(processCategories)) {
                     const avgScore = catData.scores.reduce((a, b) => a + b, 0) / catData.scores.length;
                     const percent = Math.round((avgScore / 5) * 100);
-                    html += generateSubcategoryItem(catName, percent, catData.count + ' Prozesse bewertet');
+                    html += generateSubcategoryItem(catName, percent, catData.count + (catData.count === 1 ? ' Prozess' : ' Prozesse') + ' bewertet');
                 }
                 
                 if (Object.keys(processCategories).length === 0) {
