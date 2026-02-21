@@ -102,13 +102,62 @@
         <div class="hero-container">
             <div class="hero-content">
                 <h1 class="hero-title">
-                    <span class="gradient-text">Persönlichkeitsentwicklung</span><br>
-                    Entdecke dein Potenzial
+                    <span class="gradient-text">Entdecke dein Potenzial</span>
                 </h1>
                 <p class="hero-subtitle">
-                    Verschiedene bewährte Methoden für deine persönliche Entwicklung. 
-                    Von Selbstfindung bis Zielerreichung - finde deinen Weg zu mehr Klarheit und Erfolg.
+                    Berufliche Karriere und persönliche Entwicklung – wähle deinen Bereich.
                 </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portal-Kacheln: Berufliches / Persönliches (höchste Ebene) -->
+    <section class="portal-tiles-section" id="portal-tiles">
+        <div class="container">
+            <div class="portal-tiles-grid">
+                <a href="#berufliches" class="portal-tile portal-tile-berufliches">
+                    <div class="portal-tile-icon"><i class="fas fa-briefcase"></i></div>
+                    <h2 class="portal-tile-title">Berufliches</h2>
+                    <p class="portal-tile-desc">Bewerbungsmanager, HR-Standortbestimmung, KI-Strategie</p>
+                    <span class="portal-tile-cta">Jetzt entdecken <i class="fas fa-arrow-right"></i></span>
+                </a>
+                <a href="#methods-overview" class="portal-tile portal-tile-persoenliches">
+                    <div class="portal-tile-icon"><i class="fas fa-heart"></i></div>
+                    <h2 class="portal-tile-title">Persönliches</h2>
+                    <p class="portal-tile-desc">Methoden wie Ikigai, RAISEC, Werte-Klärung und mehr</p>
+                    <span class="portal-tile-cta">Methoden entdecken <i class="fas fa-arrow-right"></i></span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Berufliches Section: Bewerbungsmanager, HR, KI-Strategie -->
+    <section id="berufliches" class="berufliches-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Berufliche Tools</h2>
+                <p class="section-subtitle">Instrumente für deine Karriere und berufliche Weiterentwicklung</p>
+            </div>
+            <div class="berufliches-grid">
+                <a href="applications/index.html" class="berufliches-card">
+                    <div class="berufliches-card-icon"><i class="fas fa-file-alt"></i></div>
+                    <h3>Bewerbungsmanager</h3>
+                    <p>KI-gestützte Bewerbungen, Lebenslauf-Optimierung, Tracking und Interview-Vorbereitung.</p>
+                    <span class="berufliches-card-link">Zum Bewerbungsmanager <i class="fas fa-external-link-alt"></i></span>
+                </a>
+                <a href="hr-selbsttest.html" class="berufliches-card">
+                    <div class="berufliches-card-icon"><i class="fas fa-chart-line"></i></div>
+                    <h3>HR-Standortbestimmung</h3>
+                    <p>Finde heraus, wo dein Unternehmen in puncto HR und Digitalisierung steht.</p>
+                    <span class="berufliches-card-link">Zum HR-Selbsttest <i class="fas fa-external-link-alt"></i></span>
+                </a>
+                <a href="ki-strategieentwicklung.html" class="berufliches-card">
+                    <div class="berufliches-card-icon"><i class="fas fa-robot"></i></div>
+                    <h3>KI-Strategie</h3>
+                    <p>Entwickle eine fundierte KI-Strategie für dein Unternehmen.</p>
+                    <span class="berufliches-card-link">Zur KI-Strategie <i class="fas fa-external-link-alt"></i></span>
+                </a>
+            </div>
         </div>
     </section>
 
@@ -1045,12 +1094,12 @@
             link.addEventListener('click', toggleMobileMenu);
         });
         
-        // Mobile Auth Button
+        // Mobile Auth Button - wie Bewerbungsmanager: Login-Modal oder Profil
         const mobileAuthButton = document.getElementById('mobileAuthButton');
         if (mobileAuthButton) {
             mobileAuthButton.addEventListener('click', () => {
                 toggleMobileMenu();
-                const authButton = document.getElementById('realAuthButton');
+                const authButton = document.getElementById('authButton');
                 if (authButton) authButton.click();
             });
         }
@@ -2316,11 +2365,10 @@
             const userDropdown = document.getElementById('userDropdown');
             const logoutBtn = document.getElementById('logoutBtn');
             
-            const isLoggedIn = (window.awsAuth && window.awsAuth.isLoggedIn()) || 
-                               (window.realUserAuth && window.realUserAuth.isLoggedIn?.());
+            const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
             
             if (isLoggedIn) {
-                const auth = window.awsAuth || window.realUserAuth;
+                const auth = window.awsAuth;
                 const userData = auth.getUserDataFromToken?.() || auth.getCurrentUser?.() || {};
                 
                 // PRIORITÄT 1: UnifiedProfileService (filtert "Test User" automatisch)
@@ -2381,7 +2429,7 @@
                 // Logout handler
                 if (logoutBtn) {
                     logoutBtn.onclick = async () => {
-                        const auth = window.awsAuth || window.realUserAuth;
+                        const auth = window.awsAuth;
                         if (auth?.logout) {
                             await auth.logout();
                         }
@@ -2400,8 +2448,8 @@
                     authButton.onclick = () => {
                         if (window.authModals?.showLogin) {
                             window.authModals.showLogin();
-                        } else if (window.realUserAuth?.showLoginModal) {
-                            window.realUserAuth.showLoginModal();
+                        } else if (window.awsAuth?.showLoginModal) {
+                            window.awsAuth.showLoginModal();
                         }
                     };
                 }

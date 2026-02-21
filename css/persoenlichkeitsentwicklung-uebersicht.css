@@ -1610,6 +1610,204 @@
     }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   PORTAL-KACHELN: Berufliches / Persönliches (höchste Ebene)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.portal-tiles-section {
+    padding: 2rem 0 3rem;
+    background: linear-gradient(180deg, rgba(30, 58, 138, 0.03) 0%, #fff 100%);
+}
+
+.portal-tiles-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.portal-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    border-radius: 20px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    min-height: 280px;
+    text-align: center;
+}
+
+.portal-tile:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+}
+
+.portal-tile-berufliches {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #6366f1 100%);
+    color: white;
+    box-shadow: 0 10px 30px rgba(30, 64, 175, 0.3);
+}
+
+.portal-tile-berufliches .portal-tile-icon,
+.portal-tile-persoenliches .portal-tile-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.portal-tile-berufliches .portal-tile-icon {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.portal-tile-persoenliches {
+    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #c084fc 100%);
+    color: white;
+    box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
+}
+
+.portal-tile-persoenliches .portal-tile-icon {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.portal-tile-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.portal-tile-desc {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin: 0 0 1.5rem;
+    line-height: 1.5;
+}
+
+.portal-tile-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+    .portal-tiles-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    .portal-tile {
+        min-height: 240px;
+        padding: 2rem 1.5rem;
+    }
+    .portal-tile-title {
+        font-size: 1.5rem;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BERUFLICHES SECTION: Bewerbungsmanager, HR, KI-Strategie
+   ═══════════════════════════════════════════════════════════════════════════ */
+.berufliches-section {
+    padding: 3rem 0 4rem;
+    background: #f8fafc;
+}
+
+.berufliches-section .section-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.berufliches-section .section-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.berufliches-section .section-subtitle {
+    font-size: 1.1rem;
+    color: #64748b;
+}
+
+.berufliches-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.berufliches-card {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    background: white;
+    border-radius: 16px;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.berufliches-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    border-color: #6366f1;
+}
+
+.berufliches-card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.berufliches-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.5rem;
+}
+
+.berufliches-card p {
+    font-size: 0.95rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0 0 1rem;
+    flex-grow: 1;
+}
+
+.berufliches-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #6366f1;
+}
+
+.berufliches-card:hover .berufliches-card-link {
+    color: #4f46e5;
+}
+
+@media (max-width: 900px) {
+    .berufliches-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Methods Section - Lila Gradient wie Services auf Hauptseite */
 .personality-methods-overview {
     background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #7c3aed 100%);
