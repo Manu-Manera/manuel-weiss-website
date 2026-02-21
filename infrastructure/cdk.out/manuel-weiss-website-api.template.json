@@ -10202,11 +10202,11 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-038333965110-eu-central-1",
-     "S3Key": "b0e36819eea22de34ed10af5f8e99492acab72179ca4ebba2c84e77e6e2bb6a3.zip"
+     "S3Key": "665963893fc7f1eff14187fcdcd642009828906d2435353291b012bef14df4bd.zip"
     },
     "FunctionName": "website-text-to-bpmn-gpt52",
     "Handler": "index.handler",
-    "MemorySize": 256,
+    "MemorySize": 512,
     "Role": {
      "Fn::GetAtt": [
       "WebsiteLambdaRole06E6525E",
@@ -10232,7 +10232,7 @@
       "Value": "ai-investment"
      }
     ],
-    "Timeout": 60
+    "Timeout": 120
    },
    "DependsOn": [
     "WebsiteLambdaRoleDefaultPolicyDA4C46DC",
@@ -10240,7 +10240,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "manuel-weiss-website-api/TextToBpmnGpt52Function/Resource",
-    "aws:asset:path": "asset.b0e36819eea22de34ed10af5f8e99492acab72179ca4ebba2c84e77e6e2bb6a3",
+    "aws:asset:path": "asset.665963893fc7f1eff14187fcdcd642009828906d2435353291b012bef14df4bd",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }

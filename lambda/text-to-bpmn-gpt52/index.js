@@ -29,19 +29,20 @@ REGELN FÜR ÜBERSICHTLICHE PROZESSE:
 3. KEINE Zusammenführungs-Gateways am Ende! Pfade können direkt zusammenlaufen
 4. Halte den Prozess so einfach wie möglich - weniger ist mehr!
 
-LAYOUT (SEHR WICHTIG FÜR LESBARKEIT):
-- row = Zeile (0, 1, 2...), col = Spalte (0, 1, 2...)
+LAYOUT (SEHR WICHTIG - IMMER HORIZONTAL VON LINKS NACH RECHTS):
+- row = Zeile (0, 1, 2...), col = Spalte (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10...)
 - Start bei row:0, col:0
-- MAXIMAL 4-5 Elemente pro Zeile! Bei mehr: neue Zeile beginnen
+- Der HAUPTPFAD verläuft IMMER HORIZONTAL auf row:0 von links nach rechts!
+- KEINE Begrenzung der Spaltenanzahl - der Prozess darf beliebig breit werden
 - JEDE Position (row,col) nur EINMAL verwenden!
-- Ziel: Kompaktes, gut lesbares Diagramm
+- Ziel: Klarer Lesefluss von links nach rechts wie beim Lesen eines Textes
 
 KRITISCHE LAYOUT-REGEL FÜR ENTSCHEIDUNGEN:
 - Der HAUPTPFAD (häufigster/wahrscheinlichster Weg) bleibt IMMER auf row: 0 horizontal!
 - Bei Entscheidungen: "Ja" oder der Normalfall geht RECHTS weiter auf GLEICHER Zeile (row: 0)
 - "Nein" oder Ausnahmen/Sonderfälle gehen auf TIEFERE Zeilen (row: 1, 2, 3...)
-- Dadurch ist der Standardprozess oben als klare horizontale Linie lesbar
-- Beispiel: Gateway auf row:0 → "Ja"-Pfad bleibt row:0, "Nein"-Pfad geht auf row:1
+- Alternative Pfade verlaufen PARALLEL unter dem Hauptpfad, ebenfalls von links nach rechts
+- NIEMALS den Hauptpfad nach unten umbrechen! Lieber mehr Spalten verwenden
 
 BEISPIEL (ÜBERSICHTLICH MIT MEHREREN ZEILEN):
 {
@@ -77,8 +78,9 @@ KRITISCH:
 - JEDES Element MUSS row und col haben!
 - KEINE zwei Elemente mit gleicher row UND col!
 - Task-Namen mit Rolle beginnen
-- MAXIMAL 4-5 Elemente pro Zeile für gute Lesbarkeit!
-- Alternative Pfade IMMER auf separaten Zeilen modellieren!`;
+- HAUPTPFAD IMMER auf row:0 horizontal durchgehend - NIEMALS umbrechen!
+- Alternative Pfade auf separaten Zeilen (row: 1, 2, 3...) parallel darunter
+- Beliebig viele Spalten erlaubt - Lesefluss von links nach rechts ist wichtiger als kompaktes Layout!`;
 
 function normalizeProcessText(text) {
   if (!text || typeof text !== 'string') return '';
@@ -931,7 +933,7 @@ async function generateBpmnWithGPT52(text, processId, apiKey) {
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: buildUserMessage(text) }
       ],
-      max_completion_tokens: 4096,
+      max_completion_tokens: 8192,
       temperature: 0.3
     })
   });

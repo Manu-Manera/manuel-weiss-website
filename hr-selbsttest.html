@@ -61,6 +61,60 @@
             object-fit: cover;
         }
         
+        /* Fortschritts-Kuchendiagramm im Header */
+        .progress-pie {
+            width: 40px;
+            height: 40px;
+            position: relative;
+        }
+        
+        .progress-pie svg {
+            transform: rotate(-90deg);
+            width: 40px;
+            height: 40px;
+        }
+        
+        .progress-pie-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.2);
+            stroke-width: 4;
+        }
+        
+        .progress-pie-fill {
+            fill: none;
+            stroke: #10b981;
+            stroke-width: 4;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        .progress-pie-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .nav-brand-info {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        
+        .nav-brand-title {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        
+        .nav-brand-subtitle {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 400;
+        }
+        
         .navbar-selftest .nav-links {
             display: flex;
             align-items: center;
@@ -2182,11 +2236,21 @@
 <body class="starry-theme">
     <!-- Navigation - Moderne Navbar -->
     <nav class="navbar-selftest">
-        <!-- Desktop: Full navbar -->
-        <a href="index.html" class="nav-brand desktop-only">
-            <img src="manuel-weiss-portrait.jpg" alt="MW">
-            <span>Manuel Weiss</span>
-        </a>
+        <!-- Desktop: Full navbar mit Fortschritts-Kuchendiagramm -->
+        <div class="nav-brand desktop-only">
+            <div class="progress-pie" id="headerProgressPie">
+                <svg viewBox="0 0 36 36">
+                    <circle class="progress-pie-bg" cx="18" cy="18" r="16"></circle>
+                    <circle class="progress-pie-fill" id="headerProgressCircle" cx="18" cy="18" r="16" 
+                            stroke-dasharray="100.53" stroke-dashoffset="100.53"></circle>
+                </svg>
+                <span class="progress-pie-text" id="headerProgressText">0%</span>
+            </div>
+            <div class="nav-brand-info">
+                <span class="nav-brand-title">HR-Coach</span>
+                <span class="nav-brand-subtitle" id="headerProgressLabel">Fortschritt</span>
+            </div>
+        </div>
         
         <!-- Mobile: Only icons -->
         <a href="index.html" class="mobile-home-btn" title="Zur Startseite">
@@ -3822,6 +3886,67 @@
             
             // Dashboard Gesamtscore aktualisieren
             updateDashboardScore();
+            
+            // Header-Fortschrittsanzeige aktualisieren
+            updateHeaderProgress();
+        }
+        
+        // Header-Kuchendiagramm aktualisieren
+        function updateHeaderProgress() {
+            const circle = document.getElementById('headerProgressCircle');
+            const text = document.getElementById('headerProgressText');
+            const label = document.getElementById('headerProgressLabel');
+            
+            if (!circle || !text) return;
+            
+            // Gesamtfortschritt berechnen (gewichtet)
+            const visionQuestions = ['vision-1', 'vision-2', 'vision-3', 'vision-4'];
+            const visionAnswered = visionQuestions.filter(q => assessmentData.vision[q]).length;
+            const visionProgress = visionAnswered / 4;
+            
+            const kulturKeys = Object.keys(assessmentData.kultur).length;
+            const kulturProgress = Math.min(kulturKeys / 18, 1);
+            
+            const orgKeys = Object.keys(assessmentData.organisation).length;
+            const orgProgress = Math.min(orgKeys / 10, 1);
+            
+            const processesCompleted = Object.keys(assessmentData.prozesse).length;
+            const processProgress = processesCompleted / 32;
+            
+            // Gewichteter Durchschnitt (alle 4 Bereiche gleich gewichtet)
+            const totalProgress = Math.round(((visionProgress + kulturProgress + orgProgress + processProgress) / 4) * 100);
+            
+            // Kuchendiagramm aktualisieren (Umfang des Kreises = 2 * PI * r = 2 * 3.14159 * 16 ≈ 100.53)
+            const circumference = 100.53;
+            const offset = circumference - (circumference * totalProgress / 100);
+            circle.style.strokeDashoffset = offset;
+            
+            // Farbe basierend auf Fortschritt
+            if (totalProgress >= 75) {
+                circle.style.stroke = '#10b981'; // Grün
+            } else if (totalProgress >= 50) {
+                circle.style.stroke = '#fbbf24'; // Gelb
+            } else if (totalProgress >= 25) {
+                circle.style.stroke = '#f97316'; // Orange
+            } else {
+                circle.style.stroke = '#6366f1'; // Lila (Standard)
+            }
+            
+            // Text aktualisieren
+            text.textContent = totalProgress + '%';
+            
+            // Label aktualisieren
+            if (label) {
+                if (totalProgress === 0) {
+                    label.textContent = 'Starten Sie!';
+                } else if (totalProgress < 50) {
+                    label.textContent = 'Weiter so!';
+                } else if (totalProgress < 100) {
+                    label.textContent = 'Fast fertig!';
+                } else {
+                    label.textContent = 'Komplett!';
+                }
+            }
         }
         
         // Dashboard-Score auf Startseite aktualisieren
@@ -6563,6 +6688,7 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
         document.addEventListener('DOMContentLoaded', () => {
             loadSavedData();
             initProcessGrid();
+            updateHeaderProgress();
             
             // Remove all slider-container elements (they are redundant with rating labels)
             document.querySelectorAll('.slider-container').forEach(el => el.remove());
