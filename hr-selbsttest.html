@@ -1348,6 +1348,122 @@
             cursor: not-allowed;
             transform: none;
         }
+
+        /* Edit/Delete Buttons für Kategorien und Prozesse */
+        .category-edit-btns, .process-edit-btns {
+            display: flex;
+            gap: 0.25rem;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .category-header:hover .category-edit-btns,
+        .process-item:hover .process-edit-btns {
+            opacity: 1;
+        }
+        .edit-btn, .delete-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            transition: all 0.2s ease;
+        }
+        .edit-btn {
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+        }
+        .edit-btn:hover {
+            background: rgba(99, 102, 241, 0.4);
+        }
+        .delete-btn {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+        .edit-btn.small, .delete-btn.small {
+            width: 24px;
+            height: 24px;
+            font-size: 0.65rem;
+        }
+        
+        /* Restore Hidden Button */
+        .restore-hidden-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: 0.75rem;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px dashed rgba(245, 158, 11, 0.4);
+            border-radius: 12px;
+            color: rgba(245, 158, 11, 0.8);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .restore-hidden-btn:hover {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: rgba(245, 158, 11, 0.6);
+        }
+        
+        /* Restore Hidden Modal */
+        .restore-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+        .restore-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+        .restore-item-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .restore-item-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+        }
+        .restore-item-name {
+            color: #fff;
+            font-weight: 500;
+        }
+        .restore-item-type {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+        }
+        .restore-item-btn {
+            padding: 0.4rem 0.8rem;
+            background: rgba(34, 197, 94, 0.2);
+            border: none;
+            border-radius: 6px;
+            color: #4ade80;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .restore-item-btn:hover {
+            background: rgba(34, 197, 94, 0.4);
+        }
         
         /* Process Grid Update */
         #processGrid {
@@ -3622,6 +3738,51 @@
         </div>
     </div>
 
+    <!-- Rename Process Modal -->
+    <div class="add-modal-overlay" id="renameProcessModal">
+        <div class="add-modal">
+            <div class="add-modal-title">
+                <i class="fas fa-pen"></i> Prozess umbenennen
+            </div>
+            <input type="hidden" id="renameProcessId">
+            <input type="text" class="add-modal-input" id="renameProcessName" placeholder="Neuer Name..." maxlength="100">
+            <div class="add-modal-actions">
+                <button class="add-modal-btn cancel" onclick="closeRenameProcessModal()">Abbrechen</button>
+                <button class="add-modal-btn confirm" id="confirmRenameProcess" onclick="confirmRenameProcess()" disabled>Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rename Category Modal -->
+    <div class="add-modal-overlay" id="renameCategoryModal">
+        <div class="add-modal">
+            <div class="add-modal-title">
+                <i class="fas fa-pen"></i> Kategorie umbenennen
+            </div>
+            <input type="hidden" id="renameCategoryId">
+            <input type="text" class="add-modal-input" id="renameCategoryName" placeholder="Neuer Name..." maxlength="50">
+            <div class="add-modal-actions">
+                <button class="add-modal-btn cancel" onclick="closeRenameCategoryModal()">Abbrechen</button>
+                <button class="add-modal-btn confirm" id="confirmRenameCategory" onclick="confirmRenameCategory()" disabled>Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Restore Hidden Modal -->
+    <div class="add-modal-overlay" id="restoreHiddenModal">
+        <div class="add-modal" style="max-width: 500px;">
+            <div class="add-modal-title">
+                <i class="fas fa-eye"></i> Ausgeblendete wiederherstellen
+            </div>
+            <div class="restore-list" id="restoreHiddenList">
+                <!-- Wird dynamisch befüllt -->
+            </div>
+            <div class="add-modal-actions">
+                <button class="add-modal-btn cancel" onclick="closeRestoreHiddenModal()">Schließen</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Process Deep Dive Modal -->
     <div class="modal-overlay" id="processModal">
         <div class="modal-content">
@@ -3784,13 +3945,21 @@
             return null;
         }
         
-        // Hilfsfunktion: Finde Kategorie und Prozessname
+        // Hilfsfunktion: Finde Kategorie und Prozessname (berücksichtigt Umbenennungen)
         function findProcessInfo(processId) {
+            // Prüfe auf umbenannten Prozessnamen
+            const renamedProcess = assessmentData?.renamedProcesses?.[processId];
+            
             // Standard-Kategorien durchsuchen
             for (const cat of hrCategories) {
                 const proc = cat.processes.find(p => p.id === processId);
                 if (proc) {
-                    return { processName: proc.name, categoryName: cat.name, color: cat.color };
+                    const renamedCat = assessmentData?.renamedCategories?.[cat.id];
+                    return { 
+                        processName: renamedProcess || proc.name, 
+                        categoryName: renamedCat || cat.name, 
+                        color: cat.color 
+                    };
                 }
             }
             
@@ -3801,7 +3970,12 @@
                     const customProcs = (assessmentData.customProcesses && assessmentData.customProcesses[cat.id]) || [];
                     const proc = customProcs.find(p => p.id === processId);
                     if (proc) {
-                        return { processName: proc.name, categoryName: cat.name, color: cat.color };
+                        const renamedCat = assessmentData?.renamedCategories?.[cat.id];
+                        return { 
+                            processName: renamedProcess || proc.name, 
+                            categoryName: renamedCat || cat.name, 
+                            color: cat.color 
+                        };
                     }
                 }
             }
@@ -3812,9 +3986,10 @@
                     const proc = assessmentData.customProcesses[catId].find(p => p.id === processId);
                     if (proc) {
                         const cat = hrCategories.find(c => c.id === catId);
+                        const renamedCat = assessmentData?.renamedCategories?.[catId];
                         return { 
-                            processName: proc.name, 
-                            categoryName: cat?.name || 'Eigene Kategorie',
+                            processName: renamedProcess || proc.name, 
+                            categoryName: renamedCat || cat?.name || 'Eigene Kategorie',
                             color: cat?.color || '#6366f1'
                         };
                     }
@@ -3830,7 +4005,11 @@
             organisation: {},
             prozesse: {},
             customProcesses: {}, // { categoryId: [{ id, name }] }
-            customCategories: [] // [{ id, name, color, icon, processes: [] }]
+            customCategories: [], // [{ id, name, color, icon, processes: [] }]
+            hiddenProcesses: [], // IDs von ausgeblendeten Standard-Prozessen
+            hiddenCategories: [], // IDs von ausgeblendeten Standard-Kategorien
+            renamedProcesses: {}, // { processId: "Neuer Name" }
+            renamedCategories: {} // { categoryId: "Neuer Name" }
         };
 
         // Load saved data
@@ -3841,6 +4020,10 @@
                 // Stelle sicher, dass neue Felder existieren
                 if (!assessmentData.customProcesses) assessmentData.customProcesses = {};
                 if (!assessmentData.customCategories) assessmentData.customCategories = [];
+                if (!assessmentData.hiddenProcesses) assessmentData.hiddenProcesses = [];
+                if (!assessmentData.hiddenCategories) assessmentData.hiddenCategories = [];
+                if (!assessmentData.renamedProcesses) assessmentData.renamedProcesses = {};
+                if (!assessmentData.renamedCategories) assessmentData.renamedCategories = {};
                 updateAllProgress();
             }
         }
@@ -3945,18 +4128,28 @@
         function initProcessGrid() {
             const grid = document.getElementById('processGrid');
             
-            // Kombiniere Standard-Kategorien mit Custom-Kategorien
+            // Kombiniere Standard-Kategorien mit Custom-Kategorien, filtere versteckte
+            const hiddenCats = assessmentData.hiddenCategories || [];
             const allCategories = [
-                ...hrCategories,
+                ...hrCategories.filter(c => !hiddenCats.includes(c.id)),
                 ...(assessmentData.customCategories || [])
             ];
             
+            const hiddenProcs = assessmentData.hiddenProcesses || [];
+            
             grid.innerHTML = allCategories.map(category => {
                 const isCustomCategory = (assessmentData.customCategories || []).some(c => c.id === category.id);
+                const isStandardCategory = hrCategories.some(c => c.id === category.id);
                 
-                // Kombiniere Standard-Prozesse mit Custom-Prozessen für diese Kategorie
+                // Hole umbenannten Kategorienamen falls vorhanden
+                const displayCategoryName = (assessmentData.renamedCategories && assessmentData.renamedCategories[category.id]) || category.name;
+                
+                // Kombiniere Standard-Prozesse mit Custom-Prozessen, filtere versteckte
                 const customProcs = (assessmentData.customProcesses && assessmentData.customProcesses[category.id]) || [];
-                const allProcesses = [...category.processes, ...customProcs];
+                const standardProcs = category.processes.filter(p => !hiddenProcs.includes(p.id));
+                const allProcesses = [...standardProcs, ...customProcs];
+                
+                if (allProcesses.length === 0 && !isCustomCategory) return ''; // Leere Standard-Kategorien ausblenden
                 
                 const ratedInCategory = allProcesses.filter(p => assessmentData.prozesse[p.id]).length;
                 const totalInCategory = allProcesses.length;
@@ -3964,12 +4157,12 @@
                 
                 return `
                 <div class="process-category" data-category="${category.id}">
-                    <div class="category-header ${isCustomCategory ? 'custom-category' : ''}" onclick="toggleCategory('${category.id}')" style="--cat-color: ${category.color}">
+                    <div class="category-header editable-category" onclick="toggleCategory('${category.id}')" style="--cat-color: ${category.color}">
                         <div class="category-icon" style="background: ${category.color};">
                             <i class="fas ${category.icon}"></i>
                         </div>
                         <div class="category-info">
-                            <h3>${escapeHtml(category.name)}</h3>
+                            <h3>${escapeHtml(displayCategoryName)}</h3>
                             <div class="category-progress">
                                 <div class="category-progress-bar">
                                     <div class="category-progress-fill" style="width: ${progressPercent}%; background: ${category.color};"></div>
@@ -3977,23 +4170,33 @@
                                 <span class="category-progress-text">${ratedInCategory}/${totalInCategory} bewertet</span>
                             </div>
                         </div>
-                        ${isCustomCategory ? `<button class="delete-category-btn" onclick="event.stopPropagation(); deleteCustomCategory('${category.id}')" title="Kategorie löschen"><i class="fas fa-trash"></i></button>` : ''}
+                        <div class="category-edit-btns">
+                            <button class="edit-btn" onclick="event.stopPropagation(); openRenameCategoryModal('${category.id}', '${escapeHtml(displayCategoryName).replace(/'/g, "\\'")}')" title="Umbenennen"><i class="fas fa-pen"></i></button>
+                            <button class="delete-btn" onclick="event.stopPropagation(); ${isCustomCategory ? `deleteCustomCategory('${category.id}')` : `hideCategory('${category.id}')`}" title="${isCustomCategory ? 'Löschen' : 'Ausblenden'}"><i class="fas ${isCustomCategory ? 'fa-trash' : 'fa-eye-slash'}"></i></button>
+                        </div>
                         <i class="fas fa-chevron-down category-toggle"></i>
                     </div>
                     <div class="category-processes">
                         ${allProcesses.map(process => {
                             const isCustomProcess = customProcs.some(p => p.id === process.id);
+                            const isStandardProcess = standardProcs.some(p => p.id === process.id);
+                            // Hole umbenannten Prozessnamen falls vorhanden
+                            const displayProcessName = (assessmentData.renamedProcesses && assessmentData.renamedProcesses[process.id]) || process.name;
+                            
                             return `
-                            <div class="process-item ${isCustomProcess ? 'custom-process' : ''} ${assessmentData.prozesse[process.id] ? 'completed' : ''}" onclick="openProcessModal('${process.id}', '${category.id}')">
+                            <div class="process-item editable-process ${assessmentData.prozesse[process.id] ? 'completed' : ''}" onclick="openProcessModal('${process.id}', '${category.id}')">
                                 <div class="process-item-top">
                                     <div class="process-item-status ${assessmentData.prozesse[process.id] ? 'completed' : 'pending'}">
                                         <i class="fas ${assessmentData.prozesse[process.id] ? 'fa-check-circle' : 'fa-circle'}"></i>
                                     </div>
                                     <div class="process-item-name-block">
-                                        <span class="process-item-name">${escapeHtml(process.name)}</span>
+                                        <span class="process-item-name">${escapeHtml(displayProcessName)}</span>
                                         ${getProcessDetailsHtml(process.id)}
                                     </div>
-                                    ${isCustomProcess ? `<button class="delete-process-btn" onclick="event.stopPropagation(); deleteCustomProcess('${category.id}', '${process.id}')" title="Prozess löschen"><i class="fas fa-times"></i></button>` : ''}
+                                    <div class="process-edit-btns">
+                                        <button class="edit-btn small" onclick="event.stopPropagation(); openRenameProcessModal('${process.id}', '${escapeHtml(displayProcessName).replace(/'/g, "\\'")}')" title="Umbenennen"><i class="fas fa-pen"></i></button>
+                                        <button class="delete-btn small" onclick="event.stopPropagation(); ${isCustomProcess ? `deleteCustomProcess('${category.id}', '${process.id}')` : `hideProcess('${process.id}')`}" title="${isCustomProcess ? 'Löschen' : 'Ausblenden'}"><i class="fas ${isCustomProcess ? 'fa-times' : 'fa-eye-slash'}"></i></button>
+                                    </div>
                                     <div class="process-item-score">
                                         ${assessmentData.prozesse[process.id] ? 
                                             `<span class="score-badge" style="background: ${getScoreColorCSS(assessmentData.prozesse[process.id])}">${getProcessScore(process.id)}</span>` : 
@@ -4011,12 +4214,18 @@
                 `;
             }).join('');
             
-            // Add "Eigene Kategorie hinzufügen" Button am Ende
+            // Add "Eigene Kategorie hinzufügen" und "Ausgeblendete wiederherstellen" Buttons
+            const hasHidden = (assessmentData.hiddenCategories?.length > 0) || (assessmentData.hiddenProcesses?.length > 0);
             grid.innerHTML += `
                 <div class="add-category-section">
                     <button class="add-category-btn" onclick="openAddCategoryModal()">
                         <i class="fas fa-folder-plus"></i> Eigene Kategorie hinzufügen
                     </button>
+                    ${hasHidden ? `
+                    <button class="restore-hidden-btn" onclick="openRestoreHiddenModal()">
+                        <i class="fas fa-eye"></i> Ausgeblendete wiederherstellen (${(assessmentData.hiddenCategories?.length || 0) + (assessmentData.hiddenProcesses?.length || 0)})
+                    </button>
+                    ` : ''}
                 </div>
             `;
         }
@@ -4185,6 +4394,180 @@
             initProcessGrid();
         }
         
+        // ========== Hide/Show Standard Elements ==========
+        
+        function hideProcess(processId) {
+            if (!confirm('Möchten Sie diesen Prozess ausblenden? Sie können ihn später wiederherstellen.')) return;
+            
+            if (!assessmentData.hiddenProcesses) assessmentData.hiddenProcesses = [];
+            if (!assessmentData.hiddenProcesses.includes(processId)) {
+                assessmentData.hiddenProcesses.push(processId);
+            }
+            
+            saveData();
+            initProcessGrid();
+        }
+        
+        function hideCategory(categoryId) {
+            if (!confirm('Möchten Sie diese Kategorie ausblenden? Alle Prozesse darin werden ebenfalls ausgeblendet. Sie können sie später wiederherstellen.')) return;
+            
+            if (!assessmentData.hiddenCategories) assessmentData.hiddenCategories = [];
+            if (!assessmentData.hiddenCategories.includes(categoryId)) {
+                assessmentData.hiddenCategories.push(categoryId);
+            }
+            
+            saveData();
+            initProcessGrid();
+        }
+        
+        function restoreProcess(processId) {
+            if (assessmentData.hiddenProcesses) {
+                assessmentData.hiddenProcesses = assessmentData.hiddenProcesses.filter(id => id !== processId);
+            }
+            saveData();
+            openRestoreHiddenModal(); // Refresh list
+            initProcessGrid();
+        }
+        
+        function restoreCategory(categoryId) {
+            if (assessmentData.hiddenCategories) {
+                assessmentData.hiddenCategories = assessmentData.hiddenCategories.filter(id => id !== categoryId);
+            }
+            saveData();
+            openRestoreHiddenModal(); // Refresh list
+            initProcessGrid();
+        }
+        
+        function openRestoreHiddenModal() {
+            const list = document.getElementById('restoreHiddenList');
+            let html = '';
+            
+            // Versteckte Kategorien
+            (assessmentData.hiddenCategories || []).forEach(catId => {
+                const cat = hrCategories.find(c => c.id === catId);
+                if (cat) {
+                    html += `
+                        <div class="restore-item">
+                            <div class="restore-item-info">
+                                <div class="restore-item-icon" style="background: ${cat.color}; color: white;">
+                                    <i class="fas ${cat.icon}"></i>
+                                </div>
+                                <div>
+                                    <div class="restore-item-name">${escapeHtml(cat.name)}</div>
+                                    <div class="restore-item-type">Kategorie</div>
+                                </div>
+                            </div>
+                            <button class="restore-item-btn" onclick="restoreCategory('${catId}')">
+                                <i class="fas fa-eye"></i> Wiederherstellen
+                            </button>
+                        </div>
+                    `;
+                }
+            });
+            
+            // Versteckte Prozesse
+            (assessmentData.hiddenProcesses || []).forEach(procId => {
+                const processInfo = findProcessInfo(procId);
+                const cat = hrCategories.find(c => c.processes.some(p => p.id === procId));
+                html += `
+                    <div class="restore-item">
+                        <div class="restore-item-info">
+                            <div class="restore-item-icon" style="background: ${cat?.color || '#6366f1'}; color: white;">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            <div>
+                                <div class="restore-item-name">${escapeHtml(processInfo.processName)}</div>
+                                <div class="restore-item-type">Prozess in ${escapeHtml(processInfo.categoryName)}</div>
+                            </div>
+                        </div>
+                        <button class="restore-item-btn" onclick="restoreProcess('${procId}')">
+                            <i class="fas fa-eye"></i> Wiederherstellen
+                        </button>
+                    </div>
+                `;
+            });
+            
+            if (!html) {
+                html = '<p style="color: rgba(255,255,255,0.5); text-align: center; padding: 2rem;">Keine ausgeblendeten Elemente vorhanden.</p>';
+            }
+            
+            list.innerHTML = html;
+            document.getElementById('restoreHiddenModal').classList.add('active');
+        }
+        
+        function closeRestoreHiddenModal() {
+            document.getElementById('restoreHiddenModal').classList.remove('active');
+        }
+        
+        // ========== Rename Functions ==========
+        
+        function openRenameProcessModal(processId, currentName) {
+            document.getElementById('renameProcessId').value = processId;
+            document.getElementById('renameProcessName').value = currentName;
+            document.getElementById('confirmRenameProcess').disabled = false;
+            document.getElementById('renameProcessModal').classList.add('active');
+            setTimeout(() => document.getElementById('renameProcessName').focus(), 100);
+        }
+        
+        function closeRenameProcessModal() {
+            document.getElementById('renameProcessModal').classList.remove('active');
+        }
+        
+        function confirmRenameProcess() {
+            const processId = document.getElementById('renameProcessId').value;
+            const newName = document.getElementById('renameProcessName').value.trim();
+            
+            if (!newName) return;
+            
+            if (!assessmentData.renamedProcesses) assessmentData.renamedProcesses = {};
+            assessmentData.renamedProcesses[processId] = newName;
+            
+            // Falls es ein Custom-Prozess ist, auch dort umbenennen
+            for (const catId of Object.keys(assessmentData.customProcesses || {})) {
+                const proc = assessmentData.customProcesses[catId].find(p => p.id === processId);
+                if (proc) {
+                    proc.name = newName;
+                    break;
+                }
+            }
+            
+            saveData();
+            closeRenameProcessModal();
+            initProcessGrid();
+        }
+        
+        function openRenameCategoryModal(categoryId, currentName) {
+            document.getElementById('renameCategoryId').value = categoryId;
+            document.getElementById('renameCategoryName').value = currentName;
+            document.getElementById('confirmRenameCategory').disabled = false;
+            document.getElementById('renameCategoryModal').classList.add('active');
+            setTimeout(() => document.getElementById('renameCategoryName').focus(), 100);
+        }
+        
+        function closeRenameCategoryModal() {
+            document.getElementById('renameCategoryModal').classList.remove('active');
+        }
+        
+        function confirmRenameCategory() {
+            const categoryId = document.getElementById('renameCategoryId').value;
+            const newName = document.getElementById('renameCategoryName').value.trim();
+            
+            if (!newName) return;
+            
+            if (!assessmentData.renamedCategories) assessmentData.renamedCategories = {};
+            assessmentData.renamedCategories[categoryId] = newName;
+            
+            // Falls es eine Custom-Kategorie ist, auch dort umbenennen
+            const customCat = (assessmentData.customCategories || []).find(c => c.id === categoryId);
+            if (customCat) {
+                customCat.name = newName;
+            }
+            
+            saveData();
+            closeRenameCategoryModal();
+            initProcessGrid();
+        }
+        
         // Event Listeners für Modals
         document.addEventListener('DOMContentLoaded', function() {
             // Add Process Modal - Input validation
@@ -4222,12 +4605,47 @@
                 });
             });
             
+            // Rename Process Modal - Input validation
+            const renameProcessInput = document.getElementById('renameProcessName');
+            if (renameProcessInput) {
+                renameProcessInput.addEventListener('input', function() {
+                    document.getElementById('confirmRenameProcess').disabled = !this.value.trim();
+                });
+                renameProcessInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && this.value.trim()) {
+                        confirmRenameProcess();
+                    }
+                });
+            }
+            
+            // Rename Category Modal - Input validation
+            const renameCategoryInput = document.getElementById('renameCategoryName');
+            if (renameCategoryInput) {
+                renameCategoryInput.addEventListener('input', function() {
+                    document.getElementById('confirmRenameCategory').disabled = !this.value.trim();
+                });
+                renameCategoryInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && this.value.trim()) {
+                        confirmRenameCategory();
+                    }
+                });
+            }
+            
             // Close modals on overlay click
             document.getElementById('addProcessModal')?.addEventListener('click', function(e) {
                 if (e.target === this) closeAddProcessModal();
             });
             document.getElementById('addCategoryModal')?.addEventListener('click', function(e) {
                 if (e.target === this) closeAddCategoryModal();
+            });
+            document.getElementById('renameProcessModal')?.addEventListener('click', function(e) {
+                if (e.target === this) closeRenameProcessModal();
+            });
+            document.getElementById('renameCategoryModal')?.addEventListener('click', function(e) {
+                if (e.target === this) closeRenameCategoryModal();
+            });
+            document.getElementById('restoreHiddenModal')?.addEventListener('click', function(e) {
+                if (e.target === this) closeRestoreHiddenModal();
             });
         });
 
@@ -5641,11 +6059,29 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
 
             yPos += 20;
 
-            // Kategorie Cards
-            hrCategories.forEach((cat, catIdx) => {
+            // Kategorie Cards - Standard + Custom Kategorien
+            const allCategoriesForPdf = [
+                ...hrCategories.map(cat => ({
+                    ...cat,
+                    processes: [
+                        ...cat.processes,
+                        ...((assessmentData.customProcesses && assessmentData.customProcesses[cat.id]) || [])
+                    ]
+                })),
+                ...(assessmentData.customCategories || []).map(cat => ({
+                    ...cat,
+                    processes: [
+                        ...cat.processes,
+                        ...((assessmentData.customProcesses && assessmentData.customProcesses[cat.id]) || [])
+                    ]
+                }))
+            ];
+            
+            allCategoriesForPdf.forEach((cat, catIdx) => {
                 const catProcesses = cat.processes;
+                if (catProcesses.length === 0) return; // Leere Kategorien überspringen
                 const ratedInCat = catProcesses.filter(p => assessmentData.prozesse && assessmentData.prozesse[p.id]).length;
-                const catProgress = (ratedInCat / catProcesses.length) * 100;
+                const catProgress = catProcesses.length > 0 ? (ratedInCat / catProcesses.length) * 100 : 0;
 
                 // Berechne minimale Höhe für Kategorie-Header + ersten Prozess
                 // damit Überschrift nie alleine am Seitenende steht

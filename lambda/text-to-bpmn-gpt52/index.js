@@ -16,71 +16,26 @@ const CORS_HEADERS = {
   'Content-Type': 'application/json'
 };
 
-const SYSTEM_PROMPT = `Du bist ein erfahrener BPMN-2.0-Prozessmodellierer. Erstelle ÜBERSICHTLICHE, gut lesbare Prozessdiagramme.
+const SYSTEM_PROMPT = `BPMN-Generator. Ausgabe: NUR JSON, kein anderer Text.
 
-WICHTIG - TEXTANALYSE:
-1. Lies den Text SORGFÄLTIG und verstehe die Geschäftslogik
-2. Achte auf Bedingungen: "wenn X, dann Y" - was passiert bei X und was bei NICHT-X?
-3. Schwellenwerte verstehen: "unter 5000" bedeutet < 5000, "ab 5000" bedeutet >= 5000
+FORMAT:
+{"n":"Prozessname","e":[Element,...],"f":[Flow,...]}
 
-REGELN FÜR ÜBERSICHTLICHE PROZESSE:
-1. Ein Schritt = ein Task. Rolle im Namen: "HR: Antrag prüfen"
-2. Entscheidungen → exclusiveGateway NUR wenn wirklich nötig
-3. KEINE Zusammenführungs-Gateways am Ende! Pfade können direkt zusammenlaufen
-4. Halte den Prozess so einfach wie möglich - weniger ist mehr!
+Element: {"i":"ID","t":"Typ","m":"Name","r":row,"c":col}
+- Typen: s=startEvent, e=endEvent, u=userTask, v=serviceTask, g=exclusiveGateway
+- r=Zeile (0,1,2...), c=Spalte (0,1,2...)
 
-LAYOUT (SEHR WICHTIG - IMMER HORIZONTAL VON LINKS NACH RECHTS):
-- row = Zeile (0, 1, 2...), col = Spalte (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10...)
-- Start bei row:0, col:0
-- Der HAUPTPFAD verläuft IMMER HORIZONTAL auf row:0 von links nach rechts!
-- KEINE Begrenzung der Spaltenanzahl - der Prozess darf beliebig breit werden
-- JEDE Position (row,col) nur EINMAL verwenden!
-- Ziel: Klarer Lesefluss von links nach rechts wie beim Lesen eines Textes
+Flow: {"i":"ID","s":"SourceID","t":"TargetID"} oder mit Label: {"i":"ID","s":"SourceID","t":"TargetID","l":"Ja/Nein"}
 
-KRITISCHE LAYOUT-REGEL FÜR ENTSCHEIDUNGEN:
-- Der HAUPTPFAD (häufigster/wahrscheinlichster Weg) bleibt IMMER auf row: 0 horizontal!
-- Bei Entscheidungen: "Ja" oder der Normalfall geht RECHTS weiter auf GLEICHER Zeile (row: 0)
-- "Nein" oder Ausnahmen/Sonderfälle gehen auf TIEFERE Zeilen (row: 1, 2, 3...)
-- Alternative Pfade verlaufen PARALLEL unter dem Hauptpfad, ebenfalls von links nach rechts
-- NIEMALS den Hauptpfad nach unten umbrechen! Lieber mehr Spalten verwenden
+LAYOUT-REGELN:
+1. Start bei r:0, c:0
+2. Hauptpfad IMMER horizontal auf r:0 von links nach rechts
+3. Bei Entscheidungen: Normalfall rechts (gleiche Zeile), Ausnahme nach unten (r:1,2...)
+4. Jede Position (r,c) nur einmal!
+5. Task-Namen: "Rolle: Tätigkeit" (kurz!)
 
-BEISPIEL (ÜBERSICHTLICH MIT MEHREREN ZEILEN):
-{
-  "processId": "Process_1",
-  "processName": "Urlaubsantrag",
-  "interpretation": "Genehmigungsprozess mit Eskalation",
-  "assumptions": [],
-  "elements": [
-    {"id": "Start_1", "type": "startEvent", "name": "Start", "row": 0, "col": 0},
-    {"id": "Task_1", "type": "userTask", "name": "Mitarbeiter: Antrag stellen", "row": 0, "col": 1},
-    {"id": "Gateway_1", "type": "exclusiveGateway", "name": "Genehmigt?", "row": 0, "col": 2},
-    {"id": "Task_2", "type": "userTask", "name": "HR: Urlaub buchen", "row": 0, "col": 3},
-    {"id": "End_1", "type": "endEvent", "name": "Ende", "row": 0, "col": 4},
-    {"id": "Task_3", "type": "userTask", "name": "Teamleitung: Ablehnung begründen", "row": 1, "col": 3},
-    {"id": "Task_4", "type": "serviceTask", "name": "System: Benachrichtigung senden", "row": 1, "col": 4},
-    {"id": "End_2", "type": "endEvent", "name": "Abgelehnt", "row": 1, "col": 5}
-  ],
-  "flows": [
-    {"id": "Flow_1", "source": "Start_1", "target": "Task_1"},
-    {"id": "Flow_2", "source": "Task_1", "target": "Gateway_1"},
-    {"id": "Flow_3", "source": "Gateway_1", "target": "Task_2", "name": "Ja"},
-    {"id": "Flow_4", "source": "Task_2", "target": "End_1"},
-    {"id": "Flow_5", "source": "Gateway_1", "target": "Task_3", "name": "Nein"},
-    {"id": "Flow_6", "source": "Task_3", "target": "Task_4"},
-    {"id": "Flow_7", "source": "Task_4", "target": "End_2"}
-  ]
-}
-
-ELEMENT-TYPEN: startEvent, endEvent, userTask, serviceTask, exclusiveGateway, parallelGateway
-
-KRITISCH:
-- NUR JSON ausgeben, kein anderer Text!
-- JEDES Element MUSS row und col haben!
-- KEINE zwei Elemente mit gleicher row UND col!
-- Task-Namen mit Rolle beginnen
-- HAUPTPFAD IMMER auf row:0 horizontal durchgehend - NIEMALS umbrechen!
-- Alternative Pfade auf separaten Zeilen (row: 1, 2, 3...) parallel darunter
-- Beliebig viele Spalten erlaubt - Lesefluss von links nach rechts ist wichtiger als kompaktes Layout!`;
+BEISPIEL:
+{"n":"Antrag","e":[{"i":"S1","t":"s","m":"Start","r":0,"c":0},{"i":"T1","t":"u","m":"MA: Antrag","r":0,"c":1},{"i":"G1","t":"g","m":"OK?","r":0,"c":2},{"i":"T2","t":"u","m":"HR: Buchen","r":0,"c":3},{"i":"E1","t":"e","m":"Ende","r":0,"c":4},{"i":"T3","t":"u","m":"TL: Ablehnen","r":1,"c":3},{"i":"E2","t":"e","m":"Abgelehnt","r":1,"c":4}],"f":[{"i":"F1","s":"S1","t":"T1"},{"i":"F2","s":"T1","t":"G1"},{"i":"F3","s":"G1","t":"T2","l":"Ja"},{"i":"F4","s":"T2","t":"E1"},{"i":"F5","s":"G1","t":"T3","l":"Nein"},{"i":"F6","s":"T3","t":"E2"}]}`;
 
 function normalizeProcessText(text) {
   if (!text || typeof text !== 'string') return '';
@@ -183,9 +138,41 @@ function tryRepairJson(jsonStr) {
 }
 
 /**
+ * Konvertiert kompaktes JSON-Format in das normale Format.
+ */
+function expandCompactJson(data) {
+  // Prüfe ob es kompaktes Format ist (hat 'n' statt 'processName', 'e' statt 'elements')
+  if (data.n || data.e || data.f) {
+    const typeMap = { 's': 'startEvent', 'e': 'endEvent', 'u': 'userTask', 'v': 'serviceTask', 'g': 'exclusiveGateway', 'p': 'parallelGateway' };
+    
+    return {
+      processId: data.processId || 'Process_1',
+      processName: data.n || data.processName || 'Prozess',
+      elements: (data.e || data.elements || []).map(el => ({
+        id: el.i || el.id,
+        type: typeMap[el.t] || el.t || el.type || 'userTask',
+        name: el.m || el.name || '',
+        row: el.r !== undefined ? el.r : el.row,
+        col: el.c !== undefined ? el.c : el.col
+      })),
+      flows: (data.f || data.flows || []).map(fl => ({
+        id: fl.i || fl.id,
+        source: fl.s || fl.source,
+        target: fl.t || fl.target,
+        name: fl.l || fl.name || undefined
+      }))
+    };
+  }
+  return data;
+}
+
+/**
  * Generiert BPMN XML aus dem strukturierten JSON.
  */
 function generateBpmnXmlFromJson(data, processId) {
+  // Expandiere kompaktes Format falls nötig
+  data = expandCompactJson(data);
+  
   const pid = data.processId || processId || 'Process_1';
   const pname = escapeXml(data.processName || 'Prozess');
   const elements = data.elements || [];
@@ -255,6 +242,14 @@ ${diXml}
  */
 function mapToBpmnType(type) {
   const mapping = {
+    // Kompakte Typen
+    's': 'startEvent',
+    'e': 'endEvent',
+    'u': 'userTask',
+    'v': 'serviceTask',
+    'g': 'exclusiveGateway',
+    'p': 'parallelGateway',
+    // Normale Typen
     'startEvent': 'startEvent',
     'endEvent': 'endEvent',
     'task': 'task',
