@@ -1109,6 +1109,245 @@
             transform: translateX(3px);
             color: rgba(255, 255, 255, 0.6);
         }
+
+        /* Add Process Button */
+        .add-process-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0.75rem 0.75rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px dashed rgba(99, 102, 241, 0.4);
+            border-radius: 10px;
+            color: rgba(99, 102, 241, 0.8);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .add-process-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.6);
+            color: #818cf8;
+        }
+        .add-process-btn i {
+            font-size: 0.9rem;
+        }
+
+        /* Custom Process Item (deletable) */
+        .process-item.custom-process {
+            position: relative;
+        }
+        .process-item.custom-process .delete-process-btn {
+            position: absolute;
+            right: 2.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.2);
+            border: none;
+            color: #ef4444;
+            font-size: 0.7rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .process-item.custom-process:hover .delete-process-btn {
+            opacity: 1;
+        }
+        .process-item.custom-process .delete-process-btn:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+
+        /* Add Category Section */
+        .add-category-section {
+            margin-top: 1rem;
+            padding: 1rem;
+        }
+        .add-category-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            width: 100%;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(139, 92, 246, 0.08));
+            border: 2px dashed rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            color: rgba(99, 102, 241, 0.7);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .add-category-btn:hover {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
+            border-color: rgba(99, 102, 241, 0.5);
+            color: #818cf8;
+            transform: translateY(-2px);
+        }
+        .add-category-btn i {
+            font-size: 1.2rem;
+        }
+
+        /* Custom Category Header (with delete) */
+        .category-header.custom-category {
+            position: relative;
+        }
+        .category-header.custom-category .delete-category-btn {
+            position: absolute;
+            right: 3rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.2);
+            border: none;
+            color: #ef4444;
+            font-size: 0.8rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        .category-header.custom-category:hover .delete-category-btn {
+            opacity: 1;
+        }
+        .category-header.custom-category .delete-category-btn:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+
+        /* Add Process/Category Modal */
+        .add-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .add-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .add-modal {
+            background: linear-gradient(145deg, #1e1b4b, #312e81);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 450px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.3s ease;
+        }
+        .add-modal-overlay.active .add-modal {
+            transform: scale(1) translateY(0);
+        }
+        .add-modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .add-modal-title i {
+            color: #818cf8;
+        }
+        .add-modal-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s ease;
+        }
+        .add-modal-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
+        }
+        .add-modal-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        .add-modal-colors {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+        .add-modal-color {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+        .add-modal-color:hover {
+            transform: scale(1.1);
+        }
+        .add-modal-color.selected {
+            border-color: #fff;
+            box-shadow: 0 0 12px currentColor;
+        }
+        .add-modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        .add-modal-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        .add-modal-btn.cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .add-modal-btn.cancel:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .add-modal-btn.confirm {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+        }
+        .add-modal-btn.confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+        .add-modal-btn.confirm:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
         
         /* Process Grid Update */
         #processGrid {
@@ -2065,15 +2304,22 @@
             box-shadow: 0 12px 40px rgba(99, 102, 241, 0.2);
         }
         .workflow-card-preview {
-            background: linear-gradient(145deg, #f8fafc, #e2e8f0);
-            height: 160px;
+            background: linear-gradient(145deg, #ffffff, #f1f5f9);
+            height: 180px;
             position: relative;
             overflow: hidden;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
         }
         .workflow-card-preview canvas,
         .workflow-card-preview .bpmn-preview {
             width: 100%;
             height: 100%;
+        }
+        .workflow-card-preview .bpmn-preview .djs-container {
+            background: transparent !important;
+        }
+        .workflow-card-preview .bjs-powered-by {
+            display: none !important;
         }
         .workflow-card-body {
             padding: 1rem 1.25rem;
@@ -3334,6 +3580,48 @@
         </div>
     </div>
 
+    <!-- Add Process Modal -->
+    <div class="add-modal-overlay" id="addProcessModal">
+        <div class="add-modal">
+            <div class="add-modal-title">
+                <i class="fas fa-plus-circle"></i> Eigenen Prozess hinzufügen
+            </div>
+            <input type="hidden" id="addProcessCategoryId">
+            <input type="text" class="add-modal-input" id="addProcessName" placeholder="Name des Prozesses eingeben..." maxlength="100">
+            <div class="add-modal-actions">
+                <button class="add-modal-btn cancel" onclick="closeAddProcessModal()">Abbrechen</button>
+                <button class="add-modal-btn confirm" id="confirmAddProcess" onclick="confirmAddProcess()" disabled>Hinzufügen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div class="add-modal-overlay" id="addCategoryModal">
+        <div class="add-modal">
+            <div class="add-modal-title">
+                <i class="fas fa-folder-plus"></i> Eigene Kategorie hinzufügen
+            </div>
+            <input type="text" class="add-modal-input" id="addCategoryName" placeholder="Name der Kategorie eingeben..." maxlength="50">
+            <label style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-bottom: 0.5rem; display: block;">Farbe wählen:</label>
+            <div class="add-modal-colors" id="categoryColorPicker">
+                <div class="add-modal-color selected" style="background: #6366f1;" data-color="#6366f1"></div>
+                <div class="add-modal-color" style="background: #8b5cf6;" data-color="#8b5cf6"></div>
+                <div class="add-modal-color" style="background: #ec4899;" data-color="#ec4899"></div>
+                <div class="add-modal-color" style="background: #f59e0b;" data-color="#f59e0b"></div>
+                <div class="add-modal-color" style="background: #10b981;" data-color="#10b981"></div>
+                <div class="add-modal-color" style="background: #06b6d4;" data-color="#06b6d4"></div>
+                <div class="add-modal-color" style="background: #84cc16;" data-color="#84cc16"></div>
+                <div class="add-modal-color" style="background: #ef4444;" data-color="#ef4444"></div>
+                <div class="add-modal-color" style="background: #f97316;" data-color="#f97316"></div>
+                <div class="add-modal-color" style="background: #14b8a6;" data-color="#14b8a6"></div>
+            </div>
+            <div class="add-modal-actions">
+                <button class="add-modal-btn cancel" onclick="closeAddCategoryModal()">Abbrechen</button>
+                <button class="add-modal-btn confirm" id="confirmAddCategory" onclick="confirmAddCategory()" disabled>Hinzufügen</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Process Deep Dive Modal -->
     <div class="modal-overlay" id="processModal">
         <div class="modal-content">
@@ -3469,11 +3757,80 @@
             cat.processes.map(p => ({ ...p, categoryId: cat.id, categoryName: cat.name, color: cat.color, icon: cat.icon }))
         );
 
+        // Hilfsfunktion: Finde Prozess (Standard oder Custom)
+        function findProcessById(processId) {
+            // Erst in Standard-Prozessen suchen
+            let process = hrProcesses.find(p => p.id === processId);
+            if (process) return process;
+            
+            // Dann in Custom-Prozessen suchen
+            if (assessmentData && assessmentData.customProcesses) {
+                for (const catId of Object.keys(assessmentData.customProcesses)) {
+                    const found = assessmentData.customProcesses[catId].find(p => p.id === processId);
+                    if (found) {
+                        // Finde die Kategorie
+                        const cat = hrCategories.find(c => c.id === catId) || 
+                                   (assessmentData.customCategories || []).find(c => c.id === catId);
+                        return {
+                            ...found,
+                            categoryId: catId,
+                            categoryName: cat?.name || 'Eigene Kategorie',
+                            color: cat?.color || '#6366f1',
+                            icon: cat?.icon || 'fa-cogs'
+                        };
+                    }
+                }
+            }
+            return null;
+        }
+        
+        // Hilfsfunktion: Finde Kategorie und Prozessname
+        function findProcessInfo(processId) {
+            // Standard-Kategorien durchsuchen
+            for (const cat of hrCategories) {
+                const proc = cat.processes.find(p => p.id === processId);
+                if (proc) {
+                    return { processName: proc.name, categoryName: cat.name, color: cat.color };
+                }
+            }
+            
+            // Custom-Kategorien durchsuchen
+            if (assessmentData && assessmentData.customCategories) {
+                for (const cat of assessmentData.customCategories) {
+                    // Prozesse in der Custom-Kategorie
+                    const customProcs = (assessmentData.customProcesses && assessmentData.customProcesses[cat.id]) || [];
+                    const proc = customProcs.find(p => p.id === processId);
+                    if (proc) {
+                        return { processName: proc.name, categoryName: cat.name, color: cat.color };
+                    }
+                }
+            }
+            
+            // Custom-Prozesse in Standard-Kategorien
+            if (assessmentData && assessmentData.customProcesses) {
+                for (const catId of Object.keys(assessmentData.customProcesses)) {
+                    const proc = assessmentData.customProcesses[catId].find(p => p.id === processId);
+                    if (proc) {
+                        const cat = hrCategories.find(c => c.id === catId);
+                        return { 
+                            processName: proc.name, 
+                            categoryName: cat?.name || 'Eigene Kategorie',
+                            color: cat?.color || '#6366f1'
+                        };
+                    }
+                }
+            }
+            
+            return { processName: processId, categoryName: 'Sonstige', color: '#6366f1' };
+        }
+
         let assessmentData = {
             vision: {},
             kultur: {},
             organisation: {},
-            prozesse: {}
+            prozesse: {},
+            customProcesses: {}, // { categoryId: [{ id, name }] }
+            customCategories: [] // [{ id, name, color, icon, processes: [] }]
         };
 
         // Load saved data
@@ -3481,6 +3838,9 @@
             const saved = localStorage.getItem('hrSelbsttest');
             if (saved) {
                 assessmentData = JSON.parse(saved);
+                // Stelle sicher, dass neue Felder existieren
+                if (!assessmentData.customProcesses) assessmentData.customProcesses = {};
+                if (!assessmentData.customCategories) assessmentData.customCategories = [];
                 updateAllProgress();
             }
         }
@@ -3585,19 +3945,31 @@
         function initProcessGrid() {
             const grid = document.getElementById('processGrid');
             
-            grid.innerHTML = hrCategories.map(category => {
-                const ratedInCategory = category.processes.filter(p => assessmentData.prozesse[p.id]).length;
-                const totalInCategory = category.processes.length;
-                const progressPercent = (ratedInCategory / totalInCategory) * 100;
+            // Kombiniere Standard-Kategorien mit Custom-Kategorien
+            const allCategories = [
+                ...hrCategories,
+                ...(assessmentData.customCategories || [])
+            ];
+            
+            grid.innerHTML = allCategories.map(category => {
+                const isCustomCategory = (assessmentData.customCategories || []).some(c => c.id === category.id);
+                
+                // Kombiniere Standard-Prozesse mit Custom-Prozessen für diese Kategorie
+                const customProcs = (assessmentData.customProcesses && assessmentData.customProcesses[category.id]) || [];
+                const allProcesses = [...category.processes, ...customProcs];
+                
+                const ratedInCategory = allProcesses.filter(p => assessmentData.prozesse[p.id]).length;
+                const totalInCategory = allProcesses.length;
+                const progressPercent = totalInCategory > 0 ? (ratedInCategory / totalInCategory) * 100 : 0;
                 
                 return `
                 <div class="process-category" data-category="${category.id}">
-                    <div class="category-header" onclick="toggleCategory('${category.id}')" style="--cat-color: ${category.color}">
+                    <div class="category-header ${isCustomCategory ? 'custom-category' : ''}" onclick="toggleCategory('${category.id}')" style="--cat-color: ${category.color}">
                         <div class="category-icon" style="background: ${category.color};">
                             <i class="fas ${category.icon}"></i>
                         </div>
                         <div class="category-info">
-                            <h3>${category.name}</h3>
+                            <h3>${escapeHtml(category.name)}</h3>
                             <div class="category-progress">
                                 <div class="category-progress-bar">
                                     <div class="category-progress-fill" style="width: ${progressPercent}%; background: ${category.color};"></div>
@@ -3605,19 +3977,23 @@
                                 <span class="category-progress-text">${ratedInCategory}/${totalInCategory} bewertet</span>
                             </div>
                         </div>
+                        ${isCustomCategory ? `<button class="delete-category-btn" onclick="event.stopPropagation(); deleteCustomCategory('${category.id}')" title="Kategorie löschen"><i class="fas fa-trash"></i></button>` : ''}
                         <i class="fas fa-chevron-down category-toggle"></i>
                     </div>
                     <div class="category-processes">
-                        ${category.processes.map(process => `
-                            <div class="process-item ${assessmentData.prozesse[process.id] ? 'completed' : ''}" onclick="openProcessModal('${process.id}')">
+                        ${allProcesses.map(process => {
+                            const isCustomProcess = customProcs.some(p => p.id === process.id);
+                            return `
+                            <div class="process-item ${isCustomProcess ? 'custom-process' : ''} ${assessmentData.prozesse[process.id] ? 'completed' : ''}" onclick="openProcessModal('${process.id}', '${category.id}')">
                                 <div class="process-item-top">
                                     <div class="process-item-status ${assessmentData.prozesse[process.id] ? 'completed' : 'pending'}">
                                         <i class="fas ${assessmentData.prozesse[process.id] ? 'fa-check-circle' : 'fa-circle'}"></i>
                                     </div>
                                     <div class="process-item-name-block">
-                                        <span class="process-item-name">${process.name}</span>
+                                        <span class="process-item-name">${escapeHtml(process.name)}</span>
                                         ${getProcessDetailsHtml(process.id)}
                                     </div>
+                                    ${isCustomProcess ? `<button class="delete-process-btn" onclick="event.stopPropagation(); deleteCustomProcess('${category.id}', '${process.id}')" title="Prozess löschen"><i class="fas fa-times"></i></button>` : ''}
                                     <div class="process-item-score">
                                         ${assessmentData.prozesse[process.id] ? 
                                             `<span class="score-badge" style="background: ${getScoreColorCSS(assessmentData.prozesse[process.id])}">${getProcessScore(process.id)}</span>` : 
@@ -3626,17 +4002,234 @@
                                     <i class="fas fa-chevron-right process-arrow"></i>
                                 </div>
                             </div>
-                        `).join('')}
+                        `}).join('')}
+                        <button class="add-process-btn" onclick="event.stopPropagation(); openAddProcessModal('${category.id}')">
+                            <i class="fas fa-plus"></i> Eigenen Prozess hinzufügen
+                        </button>
                     </div>
                 </div>
                 `;
             }).join('');
+            
+            // Add "Eigene Kategorie hinzufügen" Button am Ende
+            grid.innerHTML += `
+                <div class="add-category-section">
+                    <button class="add-category-btn" onclick="openAddCategoryModal()">
+                        <i class="fas fa-folder-plus"></i> Eigene Kategorie hinzufügen
+                    </button>
+                </div>
+            `;
         }
 
         function toggleCategory(categoryId) {
             const category = document.querySelector(`.process-category[data-category="${categoryId}"]`);
             category.classList.toggle('expanded');
         }
+
+        // ========== Custom Process Functions ==========
+        
+        function openAddProcessModal(categoryId) {
+            document.getElementById('addProcessCategoryId').value = categoryId;
+            document.getElementById('addProcessName').value = '';
+            document.getElementById('confirmAddProcess').disabled = true;
+            document.getElementById('addProcessModal').classList.add('active');
+            setTimeout(() => document.getElementById('addProcessName').focus(), 100);
+        }
+        
+        function closeAddProcessModal() {
+            document.getElementById('addProcessModal').classList.remove('active');
+        }
+        
+        function confirmAddProcess() {
+            const categoryId = document.getElementById('addProcessCategoryId').value;
+            const processName = document.getElementById('addProcessName').value.trim();
+            
+            if (!processName) return;
+            
+            // Initialisiere customProcesses falls nicht vorhanden
+            if (!assessmentData.customProcesses) {
+                assessmentData.customProcesses = {};
+            }
+            if (!assessmentData.customProcesses[categoryId]) {
+                assessmentData.customProcesses[categoryId] = [];
+            }
+            
+            // Generiere eindeutige ID
+            const processId = 'custom-' + categoryId + '-' + Date.now();
+            
+            // Füge neuen Prozess hinzu
+            assessmentData.customProcesses[categoryId].push({
+                id: processId,
+                name: processName
+            });
+            
+            saveData();
+            closeAddProcessModal();
+            initProcessGrid();
+            
+            // Öffne die Kategorie
+            const catElement = document.querySelector(`.process-category[data-category="${categoryId}"]`);
+            if (catElement && !catElement.classList.contains('expanded')) {
+                catElement.classList.add('expanded');
+            }
+        }
+        
+        function deleteCustomProcess(categoryId, processId) {
+            if (!confirm('Möchten Sie diesen Prozess wirklich löschen? Alle Bewertungen gehen verloren.')) return;
+            
+            if (assessmentData.customProcesses && assessmentData.customProcesses[categoryId]) {
+                assessmentData.customProcesses[categoryId] = assessmentData.customProcesses[categoryId].filter(p => p.id !== processId);
+            }
+            
+            // Lösche auch die Bewertungsdaten
+            if (assessmentData.prozesse[processId]) {
+                delete assessmentData.prozesse[processId];
+            }
+            
+            saveData();
+            initProcessGrid();
+        }
+        
+        // ========== Custom Category Functions ==========
+        
+        let selectedCategoryColor = '#6366f1';
+        
+        function openAddCategoryModal() {
+            document.getElementById('addCategoryName').value = '';
+            document.getElementById('confirmAddCategory').disabled = true;
+            selectedCategoryColor = '#6366f1';
+            
+            // Reset color selection
+            document.querySelectorAll('#categoryColorPicker .add-modal-color').forEach(el => {
+                el.classList.remove('selected');
+                if (el.dataset.color === '#6366f1') el.classList.add('selected');
+            });
+            
+            document.getElementById('addCategoryModal').classList.add('active');
+            setTimeout(() => document.getElementById('addCategoryName').focus(), 100);
+        }
+        
+        function closeAddCategoryModal() {
+            document.getElementById('addCategoryModal').classList.remove('active');
+        }
+        
+        function confirmAddCategory() {
+            const categoryName = document.getElementById('addCategoryName').value.trim();
+            
+            if (!categoryName) return;
+            
+            // Initialisiere customCategories falls nicht vorhanden
+            if (!assessmentData.customCategories) {
+                assessmentData.customCategories = [];
+            }
+            
+            // Generiere eindeutige ID
+            const categoryId = 'custom-cat-' + Date.now();
+            
+            // Icon basierend auf Farbe auswählen
+            const iconMap = {
+                '#6366f1': 'fa-cogs',
+                '#8b5cf6': 'fa-puzzle-piece',
+                '#ec4899': 'fa-heart',
+                '#f59e0b': 'fa-lightbulb',
+                '#10b981': 'fa-leaf',
+                '#06b6d4': 'fa-water',
+                '#84cc16': 'fa-seedling',
+                '#ef4444': 'fa-fire',
+                '#f97316': 'fa-sun',
+                '#14b8a6': 'fa-gem'
+            };
+            
+            // Füge neue Kategorie hinzu
+            assessmentData.customCategories.push({
+                id: categoryId,
+                name: categoryName,
+                color: selectedCategoryColor,
+                icon: iconMap[selectedCategoryColor] || 'fa-folder',
+                processes: []
+            });
+            
+            saveData();
+            closeAddCategoryModal();
+            initProcessGrid();
+            
+            // Öffne die neue Kategorie
+            setTimeout(() => {
+                const catElement = document.querySelector(`.process-category[data-category="${categoryId}"]`);
+                if (catElement) {
+                    catElement.classList.add('expanded');
+                    catElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+        }
+        
+        function deleteCustomCategory(categoryId) {
+            if (!confirm('Möchten Sie diese Kategorie wirklich löschen? Alle Prozesse und Bewertungen darin gehen verloren.')) return;
+            
+            // Lösche alle Prozessbewertungen dieser Kategorie
+            if (assessmentData.customProcesses && assessmentData.customProcesses[categoryId]) {
+                assessmentData.customProcesses[categoryId].forEach(p => {
+                    if (assessmentData.prozesse[p.id]) {
+                        delete assessmentData.prozesse[p.id];
+                    }
+                });
+                delete assessmentData.customProcesses[categoryId];
+            }
+            
+            // Lösche die Kategorie selbst
+            if (assessmentData.customCategories) {
+                assessmentData.customCategories = assessmentData.customCategories.filter(c => c.id !== categoryId);
+            }
+            
+            saveData();
+            initProcessGrid();
+        }
+        
+        // Event Listeners für Modals
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add Process Modal - Input validation
+            const addProcessInput = document.getElementById('addProcessName');
+            if (addProcessInput) {
+                addProcessInput.addEventListener('input', function() {
+                    document.getElementById('confirmAddProcess').disabled = !this.value.trim();
+                });
+                addProcessInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && this.value.trim()) {
+                        confirmAddProcess();
+                    }
+                });
+            }
+            
+            // Add Category Modal - Input validation
+            const addCategoryInput = document.getElementById('addCategoryName');
+            if (addCategoryInput) {
+                addCategoryInput.addEventListener('input', function() {
+                    document.getElementById('confirmAddCategory').disabled = !this.value.trim();
+                });
+                addCategoryInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && this.value.trim()) {
+                        confirmAddCategory();
+                    }
+                });
+            }
+            
+            // Color picker
+            document.querySelectorAll('#categoryColorPicker .add-modal-color').forEach(el => {
+                el.addEventListener('click', function() {
+                    document.querySelectorAll('#categoryColorPicker .add-modal-color').forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedCategoryColor = this.dataset.color;
+                });
+            });
+            
+            // Close modals on overlay click
+            document.getElementById('addProcessModal')?.addEventListener('click', function(e) {
+                if (e.target === this) closeAddProcessModal();
+            });
+            document.getElementById('addCategoryModal')?.addEventListener('click', function(e) {
+                if (e.target === this) closeAddCategoryModal();
+            });
+        });
 
         function getProcessScore(processId) {
             const data = assessmentData.prozesse[processId];
@@ -3654,8 +4247,36 @@
         }
 
         // Open process modal
-        function openProcessModal(processId) {
-            const process = hrProcesses.find(p => p.id === processId);
+        function openProcessModal(processId, categoryId) {
+            // Suche in Standard-Prozessen
+            let process = hrProcesses.find(p => p.id === processId);
+            
+            // Falls nicht gefunden, suche in Custom-Prozessen
+            if (!process) {
+                // Suche in allen Custom-Prozessen
+                for (const catId of Object.keys(assessmentData.customProcesses || {})) {
+                    const found = assessmentData.customProcesses[catId].find(p => p.id === processId);
+                    if (found) {
+                        // Finde die Kategorie für Farbe/Icon
+                        const cat = hrCategories.find(c => c.id === catId) || 
+                                   (assessmentData.customCategories || []).find(c => c.id === catId);
+                        process = {
+                            ...found,
+                            categoryId: catId,
+                            categoryName: cat?.name || 'Eigene Kategorie',
+                            color: cat?.color || '#6366f1',
+                            icon: cat?.icon || 'fa-cogs'
+                        };
+                        break;
+                    }
+                }
+            }
+            
+            if (!process) {
+                console.error('Process not found:', processId);
+                return;
+            }
+            
             const data = assessmentData.prozesse[processId] || {};
             
             document.getElementById('modalTitle').textContent = process.name;
@@ -4021,9 +4642,21 @@
             selectCategory('vision');
         }
         
+        // Hilfsfunktion: Gesamtzahl aller Prozesse (Standard + Custom)
+        function getTotalProcessCount() {
+            let count = hrProcesses.length;
+            // Custom-Prozesse in Standard-Kategorien
+            if (assessmentData.customProcesses) {
+                for (const procs of Object.values(assessmentData.customProcesses)) {
+                    count += procs.length;
+                }
+            }
+            return count;
+        }
+        
         // Prozess-Statistik aktualisieren
         function updateProcessStats() {
-            const totalProcesses = hrProcesses.length; // 32 Prozesse (8 Kategorien × 4)
+            const totalProcesses = getTotalProcessCount();
             const ratedProcesses = Object.keys(assessmentData.prozesse || {});
             const ratedCount = ratedProcesses.length;
             
@@ -4080,13 +4713,13 @@
                 const entries = [];
                 (ratedProcesses || []).forEach(id => {
                     const data = assessmentData.prozesse[id];
-                    const process = hrProcesses.find(p => p.id === id);
-                    if (!process || !data) return;
+                    const processInfo = findProcessInfo(id);
+                    if (!data) return;
                     const tools = (data.tools && String(data.tools).trim()) || '';
                     const notes = (data.notes && String(data.notes).trim()) || '';
                     const desc = (data.description && String(data.description).trim()) || '';
                     if (!tools && !notes && !desc) return;
-                    entries.push({ name: process.name, tools, notes, desc });
+                    entries.push({ name: processInfo.processName, tools, notes, desc });
                 });
                 if (entries.length > 0) {
                     manualBox.style.display = 'block';
@@ -4154,8 +4787,7 @@
             
             // Process-based recommendations
             Object.entries(assessmentData.prozesse).forEach(([id, data]) => {
-                const process = hrProcesses.find(p => p.id === id);
-                if (!process) return;
+                const processInfo = findProcessInfo(id);
                 
                 const digiGap = (data.digiSoll || 0) - (data.digiIst || 0);
                 const qualGap = (data.qualSoll || 0) - (data.qualIst || 0);
@@ -4164,7 +4796,7 @@
                 
                 if (totalGap > 0) {
                     recommendations.push({
-                        title: process.name,
+                        title: processInfo.processName,
                         text: `Gap von ${totalGap} Punkten identifiziert. ${digiGap > 0 ? `Digitalisierung um ${digiGap} Stufen verbessern.` : ''} ${qualGap > 0 ? `Prozessqualität um ${qualGap} Stufen verbessern.` : ''}`,
                         priority: priority > 6 ? 'high' : priority > 3 ? 'medium' : 'low',
                         score: priority
@@ -4245,15 +4877,22 @@
                 }
             });
             
+            // Alle Kategorien (Standard + Custom) für Statistik
+            const allCats = [...hrCategories, ...(assessmentData.customCategories || [])];
+            
             return {
                 assessmentData: fullData,
                 prozesseBewertet: Object.keys(fullData.prozesse || {}).length,
-                prozesseGesamt: hrProcesses.length,
-                kategorien: hrCategories.map(cat => ({
-                    name: cat.name,
-                    bewertet: cat.processes.filter(p => fullData.prozesse[p.id]).length,
-                    gesamt: cat.processes.length
-                })),
+                prozesseGesamt: getTotalProcessCount(),
+                kategorien: allCats.map(cat => {
+                    const customProcs = (assessmentData.customProcesses && assessmentData.customProcesses[cat.id]) || [];
+                    const allProcs = [...cat.processes, ...customProcs];
+                    return {
+                        name: cat.name,
+                        bewertet: allProcs.filter(p => fullData.prozesse[p.id]).length,
+                        gesamt: allProcs.length
+                    };
+                }),
                 domInputs: domInputs
             };
         }
@@ -4696,7 +5335,7 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
 
             // Prozess-Statistiken berechnen
             const ratedProcessIds = Object.keys(assessmentData.prozesse || {});
-            const totalProcessCount = hrProcesses.length;
+            const totalProcessCount = getTotalProcessCount();
             const ratedCount = ratedProcessIds.length;
             let digitalCount = 0, potentialCount = 0;
             ratedProcessIds.forEach(id => {
@@ -5481,21 +6120,12 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             const prozessDetails = {};
             for (const [processId, data] of Object.entries(assessmentData.prozesse || {})) {
                 if (data) {
-                    // Prozessname finden
-                    let processName = processId;
-                    let categoryName = '';
-                    for (const cat of hrCategories) {
-                        const proc = cat.processes.find(p => p.id === processId);
-                        if (proc) {
-                            processName = proc.name;
-                            categoryName = cat.name;
-                            break;
-                        }
-                    }
+                    // Prozessname finden (Standard + Custom)
+                    const processInfo = findProcessInfo(processId);
                     
                     prozessDetails[processId] = {
-                        name: processName,
-                        category: categoryName,
+                        name: processInfo.processName,
+                        category: processInfo.categoryName,
                         digiIst: data.digiIst,
                         digiSoll: data.digiSoll,
                         qualIst: data.qualIst,
@@ -5816,17 +6446,13 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             let html = '<h3><i class="fas fa-chart-bar"></i> Unterbereiche</h3>';
             
             if (category === 'prozesse') {
-                // Dynamische Prozess-Kategorien
+                // Dynamische Prozess-Kategorien (Standard + Custom)
                 const processCategories = {};
                 for (const [processId, data] of Object.entries(assessmentData.prozesse || {})) {
                     if (data) {
-                        let categoryName = 'Sonstige';
-                        for (const cat of hrCategories) {
-                            if (cat.processes.find(p => p.id === processId)) {
-                                categoryName = cat.name;
-                                break;
-                            }
-                        }
+                        const processInfo = findProcessInfo(processId);
+                        const categoryName = processInfo.categoryName || 'Sonstige';
+                        
                         if (!processCategories[categoryName]) {
                             processCategories[categoryName] = { scores: [], count: 0 };
                         }
@@ -6403,21 +7029,13 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             
             for (const [processId, data] of Object.entries(prozesse)) {
                 if (data && data.bpmnXml) {
-                    // Find process name from hrCategories
-                    let processName = processId;
-                    let categoryName = '';
-                    for (const cat of hrCategories) {
-                        const proc = cat.processes.find(p => p.id === processId);
-                        if (proc) {
-                            processName = proc.name;
-                            categoryName = cat.name;
-                            break;
-                        }
-                    }
+                    // Find process name (Standard + Custom)
+                    const processInfo = findProcessInfo(processId);
+                    
                     workflowProcesses.push({
                         id: processId,
-                        name: processName,
-                        category: categoryName,
+                        name: processInfo.processName,
+                        category: processInfo.categoryName,
                         description: data.description || '',
                         bpmnXml: data.bpmnXml
                     });
@@ -6474,9 +7092,20 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
         // Render BPMN preview in a card
         async function renderBpmnPreview(processId, bpmnXml) {
             const container = document.getElementById(`preview-${processId}`);
-            if (!container || !bpmnXml) return;
+            if (!container) return;
+            
+            // Show loading state first
+            container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #64748b; font-size: 0.85rem;"><i class="fas fa-spinner fa-spin" style="margin-right: 0.5rem;"></i> Lade Vorschau...</div>';
+            
+            if (!bpmnXml) {
+                container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #94a3b8; font-size: 0.85rem;"><i class="fas fa-project-diagram" style="margin-right: 0.5rem; opacity: 0.5;"></i> Vorschau nicht verfügbar</div>';
+                return;
+            }
             
             try {
+                // Clear container and create fresh div for viewer
+                container.innerHTML = '';
+                
                 const viewer = new BpmnJS({
                     container: container
                 });
@@ -6485,6 +7114,9 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 
                 const canvas = viewer.get('canvas');
                 canvas.zoom('fit-viewport');
+                
+                // Add subtle styling to preview
+                container.style.background = 'linear-gradient(145deg, #ffffff, #f8fafc)';
             } catch (err) {
                 console.warn('Could not render preview for', processId, err);
                 container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #94a3b8; font-size: 0.85rem;"><i class="fas fa-exclamation-circle" style="margin-right: 0.5rem;"></i> Vorschau nicht verfügbar</div>';
@@ -6499,15 +7131,9 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 return;
             }
             
-            // Find process name
-            let processName = processId;
-            for (const cat of hrCategories) {
-                const proc = cat.processes.find(p => p.id === processId);
-                if (proc) {
-                    processName = proc.name.replace(/[^a-zA-Z0-9äöüÄÖÜß]/g, '-');
-                    break;
-                }
-            }
+            // Find process name (Standard + Custom)
+            const processInfo = findProcessInfo(processId);
+            const processName = processInfo.processName.replace(/[^a-zA-Z0-9äöüÄÖÜß]/g, '-');
             
             const blob = new Blob([data.bpmnXml], { type: 'application/xml' });
             const url = URL.createObjectURL(blob);

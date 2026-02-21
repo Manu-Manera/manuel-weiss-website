@@ -84,7 +84,8 @@ KRITISCH:
 
 function normalizeProcessText(text) {
   if (!text || typeof text !== 'string') return '';
-  return text.trim().replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n').replace(/[ \t]+/g, ' ').substring(0, 8000);
+  // Erhöhtes Limit für längere Prozessbeschreibungen (31+ Schritte)
+  return text.trim().replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n').replace(/[ \t]+/g, ' ').substring(0, 16000);
 }
 
 function buildUserMessage(text) {
@@ -93,9 +94,15 @@ function buildUserMessage(text) {
 
 /**
  * Parst die GPT-Antwort und extrahiert das JSON.
+ * Versucht auch abgeschnittene JSON-Antworten zu reparieren.
  */
 function parseJsonResponse(content) {
   const raw = (content || '').trim();
+  
+  if (!raw) {
+    console.warn('Empty GPT response');
+    return null;
+  }
   
   // Versuche JSON aus Code-Block zu extrahieren
   const jsonBlockMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
@@ -104,6 +111,9 @@ function parseJsonResponse(content) {
       return JSON.parse(jsonBlockMatch[1].trim());
     } catch (e) {
       console.warn('JSON parse from code block failed:', e.message);
+      // Versuche abgeschnittenes JSON zu reparieren
+      const repaired = tryRepairJson(jsonBlockMatch[1].trim());
+      if (repaired) return repaired;
     }
   }
   
@@ -114,10 +124,62 @@ function parseJsonResponse(content) {
       return JSON.parse(jsonMatch[0]);
     } catch (e) {
       console.warn('JSON parse failed:', e.message);
+      // Versuche abgeschnittenes JSON zu reparieren
+      const repaired = tryRepairJson(jsonMatch[0]);
+      if (repaired) return repaired;
     }
   }
   
+  // Letzter Versuch: Finde JSON-Start und versuche zu reparieren
+  const jsonStart = raw.indexOf('{');
+  if (jsonStart !== -1) {
+    const repaired = tryRepairJson(raw.substring(jsonStart));
+    if (repaired) return repaired;
+  }
+  
+  console.warn('Could not parse JSON from GPT response');
   return null;
+}
+
+/**
+ * Versucht abgeschnittenes JSON zu reparieren.
+ */
+function tryRepairJson(jsonStr) {
+  if (!jsonStr) return null;
+  
+  try {
+    // Erst normales Parsen versuchen
+    return JSON.parse(jsonStr);
+  } catch (e) {
+    // Versuche fehlende Klammern zu ergänzen
+    let repaired = jsonStr.trim();
+    
+    // Zähle offene Klammern
+    const openBraces = (repaired.match(/\{/g) || []).length;
+    const closeBraces = (repaired.match(/\}/g) || []).length;
+    const openBrackets = (repaired.match(/\[/g) || []).length;
+    const closeBrackets = (repaired.match(/\]/g) || []).length;
+    
+    // Füge fehlende schließende Klammern hinzu
+    for (let i = 0; i < openBrackets - closeBrackets; i++) {
+      repaired += ']';
+    }
+    for (let i = 0; i < openBraces - closeBraces; i++) {
+      repaired += '}';
+    }
+    
+    // Entferne trailing comma vor schließenden Klammern
+    repaired = repaired.replace(/,\s*([}\]])/g, '$1');
+    
+    try {
+      const parsed = JSON.parse(repaired);
+      console.log('Successfully repaired truncated JSON');
+      return parsed;
+    } catch (e2) {
+      console.warn('JSON repair failed:', e2.message);
+      return null;
+    }
+  }
 }
 
 /**
@@ -920,6 +982,10 @@ function buildFallbackBpmnXml(text, processId) {
  */
 async function generateBpmnWithGPT52(text, processId, apiKey) {
   const openaiApiUrl = 'https://api.openai.com/v1/chat/completions';
+  
+  // Zähle ungefähre Schritte für Logging
+  const stepCount = (text.match(/Rolle:|Tätigkeit:|Schritt|→|->|\d+\./gi) || []).length;
+  console.log(`Generating BPMN for process with ~${stepCount} steps, text length: ${text.length}`);
 
   const response = await fetch(openaiApiUrl, {
     method: 'POST',
@@ -933,18 +999,28 @@ async function generateBpmnWithGPT52(text, processId, apiKey) {
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: buildUserMessage(text) }
       ],
-      max_completion_tokens: 8192,
+      max_completion_tokens: 16384, // Erhöht für komplexe Prozesse mit 30+ Schritten
       temperature: 0.3
     })
   });
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
-    throw new Error(err.error?.message || response.statusText);
+    const errorMsg = err.error?.message || response.statusText || 'Unknown API error';
+    console.error('OpenAI API error:', errorMsg, 'Status:', response.status);
+    throw new Error(`OpenAI API Fehler: ${errorMsg}`);
   }
 
   const data = await response.json();
   const content = data.choices?.[0]?.message?.content || '';
+  const finishReason = data.choices?.[0]?.finish_reason || 'unknown';
+  
+  console.log(`GPT response received. Finish reason: ${finishReason}, Content length: ${content.length}`);
+  
+  // Warnung wenn Antwort abgeschnitten wurde
+  if (finishReason === 'length') {
+    console.warn('GPT response was truncated due to max_tokens limit');
+  }
   
   const jsonData = parseJsonResponse(content);
   
