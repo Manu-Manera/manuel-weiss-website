@@ -159,6 +159,63 @@
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
         }
         
+        /* Auth-Button wie Bewerbungsmanager */
+        .hr-nav-auth-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            transition: all 0.2s;
+        }
+        .hr-nav-auth-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+        .hr-user-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            min-width: 200px;
+            background: rgba(30, 41, 59, 0.98);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            padding: 0.5rem;
+            z-index: 1001;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .hr-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            color: #e2e8f0;
+            text-decoration: none;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            border-radius: 8px;
+            transition: background 0.2s;
+            text-align: left;
+        }
+        .hr-dropdown-item:hover {
+            background: rgba(99, 102, 241, 0.2);
+            color: white;
+        }
+        .hr-dropdown-divider {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.15);
+            margin: 0.5rem 0;
+        }
         .hr-nav-user-badge {
             display: flex;
             align-items: center;
@@ -173,6 +230,21 @@
         }
         .hr-nav-user-badge i {
             font-size: 0.9rem;
+        }
+        .mobile-hr-auth-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 1rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
         }
         .mobile-user-badge {
             display: flex;
@@ -2850,12 +2922,21 @@
             <i class="fas fa-home"></i>
         </a>
         
-        <div class="nav-links">
+        <div class="nav-links" style="position: relative;">
             <a href="index.html" class="nav-link"><i class="fas fa-home"></i>Start</a>
             <a href="#" class="nav-link" onclick="event.preventDefault(); showSection('results');"><i class="fas fa-chart-bar"></i>Ergebnisse</a>
             <a href="#" class="nav-link" onclick="event.preventDefault(); showSection('results'); setTimeout(function(){ selectCategory('prozesse'); }, 100);"><i class="fas fa-pencil-alt"></i>Prozesse zeichnen</a>
             <a href="ki-strategieentwicklung.html" class="nav-link"><i class="fas fa-brain"></i>KI-Strategie</a>
-            <span id="hrNavUserBadge" class="hr-nav-user-badge" style="display: none;"></span>
+            <button id="hrAuthButton" class="hr-nav-auth-btn" title="Anmelden oder Profil">
+                <i class="fas fa-user"></i>
+                <span id="hrAuthButtonText">Anmelden</span>
+            </button>
+            <div class="hr-user-dropdown" id="hrUserDropdown" style="display: none;">
+                <a href="user-profile.html" class="hr-dropdown-item"><i class="fas fa-user-circle"></i> Mein Profil</a>
+                <a href="applications/dashboard.html" class="hr-dropdown-item"><i class="fas fa-th-large"></i> Dashboard</a>
+                <hr class="hr-dropdown-divider">
+                <button class="hr-dropdown-item" id="hrLogoutBtn"><i class="fas fa-sign-out-alt"></i> Abmelden</button>
+            </div>
             <a href="#" class="nav-link nav-cta" onclick="downloadResults()"><i class="fas fa-download"></i>Export</a>
         </div>
         <div class="mobile-menu-btn" onclick="toggleMobileMenu()">
@@ -2871,8 +2952,17 @@
         <a href="ki-strategieentwicklung.html" class="mobile-menu-link"><i class="fas fa-brain"></i>KI-Strategie</a>
         <div style="border-top: 1px solid rgba(255,255,255,0.2); margin: 1rem 0;"></div>
         <a href="#" onclick="saveToProfile(); toggleMobileMenu();" class="mobile-menu-link"><i class="fas fa-save"></i>Im Profil speichern</a>
-        <span id="mobileUserBadge" class="mobile-user-badge" style="display: none;"></span>
-        <a href="login.html" class="mobile-menu-link" id="mobileLoginLink"><i class="fas fa-sign-in-alt"></i>Anmelden</a>
+        <button id="mobileHrAuthButton" class="mobile-hr-auth-btn">
+            <i class="fas fa-user"></i>
+            <span id="mobileHrAuthButtonText">Anmelden</span>
+        </button>
+        <div id="mobileHrAuthLinks" style="display: none;">
+            <a href="user-profile.html" class="mobile-menu-link" onclick="toggleMobileMenu()"><i class="fas fa-user-circle"></i> Mein Profil</a>
+            <a href="applications/dashboard.html" class="mobile-menu-link" onclick="toggleMobileMenu()"><i class="fas fa-th-large"></i> Dashboard</a>
+            <button class="mobile-menu-link" id="mobileHrLogoutBtn" style="width:100%;text-align:left;border:none;background:none;color:inherit;font:inherit;">
+                <i class="fas fa-sign-out-alt"></i> Abmelden
+            </button>
+        </div>
         <a href="#" onclick="downloadResults(); toggleMobileMenu();" class="mobile-menu-link mobile-menu-cta"><i class="fas fa-download"></i>PDF Export</a>
     </div>
     
@@ -4017,6 +4107,8 @@
 
     <!-- Scripts - BPMN wird bei Bedarf geladen (schnellerer Initial-Load) -->
     <script src="js/unified-aws-auth.js" defer></script>
+    <script src="js/unified-auth-modals.js" defer></script>
+    <script src="js/cloud-data-service.js"></script>
     <script src="js/shooting-stars.js" defer></script>
     <!-- PDF Export Libraries - nur bei Export benötigt -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
@@ -4251,9 +4343,43 @@
             renamedCategories: {} // { categoryId: "Neuer Name" }
         };
 
-        // Load saved data
-        function loadSavedData() {
-            const saved = localStorage.getItem('hrSelbsttest');
+        // User-spezifischer Storage-Key (Ergebnisse bleiben nach Re-Login erhalten)
+        function getHrStorageKey() {
+            const userId = (window.awsAuth && window.awsAuth.isLoggedIn && window.awsAuth.isLoggedIn())
+                ? (window.awsAuth.getUserDataFromToken?.()?.sub || window.awsAuth.getCurrentUser?.()?.username)
+                : null;
+            return userId ? 'hrSelbsttest_' + userId : 'hrSelbsttest';
+        }
+        function getSavedTestsKey() {
+            const userId = (window.awsAuth && window.awsAuth.isLoggedIn && window.awsAuth.isLoggedIn())
+                ? (window.awsAuth.getUserDataFromToken?.()?.sub || window.awsAuth.getCurrentUser?.()?.username)
+                : null;
+            return userId ? 'savedHRTests_' + userId : 'savedHRTests';
+        }
+
+        // Load saved data (zuerst AWS wenn eingeloggt, sonst localStorage)
+        async function loadSavedData() {
+            if (window.awsAuth?.isLoggedIn?.() && window.cloudDataService?.isUserLoggedIn?.()) {
+                try {
+                    const cloud = await window.cloudDataService.getHrSelbsttest();
+                    if (cloud.hrSelbsttest && Object.keys(cloud.hrSelbsttest).length > 0) {
+                        assessmentData = cloud.hrSelbsttest;
+                        if (!assessmentData.customProcesses) assessmentData.customProcesses = {};
+                        if (!assessmentData.customCategories) assessmentData.customCategories = [];
+                        if (!assessmentData.hiddenProcesses) assessmentData.hiddenProcesses = [];
+                        if (!assessmentData.hiddenCategories) assessmentData.hiddenCategories = [];
+                        if (!assessmentData.renamedProcesses) assessmentData.renamedProcesses = {};
+                        if (!assessmentData.renamedCategories) assessmentData.renamedCategories = {};
+                        localStorage.setItem(getHrStorageKey(), JSON.stringify(assessmentData));
+                        updateAllProgress();
+                        return;
+                    }
+                } catch (e) {
+                    console.warn('AWS HR-Daten laden fehlgeschlagen, Fallback localStorage:', e);
+                }
+            }
+            const key = getHrStorageKey();
+            const saved = localStorage.getItem(key);
             if (saved) {
                 assessmentData = JSON.parse(saved);
                 // Stelle sicher, dass neue Felder existieren
@@ -4267,10 +4393,26 @@
             }
         }
 
-        // Save data
+        // Debounced AWS-Sync (max 1x alle 3 Sek bei Änderungen)
+        let hrAwsSyncTimeout = null;
+        function scheduleAwsSync() {
+            if (!window.cloudDataService?.isUserLoggedIn?.()) return;
+            if (hrAwsSyncTimeout) clearTimeout(hrAwsSyncTimeout);
+            hrAwsSyncTimeout = setTimeout(async () => {
+                hrAwsSyncTimeout = null;
+                try {
+                    const savedKey = getSavedTestsKey();
+                    const savedTests = JSON.parse(localStorage.getItem(savedKey) || '[]');
+                    await window.cloudDataService.saveHrSelbsttest(assessmentData, savedTests);
+                } catch (e) { console.warn('AWS-Sync fehlgeschlagen:', e); }
+            }, 3000);
+        }
+        
+        // Save data (lokal + debounced AWS wie Bewerbungsmanager)
         function saveData() {
-            localStorage.setItem('hrSelbsttest', JSON.stringify(assessmentData));
+            localStorage.setItem(getHrStorageKey(), JSON.stringify(assessmentData));
             updateAllProgress();
+            scheduleAwsSync();
         }
 
         // Select rating
@@ -5521,7 +5663,7 @@
             const isLoggedIn = checkHrAuth();
             if (isLoggedIn) {
                 saveTestResults();
-                updateHrNavUserBadge();
+                updateHrNavAuthState();
             } else {
                 document.getElementById('authModal').classList.add('active');
             }
@@ -5537,48 +5679,86 @@
             return !!(userToken && userData);
         }
         
-        // User-Badge in der Nav aktualisieren (Desktop + Mobile)
-        function updateHrNavUserBadge() {
+        // Auth-State in Nav aktualisieren (Button + Dropdown wie Bewerbungsmanager)
+        function updateHrNavAuthState() {
+            const authBtn = document.getElementById('hrAuthButton');
+            const authBtnText = document.getElementById('hrAuthButtonText');
+            const mobileAuthBtn = document.getElementById('mobileHrAuthButton');
+            const mobileAuthBtnText = document.getElementById('mobileHrAuthButtonText');
+            const mobileAuthLinks = document.getElementById('mobileHrAuthLinks');
+            const mobileLogoutBtn = document.getElementById('mobileHrLogoutBtn');
+            const dropdown = document.getElementById('hrUserDropdown');
+            const logoutBtn = document.getElementById('hrLogoutBtn');
+            
+            const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn && window.awsAuth.isLoggedIn();
+            
             let displayName = '';
-            if (window.awsAuth && window.awsAuth.isLoggedIn && window.awsAuth.isLoggedIn()) {
+            if (isLoggedIn) {
                 const ud = window.awsAuth.getUserDataFromToken && window.awsAuth.getUserDataFromToken();
-                if (ud) displayName = ud.name || ud.email || '';
+                if (ud) displayName = ud.name || ud.email?.split('@')[0] || 'Profil';
+                displayName = displayName || 'Profil';
             }
-            if (!displayName) {
-                try {
-                    const ud = JSON.parse(localStorage.getItem('userData') || '{}');
-                    displayName = ud.name || ud.email || '';
-                } catch (e) {}
-            }
-            const shortName = displayName ? (displayName.length > 20 ? displayName.slice(0, 17) + '…' : displayName) : '';
-            const badge = document.getElementById('hrNavUserBadge');
-            if (badge) {
-                if (displayName) {
-                    badge.style.display = 'flex';
-                    badge.innerHTML = '<i class="fas fa-user-check"></i> ' + shortName;
-                } else {
-                    badge.style.display = 'none';
+            
+            const doLogout = async () => {
+                if (window.awsAuth?.logout) await window.awsAuth.logout();
+                localStorage.removeItem('awsUserSession');
+                localStorage.removeItem('awsAuthTokens');
+                window.location.reload();
+            };
+            
+            if (isLoggedIn) {
+                if (authBtn && authBtnText) {
+                    authBtn.style.display = 'flex';
+                    authBtn.classList.add('logged-in');
+                    authBtnText.textContent = displayName.length > 18 ? displayName.slice(0, 15) + '…' : displayName;
+                    const icon = authBtn.querySelector('i');
+                    if (icon) icon.className = 'fas fa-user-check';
+                    authBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        if (dropdown) dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+                    };
                 }
-            }
-            const mobileBadge = document.getElementById('mobileUserBadge');
-            const mobileLogin = document.getElementById('mobileLoginLink');
-            if (mobileBadge && mobileLogin) {
-                if (displayName) {
-                    mobileBadge.style.display = 'flex';
-                    mobileBadge.innerHTML = '<i class="fas fa-user-check"></i> ' + shortName;
-                    mobileLogin.style.display = 'none';
-                } else {
-                    mobileBadge.style.display = 'none';
-                    mobileLogin.style.display = '';
+                if (mobileAuthBtn && mobileAuthBtnText) {
+                    mobileAuthBtn.style.display = 'none';
                 }
+                if (mobileAuthLinks) mobileAuthLinks.style.display = 'block';
+                if (mobileLogoutBtn) mobileLogoutBtn.onclick = doLogout;
+                if (logoutBtn) logoutBtn.onclick = doLogout;
+                if (dropdown) dropdown.style.display = 'none';
+            } else {
+                if (authBtn && authBtnText) {
+                    authBtn.style.display = 'flex';
+                    authBtn.classList.remove('logged-in');
+                    authBtnText.textContent = 'Anmelden';
+                    const icon = authBtn.querySelector('i');
+                    if (icon) icon.className = 'fas fa-user';
+                    authBtn.onclick = () => {
+                        if (window.authModals?.showLogin) window.authModals.showLogin();
+                        else if (window.awsAuth?.showLoginModal) window.awsAuth.showLoginModal();
+                        else document.getElementById('authModal')?.classList?.add('active');
+                    };
+                }
+                if (mobileAuthBtn && mobileAuthBtnText) {
+                    mobileAuthBtn.style.display = 'flex';
+                    mobileAuthBtnText.textContent = 'Anmelden';
+                    const icon = mobileAuthBtn.querySelector('i');
+                    if (icon) icon.className = 'fas fa-user';
+                    mobileAuthBtn.onclick = () => {
+                        toggleMobileMenu();
+                        if (window.authModals?.showLogin) window.authModals.showLogin();
+                        else if (window.awsAuth?.showLoginModal) window.awsAuth.showLoginModal();
+                        else document.getElementById('authModal')?.classList?.add('active');
+                    };
+                }
+                if (mobileAuthLinks) mobileAuthLinks.style.display = 'none';
+                if (dropdown) dropdown.style.display = 'none';
             }
         }
         
-        // Test-Ergebnisse speichern
-        function saveTestResults() {
+        // Test-Ergebnisse speichern (lokal + AWS wie Bewerbungsmanager)
+        async function saveTestResults() {
             const scores = calculateScores();
             const timestamp = new Date().toISOString();
-            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
             
             const testResult = {
                 id: 'hr-selbsttest-' + Date.now(),
@@ -5589,14 +5769,23 @@
                 answers: collectAllAnswers()
             };
             
-            // Hole bestehende gespeicherte Tests
-            let savedTests = JSON.parse(localStorage.getItem('savedHRTests') || '[]');
+            // Hole bestehende gespeicherte Tests (user-spezifisch)
+            const savedKey = getSavedTestsKey();
+            let savedTests = JSON.parse(localStorage.getItem(savedKey) || '[]');
             savedTests.unshift(testResult); // Neueste zuerst
             if (savedTests.length > 10) savedTests = savedTests.slice(0, 10); // Max 10 behalten
             
-            localStorage.setItem('savedHRTests', JSON.stringify(savedTests));
+            localStorage.setItem(savedKey, JSON.stringify(savedTests));
             
-            // Zeige Erfolgsmeldung
+            // In AWS speichern (wie Bewerbungsmanager)
+            if (window.cloudDataService?.isUserLoggedIn?.()) {
+                try {
+                    await window.cloudDataService.saveHrSelbsttest(assessmentData, savedTests);
+                } catch (e) {
+                    console.warn('AWS-Speichern fehlgeschlagen:', e);
+                }
+            }
+            
             showSaveSuccess();
         }
         
@@ -5668,7 +5857,7 @@
                     if (result && result.success) {
                         closeAuthModal();
                         saveTestResults();
-                        if (typeof updateHrNavUserBadge === 'function') updateHrNavUserBadge();
+                        if (typeof updateHrNavAuthState === 'function') updateHrNavAuthState();
                         return;
                     }
                     showAuthError(result?.error || 'Anmeldung fehlgeschlagen.');
@@ -5690,7 +5879,7 @@
                     localStorage.setItem('userData', JSON.stringify({ email, name: data.name || email.split('@')[0] }));
                     closeAuthModal();
                     saveTestResults();
-                    if (typeof updateHrNavUserBadge === 'function') updateHrNavUserBadge();
+                    if (typeof updateHrNavAuthState === 'function') updateHrNavAuthState();
                     return;
                 }
             } catch (e) {}
@@ -5699,7 +5888,7 @@
             localStorage.setItem('userData', JSON.stringify({ email, name: email.split('@')[0] }));
             closeAuthModal();
             saveTestResults();
-            if (typeof updateHrNavUserBadge === 'function') updateHrNavUserBadge();
+            if (typeof updateHrNavAuthState === 'function') updateHrNavAuthState();
         }
         
         // Registrierung
@@ -5741,7 +5930,7 @@
                     localStorage.setItem('userData', JSON.stringify({ email, name }));
                     closeAuthModal();
                     saveTestResults();
-                    if (typeof updateHrNavUserBadge === 'function') updateHrNavUserBadge();
+                    if (typeof updateHrNavAuthState === 'function') updateHrNavAuthState();
                     return;
                 }
             } catch (e) {}
@@ -5750,7 +5939,7 @@
             localStorage.setItem('userData', JSON.stringify({ email, name }));
             closeAuthModal();
             saveTestResults();
-            if (typeof updateHrNavUserBadge === 'function') updateHrNavUserBadge();
+            if (typeof updateHrNavAuthState === 'function') updateHrNavAuthState();
         }
         
         // Auth-Tab wechseln
@@ -8210,6 +8399,26 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
 
         document.addEventListener('DOMContentLoaded', () => {
             loadSavedData();
+            // Auth kann asynchron starten: nach 1.5s erneut laden (user-spezifischer Key)
+            setTimeout(loadSavedData, 1500);
+            if (typeof updateAllProgress === 'function') setTimeout(updateAllProgress, 1600);
+            // Bei Auth-Änderung: Daten neu laden (user-spezifischer Key) + Nav aktualisieren
+            window.addEventListener('authStateChanged', () => {
+                loadSavedData();
+                if (typeof updateAllProgress === 'function') updateAllProgress();
+                setTimeout(updateHrNavAuthState, 100);
+            });
+            window.addEventListener('userLoggedIn', () => {
+                loadSavedData();
+                if (typeof updateAllProgress === 'function') updateAllProgress();
+                setTimeout(updateHrNavAuthState, 200);
+            });
+            // Dropdown schließen bei Klick außerhalb
+            document.addEventListener('click', (e) => {
+                const dd = document.getElementById('hrUserDropdown');
+                const btn = document.getElementById('hrAuthButton');
+                if (dd && btn && !btn.contains(e.target) && !dd.contains(e.target)) dd.style.display = 'none';
+            });
             // Schwere Init auslagern - UI bleibt sofort reaktiv (Vision/Kultur umschaltbar)
             const runHeavyInit = () => {
                 initProcessGrid();
@@ -8236,8 +8445,7 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 });
             };
             (typeof requestIdleCallback !== 'undefined' ? (cb) => requestIdleCallback(cb, { timeout: 100 }) : (cb) => setTimeout(cb, 0))(runHeavyInit);
-            setTimeout(updateHrNavUserBadge, 800);
-            window.addEventListener('userLoggedIn', () => setTimeout(updateHrNavUserBadge, 200));
+            setTimeout(updateHrNavAuthState, 800);
         });
     </script>
     

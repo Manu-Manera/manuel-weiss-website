@@ -215,6 +215,48 @@ class CloudDataService {
     }
 
     // ========================================
+    // HR-SELBSTTEST (wie Bewerbungsmanager in AWS)
+    // ========================================
+
+    /**
+     * HR-Selbsttest-Daten in AWS speichern
+     */
+    async saveHrSelbsttest(hrSelbsttest, savedHRTests) {
+        try {
+            const result = await this.apiRequest('/profile', 'PUT', {
+                hrSelbsttest: hrSelbsttest || {},
+                savedHRTests: savedHRTests || []
+            });
+            if (result?.success) {
+                this.cache.profile = result;
+                console.log('✅ HR-Selbsttest in AWS gespeichert');
+                return result;
+            }
+        } catch (error) {
+            console.warn('Cloud-Speichern HR-Selbsttest fehlgeschlagen:', error);
+        }
+        return { success: false };
+    }
+
+    /**
+     * HR-Selbsttest-Daten aus AWS laden
+     */
+    async getHrSelbsttest(forceRefresh = false) {
+        try {
+            const profile = await this.apiRequest('/profile');
+            if (profile?.hrSelbsttest !== undefined || profile?.savedHRTests !== undefined) {
+                return {
+                    hrSelbsttest: profile.hrSelbsttest || null,
+                    savedHRTests: profile.savedHRTests || []
+                };
+            }
+        } catch (error) {
+            console.warn('Cloud-Laden HR-Selbsttest fehlgeschlagen:', error);
+        }
+        return { hrSelbsttest: null, savedHRTests: [] };
+    }
+
+    // ========================================
     // LEBENSLÄUFE
     // ========================================
     
