@@ -1254,7 +1254,7 @@ async function analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey) {
       'Authorization': `Bearer ${openaiApiKey}`
     },
     body: JSON.stringify({
-      model: 'gpt-4o',
+      model: 'gpt-5.2',
       messages: [
         { role: 'system', content: ANALYZE_SYSTEM_PROMPT },
         { role: 'user', content: `Analysiere diesen HR-Prozess und liefere suggestions, raci (für alle Tasks), tobeDescription und tobeProcess:\n\n${structureText}` }
