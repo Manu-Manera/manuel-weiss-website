@@ -16,7 +16,7 @@ const CORS_HEADERS = {
   'Content-Type': 'application/json'
 };
 
-const SYSTEM_PROMPT = `Du bist ein erfahrener BPMN-2.0-Prozessmodellierer mit HR-Expertise.
+const SYSTEM_PROMPT = `Du bist ein erfahrener BPMN-2.0-Prozessmodellierer mit umfangreicher HR-Expertise.
 
 AUFGABE: Wandle den Prozess-Text in ein BPMN-Diagramm um.
 
@@ -25,14 +25,14 @@ KRITISCHE REGELN (strikt befolgen):
 1. VOLLSTÄNDIGKEIT: EINE ZEILE = EIN EINZIGER TASK
    - N Zeilen im Text → genau N Tasks (KEINE Obergrenze!)
    - Alle Tätigkeiten in EINER Zeile (Komma, Punkt, "und") gehören ZUSAMMEN in denselben Task!
-   - Beispiel: "MA: Abwesenheit erfassen. Zeitraum wählen. Kommentar hinzufügen." → 1 Task mit allen drei Tätigkeiten
 
-2. TASK-NAMEN: Format "Rolle: Tätigkeit" (max 50 Zeichen bei mehreren Tätigkeiten)
+
+2. TASK-NAMEN: Format "Rolle: Tätigkeit" (keine Obergrenze für Zeichenanzahl bei mehreren Tätigkeiten)
    - Gut: "HR: Stelle ausschreiben", "TL: Antrag prüfen"
-   - Rollen: MA (Mitarbeiter), TL (Teamleiter), AL (Abteilungsleiter), HR, GF (Geschäftsführung)
+   - Rollen: MA (Mitarbeiter), TL (Teamleiter), AL (Abteilungsleiter), HR (Human Resources), GF (Geschäftsführung), etc. 
 
 3. ENTSCHEIDUNGEN erkennen bei: "oder", "falls", "wenn", "prüft", "entscheidet", "genehmigt/abgelehnt"
-   → exclusiveGateway mit genau 2 ausgehenden Flows (Ja/Nein)
+   → exclusiveGateway mit genau 2 ausgehenden Flows (Ja/Nein) oder pro Entscheidung ein neuer Pfad mit eindeutiger Beschriftung
 
 4. LAYOUT für bpmn.io (WICHTIG für korrekte Darstellung):
    - row und col sind PFLICHT für jedes Element!
@@ -40,6 +40,8 @@ KRITISCHE REGELN (strikt befolgen):
    - row=1,2,...: Alternativpfade (bei Nein-Zweigen)
    - col=0,1,2,...: Position von links nach rechts, IMMER aufsteigend
    - KEINE doppelten row/col Kombinationen!
+   - Pfeile: IMMER LINKS in Task rein, RECHTS raus – daher ausreichend Abstand!
+   - Task NACH Gateway (Ja-Pfad): col = Gateway_col + 1 (mind. 1 Spalte Abstand, sonst geht Pfeil durch Task!)
    - Gateway-Nein-Pfad: gleiche col wie Ja-Pfad, aber row+1
 
 5. FLOW-REGELN:
@@ -83,6 +85,7 @@ HÄUFIGE FEHLER VERMEIDEN:
 - Eine Zeile in mehrere Tasks aufteilen → FALSCH (eine Zeile = ein Task, alle Tätigkeiten zusammen)
 - row/col weglassen → FALSCH (Layout wird kaputt)
 - Doppelte row/col → FALSCH (Elemente überlappen)
+- Task nach Gateway mit gleicher col wie Gateway → FALSCH (Pfeil geht durch Task! col+1 nötig)
 - Flows ohne source/target → FALSCH (Verbindungen fehlen)
 
 PROZESSE MIT BELIEBIG VIELEN SCHRITTEN (keine Obergrenze):
@@ -459,7 +462,9 @@ function calculateLayout(elements, flows) {
   const hasGridInfo = elements.some(el => el.row !== undefined && el.col !== undefined);
   
   // Schritt 1: Korrigiere row/col bei Duplikaten
-  const correctedElements = fixDuplicatePositions(elements, flows);
+  let correctedElements = fixDuplicatePositions(elements, flows);
+  // Schritt 1b: Task nach Gateway (Ja-Pfad) muss col > Gateway haben, sonst geht Pfeil durch Task
+  correctedElements = fixGatewaySuccessorCol(correctedElements, flows);
   
   if (hasGridInfo) {
     // Nutze row/col aus dem JSON für sauberes Grid-Layout
@@ -589,6 +594,31 @@ function fixDuplicatePositions(elements, flows) {
   }
   
   return corrected;
+}
+
+/**
+ * Stellt sicher, dass Tasks nach einem Gateway (Ja-Pfad) mindestens col+1 haben.
+ * Verhindert, dass der Pfeil durch den Task geht (Pfeil = links rein, rechts raus).
+ */
+function fixGatewaySuccessorCol(elements, flows) {
+  const elMap = new Map(elements.map(el => [el.id, el]));
+  const gateways = elements.filter(el => (el.type || '').includes('Gateway') || el.type === 'g');
+  
+  for (const gw of gateways) {
+    const gwCol = gw.col ?? 0;
+    const outgoing = flows.filter(f => f.source === gw.id);
+    for (const flow of outgoing) {
+      const isJaPath = !flow.name || /^(ja|yes|genehmigt|ok)$/i.test(String(flow.name));
+      if (!isJaPath) continue; // Nein-Pfad darf gleiche col haben (anderer row)
+      const target = elMap.get(flow.target);
+      if (!target || target.col === undefined) continue;
+      if (target.col <= gwCol) {
+        target.col = gwCol + 1;
+        console.log(`Gateway-Nachfolger korrigiert: ${target.id} col ${target.col - 1} → ${target.col}`);
+      }
+    }
+  }
+  return elements;
 }
 
 /**
