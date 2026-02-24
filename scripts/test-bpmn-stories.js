@@ -5,6 +5,7 @@
  * Aufruf:
  *   OPENAI_API_KEY=sk-... node scripts/test-bpmn-stories.js   # GPT-Integration (API oder Lambda)
  *   OPENAI_API_KEY=sk-... node scripts/test-bpmn-stories.js --lambda   # Nur Lambda direkt
+ *   OPENAI_API_KEY=sk-... node scripts/test-bpmn-stories.js --recruiting-12   # Nur 12-Zeilen-Recruiting-Test
  *   BPMN_API_BASE=https://... node scripts/test-bpmn-stories.js
  *
  * Ohne OPENAI_API_KEY schlägt der Test fehl (kein Fallback mehr).
@@ -14,6 +15,7 @@ const path = require('path');
 const API_BASE = process.env.BPMN_API_BASE || 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
 const ENDPOINT = API_BASE.replace(/\/$/, '') + '/text-to-bpmn-gpt';
 const USE_LAMBDA_DIRECT = process.argv.includes('--lambda');
+const ONLY_RECRUITING_12 = process.argv.includes('--recruiting-12');
 const OPENAI_API_KEY = (process.env.OPENAI_API_KEY || '').trim();
 
 const HR_STORIES = [
@@ -23,7 +25,20 @@ const HR_STORIES = [
   { id: 'bewerbung', title: 'Bewerbungsprozess', text: 'Bewerber sendet Lebenslauf und Anschreiben. HR prüft die Unterlagen und leitet sie an die Fachabteilung weiter. Bei Eignung wird zum Vorstellungsgespräch eingeladen. Nach dem Gespräch entscheidet die Abteilung. Bei Zusage erhält der Bewerber den Vertragsentwurf.' },
   { id: 'gehaltsabschluss', title: 'Gehaltsabschluss / Lohnrunden', text: 'HR bereitet die Lohnrunde vor und sammelt Vorschläge der Vorgesetzten. Die Vorschläge werden mit dem Budget abgeglichen. Nach Freigabe durch die Geschäftsleitung werden die Gehälter angepasst und die Mitarbeiter schriftlich informiert.' },
   { id: 'offboarding', title: 'Offboarding / Austritt', text: 'Mitarbeiter kündigt. HR bestätigt den Austrittstermin und startet die Checkliste. IT sperrt Zugänge zum Austrittsdatum. Rückgabe von Geräten und Ausweis. Letzte Lohnabrechnung und Arbeitszeugnis werden erstellt. Abschlussgespräch mit Vorgesetztem.' },
-  { id: 'schulung', title: 'Schulungsanmeldung', text: 'Mitarbeiter meldet sich für eine Schulung an. Der Vorgesetzte genehmigt die Teilnahme. Nach Genehmigung wird die Anmeldung an den Schulungsanbieter übermittelt. Der Mitarbeiter erhält eine Bestätigung und erinnert sich selbst an den Termin.' }
+  { id: 'schulung', title: 'Schulungsanmeldung', text: 'Mitarbeiter meldet sich für eine Schulung an. Der Vorgesetzte genehmigt die Teilnahme. Nach Genehmigung wird die Anmeldung an den Schulungsanbieter übermittelt. Der Mitarbeiter erhält eine Bestätigung und erinnert sich selbst an den Termin.' },
+  // 12-Zeilen-Test (Recruiting inkl. Onboarding & Abschluss) – früher fehlgeschlagen
+  { id: 'recruiting-12', title: 'Recruiting 12 Schritte', text: `Linie: Bedarf melden, Funktion/Level klären, Pensum/Startdatum festlegen, Budget bestätigen.
+HRBP: Briefing führen, Anforderungsprofil & Lohnband definieren, Freigabe Finance/GL einholen.
+HR Admin: Stelle im ATS eröffnen, Inserat erstellen/publizieren, Bewerbungen erfassen.
+HR/Recruiting: Sourcing & Screening, Shortlist, Interviews aufgleisen.
+Linie + HRBP: Interviews führen, Vergleich/Entscheid, Referenzen & Bewilligung (mit Einwilligung) prüfen.
+HRBP: Offer-Call, Konditionen finalisieren (Lohn, Bonus, Probezeit, Ferien, Arbeitsort/Hybrid, Kündigungsfrist).
+HR Admin (Arbeitsvertrag): Vertragsdaten erfassen, Vertragsvorlage wählen, Klauseln setzen (Pensum, Funktion, Lohn, Zulagen, Arbeitszeit, Probezeit, Startdatum, Ferien, Konkurrenzverbot falls nötig), Anhänge vorbereiten.
+HRBP: Vertragscheck (Compliance, Lohnband, Sonderklauseln), interne Freigaben einholen (Linie/GL).
+HR Admin: Vertrag final erstellen (PDF/e-sign), Versand, Unterschriften nachfassen, Dossier vollständig ablegen.
+HR Admin + Payroll: Eintritt im HRIS/Payroll erfassen, AHV/UVG/BVG triggern, Stammdaten & Bank/Steuern einholen.
+Linie + HR: Onboarding planen (Buddy, Einarbeitung, Ziele 30/60/90), IT/Workplace beauftragen, Probezeit-Check-ins setzen.
+HRBP: Prozessabschluss (ATS schliessen, Absagen, Reporting, DSG-Löschfristen).` }
 ];
 
 function isValidBpmnXml(xml) {
@@ -99,13 +114,18 @@ async function main() {
     console.log('Modus: API');
     console.log('Endpoint:', ENDPOINT);
   }
-  console.log('Stories:', HR_STORIES.length);
+  const stories = ONLY_RECRUITING_12 ? HR_STORIES.filter(s => s.id === 'recruiting-12') : HR_STORIES;
+  if (stories.length === 0) {
+    console.error('Keine Stories zum Testen (--recruiting-12?)');
+    process.exit(1);
+  }
+  console.log('Stories:', stories.length, ONLY_RECRUITING_12 ? '(nur recruiting-12)' : '');
   console.log('---');
 
   let testFn = useLambda ? testViaLambda : testViaApi;
   const results = [];
 
-  for (const story of HR_STORIES) {
+  for (const story of stories) {
     process.stdout.write(`  ${story.id} … `);
     try {
       let r = await testFn(story);

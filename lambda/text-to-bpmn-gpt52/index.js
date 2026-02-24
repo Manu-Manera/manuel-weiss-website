@@ -23,7 +23,7 @@ AUFGABE: Wandle den Prozess-Text in ein BPMN-Diagramm um.
 KRITISCHE REGELN (strikt befolgen):
 
 1. VOLLSTÄNDIGKEIT: JEDER Schritt im Text = EIN eigener Task
-   - 6 Schritte im Text → mindestens 6 Tasks erstellen
+   - N Schritte im Text → genau N Tasks erstellen (KEINE Obergrenze für die Anzahl Tasks!)
    - NIEMALS Schritte zusammenfassen oder weglassen!
 
 2. TASK-NAMEN: Format "Rolle: Tätigkeit" (max 30 Zeichen)
@@ -82,7 +82,13 @@ HÄUFIGE FEHLER VERMEIDEN:
 - Schritte zusammenfassen → FALSCH (jeder Schritt = ein Task)
 - row/col weglassen → FALSCH (Layout wird kaputt)
 - Doppelte row/col → FALSCH (Elemente überlappen)
-- Flows ohne source/target → FALSCH (Verbindungen fehlen)`;
+- Flows ohne source/target → FALSCH (Verbindungen fehlen)
+
+PROZESSE MIT BELIEBIG VIELEN SCHRITTEN (keine Obergrenze):
+- Jede Zeile im Text = EIN Task (col aufsteigend: 1, 2, 3, ... bis N)
+- Start col=0, End col=N+1
+- Alle Tasks auf row=0 (linearer Hauptpfad)
+- Flows: Start→Task_1→Task_2→...→Task_N→End`;
 
 function normalizeProcessText(text) {
   if (!text || typeof text !== 'string') return '';
@@ -1041,8 +1047,9 @@ async function generateBpmnWithGPT52(text, processId, apiKey) {
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: buildUserMessage(text) }
       ],
-      max_completion_tokens: 16384, // Erhöht für komplexe Prozesse mit 30+ Schritten
-      temperature: 0.3
+      max_completion_tokens: 65536, // Keine Beschränkung; auch 50+ Tasks möglich
+      temperature: 0.3,
+      response_format: { type: 'json_object' } // Garantiert valides JSON, reduziert Truncation-Probleme
     })
   });
 
@@ -1067,7 +1074,7 @@ async function generateBpmnWithGPT52(text, processId, apiKey) {
   const jsonData = parseJsonResponse(content);
   
   if (!jsonData || !jsonData.elements || jsonData.elements.length === 0) {
-    console.warn('No valid JSON from GPT, using fallback');
+    console.warn('No valid JSON from GPT, using fallback. finish_reason:', finishReason, 'content_preview:', content.slice(0, 300));
     return {
       bpmnXml: buildFallbackBpmnXml(text, processId),
       interpretation: 'Fallback: KI hat kein gültiges JSON geliefert.',
