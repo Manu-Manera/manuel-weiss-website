@@ -6724,10 +6724,10 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                             boxHeight += 6 + Math.min(nl.length, 3) * 3.5;
                         }
                         if (hasBpmn) {
-                            // Calculate actual image height based on aspect ratio
+                            // Größere Darstellung für bessere Lesbarkeit (max 55mm Höhe)
                             const aspectRatio = bpmnData.aspectRatio || 2;
                             const maxWidth = contentWidth - 30;
-                            const maxHeight = 38;
+                            const maxHeight = 55;
                             bpmnImgHeight = Math.min(maxWidth / aspectRatio, maxHeight);
                             boxHeight += 8 + bpmnImgHeight; // Label + image + padding
                         }
@@ -6829,9 +6829,9 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                                 const imgDataUrl = bpmnData.dataUrl || bpmnData;
                                 const aspectRatio = bpmnData.aspectRatio || 2;
                                 
-                                // Calculate dimensions maintaining aspect ratio
+                                // Größere Darstellung für bessere Lesbarkeit (max 55mm Höhe)
                                 const maxWidth = contentWidth - 30;
-                                const maxHeight = 38;
+                                const maxHeight = 55;
                                 
                                 let imgWidth, imgHeight;
                                 if (maxWidth / aspectRatio <= maxHeight) {
@@ -8320,10 +8320,10 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 let viewer = null;
                 
                 try {
-                    // Create temporary container - größer für höhere PDF-Qualität (DPI verdoppelt)
+                    // Container: Maximum für PDF-Qualität (iOS-Limit 4096, Desktop bis 6000)
                     const isMobile = window.innerWidth < 768;
-                    const containerWidth = isMobile ? 1600 : 2400;
-                    const containerHeight = isMobile ? 800 : 1200;
+                    const containerWidth = isMobile ? 2000 : 3200;
+                    const containerHeight = isMobile ? 1000 : 1600;
                     
                     tempContainer = document.createElement('div');
                     tempContainer.style.cssText = `position: absolute; left: -9999px; top: -9999px; width: ${containerWidth}px; height: ${containerHeight}px;`;
@@ -8358,12 +8358,12 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                         }
                     }
                     
-                    // Scale factor für PDF-Qualität (verdoppelt für lesbare Prozesse im Report)
-                    const scale = isMobile ? 2 : 3;
-                    const maxWidth = isMobile ? 2400 : 4000;
-                    const maxHeight = isMobile ? 1600 : 2400;
-                    const outputWidth = Math.min(Math.max(svgWidth * scale, 1600), maxWidth);
-                    const outputHeight = Math.min(Math.max(svgHeight * scale, 800), maxHeight);
+                    // Maximum-Qualität: scale 4–5, max 6000px (iOS Canvas-Limit 4096 beachten)
+                    const scale = isMobile ? 3 : 5;
+                    const maxWidth = isMobile ? 3600 : 6000;
+                    const maxHeight = isMobile ? 2400 : 3600;
+                    const outputWidth = Math.min(Math.max(svgWidth * scale, 2000), maxWidth);
+                    const outputHeight = Math.min(Math.max(svgHeight * scale, 1200), maxHeight);
                     
                     // Set explicit dimensions on SVG for proper rendering
                     svgEl.setAttribute('width', outputWidth);
