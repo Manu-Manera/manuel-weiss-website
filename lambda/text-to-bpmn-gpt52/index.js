@@ -92,7 +92,13 @@ PROZESSE MIT BELIEBIG VIELEN SCHRITTEN (keine Obergrenze):
 
 FORMAT "Kategorie: Rolle: Tätigkeit" (z.B. Ferien, Unbezahlter Urlaub, Krankmeldung):
 - Jede Zeile = EIN Task. Task-Name aus "Rolle: Tätigkeit" ableiten (max 40 Zeichen, Kategorie optional)
-- Linear von oben nach unten: Task_1, Task_2, ... Task_N`;
+- Linear von oben nach unten: Task_1, Task_2, ... Task_N
+
+WICHTIG bei 12+ Zeilen (lange Prozesse): KOMPAKTES JSON verwenden, um Truncation zu vermeiden!
+- Statt "elements" → "e", statt "flows" → "f", statt "processName" → "n"
+- Pro Element: "i"=id, "t"=type (u=userTask,s=startEvent,e=endEvent,g=exclusiveGateway), "m"=name, "r"=row, "c"=col
+- Pro Flow: "i"=id, "s"=source, "t"=target, "l"=name (optional)
+- Beispiel: {"n":"Prozess","e":[{"i":"Start_1","t":"s","m":"Start","r":0,"c":0},{"i":"Task_1","t":"u","m":"MA: Antrag","r":0,"c":1}],"f":[{"i":"F1","s":"Start_1","t":"Task_1"}]}`;
 
 function normalizeProcessText(text) {
   if (!text || typeof text !== 'string') return '';
@@ -101,7 +107,12 @@ function normalizeProcessText(text) {
 }
 
 function buildUserMessage(text) {
-  return `Prozess-Text:\n\n${normalizeProcessText(text)}`;
+  const normalized = normalizeProcessText(text);
+  const lineCount = (normalized.match(/\n/g) || []).length + 1;
+  const compactHint = lineCount >= 12
+    ? '\n\n[Hinweis: 12+ Zeilen – bitte KOMPAKTES JSON (e, f, n, i, t, m, r, c, s) verwenden!]'
+    : '';
+  return `Prozess-Text:\n\n${normalized}${compactHint}`;
 }
 
 /**
@@ -1051,7 +1062,7 @@ async function generateBpmnWithGPT52(text, processId, apiKey) {
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: buildUserMessage(text) }
       ],
-      max_completion_tokens: 65536, // Keine Beschränkung; auch 50+ Tasks möglich
+      max_completion_tokens: 128000, // Lange Prozesse (19+ Zeilen) – kompaktes JSON reduziert Truncation
       temperature: 0.3,
       response_format: { type: 'json_object' } // Garantiert valides JSON, reduziert Truncation-Probleme
     })
@@ -1075,7 +1086,8 @@ async function generateBpmnWithGPT52(text, processId, apiKey) {
     console.warn('GPT response was truncated due to max_tokens limit');
   }
   
-  const jsonData = parseJsonResponse(content);
+  let jsonData = parseJsonResponse(content);
+  if (jsonData) jsonData = expandCompactJson(jsonData);
   
   if (!jsonData || !jsonData.elements || jsonData.elements.length === 0) {
     console.warn('No valid JSON from GPT, using fallback. finish_reason:', finishReason, 'content_preview:', content.slice(0, 300));
@@ -1103,6 +1115,15 @@ async function generateBpmnWithGPT52(text, processId, apiKey) {
     if (jsonData.flows.length < before) {
       console.warn(`Removed ${before - jsonData.flows.length} flows with invalid source/target references`);
     }
+  }
+  // Bei Truncation: Wenn keine Flows, lineare Flows aus Element-Reihenfolge (col) erzeugen
+  if (!jsonData.flows || jsonData.flows.length === 0) {
+    const els = [...jsonData.elements].sort((a, b) => (a.col ?? 999) - (b.col ?? 999));
+    jsonData.flows = [];
+    for (let i = 0; i < els.length - 1; i++) {
+      jsonData.flows.push({ id: `F${i + 1}`, source: els[i].id, target: els[i + 1].id });
+    }
+    console.log('Auto-generated linear flows from element order (truncation recovery)');
   }
 
   let bpmnXml;

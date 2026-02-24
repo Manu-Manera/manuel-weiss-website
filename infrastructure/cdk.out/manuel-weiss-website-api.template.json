@@ -10202,7 +10202,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-038333965110-eu-central-1",
-     "S3Key": "a1d12a7f59d32d51347ffcfe673dfc10886e90a466ebe129259034dcf0b0f7e4.zip"
+     "S3Key": "ca26a3fb39d210f5e5a5d6d7a86421c35caaca375e5b5ae4a41284c713a865e6.zip"
     },
     "FunctionName": "website-text-to-bpmn-gpt52",
     "Handler": "index.handler",
@@ -10240,7 +10240,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "manuel-weiss-website-api/TextToBpmnGpt52Function/Resource",
-    "aws:asset:path": "asset.a1d12a7f59d32d51347ffcfe673dfc10886e90a466ebe129259034dcf0b0f7e4",
+    "aws:asset:path": "asset.ca26a3fb39d210f5e5a5d6d7a86421c35caaca375e5b5ae4a41284c713a865e6",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }

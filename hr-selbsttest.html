@@ -1104,6 +1104,23 @@
         
         .process-category.expanded .category-processes {
             max-height: 400px;
+            overflow-y: auto; /* Scrollbar bei vielen Prozessen – "Eigenen Prozess hinzufügen" bleibt erreichbar */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(99, 102, 241, 0.5) rgba(255, 255, 255, 0.05);
+        }
+        .process-category.expanded .category-processes::-webkit-scrollbar {
+            width: 8px;
+        }
+        .process-category.expanded .category-processes::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 4px;
+        }
+        .process-category.expanded .category-processes::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.4);
+            border-radius: 4px;
+        }
+        .process-category.expanded .category-processes::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.6);
         }
         
         .process-item {
