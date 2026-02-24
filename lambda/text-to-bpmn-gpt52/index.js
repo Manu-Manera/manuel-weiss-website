@@ -31,8 +31,11 @@ KRITISCHE REGELN (strikt befolgen):
    - Gut: "HR: Stelle ausschreiben", "TL: Antrag prüfen"
    - Rollen: MA (Mitarbeiter), TL (Teamleiter), AL (Abteilungsleiter), HR (Human Resources), GF (Geschäftsführung), etc. 
 
-3. ENTSCHEIDUNGEN erkennen bei: "oder", "falls", "wenn", "prüft", "entscheidet", "genehmigt/abgelehnt"
-   → exclusiveGateway mit genau 2 ausgehenden Flows (Ja/Nein) oder pro Entscheidung ein neuer Pfad mit eindeutiger Beschriftung
+3. ENTSCHEIDUNGEN (WICHTIG für HR-Prozesse):
+   - Immer wenn jemand etwas ablehnen/genehmigen kann: "lehnt ab", "genehmigt", "prüft", "entscheidet" → exclusiveGateway!
+   - Beispiel: "TL lehnt unbezahlten Urlaub ab" → Gateway "Genehmigt?" mit Ja (weiter) und Nein (Absage-Task)
+   - 2 Pfade: name "Ja"/"Nein" oder "Genehmigt"/"Abgelehnt"
+   - 3+ Pfade (z.B. Budget-Stufen): name "<5000", "5000-10000", ">10000" – jeder Pfad eigener Task, row aufsteigend
 
 4. LAYOUT für bpmn.io (WICHTIG für korrekte Darstellung):
    - row und col sind PFLICHT für jedes Element!
@@ -43,10 +46,12 @@ KRITISCHE REGELN (strikt befolgen):
    - Pfeile: IMMER LINKS in Task rein, RECHTS raus – daher ausreichend Abstand!
    - Task NACH Gateway (Ja-Pfad): col = Gateway_col + 1 (mind. 1 Spalte Abstand, sonst geht Pfeil durch Task!)
    - Gateway-Nein-Pfad: gleiche col wie Ja-Pfad, aber row+1
+   - Bei 3+ Pfaden: row 0, 1, 2, ... für jeden Pfad; col = Gateway_col + 1 für alle
 
 5. FLOW-REGELN:
    - Jeder Flow braucht eindeutige id, source, target
-   - Bei Gateways: "name": "Ja" oder "name": "Nein" für die Flows
+   - Bei Gateways: "name": "Ja"/"Nein" oder "Genehmigt"/"Abgelehnt" oder bei 3+ Pfaden z.B. "<5000"/"5000-10000"/">10000"
+   - Ablehnungspfade: Immer einen Task für die Ablehnung (z.B. "HR: Absage senden") und eigenes End-Event
    - Flows verbinden Elemente in col-Reihenfolge
 
 AUSGABE: NUR JSON, kein anderer Text!
@@ -886,27 +891,14 @@ function calculateWaypointsWithAvoidance(src, tgt, positions, srcId, tgtId) {
       return directPath;
     }
     
-    // Alternative: Mit etwas Abstand zum Ziel und dann von oben/unten rein
-    // Statt außen herum, lieber näher am Ziel mit Knick
-    if (tgtIsBelow) {
-      // Route: rechts raus, runter neben das Ziel, dann von oben rein
-      return [
-        { x: srcRight, y: srcCenterY },
-        { x: tgtLeft - 25, y: srcCenterY },
-        { x: tgtLeft - 25, y: tgtTop - 20 },
-        { x: tgtCenterX, y: tgtTop - 20 },
-        { x: tgtCenterX, y: tgtTop }
-      ];
-    } else {
-      // Route: rechts raus, hoch neben das Ziel, dann von unten rein
-      return [
-        { x: srcRight, y: srcCenterY },
-        { x: tgtLeft - 25, y: srcCenterY },
-        { x: tgtLeft - 25, y: tgtBottom + 20 },
-        { x: tgtCenterX, y: tgtBottom + 20 },
-        { x: tgtCenterX, y: tgtBottom }
-      ];
-    }
+    // Alternative: Um Hindernis herum, aber IMMER von LINKS in Task rein (nicht von oben/unten!)
+    const approachX = tgtLeft - 25;
+    return [
+      { x: srcRight, y: srcCenterY },
+      { x: approachX, y: srcCenterY },
+      { x: approachX, y: tgtCenterY },
+      { x: tgtLeft, y: tgtCenterY }
+    ];
   }
   
   // ============================================
