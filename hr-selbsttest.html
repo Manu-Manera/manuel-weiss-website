@@ -5293,10 +5293,6 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="bpmn-hint">
-                                <span class="bpmn-hint-desktop"><i class="fas fa-search-plus"></i> Mausrad zum Zoomen &nbsp;|&nbsp; <i class="fas fa-hand-paper"></i> Ziehen zum Verschieben</span>
-                                <span class="bpmn-hint-mobile"><i class="fas fa-hand-pointer"></i> Wischen zum Verschieben &nbsp;|&nbsp; <i class="fas fa-expand-arrows-alt"></i> Zwei Finger zoomen</span>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -8324,10 +8320,10 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 let viewer = null;
                 
                 try {
-                    // Create temporary container - smaller for mobile
+                    // Create temporary container - größer für höhere PDF-Qualität (DPI verdoppelt)
                     const isMobile = window.innerWidth < 768;
-                    const containerWidth = isMobile ? 800 : 1200;
-                    const containerHeight = isMobile ? 400 : 600;
+                    const containerWidth = isMobile ? 1600 : 2400;
+                    const containerHeight = isMobile ? 800 : 1200;
                     
                     tempContainer = document.createElement('div');
                     tempContainer.style.cssText = `position: absolute; left: -9999px; top: -9999px; width: ${containerWidth}px; height: ${containerHeight}px;`;
@@ -8362,12 +8358,12 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                         }
                     }
                     
-                    // Scale factor for quality (reduced for mobile compatibility)
-                    const scale = isMobile ? 1 : 1.5;
-                    const maxWidth = isMobile ? 1200 : 2000;
-                    const maxHeight = isMobile ? 800 : 1200;
-                    const outputWidth = Math.min(Math.max(svgWidth * scale, 800), maxWidth);
-                    const outputHeight = Math.min(Math.max(svgHeight * scale, 400), maxHeight);
+                    // Scale factor für PDF-Qualität (verdoppelt für lesbare Prozesse im Report)
+                    const scale = isMobile ? 2 : 3;
+                    const maxWidth = isMobile ? 2400 : 4000;
+                    const maxHeight = isMobile ? 1600 : 2400;
+                    const outputWidth = Math.min(Math.max(svgWidth * scale, 1600), maxWidth);
+                    const outputHeight = Math.min(Math.max(svgHeight * scale, 800), maxHeight);
                     
                     // Set explicit dimensions on SVG for proper rendering
                     svgEl.setAttribute('width', outputWidth);
