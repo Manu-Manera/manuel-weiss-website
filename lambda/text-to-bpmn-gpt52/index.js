@@ -88,7 +88,11 @@ PROZESSE MIT BELIEBIG VIELEN SCHRITTEN (keine Obergrenze):
 - Jede Zeile im Text = EIN Task (col aufsteigend: 1, 2, 3, ... bis N)
 - Start col=0, End col=N+1
 - Alle Tasks auf row=0 (linearer Hauptpfad)
-- Flows: Start→Task_1→Task_2→...→Task_N→End`;
+- Flows: Start→Task_1→Task_2→...→Task_N→End
+
+FORMAT "Kategorie: Rolle: Tätigkeit" (z.B. Ferien, Unbezahlter Urlaub, Krankmeldung):
+- Jede Zeile = EIN Task. Task-Name aus "Rolle: Tätigkeit" ableiten (max 40 Zeichen, Kategorie optional)
+- Linear von oben nach unten: Task_1, Task_2, ... Task_N`;
 
 function normalizeProcessText(text) {
   if (!text || typeof text !== 'string') return '';
@@ -1081,13 +1085,42 @@ async function generateBpmnWithGPT52(text, processId, apiKey) {
       assumptions: 'ANNAHME: Einfaches Start → Task → Ende Diagramm erstellt.'
     };
   }
-  
-  const bpmnXml = generateBpmnXmlFromJson(jsonData, processId);
+
+  // Elemente ohne ID bereinigen; Flows mit ungültigen source/target entfernen
+  jsonData.elements = (jsonData.elements || []).filter(el => el && el.id);
+  if (jsonData.elements.length === 0) {
+    console.warn('No elements with valid IDs after cleanup, using fallback');
+    return {
+      bpmnXml: buildFallbackBpmnXml(text, processId),
+      interpretation: 'Fallback: Keine gültigen Elemente im JSON.',
+      assumptions: 'ANNAHME: Einfaches Start → Task → Ende Diagramm erstellt.'
+    };
+  }
+  const validIds = new Set(jsonData.elements.map(el => el.id));
+  if (jsonData.flows && jsonData.flows.length > 0) {
+    const before = jsonData.flows.length;
+    jsonData.flows = jsonData.flows.filter(f => validIds.has(f.source) && validIds.has(f.target));
+    if (jsonData.flows.length < before) {
+      console.warn(`Removed ${before - jsonData.flows.length} flows with invalid source/target references`);
+    }
+  }
+
+  let bpmnXml;
+  try {
+    bpmnXml = generateBpmnXmlFromJson(jsonData, processId);
+  } catch (xmlErr) {
+    console.warn('generateBpmnXmlFromJson failed:', xmlErr.message);
+    return {
+      bpmnXml: buildFallbackBpmnXml(text, processId),
+      interpretation: 'Fallback: Fehler bei BPMN-Generierung.',
+      assumptions: `ANNAHME: ${xmlErr.message} – Einfaches Diagramm erstellt.`
+    };
+  }
 
   return {
     bpmnXml,
     interpretation: jsonData.interpretation || undefined,
-    assumptions: (jsonData.assumptions || []).join('\n') || undefined
+    assumptions: Array.isArray(jsonData.assumptions) ? jsonData.assumptions.join('\n') : (jsonData.assumptions ? String(jsonData.assumptions) : undefined)
   };
 }
 
