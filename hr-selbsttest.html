@@ -2209,6 +2209,27 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
+        /* Desktop: Prozess-Modal breiter */
+        @media (min-width: 1024px) {
+            .hr-process-modal {
+                max-width: 1100px !important;
+            }
+        }
+        @media (min-width: 1280px) {
+            .hr-process-modal {
+                max-width: 1200px !important;
+            }
+        }
+        /* Prozess-Modal: Überschrift WEISS auf dunklem Hintergrund (Lesbarkeit!) */
+        .hr-process-modal .modal-header {
+            background: transparent !important;
+        }
+        .hr-process-modal .modal-title,
+        .hr-process-modal h2.modal-title,
+        #processModal .modal-title {
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+        }
         /* Prozess-Modal: Dunkler Hintergrund, helle Schrift (Lesbarkeit) */
         .hr-process-modal .modal-body,
         .hr-process-modal .rating-group-title,
