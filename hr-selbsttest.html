@@ -2198,8 +2198,9 @@
             display: flex;
         }
         
-        .modal-content {
-            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+        .modal-content,
+        .hr-process-modal {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%) !important;
             border-radius: 24px;
             width: 100%;
             max-width: 800px;
@@ -2207,6 +2208,39 @@
             overflow-y: auto;
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        /* Prozess-Modal: Dunkler Hintergrund, helle Schrift (Lesbarkeit) */
+        .hr-process-modal .modal-body,
+        .hr-process-modal .rating-group-title,
+        .hr-process-modal .rating-column-label,
+        .hr-process-modal .rating-label,
+        .hr-process-modal .rating-value,
+        .hr-process-modal .wizard-textarea,
+        .hr-process-modal .wizard-textarea::placeholder {
+            color: #e2e8f0 !important;
+        }
+        .hr-process-modal .rating-column-label,
+        .hr-process-modal .rating-label {
+            color: #a5b4fc !important;
+        }
+        .hr-process-modal .rating-column {
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+        .hr-process-modal .rating-value {
+            color: #fff !important;
+        }
+        .hr-process-modal .rating-option {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-color: rgba(255, 255, 255, 0.15) !important;
+        }
+        .hr-process-modal .rating-option.selected {
+            background: rgba(99, 102, 241, 0.25) !important;
+            border-color: #6366f1 !important;
+        }
+        .hr-process-modal .wizard-textarea {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-color: rgba(255, 255, 255, 0.15) !important;
+            color: #e2e8f0 !important;
         }
         
         .modal-header {
@@ -4088,9 +4122,9 @@
         </div>
     </div>
 
-    <!-- Process Deep Dive Modal -->
+    <!-- Process Deep Dive Modal - Dunkles Theme (Kontrast wie ursprünglich) -->
     <div class="modal-overlay" id="processModal">
-        <div class="modal-content">
+        <div class="modal-content hr-process-modal">
             <div class="modal-header">
                 <h2 class="modal-title" id="modalTitle">Prozess bewerten</h2>
                 <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
