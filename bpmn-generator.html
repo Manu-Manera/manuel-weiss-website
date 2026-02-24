@@ -152,6 +152,12 @@
         .bpmn-diagram-actions button:hover {
             background: rgba(255,255,255,0.3);
         }
+        .bpmn-analyze-btn {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.9), rgba(99, 102, 241, 0.9)) !important;
+        }
+        .bpmn-analyze-btn:hover {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 1), rgba(99, 102, 241, 1)) !important;
+        }
         
         #bpmnDiagramContainer { 
             height: 500px; 
@@ -325,6 +331,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                 <div class="bpmn-diagram-header">
                     <h3><i class="fas fa-sitemap"></i> Prozess-Workflow</h3>
                     <div class="bpmn-diagram-actions">
+                        <button type="button" id="bpmnAnalyzeBtn" class="bpmn-analyze-btn" title="KI analysiert den Prozess und gibt Optimierungsvorschläge"><i class="fas fa-magic"></i> KI analysieren</button>
                         <button type="button" id="bpmnCopyBtn"><i class="fas fa-copy"></i> Kopieren</button>
                         <button type="button" id="bpmnDownloadBtn"><i class="fas fa-download"></i> .bpmn</button>
                         <button type="button" id="bpmnOpenDemoBtn"><i class="fas fa-external-link-alt"></i> bpmn.io</button>
@@ -337,6 +344,13 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             </div>
         </div>
         
+        <div id="bpmnOptimizePanel" class="bpmn-optimize-panel" style="display: none; margin-top: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 12px; border: 1px solid rgba(14, 165, 233, 0.3);">
+            <h4 style="margin: 0 0 0.75rem; color: #0369a1;"><i class="fas fa-lightbulb"></i> KI-Optimierungsvorschläge</h4>
+            <div id="bpmnOptimizeLoading" style="display: none; padding: 1rem; text-align: center; color: #64748b;"><i class="fas fa-spinner fa-spin"></i> Analysiere Prozess…</div>
+            <div id="bpmnOptimizeContent" style="display: none;"></div>
+            <div id="bpmnOptimizeError" style="display: none; padding: 0.75rem; background: #fee2e2; color: #991b1b; border-radius: 8px; font-size: 0.9rem;"></div>
+        </div>
+
         <div class="bpmn-tabs-section">
             <div class="bpmn-result-tabs">
                 <button type="button" id="bpmnTabRaci" class="active"><i class="fas fa-users-cog"></i> Rollen & RACI</button>
@@ -402,7 +416,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         </div>
         <div id="bpmnDiagramWrap" style="display:none;"></div>
 
-        <p style="text-align: center; margin-top: 2rem;">
+        <p style="text-align: center; margin-top: 2rem;" id="bpmnBackLink">
             <a href="hr-prozessautomatisierung.html" style="color: #667eea;">← Zurück zur HR-Prozessautomatisierung</a>
         </p>
     </main>
@@ -836,7 +850,94 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         });
     }
 
+    // Pre-Load: Prozess aus HR-Selbsttest (Prozess Optimieren)
+    (function loadOptimizeProcess() {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('optimize') !== '1') return;
+        try {
+            var stored = sessionStorage.getItem('bpmn-optimize-process');
+            if (!stored) return;
+            var data = JSON.parse(stored);
+            sessionStorage.removeItem('bpmn-optimize-process');
+            if (data.description && processTextEl) {
+                processTextEl.value = data.description;
+                processTextEl.dataset.example = 'false';
+            }
+            if (data.bpmnXml) {
+                showResult(data.bpmnXml, null, null);
+            }
+            if (data.returnUrl) {
+                var backEl = document.getElementById('bpmnBackLink');
+                if (backEl) backEl.innerHTML = '<a href="' + data.returnUrl + '" style="color: #667eea;"><i class="fas fa-arrow-left"></i> Zurück zum HR-Selbsttest</a>';
+            }
+        } catch (e) { console.warn('loadOptimizeProcess:', e); }
+    })();
+
+    async function analyzeBpmn() {
+        getCurrentXmlFromEditor(function(err, xml) {
+            var bpmnXml = xml || currentBpmnXml;
+            if (!bpmnXml || bpmnXml.length < 50) {
+                showError('Kein BPMN-Diagramm vorhanden. Bitte zuerst einen Workflow generieren.');
+                return;
+            }
+            var panel = document.getElementById('bpmnOptimizePanel');
+            var loading = document.getElementById('bpmnOptimizeLoading');
+            var content = document.getElementById('bpmnOptimizeContent');
+            var errEl = document.getElementById('bpmnOptimizeError');
+            if (!panel || !loading || !content || !errEl) return;
+            panel.style.display = 'block';
+            loading.style.display = 'block';
+            content.style.display = 'none';
+            errEl.style.display = 'none';
+            content.innerHTML = '';
+            var desc = (processTextEl && processTextEl.value) ? processTextEl.value.trim() : '';
+            (async function() {
+                try {
+                    var openaiApiKey = '';
+                    if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
+                        openaiApiKey = await window.awsAPISettings.getFullApiKey('openai') || '';
+                    }
+                    if (!openaiApiKey || openaiApiKey.length < 10) {
+                        throw new Error('OpenAI API-Key nicht konfiguriert. Bitte im Admin unter API Keys hinterlegen.');
+                    }
+                    var url = apiUrl();
+                    if (!url) throw new Error('API-URL nicht konfiguriert.');
+                    var res = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'analyze', bpmnXml: bpmnXml, description: desc, openaiApiKey: openaiApiKey })
+                    });
+                    var data = await res.json().catch(function() { return {}; });
+                    if (!res.ok) throw new Error(data.error || res.statusText || 'Unbekannter Fehler');
+                    if (!data.success || !Array.isArray(data.suggestions)) throw new Error('Keine Vorschläge erhalten.');
+                    var typeLabels = { bottleneck: 'Flaschenhals', redundancy: 'Redundanz', automation: 'Automatisierung', clarity: 'Klarheit', compliance: 'Compliance', other: 'Sonstiges' };
+                    var prioColors = { high: '#dc2626', medium: '#d97706', low: '#059669' };
+                    var html = '<ul style="margin:0;padding:0;list-style:none;">';
+                    data.suggestions.forEach(function(s) {
+                        var typeLabel = typeLabels[s.type] || s.type || 'Sonstiges';
+                        var prioColor = prioColors[s.priority] || '#64748b';
+                        html += '<li style="margin-bottom:1rem;padding:0.75rem;background:white;border-radius:8px;border-left:4px solid ' + prioColor + ';box-shadow:0 1px 3px rgba(0,0,0,0.08);">';
+                        html += '<strong style="color:#1e293b;">' + (s.title || 'Vorschlag') + '</strong>';
+                        html += ' <span style="font-size:0.75rem;color:#64748b;margin-left:0.5rem;">' + typeLabel + ' · ' + (s.priority || 'medium') + '</span>';
+                        html += '<p style="margin:0.5rem 0 0;font-size:0.9rem;color:#475569;line-height:1.5;">' + (s.description || '').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</p>';
+                        html += '</li>';
+                    });
+                    html += '</ul>';
+                    content.innerHTML = html;
+                    content.style.display = 'block';
+                } catch (e) {
+                    errEl.textContent = e.message || 'Analyse fehlgeschlagen.';
+                    errEl.style.display = 'block';
+                } finally {
+                    loading.style.display = 'none';
+                }
+            })();
+        });
+    }
+
     document.getElementById('bpmnGenerateBtn').addEventListener('click', generateBpmn);
+    var analyzeBtn = document.getElementById('bpmnAnalyzeBtn');
+    if (analyzeBtn) analyzeBtn.addEventListener('click', analyzeBpmn);
     document.getElementById('bpmnCopyBtn').addEventListener('click', copyXml);
     document.getElementById('bpmnDownloadBtn').addEventListener('click', downloadBpmn);
     document.getElementById('bpmnOpenDemoBtn').addEventListener('click', openInDemoBpmnIo);

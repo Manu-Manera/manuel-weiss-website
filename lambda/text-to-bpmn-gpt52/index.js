@@ -1169,6 +1169,98 @@ async function generateBpmnWithGPT52(text, processId, apiKey) {
   };
 }
 
+/**
+ * Extrahiert Prozessstruktur aus BPMN-XML für KI-Analyse.
+ */
+function extractProcessStructureFromXml(bpmnXml) {
+  const tasks = [];
+  const gateways = [];
+  const flows = [];
+  try {
+    const taskEls = bpmnXml.match(/<bpmn:(?:userTask|serviceTask|task)[^>]*>/g) || [];
+    for (const el of taskEls) {
+      const name = (el.match(/name="([^"]*)"/) || [])[1] || '';
+      const id = (el.match(/id="([^"]+)"/) || [])[1] || '';
+      if (id) tasks.push({ name, id });
+    }
+    const gwEls = bpmnXml.match(/<bpmn:exclusiveGateway[^>]*>/g) || [];
+    for (const el of gwEls) {
+      const name = (el.match(/name="([^"]*)"/) || [])[1] || '';
+      const id = (el.match(/id="([^"]+)"/) || [])[1] || '';
+      if (id) gateways.push({ name, id });
+    }
+    const flowEls = bpmnXml.match(/<bpmn:sequenceFlow[^>]*>/g) || [];
+    for (const el of flowEls) {
+      const source = (el.match(/sourceRef="([^"]+)"/) || [])[1] || '';
+      const target = (el.match(/targetRef="([^"]+)"/) || [])[1] || '';
+      const name = (el.match(/name="([^"]*)"/) || [])[1] || '';
+      if (source && target) flows.push({ source, target, name });
+    }
+  } catch (e) {
+    console.warn('extractProcessStructureFromXml:', e.message);
+  }
+  return { tasks, gateways, flows };
+}
+
+const ANALYZE_SYSTEM_PROMPT = `Du bist ein erfahrener Prozessberater mit HR- und BPM-Expertise.
+
+AUFGABE: Analysiere das gegebene BPMN-Prozessmodell und gib konkrete Optimierungsvorschläge.
+
+AUSGABE: NUR valides JSON im folgenden Format (kein anderer Text):
+{
+  "suggestions": [
+    {
+      "type": "bottleneck|redundancy|automation|clarity|compliance|other",
+      "title": "Kurzer Titel (max 60 Zeichen)",
+      "description": "Konkrete Beschreibung des Problems und des Vorschlags",
+      "priority": "high|medium|low"
+    }
+  ]
+}
+
+FOKUS: Flaschenhälse, Redundanzen, Automatisierungspotenziale, fehlende Entscheidungen, unklare Rollen, Compliance-Risiken.`;
+
+async function analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey) {
+  const { tasks, gateways, flows } = extractProcessStructureFromXml(bpmnXml);
+  const structureText = [
+    'Tasks: ' + tasks.map(t => t.name).join(' → '),
+    'Gateways: ' + gateways.map(g => g.name).join(', '),
+    description ? 'Kontext: ' + description : ''
+  ].filter(Boolean).join('\n');
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${openaiApiKey}`
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o',
+      messages: [
+        { role: 'system', content: ANALYZE_SYSTEM_PROMPT },
+        { role: 'user', content: `Analysiere diesen HR-Prozess:\n\n${structureText}\n\nGib 3–6 konkrete Optimierungsvorschläge.` }
+      ],
+      response_format: { type: 'json_object' },
+      max_tokens: 2000
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error?.message || response.statusText || 'OpenAI API Fehler');
+  }
+
+  const data = await response.json();
+  const content = data.choices?.[0]?.message?.content || '{}';
+  let parsed;
+  try {
+    parsed = JSON.parse(content);
+  } catch (e) {
+    parsed = { suggestions: [{ type: 'other', title: 'Analyse', description: content, priority: 'medium' }] };
+  }
+  return parsed.suggestions || [];
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 200, headers: CORS_HEADERS, body: '' };
@@ -1179,15 +1271,33 @@ exports.handler = async (event) => {
 
   try {
     const body = typeof event.body === 'string' ? JSON.parse(event.body) : event.body || {};
-    const text = (body.text || '').trim();
-    const processId = body.processId || 'process';
+    const action = body.action || 'generate';
     const openaiApiKey = (body.openaiApiKey || '').trim();
 
-    if (!text) {
-      return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ success: false, error: 'text is required' }) };
-    }
     if (!openaiApiKey || openaiApiKey.length < 10) {
       return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ success: false, error: 'openaiApiKey is required (im Admin unter API Keys hinterlegen)' }) };
+    }
+
+    // BPMN-Analyse: Prozess optimieren
+    if (action === 'analyze') {
+      const bpmnXml = (body.bpmnXml || '').trim();
+      const description = (body.description || '').trim();
+      if (!bpmnXml || bpmnXml.length < 50) {
+        return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ success: false, error: 'bpmnXml is required for analysis' }) };
+      }
+      const suggestions = await analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey);
+      return {
+        statusCode: 200,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({ success: true, suggestions })
+      };
+    }
+
+    // Standard: BPMN-Generierung aus Text
+    const text = (body.text || '').trim();
+    const processId = body.processId || 'process';
+    if (!text) {
+      return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ success: false, error: 'text is required' }) };
     }
 
     const result = await generateBpmnWithGPT52(text, processId, openaiApiKey);

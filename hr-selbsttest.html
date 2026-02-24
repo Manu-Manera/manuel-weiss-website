@@ -2811,6 +2811,7 @@
         }
         .workflow-card-actions {
             display: flex;
+            flex-wrap: wrap;
             gap: 0.5rem;
             margin-left: auto;
         }
@@ -2839,6 +2840,15 @@
         }
         .workflow-card-btn.secondary:hover {
             background: rgba(255, 255, 255, 0.15);
+        }
+        .workflow-card-btn.optimize {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.9), rgba(99, 102, 241, 0.9));
+            color: white;
+        }
+        .workflow-card-btn.optimize:hover {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 1), rgba(99, 102, 241, 1));
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
         }
         @media (max-width: 768px) {
             .workflow-cards {
@@ -5248,6 +5258,7 @@
                         <i class="fas fa-align-left" style="color: #8b5cf6;"></i>
                         Kurzbeschreibung Prozess
                     </div>
+                    <div class="process-description-hint" style="font-size: 0.75rem; color: rgba(255,255,255,0.45); margin-bottom: 0.35rem;">Für eine neue Aufgabe eine neue Zeile verwenden, für zusammengefasste in gleiche Zeile schreiben.</div>
                     <textarea class="wizard-textarea" id="modalProcessDescription" placeholder="Wer macht was, womit, wann, warum?" oninput="updateWorkflowLinkVisibility()">${data.description || ''}</textarea>
                     
                     <div class="workflow-section">
@@ -8213,6 +8224,9 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                                 <button class="workflow-card-btn secondary" onclick="downloadBpmnFromDashboard('${proc.id}')" title="BPMN herunterladen">
                                     <i class="fas fa-download"></i>
                                 </button>
+                                <button class="workflow-card-btn optimize" onclick="openProcessOptimize('${proc.id}')" title="Prozess optimieren">
+                                    <i class="fas fa-magic"></i> Prozess Optimieren
+                                </button>
                                 <button class="workflow-card-btn primary" onclick="openWorkflowDetail('${proc.id}')" title="Details anzeigen">
                                     <i class="fas fa-expand"></i> Öffnen
                                 </button>
@@ -8304,6 +8318,31 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
         function openWorkflowDetail(processId) {
             // Open the process modal to show the workflow
             openProcessModal(processId);
+        }
+        
+        // Open BPMN-Generator with process data for optimization (full-page editor + KI-Analyse)
+        function openProcessOptimize(processId) {
+            const data = assessmentData.prozesse[processId];
+            if (!data || !data.bpmnXml) {
+                alert('Kein Workflow vorhanden. Bitte zuerst einen Workflow generieren.');
+                return;
+            }
+            const processInfo = findProcessInfo(processId);
+            const payload = {
+                processId,
+                name: processInfo.processName,
+                category: processInfo.categoryName,
+                description: data.description || '',
+                bpmnXml: data.bpmnXml,
+                returnUrl: window.location.href
+            };
+            try {
+                sessionStorage.setItem('bpmn-optimize-process', JSON.stringify(payload));
+                window.location.href = 'bpmn-generator.html?optimize=1';
+            } catch (e) {
+                console.error('sessionStorage failed:', e);
+                alert('Konnte Prozessdaten nicht übertragen. Bitte versuchen Sie es erneut.');
+            }
         }
         
         // Download BPMN file
