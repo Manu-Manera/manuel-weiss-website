@@ -22,11 +22,12 @@ AUFGABE: Wandle den Prozess-Text in ein BPMN-Diagramm um.
 
 KRITISCHE REGELN (strikt befolgen):
 
-1. VOLLSTÄNDIGKEIT: JEDER Schritt im Text = EIN eigener Task
-   - N Schritte im Text → genau N Tasks erstellen (KEINE Obergrenze für die Anzahl Tasks!)
-   - NIEMALS Schritte zusammenfassen oder weglassen!
+1. VOLLSTÄNDIGKEIT: EINE ZEILE = EIN EINZIGER TASK
+   - N Zeilen im Text → genau N Tasks (KEINE Obergrenze!)
+   - Alle Tätigkeiten in EINER Zeile (Komma, Punkt, "und") gehören ZUSAMMEN in denselben Task!
+   - Beispiel: "MA: Abwesenheit erfassen. Zeitraum wählen. Kommentar hinzufügen." → 1 Task mit allen drei Tätigkeiten
 
-2. TASK-NAMEN: Format "Rolle: Tätigkeit" (max 30 Zeichen)
+2. TASK-NAMEN: Format "Rolle: Tätigkeit" (max 50 Zeichen bei mehreren Tätigkeiten)
    - Gut: "HR: Stelle ausschreiben", "TL: Antrag prüfen"
    - Rollen: MA (Mitarbeiter), TL (Teamleiter), AL (Abteilungsleiter), HR, GF (Geschäftsführung)
 
@@ -79,7 +80,7 @@ AUSGABE: NUR JSON, kein anderer Text!
 ELEMENT-TYPEN: startEvent, endEvent, userTask, serviceTask, exclusiveGateway
 
 HÄUFIGE FEHLER VERMEIDEN:
-- Schritte zusammenfassen → FALSCH (jeder Schritt = ein Task)
+- Eine Zeile in mehrere Tasks aufteilen → FALSCH (eine Zeile = ein Task, alle Tätigkeiten zusammen)
 - row/col weglassen → FALSCH (Layout wird kaputt)
 - Doppelte row/col → FALSCH (Elemente überlappen)
 - Flows ohne source/target → FALSCH (Verbindungen fehlen)
@@ -91,8 +92,9 @@ PROZESSE MIT BELIEBIG VIELEN SCHRITTEN (keine Obergrenze):
 - Flows: Start→Task_1→Task_2→...→Task_N→End
 
 FORMAT "Kategorie: Rolle: Tätigkeit" (z.B. Ferien, Unbezahlter Urlaub, Krankmeldung):
-- Jede Zeile = EIN Task. Task-Name aus "Rolle: Tätigkeit" ableiten (max 40 Zeichen, Kategorie optional)
-- Linear von oben nach unten: Task_1, Task_2, ... Task_N
+- Jede Zeile = EIN Task. Alle Tätigkeiten der Zeile (Komma/Punkt-getrennt) in EINEM Task-Namen zusammenfassen
+- Task-Name: "Rolle: Tätigkeit1, Tätigkeit2, ..." – max 50 Zeichen, Kategorie optional
+- Linear: Task_1, Task_2, ... Task_N
 
 WICHTIG bei 12+ Zeilen (lange Prozesse): KOMPAKTES JSON verwenden, um Truncation zu vermeiden!
 - Statt "elements" → "e", statt "flows" → "f", statt "processName" → "n"
