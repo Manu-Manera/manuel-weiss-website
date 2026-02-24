@@ -1204,26 +1204,45 @@ function extractProcessStructureFromXml(bpmnXml) {
 
 const ANALYZE_SYSTEM_PROMPT = `Du bist ein erfahrener Prozessberater mit HR- und BPM-Expertise.
 
-AUFGABE: Analysiere das gegebene BPMN-Prozessmodell und gib konkrete Optimierungsvorschläge.
+AUFGABE: Analysiere das gegebene BPMN-Prozessmodell und liefere:
+1. Optimierungsvorschläge
+2. RACI + Rollen + IT-Systeme pro Task (aus Task-Namen ableiten: "Rolle: Tätigkeit")
+3. Verbale Beschreibung der To-Be-Verbesserungen
+4. To-Be-Prozess als BPMN-Struktur (optimierter Ablauf)
 
-AUSGABE: NUR valides JSON im folgenden Format (kein anderer Text):
+AUSGABE: NUR valides JSON (kein anderer Text):
 {
   "suggestions": [
-    {
-      "type": "bottleneck|redundancy|automation|clarity|compliance|other",
-      "title": "Kurzer Titel (max 60 Zeichen)",
-      "description": "Konkrete Beschreibung des Problems und des Vorschlags",
-      "priority": "high|medium|low"
-    }
-  ]
+    { "type": "bottleneck|redundancy|automation|clarity|compliance|other", "title": "Kurzer Titel", "description": "Konkrete Beschreibung", "priority": "high|medium|low" }
+  ],
+  "raci": [
+    { "taskId": "exakte Task-ID aus der Liste", "taskName": "Task-Name", "rolle": "z.B. HR", "itSystem": "z.B. SAP SuccessFactors", "raciR": "Ausführend", "raciA": "Verantwortlich", "raciC": "Konsultiert", "raciI": "Informiert" }
+  ],
+  "tobeDescription": "2–4 Absätze: Was wurde verbessert, welche Schritte optimiert, Automatisierung, etc.",
+  "tobeProcess": {
+    "processId": "Process_ToBe",
+    "processName": "Prozess Optimiert",
+    "elements": [
+      { "id": "Start_1", "type": "startEvent", "name": "Start", "row": 0, "col": 0 },
+      { "id": "Task_1", "type": "userTask", "name": "Rolle: Tätigkeit", "row": 0, "col": 1 },
+      { "id": "End_1", "type": "endEvent", "name": "Ende", "row": 0, "col": 2 }
+    ],
+    "flows": [
+      { "id": "F1", "source": "Start_1", "target": "Task_1" },
+      { "id": "F2", "source": "Task_1", "target": "End_1" }
+    ]
+  }
 }
 
-FOKUS: Flaschenhälse, Redundanzen, Automatisierungspotenziale, fehlende Entscheidungen, unklare Rollen, Compliance-Risiken.`;
+WICHTIG:
+- raci: Für JEDEN Task aus der Liste mit taskId und taskName. Rolle aus "Rolle: Tätigkeit" (MA, TL, HR, etc.). itSystem passend zu Tätigkeit (z.B. ATS, HRIS, Zeiterfassung).
+- tobeProcess: Optimierter Ablauf mit elements (row, col Pflicht!) und flows. Reduzierte Schritte, Automatisierung, klarere Entscheidungen.`;
 
 async function analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey) {
   const { tasks, gateways, flows } = extractProcessStructureFromXml(bpmnXml);
+  const taskListJson = JSON.stringify(tasks.map(t => ({ id: t.id, name: t.name })));
   const structureText = [
-    'Tasks: ' + tasks.map(t => t.name).join(' → '),
+    'Tasks (mit IDs für raci-Zuordnung): ' + taskListJson,
     'Gateways: ' + gateways.map(g => g.name).join(', '),
     description ? 'Kontext: ' + description : ''
   ].filter(Boolean).join('\n');
@@ -1238,10 +1257,10 @@ async function analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey) {
       model: 'gpt-4o',
       messages: [
         { role: 'system', content: ANALYZE_SYSTEM_PROMPT },
-        { role: 'user', content: `Analysiere diesen HR-Prozess:\n\n${structureText}\n\nGib 3–6 konkrete Optimierungsvorschläge.` }
+        { role: 'user', content: `Analysiere diesen HR-Prozess und liefere suggestions, raci (für alle Tasks), tobeDescription und tobeProcess:\n\n${structureText}` }
       ],
       response_format: { type: 'json_object' },
-      max_tokens: 2000
+      max_tokens: 8000
     })
   });
 
@@ -1256,9 +1275,24 @@ async function analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey) {
   try {
     parsed = JSON.parse(content);
   } catch (e) {
-    parsed = { suggestions: [{ type: 'other', title: 'Analyse', description: content, priority: 'medium' }] };
+    parsed = { suggestions: [{ type: 'other', title: 'Analyse', description: content, priority: 'medium' }], raci: [], tobeDescription: '', tobeProcess: null };
   }
-  return parsed.suggestions || [];
+
+  let tobeBpmnXml = null;
+  if (parsed.tobeProcess && parsed.tobeProcess.elements && parsed.tobeProcess.elements.length > 0) {
+    try {
+      tobeBpmnXml = generateBpmnXmlFromJson(parsed.tobeProcess, 'Process_ToBe');
+    } catch (e) {
+      console.warn('tobeProcess to BPMN failed:', e.message);
+    }
+  }
+
+  return {
+    suggestions: parsed.suggestions || [],
+    raci: parsed.raci || [],
+    tobeDescription: parsed.tobeDescription || '',
+    tobeBpmnXml
+  };
 }
 
 exports.handler = async (event) => {
@@ -1285,11 +1319,17 @@ exports.handler = async (event) => {
       if (!bpmnXml || bpmnXml.length < 50) {
         return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ success: false, error: 'bpmnXml is required for analysis' }) };
       }
-      const suggestions = await analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey);
+      const result = await analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey);
       return {
         statusCode: 200,
         headers: CORS_HEADERS,
-        body: JSON.stringify({ success: true, suggestions })
+        body: JSON.stringify({
+          success: true,
+          suggestions: result.suggestions,
+          raci: result.raci,
+          tobeDescription: result.tobeDescription,
+          tobeBpmnXml: result.tobeBpmnXml
+        })
       };
     }
 

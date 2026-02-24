@@ -277,6 +277,7 @@
             #bpmnProcessText { min-height: 140px; font-size: 0.9rem; }
             #bpmnDiagramContainer { height: 350px; }
             .bpmn-result-tabs button { padding: 0.5rem 0.75rem; font-size: 0.85rem; }
+            .bpmn-tobe-grid, .bpmn-tobe-meta { grid-template-columns: 1fr !important; }
         }
     </style>
 </head>
@@ -346,9 +347,42 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         
         <div id="bpmnOptimizePanel" class="bpmn-optimize-panel" style="display: none; margin-top: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 12px; border: 1px solid rgba(14, 165, 233, 0.3);">
             <h4 style="margin: 0 0 0.75rem; color: #0369a1;"><i class="fas fa-lightbulb"></i> KI-Optimierungsvorschläge</h4>
+            <div id="bpmnAsIsBadge" style="display: none; margin-bottom: 0.75rem; padding: 0.5rem 0.75rem; background: rgba(5, 150, 105, 0.15); border-radius: 8px; font-size: 0.85rem; color: #065f46;"><i class="fas fa-check-circle"></i> As-Is Prozess gespeichert</div>
             <div id="bpmnOptimizeLoading" style="display: none; padding: 1rem; text-align: center; color: #64748b;"><i class="fas fa-spinner fa-spin"></i> Analysiere Prozess…</div>
             <div id="bpmnOptimizeContent" style="display: none;"></div>
             <div id="bpmnOptimizeError" style="display: none; padding: 0.75rem; background: #fee2e2; color: #991b1b; border-radius: 8px; font-size: 0.9rem;"></div>
+        </div>
+
+        <div id="bpmnToBeSection" class="bpmn-tobe-section" style="display: none; margin-top: 2rem; padding: 1.5rem; background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); border-radius: 16px; border: 1px solid rgba(139, 92, 246, 0.3);">
+            <h4 style="margin: 0 0 1rem; color: #5b21b6;"><i class="fas fa-arrow-right"></i> To-Be Prozess (optimiert)</h4>
+            <div class="bpmn-tobe-meta" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div>
+                    <label style="display: block; margin-bottom: 0.35rem; font-weight: 600; color: #374151; font-size: 0.9rem;">Prozessziel</label>
+                    <input type="text" id="bpmnTobeProzessziel" placeholder="z.B. Schnelle, transparente Bearbeitung von Urlaubsanträgen" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 0.35rem; font-weight: 600; color: #374151; font-size: 0.9rem;">Prozessbeschreibung</label>
+                    <textarea id="bpmnTobeProzessbeschreibung" rows="2" placeholder="Kurze Beschreibung des optimierten Prozesses…" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.9rem; resize: vertical; box-sizing: border-box;"></textarea>
+                </div>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.35rem; font-weight: 600; color: #374151; font-size: 0.9rem;">OMRA (Organisation, Methoden, Verantwortlichkeiten, Anwendungen)</label>
+                <textarea id="bpmnTobeOmra" rows="3" placeholder="O: Welche Abteilungen/Rollen sind beteiligt? M: Welche Methoden/Arbeitsweisen? R: Wer ist wofür verantwortlich? A: Welche IT-Systeme/Anwendungen?" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.9rem; resize: vertical; box-sizing: border-box;"></textarea>
+            </div>
+            <div class="bpmn-tobe-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1rem;">
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Verbesserungen (KI-Beschreibung)</label>
+                    <textarea id="bpmnTobeDescription" rows="8" style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.9rem; resize: vertical; box-sizing: border-box;" placeholder="Die KI beschreibt hier die Optimierungen…"></textarea>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">To-Be Diagramm (bearbeitbar)</label>
+                    <div id="bpmnTobeDiagramContainer" style="height: 320px; background: #fafafa; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;"></div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <button type="button" id="bpmnTobeSaveBtn" style="padding: 0.5rem 1rem; background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-save"></i> To-Be speichern</button>
+                <button type="button" id="bpmnTobeDownloadBtn" style="padding: 0.5rem 1rem; background: #e5e7eb; color: #374151; border: none; border-radius: 8px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-download"></i> .bpmn herunterladen</button>
+            </div>
         </div>
 
         <div class="bpmn-tabs-section">
@@ -429,6 +463,9 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
     var currentBpmnXml = null;
     var bpmnModeler = null;
     var taskMeta = {};
+    var asIsState = null;
+    var tobeBpmnModeler = null;
+    var tobeBpmnXml = null;
 
     var MW_NS = 'http://manuel-weiss.ch/bpmn/ext';
 
@@ -700,7 +737,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         }
     }
 
-    function showResult(xml, interpretation, assumptions) {
+    function showResult(xml, interpretation, assumptions, skipAutoDownload) {
         currentBpmnXml = xml;
         var area = document.getElementById('bpmnResultArea');
         var pre = document.getElementById('bpmnXmlOutput');
@@ -722,7 +759,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         }
 
         renderBpmnEditor(xml);
-        autoDownloadBpmnFromXml(xml);
+        if (!skipAutoDownload) autoDownloadBpmnFromXml(xml);
     }
 
     function apiUrl() {
@@ -864,7 +901,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                 processTextEl.dataset.example = 'false';
             }
             if (data.bpmnXml) {
-                showResult(data.bpmnXml, null, null);
+                showResult(data.bpmnXml, null, null, true);
             }
             if (data.returnUrl) {
                 var backEl = document.getElementById('bpmnBackLink');
@@ -872,6 +909,72 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             }
         } catch (e) { console.warn('loadOptimizeProcess:', e); }
     })();
+
+    function applyRaciToTaskMeta(raciList) {
+        if (!raciList || !Array.isArray(raciList)) return;
+        var idByName = {};
+        if (bpmnModeler) {
+            var registry = bpmnModeler.get('elementRegistry');
+            if (registry) {
+                registry.getAll().forEach(function(el) {
+                    if (el.type === 'bpmn:Task' || (el.businessObject && el.businessObject.$type === 'bpmn:Task')) {
+                        var n = (el.businessObject && el.businessObject.name) || el.id;
+                        idByName[n] = el.id;
+                    }
+                });
+            }
+        }
+        raciList.forEach(function(r) {
+            var id = r.taskId;
+            if (!id && r.taskName) id = idByName[r.taskName];
+            if (!id) return;
+            if (!taskMeta[id]) taskMeta[id] = {};
+            if (r.rolle) taskMeta[id].rolle = r.rolle;
+            if (r.itSystem) taskMeta[id].itSystem = r.itSystem;
+            if (r.raciR) taskMeta[id].raciR = r.raciR;
+            if (r.raciA) taskMeta[id].raciA = r.raciA;
+            if (r.raciC) taskMeta[id].raciC = r.raciC;
+            if (r.raciI) taskMeta[id].raciI = r.raciI;
+        });
+    }
+
+    function renderTobeEditor(xml) {
+        var container = document.getElementById('bpmnTobeDiagramContainer');
+        if (!container || !xml) return;
+        tobeBpmnXml = xml;
+        var ModelerClass = window.BpmnModeler || window.BpmnJS;
+        if (!ModelerClass) return;
+        if (tobeBpmnModeler) {
+            try { tobeBpmnModeler.destroy(); } catch(e) {}
+            tobeBpmnModeler = null;
+        }
+        container.innerHTML = '';
+        tobeBpmnModeler = new ModelerClass({
+            container: container,
+            keyboard: { bindTo: document },
+            zoomScroll: { enabled: true }
+        });
+        tobeBpmnModeler.importXML(xml).then(function() {
+            var canvas = tobeBpmnModeler.get('canvas');
+            if (canvas && canvas.zoom) setTimeout(function() { canvas.zoom('fit-viewport'); }, 100);
+        }).catch(function(err) {
+            container.innerHTML = '<div style="padding:1rem;color:#991b1b;font-size:0.9rem;">Diagramm konnte nicht geladen werden.</div>';
+        });
+    }
+
+    function getTobeXmlFromEditor(cb) {
+        if (!tobeBpmnModeler || typeof tobeBpmnModeler.saveXML !== 'function') {
+            if (cb) cb(null, tobeBpmnXml);
+            return;
+        }
+        tobeBpmnModeler.saveXML({ format: true }).then(function(result) {
+            var xml = result && result.xml ? result.xml : tobeBpmnXml;
+            if (xml) tobeBpmnXml = xml;
+            if (cb) cb(null, xml);
+        }).catch(function(err) {
+            if (cb) cb(err, tobeBpmnXml);
+        });
+    }
 
     async function analyzeBpmn() {
         getCurrentXmlFromEditor(function(err, xml) {
@@ -884,12 +987,18 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             var loading = document.getElementById('bpmnOptimizeLoading');
             var content = document.getElementById('bpmnOptimizeContent');
             var errEl = document.getElementById('bpmnOptimizeError');
+            var asIsBadge = document.getElementById('bpmnAsIsBadge');
+            var toBeSection = document.getElementById('bpmnToBeSection');
             if (!panel || !loading || !content || !errEl) return;
             panel.style.display = 'block';
             loading.style.display = 'block';
             content.style.display = 'none';
             errEl.style.display = 'none';
             content.innerHTML = '';
+            asIsBadge.style.display = 'none';
+            toBeSection.style.display = 'none';
+            asIsState = { bpmnXml: bpmnXml, taskMeta: JSON.parse(JSON.stringify(taskMeta)) };
+            asIsBadge.style.display = 'block';
             var desc = (processTextEl && processTextEl.value) ? processTextEl.value.trim() : '';
             (async function() {
                 try {
@@ -910,6 +1019,8 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                     var data = await res.json().catch(function() { return {}; });
                     if (!res.ok) throw new Error(data.error || res.statusText || 'Unbekannter Fehler');
                     if (!data.success || !Array.isArray(data.suggestions)) throw new Error('Keine Vorschläge erhalten.');
+                    applyRaciToTaskMeta(data.raci);
+                    refreshRaciTable();
                     var typeLabels = { bottleneck: 'Flaschenhals', redundancy: 'Redundanz', automation: 'Automatisierung', clarity: 'Klarheit', compliance: 'Compliance', other: 'Sonstiges' };
                     var prioColors = { high: '#dc2626', medium: '#d97706', low: '#059669' };
                     var html = '<ul style="margin:0;padding:0;list-style:none;">';
@@ -925,6 +1036,12 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                     html += '</ul>';
                     content.innerHTML = html;
                     content.style.display = 'block';
+                    var tobeDescEl = document.getElementById('bpmnTobeDescription');
+                    if (tobeDescEl && data.tobeDescription) tobeDescEl.value = data.tobeDescription;
+                    if (data.tobeBpmnXml && toBeSection) {
+                        toBeSection.style.display = 'block';
+                        renderTobeEditor(data.tobeBpmnXml);
+                    }
                 } catch (e) {
                     errEl.textContent = e.message || 'Analyse fehlgeschlagen.';
                     errEl.style.display = 'block';
@@ -934,6 +1051,37 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             })();
         });
     }
+
+    document.getElementById('bpmnTobeSaveBtn').addEventListener('click', function() {
+        getTobeXmlFromEditor(function(err, xml) {
+            if (!xml) return;
+            var desc = (document.getElementById('bpmnTobeDescription') || {}).value || '';
+            var prozessziel = (document.getElementById('bpmnTobeProzessziel') || {}).value || '';
+            var prozessbeschreibung = (document.getElementById('bpmnTobeProzessbeschreibung') || {}).value || '';
+            var omra = (document.getElementById('bpmnTobeOmra') || {}).value || '';
+            var payload = { tobeBpmnXml: xml, tobeDescription: desc, prozessziel: prozessziel, prozessbeschreibung: prozessbeschreibung, omra: omra, asIsState: asIsState, savedAt: new Date().toISOString() };
+            try {
+                localStorage.setItem('bpmn-process-optimize', JSON.stringify(payload));
+                setStatus('To-Be gespeichert.');
+                setTimeout(function() { setStatus(''); }, 3000);
+            } catch (e) {
+                showError('Speichern fehlgeschlagen: ' + (e.message || 'localStorage nicht verfügbar'));
+            }
+        });
+    });
+    document.getElementById('bpmnTobeDownloadBtn').addEventListener('click', function() {
+        getTobeXmlFromEditor(function(err, xml) {
+            if (!xml) return;
+            var blob = new Blob([xml], { type: 'application/xml' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'prozess-tobe.bpmn';
+            a.click();
+            URL.revokeObjectURL(a.href);
+            setStatus('To-Be .bpmn heruntergeladen.');
+            setTimeout(function() { setStatus(''); }, 2000);
+        });
+    });
 
     document.getElementById('bpmnGenerateBtn').addEventListener('click', generateBpmn);
     var analyzeBtn = document.getElementById('bpmnAnalyzeBtn');
