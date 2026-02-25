@@ -1016,9 +1016,14 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ action: 'analyze', bpmnXml: bpmnXml, description: desc, openaiApiKey: openaiApiKey })
                     });
-                    var data = await res.json().catch(function() { return {}; });
-                    if (!res.ok) throw new Error(data.error || res.statusText || 'Unbekannter Fehler');
-                    if (!data.success || !Array.isArray(data.suggestions)) throw new Error('Keine Vorschläge erhalten.');
+                    var rawText = await res.text();
+                    var data = {};
+                    try { data = JSON.parse(rawText); } catch(parseErr) { data = { error: rawText && rawText.length < 200 ? rawText : 'Antwort konnte nicht gelesen werden' }; }
+                    if (!res.ok) {
+                        var errMsg = data.error || (data.message) || res.statusText || ('HTTP ' + res.status);
+                        throw new Error(errMsg);
+                    }
+                    if (!data.success || !Array.isArray(data.suggestions)) throw new Error(data.error || 'Keine Vorschläge erhalten.');
                     applyRaciToTaskMeta(data.raci);
                     refreshRaciTable();
                     var typeLabels = { bottleneck: 'Flaschenhals', redundancy: 'Redundanz', automation: 'Automatisierung', clarity: 'Klarheit', compliance: 'Compliance', other: 'Sonstiges' };

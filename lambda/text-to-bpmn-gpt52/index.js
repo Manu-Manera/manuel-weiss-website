@@ -1266,7 +1266,8 @@ async function analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey) {
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
-    throw new Error(err.error?.message || response.statusText || 'OpenAI API Fehler');
+    const msg = (typeof err.error === 'string' ? err.error : err.error?.message) || err.message || response.statusText || 'OpenAI API Fehler';
+    throw new Error(msg);
   }
 
   const data = await response.json();
@@ -1318,6 +1319,10 @@ exports.handler = async (event) => {
       const description = (body.description || '').trim();
       if (!bpmnXml || bpmnXml.length < 50) {
         return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ success: false, error: 'bpmnXml is required for analysis' }) };
+      }
+      const { tasks } = extractProcessStructureFromXml(bpmnXml);
+      if (!tasks || tasks.length === 0) {
+        return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ success: false, error: 'Keine Tasks im BPMN-Diagramm gefunden. Bitte zuerst einen Workflow generieren.' }) };
       }
       const result = await analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey);
       return {
