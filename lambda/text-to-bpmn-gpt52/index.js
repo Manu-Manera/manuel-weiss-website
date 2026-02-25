@@ -1260,7 +1260,7 @@ async function analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey) {
         { role: 'user', content: `Analysiere diesen HR-Prozess und liefere suggestions, raci (für alle Tasks), tobeDescription und tobeProcess:\n\n${structureText}` }
       ],
       response_format: { type: 'json_object' },
-      max_tokens: 8000
+      max_completion_tokens: 8000
     })
   });
 
