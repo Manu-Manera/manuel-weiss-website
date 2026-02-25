@@ -763,7 +763,10 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         if (!skipAutoDownload) autoDownloadBpmnFromXml(xml);
     }
 
-    function apiUrl() {
+    function apiUrl(useLongTimeout) {
+        if (useLongTimeout && window.AWS_APP_CONFIG && window.AWS_APP_CONFIG.ENDPOINTS && window.AWS_APP_CONFIG.ENDPOINTS.TEXT_TO_BPMN_GPT_LONG) {
+            return window.AWS_APP_CONFIG.ENDPOINTS.TEXT_TO_BPMN_GPT_LONG;
+        }
         return (window.getApiUrl && window.getApiUrl('TEXT_TO_BPMN_GPT')) ||
             (window.AWS_APP_CONFIG && window.AWS_APP_CONFIG.API_BASE ? window.AWS_APP_CONFIG.API_BASE + '/text-to-bpmn-gpt' : '');
     }
@@ -1010,7 +1013,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                     if (!openaiApiKey || openaiApiKey.length < 10) {
                         throw new Error('OpenAI API-Key nicht konfiguriert. Bitte im Admin unter API Keys hinterlegen.');
                     }
-                    var url = apiUrl();
+                    var url = apiUrl(true) || apiUrl();
                     if (!url) throw new Error('API-URL nicht konfiguriert.');
                     var res = await fetch(url, {
                         method: 'POST',
@@ -1085,7 +1088,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                 openaiApiKey = await window.awsAPISettings.getFullApiKey('openai') || '';
             }
             if (!openaiApiKey || openaiApiKey.length < 10) throw new Error('OpenAI API-Key nicht konfiguriert.');
-            var url = apiUrl();
+            var url = apiUrl(true) || apiUrl();
             if (!url) throw new Error('API-URL nicht konfiguriert.');
             var desc = (processTextEl && processTextEl.value) ? processTextEl.value.trim() : '';
             var res = await fetch(url, {

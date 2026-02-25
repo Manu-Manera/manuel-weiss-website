@@ -10202,7 +10202,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-038333965110-eu-central-1",
-     "S3Key": "22f31ad0be3047a689b7dc8690c43898533b67b1f2a2df2dc82b654279fa8f57.zip"
+     "S3Key": "7cdbf7dac05f4d8ce7768c0db4d09b297bab562f258c80771bf79dff7c4cabd1.zip"
     },
     "FunctionName": "website-text-to-bpmn-gpt52",
     "Handler": "index.handler",
@@ -10240,9 +10240,70 @@
    ],
    "Metadata": {
     "aws:cdk:path": "manuel-weiss-website-api/TextToBpmnGpt52Function/Resource",
-    "aws:asset:path": "asset.22f31ad0be3047a689b7dc8690c43898533b67b1f2a2df2dc82b654279fa8f57",
+    "aws:asset:path": "asset.7cdbf7dac05f4d8ce7768c0db4d09b297bab562f258c80771bf79dff7c4cabd1",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
+   }
+  },
+  "TextToBpmnGpt52FunctionFunctionUrlB812F83B": {
+   "Type": "AWS::Lambda::Url",
+   "Properties": {
+    "AuthType": "NONE",
+    "Cors": {
+     "AllowHeaders": [
+      "Content-Type",
+      "Authorization"
+     ],
+     "AllowMethods": [
+      "POST"
+     ],
+     "AllowOrigins": [
+      "*"
+     ]
+    },
+    "TargetFunctionArn": {
+     "Fn::GetAtt": [
+      "TextToBpmnGpt52FunctionDB23C5C5",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/TextToBpmnGpt52Function/FunctionUrl/Resource"
+   }
+  },
+  "TextToBpmnGpt52FunctioninvokefunctionurlE7A1A9E1": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunctionUrl",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "TextToBpmnGpt52FunctionDB23C5C5",
+      "Arn"
+     ]
+    },
+    "FunctionUrlAuthType": "NONE",
+    "Principal": "*"
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/TextToBpmnGpt52Function/invoke-function-url"
+   }
+  },
+  "TextToBpmnGpt52FunctioninvokefunctionD9FD45F2": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "TextToBpmnGpt52FunctionDB23C5C5",
+      "Arn"
+     ]
+    },
+    "InvokedViaFunctionUrl": true,
+    "Principal": "*"
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/TextToBpmnGpt52Function/invoke-function"
    }
   },
   "HrLeadsFunction4ED7920B": {
@@ -10411,7 +10472,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/12QzU7DQAyEn6X3jYEUHqAFwQlRFe6VszFlm/2J4l1KFOXd2Z8UASd/Mx5ZI9dQr+/gZoVnrmTbVVo1ML16lJ2I1mFqR4vGtQ28YaNpi0yC17ANsiOflUID095pEvfvNs+d00qOSRaaBfbqiJ7OOMYosd/0KqcXfKBeu9GQ9cn9pWKPY75bIOZdGGRp8Uz+w7VpudBlu1wuvBvc1/ijnkqJqHtnOSf/WbPQaJoWYUr1aTCKWTkrHoOVPkG0LzzHTxyQmTzDJo35T4eX4PvgRd6k/soeZ2FdS3Diq8/6Fmq4Xp1YqWoI1itDsC/zG2i+T/KTAQAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/12QzU7DMBCEn6V3Z4EUHqAFwQlRFThXG3sJbvwTxTYlivLu+CetgNN8M7tajV1Dvb6DmxWeXMVFVynZwPTqkXcsRodJjAa1FQ28YaNoi46YW8M28I58dhI1THuriN1/mKw7qyQfky00M+xli55OOMZVcn7Ty7y94AP1yo6ajE/pLxd7tPlugbhvw8BLi2fyn1ak4ULn6XK58G6w3+PFPZUS0ffWuLz5L5qZQt0IhCnVp0FL56Q17DEY7hPE+MJneB9UyqPM8XMO6Bx5B5sk859aL8H3wbM8SU+Spp2ZsYLg6K6+6luo4Xp1dFJWQzBeaoJ90R+27cmYpgEAAA=="
    },
    "Metadata": {
     "aws:cdk:path": "manuel-weiss-website-api/CDKMetadata/Default"
@@ -10439,6 +10500,18 @@
       "/"
      ]
     ]
+   }
+  },
+  "TextToBpmnGpt52FunctionUrl": {
+   "Description": "Lambda Function URL für BPMN (Analyse/To-Be) - längerer Timeout",
+   "Value": {
+    "Fn::GetAtt": [
+     "TextToBpmnGpt52FunctionFunctionUrlB812F83B",
+     "FunctionUrl"
+    ]
+   },
+   "Export": {
+    "Name": "TextToBpmnGpt52FunctionUrl"
    }
   },
   "WebsiteApiUrl": {

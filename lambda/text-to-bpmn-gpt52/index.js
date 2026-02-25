@@ -1353,10 +1353,11 @@ async function generateTobeWithGPT(bpmnXml, description, tobeDescription, sugges
 }
 
 exports.handler = async (event) => {
-  if (event.httpMethod === 'OPTIONS') {
+  const httpMethod = event.requestContext?.http?.method || event.httpMethod;
+  if (httpMethod === 'OPTIONS') {
     return { statusCode: 200, headers: CORS_HEADERS, body: '' };
   }
-  if (event.httpMethod !== 'POST') {
+  if (httpMethod !== 'POST') {
     return { statusCode: 405, headers: CORS_HEADERS, body: JSON.stringify({ success: false, error: 'Method not allowed' }) };
   }
 

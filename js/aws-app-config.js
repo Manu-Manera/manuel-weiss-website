@@ -72,6 +72,8 @@ window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
     // HR-Automation (BPMN)
     TEXT_TO_BPMN: '/text-to-bpmn',
     TEXT_TO_BPMN_GPT: '/text-to-bpmn-gpt',
+    // Lambda Function URL für Analyse/To-Be (120s Timeout statt API Gateway 29s)
+    TEXT_TO_BPMN_GPT_LONG: 'https://xvlec4ytuprq6nkkmiahxsw72m0dupzy.lambda-url.eu-central-1.on.aws',
 
     // Contact
     CONTACT_EMAIL: '/contact-email',

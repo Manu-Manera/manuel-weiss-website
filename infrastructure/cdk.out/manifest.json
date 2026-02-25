@@ -24,7 +24,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::038333965110:role/cdk-hnb659fds-deploy-role-038333965110-eu-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::038333965110:role/cdk-hnb659fds-cfn-exec-role-038333965110-eu-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-038333965110-eu-central-1/cf8931d9a11129ee9f0fcfe73f2a4b0617277f79ff0d6dffd507a651fe92593c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-038333965110-eu-central-1/0c3cae8b258a183c94778f7d9affd02a29c70b967478b854abfd4be80a8c51b0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1863,6 +1863,24 @@
             "data": "TextToBpmnGpt52FunctionDB23C5C5"
           }
         ],
+        "/manuel-weiss-website-api/TextToBpmnGpt52Function/FunctionUrl/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TextToBpmnGpt52FunctionFunctionUrlB812F83B"
+          }
+        ],
+        "/manuel-weiss-website-api/TextToBpmnGpt52Function/invoke-function-url": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TextToBpmnGpt52FunctioninvokefunctionurlE7A1A9E1"
+          }
+        ],
+        "/manuel-weiss-website-api/TextToBpmnGpt52Function/invoke-function": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TextToBpmnGpt52FunctioninvokefunctionD9FD45F2"
+          }
+        ],
         "/manuel-weiss-website-api/HrLeadsFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -1879,6 +1897,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "UserProfileApiFunctionCDBD086B"
+          }
+        ],
+        "/manuel-weiss-website-api/TextToBpmnGpt52FunctionUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TextToBpmnGpt52FunctionUrl"
           }
         ],
         "/manuel-weiss-website-api/WebsiteApiUrl": [

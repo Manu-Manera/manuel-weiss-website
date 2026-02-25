@@ -648,6 +648,22 @@ export class WebsiteApiStack extends cdk.Stack {
     const textToBpmnGptResource = this.api.root.addResource('text-to-bpmn-gpt');
     textToBpmnGptResource.addMethod('POST', new apigateway.LambdaIntegration(textToBpmnGpt52Lambda));
 
+    // Lambda Function URL für text-to-bpmn-gpt52 (längerer Timeout als API Gateway 29s)
+    // Nutzt Lambda direkt → 120s Timeout statt 29s bei API Gateway
+    const textToBpmnGpt52LambdaUrl = textToBpmnGpt52Lambda.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+      cors: {
+        allowedOrigins: ['*'],
+        allowedMethods: [lambda.HttpMethod.POST],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+      },
+    });
+    new cdk.CfnOutput(this, 'TextToBpmnGpt52FunctionUrl', {
+      value: textToBpmnGpt52LambdaUrl.url,
+      description: 'Lambda Function URL für BPMN (Analyse/To-Be) - längerer Timeout',
+      exportName: 'TextToBpmnGpt52FunctionUrl',
+    });
+
     // /hr-leads (HR-Selbsttest Lead-Erfassung)
     const hrLeadsResource = this.api.root.addResource('hr-leads');
     const hrLeadsSaveResource = hrLeadsResource.addResource('save');
