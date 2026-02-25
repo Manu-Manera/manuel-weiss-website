@@ -381,6 +381,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                 <button type="button" id="bpmnTobeGenerateBtn" style="display: none; padding: 0.5rem 1rem; background: linear-gradient(135deg, #059669, #10b981); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; align-items: center; gap: 0.5rem;"><i class="fas fa-magic"></i> To-Be Diagramm generieren</button>
                 <button type="button" id="bpmnTobeSaveBtn" style="padding: 0.5rem 1rem; background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-save"></i> To-Be speichern</button>
                 <button type="button" id="bpmnTobeDownloadBtn" style="padding: 0.5rem 1rem; background: #e5e7eb; color: #374151; border: none; border-radius: 8px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-download"></i> .bpmn herunterladen</button>
+                <span id="bpmnTobeStatus" style="font-size: 0.9rem; color: #059669;"></span>
             </div>
         </div>
 
@@ -1122,8 +1123,20 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
     });
 
     document.getElementById('bpmnTobeSaveBtn').addEventListener('click', function() {
+        function setTobeStatus(msg, isError) {
+            var el = document.getElementById('bpmnTobeStatus');
+            if (el) { el.textContent = msg; el.style.color = isError ? '#dc2626' : '#059669'; }
+            setTimeout(function() { var e = document.getElementById('bpmnTobeStatus'); if (e) e.textContent = ''; }, 4000);
+        }
         getTobeXmlFromEditor(function(err, xml) {
-            if (!xml) return;
+            if (err) {
+                setTobeStatus('Fehler: ' + (err.message || 'Diagramm konnte nicht gelesen werden.'), true);
+                return;
+            }
+            if (!xml || xml.length < 50) {
+                setTobeStatus('Kein To-Be-Diagramm vorhanden. Bitte zuerst „To-Be Diagramm generieren“ klicken.', true);
+                return;
+            }
             var desc = (document.getElementById('bpmnTobeDescription') || {}).value || '';
             var prozessziel = (document.getElementById('bpmnTobeProzessziel') || {}).value || '';
             var prozessbeschreibung = (document.getElementById('bpmnTobeProzessbeschreibung') || {}).value || '';
@@ -1131,10 +1144,13 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             var payload = { tobeBpmnXml: xml, tobeDescription: desc, prozessziel: prozessziel, prozessbeschreibung: prozessbeschreibung, omra: omra, asIsState: asIsState, savedAt: new Date().toISOString() };
             try {
                 localStorage.setItem('bpmn-process-optimize', JSON.stringify(payload));
+                setTobeStatus('To-Be gespeichert.', false);
                 setStatus('To-Be gespeichert.');
                 setTimeout(function() { setStatus(''); }, 3000);
             } catch (e) {
-                showError('Speichern fehlgeschlagen: ' + (e.message || 'localStorage nicht verfügbar'));
+                var errMsg = e.name === 'QuotaExceededError' ? 'Speicherplatz voll. Bitte alte Daten löschen oder .bpmn herunterladen.' : (e.message || 'localStorage nicht verfügbar');
+                setTobeStatus('Speichern fehlgeschlagen: ' + errMsg, true);
+                showError('Speichern fehlgeschlagen: ' + errMsg);
             }
         });
     });
