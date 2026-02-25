@@ -369,15 +369,13 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                 <label style="display: block; margin-bottom: 0.35rem; font-weight: 600; color: #374151; font-size: 0.9rem;">OMRA (Organisation, Methoden, Verantwortlichkeiten, Anwendungen)</label>
                 <textarea id="bpmnTobeOmra" rows="3" placeholder="O: Welche Abteilungen/Rollen sind beteiligt? M: Welche Methoden/Arbeitsweisen? R: Wer ist wofür verantwortlich? A: Welche IT-Systeme/Anwendungen?" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.9rem; resize: vertical; box-sizing: border-box;"></textarea>
             </div>
-            <div class="bpmn-tobe-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1rem;">
-                <div>
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Verbesserungen (KI-Beschreibung)</label>
-                    <textarea id="bpmnTobeDescription" rows="8" style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.9rem; resize: vertical; box-sizing: border-box;" placeholder="Die KI beschreibt hier die Optimierungen…"></textarea>
-                </div>
-                <div>
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">To-Be Diagramm (bearbeitbar)</label>
-                    <div id="bpmnTobeDiagramContainer" style="height: 320px; background: #fafafa; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;"></div>
-                </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Verbesserungen (KI-Beschreibung)</label>
+                <textarea id="bpmnTobeDescription" rows="8" style="width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.9rem; resize: vertical; box-sizing: border-box;" placeholder="Die KI beschreibt hier die Optimierungen…"></textarea>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">To-Be Diagramm (bearbeitbar)</label>
+                <div id="bpmnTobeDiagramContainer" style="height: 70vh; min-height: 500px; background: #fafafa; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;"></div>
             </div>
             <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
                 <button type="button" id="bpmnTobeGenerateBtn" style="display: none; padding: 0.5rem 1rem; background: linear-gradient(135deg, #059669, #10b981); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; align-items: center; gap: 0.5rem;"><i class="fas fa-magic"></i> To-Be Diagramm generieren</button>
@@ -914,9 +912,14 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         } catch (e) { console.warn('loadOptimizeProcess:', e); }
     })();
 
+    function normalizeForMatch(s) {
+        if (!s || typeof s !== 'string') return '';
+        return s.trim().toLowerCase().replace(/\s+/g, ' ');
+    }
     function applyRaciToTaskMeta(raciList) {
         if (!raciList || !Array.isArray(raciList)) return;
         var idByName = {};
+        var idByNormalizedName = {};
         if (bpmnModeler) {
             var registry = bpmnModeler.get('elementRegistry');
             if (registry) {
@@ -924,6 +927,8 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                     if (el.type === 'bpmn:Task' || (el.businessObject && el.businessObject.$type === 'bpmn:Task')) {
                         var n = (el.businessObject && el.businessObject.name) || el.id;
                         idByName[n] = el.id;
+                        idByNormalizedName[normalizeForMatch(n)] = el.id;
+                        idByNormalizedName[normalizeForMatch(el.id)] = el.id;
                     }
                 });
             }
@@ -931,6 +936,11 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         raciList.forEach(function(r) {
             var id = r.taskId;
             if (!id && r.taskName) id = idByName[r.taskName];
+            if (!id && r.taskName) id = idByNormalizedName[normalizeForMatch(r.taskName)];
+            if (!id && r.taskId) id = idByNormalizedName[normalizeForMatch(r.taskId)];
+            if (!id && r.taskName) {
+                for (var k in idByName) { if (normalizeForMatch(k).indexOf(normalizeForMatch(r.taskName)) >= 0 || normalizeForMatch(r.taskName).indexOf(normalizeForMatch(k)) >= 0) { id = idByName[k]; break; } }
+            }
             if (!id) return;
             if (!taskMeta[id]) taskMeta[id] = {};
             if (r.rolle) taskMeta[id].rolle = r.rolle;

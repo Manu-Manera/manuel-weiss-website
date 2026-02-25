@@ -1222,7 +1222,7 @@ AUSGABE: NUR valides JSON:
   "tobeDescription": "2–3 Absätze: Was verbessern, welche Schritte optimieren, Automatisierung."
 }
 
-raci: Für JEDEN Task mit taskId und taskName. Rolle aus "Rolle: Tätigkeit". itSystem passend.`;
+raci: PFLICHT für JEDEN Task! Verwende die exakten taskId aus der Task-Liste (z.B. Task_1, Task_2). taskName = Task-Name. Rolle aus "Rolle: Tätigkeit" extrahieren. itSystem passend (z.B. SAP, Workday, Excel). R=Ausführend, A=Verantwortlich, C=Konsultiert, I=Informiert.`;
 
 const TOBE_SYSTEM_PROMPT = `Du bist ein BPMN-Experte. Erstelle einen optimierten To-Be-Prozess als BPMN-Struktur.
 
@@ -1250,7 +1250,7 @@ async function analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey) {
   const taskListJson = JSON.stringify(tasks.map(t => ({ id: t.id, name: t.name })));
   const descShort = (description || '').trim().substring(0, 1500);
   const structureText = [
-    'Tasks (mit IDs für raci-Zuordnung): ' + taskListJson,
+    'Tasks (raci PFLICHT für jeden – verwende exakt diese IDs): ' + taskListJson,
     'Gateways: ' + gateways.map(g => g.name).join(', '),
     descShort ? 'Kontext: ' + descShort : ''
   ].filter(Boolean).join('\n');
