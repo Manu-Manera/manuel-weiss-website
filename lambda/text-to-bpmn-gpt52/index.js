@@ -1236,15 +1236,16 @@ AUSGABE: NUR valides JSON (kein anderer Text):
 
 WICHTIG:
 - raci: Für JEDEN Task aus der Liste mit taskId und taskName. Rolle aus "Rolle: Tätigkeit" (MA, TL, HR, etc.). itSystem passend zu Tätigkeit (z.B. ATS, HRIS, Zeiterfassung).
-- tobeProcess: Optimierter Ablauf mit elements (row, col Pflicht!) und flows. Reduzierte Schritte, Automatisierung, klarere Entscheidungen.`;
+- tobeProcess: Optimierter Ablauf, maximal 8 Tasks, elements (row, col Pflicht!) und flows. Kompakt halten.`;
 
 async function analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey) {
   const { tasks, gateways, flows } = extractProcessStructureFromXml(bpmnXml);
   const taskListJson = JSON.stringify(tasks.map(t => ({ id: t.id, name: t.name })));
+  const descShort = (description || '').trim().substring(0, 1500);
   const structureText = [
     'Tasks (mit IDs für raci-Zuordnung): ' + taskListJson,
     'Gateways: ' + gateways.map(g => g.name).join(', '),
-    description ? 'Kontext: ' + description : ''
+    descShort ? 'Kontext: ' + descShort : ''
   ].filter(Boolean).join('\n');
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -1257,10 +1258,11 @@ async function analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey) {
       model: 'gpt-5.2',
       messages: [
         { role: 'system', content: ANALYZE_SYSTEM_PROMPT },
-        { role: 'user', content: `Analysiere diesen HR-Prozess und liefere suggestions, raci (für alle Tasks), tobeDescription und tobeProcess:\n\n${structureText}` }
+        { role: 'user', content: `Analysiere diesen HR-Prozess und liefere suggestions, raci (für alle Tasks), tobeDescription und tobeProcess (max 8 Tasks):\n\n${structureText}` }
       ],
       response_format: { type: 'json_object' },
-      max_completion_tokens: 8000
+      max_completion_tokens: 4000,
+      temperature: 0.3
     })
   });
 
