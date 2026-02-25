@@ -160,7 +160,9 @@
         }
         
         #bpmnDiagramContainer { 
-            height: 500px; 
+            height: 65vh;
+            min-height: 500px;
+            max-height: 900px;
             background: #fafafa; 
         }
         #bpmnDiagramContainer .bjs-container { border-radius: 0; }
@@ -348,7 +350,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         <div id="bpmnOptimizePanel" class="bpmn-optimize-panel" style="display: none; margin-top: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 12px; border: 1px solid rgba(14, 165, 233, 0.3);">
             <h4 style="margin: 0 0 0.75rem; color: #0369a1;"><i class="fas fa-lightbulb"></i> KI-Optimierungsvorschläge</h4>
             <div id="bpmnAsIsBadge" style="display: none; margin-bottom: 0.75rem; padding: 0.5rem 0.75rem; background: rgba(5, 150, 105, 0.15); border-radius: 8px; font-size: 0.85rem; color: #065f46;"><i class="fas fa-check-circle"></i> As-Is Prozess gespeichert</div>
-            <div id="bpmnOptimizeLoading" style="display: none; padding: 1rem; text-align: center; color: #64748b;"><i class="fas fa-spinner fa-spin"></i> Analysiere Prozess…</div>
+            <div id="bpmnOptimizeLoading" style="display: none; padding: 1rem; text-align: center; color: #64748b;"><i class="fas fa-spinner fa-spin"></i> Analysiere Prozess… (bei langen Prozessen 1–2 Min.)</div>
             <div id="bpmnOptimizeContent" style="display: none;"></div>
             <div id="bpmnOptimizeError" style="display: none; padding: 0.75rem; background: #fee2e2; color: #991b1b; border-radius: 8px; font-size: 0.9rem;"></div>
         </div>
@@ -693,7 +695,8 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         bpmnModeler.importXML(xml).then(function() {
             var canvas = bpmnModeler.get('canvas');
             if (canvas && canvas.zoom) {
-                setTimeout(function() { canvas.zoom('fit-viewport'); }, 100);
+                setTimeout(function() { canvas.zoom('fit-viewport'); }, 150);
+                setTimeout(function() { if (canvas && canvas.zoom) canvas.zoom('fit-viewport'); }, 500);
             }
             refreshRaciTable();
         }).catch(function(err) {
@@ -804,14 +807,14 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             } catch (e) { console.warn('OpenAI-Key nicht geladen, Fallback:', e); }
         }
 
-        var url = apiUrl();
+        var url = apiUrl(true) || apiUrl();
         if (!url) {
             showError('API-URL ist nicht konfiguriert.');
             return;
         }
 
         setBusy(true);
-        setStatus('Rufe API auf…');
+        setStatus('Rufe API auf… (bei langen Prozessen kann es 1–2 Min. dauern)');
 
         try {
             var res = await fetch(url, {

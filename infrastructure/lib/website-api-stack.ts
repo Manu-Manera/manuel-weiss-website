@@ -394,7 +394,7 @@ export class WebsiteApiStack extends cdk.Stack {
       handler: 'index.handler',
       code: lambda.Code.fromAsset('../lambda/text-to-bpmn-gpt52'),
       role: lambdaRole,
-      timeout: cdk.Duration.seconds(120), // Längerer Timeout für komplexe Prozesse (31+ Schritte)
+      timeout: cdk.Duration.seconds(300), // 5 Min für lange Prozesse (API Gateway max 29s → Function URL)
       memorySize: 1024 // Mehr Memory = schnellerer CPU für Analyse (API Gateway max 29s)
     });
 

@@ -1268,7 +1268,7 @@ async function analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey) {
         { role: 'user', content: `Analysiere diesen HR-Prozess:\n\n${structureText}` }
       ],
       response_format: { type: 'json_object' },
-      max_completion_tokens: 2500,
+      max_completion_tokens: tasks.length > 15 ? 4500 : 2500,
       temperature: 0.3
     })
   });
