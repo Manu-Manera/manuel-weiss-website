@@ -1204,21 +1204,32 @@ function extractProcessStructureFromXml(bpmnXml) {
 
 const ANALYZE_SYSTEM_PROMPT = `Du bist ein erfahrener Prozessberater mit HR- und BPM-Expertise.
 
-AUFGABE: Analysiere das gegebene BPMN-Prozessmodell und liefere:
-1. Optimierungsvorschläge
-2. RACI + Rollen + IT-Systeme pro Task (aus Task-Namen ableiten: "Rolle: Tätigkeit")
-3. Verbale Beschreibung der To-Be-Verbesserungen
-4. To-Be-Prozess als BPMN-Struktur (optimierter Ablauf)
+AUFGABE: Analysiere das BPMN-Prozessmodell und liefere NUR:
+1. Optimierungsvorschläge (3–5 Stück)
+2. RACI + Rollen + IT-Systeme pro Task
+3. Kurze verbale To-Be-Beschreibung (2–3 Absätze)
 
-AUSGABE: NUR valides JSON (kein anderer Text):
+KEIN tobeProcess! Nur suggestions, raci, tobeDescription.
+
+AUSGABE: NUR valides JSON:
 {
   "suggestions": [
     { "type": "bottleneck|redundancy|automation|clarity|compliance|other", "title": "Kurzer Titel", "description": "Konkrete Beschreibung", "priority": "high|medium|low" }
   ],
   "raci": [
-    { "taskId": "exakte Task-ID aus der Liste", "taskName": "Task-Name", "rolle": "z.B. HR", "itSystem": "z.B. SAP SuccessFactors", "raciR": "Ausführend", "raciA": "Verantwortlich", "raciC": "Konsultiert", "raciI": "Informiert" }
+    { "taskId": "exakte Task-ID", "taskName": "Task-Name", "rolle": "z.B. HR", "itSystem": "z.B. SAP", "raciR": "Ausführend", "raciA": "Verantwortlich", "raciC": "Konsultiert", "raciI": "Informiert" }
   ],
-  "tobeDescription": "2–4 Absätze: Was wurde verbessert, welche Schritte optimiert, Automatisierung, etc.",
+  "tobeDescription": "2–3 Absätze: Was verbessern, welche Schritte optimieren, Automatisierung."
+}
+
+raci: Für JEDEN Task mit taskId und taskName. Rolle aus "Rolle: Tätigkeit". itSystem passend.`;
+
+const TOBE_SYSTEM_PROMPT = `Du bist ein BPMN-Experte. Erstelle einen optimierten To-Be-Prozess als BPMN-Struktur.
+
+EINGABE: Prozessbeschreibung, Tasks, Verbesserungsvorschläge.
+AUSGABE: NUR valides JSON mit tobeProcess (elements + flows). Maximal 8 Tasks. row und col Pflicht.
+
+{
   "tobeProcess": {
     "processId": "Process_ToBe",
     "processName": "Prozess Optimiert",
@@ -1232,11 +1243,7 @@ AUSGABE: NUR valides JSON (kein anderer Text):
       { "id": "F2", "source": "Task_1", "target": "End_1" }
     ]
   }
-}
-
-WICHTIG:
-- raci: Für JEDEN Task aus der Liste mit taskId und taskName. Rolle aus "Rolle: Tätigkeit" (MA, TL, HR, etc.). itSystem passend zu Tätigkeit (z.B. ATS, HRIS, Zeiterfassung).
-- tobeProcess: Optimierter Ablauf, maximal 8 Tasks, elements (row, col Pflicht!) und flows. Kompakt halten.`;
+}`;
 
 async function analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey) {
   const { tasks, gateways, flows } = extractProcessStructureFromXml(bpmnXml);
@@ -1258,10 +1265,10 @@ async function analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey) {
       model: 'gpt-5.2',
       messages: [
         { role: 'system', content: ANALYZE_SYSTEM_PROMPT },
-        { role: 'user', content: `Analysiere diesen HR-Prozess und liefere suggestions, raci (für alle Tasks), tobeDescription und tobeProcess (max 8 Tasks):\n\n${structureText}` }
+        { role: 'user', content: `Analysiere diesen HR-Prozess:\n\n${structureText}` }
       ],
       response_format: { type: 'json_object' },
-      max_completion_tokens: 4000,
+      max_completion_tokens: 2500,
       temperature: 0.3
     })
   });
@@ -1278,7 +1285,60 @@ async function analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey) {
   try {
     parsed = JSON.parse(content);
   } catch (e) {
-    parsed = { suggestions: [{ type: 'other', title: 'Analyse', description: content, priority: 'medium' }], raci: [], tobeDescription: '', tobeProcess: null };
+    parsed = { suggestions: [{ type: 'other', title: 'Analyse', description: content, priority: 'medium' }], raci: [], tobeDescription: '' };
+  }
+
+  return {
+    suggestions: parsed.suggestions || [],
+    raci: parsed.raci || [],
+    tobeDescription: parsed.tobeDescription || '',
+    tobeBpmnXml: null
+  };
+}
+
+async function generateTobeWithGPT(bpmnXml, description, tobeDescription, suggestions, openaiApiKey) {
+  const { tasks, gateways } = extractProcessStructureFromXml(bpmnXml);
+  const taskListJson = JSON.stringify(tasks.map(t => ({ id: t.id, name: t.name })));
+  const suggText = suggestions && suggestions.length ? suggestions.map(s => s.title + ': ' + s.description).join('\n') : '';
+  const userContent = [
+    'Tasks: ' + taskListJson,
+    'Gateways: ' + gateways.map(g => g.name).join(', '),
+    description ? 'Kontext: ' + description.substring(0, 500) : '',
+    tobeDescription ? 'To-Be-Beschreibung: ' + tobeDescription.substring(0, 800) : '',
+    suggText ? 'Verbesserungen: ' + suggText.substring(0, 600) : ''
+  ].filter(Boolean).join('\n\n');
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${openaiApiKey}`
+    },
+    body: JSON.stringify({
+      model: 'gpt-5.2',
+      messages: [
+        { role: 'system', content: TOBE_SYSTEM_PROMPT },
+        { role: 'user', content: `Erstelle optimierten To-Be-Prozess (max 8 Tasks):\n\n${userContent}` }
+      ],
+      response_format: { type: 'json_object' },
+      max_completion_tokens: 2000,
+      temperature: 0.3
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    const msg = (typeof err.error === 'string' ? err.error : err.error?.message) || err.message || response.statusText || 'OpenAI API Fehler';
+    throw new Error(msg);
+  }
+
+  const data = await response.json();
+  const content = data.choices?.[0]?.message?.content || '{}';
+  let parsed;
+  try {
+    parsed = JSON.parse(content);
+  } catch (e) {
+    throw new Error('To-Be konnte nicht gelesen werden');
   }
 
   let tobeBpmnXml = null;
@@ -1286,16 +1346,10 @@ async function analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey) {
     try {
       tobeBpmnXml = generateBpmnXmlFromJson(parsed.tobeProcess, 'Process_ToBe');
     } catch (e) {
-      console.warn('tobeProcess to BPMN failed:', e.message);
+      throw new Error('To-Be BPMN-Generierung fehlgeschlagen: ' + e.message);
     }
   }
-
-  return {
-    suggestions: parsed.suggestions || [],
-    raci: parsed.raci || [],
-    tobeDescription: parsed.tobeDescription || '',
-    tobeBpmnXml
-  };
+  return tobeBpmnXml;
 }
 
 exports.handler = async (event) => {
@@ -1315,7 +1369,7 @@ exports.handler = async (event) => {
       return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ success: false, error: 'openaiApiKey is required (im Admin unter API Keys hinterlegen)' }) };
     }
 
-    // BPMN-Analyse: Prozess optimieren
+    // BPMN-Analyse: Prozess optimieren (Phase 1: schnell, ohne To-Be-Diagramm)
     if (action === 'analyze') {
       const bpmnXml = (body.bpmnXml || '').trim();
       const description = (body.description || '').trim();
@@ -1335,8 +1389,29 @@ exports.handler = async (event) => {
           suggestions: result.suggestions,
           raci: result.raci,
           tobeDescription: result.tobeDescription,
-          tobeBpmnXml: result.tobeBpmnXml
+          tobeBpmnXml: null
         })
+      };
+    }
+
+    // To-Be-Diagramm separat generieren (Phase 2: nach Analyse)
+    if (action === 'generateTobe') {
+      const bpmnXml = (body.bpmnXml || '').trim();
+      const description = (body.description || '').trim();
+      const tobeDescription = (body.tobeDescription || '').trim();
+      const suggestions = body.suggestions || [];
+      if (!bpmnXml || bpmnXml.length < 50) {
+        return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ success: false, error: 'bpmnXml is required' }) };
+      }
+      const { tasks } = extractProcessStructureFromXml(bpmnXml);
+      if (!tasks || tasks.length === 0) {
+        return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ success: false, error: 'Keine Tasks im BPMN-Diagramm.' }) };
+      }
+      const tobeBpmnXml = await generateTobeWithGPT(bpmnXml, description, tobeDescription, suggestions, openaiApiKey);
+      return {
+        statusCode: 200,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({ success: true, tobeBpmnXml })
       };
     }
 

@@ -379,7 +379,8 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                     <div id="bpmnTobeDiagramContainer" style="height: 320px; background: #fafafa; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;"></div>
                 </div>
             </div>
-            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
+                <button type="button" id="bpmnTobeGenerateBtn" style="display: none; padding: 0.5rem 1rem; background: linear-gradient(135deg, #059669, #10b981); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; align-items: center; gap: 0.5rem;"><i class="fas fa-magic"></i> To-Be Diagramm generieren</button>
                 <button type="button" id="bpmnTobeSaveBtn" style="padding: 0.5rem 1rem; background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-save"></i> To-Be speichern</button>
                 <button type="button" id="bpmnTobeDownloadBtn" style="padding: 0.5rem 1rem; background: #e5e7eb; color: #374151; border: none; border-radius: 8px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-download"></i> .bpmn herunterladen</button>
             </div>
@@ -1043,9 +1044,18 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                     content.style.display = 'block';
                     var tobeDescEl = document.getElementById('bpmnTobeDescription');
                     if (tobeDescEl && data.tobeDescription) tobeDescEl.value = data.tobeDescription;
-                    if (data.tobeBpmnXml && toBeSection) {
+                    if (toBeSection) {
                         toBeSection.style.display = 'block';
-                        renderTobeEditor(data.tobeBpmnXml);
+                        toBeSection.dataset.lastAnalyze = JSON.stringify({ bpmnXml: bpmnXml, suggestions: data.suggestions });
+                        var tobeGenBtn = document.getElementById('bpmnTobeGenerateBtn');
+                        if (tobeGenBtn) {
+                            tobeGenBtn.style.display = 'inline-flex';
+                            tobeGenBtn.disabled = false;
+                        }
+                        if (data.tobeBpmnXml) {
+                            renderTobeEditor(data.tobeBpmnXml);
+                            if (tobeGenBtn) tobeGenBtn.style.display = 'none';
+                        }
                     }
                 } catch (e) {
                     errEl.textContent = e.message || 'Analyse fehlgeschlagen.';
@@ -1056,6 +1066,47 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             })();
         });
     }
+
+    document.getElementById('bpmnTobeGenerateBtn').addEventListener('click', async function() {
+        var btn = this;
+        var stored = (document.getElementById('bpmnToBeSection') || {}).dataset.lastAnalyze;
+        if (!stored) return;
+        var parsed;
+        try { parsed = JSON.parse(stored); } catch(e) { return; }
+        var bpmnXml = parsed.bpmnXml;
+        var suggestions = parsed.suggestions || [];
+        if (!bpmnXml) return;
+        var tobeDesc = (document.getElementById('bpmnTobeDescription') || {}).value || '';
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generiere…';
+        try {
+            var openaiApiKey = '';
+            if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
+                openaiApiKey = await window.awsAPISettings.getFullApiKey('openai') || '';
+            }
+            if (!openaiApiKey || openaiApiKey.length < 10) throw new Error('OpenAI API-Key nicht konfiguriert.');
+            var url = apiUrl();
+            if (!url) throw new Error('API-URL nicht konfiguriert.');
+            var desc = (processTextEl && processTextEl.value) ? processTextEl.value.trim() : '';
+            var res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'generateTobe', bpmnXml: bpmnXml, description: desc, tobeDescription: tobeDesc, suggestions: suggestions, openaiApiKey: openaiApiKey })
+            });
+            var rawText = await res.text();
+            var data = {};
+            try { data = JSON.parse(rawText); } catch(parseErr) { data = {}; }
+            if (!res.ok) throw new Error(data.error || res.statusText || 'Fehler');
+            if (!data.success || !data.tobeBpmnXml) throw new Error('To-Be konnte nicht generiert werden.');
+            renderTobeEditor(data.tobeBpmnXml);
+            btn.style.display = 'none';
+        } catch (e) {
+            showError(e.message || 'To-Be-Generierung fehlgeschlagen.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-magic"></i> To-Be Diagramm generieren';
+        }
+    });
 
     document.getElementById('bpmnTobeSaveBtn').addEventListener('click', function() {
         getTobeXmlFromEditor(function(err, xml) {
