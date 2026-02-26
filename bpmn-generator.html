@@ -791,9 +791,20 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         if (!busy) setStatus('');
     }
 
+    function normalizeApiError(msg) {
+        if (!msg || typeof msg !== 'string') return 'Ein unbekannter Fehler ist aufgetreten.';
+        var m = msg.trim().toLowerCase();
+        if (m === 'load failed' || m === 'failed to fetch' || m.indexOf('load failed') >= 0 || m.indexOf('failed to fetch') >= 0) {
+            return 'Netzwerkfehler: Verbindung zur KI-API konnte nicht hergestellt werden. Bitte prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.';
+        }
+        if (m.indexOf('timeout') >= 0 || m.indexOf('timed out') >= 0) {
+            return 'Zeitüberschreitung: Die Anfrage hat zu lange gedauert. Bei langen Prozessen bitte „Beschreibung optimieren“ vor „Workflow generieren“ nutzen.';
+        }
+        return msg;
+    }
     function showError(msg) {
         var err = document.getElementById('bpmnError');
-        if (err) { err.style.display = 'block'; err.textContent = msg; }
+        if (err) { err.style.display = 'block'; err.textContent = normalizeApiError(msg); }
     }
 
     async function optimizeDescription() {
@@ -821,6 +832,8 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         }
         var btn = document.getElementById('bpmnOptimizeDescBtn');
         if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Optimiere…'; }
+        var errEl = document.getElementById('bpmnError');
+        if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
         setStatus('Beschreibung wird optimiert…');
         try {
             var res = await fetch(url, {
@@ -835,7 +848,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             setStatus('Beschreibung optimiert. Jetzt „Workflow generieren“ klicken.');
             setTimeout(function() { setStatus(''); }, 4000);
         } catch (e) {
-            showError(e.message || 'Optimierung fehlgeschlagen.');
+            showError(normalizeApiError(e.message || 'Optimierung fehlgeschlagen.'));
         } finally {
             if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Beschreibung optimieren'; }
         }
@@ -863,6 +876,8 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         }
 
         setBusy(true);
+        var errEl = document.getElementById('bpmnError');
+        if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
         setStatus('Rufe API auf… (bei langen Prozessen kann es 1–2 Min. dauern)');
 
         try {
@@ -883,7 +898,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                 showError(data.error || 'Kein BPMN-XML in der Antwort.');
             }
         } catch (e) {
-            showError(e.message || 'Netzwerk- oder Fehler beim Aufruf.');
+            showError(normalizeApiError(e.message || 'Netzwerk- oder Fehler beim Aufruf.'));
         } finally {
             setBusy(false);
         }
@@ -1061,7 +1076,10 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             loading.style.display = 'block';
             content.style.display = 'none';
             errEl.style.display = 'none';
+            errEl.textContent = '';
             content.innerHTML = '';
+            var errGlobal = document.getElementById('bpmnError');
+            if (errGlobal) { errGlobal.style.display = 'none'; errGlobal.textContent = ''; }
             asIsBadge.style.display = 'none';
             toBeSection.style.display = 'none';
             asIsState = { bpmnXml: bpmnXml, taskMeta: JSON.parse(JSON.stringify(taskMeta)) };
@@ -1124,7 +1142,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                         }
                     }
                 } catch (e) {
-                    errEl.textContent = e.message || 'Analyse fehlgeschlagen.';
+                    errEl.textContent = normalizeApiError(e.message || 'Analyse fehlgeschlagen.');
                     errEl.style.display = 'block';
                 } finally {
                     loading.style.display = 'none';
@@ -1167,7 +1185,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             renderTobeEditor(data.tobeBpmnXml);
             btn.style.display = 'none';
         } catch (e) {
-            showError(e.message || 'To-Be-Generierung fehlgeschlagen.');
+            showError(normalizeApiError(e.message || 'To-Be-Generierung fehlgeschlagen.'));
         } finally {
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-magic"></i> To-Be Diagramm generieren';
