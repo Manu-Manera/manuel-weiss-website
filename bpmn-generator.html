@@ -574,13 +574,17 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         } catch (e) { console.warn('injectRaciIntoXml:', e); return xml; }
     }
 
+    function isTaskElement(el) {
+        var t = el.type || (el.businessObject && el.businessObject.$type) || '';
+        return t && (t === 'bpmn:Task' || t === 'bpmn:UserTask' || t === 'bpmn:ServiceTask' || t === 'bpmn:ManualTask' || (typeof t === 'string' && t.indexOf('Task') >= 0));
+    }
     function refreshRaciTable() {
         var tbody = document.getElementById('bpmnRaciTableBody');
         if (!tbody || !bpmnModeler) return;
         tbody.innerHTML = '';
         var registry = bpmnModeler.get('elementRegistry');
         var all = registry.getAll();
-        var tasks = all.filter(function(el) { return el.type === 'bpmn:Task' || (el.businessObject && el.businessObject.$type === 'bpmn:Task'); });
+        var tasks = all.filter(isTaskElement);
         tasks.forEach(function(el) {
             var id = el.id;
             var name = (el.businessObject && el.businessObject.name) || id;
@@ -614,7 +618,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         var formId = document.getElementById('bpmnTaskFormId');
         eventBus.on('selection.changed', function(e) {
             var sel = e.newSelection || [];
-            var task = sel.length === 1 && (sel[0].type === 'bpmn:Task' || (sel[0].businessObject && sel[0].businessObject.$type === 'bpmn:Task')) ? sel[0] : null;
+            var task = sel.length === 1 && isTaskElement(sel[0]) ? sel[0] : null;
             if (!task) {
                 form.style.display = 'none';
                 return;
@@ -703,6 +707,10 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                 setTimeout(function() { if (canvas && canvas.zoom) canvas.zoom('fit-viewport'); }, 500);
             }
             refreshRaciTable();
+            if (window._bpmnAutoAnalyzeRaci) {
+                window._bpmnAutoAnalyzeRaci = false;
+                setTimeout(function() { analyzeBpmn(); }, 300);
+            }
         }).catch(function(err) {
             console.error('BPMN import failed:', err);
             var msg = '<div style="padding:2rem;text-align:center;color:#b91c1c;">Diagramm konnte nicht geladen werden: ' + (err && err.message ? err.message : 'Siehe Konsole') + '. <a href="#" id="bpmnShowXmlTab" style="color:#667eea;">XML-Ansicht</a> prüfen.</div>';
@@ -744,8 +752,9 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         }
     }
 
-    function showResult(xml, interpretation, assumptions, skipAutoDownload) {
+    function showResult(xml, interpretation, assumptions, skipAutoDownload, autoFillRaci) {
         currentBpmnXml = xml;
+        if (autoFillRaci) window._bpmnAutoAnalyzeRaci = true;
         var area = document.getElementById('bpmnResultArea');
         var pre = document.getElementById('bpmnXmlOutput');
         var err = document.getElementById('bpmnError');
@@ -893,7 +902,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                 return;
             }
             if (data.success && data.bpmnXml) {
-                showResult(data.bpmnXml, data.interpretation, data.assumptions);
+                showResult(data.bpmnXml, data.interpretation, data.assumptions, false, true);
             } else {
                 showError(data.error || 'Kein BPMN-XML in der Antwort.');
             }
@@ -992,7 +1001,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             var registry = bpmnModeler.get('elementRegistry');
             if (registry) {
                 registry.getAll().forEach(function(el) {
-                    if (el.type === 'bpmn:Task' || (el.businessObject && el.businessObject.$type === 'bpmn:Task')) {
+                    if (isTaskElement(el)) {
                         var n = (el.businessObject && el.businessObject.name) || el.id;
                         idByName[n] = el.id;
                         idByNormalizedName[normalizeForMatch(n)] = el.id;
