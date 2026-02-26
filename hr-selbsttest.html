@@ -5177,6 +5177,7 @@
 
         // Open process modal
         function openProcessModal(processId, categoryId) {
+            currentWorkflowProcessId = processId;
             // Suche in Standard-Prozessen
             let process = hrProcesses.find(p => p.id === processId);
             
@@ -8096,16 +8097,17 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
         // Speichere BPMN-Änderungen
         let modalTaskMeta = {};
         async function saveBpmnChanges() {
-            if (!bpmnViewer || !currentWorkflowProcessId) return;
+            const pid = currentWorkflowProcessId || document.getElementById('currentProcessId')?.value;
+            if (!bpmnViewer || !pid) return;
             
             try {
                 const { xml } = await bpmnViewer.saveXML({ format: true });
                 
-                if (!assessmentData.prozesse[currentWorkflowProcessId]) {
-                    assessmentData.prozesse[currentWorkflowProcessId] = {};
+                if (!assessmentData.prozesse[pid]) {
+                    assessmentData.prozesse[pid] = {};
                 }
-                assessmentData.prozesse[currentWorkflowProcessId].bpmnXml = xml;
-                assessmentData.prozesse[currentWorkflowProcessId].taskMeta = JSON.parse(JSON.stringify(modalTaskMeta));
+                assessmentData.prozesse[pid].bpmnXml = xml;
+                assessmentData.prozesse[pid].taskMeta = JSON.parse(JSON.stringify(modalTaskMeta));
                 saveData();
             } catch (e) {
                 console.warn('Save BPMN error:', e);
@@ -8191,9 +8193,17 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
         }
         
         async function runModalRaciAutoFill() {
-            if (!bpmnViewer || !currentWorkflowProcessId) return;
-            const btn = document.getElementById('modalRaciAutoFillBtn');
+            const pid = currentWorkflowProcessId || document.getElementById('currentProcessId')?.value;
             const statusEl = document.getElementById('modalRaciAutoFillStatus');
+            if (!bpmnViewer) {
+                if (statusEl) { statusEl.textContent = 'Kein Diagramm geladen.'; setTimeout(() => { statusEl.textContent = ''; }, 3000); }
+                return;
+            }
+            if (!pid) {
+                if (statusEl) { statusEl.textContent = 'Prozess nicht erkannt.'; setTimeout(() => { statusEl.textContent = ''; }, 3000); }
+                return;
+            }
+            const btn = document.getElementById('modalRaciAutoFillBtn');
             try {
                 const { xml } = await bpmnViewer.saveXML({ format: true });
                 if (!xml || xml.length < 50) {
