@@ -2612,6 +2612,9 @@
             text-align: left;
         }
         .modal-raci-table th { background: #f1f5f9; color: #334155; font-weight: 600; }
+        .modal-raci-table td:first-child { color: #4c1d95; max-width: 140px; white-space: normal; word-wrap: break-word; line-height: 1.35; }
+        .modal-raci-table th:first-child { max-width: 140px; }
+        .modal-raci-table th:nth-child(7), .modal-raci-table td:nth-child(7) { min-width: 400px; white-space: normal; }
         .modal-raci-table input {
             width: 100%;
             min-width: 60px;
@@ -2620,6 +2623,11 @@
             border-radius: 4px;
             font-size: 0.8rem;
         }
+        .modal-raci-table input[data-field="raciR"] { background: #eff6ff; color: #1e40af; }
+        .modal-raci-table input[data-field="raciA"] { background: #ecfdf5; color: #065f46; }
+        .modal-raci-table input[data-field="raciC"] { background: #fffbeb; color: #92400e; }
+        .modal-raci-table input[data-field="raciI"] { background: #eef2ff; color: #3730a3; }
+        .modal-raci-table input[data-field="itSystem"] { min-width: 360px; }
         
         /* BPMN Toolbar (links wie bei bpmn.io) */
         .bpmn-toolbar {
@@ -8144,13 +8152,14 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 const m = modalTaskMeta[id] || {};
                 const tr = document.createElement('tr');
                 tr.dataset.taskId = id;
-                tr.innerHTML = '<td><strong>' + (name || '').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</strong></td>' +
-                    '<td><input type="text" data-field="raciR" value="' + (m.raciR || '') + '" placeholder="–"></td>' +
-                    '<td><input type="text" data-field="raciA" value="' + (m.raciA || '') + '" placeholder="–"></td>' +
-                    '<td><input type="text" data-field="raciC" value="' + (m.raciC || '') + '" placeholder="–"></td>' +
-                    '<td><input type="text" data-field="raciI" value="' + (m.raciI || '') + '" placeholder="–"></td>' +
-                    '<td><input type="text" data-field="rolle" value="' + (m.rolle || '') + '" placeholder="–"></td>' +
-                    '<td><input type="text" data-field="itSystem" value="' + (m.itSystem || '') + '" placeholder="–"></td>';
+                var esc = (s) => (s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                tr.innerHTML = '<td><strong>' + esc(name) + '</strong></td>' +
+                    '<td><input type="text" data-field="raciR" value="' + esc(m.raciR) + '" placeholder="–"></td>' +
+                    '<td><input type="text" data-field="raciA" value="' + esc(m.raciA) + '" placeholder="–"></td>' +
+                    '<td><input type="text" data-field="raciC" value="' + esc(m.raciC) + '" placeholder="–"></td>' +
+                    '<td><input type="text" data-field="raciI" value="' + esc(m.raciI) + '" placeholder="–"></td>' +
+                    '<td><input type="text" data-field="rolle" value="' + esc(m.rolle) + '" placeholder="–"></td>' +
+                    '<td><input type="text" data-field="itSystem" value="' + esc(m.itSystem) + '" placeholder="–"></td>';
                 tr.querySelectorAll('input').forEach(inp => {
                     inp.addEventListener('change', function() {
                         const fid = tr.dataset.taskId;
