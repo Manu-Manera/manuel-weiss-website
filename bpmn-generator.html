@@ -318,6 +318,10 @@ Teamleitung genehmigt oder lehnt ab.
 Bei Genehmigung: HR bucht Urlaub.
 Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                 
+                <button type="button" id="bpmnOptimizeDescBtn" style="width: 100%; padding: 0.6rem 1rem; background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 0.5rem;">
+                    <i class="fas fa-wand-magic-sparkles"></i> Beschreibung optimieren
+                </button>
+                <p style="font-size: 0.75rem; color: #64748b; margin: 0.35rem 0 0;">Empfohlen bei langen Prozessen: Erst optimieren, dann generieren.</p>
                 <button type="button" id="bpmnGenerateBtn">
                     <i class="fas fa-magic"></i> Workflow generieren
                 </button>
@@ -792,6 +796,51 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         if (err) { err.style.display = 'block'; err.textContent = msg; }
     }
 
+    async function optimizeDescription() {
+        var textarea = document.getElementById('bpmnProcessText');
+        var text = (textarea && textarea.value) ? textarea.value.trim() : '';
+        if (!text || text.length < 20) {
+            showError('Bitte mindestens 20 Zeichen Prozessbeschreibung eingeben.');
+            return;
+        }
+        var openaiApiKey = '';
+        if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
+            try {
+                var key = await window.awsAPISettings.getFullApiKey('openai');
+                if (key && typeof key === 'string' && key.length > 10) openaiApiKey = key;
+            } catch (e) { console.warn('OpenAI-Key nicht geladen:', e); }
+        }
+        if (!openaiApiKey || openaiApiKey.length < 10) {
+            showError('OpenAI API-Key nicht konfiguriert. Bitte im Admin unter API Keys hinterlegen.');
+            return;
+        }
+        var url = apiUrl(true) || apiUrl();
+        if (!url) {
+            showError('API-URL ist nicht konfiguriert.');
+            return;
+        }
+        var btn = document.getElementById('bpmnOptimizeDescBtn');
+        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Optimiere…'; }
+        setStatus('Beschreibung wird optimiert…');
+        try {
+            var res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'optimizeDescription', text: text, openaiApiKey: openaiApiKey })
+            });
+            var data = await res.json().catch(function() { return {}; });
+            if (!res.ok) throw new Error(data.error || res.statusText || 'Fehler');
+            if (!data.success || !data.optimizedText) throw new Error('Keine optimierte Beschreibung erhalten.');
+            if (textarea) textarea.value = data.optimizedText;
+            setStatus('Beschreibung optimiert. Jetzt „Workflow generieren“ klicken.');
+            setTimeout(function() { setStatus(''); }, 4000);
+        } catch (e) {
+            showError(e.message || 'Optimierung fehlgeschlagen.');
+        } finally {
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Beschreibung optimieren'; }
+        }
+    }
+
     async function generateBpmn() {
         var text = (document.getElementById('bpmnProcessText') || {}).value || '';
         if (!text.trim()) {
@@ -1171,6 +1220,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         });
     });
 
+    document.getElementById('bpmnOptimizeDescBtn').addEventListener('click', optimizeDescription);
     document.getElementById('bpmnGenerateBtn').addEventListener('click', generateBpmn);
     var analyzeBtn = document.getElementById('bpmnAnalyzeBtn');
     if (analyzeBtn) analyzeBtn.addEventListener('click', analyzeBpmn);

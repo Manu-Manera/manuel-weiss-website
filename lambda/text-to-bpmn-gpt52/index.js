@@ -1202,6 +1202,50 @@ function extractProcessStructureFromXml(bpmnXml) {
   return { tasks, gateways, flows };
 }
 
+const OPTIMIZE_DESCRIPTION_PROMPT = `Du bist ein erfahrener HR-Prozessberater.
+
+AUFGABE: Optimiere die Prozessbeschreibung für Klarheit und BPMN-Tauglichkeit.
+
+REGELN:
+- Eine Zeile = ein Schritt/Task
+- Format "Rolle: Tätigkeit" (z.B. "HR: Stelle ausschreiben", "TL: Antrag prüfen")
+- Entscheidungen explizit machen (z.B. "TL genehmigt oder lehnt ab" → zwei Zeilen mit Ja/Nein)
+- Keine Inhalte hinzufügen oder weglassen – nur strukturieren und präzisieren
+- Rollen: MA, TL, AL, HR, GF etc.
+
+AUSGABE: NUR den optimierten Text, kein JSON, keine Erklärungen.`;
+
+async function optimizeDescriptionWithGPT(text, openaiApiKey) {
+  const normalized = normalizeProcessText(text);
+  if (!normalized || normalized.length < 20) {
+    throw new Error('Prozessbeschreibung zu kurz');
+  }
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${openaiApiKey}`
+    },
+    body: JSON.stringify({
+      model: 'gpt-5.2',
+      messages: [
+        { role: 'system', content: OPTIMIZE_DESCRIPTION_PROMPT },
+        { role: 'user', content: `Optimiere diese Prozessbeschreibung:\n\n${normalized}` }
+      ],
+      max_completion_tokens: 4000,
+      temperature: 0.3
+    })
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    const msg = (typeof err.error === 'string' ? err.error : err.error?.message) || err.message || response.statusText || 'OpenAI API Fehler';
+    throw new Error(msg);
+  }
+  const data = await response.json();
+  const content = (data.choices?.[0]?.message?.content || '').trim();
+  return content || normalized;
+}
+
 const ANALYZE_SYSTEM_PROMPT = `Du bist ein erfahrener Prozessberater mit HR- und BPM-Expertise.
 
 AUFGABE: Analysiere das BPMN-Prozessmodell und liefere NUR:
@@ -1368,6 +1412,20 @@ exports.handler = async (event) => {
 
     if (!openaiApiKey || openaiApiKey.length < 10) {
       return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ success: false, error: 'openaiApiKey is required (im Admin unter API Keys hinterlegen)' }) };
+    }
+
+    // Beschreibung optimieren (nur Text – danach separat BPMN generieren)
+    if (action === 'optimizeDescription') {
+      const text = (body.text || '').trim();
+      if (!text || text.length < 20) {
+        return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ success: false, error: 'Prozessbeschreibung erforderlich (mind. 20 Zeichen)' }) };
+      }
+      const optimizedText = await optimizeDescriptionWithGPT(text, openaiApiKey);
+      return {
+        statusCode: 200,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({ success: true, optimizedText })
+      };
     }
 
     // BPMN-Analyse: Prozess optimieren (Phase 1: schnell, ohne To-Be-Diagramm)
