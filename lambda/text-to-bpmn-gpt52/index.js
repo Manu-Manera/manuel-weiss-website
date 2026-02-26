@@ -22,19 +22,20 @@ AUFGABE: Wandle den Prozess-Text in ein BPMN-Diagramm um.
 
 KRITISCHE REGELN (strikt befolgen):
 
-1. VOLLSTÄNDIGKEIT: EINE ZEILE = EIN EINZIGER TASK
-   - N Zeilen im Text → genau N Tasks (KEINE Obergrenze!)
+1. VOLLSTÄNDIGKEIT & ZUSAMMENFASSUNG:
+   - N Zeilen im Text → maximal N Tasks (KEINE Obergrenze!)
    - Alle Tätigkeiten in EINER Zeile (Komma, Punkt, "und") gehören ZUSAMMEN in denselben Task!
-
+   - ZUSAMMENFASSUNG: Aufgaben, die auf derselben Benutzeroberfläche von derselben Rolle erledigt werden (z.B. Formularfelder: Zeitraum wählen + Kommentar hinzufügen), in EINEN Task zusammenfassen! Beispiel: "MA: Zeitraum wählen" + "MA: Kommentar hinzufügen" → EIN Task "MA: Zeitraum wählen und Kommentar hinzufügen"
 
 2. TASK-NAMEN: Format "Rolle: Tätigkeit" (keine Obergrenze für Zeichenanzahl bei mehreren Tätigkeiten)
    - Gut: "HR: Stelle ausschreiben", "TL: Antrag prüfen"
    - Rollen: MA (Mitarbeiter), TL (Teamleiter), AL (Abteilungsleiter), HR (Human Resources), GF (Geschäftsführung), etc. 
 
 3. ENTSCHEIDUNGEN (WICHTIG für HR-Prozesse):
-   - Immer wenn jemand etwas ablehnen/genehmigen kann: "lehnt ab", "genehmigt", "prüft", "entscheidet" → exclusiveGateway!
-   - Beispiel: "TL lehnt unbezahlten Urlaub ab" → Gateway "Genehmigt?" mit Ja (weiter) und Nein (Absage-Task)
+   - JEDE Prüfung braucht ein Gateway! Wenn "prüft", "prüfen", "genehmigt", "lehnt ab", "entscheidet" vorkommt → NACH dem Prüf-Task MUSS ein exclusiveGateway folgen!
+   - Beispiel: "VG: Teamplanung prüfen" → Task + direkt danach Gateway "Genehmigt?" mit Ja (weiter) und Nein (Ablehnungspfad, ggf. eigenes Ende)
    - 2 Pfade: name "Ja"/"Nein" oder "Genehmigt"/"Abgelehnt"
+   - Ablehnungspfad: Immer Task für Absage/Information + eigenes End-Event (Prozess kann dort enden!)
    - 3+ Pfade (z.B. Budget-Stufen): name "<5000", "5000-10000", ">10000" – jeder Pfad eigener Task, row aufsteigend
 
 4. LAYOUT für bpmn.io (WICHTIG für korrekte Darstellung):
@@ -88,6 +89,8 @@ ELEMENT-TYPEN: startEvent, endEvent, userTask, serviceTask, exclusiveGateway
 
 HÄUFIGE FEHLER VERMEIDEN:
 - Eine Zeile in mehrere Tasks aufteilen → FALSCH (eine Zeile = ein Task, alle Tätigkeiten zusammen)
+- Mehrere Zeilen, die dieselbe UI/Rolle betreffen (z.B. Zeitraum + Kommentar), als separate Tasks lassen → FALSCH (zusammenfassen!)
+- Prüfung ohne Gateway dahinter → FALSCH (jede Prüfung braucht exclusiveGateway mit Ja/Nein)
 - row/col weglassen → FALSCH (Layout wird kaputt)
 - Doppelte row/col → FALSCH (Elemente überlappen)
 - Task nach Gateway mit gleicher col wie Gateway → FALSCH (Pfeil geht durch Task! col+1 nötig)
@@ -95,10 +98,10 @@ HÄUFIGE FEHLER VERMEIDEN:
 - JEDER Pfad muss in einem endEvent enden → Jeder letzte Task/Gateway-Ausgang braucht ein End-X und Flow dorthin!
 
 PROZESSE MIT BELIEBIG VIELEN SCHRITTEN (keine Obergrenze):
-- Jede Zeile im Text = EIN Task (col aufsteigend: 1, 2, 3, ... bis N)
-- Start col=0, End col=N+1
-- Alle Tasks auf row=0 (linearer Hauptpfad)
-- Flows: Start→Task_1→Task_2→...→Task_N→End
+- Jede Zeile = EIN Task; bei Prüfung: Task + Gateway + ggf. Ablehnungspfad mit eigenem Ende
+- Start col=0, End col=N+1 (bei Gateways: mehrere End-Events für verschiedene Pfade!)
+- Hauptpfad row=0; Ablehnungspfade row=1, 2, ...
+- Flows: Start→Task_1→...→Task→Gateway→(Ja: weiter / Nein: Absage-Task→End)
 
 FORMAT "Kategorie: Rolle: Tätigkeit" (z.B. Ferien, Unbezahlter Urlaub, Krankmeldung):
 - Jede Zeile = EIN Task. Alle Tätigkeiten der Zeile (Komma/Punkt-getrennt) in EINEM Task-Namen zusammenfassen
@@ -246,6 +249,53 @@ function expandCompactJson(data) {
 }
 
 /**
+ * Stellt sicher, dass parallele/alternative Pfade jeweils ein eigenes End-Event haben.
+ * Verhindert, dass Pfeile durch Tasks hindurchgehen, weil mehrere Pfade ein gemeinsames Ende teilen.
+ */
+function ensureSeparateEndEventsForParallelPaths(data) {
+  const elements = [...(data.elements || [])];
+  let flows = [...(data.flows || [])];
+  const elById = new Map(elements.map(el => [el.id, el]));
+
+  // Finde End-Events mit mehreren eingehenden Flows
+  const incomingByEnd = {};
+  for (const f of flows) {
+    const tgt = elById.get(f.target);
+    if (tgt && (tgt.type || '').toLowerCase().includes('endevent')) {
+      incomingByEnd[f.target] = incomingByEnd[f.target] || [];
+      incomingByEnd[f.target].push(f);
+    }
+  }
+
+  let endCounter = 1;
+  const existingEndIds = new Set(elements.filter(el => (el.type || '').toLowerCase().includes('endevent')).map(el => el.id));
+
+  for (const [endId, incomingFlows] of Object.entries(incomingByEnd)) {
+    if (incomingFlows.length <= 1) continue;
+
+    const endEl = elements.find(el => el.id === endId);
+    if (!endEl) continue;
+
+    // Erstelle für jeden eingehenden Flow (ab dem 2.) ein eigenes End-Event
+    for (let i = 1; i < incomingFlows.length; i++) {
+      const flow = incomingFlows[i];
+      const srcEl = elById.get(flow.source);
+      const row = srcEl ? (srcEl.row ?? 0) : (endEl.row ?? 0);
+      const col = (endEl.col ?? 0) + 1;
+
+      let newEndId = `End_${endCounter++}`;
+      while (existingEndIds.has(newEndId)) newEndId = `End_${endCounter++}`;
+      existingEndIds.add(newEndId);
+
+      elements.push({ id: newEndId, type: 'endEvent', name: endEl.name || 'Ende', row, col });
+      flow.target = newEndId;
+    }
+  }
+
+  return { ...data, elements, flows };
+}
+
+/**
  * Stellt sicher, dass jeder Pfad in einem endEvent endet.
  * Elemente ohne ausgehende Flows (außer endEvent) erhalten ein End-Event.
  */
@@ -383,8 +433,9 @@ function mapToBpmnType(type) {
 function generateDiXml(elements, flows, processId) {
   if (!elements || elements.length === 0) return '';
   
-  // Berechne Layout basierend auf Flow-Struktur
-  const positions = calculateLayout(elements, flows);
+  // Berechne Layout basierend auf Flow-Struktur (To-Be: mehr vertikaler Abstand für Übersicht)
+  const isTobe = (processId || '').includes('ToBe');
+  const positions = calculateLayout(elements, flows, isTobe);
   
   let diXml = `  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="${processId}">
@@ -485,14 +536,14 @@ function generateDiXml(elements, flows, processId) {
  * Falls row/col fehlen, wird ein Fallback-Algorithmus verwendet.
  * Enthält Kollisionserkennung und -korrektur.
  */
-function calculateLayout(elements, flows) {
+function calculateLayout(elements, flows, isTobe = false) {
   const positions = {};
   
-  // Konstanten für das Grid-Layout (vergrößert für besseres Routing)
+  // Konstanten für das Grid-Layout (To-Be: mehr Abstand für übersichtliches Layout)
   const startX = 150;       // Mehr Rand links
   const startY = 100;       // Mehr Rand oben
-  const cellWidth = 220;    // Breiter für Routing-Kanäle zwischen Elementen
-  const cellHeight = 150;   // Höher für vertikale Routing-Kanäle
+  const cellWidth = isTobe ? 240 : 220;    // To-Be: breiter für Klarheit
+  const cellHeight = isTobe ? 200 : 150;   // To-Be: höher – Alternativpfade klar getrennt
   const minSpacing = 30;    // Mindestabstand zwischen Elementen
   
   // Prüfe ob row/col vorhanden sind
@@ -1243,26 +1294,31 @@ AUFGABE: Optimiere die Prozessbeschreibung so, dass sie 1:1 in ein valides BPMN-
 
 KRITISCHE REGELN (strikt befolgen):
 
-1. EINE ZEILE = EIN TASK (HÖCHSTE PRIORITÄT)
+1. ZUSAMMENFASSUNG: Aufgaben auf derselben Benutzeroberfläche → EINE Zeile
+   - Schritte, die dieselbe Rolle auf derselben Maske/Formular macht (z.B. Zeitraum wählen, Kommentar hinzufügen, Vertretung klären), in EINE Zeile zusammenfassen!
+   - Beispiel: "MA: Zeitraum wählen" + "MA: Kommentar hinzufügen" → "MA: Zeitraum wählen und Kommentar hinzufügen" (eine Zeile)
+   - FALSCH: Jeder Klick eigene Zeile. RICHTIG: Logische Einheit pro Zeile (was man auf einer UI macht).
+
+2. EINE ZEILE = EIN TASK
    - N Zeilen im Text → genau N Tasks
    - Alle Tätigkeiten in EINER Zeile (Komma, Punkt, "und") gehören ZUSAMMEN in denselben Task
-   - FALSCH: Zwei Schritte in einer Zeile. RICHTIG: Jeder Schritt eigene Zeile.
 
-2. TASK-NAMEN: Format "Rolle: Tätigkeit"
+3. TASK-NAMEN: Format "Rolle: Tätigkeit"
    - Gut: "HR: Stelle ausschreiben", "TL: Antrag prüfen", "MA: Urlaubsantrag einreichen"
    - Rollen: MA (Mitarbeiter), TL (Teamleiter), VG (Vorgesetzte:r), AL (Abteilungsleiter), HR, HRBP, HR Admin, Payroll, GF
    - Max. ~60 Zeichen pro Task-Name für Lesbarkeit
 
-3. ENTSCHEIDUNGEN explizit machen (wichtig für BPMN-Gateways)
-   - Trigger: "genehmigt oder lehnt ab", "prüft", "entscheidet", "fordert an"
-   - Statt "TL genehmigt oder lehnt ab" → zwei getrennte Zeilen: "TL: Prüft Antrag" + "TL: Genehmigt" und "TL: Lehnt ab" (oder als Folge mit klarem Ja/Nein)
-   - Bei Ablehnung: Eigenen Schritt für Absage/Information (z.B. "HR: Absage senden")
+4. PRÜFUNG = ENTSCHEIDUNG (Pflicht!)
+   - Jede Prüfung ("prüft", "prüfen", "genehmigt", "lehnt ab") muss zu einer Entscheidung führen
+   - Nach dem Prüf-Task: Explizit Ja/Nein oder Genehmigt/Abgelehnt als Folge
+   - Bei Ablehnung: Eigenen Schritt für Absage/Information (z.B. "VG: Absage mitteilen") – der Prozess endet dort
+   - Beispiel: "VG: Teamplanung prüfen" → danach muss klar sein: "Ja: Weiter" und "Nein: Absage" (oder ähnlich)
 
-4. SYSTEM vs. MENSCH unterscheiden
+5. SYSTEM vs. MENSCH unterscheiden
    - Menschliche Tätigkeit: erfassen, prüfen, genehmigen, erstellen, melden → userTask
    - System/Automatisierung: "läuft automatisch", "Reporting", "System triggert", "Meldung generiert" → als "System: ..." oder "Automatisch: ..." kennzeichnen
 
-5. INHALT
+6. INHALT
    - Keine neuen Schritte erfinden – nur strukturieren und präzisieren
    - Kategorie-Präfix (Ferien, Krankmeldung, Recruiting) optional, wenn Rolle+Tätigkeit klar sind
    - Ablauf logisch: Start → Schritte in Reihenfolge → Ende(s)
@@ -1326,6 +1382,19 @@ const TOBE_SYSTEM_PROMPT = `Du bist ein BPMN-Experte. Erstelle einen optimierten
 
 EINGABE: Prozessbeschreibung, Tasks, Verbesserungsvorschläge.
 AUSGABE: NUR valides JSON mit tobeProcess (elements + flows). Maximal 8 Tasks. row und col Pflicht.
+
+KRITISCHE LAYOUT-REGELN (strikt befolgen):
+1. ÜBERSICHTLICHKEIT: Nicht alles auf row=0! Alternativpfade (Nein, Ablehnung) MÜSSEN auf row=1, 2, 3...
+   - Hauptpfad (Ja, Happy Path): row=0, col aufsteigend
+   - Nein-Pfad / Ablehnung: row=1 (oder 2, 3 bei mehreren Zweigen), col = Gateway_col + 1
+   - So entsteht ein klares, vertikal gestaffeltes Layout – nie alles auf einer Zeile!
+2. JEDER Pfad braucht ein EIGENES End-Event! Kein gemeinsames Ende für mehrere Pfade.
+   - Exklusives Gateway: Ja-Pfad → End_1, Nein-Pfad → End_2 (auf row=1)
+   - Paralleles Gateway: Jeder Ausgang → eigener Task → eigenes End
+3. Pfeile dürfen NIEMALS durch Aufgaben (Tasks) hindurchgehen!
+   - Task nach Gateway: col = Gateway_col + 1 (mind. 1 Spalte Abstand)
+   - Parallele/Alternativpfade: unterschiedliche row (0, 1, 2...), jeder mit eigenem End-Event
+4. Bei Überschneidungen: Nur Pfeile dürfen sich kreuzen, nie durch Tasks!
 
 {
   "tobeProcess": {
@@ -1442,7 +1511,8 @@ async function generateTobeWithGPT(bpmnXml, description, tobeDescription, sugges
   let tobeBpmnXml = null;
   if (parsed.tobeProcess && parsed.tobeProcess.elements && parsed.tobeProcess.elements.length > 0) {
     try {
-      tobeBpmnXml = generateBpmnXmlFromJson(parsed.tobeProcess, 'Process_ToBe');
+      const tobeData = ensureEndEvents(ensureSeparateEndEventsForParallelPaths(parsed.tobeProcess));
+      tobeBpmnXml = generateBpmnXmlFromJson(tobeData, 'Process_ToBe');
     } catch (e) {
       throw new Error('To-Be BPMN-Generierung fehlgeschlagen: ' + e.message);
     }

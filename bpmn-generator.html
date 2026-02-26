@@ -239,6 +239,21 @@
         .raci-a { background: #d1fae5; color: #065f46; }
         .raci-c { background: #fef3c7; color: #92400e; }
         .raci-i { background: #e0e7ff; color: #3730a3; }
+        .raci-collapse-header { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: #f1f5f9; border-radius: 8px; cursor: pointer; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem; user-select: none; }
+        .raci-collapse-header:hover { background: #e2e8f0; }
+        .raci-collapse-header i.fa-chevron-down { transition: transform 0.2s; }
+        .raci-collapse-header.collapsed i.fa-chevron-down { transform: rotate(-90deg); }
+        .raci-collapse-content { overflow: hidden; }
+        .raci-collapse-content.collapsed { display: none; }
+        .bpmn-raci-table input.raci-input { width: 100%; min-width: 60px; padding: 0.25rem 0.4rem; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 0.8rem; box-sizing: border-box; }
+        .bpmn-raci-table input.raci-input:focus { border-color: #667eea; outline: none; }
+        .bpmn-raci-table input.raci-r { background: #eff6ff; }
+        .bpmn-raci-table input.raci-a { background: #ecfdf5; }
+        .bpmn-raci-table input.raci-c { background: #fffbeb; }
+        .bpmn-raci-table input.raci-i { background: #eef2ff; }
+        .raci-under-diagram { margin-top: 1rem; }
+        .bpmn-raci-table th:nth-child(7), .bpmn-raci-table td:nth-child(7) { min-width: 200px; white-space: normal; }
+        .bpmn-raci-table input.raci-input[data-field="itSystem"] { min-width: 180px; }
         
         .bpmn-info-box {
             margin-top: 1rem;
@@ -302,9 +317,12 @@
     </nav>
 
     <main class="bpmn-page">
+        <p style="margin-bottom: 1rem;">
+            <a href="hr-selbsttest.html?view=prozesse-workflows" style="color: #667eea; text-decoration: none; font-size: 0.9rem;"><i class="fas fa-arrow-left"></i> Zurück zur Prozessübersicht</a>
+        </p>
         <div class="bpmn-hero">
-            <h1><i class="fas fa-project-diagram"></i> BPMN Workflow-Generator</h1>
-            <p>Beschreiben Sie Ihren Prozess – die KI erstellt ein bearbeitbares BPMN-Diagramm</p>
+            <h1 id="bpmnHeroTitle"><i class="fas fa-project-diagram"></i> BPMN Workflow-Generator</h1>
+            <p id="bpmnHeroSubtitle">Beschreiben Sie Ihren Prozess – die KI erstellt ein bearbeitbares BPMN-Diagramm</p>
         </div>
 
         <div class="bpmn-main-layout">
@@ -348,6 +366,34 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                 <div class="bpmn-editor-hint">
                     <i class="fas fa-edit"></i> Elemente anklicken zum Bearbeiten • <i class="fas fa-search-plus"></i> Ctrl/Shift+Mausrad zoomen • Palette links für neue Elemente
                 </div>
+                <div class="raci-collapse-section raci-under-diagram" id="raciAsIsSection">
+                    <div class="raci-collapse-header" id="raciAsIsHeader" data-target="raciAsIsContent">
+                        <span><i class="fas fa-chart-line"></i> As-Is Rollen & RACI</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="raci-collapse-content" id="raciAsIsContent">
+                        <div style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <button type="button" id="bpmnRaciAutoFillBtn" style="padding: 0.4rem 0.75rem; background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.35rem;"><i class="fas fa-magic"></i> Automatisch ausfüllen</button>
+                            <span id="bpmnRaciAutoFillStatus" style="font-size: 0.8rem; color: #64748b;"></span>
+                        </div>
+                        <div class="bpmn-raci-table-wrap">
+                            <table class="bpmn-raci-table" id="bpmnRaciTable">
+                                <thead>
+                                    <tr>
+                                        <th>Task</th>
+                                        <th>R</th>
+                                        <th>A</th>
+                                        <th>C</th>
+                                        <th>I</th>
+                                        <th>Rolle</th>
+                                        <th>System</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bpmnRaciTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -383,6 +429,34 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                 <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">To-Be Diagramm (bearbeitbar)</label>
                 <div id="bpmnTobeDiagramContainer" style="height: 70vh; min-height: 500px; background: #fafafa; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;"></div>
             </div>
+            <div class="raci-collapse-section raci-under-diagram" id="raciTobeSection">
+                <div class="raci-collapse-header collapsed" id="raciTobeHeader" data-target="raciTobeContent">
+                    <span><i class="fas fa-arrow-right"></i> To-Be Rollen & RACI</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="raci-collapse-content collapsed" id="raciTobeContent">
+                    <div style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                        <button type="button" id="bpmnTobeRaciAutoFillBtn" style="padding: 0.4rem 0.75rem; background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.35rem;"><i class="fas fa-magic"></i> Automatisch ausfüllen</button>
+                        <span id="bpmnTobeRaciAutoFillStatus" style="font-size: 0.8rem; color: #64748b;"></span>
+                    </div>
+                    <div class="bpmn-raci-table-wrap">
+                        <table class="bpmn-raci-table" id="bpmnTobeRaciTable">
+                            <thead>
+                                <tr>
+                                    <th>Task</th>
+                                    <th>R</th>
+                                    <th>A</th>
+                                    <th>C</th>
+                                    <th>I</th>
+                                    <th>Rolle</th>
+                                    <th>System</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bpmnTobeRaciTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
             <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
                 <button type="button" id="bpmnTobeGenerateBtn" style="display: none; padding: 0.5rem 1rem; background: linear-gradient(135deg, #059669, #10b981); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; align-items: center; gap: 0.5rem;"><i class="fas fa-magic"></i> To-Be Diagramm generieren</button>
                 <button type="button" id="bpmnTobeSaveBtn" style="padding: 0.5rem 1rem; background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-save"></i> To-Be speichern</button>
@@ -397,10 +471,11 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                 <button type="button" id="bpmnTabXml"><i class="fas fa-code"></i> XML-Code</button>
             </div>
             <div class="bpmn-tab-content show" id="bpmnRaciWrap">
-                <p class="bpmn-raci-hint"><i class="fas fa-mouse-pointer"></i> Task im Diagramm anklicken, dann Rolle, IT-System und RACI erfassen.</p>
+                <p class="bpmn-raci-hint"><i class="fas fa-mouse-pointer"></i> Task im As-Is- oder To-Be-Diagramm anklicken, dann Rolle, IT-System und RACI erfassen. Oder direkt in der Tabellen-Zelle unter dem jeweiligen Diagramm bearbeiten.</p>
                 <div class="bpmn-task-form" id="bpmnTaskForm" style="display: none;">
                     <strong id="bpmnTaskFormTitle">Task auswählen</strong>
                     <input type="hidden" id="bpmnTaskFormId">
+                    <input type="hidden" id="bpmnTaskFormContext" value="asIs">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
                         <div>
                             <label>Rolle</label>
@@ -420,22 +495,6 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                         <div><label>I</label><input type="text" id="bpmnMetaI" placeholder="Informiert"></div>
                     </div>
                     <button type="button" id="bpmnMetaSave" style="margin-top: 0.75rem; padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; width: 100%;"><i class="fas fa-save"></i> Speichern</button>
-                </div>
-                <div class="bpmn-raci-table-wrap">
-                    <table class="bpmn-raci-table" id="bpmnRaciTable">
-                        <thead>
-                            <tr>
-                                <th>Task</th>
-                                <th>R</th>
-                                <th>A</th>
-                                <th>C</th>
-                                <th>I</th>
-                                <th>Rolle</th>
-                                <th>System</th>
-                            </tr>
-                        </thead>
-                        <tbody id="bpmnRaciTableBody"></tbody>
-                    </table>
                 </div>
             </div>
             <div class="bpmn-tab-content" id="bpmnXmlWrap">
@@ -457,10 +516,12 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         <div id="bpmnDiagramWrap" style="display:none;"></div>
 
         <p style="text-align: center; margin-top: 2rem;" id="bpmnBackLink">
-            <a href="hr-prozessautomatisierung.html" style="color: #667eea;">← Zurück zur HR-Prozessautomatisierung</a>
+            <a href="hr-selbsttest.html?view=prozesse-workflows" style="color: #667eea;">← Zurück zur Prozessübersicht</a>
         </p>
     </main>
 
+    <script src="js/unified-aws-auth.js" defer></script>
+    <script src="js/cloud-data-service.js"></script>
     <script src="https://unpkg.com/bpmn-js@17.4.0/dist/bpmn-modeler.development.js"></script>
     <script src="js/aws-app-config.js"></script>
     <script src="js/aws-api-settings.js"></script>
@@ -469,9 +530,11 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
     var currentBpmnXml = null;
     var bpmnModeler = null;
     var taskMeta = {};
+    var tobeTaskMeta = {};
     var asIsState = null;
     var tobeBpmnModeler = null;
     var tobeBpmnXml = null;
+    var currentProcessContext = { processId: null, processName: null, category: null };
 
     var MW_NS = 'http://manuel-weiss.ch/bpmn/ext';
 
@@ -527,6 +590,50 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         } catch (e) { console.warn('extractRaciFromXml:', e); }
     }
 
+    function extractRaciFromTobeXml(xml) {
+        tobeTaskMeta = {};
+        if (!xml || typeof xml !== 'string') return;
+        try {
+            var parser = new DOMParser();
+            var doc = parser.parseFromString(xml, 'application/xml');
+            var tasks = [];
+            var q = doc.querySelectorAll('bpmn\\:task');
+            for (var qi = 0; qi < q.length; qi++) tasks.push(q[qi]);
+            if (!tasks.length) {
+                var any = doc.getElementsByTagName('*');
+                for (var k = 0; k < any.length; k++) {
+                    if (any[k].localName === 'task' || (any[k].tagName && any[k].tagName.indexOf('task') >= 0)) tasks.push(any[k]);
+                }
+            }
+            for (var i = 0; i < tasks.length; i++) {
+                var task = tasks[i];
+                var id = task.getAttribute('id');
+                if (!id) continue;
+                var ext = task.querySelector('bpmn\\:extensionElements') || task.getElementsByTagName('extensionElements')[0];
+                if (!ext) continue;
+                var meta = ext.querySelector('mw\\:taskMeta') || ext.getElementsByTagNameNS(MW_NS, 'taskMeta')[0];
+                if (!meta) {
+                    var list = ext.getElementsByTagName('*');
+                    for (var j = 0; j < list.length; j++) { if (list[j].localName === 'taskMeta') { meta = list[j]; break; } }
+                }
+                if (!meta) continue;
+                function text(m, tag) {
+                    var n = m.getElementsByTagNameNS ? m.getElementsByTagNameNS(MW_NS, tag)[0] : m.querySelector(tag + ', mw\\:' + tag);
+                    return n ? n.textContent.trim() : '';
+                }
+                tobeTaskMeta[id] = {
+                    rolle: text(meta, 'rolle'),
+                    itSystem: text(meta, 'itSystem'),
+                    beschreibung: text(meta, 'beschreibung'),
+                    raciR: text(meta, 'raciR'),
+                    raciA: text(meta, 'raciA'),
+                    raciC: text(meta, 'raciC'),
+                    raciI: text(meta, 'raciI')
+                };
+            }
+        } catch (e) { console.warn('extractRaciFromTobeXml:', e); }
+    }
+
     function injectRaciIntoXml(xml) {
         if (!xml) return xml;
         if (Object.keys(taskMeta).length === 0) return xml;
@@ -574,10 +681,84 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         } catch (e) { console.warn('injectRaciIntoXml:', e); return xml; }
     }
 
+    function injectRaciIntoTobeXml(xml) {
+        if (!xml) return xml;
+        if (Object.keys(tobeTaskMeta).length === 0) return xml;
+        try {
+            var parser = new DOMParser();
+            var doc = parser.parseFromString(xml, 'application/xml');
+            var taskList = [];
+            var t1 = doc.getElementsByTagName('bpmn:task');
+            for (var ti = 0; ti < t1.length; ti++) taskList.push(t1[ti]);
+            if (!taskList.length) {
+                var t2 = doc.querySelectorAll('bpmn\\:task');
+                for (ti = 0; ti < t2.length; ti++) taskList.push(t2[ti]);
+            }
+            if (!taskList.length) {
+                var all = doc.getElementsByTagName('*');
+                for (var q = 0; q < all.length; q++) { if (all[q].localName === 'task') taskList.push(all[q]); }
+            }
+            for (var i = 0; i < taskList.length; i++) {
+                var task = taskList[i];
+                var id = task.getAttribute('id');
+                var m = tobeTaskMeta[id];
+                if (!m || (!m.rolle && !m.itSystem && !m.beschreibung && !m.raciR && !m.raciA && !m.raciC && !m.raciI)) continue;
+                var ext = task.getElementsByTagName('extensionElements')[0] || task.querySelector('bpmn\\:extensionElements');
+                if (!ext) {
+                    ext = doc.createElementNS('http://www.omg.org/spec/BPMN/20100524/MODEL', 'extensionElements');
+                    ext.prefix = 'bpmn';
+                    task.insertBefore(ext, task.firstChild);
+                }
+                var existing = ext.getElementsByTagNameNS(MW_NS, 'taskMeta');
+                for (var r = existing.length - 1; r >= 0; r--) ext.removeChild(existing[r]);
+                var meta = doc.createElementNS(MW_NS, 'taskMeta');
+                meta.prefix = 'mw';
+                function add(el, val) { if (val) { var c = doc.createElementNS(MW_NS, el); c.prefix = 'mw'; c.textContent = val; meta.appendChild(c); } }
+                add('rolle', m.rolle);
+                add('itSystem', m.itSystem);
+                add('beschreibung', m.beschreibung);
+                add('raciR', m.raciR);
+                add('raciA', m.raciA);
+                add('raciC', m.raciC);
+                add('raciI', m.raciI);
+                ext.appendChild(meta);
+            }
+            if (!doc.documentElement.getAttribute('xmlns:mw')) doc.documentElement.setAttribute('xmlns:mw', MW_NS);
+            return new XMLSerializer().serializeToString(doc);
+        } catch (e) { console.warn('injectRaciIntoTobeXml:', e); return xml; }
+    }
+
     function isTaskElement(el) {
         var t = el.type || (el.businessObject && el.businessObject.$type) || '';
         return t && (t === 'bpmn:Task' || t === 'bpmn:UserTask' || t === 'bpmn:ServiceTask' || t === 'bpmn:ManualTask' || (typeof t === 'string' && t.indexOf('Task') >= 0));
     }
+    function buildRaciRow(id, name, m, metaStore) {
+        m = m || {};
+        var tr = document.createElement('tr');
+        tr.dataset.taskId = id;
+        tr.innerHTML =
+            '<td><strong>' + escapeHtml(name) + '</strong></td>' +
+            '<td><input type="text" class="raci-input raci-r" data-field="raciR" value="" placeholder="–"></td>' +
+            '<td><input type="text" class="raci-input raci-a" data-field="raciA" value="" placeholder="–"></td>' +
+            '<td><input type="text" class="raci-input raci-c" data-field="raciC" value="" placeholder="–"></td>' +
+            '<td><input type="text" class="raci-input raci-i" data-field="raciI" value="" placeholder="–"></td>' +
+            '<td><input type="text" class="raci-input" data-field="rolle" value="" placeholder="–"></td>' +
+            '<td><input type="text" class="raci-input" data-field="itSystem" value="" placeholder="–" style="min-width:180px"></td>';
+        var inputs = tr.querySelectorAll('.raci-input');
+        var fields = ['raciR', 'raciA', 'raciC', 'raciI', 'rolle', 'itSystem'];
+        for (var i = 0; i < inputs.length && i < fields.length; i++) {
+            inputs[i].value = m[fields[i]] || '';
+            inputs[i].addEventListener('change', function() {
+                var fid = tr.dataset.taskId;
+                var field = this.dataset.field;
+                var val = this.value.trim();
+                if (!metaStore[fid]) metaStore[fid] = {};
+                metaStore[fid][field] = val;
+            });
+        }
+        return tr;
+    }
+
     function refreshRaciTable() {
         var tbody = document.getElementById('bpmnRaciTableBody');
         if (!tbody || !bpmnModeler) return;
@@ -589,18 +770,29 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             var id = el.id;
             var name = (el.businessObject && el.businessObject.name) || id;
             var m = taskMeta[id] || {};
-            var tr = document.createElement('tr');
-            tr.innerHTML =
-                '<td><strong>' + escapeHtml(name) + '</strong></td>' +
-                '<td>' + (m.raciR ? '<span class="raci-badge raci-r">' + escapeHtml(m.raciR) + '</span>' : '–') + '</td>' +
-                '<td>' + (m.raciA ? '<span class="raci-badge raci-a">' + escapeHtml(m.raciA) + '</span>' : '–') + '</td>' +
-                '<td>' + (m.raciC ? '<span class="raci-badge raci-c">' + escapeHtml(m.raciC) + '</span>' : '–') + '</td>' +
-                '<td>' + (m.raciI ? '<span class="raci-badge raci-i">' + escapeHtml(m.raciI) + '</span>' : '–') + '</td>' +
-                '<td>' + escapeHtml(m.rolle || '') + '</td>' +
-                '<td>' + escapeHtml(m.itSystem || '') + '</td>';
-            tbody.appendChild(tr);
+            tbody.appendChild(buildRaciRow(id, name, m, taskMeta));
         });
         if (tasks.length === 0) tbody.innerHTML = '<tr><td colspan="7">Keine Tasks im Diagramm. Bitte zuerst BPMN generieren.</td></tr>';
+    }
+
+    function refreshTobeRaciTable() {
+        var tbody = document.getElementById('bpmnTobeRaciTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        if (!tobeBpmnModeler) {
+            tbody.innerHTML = '<tr><td colspan="7">Kein To-Be-Diagramm. Bitte zuerst To-Be generieren.</td></tr>';
+            return;
+        }
+        var registry = tobeBpmnModeler.get('elementRegistry');
+        var all = registry.getAll();
+        var tasks = all.filter(isTaskElement);
+        tasks.forEach(function(el) {
+            var id = el.id;
+            var name = (el.businessObject && el.businessObject.name) || id;
+            var m = tobeTaskMeta[id] || {};
+            tbody.appendChild(buildRaciRow(id, name, m, tobeTaskMeta));
+        });
+        if (tasks.length === 0) tbody.innerHTML = '<tr><td colspan="7">Kein To-Be-Diagramm. Bitte zuerst To-Be generieren.</td></tr>';
     }
 
     function escapeHtml(s) {
@@ -616,6 +808,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         var form = document.getElementById('bpmnTaskForm');
         var formTitle = document.getElementById('bpmnTaskFormTitle');
         var formId = document.getElementById('bpmnTaskFormId');
+        var formContext = document.getElementById('bpmnTaskFormContext');
         eventBus.on('selection.changed', function(e) {
             var sel = e.newSelection || [];
             var task = sel.length === 1 && isTaskElement(sel[0]) ? sel[0] : null;
@@ -623,10 +816,38 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                 form.style.display = 'none';
                 return;
             }
+            formContext.value = 'asIs';
             var id = task.id;
             formId.value = id;
-            formTitle.textContent = 'Task: ' + ((task.businessObject && task.businessObject.name) || id);
+            formTitle.textContent = 'Task (As-Is): ' + ((task.businessObject && task.businessObject.name) || id);
             var m = taskMeta[id] || {};
+            document.getElementById('bpmnMetaRolle').value = m.rolle || '';
+            document.getElementById('bpmnMetaItSystem').value = m.itSystem || '';
+            document.getElementById('bpmnMetaBeschreibung').value = m.beschreibung || '';
+            document.getElementById('bpmnMetaR').value = m.raciR || '';
+            document.getElementById('bpmnMetaA').value = m.raciA || '';
+            document.getElementById('bpmnMetaC').value = m.raciC || '';
+            document.getElementById('bpmnMetaI').value = m.raciI || '';
+            form.style.display = 'block';
+        });
+    }
+
+    function setupTobeSelectionListener() {
+        if (!tobeBpmnModeler) return;
+        var eventBus = tobeBpmnModeler.get('eventBus');
+        var form = document.getElementById('bpmnTaskForm');
+        var formTitle = document.getElementById('bpmnTaskFormTitle');
+        var formId = document.getElementById('bpmnTaskFormId');
+        var formContext = document.getElementById('bpmnTaskFormContext');
+        eventBus.on('selection.changed', function(e) {
+            var sel = e.newSelection || [];
+            var task = sel.length === 1 && isTaskElement(sel[0]) ? sel[0] : null;
+            if (!task) return;
+            formContext.value = 'tobe';
+            var id = task.id;
+            formId.value = id;
+            formTitle.textContent = 'Task (To-Be): ' + ((task.businessObject && task.businessObject.name) || id);
+            var m = tobeTaskMeta[id] || {};
             document.getElementById('bpmnMetaRolle').value = m.rolle || '';
             document.getElementById('bpmnMetaItSystem').value = m.itSystem || '';
             document.getElementById('bpmnMetaBeschreibung').value = m.beschreibung || '';
@@ -640,8 +861,9 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
 
     function saveTaskMeta() {
         var id = document.getElementById('bpmnTaskFormId').value;
+        var ctx = (document.getElementById('bpmnTaskFormContext') || {}).value || 'asIs';
         if (!id) return;
-        taskMeta[id] = {
+        var data = {
             rolle: document.getElementById('bpmnMetaRolle').value.trim(),
             itSystem: document.getElementById('bpmnMetaItSystem').value.trim(),
             beschreibung: document.getElementById('bpmnMetaBeschreibung').value.trim(),
@@ -650,7 +872,13 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             raciC: document.getElementById('bpmnMetaC').value.trim(),
             raciI: document.getElementById('bpmnMetaI').value.trim()
         };
-        refreshRaciTable();
+        if (ctx === 'tobe') {
+            tobeTaskMeta[id] = data;
+            refreshTobeRaciTable();
+        } else {
+            taskMeta[id] = data;
+            refreshRaciTable();
+        }
     }
 
     function sanitizeBpmnXml(xml) {
@@ -902,7 +1130,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                 return;
             }
             if (data.success && data.bpmnXml) {
-                showResult(data.bpmnXml, data.interpretation, data.assumptions, false, true);
+                showResult(data.bpmnXml, data.interpretation, data.assumptions, true, true);
             } else {
                 showError(data.error || 'Kein BPMN-XML in der Antwort.');
             }
@@ -975,6 +1203,9 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             if (!stored) return;
             var data = JSON.parse(stored);
             sessionStorage.removeItem('bpmn-optimize-process');
+            if (data.processId) currentProcessContext.processId = data.processId;
+            if (data.name) currentProcessContext.processName = data.name;
+            if (data.category) currentProcessContext.category = data.category;
             if (data.description && processTextEl) {
                 processTextEl.value = data.description;
                 processTextEl.dataset.example = 'false';
@@ -986,8 +1217,25 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                 var backEl = document.getElementById('bpmnBackLink');
                 if (backEl) backEl.innerHTML = '<a href="' + data.returnUrl + '" style="color: #667eea;"><i class="fas fa-arrow-left"></i> Zurück zum HR-Selbsttest</a>';
             }
+            updatePageTitle();
         } catch (e) { console.warn('loadOptimizeProcess:', e); }
     })();
+
+    function updatePageTitle() {
+        var titleEl = document.getElementById('bpmnHeroTitle');
+        var subEl = document.getElementById('bpmnHeroSubtitle');
+        if (!titleEl) return;
+        if (currentProcessContext.processName && currentProcessContext.category) {
+            titleEl.innerHTML = '<i class="fas fa-project-diagram"></i> ' + (currentProcessContext.processName || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            titleEl.dataset.category = currentProcessContext.category;
+            if (subEl) subEl.textContent = currentProcessContext.category + ' – Prozess optimieren';
+            document.title = (currentProcessContext.processName || 'BPMN') + ' – ' + (currentProcessContext.category || 'Prozess') + ' | Manuel Weiss';
+        } else {
+            titleEl.innerHTML = '<i class="fas fa-project-diagram"></i> BPMN Workflow-Generator';
+            if (subEl) subEl.textContent = 'Beschreiben Sie Ihren Prozess – die KI erstellt ein bearbeitbares BPMN-Diagramm';
+            document.title = 'BPMN Workflow-Generator | Manuel Weiss';
+        }
+    }
 
     function normalizeForMatch(s) {
         if (!s || typeof s !== 'string') return '';
@@ -1029,10 +1277,73 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         });
     }
 
+    function applyRaciToTobeTaskMeta(raciList) {
+        if (!raciList || !Array.isArray(raciList)) return;
+        var idByName = {};
+        var idByNormalizedName = {};
+        if (tobeBpmnModeler) {
+            var registry = tobeBpmnModeler.get('elementRegistry');
+            if (registry) {
+                registry.getAll().forEach(function(el) {
+                    if (isTaskElement(el)) {
+                        var n = (el.businessObject && el.businessObject.name) || el.id;
+                        idByName[n] = el.id;
+                        idByNormalizedName[normalizeForMatch(n)] = el.id;
+                        idByNormalizedName[normalizeForMatch(el.id)] = el.id;
+                    }
+                });
+            }
+        }
+        raciList.forEach(function(r) {
+            var id = r.taskId;
+            if (!id && r.taskName) id = idByName[r.taskName];
+            if (!id && r.taskName) id = idByNormalizedName[normalizeForMatch(r.taskName)];
+            if (!id && r.taskId) id = idByNormalizedName[normalizeForMatch(r.taskId)];
+            if (!id && r.taskName) {
+                for (var k in idByName) { if (normalizeForMatch(k).indexOf(normalizeForMatch(r.taskName)) >= 0 || normalizeForMatch(r.taskName).indexOf(normalizeForMatch(k)) >= 0) { id = idByName[k]; break; } }
+            }
+            if (!id) return;
+            if (!tobeTaskMeta[id]) tobeTaskMeta[id] = {};
+            if (r.rolle) tobeTaskMeta[id].rolle = r.rolle;
+            if (r.itSystem) tobeTaskMeta[id].itSystem = r.itSystem;
+            if (r.raciR) tobeTaskMeta[id].raciR = r.raciR;
+            if (r.raciA) tobeTaskMeta[id].raciA = r.raciA;
+            if (r.raciC) tobeTaskMeta[id].raciC = r.raciC;
+            if (r.raciI) tobeTaskMeta[id].raciI = r.raciI;
+        });
+    }
+
+    function analyzeTobeForRaci(tobeXml) {
+        if (!tobeXml || tobeXml.length < 50) return;
+        (async function() {
+            try {
+                var openaiApiKey = '';
+                if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
+                    openaiApiKey = await window.awsAPISettings.getFullApiKey('openai') || '';
+                }
+                if (!openaiApiKey || openaiApiKey.length < 10) return;
+                var url = apiUrl(true) || apiUrl();
+                if (!url) return;
+                var res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'analyze', bpmnXml: tobeXml, description: '', openaiApiKey: openaiApiKey })
+                });
+                var rawText = await res.text();
+                var data = {};
+                try { data = JSON.parse(rawText); } catch(parseErr) { return; }
+                if (!res.ok || !data.success || !Array.isArray(data.raci)) return;
+                applyRaciToTobeTaskMeta(data.raci);
+                refreshTobeRaciTable();
+            } catch (e) { console.warn('To-Be RACI auto-fill:', e); }
+        })();
+    }
+
     function renderTobeEditor(xml) {
         var container = document.getElementById('bpmnTobeDiagramContainer');
         if (!container || !xml) return;
         tobeBpmnXml = xml;
+        extractRaciFromTobeXml(xml);
         var ModelerClass = window.BpmnModeler || window.BpmnJS;
         if (!ModelerClass) return;
         if (tobeBpmnModeler) {
@@ -1048,6 +1359,9 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         tobeBpmnModeler.importXML(xml).then(function() {
             var canvas = tobeBpmnModeler.get('canvas');
             if (canvas && canvas.zoom) setTimeout(function() { canvas.zoom('fit-viewport'); }, 100);
+            setupTobeSelectionListener();
+            refreshTobeRaciTable();
+            analyzeTobeForRaci(xml);
         }).catch(function(err) {
             container.innerHTML = '<div style="padding:1rem;color:#991b1b;font-size:0.9rem;">Diagramm konnte nicht geladen werden.</div>';
         });
@@ -1055,15 +1369,17 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
 
     function getTobeXmlFromEditor(cb) {
         if (!tobeBpmnModeler || typeof tobeBpmnModeler.saveXML !== 'function') {
-            if (cb) cb(null, tobeBpmnXml);
+            var xml = injectRaciIntoTobeXml(tobeBpmnXml);
+            if (cb) cb(null, xml);
             return;
         }
         tobeBpmnModeler.saveXML({ format: true }).then(function(result) {
             var xml = result && result.xml ? result.xml : tobeBpmnXml;
             if (xml) tobeBpmnXml = xml;
+            xml = injectRaciIntoTobeXml(xml);
             if (cb) cb(null, xml);
         }).catch(function(err) {
-            if (cb) cb(err, tobeBpmnXml);
+            if (cb) cb(err, injectRaciIntoTobeXml(tobeBpmnXml));
         });
     }
 
@@ -1072,6 +1388,10 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             var bpmnXml = xml || currentBpmnXml;
             if (!bpmnXml || bpmnXml.length < 50) {
                 showError('Kein BPMN-Diagramm vorhanden. Bitte zuerst einen Workflow generieren.');
+                var rb = document.getElementById('bpmnRaciAutoFillBtn');
+                var rs = document.getElementById('bpmnRaciAutoFillStatus');
+                if (rb) rb.disabled = false;
+                if (rs) rs.textContent = '';
                 return;
             }
             var panel = document.getElementById('bpmnOptimizePanel');
@@ -1155,6 +1475,10 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                     errEl.style.display = 'block';
                 } finally {
                     loading.style.display = 'none';
+                    var raciBtn = document.getElementById('bpmnRaciAutoFillBtn');
+                    var raciStatus = document.getElementById('bpmnRaciAutoFillStatus');
+                    if (raciBtn) raciBtn.disabled = false;
+                    if (raciStatus) raciStatus.textContent = '';
                 }
             })();
         });
@@ -1201,13 +1525,13 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         }
     });
 
-    document.getElementById('bpmnTobeSaveBtn').addEventListener('click', function() {
+    document.getElementById('bpmnTobeSaveBtn').addEventListener('click', async function() {
         function setTobeStatus(msg, isError) {
             var el = document.getElementById('bpmnTobeStatus');
             if (el) { el.textContent = msg; el.style.color = isError ? '#dc2626' : '#059669'; }
             setTimeout(function() { var e = document.getElementById('bpmnTobeStatus'); if (e) e.textContent = ''; }, 4000);
         }
-        getTobeXmlFromEditor(function(err, xml) {
+        getTobeXmlFromEditor(async function(err, xml) {
             if (err) {
                 setTobeStatus('Fehler: ' + (err.message || 'Diagramm konnte nicht gelesen werden.'), true);
                 return;
@@ -1223,7 +1547,24 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             var payload = { tobeBpmnXml: xml, tobeDescription: desc, prozessziel: prozessziel, prozessbeschreibung: prozessbeschreibung, omra: omra, asIsState: asIsState, savedAt: new Date().toISOString() };
             try {
                 localStorage.setItem('bpmn-process-optimize', JSON.stringify(payload));
-                setTobeStatus('To-Be gespeichert.', false);
+                if (currentProcessContext.processId && window.cloudDataService && window.cloudDataService.isUserLoggedIn && window.cloudDataService.isUserLoggedIn()) {
+                    try {
+                        var cloud = await window.cloudDataService.getHrSelbsttest();
+                        var assessmentData = cloud.hrSelbsttest || { prozesse: {} };
+                        var savedTests = cloud.savedHRTests || [];
+                        if (!assessmentData.prozesse) assessmentData.prozesse = {};
+                        if (!assessmentData.prozesse[currentProcessContext.processId]) assessmentData.prozesse[currentProcessContext.processId] = {};
+                        assessmentData.prozesse[currentProcessContext.processId].bpmnXml = xml;
+                        assessmentData.prozesse[currentProcessContext.processId].description = desc || (assessmentData.prozesse[currentProcessContext.processId].description || '');
+                        await window.cloudDataService.saveHrSelbsttest(assessmentData, savedTests);
+                        setTobeStatus('To-Be in AWS-Profil gespeichert.', false);
+                    } catch (awsErr) {
+                        console.warn('AWS-Speichern:', awsErr);
+                        setTobeStatus('To-Be lokal gespeichert. AWS: ' + (awsErr.message || 'Fehler'), true);
+                    }
+                } else {
+                    setTobeStatus('To-Be gespeichert.', false);
+                }
                 setStatus('To-Be gespeichert.');
                 setTimeout(function() { setStatus(''); }, 3000);
             } catch (e) {
@@ -1251,6 +1592,41 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
     document.getElementById('bpmnGenerateBtn').addEventListener('click', generateBpmn);
     var analyzeBtn = document.getElementById('bpmnAnalyzeBtn');
     if (analyzeBtn) analyzeBtn.addEventListener('click', analyzeBpmn);
+    var raciAutoFillBtn = document.getElementById('bpmnRaciAutoFillBtn');
+    if (raciAutoFillBtn) raciAutoFillBtn.addEventListener('click', function() {
+        var statusEl = document.getElementById('bpmnRaciAutoFillStatus');
+        if (statusEl) statusEl.textContent = 'KI füllt RACI-Matrix…';
+        raciAutoFillBtn.disabled = true;
+        analyzeBpmn();
+    });
+    var tobeRaciAutoFillBtn = document.getElementById('bpmnTobeRaciAutoFillBtn');
+    if (tobeRaciAutoFillBtn) tobeRaciAutoFillBtn.addEventListener('click', async function() {
+        var statusEl = document.getElementById('bpmnTobeRaciAutoFillStatus');
+        if (!tobeBpmnXml || tobeBpmnXml.length < 50) {
+            if (statusEl) statusEl.textContent = 'Kein To-Be-Diagramm. Bitte zuerst generieren.';
+            return;
+        }
+        if (statusEl) statusEl.textContent = 'KI füllt RACI-Matrix…';
+        tobeRaciAutoFillBtn.disabled = true;
+        try {
+            var openaiApiKey = await (window.awsAPISettings && window.awsAPISettings.getFullApiKey ? window.awsAPISettings.getFullApiKey('openai') : Promise.resolve('')) || '';
+            if (!openaiApiKey || openaiApiKey.length < 10) throw new Error('OpenAI API-Key nicht konfiguriert.');
+            var url = apiUrl(true) || apiUrl();
+            if (!url) throw new Error('API-URL nicht konfiguriert.');
+            var res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'analyze', bpmnXml: tobeBpmnXml, description: '', openaiApiKey: openaiApiKey }) });
+            var data = {};
+            try { data = JSON.parse(await res.text()); } catch(e) {}
+            if (!res.ok || !data.success) throw new Error(data.error || 'Analyse fehlgeschlagen.');
+            applyRaciToTobeTaskMeta(data.raci || []);
+            refreshTobeRaciTable();
+            if (statusEl) statusEl.textContent = 'RACI ausgefüllt.';
+        } catch (e) {
+            if (statusEl) statusEl.textContent = 'Fehler: ' + (e.message || 'Unbekannt');
+        } finally {
+            tobeRaciAutoFillBtn.disabled = false;
+            setTimeout(function() { var s = document.getElementById('bpmnTobeRaciAutoFillStatus'); if (s) s.textContent = ''; }, 3000);
+        }
+    });
     document.getElementById('bpmnCopyBtn').addEventListener('click', copyXml);
     document.getElementById('bpmnDownloadBtn').addEventListener('click', downloadBpmn);
     document.getElementById('bpmnOpenDemoBtn').addEventListener('click', openInDemoBpmnIo);
@@ -1261,6 +1637,16 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         document.getElementById('bpmnRaciWrap').classList.add('show');
         document.getElementById('bpmnXmlWrap').classList.remove('show');
         refreshRaciTable();
+        refreshTobeRaciTable();
+    });
+    [['raciAsIsHeader', 'raciAsIsContent'], ['raciTobeHeader', 'raciTobeContent']].forEach(function(pair) {
+        var header = document.getElementById(pair[0]);
+        var content = document.getElementById(pair[1]);
+        if (!header || !content) return;
+        header.addEventListener('click', function() {
+            var collapsed = content.classList.toggle('collapsed');
+            header.classList.toggle('collapsed', collapsed);
+        });
     });
     document.getElementById('bpmnTabXml').addEventListener('click', function() {
         document.getElementById('bpmnTabXml').classList.add('active');

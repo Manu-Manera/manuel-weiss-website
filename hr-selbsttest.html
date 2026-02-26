@@ -8204,7 +8204,7 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             
             // Generate cards HTML
             cardsContainer.innerHTML = workflowProcesses.map(proc => `
-                <div class="workflow-card" data-process-id="${proc.id}">
+                <div class="workflow-card" data-process-id="${proc.id}" onclick="openProcessOptimize('${proc.id}')" style="cursor: pointer;">
                     <div class="workflow-card-preview">
                         <div class="bpmn-preview" id="preview-${proc.id}"></div>
                     </div>
@@ -8221,14 +8221,14 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                                 <i class="fas fa-folder"></i> ${escapeHtml(proc.category)}
                             </span>
                             <div class="workflow-card-actions">
-                                <button class="workflow-card-btn secondary" onclick="downloadBpmnFromDashboard('${proc.id}')" title="BPMN herunterladen">
+                                <button class="workflow-card-btn secondary" onclick="event.stopPropagation(); downloadBpmnFromDashboard('${proc.id}');" title="BPMN herunterladen">
                                     <i class="fas fa-download"></i>
                                 </button>
-                                <button class="workflow-card-btn optimize" onclick="openProcessOptimize('${proc.id}')" title="Prozess optimieren">
+                                <button class="workflow-card-btn optimize" onclick="event.stopPropagation(); openProcessOptimize('${proc.id}');" title="Prozess optimieren">
                                     <i class="fas fa-magic"></i> Prozess Optimieren
                                 </button>
-                                <button class="workflow-card-btn primary" onclick="openWorkflowDetail('${proc.id}')" title="Details anzeigen">
-                                    <i class="fas fa-expand"></i> Öffnen
+                                <button class="workflow-card-btn primary" onclick="event.stopPropagation(); openWorkflowDetail('${proc.id}');" title="Prozess bewerten">
+                                    <i class="fas fa-star"></i> Bewertung
                                 </button>
                             </div>
                         </div>
@@ -8553,6 +8553,16 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             };
             (typeof requestIdleCallback !== 'undefined' ? (cb) => requestIdleCallback(cb, { timeout: 100 }) : (cb) => setTimeout(cb, 0))(runHeavyInit);
             setTimeout(updateHrNavAuthState, 800);
+            // URL-Parameter: Direkt zur Prozessübersicht (z.B. von bpmn-generator zurück)
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('view') === 'prozesse-workflows') {
+                setTimeout(() => {
+                    if (typeof showSection === 'function') showSection('results');
+                    setTimeout(() => {
+                        if (typeof selectCategory === 'function') selectCategory('prozesse');
+                    }, 150);
+                }, 500);
+            }
         });
     </script>
     
