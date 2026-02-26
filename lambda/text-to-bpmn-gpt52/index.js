@@ -1412,6 +1412,58 @@ KRITISCHE LAYOUT-REGELN (strikt befolgen):
   }
 }`;
 
+const RACI_ONLY_SYSTEM_PROMPT = `Du bist ein RACI-Experte für HR-Prozesse.
+
+AUFGABE: Fülle NUR die RACI-Matrix für jeden Task. Keine Vorschläge, keine Beschreibungen.
+
+AUSGABE: NUR valides JSON:
+{
+  "raci": [
+    { "taskId": "exakte Task-ID", "taskName": "Task-Name", "rolle": "z.B. HR", "itSystem": "z.B. SAP", "raciR": "Ausführend", "raciA": "Verantwortlich", "raciC": "Konsultiert", "raciI": "Informiert" }
+  ]
+}
+
+PFLICHT: raci für JEDEN Task! taskId exakt aus der Liste. Rolle aus "Rolle: Tätigkeit" extrahieren. itSystem passend (SAP, Workday, Excel, Outlook, etc.). R=Ausführend, A=Verantwortlich, C=Konsultiert, I=Informiert.`;
+
+async function analyzeRaciOnlyWithGPT(bpmnXml, openaiApiKey) {
+  const { tasks } = extractProcessStructureFromXml(bpmnXml);
+  const taskListJson = JSON.stringify(tasks.map(t => ({ id: t.id, name: t.name })));
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${openaiApiKey}`
+    },
+    body: JSON.stringify({
+      model: 'gpt-5.2',
+      messages: [
+        { role: 'system', content: RACI_ONLY_SYSTEM_PROMPT },
+        { role: 'user', content: `RACI für diese Tasks (exakte IDs verwenden):\n${taskListJson}` }
+      ],
+      response_format: { type: 'json_object' },
+      max_completion_tokens: Math.min(1500, 100 + tasks.length * 80),
+      temperature: 0.2
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    const msg = (typeof err.error === 'string' ? err.error : err.error?.message) || err.message || response.statusText || 'OpenAI API Fehler';
+    throw new Error(msg);
+  }
+
+  const data = await response.json();
+  const content = data.choices?.[0]?.message?.content || '{}';
+  let parsed;
+  try {
+    parsed = JSON.parse(content);
+  } catch (e) {
+    parsed = { raci: [] };
+  }
+  return { raci: parsed.raci || [] };
+}
+
 async function analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey) {
   const { tasks, gateways, flows } = extractProcessStructureFromXml(bpmnXml);
   const taskListJson = JSON.stringify(tasks.map(t => ({ id: t.id, name: t.name })));
@@ -1549,6 +1601,24 @@ exports.handler = async (event) => {
         statusCode: 200,
         headers: CORS_HEADERS,
         body: JSON.stringify({ success: true, optimizedText })
+      };
+    }
+
+    // RACI nur (schnell, für "Automatisch ausfüllen") – weniger Tokens, geringeres Timeout-Risiko
+    if (action === 'analyzeRaci') {
+      const bpmnXml = (body.bpmnXml || '').trim();
+      if (!bpmnXml || bpmnXml.length < 50) {
+        return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ success: false, error: 'bpmnXml is required for RACI analysis' }) };
+      }
+      const { tasks } = extractProcessStructureFromXml(bpmnXml);
+      if (!tasks || tasks.length === 0) {
+        return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ success: false, error: 'Keine Tasks im BPMN-Diagramm gefunden.' }) };
+      }
+      const result = await analyzeRaciOnlyWithGPT(bpmnXml, openaiApiKey);
+      return {
+        statusCode: 200,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({ success: true, raci: result.raci })
       };
     }
 

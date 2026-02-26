@@ -381,10 +381,10 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                                 <thead>
                                     <tr>
                                         <th>Task</th>
-                                        <th>R</th>
-                                        <th>A</th>
-                                        <th>C</th>
-                                        <th>I</th>
+                                        <th title="Responsible – Wer führt die Aufgabe aus? Die Person, die die Arbeit tatsächlich durchführt.">R</th>
+                                        <th title="Accountable – Wer hat die letzte Verantwortung? Die Person, die die Entscheidung trifft und für das Ergebnis haftet. Pro Task nur eine Person.">A</th>
+                                        <th title="Consulted – Wer wird vor der Entscheidung um Rat gefragt? Personen mit Expertise, die einbezogen werden.">C</th>
+                                        <th title="Informed – Wer wird nach der Entscheidung informiert? Personen, die über den Fortschritt oder das Ergebnis in Kenntnis gesetzt werden.">I</th>
                                         <th>Rolle</th>
                                         <th>System</th>
                                     </tr>
@@ -444,10 +444,10 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                             <thead>
                                 <tr>
                                     <th>Task</th>
-                                    <th>R</th>
-                                    <th>A</th>
-                                    <th>C</th>
-                                    <th>I</th>
+                                    <th title="Responsible – Wer führt die Aufgabe aus? Die Person, die die Arbeit tatsächlich durchführt.">R</th>
+                                    <th title="Accountable – Wer hat die letzte Verantwortung? Die Person, die die Entscheidung trifft und für das Ergebnis haftet. Pro Task nur eine Person.">A</th>
+                                    <th title="Consulted – Wer wird vor der Entscheidung um Rat gefragt? Personen mit Expertise, die einbezogen werden.">C</th>
+                                    <th title="Informed – Wer wird nach der Entscheidung informiert? Personen, die über den Fortschritt oder das Ergebnis in Kenntnis gesetzt werden.">I</th>
                                     <th>Rolle</th>
                                     <th>System</th>
                                 </tr>
@@ -521,7 +521,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
     </main>
 
     <script src="js/unified-aws-auth.js" defer></script>
-    <script src="js/cloud-data-service.js"></script>
+    <script src="js/cloud-data-service.js?v=20260226"></script>
     <script src="https://unpkg.com/bpmn-js@17.4.0/dist/bpmn-modeler.development.js"></script>
     <script src="js/aws-app-config.js"></script>
     <script src="js/aws-api-settings.js"></script>
@@ -1327,7 +1327,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                 var res = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'analyze', bpmnXml: tobeXml, description: '', openaiApiKey: openaiApiKey })
+                    body: JSON.stringify({ action: 'analyzeRaci', bpmnXml: tobeXml, openaiApiKey: openaiApiKey })
                 });
                 var rawText = await res.text();
                 var data = {};
@@ -1425,12 +1425,26 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                     }
                     var url = apiUrl(true) || apiUrl();
                     if (!url) throw new Error('API-URL nicht konfiguriert.');
-                    var res = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: 'analyze', bpmnXml: bpmnXml, description: desc, openaiApiKey: openaiApiKey })
-                    });
-                    var rawText = await res.text();
+                    var payload = { action: 'analyze', bpmnXml: bpmnXml, description: desc, openaiApiKey: openaiApiKey };
+                    var doFetch = function() { return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); };
+                    var res, rawText;
+                    try {
+                        res = await doFetch();
+                        if (!res.ok && (res.status === 504 || res.status === 502)) {
+                            if (loading) loading.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Zeitüberschreitung – versuche erneut (1–2 Min. bei langen Prozessen)…';
+                            await new Promise(function(r) { setTimeout(r, 2000); });
+                            res = await doFetch();
+                        }
+                        rawText = await res.text();
+                    } catch (fetchErr) {
+                        var msg = (fetchErr && fetchErr.message) || '';
+                        if ((msg.indexOf('timeout') >= 0 || msg.indexOf('fetch') >= 0 || msg.indexOf('Failed') >= 0) && loading) {
+                            loading.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verbindung abgebrochen – versuche erneut…';
+                            await new Promise(function(r) { setTimeout(r, 2000); });
+                            res = await doFetch();
+                            rawText = await res.text();
+                        } else throw fetchErr;
+                    }
                     var data = {};
                     try { data = JSON.parse(rawText); } catch(parseErr) { data = { error: rawText && rawText.length < 200 ? rawText : 'Antwort konnte nicht gelesen werden' }; }
                     if (!res.ok) {
@@ -1549,14 +1563,31 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                 localStorage.setItem('bpmn-process-optimize', JSON.stringify(payload));
                 if (currentProcessContext.processId && window.cloudDataService && window.cloudDataService.isUserLoggedIn && window.cloudDataService.isUserLoggedIn()) {
                     try {
-                        var cloud = await window.cloudDataService.getHrSelbsttest();
-                        var assessmentData = cloud.hrSelbsttest || { prozesse: {} };
-                        var savedTests = cloud.savedHRTests || [];
+                        var assessmentData, savedTests;
+                        if (typeof window.cloudDataService.getHrSelbsttest === 'function') {
+                            var cloud = await window.cloudDataService.getHrSelbsttest();
+                            assessmentData = cloud.hrSelbsttest || { prozesse: {} };
+                            savedTests = cloud.savedHRTests || [];
+                        } else if (typeof window.cloudDataService.getProfile === 'function') {
+                            var profile = await window.cloudDataService.getProfile(true) || {};
+                            assessmentData = profile.hrSelbsttest || { prozesse: {} };
+                            savedTests = profile.savedHRTests || [];
+                        } else {
+                            assessmentData = { prozesse: {} };
+                            savedTests = [];
+                        }
                         if (!assessmentData.prozesse) assessmentData.prozesse = {};
                         if (!assessmentData.prozesse[currentProcessContext.processId]) assessmentData.prozesse[currentProcessContext.processId] = {};
                         assessmentData.prozesse[currentProcessContext.processId].bpmnXml = xml;
                         assessmentData.prozesse[currentProcessContext.processId].description = desc || (assessmentData.prozesse[currentProcessContext.processId].description || '');
-                        await window.cloudDataService.saveHrSelbsttest(assessmentData, savedTests);
+                        if (typeof window.cloudDataService.saveHrSelbsttest === 'function') {
+                            await window.cloudDataService.saveHrSelbsttest(assessmentData, savedTests);
+                        } else if (typeof window.cloudDataService.saveProfile === 'function') {
+                            var p = await window.cloudDataService.getProfile(false) || {};
+                            await window.cloudDataService.saveProfile(Object.assign({}, p, { hrSelbsttest: assessmentData, savedHRTests: savedTests }));
+                        } else {
+                            throw new Error('Cloud-Speicher nicht verfügbar. Bitte Seite neu laden.');
+                        }
                         setTobeStatus('To-Be in AWS-Profil gespeichert.', false);
                     } catch (awsErr) {
                         console.warn('AWS-Speichern:', awsErr);
@@ -1593,11 +1624,37 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
     var analyzeBtn = document.getElementById('bpmnAnalyzeBtn');
     if (analyzeBtn) analyzeBtn.addEventListener('click', analyzeBpmn);
     var raciAutoFillBtn = document.getElementById('bpmnRaciAutoFillBtn');
-    if (raciAutoFillBtn) raciAutoFillBtn.addEventListener('click', function() {
+    if (raciAutoFillBtn) raciAutoFillBtn.addEventListener('click', async function() {
         var statusEl = document.getElementById('bpmnRaciAutoFillStatus');
-        if (statusEl) statusEl.textContent = 'KI füllt RACI-Matrix…';
-        raciAutoFillBtn.disabled = true;
-        analyzeBpmn();
+        getCurrentXmlFromEditor(function(err, xml) {
+            var bpmnXml = xml || currentBpmnXml;
+            if (!bpmnXml || bpmnXml.length < 50) {
+                if (statusEl) statusEl.textContent = 'Kein Diagramm. Bitte zuerst Workflow generieren.';
+                return;
+            }
+            if (statusEl) statusEl.textContent = 'KI füllt RACI-Matrix…';
+            raciAutoFillBtn.disabled = true;
+            (async function() {
+                try {
+                    var openaiApiKey = await (window.awsAPISettings && window.awsAPISettings.getFullApiKey ? window.awsAPISettings.getFullApiKey('openai') : Promise.resolve('')) || '';
+                    if (!openaiApiKey || openaiApiKey.length < 10) throw new Error('OpenAI API-Key nicht konfiguriert.');
+                    var url = apiUrl(true) || apiUrl();
+                    if (!url) throw new Error('API-URL nicht konfiguriert.');
+                    var res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'analyzeRaci', bpmnXml: bpmnXml, openaiApiKey: openaiApiKey }) });
+                    var data = {};
+                    try { data = JSON.parse(await res.text()); } catch(e) {}
+                    if (!res.ok || !data.success) throw new Error(data.error || 'RACI-Analyse fehlgeschlagen.');
+                    applyRaciToTaskMeta(data.raci || []);
+                    refreshRaciTable();
+                    if (statusEl) statusEl.textContent = 'RACI ausgefüllt.';
+                } catch (e) {
+                    if (statusEl) statusEl.textContent = 'Fehler: ' + (e.message || 'Unbekannt');
+                } finally {
+                    raciAutoFillBtn.disabled = false;
+                    setTimeout(function() { var s = document.getElementById('bpmnRaciAutoFillStatus'); if (s) s.textContent = ''; }, 3000);
+                }
+            })();
+        });
     });
     var tobeRaciAutoFillBtn = document.getElementById('bpmnTobeRaciAutoFillBtn');
     if (tobeRaciAutoFillBtn) tobeRaciAutoFillBtn.addEventListener('click', async function() {
@@ -1613,7 +1670,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             if (!openaiApiKey || openaiApiKey.length < 10) throw new Error('OpenAI API-Key nicht konfiguriert.');
             var url = apiUrl(true) || apiUrl();
             if (!url) throw new Error('API-URL nicht konfiguriert.');
-            var res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'analyze', bpmnXml: tobeBpmnXml, description: '', openaiApiKey: openaiApiKey }) });
+            var res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'analyzeRaci', bpmnXml: tobeBpmnXml, openaiApiKey: openaiApiKey }) });
             var data = {};
             try { data = JSON.parse(await res.text()); } catch(e) {}
             if (!res.ok || !data.success) throw new Error(data.error || 'Analyse fehlgeschlagen.');
