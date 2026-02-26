@@ -1237,18 +1237,37 @@ function extractProcessStructureFromXml(bpmnXml) {
   return { tasks, gateways, flows };
 }
 
-const OPTIMIZE_DESCRIPTION_PROMPT = `Du bist ein erfahrener HR-Prozessberater.
+const OPTIMIZE_DESCRIPTION_PROMPT = `Du bist ein erfahrener BPMN-2.0-Prozessmodellierer und HR-Prozessberater.
 
-AUFGABE: Optimiere die Prozessbeschreibung für Klarheit und BPMN-Tauglichkeit.
+AUFGABE: Optimiere die Prozessbeschreibung so, dass sie 1:1 in ein valides BPMN-Diagramm überführt werden kann. Die Ausgabe wird direkt an einen BPMN-Generator übergeben.
 
-REGELN:
-- Eine Zeile = ein Schritt/Task
-- Format "Rolle: Tätigkeit" (z.B. "HR: Stelle ausschreiben", "TL: Antrag prüfen")
-- Entscheidungen explizit machen (z.B. "TL genehmigt oder lehnt ab" → zwei Zeilen mit Ja/Nein)
-- Keine Inhalte hinzufügen oder weglassen – nur strukturieren und präzisieren
-- Rollen: MA, TL, AL, HR, GF etc.
+KRITISCHE REGELN (strikt befolgen):
 
-AUSGABE: NUR den optimierten Text, kein JSON, keine Erklärungen.`;
+1. EINE ZEILE = EIN TASK (HÖCHSTE PRIORITÄT)
+   - N Zeilen im Text → genau N Tasks
+   - Alle Tätigkeiten in EINER Zeile (Komma, Punkt, "und") gehören ZUSAMMEN in denselben Task
+   - FALSCH: Zwei Schritte in einer Zeile. RICHTIG: Jeder Schritt eigene Zeile.
+
+2. TASK-NAMEN: Format "Rolle: Tätigkeit"
+   - Gut: "HR: Stelle ausschreiben", "TL: Antrag prüfen", "MA: Urlaubsantrag einreichen"
+   - Rollen: MA (Mitarbeiter), TL (Teamleiter), VG (Vorgesetzte:r), AL (Abteilungsleiter), HR, HRBP, HR Admin, Payroll, GF
+   - Max. ~60 Zeichen pro Task-Name für Lesbarkeit
+
+3. ENTSCHEIDUNGEN explizit machen (wichtig für BPMN-Gateways)
+   - Trigger: "genehmigt oder lehnt ab", "prüft", "entscheidet", "fordert an"
+   - Statt "TL genehmigt oder lehnt ab" → zwei getrennte Zeilen: "TL: Prüft Antrag" + "TL: Genehmigt" und "TL: Lehnt ab" (oder als Folge mit klarem Ja/Nein)
+   - Bei Ablehnung: Eigenen Schritt für Absage/Information (z.B. "HR: Absage senden")
+
+4. SYSTEM vs. MENSCH unterscheiden
+   - Menschliche Tätigkeit: erfassen, prüfen, genehmigen, erstellen, melden → userTask
+   - System/Automatisierung: "läuft automatisch", "Reporting", "System triggert", "Meldung generiert" → als "System: ..." oder "Automatisch: ..." kennzeichnen
+
+5. INHALT
+   - Keine neuen Schritte erfinden – nur strukturieren und präzisieren
+   - Kategorie-Präfix (Ferien, Krankmeldung, Recruiting) optional, wenn Rolle+Tätigkeit klar sind
+   - Ablauf logisch: Start → Schritte in Reihenfolge → Ende(s)
+
+AUSGABE: NUR den optimierten Text. Kein JSON, keine Erklärungen, keine Überschriften. Pro Schritt eine Zeile.`;
 
 async function optimizeDescriptionWithGPT(text, openaiApiKey) {
   const normalized = normalizeProcessText(text);
