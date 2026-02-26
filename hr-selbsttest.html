@@ -6823,15 +6823,19 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                     const procPct = (procScore / 5) * 100;
                     const procColor = isRated ? getScoreColor(procScore) : [200, 200, 200];
                     
-                    // Berechne Box-Höhe basierend auf Kurzbeschreibung, Tools, Notes und BPMN
+                    // Berechne Box-Höhe basierend auf Kurzbeschreibung, Tools, Notes, BPMN und RACI
                     const descStr = procData && procData.description ? String(procData.description).trim() : '';
                     const toolsStr = procData && procData.tools ? String(procData.tools).trim() : '';
                     const notesStr = procData && procData.notes ? String(procData.notes).trim() : '';
                     const bpmnData = bpmnImages[proc.id];
                     const hasBpmn = bpmnData ? true : false;
+                    const _rawTaskMeta = procData && (procData.tobeTaskMeta || procData.taskMeta);
+                    const taskMeta = (_rawTaskMeta && typeof _rawTaskMeta === 'object') ? (Object.keys(procData.tobeTaskMeta || {}).length > 0 ? procData.tobeTaskMeta : procData.taskMeta || {}) : {};
+                    const raciRows = Object.keys(taskMeta).length;
+                    const hasRaci = raciRows > 0;
                     let boxHeight = 10;
                     let bpmnImgHeight = 0;
-                    if (descStr || toolsStr || notesStr || hasBpmn) {
+                    if (descStr || toolsStr || notesStr || hasBpmn || hasRaci) {
                         if (descStr) {
                             doc.setFontSize(7);
                             const dl = doc.splitTextToSize(descStr, contentWidth - 55);
@@ -6854,6 +6858,9 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                             const maxHeight = 55;
                             bpmnImgHeight = Math.min(maxWidth / aspectRatio, maxHeight);
                             boxHeight += 8 + bpmnImgHeight; // Label + image + padding
+                        }
+                        if (hasRaci) {
+                            boxHeight += 8 + Math.min(raciRows, 8) * 5; // RACI Header + max 8 Zeilen à 5mm
                         }
                     }
                     
@@ -6941,6 +6948,7 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                         }
                         
                         // BPMN Workflow Diagramm (wenn vorhanden)
+                        let bpmnImgDrawnHeight = 0;
                         if (bpmnImages[proc.id]) {
                             doc.setFillColor(16, 185, 129);
                             doc.setTextColor(255, 255, 255);
@@ -6965,11 +6973,67 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                                     imgHeight = maxHeight;
                                     imgWidth = maxHeight * aspectRatio;
                                 }
-                                
+                                bpmnImgDrawnHeight = imgHeight;
                                 doc.addImage(imgDataUrl, 'PNG', margin + 20, detailY + 4, imgWidth, imgHeight);
                             } catch (imgErr) {
                                 console.warn('Could not add BPMN image to PDF:', imgErr);
                             }
+                            detailY += 4 + bpmnImgDrawnHeight;
+                        }
+                        
+                        // RACI-Matrix (wenn vorhanden)
+                        if (hasRaci && raciRows > 0) {
+                            const bpmnXml = (Object.keys(procData.tobeTaskMeta || {}).length > 0 ? procData.tobeBpmnXml : null) || procData.bpmnXml || '';
+                            const getTaskName = (taskId) => {
+                                if (!bpmnXml) return taskId;
+                                const esc = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                                const m = bpmnXml.match(new RegExp(`<(?:bpmn:|bpmn2:)?(?:userTask|serviceTask|manualTask|task)[^>]*id="${esc(taskId)}"[^>]*name="([^"]*)"`, 'i'))
+                                    || bpmnXml.match(new RegExp(`<(?:bpmn:|bpmn2:)?(?:userTask|serviceTask|manualTask|task)[^>]*name="([^"]*)"[^>]*id="${esc(taskId)}"`, 'i'));
+                                return (m && m[1]) ? m[1] : taskId;
+                            };
+                            doc.setFillColor(139, 92, 246);
+                            doc.setTextColor(255, 255, 255);
+                            doc.setFontSize(6);
+                            doc.roundedRect(margin + 20, detailY - 2, 28, 5, 1, 1, 'F');
+                            doc.text('RACI:', margin + 22, detailY + 1.5);
+                            detailY += 6;
+                            const colW = (contentWidth - 45) / 7;
+                            const rowH = 5;
+                            const raciTasks = Object.keys(taskMeta).slice(0, 8);
+                            doc.setFontSize(6);
+                            doc.setTextColor(...colors.dark);
+                            doc.setFont('helvetica', 'bold');
+                            doc.text('Task', margin + 22, detailY + 3);
+                            doc.text('R', margin + 22 + colW, detailY + 3);
+                            doc.text('A', margin + 22 + colW * 2, detailY + 3);
+                            doc.text('C', margin + 22 + colW * 3, detailY + 3);
+                            doc.text('I', margin + 22 + colW * 4, detailY + 3);
+                            doc.text('Rolle', margin + 22 + colW * 5, detailY + 3);
+                            doc.text('System', margin + 22 + colW * 6, detailY + 3);
+                            doc.setFont('helvetica', 'normal');
+                            detailY += 4;
+                            doc.setDrawColor(200, 200, 200);
+                            raciTasks.forEach((taskId, idx) => {
+                                const t = taskMeta[taskId] || {};
+                                const r = (t.raciR || t.R || '').trim();
+                                const a = (t.raciA || t.A || '').trim();
+                                const c = (t.raciC || t.C || '').trim();
+                                const i = (t.raciI || t.I || '').trim();
+                                const rolle = (t.rolle || '').trim();
+                                const sys = (t.itSystem || t.system || '').trim();
+                                const taskName = getTaskName(taskId);
+                                doc.rect(margin + 20, detailY, contentWidth - 40, rowH);
+                                doc.setFontSize(5);
+                                doc.text(doc.splitTextToSize(taskName, colW - 2)[0] || '-', margin + 22, detailY + 3.5);
+                                doc.text(r || '-', margin + 22 + colW + 2, detailY + 3.5);
+                                doc.text(a || '-', margin + 22 + colW * 2 + 2, detailY + 3.5);
+                                doc.text(c || '-', margin + 22 + colW * 3 + 2, detailY + 3.5);
+                                doc.text(i || '-', margin + 22 + colW * 4 + 2, detailY + 3.5);
+                                doc.text(doc.splitTextToSize(rolle, colW - 2)[0] || '-', margin + 22 + colW * 5, detailY + 3.5);
+                                doc.text(doc.splitTextToSize(sys, colW - 2)[0] || '-', margin + 22 + colW * 6, detailY + 3.5);
+                                detailY += rowH;
+                            });
+                            detailY += 2;
                         }
                     } else {
                         doc.setTextColor(...colors.muted);
