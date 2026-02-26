@@ -8,6 +8,7 @@ alwaysApply: true
 - **Nach jeder Änderung** an Inhalten, die live gehen sollen (HTML, CSS, JS, Bilder, Konfiguration der Website):
   1. **Deployen**: `./deploy-aws-website.sh --quick` (im Projektroot)
   2. **Committen und Pushen**: `git add` (relevante Dateien), `git commit -m "..."`, `git push origin main`
+- **Immer beides**: Deploy und Push gehören zusammen – nach Änderungen nie nur eines davon vergessen.
 - Bei Lambda/Infrastruktur-Änderungen: `cd infrastructure && npx cdk deploy manuel-weiss-website-api --require-approval never` vor dem Website-Deploy.
 - Optional: Nach dem Deploy kurz bestätigen (z. B. „Deploy durchgeführt, gepusht, in 2–5 Min live unter https://manuel-weiss.ch“).
 - Wenn der Nutzer explizit sagt „nicht deployen“, „nicht pushen“ oder „noch nicht deployen“, dann nicht ausführen.
