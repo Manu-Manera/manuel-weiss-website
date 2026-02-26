@@ -8167,6 +8167,7 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
         function applyRaciToModalTaskMeta(raciList) {
             if (!raciList || !Array.isArray(raciList)) return;
             const idByName = {};
+            const taskIds = [];
             if (bpmnViewer) {
                 try {
                     const registry = bpmnViewer.get('elementRegistry');
@@ -8174,21 +8175,30 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                         if (isTaskElement(el)) {
                             const n = (el.businessObject && el.businessObject.name) || el.id;
                             idByName[n] = el.id;
-                            idByName[n.trim().toLowerCase()] = el.id;
+                            idByName[(n || '').trim().toLowerCase()] = el.id;
+                            taskIds.push({ id: el.id, name: n });
                         }
                     });
                 } catch (e) {}
             }
-            raciList.forEach(r => {
-                let id = r.taskId || idByName[r.taskName] || idByName[(r.taskName || '').trim().toLowerCase()];
+            const norm = (v) => (v && typeof v === 'string') ? v.trim() : '';
+            raciList.forEach((r, idx) => {
+                let id = r.taskId || r.taskID || idByName[r.taskName] || idByName[(r.taskName || '').trim().toLowerCase()];
+                if (!id && taskIds[idx]) id = taskIds[idx].id;
                 if (!id) return;
                 if (!modalTaskMeta[id]) modalTaskMeta[id] = {};
-                if (r.rolle) modalTaskMeta[id].rolle = r.rolle;
-                if (r.itSystem) modalTaskMeta[id].itSystem = r.itSystem;
-                if (r.raciR) modalTaskMeta[id].raciR = r.raciR;
-                if (r.raciA) modalTaskMeta[id].raciA = r.raciA;
-                if (r.raciC) modalTaskMeta[id].raciC = r.raciC;
-                if (r.raciI) modalTaskMeta[id].raciI = r.raciI;
+                const rolle = norm(r.rolle || r.Rolle);
+                const itSystem = norm(r.itSystem || r.ItSystem);
+                const raciR = norm(r.raciR || r.R);
+                const raciA = norm(r.raciA || r.A);
+                const raciC = norm(r.raciC || r.C);
+                const raciI = norm(r.raciI || r.I);
+                if (rolle) modalTaskMeta[id].rolle = rolle;
+                if (itSystem) modalTaskMeta[id].itSystem = itSystem;
+                if (raciR) modalTaskMeta[id].raciR = raciR;
+                if (raciA) modalTaskMeta[id].raciA = raciA;
+                if (raciC) modalTaskMeta[id].raciC = raciC;
+                if (raciI) modalTaskMeta[id].raciI = raciI;
             });
         }
         

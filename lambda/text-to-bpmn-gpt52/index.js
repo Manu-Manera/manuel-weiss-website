@@ -1263,7 +1263,7 @@ function extractProcessStructureFromXml(bpmnXml) {
   const gateways = [];
   const flows = [];
   try {
-    const taskEls = bpmnXml.match(/<bpmn:(?:userTask|serviceTask|task)[^>]*>/g) || [];
+    const taskEls = bpmnXml.match(/<bpmn:(?:userTask|serviceTask|manualTask|task)[^>]*>/g) || [];
     for (const el of taskEls) {
       const name = (el.match(/name="([^"]*)"/) || [])[1] || '';
       const id = (el.match(/id="([^"]+)"/) || [])[1] || '';
@@ -1471,7 +1471,35 @@ async function analyzeRaciOnlyWithGPT(bpmnXml, openaiApiKey, description = '') {
   } catch (e) {
     parsed = { raci: [] };
   }
-  return { raci: parsed.raci || [] };
+  const gptRaci = parsed.raci || [];
+  // Merge: Jeden Task aus dem BPMN mit RACI-Daten aus GPT verbinden (taskId garantiert aus BPMN)
+  const raciById = {};
+  gptRaci.forEach(r => {
+    const tid = (r.taskId || r.taskID || '').trim();
+    if (tid) raciById[tid] = r;
+  });
+  const norm = (v) => (v && typeof v === 'string') ? v.trim() : '';
+  const merged = tasks.map(t => {
+    let r = raciById[t.id];
+    if (!r) {
+      r = gptRaci.find(g => {
+        const gn = norm(g.taskName || g.taskname);
+        const tn = norm(t.name);
+        return gn && tn && (tn.toLowerCase().includes(gn.toLowerCase()) || gn.toLowerCase().includes(tn.toLowerCase()));
+      });
+    }
+    return {
+      taskId: t.id,
+      taskName: t.name,
+      rolle: norm(r?.rolle || r?.Rolle),
+      itSystem: norm(r?.itSystem || r?.ItSystem),
+      raciR: norm(r?.raciR || r?.R),
+      raciA: norm(r?.raciA || r?.A),
+      raciC: norm(r?.raciC || r?.C),
+      raciI: norm(r?.raciI || r?.I)
+    };
+  });
+  return { raci: merged };
 }
 
 async function analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey) {
