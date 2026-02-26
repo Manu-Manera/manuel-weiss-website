@@ -1014,6 +1014,20 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         return (window.getApiUrl && window.getApiUrl('TEXT_TO_BPMN_GPT')) ||
             (window.AWS_APP_CONFIG && window.AWS_APP_CONFIG.API_BASE ? window.AWS_APP_CONFIG.API_BASE + '/text-to-bpmn-gpt' : '');
     }
+    // Fetch mit 4-Min-Timeout für lange KI-Anfragen (Lambda hat 5 Min)
+    function fetchWithTimeout(url, options, timeoutMs) {
+        timeoutMs = timeoutMs || 240000;
+        var ctrl = new AbortController();
+        var id = setTimeout(function() { ctrl.abort(); }, timeoutMs);
+        return fetch(url, Object.assign({}, options, { signal: ctrl.signal })).then(function(r) {
+            clearTimeout(id);
+            return r;
+        }).catch(function(e) {
+            clearTimeout(id);
+            if (e.name === 'AbortError') throw new Error('Zeitüberschreitung: Die Anfrage hat zu lange gedauert. Bei langen Prozessen bitte „Beschreibung optimieren“ vor „Workflow generieren“ nutzen.');
+            throw e;
+        });
+    }
 
     function setStatus(t) {
         var el = document.getElementById('bpmnStatus');
@@ -1119,11 +1133,11 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         setStatus('Rufe API auf… (bei langen Prozessen kann es 1–2 Min. dauern)');
 
         try {
-            var res = await fetch(url, {
+            var res = await fetchWithTimeout(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text: text.trim(), openaiApiKey: openaiApiKey })
-            });
+            }, 240000);
             var data = await res.json().catch(function() { return {}; });
 
             if (!res.ok) {
@@ -1450,7 +1464,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                     var url = apiUrl(true) || apiUrl();
                     if (!url) throw new Error('API-URL nicht konfiguriert.');
                     var payload = { action: 'analyze', bpmnXml: bpmnXml, description: desc, openaiApiKey: openaiApiKey };
-                    var doFetch = function() { return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); };
+                    var doFetch = function() { return fetchWithTimeout(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }, 240000); };
                     var res, rawText;
                     try {
                         res = await doFetch();
