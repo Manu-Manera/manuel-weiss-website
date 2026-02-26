@@ -7903,6 +7903,9 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 // Now initialize the viewer
                 await initBpmnViewer(data.bpmnXml);
                 
+                // RACI direkt automatisch ausfüllen
+                await runModalRaciAutoFill();
+                
             } catch (error) {
                 console.error('Workflow generation error:', error);
                 showWorkflowError(error.message);
@@ -8187,44 +8190,47 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             });
         }
         
+        async function runModalRaciAutoFill() {
+            if (!bpmnViewer || !currentWorkflowProcessId) return;
+            const btn = document.getElementById('modalRaciAutoFillBtn');
+            const statusEl = document.getElementById('modalRaciAutoFillStatus');
+            try {
+                const { xml } = await bpmnViewer.saveXML({ format: true });
+                if (!xml || xml.length < 50) {
+                    if (statusEl) statusEl.textContent = 'Kein Diagramm.';
+                    return;
+                }
+                if (statusEl) statusEl.textContent = 'KI füllt RACI…';
+                if (btn) btn.disabled = true;
+                const apiKey = await getOpenAIApiKey();
+                if (!apiKey || apiKey.length < 10) throw new Error('OpenAI API-Key nicht konfiguriert.');
+                const url = getBpmnAnalyzeApiUrl();
+                if (!url) throw new Error('API-URL nicht konfiguriert.');
+                const description = document.getElementById('modalProcessDescription')?.value?.trim() || '';
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'analyzeRaci', bpmnXml: xml, description: description, openaiApiKey: apiKey })
+                });
+                const data = JSON.parse(await res.text()) || {};
+                if (!res.ok || !data.success) throw new Error(data.error || 'RACI-Analyse fehlgeschlagen.');
+                applyRaciToModalTaskMeta(data.raci || []);
+                refreshModalRaciTable();
+                if (statusEl) statusEl.textContent = 'RACI ausgefüllt.';
+                saveBpmnChanges();
+            } catch (e) {
+                if (statusEl) statusEl.textContent = 'Fehler: ' + (e.message || 'Unbekannt');
+                console.warn('Modal RACI auto-fill:', e);
+            } finally {
+                if (btn) btn.disabled = false;
+                setTimeout(() => { const s = document.getElementById('modalRaciAutoFillStatus'); if (s) s.textContent = ''; }, 3000);
+            }
+        }
+        
         function setupModalRaciAutoFill() {
             const btn = document.getElementById('modalRaciAutoFillBtn');
             if (!btn) return;
-            btn.onclick = async function() {
-                if (!bpmnViewer || !currentWorkflowProcessId) return;
-                const statusEl = document.getElementById('modalRaciAutoFillStatus');
-                try {
-                    const { xml } = await bpmnViewer.saveXML({ format: true });
-                    if (!xml || xml.length < 50) {
-                        if (statusEl) statusEl.textContent = 'Kein Diagramm.';
-                        return;
-                    }
-                    if (statusEl) statusEl.textContent = 'KI füllt RACI…';
-                    btn.disabled = true;
-                    const apiKey = await getOpenAIApiKey();
-                    if (!apiKey || apiKey.length < 10) throw new Error('OpenAI API-Key nicht konfiguriert.');
-                    const url = getBpmnAnalyzeApiUrl();
-                    if (!url) throw new Error('API-URL nicht konfiguriert.');
-                    const description = document.getElementById('modalProcessDescription')?.value?.trim() || '';
-                    const res = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: 'analyzeRaci', bpmnXml: xml, description: description, openaiApiKey: apiKey })
-                    });
-                    const data = JSON.parse(await res.text()) || {};
-                    if (!res.ok || !data.success) throw new Error(data.error || 'RACI-Analyse fehlgeschlagen.');
-                    applyRaciToModalTaskMeta(data.raci || []);
-                    refreshModalRaciTable();
-                    if (statusEl) statusEl.textContent = 'RACI ausgefüllt.';
-                    saveBpmnChanges();
-                } catch (e) {
-                    if (statusEl) statusEl.textContent = 'Fehler: ' + (e.message || 'Unbekannt');
-                    console.warn('Modal RACI auto-fill:', e);
-                } finally {
-                    btn.disabled = false;
-                    setTimeout(() => { const s = document.getElementById('modalRaciAutoFillStatus'); if (s) s.textContent = ''; }, 3000);
-                }
-            };
+            btn.onclick = () => runModalRaciAutoFill();
         }
         
         function bpmnZoom(action) {
