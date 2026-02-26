@@ -1358,12 +1358,15 @@ async function optimizeDescriptionWithGPT(text, openaiApiKey) {
 
 const ANALYZE_SYSTEM_PROMPT = `Du bist ein erfahrener Prozessberater mit HR- und BPM-Expertise.
 
-AUFGABE: Analysiere das BPMN-Prozessmodell und liefere NUR:
+AUFGABE: Analysiere das BPMN-Prozessmodell und liefere:
 1. Optimierungsvorschläge (3–5 Stück)
 2. RACI + Rollen + IT-Systeme pro Task
-3. Kurze verbale To-Be-Beschreibung (2–3 Absätze)
+3. tobeDescription (2–3 Absätze)
+4. prozessziel (1 Satz, z.B. "Schnelle, transparente Bearbeitung von Urlaubsanträgen")
+5. prozessbeschreibung (Kurzbeschreibung, 2–3 Sätze)
+6. omra (Organisation, Methoden, Verantwortlichkeiten, Anwendungen – strukturierte Absätze)
 
-KEIN tobeProcess! Nur suggestions, raci, tobeDescription.
+KEIN tobeProcess! Nur suggestions, raci, tobeDescription, prozessziel, prozessbeschreibung, omra.
 
 AUSGABE: NUR valides JSON:
 {
@@ -1373,7 +1376,10 @@ AUSGABE: NUR valides JSON:
   "raci": [
     { "taskId": "exakte Task-ID", "taskName": "Task-Name", "rolle": "z.B. HR", "itSystem": "z.B. SAP", "raciR": "Ausführend", "raciA": "Verantwortlich", "raciC": "Konsultiert", "raciI": "Informiert" }
   ],
-  "tobeDescription": "2–3 Absätze: Was verbessern, welche Schritte optimieren, Automatisierung."
+  "tobeDescription": "2–3 Absätze: Was verbessern, welche Schritte optimieren, Automatisierung.",
+  "prozessziel": "Ein Satz: Ziel des optimierten Prozesses.",
+  "prozessbeschreibung": "2–3 Sätze: Kurzbeschreibung des optimierten Prozesses.",
+  "omra": "O: Organisation/Rollen. M: Methoden. R: Verantwortlichkeiten. A: Anwendungen/IT-Systeme. (Pro Absatz 1–2 Sätze)"
 }
 
 raci: PFLICHT für JEDEN Task! Verwende die exakten taskId aus der Task-Liste (z.B. Task_1, Task_2). taskName = Task-Name. Rolle aus "Rolle: Tätigkeit" extrahieren. itSystem passend (z.B. SAP, Workday, Excel). R=Ausführend, A=Verantwortlich, C=Konsultiert, I=Informiert.`;
@@ -1415,6 +1421,7 @@ KRITISCHE LAYOUT-REGELN (strikt befolgen):
 const RACI_ONLY_SYSTEM_PROMPT = `Du bist ein RACI-Experte für HR-Prozesse.
 
 AUFGABE: Fülle NUR die RACI-Matrix für jeden Task. Keine Vorschläge, keine Beschreibungen.
+Wenn eine Prozessbeschreibung/Kontext mitgegeben wird: Nutze sie, um Rollen und IT-Systeme präzise zuzuordnen.
 
 AUSGABE: NUR valides JSON:
 {
@@ -1425,9 +1432,12 @@ AUSGABE: NUR valides JSON:
 
 PFLICHT: raci für JEDEN Task! taskId exakt aus der Liste. Rolle aus "Rolle: Tätigkeit" extrahieren. itSystem passend (SAP, Workday, Excel, Outlook, etc.). R=Ausführend, A=Verantwortlich, C=Konsultiert, I=Informiert.`;
 
-async function analyzeRaciOnlyWithGPT(bpmnXml, openaiApiKey) {
+async function analyzeRaciOnlyWithGPT(bpmnXml, openaiApiKey, description = '') {
   const { tasks } = extractProcessStructureFromXml(bpmnXml);
   const taskListJson = JSON.stringify(tasks.map(t => ({ id: t.id, name: t.name })));
+  const descPart = (description || '').trim().substring(0, 2000)
+    ? `\n\nProzessbeschreibung/Kontext (nutze für Rollen und IT-Systeme):\n${description.trim().substring(0, 2000)}`
+    : '';
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -1439,7 +1449,7 @@ async function analyzeRaciOnlyWithGPT(bpmnXml, openaiApiKey) {
       model: 'gpt-5.2',
       messages: [
         { role: 'system', content: RACI_ONLY_SYSTEM_PROMPT },
-        { role: 'user', content: `RACI für diese Tasks (exakte IDs verwenden):\n${taskListJson}` }
+        { role: 'user', content: `RACI für diese Tasks (exakte IDs verwenden):\n${taskListJson}${descPart}` }
       ],
       response_format: { type: 'json_object' },
       max_completion_tokens: Math.min(1500, 100 + tasks.length * 80),
@@ -1504,13 +1514,16 @@ async function analyzeBpmnWithGPT(bpmnXml, description, openaiApiKey) {
   try {
     parsed = JSON.parse(content);
   } catch (e) {
-    parsed = { suggestions: [{ type: 'other', title: 'Analyse', description: content, priority: 'medium' }], raci: [], tobeDescription: '' };
+    parsed = { suggestions: [{ type: 'other', title: 'Analyse', description: content, priority: 'medium' }], raci: [], tobeDescription: '', prozessziel: '', prozessbeschreibung: '', omra: '' };
   }
 
   return {
     suggestions: parsed.suggestions || [],
     raci: parsed.raci || [],
     tobeDescription: parsed.tobeDescription || '',
+    prozessziel: parsed.prozessziel || '',
+    prozessbeschreibung: parsed.prozessbeschreibung || '',
+    omra: parsed.omra || '',
     tobeBpmnXml: null
   };
 }
@@ -1614,7 +1627,8 @@ exports.handler = async (event) => {
       if (!tasks || tasks.length === 0) {
         return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ success: false, error: 'Keine Tasks im BPMN-Diagramm gefunden.' }) };
       }
-      const result = await analyzeRaciOnlyWithGPT(bpmnXml, openaiApiKey);
+      const description = (body.description || '').trim();
+      const result = await analyzeRaciOnlyWithGPT(bpmnXml, openaiApiKey, description);
       return {
         statusCode: 200,
         headers: CORS_HEADERS,
@@ -1642,6 +1656,9 @@ exports.handler = async (event) => {
           suggestions: result.suggestions,
           raci: result.raci,
           tobeDescription: result.tobeDescription,
+          prozessziel: result.prozessziel,
+          prozessbeschreibung: result.prozessbeschreibung,
+          omra: result.omra,
           tobeBpmnXml: null
         })
       };

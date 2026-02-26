@@ -2572,6 +2572,54 @@
             background: #ddd;
             margin: 2px 0;
         }
+        /* Modal RACI Section */
+        .modal-raci-section {
+            background: rgba(99, 102, 241, 0.08);
+            border-radius: 10px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            overflow: hidden;
+        }
+        .modal-raci-header {
+            padding: 0.6rem 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: rgba(255,255,255,0.9);
+            transition: background 0.2s;
+        }
+        .modal-raci-header:hover { background: rgba(99, 102, 241, 0.15); }
+        .modal-raci-header.collapsed .fa-chevron-down { transform: rotate(-90deg); }
+        .modal-raci-content {
+            padding: 0.75rem 1rem;
+            max-height: 400px;
+            overflow: auto;
+        }
+        .modal-raci-content.collapsed { display: none !important; }
+        .modal-raci-table-wrap { overflow-x: auto; margin-top: 0.5rem; }
+        .modal-raci-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            background: rgba(255,255,255,0.95);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .modal-raci-table th, .modal-raci-table td {
+            padding: 0.4rem 0.5rem;
+            border: 1px solid #e2e8f0;
+            text-align: left;
+        }
+        .modal-raci-table th { background: #f1f5f9; color: #334155; font-weight: 600; }
+        .modal-raci-table input {
+            width: 100%;
+            min-width: 60px;
+            padding: 0.25rem 0.35rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
         
         /* BPMN Toolbar (links wie bei bpmn.io) */
         .bpmn-toolbar {
@@ -5264,7 +5312,7 @@
                     <div class="workflow-section">
                         <div id="workflowGenerateLink" class="workflow-generate-link ${data.description ? '' : 'disabled'}" onclick="generateWorkflow('${processId}')">
                             <i class="fas fa-project-diagram"></i>
-                            <span>Workflow zeichnen</span>
+                            <span>BPMN Workflow mit KI zeichnen lassen</span>
                         </div>
                         <div id="workflowLoading" class="workflow-loading" style="display: none;">
                             <div class="spinner"></div>
@@ -5322,15 +5370,48 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="modal-raci-section" id="modalRaciSection" style="margin-top: 1rem; display: none;">
+                            <div class="modal-raci-header collapsed" id="modalRaciHeader" onclick="toggleModalRaci()">
+                                <span><i class="fas fa-users-cog"></i> Rollen & RACI</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="modal-raci-content collapsed" id="modalRaciContent">
+                                <div style="margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <button type="button" id="modalRaciAutoFillBtn" class="bpmn-viewer-btn secondary" style="padding: 0.4rem 0.75rem; font-size: 0.85rem;">
+                                        <i class="fas fa-magic"></i> Automatisch ausfüllen
+                                    </button>
+                                    <span id="modalRaciAutoFillStatus" style="font-size: 0.8rem; color: rgba(255,255,255,0.6);"></span>
+                                </div>
+                                <div class="modal-raci-table-wrap">
+                                    <table class="modal-raci-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Task</th>
+                                                <th title="Responsible – Ausführend">R</th>
+                                                <th title="Accountable – Verantwortlich">A</th>
+                                                <th title="Consulted – Konsultiert">C</th>
+                                                <th title="Informed – Informiert">I</th>
+                                                <th>Rolle</th>
+                                                <th>System</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="modalRaciTableBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
             
             document.getElementById('processModal').classList.add('active');
             
-            // Initialize BPMN viewer if there's existing XML
+            modalTaskMeta = data.taskMeta ? JSON.parse(JSON.stringify(data.taskMeta)) : {};
             if (data.bpmnXml) {
                 setTimeout(() => initBpmnViewer(data.bpmnXml), 100);
+            } else {
+                const raciSection = document.getElementById('modalRaciSection');
+                if (raciSection) raciSection.style.display = 'none';
             }
             // Hide mobile export footer when modal is open
             const mobileFooter = document.querySelector('.mobile-export-footer');
@@ -7727,6 +7808,11 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             return (window.getApiUrl && window.getApiUrl('TEXT_TO_BPMN_GPT')) ||
                 (window.AWS_APP_CONFIG && window.AWS_APP_CONFIG.API_BASE ? window.AWS_APP_CONFIG.API_BASE + '/text-to-bpmn-gpt' : '');
         }
+        // Long-timeout URL for RACI/Analyse (Lambda Function URL)
+        function getBpmnAnalyzeApiUrl() {
+            if (window.AWS_APP_CONFIG?.ENDPOINTS?.TEXT_TO_BPMN_GPT_LONG) return window.AWS_APP_CONFIG.ENDPOINTS.TEXT_TO_BPMN_GPT_LONG;
+            return getBpmnApiUrl();
+        }
         
         // Get OpenAI API Key from admin settings
         async function getOpenAIApiKey() {
@@ -7914,6 +8000,8 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                         }
                     }, 300);
                 }
+                refreshModalRaciTable();
+                setupModalRaciAutoFill();
             } catch (err) {
                 console.error('BPMN import error:', err);
                 showWorkflowError('Diagramm konnte nicht geladen werden: ' + (err.message || err));
@@ -8003,6 +8091,7 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
         }
         
         // Speichere BPMN-Änderungen
+        let modalTaskMeta = {};
         async function saveBpmnChanges() {
             if (!bpmnViewer || !currentWorkflowProcessId) return;
             
@@ -8013,10 +8102,129 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                     assessmentData.prozesse[currentWorkflowProcessId] = {};
                 }
                 assessmentData.prozesse[currentWorkflowProcessId].bpmnXml = xml;
+                assessmentData.prozesse[currentWorkflowProcessId].taskMeta = JSON.parse(JSON.stringify(modalTaskMeta));
                 saveData();
             } catch (e) {
                 console.warn('Save BPMN error:', e);
             }
+        }
+        
+        function toggleModalRaci() {
+            const header = document.getElementById('modalRaciHeader');
+            const content = document.getElementById('modalRaciContent');
+            if (header && content) {
+                content.classList.toggle('collapsed');
+                header.classList.toggle('collapsed', content.classList.contains('collapsed'));
+            }
+        }
+        
+        function isTaskElement(el) {
+            const t = el.type || (el.businessObject && el.businessObject.$type) || '';
+            return t && (t === 'bpmn:Task' || t === 'bpmn:UserTask' || t === 'bpmn:ServiceTask' || t === 'bpmn:ManualTask' || (typeof t === 'string' && t.indexOf('Task') >= 0));
+        }
+        
+        function refreshModalRaciTable() {
+            const tbody = document.getElementById('modalRaciTableBody');
+            const section = document.getElementById('modalRaciSection');
+            if (!tbody || !bpmnViewer) return;
+            if (!section) return;
+            section.style.display = 'block';
+            const registry = bpmnViewer.get('elementRegistry');
+            const all = registry.getAll();
+            const tasks = all.filter(isTaskElement);
+            tbody.innerHTML = '';
+            tasks.forEach(el => {
+                const id = el.id;
+                const name = (el.businessObject && el.businessObject.name) || id;
+                const m = modalTaskMeta[id] || {};
+                const tr = document.createElement('tr');
+                tr.dataset.taskId = id;
+                tr.innerHTML = '<td><strong>' + (name || '').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</strong></td>' +
+                    '<td><input type="text" data-field="raciR" value="' + (m.raciR || '') + '" placeholder="–"></td>' +
+                    '<td><input type="text" data-field="raciA" value="' + (m.raciA || '') + '" placeholder="–"></td>' +
+                    '<td><input type="text" data-field="raciC" value="' + (m.raciC || '') + '" placeholder="–"></td>' +
+                    '<td><input type="text" data-field="raciI" value="' + (m.raciI || '') + '" placeholder="–"></td>' +
+                    '<td><input type="text" data-field="rolle" value="' + (m.rolle || '') + '" placeholder="–"></td>' +
+                    '<td><input type="text" data-field="itSystem" value="' + (m.itSystem || '') + '" placeholder="–"></td>';
+                tr.querySelectorAll('input').forEach(inp => {
+                    inp.addEventListener('change', function() {
+                        const fid = tr.dataset.taskId;
+                        if (!modalTaskMeta[fid]) modalTaskMeta[fid] = {};
+                        modalTaskMeta[fid][inp.dataset.field] = inp.value.trim();
+                        saveBpmnChanges();
+                    });
+                });
+                tbody.appendChild(tr);
+            });
+            if (tasks.length === 0) tbody.innerHTML = '<tr><td colspan="7">Keine Tasks im Diagramm.</td></tr>';
+        }
+        
+        function applyRaciToModalTaskMeta(raciList) {
+            if (!raciList || !Array.isArray(raciList)) return;
+            const idByName = {};
+            if (bpmnViewer) {
+                try {
+                    const registry = bpmnViewer.get('elementRegistry');
+                    registry.getAll().forEach(el => {
+                        if (isTaskElement(el)) {
+                            const n = (el.businessObject && el.businessObject.name) || el.id;
+                            idByName[n] = el.id;
+                            idByName[n.trim().toLowerCase()] = el.id;
+                        }
+                    });
+                } catch (e) {}
+            }
+            raciList.forEach(r => {
+                let id = r.taskId || idByName[r.taskName] || idByName[(r.taskName || '').trim().toLowerCase()];
+                if (!id) return;
+                if (!modalTaskMeta[id]) modalTaskMeta[id] = {};
+                if (r.rolle) modalTaskMeta[id].rolle = r.rolle;
+                if (r.itSystem) modalTaskMeta[id].itSystem = r.itSystem;
+                if (r.raciR) modalTaskMeta[id].raciR = r.raciR;
+                if (r.raciA) modalTaskMeta[id].raciA = r.raciA;
+                if (r.raciC) modalTaskMeta[id].raciC = r.raciC;
+                if (r.raciI) modalTaskMeta[id].raciI = r.raciI;
+            });
+        }
+        
+        function setupModalRaciAutoFill() {
+            const btn = document.getElementById('modalRaciAutoFillBtn');
+            if (!btn) return;
+            btn.onclick = async function() {
+                if (!bpmnViewer || !currentWorkflowProcessId) return;
+                const statusEl = document.getElementById('modalRaciAutoFillStatus');
+                try {
+                    const { xml } = await bpmnViewer.saveXML({ format: true });
+                    if (!xml || xml.length < 50) {
+                        if (statusEl) statusEl.textContent = 'Kein Diagramm.';
+                        return;
+                    }
+                    if (statusEl) statusEl.textContent = 'KI füllt RACI…';
+                    btn.disabled = true;
+                    const apiKey = await getOpenAIApiKey();
+                    if (!apiKey || apiKey.length < 10) throw new Error('OpenAI API-Key nicht konfiguriert.');
+                    const url = getBpmnAnalyzeApiUrl();
+                    if (!url) throw new Error('API-URL nicht konfiguriert.');
+                    const description = document.getElementById('modalProcessDescription')?.value?.trim() || '';
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'analyzeRaci', bpmnXml: xml, description: description, openaiApiKey: apiKey })
+                    });
+                    const data = JSON.parse(await res.text()) || {};
+                    if (!res.ok || !data.success) throw new Error(data.error || 'RACI-Analyse fehlgeschlagen.');
+                    applyRaciToModalTaskMeta(data.raci || []);
+                    refreshModalRaciTable();
+                    if (statusEl) statusEl.textContent = 'RACI ausgefüllt.';
+                    saveBpmnChanges();
+                } catch (e) {
+                    if (statusEl) statusEl.textContent = 'Fehler: ' + (e.message || 'Unbekannt');
+                    console.warn('Modal RACI auto-fill:', e);
+                } finally {
+                    btn.disabled = false;
+                    setTimeout(() => { const s = document.getElementById('modalRaciAutoFillStatus'); if (s) s.textContent = ''; }, 3000);
+                }
+            };
         }
         
         function bpmnZoom(action) {
@@ -8193,7 +8401,7 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                     <div class="workflow-empty-state" style="grid-column: 1/-1; text-align: center; padding: 2.5rem; color: rgba(255,255,255,0.6);">
                         <i class="fas fa-project-diagram" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
                         <p style="font-size: 1rem; margin-bottom: 0.5rem;">Noch keine Prozess-Workflows erstellt</p>
-                        <p style="font-size: 0.9rem;">Bewerten Sie Prozesse und erstellen Sie unter „Workflow zeichnen“ BPMN-Diagramme.</p>
+                        <p style="font-size: 0.9rem;">Bewerten Sie Prozesse und erstellen Sie unter „BPMN Workflow mit KI zeichnen lassen“ BPMN-Diagramme.</p>
                         <button class="btn-nav btn-next" onclick="showSection('prozesse')" style="margin-top: 1rem;">
                             <i class="fas fa-arrow-left"></i> Zu den Prozessen
                         </button>
@@ -8334,6 +8542,13 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 category: processInfo.categoryName,
                 description: data.description || '',
                 bpmnXml: data.bpmnXml,
+                tobeBpmnXml: data.tobeBpmnXml || null,
+                tobeDescription: data.tobeDescription || '',
+                prozessziel: data.prozessziel || '',
+                prozessbeschreibung: data.prozessbeschreibung || '',
+                omra: data.omra || '',
+                taskMeta: data.taskMeta || null,
+                tobeTaskMeta: data.tobeTaskMeta || null,
                 returnUrl: window.location.href
             };
             try {
