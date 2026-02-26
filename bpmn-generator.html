@@ -938,7 +938,13 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             refreshRaciTable();
             if (window._bpmnAutoAnalyzeRaci) {
                 window._bpmnAutoAnalyzeRaci = false;
-                setTimeout(function() { analyzeBpmn(); }, 300);
+                var taskCount = (xml.match(/<(?:bpmn:|bpmn2:)?(?:userTask|serviceTask|manualTask|task)/gi) || []).length;
+                if (taskCount > 12) {
+                    setStatus('Diagramm mit ' + taskCount + ' Tasks. Klicken Sie auf „KI analysieren“ für Optimierungsvorschläge.');
+                    setTimeout(function() { setStatus(''); }, 5000);
+                } else {
+                    setTimeout(function() { analyzeBpmn(); }, 300);
+                }
             }
         }).catch(function(err) {
             console.error('BPMN import failed:', err);
@@ -1043,13 +1049,16 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         if (!busy) setStatus('');
     }
 
-    function normalizeApiError(msg) {
+    function normalizeApiError(msg, context) {
         if (!msg || typeof msg !== 'string') return 'Ein unbekannter Fehler ist aufgetreten.';
         var m = msg.trim().toLowerCase();
         if (m === 'load failed' || m === 'failed to fetch' || m.indexOf('load failed') >= 0 || m.indexOf('failed to fetch') >= 0) {
             return 'Netzwerkfehler: Verbindung zur KI-API konnte nicht hergestellt werden. Bitte prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.';
         }
-        if (m.indexOf('timeout') >= 0 || m.indexOf('timed out') >= 0) {
+        if (m.indexOf('timeout') >= 0 || m.indexOf('timed out') >= 0 || m.indexOf('zeitüberschreitung') >= 0) {
+            if (context === 'analyze') {
+                return 'KI-Analyse konnte nicht abgeschlossen werden (Zeitüberschreitung). Das Diagramm ist fertig. Klicken Sie auf „KI analysieren“ für einen erneuten Versuch.';
+            }
             return 'Zeitüberschreitung: Die Anfrage hat zu lange gedauert. Bei langen Prozessen bitte „Beschreibung optimieren“ vor „Workflow generieren“ nutzen.';
         }
         return msg;
@@ -1526,7 +1535,8 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                         }
                     }
                 } catch (e) {
-                    errEl.textContent = normalizeApiError(e.message || 'Analyse fehlgeschlagen.');
+                    var errMsg = normalizeApiError(e.message || 'Analyse fehlgeschlagen.', 'analyze');
+                    errEl.innerHTML = errMsg + ' <button type="button" class="bpmn-analyze-btn" style="margin-left:0.5rem;padding:0.35rem 0.75rem;font-size:0.85rem;" onclick="var b=document.getElementById(&apos;bpmnAnalyzeBtn&apos;);if(b)b.click()"><i class="fas fa-redo"></i> Erneut versuchen</button>';
                     errEl.style.display = 'block';
                 } finally {
                     loading.style.display = 'none';
