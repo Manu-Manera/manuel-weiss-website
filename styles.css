@@ -683,7 +683,7 @@ a:hover {
 
 .starry-theme .nav-link,
 .dark-page .nav-link {
-    color: rgba(255, 255, 255, 0.9) !important;
+    color: #8b5cf6 !important;
     text-shadow: none;
 }
 
@@ -691,17 +691,17 @@ a:hover {
 .starry-theme .nav-link.active,
 .dark-page .nav-link:hover,
 .dark-page .nav-link.active {
-    color: #ffffff !important;
+    color: #a78bfa !important;
 }
 
 .starry-theme .nav-link.active::after,
 .dark-page .nav-link.active::after {
-    background: #ffffff;
+    background: #a78bfa;
 }
 
 .starry-theme .nav-name,
 .dark-page .nav-name {
-    color: white !important;
+    color: #8b5cf6 !important;
 }
 
 /* Anmelden Button bleibt immer gleich */

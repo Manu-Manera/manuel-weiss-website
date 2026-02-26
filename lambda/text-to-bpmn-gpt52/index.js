@@ -92,6 +92,7 @@ HÄUFIGE FEHLER VERMEIDEN:
 - Doppelte row/col → FALSCH (Elemente überlappen)
 - Task nach Gateway mit gleicher col wie Gateway → FALSCH (Pfeil geht durch Task! col+1 nötig)
 - Flows ohne source/target → FALSCH (Verbindungen fehlen)
+- JEDER Pfad muss in einem endEvent enden → Jeder letzte Task/Gateway-Ausgang braucht ein End-X und Flow dorthin!
 
 PROZESSE MIT BELIEBIG VIELEN SCHRITTEN (keine Obergrenze):
 - Jede Zeile im Text = EIN Task (col aufsteigend: 1, 2, 3, ... bis N)
@@ -242,6 +243,37 @@ function expandCompactJson(data) {
     };
   }
   return data;
+}
+
+/**
+ * Stellt sicher, dass jeder Pfad in einem endEvent endet.
+ * Elemente ohne ausgehende Flows (außer endEvent) erhalten ein End-Event.
+ */
+function ensureEndEvents(data) {
+  const elements = [...(data.elements || [])];
+  const flows = [...(data.flows || [])];
+  const elById = {};
+  elements.forEach(el => { elById[el.id] = el; });
+
+  const outgoingCount = {};
+  flows.forEach(f => { outgoingCount[f.source] = (outgoingCount[f.source] || 0) + 1; });
+
+  let endCounter = 1;
+  const existingEndIds = new Set(elements.filter(el => (el.type || '').toLowerCase().includes('endevent')).map(el => el.id));
+
+  elements.forEach(el => {
+    const hasOutgoing = (outgoingCount[el.id] || 0) > 0;
+    const isEndEvent = (el.type || '').toLowerCase().includes('endevent');
+    if (!hasOutgoing && !isEndEvent) {
+      const endId = `End_${endCounter++}`;
+      const row = el.row ?? 0;
+      const col = (el.col ?? 0) + 1;
+      elements.push({ id: endId, type: 'endEvent', name: 'Ende', row, col });
+      flows.push({ id: `F_${endId}`, source: el.id, target: endId });
+    }
+  });
+
+  return { ...data, elements, flows };
 }
 
 /**
@@ -1149,6 +1181,9 @@ async function generateBpmnWithGPT52(text, processId, apiKey) {
     }
     console.log('Auto-generated linear flows from element order (truncation recovery)');
   }
+
+  // Fehlende End-Events ergänzen: Jeder Pfad muss in einem endEvent enden
+  jsonData = ensureEndEvents(jsonData);
 
   let bpmnXml;
   try {
