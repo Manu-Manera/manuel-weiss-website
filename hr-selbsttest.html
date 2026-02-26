@@ -5469,11 +5469,17 @@
                 qualIst: getSelectedValue('modal-qual-ist'),
                 qualSoll: getSelectedValue('modal-qual-soll'),
                 wichtigkeit: getSelectedValue('modal-wichtigkeit'),
-                // Behalte bestehende Werte, wenn Felder leer sind
                 description: newDescription || existingData.description || '',
                 tools: newTools || existingData.tools || '',
                 notes: newNotes || existingData.notes || '',
-                bpmnXml: existingData.bpmnXml || null
+                bpmnXml: existingData.bpmnXml || null,
+                taskMeta: existingData.taskMeta || null,
+                tobeBpmnXml: existingData.tobeBpmnXml || null,
+                tobeTaskMeta: existingData.tobeTaskMeta || null,
+                tobeDescription: existingData.tobeDescription || '',
+                prozessziel: existingData.prozessziel || '',
+                prozessbeschreibung: existingData.prozessbeschreibung || '',
+                omra: existingData.omra || ''
             };
             
             saveData();

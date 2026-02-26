@@ -320,7 +320,7 @@
 
     <main class="bpmn-page">
         <p style="margin-bottom: 1rem;">
-            <a href="hr-selbsttest.html?view=prozesse-workflows" style="color: #667eea; text-decoration: none; font-size: 0.9rem;"><i class="fas fa-arrow-left"></i> Zurück zur Prozessübersicht</a>
+            <a href="hr-selbsttest.html?view=prozesse-workflows" id="bpmnBackTop" data-back-url="hr-selbsttest.html?view=prozesse-workflows" style="color: #667eea; text-decoration: none; font-size: 0.9rem;"><i class="fas fa-arrow-left"></i> Zurück zur Prozessübersicht</a>
         </p>
         <div class="bpmn-hero">
             <h1 id="bpmnHeroTitle"><i class="fas fa-project-diagram"></i> BPMN Workflow-Generator</h1>
@@ -1220,6 +1220,45 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         });
     }
 
+    function getHrStorageKey() {
+        var userId = null;
+        if (window.awsAuth && typeof window.awsAuth.isLoggedIn === 'function' && window.awsAuth.isLoggedIn()) {
+            if (typeof window.awsAuth.getUserDataFromToken === 'function') {
+                var d = window.awsAuth.getUserDataFromToken();
+                userId = d && d.sub;
+            }
+            if (!userId && typeof window.awsAuth.getCurrentUser === 'function') {
+                var u = window.awsAuth.getCurrentUser();
+                userId = (u && u.sub) || (u && u.username);
+            }
+        }
+        return userId ? 'hrSelbsttest_' + userId : 'hrSelbsttest';
+    }
+    function saveToBeIntoHrLocalStorage(cb) {
+        if (!currentProcessContext.processId) { if (cb) cb(); return; }
+        getTobeXmlFromEditor(function(err, xml) {
+            if (err || !xml || xml.length < 50) { if (cb) cb(); return; }
+            try {
+                var key = getHrStorageKey();
+                var saved = localStorage.getItem(key);
+                var assessmentData = saved ? JSON.parse(saved) : { prozesse: {} };
+                if (!assessmentData.prozesse) assessmentData.prozesse = {};
+                if (!assessmentData.prozesse[currentProcessContext.processId]) assessmentData.prozesse[currentProcessContext.processId] = {};
+                var slot = assessmentData.prozesse[currentProcessContext.processId];
+                slot.tobeBpmnXml = xml;
+                slot.tobeDescription = (document.getElementById('bpmnTobeDescription') || {}).value || slot.tobeDescription || '';
+                slot.prozessziel = (document.getElementById('bpmnTobeProzessziel') || {}).value || slot.prozessziel || '';
+                slot.prozessbeschreibung = (document.getElementById('bpmnTobeProzessbeschreibung') || {}).value || slot.prozessbeschreibung || '';
+                slot.omra = (document.getElementById('bpmnTobeOmra') || {}).value || slot.omra || '';
+                slot.taskMeta = (asIsState && asIsState.taskMeta) ? JSON.parse(JSON.stringify(asIsState.taskMeta)) : (slot.taskMeta || {});
+                slot.tobeTaskMeta = JSON.parse(JSON.stringify(tobeTaskMeta || {}));
+                slot.bpmnXml = slot.bpmnXml || (asIsState && asIsState.bpmnXml) || currentBpmnXml;
+                slot.description = slot.description || (processTextEl && processTextEl.value) || '';
+                localStorage.setItem(key, JSON.stringify(assessmentData));
+            } catch (e) { console.warn('saveToBeIntoHrLocalStorage:', e); }
+            if (cb) cb();
+        });
+    }
     // Pre-Load: Prozess aus HR-Selbsttest (Prozess Optimieren)
     (function loadOptimizeProcess() {
         var params = new URLSearchParams(window.location.search);
@@ -1260,8 +1299,24 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                 }, true);
             }
             if (data.returnUrl) {
+                var backUrl = data.returnUrl.replace(/"/g, '&quot;');
                 var backEl = document.getElementById('bpmnBackLink');
-                if (backEl) backEl.innerHTML = '<a href="' + data.returnUrl + '" style="color: #667eea;"><i class="fas fa-arrow-left"></i> Zurück zum HR-Selbsttest</a>';
+                if (backEl) {
+                    backEl.innerHTML = '<a href="#" id="bpmnBackLinkA" data-return-url="' + backUrl + '" style="color: #667eea;"><i class="fas fa-arrow-left"></i> Zurück zum HR-Selbsttest</a>';
+                    var link = document.getElementById('bpmnBackLinkA');
+                    if (link) link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        saveToBeIntoHrLocalStorage(function() { window.location.href = data.returnUrl; });
+                    });
+                }
+                var topLink = document.getElementById('bpmnBackTop');
+                if (topLink) {
+                    topLink.setAttribute('data-back-url', data.returnUrl);
+                    topLink.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        saveToBeIntoHrLocalStorage(function() { window.location.href = data.returnUrl; });
+                    });
+                }
             }
             updatePageTitle();
         } catch (e) { console.warn('loadOptimizeProcess:', e); }
@@ -1679,6 +1734,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
                 } else {
                     setTobeStatus('Gespeichert: ' + (currentProcessContext.processName || 'To-Be') + ' – ' + now.toLocaleDateString('de-CH') + ' ' + now.toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' }), false);
                 }
+                saveToBeIntoHrLocalStorage();
                 setStatus('To-Be gespeichert: ' + saveFilename);
                 setTimeout(function() { setStatus(''); }, 3000);
             } catch (e) {
