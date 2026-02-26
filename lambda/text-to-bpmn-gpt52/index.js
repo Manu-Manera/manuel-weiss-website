@@ -1257,19 +1257,22 @@ async function generateBpmnWithGPT52(text, processId, apiKey) {
 
 /**
  * Extrahiert Prozessstruktur aus BPMN-XML für KI-Analyse.
+ * Unterstützt bpmn:, bpmn2: und prefixlose Elemente (bpmn.io, Camunda, etc.)
  */
 function extractProcessStructureFromXml(bpmnXml) {
   const tasks = [];
   const gateways = [];
   const flows = [];
   try {
-    const taskEls = bpmnXml.match(/<bpmn:(?:userTask|serviceTask|manualTask|task)[^>]*>/g) || [];
+    // bpmn:, bpmn2: oder kein Prefix (BPMN 2.0, bpmn.io, Camunda)
+    const taskRegex = /<(?:bpmn:|bpmn2:)?(?:userTask|serviceTask|manualTask|task)[^>]*>/gi;
+    const taskEls = bpmnXml.match(taskRegex) || [];
     for (const el of taskEls) {
       const name = (el.match(/name="([^"]*)"/) || [])[1] || '';
-      const id = (el.match(/id="([^"]+)"/) || [])[1] || '';
+      const id = (el.match(/\bid="([^"]+)"/) || [])[1] || '';
       if (id) tasks.push({ name, id });
     }
-    const gwEls = bpmnXml.match(/<bpmn:exclusiveGateway[^>]*>/g) || [];
+    const gwEls = bpmnXml.match(/<(?:bpmn:|bpmn2:)?exclusiveGateway[^>]*>/gi) || [];
     for (const el of gwEls) {
       const name = (el.match(/name="([^"]*)"/) || [])[1] || '';
       const id = (el.match(/id="([^"]+)"/) || [])[1] || '';
@@ -1420,17 +1423,14 @@ KRITISCHE LAYOUT-REGELN (strikt befolgen):
 
 const RACI_ONLY_SYSTEM_PROMPT = `Du bist ein RACI-Experte für HR-Prozesse.
 
-AUFGABE: Fülle NUR die RACI-Matrix für jeden Task. Keine Vorschläge, keine Beschreibungen.
-Wenn eine Prozessbeschreibung/Kontext mitgegeben wird: Nutze sie, um Rollen und IT-Systeme präzise zuzuordnen.
+AUFGABE: Fülle die RACI-Matrix für JEDEN Task. Jeder Task braucht mindestens rolle, raciR und raciA.
+Wenn eine Prozessbeschreibung mitgegeben wird: Nutze sie für Rollen und IT-Systeme.
 
-AUSGABE: NUR valides JSON:
-{
-  "raci": [
-    { "taskId": "exakte Task-ID", "taskName": "Task-Name", "rolle": "z.B. HR", "itSystem": "z.B. SAP", "raciR": "Ausführend", "raciA": "Verantwortlich", "raciC": "Konsultiert", "raciI": "Informiert" }
-  ]
-}
+AUSGABE: NUR valides JSON mit "raci"-Array. Jedes Objekt MUSS haben: taskId (exakt aus der Liste), taskName, rolle, raciR, raciA, raciC, raciI, itSystem.
+Beispiel für Task "HR: Stelle ausschreiben":
+{ "taskId": "Task_2", "taskName": "HR: Stelle ausschreiben", "rolle": "HR", "itSystem": "ATS/Workday", "raciR": "HR", "raciA": "HR-Leitung", "raciC": "Fachbereich", "raciI": "GF" }
 
-PFLICHT: raci für JEDEN Task! taskId exakt aus der Liste. Rolle aus "Rolle: Tätigkeit" extrahieren. itSystem passend (SAP, Workday, Excel, Outlook, etc.). R=Ausführend, A=Verantwortlich, C=Konsultiert, I=Informiert.`;
+PFLICHT: Für JEDEN Task ein Eintrag! taskId exakt wie in der Liste. raciR=Ausführend, raciA=Verantwortlich, raciC=Konsultiert, raciI=Informiert. Keine leeren Strings – immer konkrete Rollen eintragen.`;
 
 async function analyzeRaciOnlyWithGPT(bpmnXml, openaiApiKey, description = '') {
   const { tasks } = extractProcessStructureFromXml(bpmnXml);
@@ -1449,10 +1449,10 @@ async function analyzeRaciOnlyWithGPT(bpmnXml, openaiApiKey, description = '') {
       model: 'gpt-5.2',
       messages: [
         { role: 'system', content: RACI_ONLY_SYSTEM_PROMPT },
-        { role: 'user', content: `RACI für diese Tasks (exakte IDs verwenden):\n${taskListJson}${descPart}` }
+        { role: 'user', content: `Fülle RACI für diese ${tasks.length} Tasks. Verwende die exakten taskIds:\n\n${taskListJson}${descPart}\n\nAntworte NUR mit dem JSON-Objekt {"raci": [...]} – für jeden Task einen Eintrag mit taskId, taskName, rolle, raciR, raciA, raciC, raciI, itSystem.` }
       ],
       response_format: { type: 'json_object' },
-      max_completion_tokens: Math.min(1500, 100 + tasks.length * 80),
+      max_completion_tokens: Math.min(2500, 200 + tasks.length * 120),
       temperature: 0.2
     })
   });
@@ -1479,6 +1479,13 @@ async function analyzeRaciOnlyWithGPT(bpmnXml, openaiApiKey, description = '') {
     if (tid) raciById[tid] = r;
   });
   const norm = (v) => (v && typeof v === 'string') ? v.trim() : '';
+  // Fallback: Rolle aus "Rolle: Tätigkeit" extrahieren, wenn GPT nichts liefert
+  const extractRolleFromName = (name) => {
+    const n = norm(name);
+    const colon = n.indexOf(':');
+    if (colon > 0) return n.substring(0, colon).trim();
+    return '';
+  };
   const merged = tasks.map(t => {
     let r = raciById[t.id];
     if (!r) {
@@ -1488,15 +1495,22 @@ async function analyzeRaciOnlyWithGPT(bpmnXml, openaiApiKey, description = '') {
         return gn && tn && (tn.toLowerCase().includes(gn.toLowerCase()) || gn.toLowerCase().includes(tn.toLowerCase()));
       });
     }
+    const rolle = norm(r?.rolle || r?.Rolle) || extractRolleFromName(t.name);
+    const raciR = norm(r?.raciR || r?.R);
+    const raciA = norm(r?.raciA || r?.A);
+    const raciC = norm(r?.raciC || r?.C);
+    const raciI = norm(r?.raciI || r?.I);
+    // Fallback: Wenn keine RACI-Werte, rolle als R (Ausführend) setzen
+    const fallbackR = rolle && !raciR && !raciA ? rolle : raciR;
     return {
       taskId: t.id,
       taskName: t.name,
-      rolle: norm(r?.rolle || r?.Rolle),
+      rolle: rolle,
       itSystem: norm(r?.itSystem || r?.ItSystem),
-      raciR: norm(r?.raciR || r?.R),
-      raciA: norm(r?.raciA || r?.A),
-      raciC: norm(r?.raciC || r?.C),
-      raciI: norm(r?.raciI || r?.I)
+      raciR: fallbackR,
+      raciA: raciA,
+      raciC: raciC,
+      raciI: raciI
     };
   });
   return { raci: merged };
