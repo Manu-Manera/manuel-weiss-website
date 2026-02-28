@@ -219,9 +219,26 @@ exports.handler = async (event) => {
         
         // Für GET-Requests: Erlaube auch ohne userId (für globale Keys)
         // Für POST/PUT/DELETE: userId erforderlich
-        const userId = event.requestContext?.authorizer?.claims?.sub 
+        let userId = event.requestContext?.authorizer?.claims?.sub 
             || event.headers?.['x-user-id'] 
             || event.headers?.['X-User-Id'];
+        
+        // Fallback: Extrahiere userId aus JWT-Token im Authorization Header
+        if (!userId) {
+            const authHeader = event.headers?.['Authorization'] || event.headers?.['authorization'];
+            if (authHeader && authHeader.startsWith('Bearer ')) {
+                try {
+                    const token = authHeader.substring(7);
+                    const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+                    userId = payload.sub;
+                    console.log(`🔑 userId aus JWT extrahiert: ${userId}`);
+                } catch (e) {
+                    console.warn('⚠️ Konnte userId nicht aus JWT extrahieren:', e.message);
+                }
+            }
+        }
+        
+        console.log(`🔍 userId für ${httpMethod}: ${userId || 'nicht vorhanden'}`);
         
         switch (httpMethod) {
             case 'GET':
@@ -369,6 +386,14 @@ async function saveApiSettings(userId, data) {
     try {
         const now = new Date().toISOString();
         
+        // Prüfe ob userId vorhanden ist
+        if (!userId) {
+            console.error('❌ saveApiSettings: userId ist undefined/null');
+            return response(401, { error: 'Nicht authentifiziert. Bitte melden Sie sich an.' });
+        }
+        
+        console.log(`📝 saveApiSettings für User: ${userId}`);
+        
         // Validiere API-Keys
         if (data.openai?.apiKey && !isValidApiKey(data.openai.apiKey, 'openai')) {
             return response(400, { error: 'Ungültiger OpenAI API-Key Format' });
@@ -457,6 +482,51 @@ async function saveApiSettings(userId, data) {
             TableName: TABLE_NAME,
             Item: settingsItem
         }));
+        
+        // WICHTIG: Auch api-settings#global aktualisieren – HR-Coach/BPMN laden Key mit global=true
+        // (ohne Login), daher muss der neue Key dort landen
+        try {
+            const globalItem = {
+                userId: 'api-settings#global',
+                updatedAt: now
+            };
+            if (settingsItem.openai && settingsItem.openai.apiKey) {
+                const rawKey = settingsItem.openai.apiKey;
+                globalItem.openai = {
+                    apiKey: isEncrypted(rawKey) ? decryptApiKey(rawKey, userId) : rawKey,
+                    model: settingsItem.openai.model || 'gpt-3.5-turbo',
+                    maxTokens: settingsItem.openai.maxTokens || 1000,
+                    temperature: settingsItem.openai.temperature ?? 0.7
+                };
+            }
+            if (settingsItem.anthropic && settingsItem.anthropic.apiKey) {
+                const rawKey = settingsItem.anthropic.apiKey;
+                globalItem.anthropic = {
+                    apiKey: isEncrypted(rawKey) ? decryptApiKey(rawKey, userId) : rawKey,
+                    model: settingsItem.anthropic.model,
+                    maxTokens: settingsItem.anthropic.maxTokens,
+                    temperature: settingsItem.anthropic.temperature
+                };
+            }
+            if (settingsItem.google && settingsItem.google.apiKey) {
+                const rawKey = settingsItem.google.apiKey;
+                globalItem.google = {
+                    apiKey: isEncrypted(rawKey) ? decryptApiKey(rawKey, userId) : rawKey,
+                    model: settingsItem.google.model,
+                    maxTokens: settingsItem.google.maxTokens,
+                    temperature: settingsItem.google.temperature
+                };
+            }
+            if (globalItem.openai || globalItem.anthropic || globalItem.google) {
+                await docClient.send(new PutCommand({
+                    TableName: PROFILE_TABLE,
+                    Item: globalItem
+                }));
+                console.log('✅ Globale API Settings (api-settings#global) aktualisiert');
+            }
+        } catch (globalErr) {
+            console.warn('⚠️ Globale Settings konnten nicht aktualisiert werden:', globalErr.message);
+        }
         
         console.log('✅ API Settings sicher gespeichert (verschlüsselt)');
         

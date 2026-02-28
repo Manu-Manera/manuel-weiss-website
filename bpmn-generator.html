@@ -1063,6 +1063,9 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             }
             return 'Zeitüberschreitung: Die Anfrage hat zu lange gedauert. Bei langen Prozessen bitte „Beschreibung optimieren“ vor „Workflow generieren“ nutzen.';
         }
+        if (m.indexOf('quota') >= 0 || m.indexOf('exceeded') >= 0) {
+            return 'OpenAI-Kontingent erreicht. Bitte prüfen Sie Ihr monatliches Budget unter platform.openai.com/account/limits und erhöhen Sie es bei Bedarf.';
+        }
         return msg;
     }
     function showError(msg) {

@@ -6830,7 +6830,7 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                     const bpmnData = bpmnImages[proc.id];
                     const hasBpmn = bpmnData ? true : false;
                     const _rawTaskMeta = procData && (procData.tobeTaskMeta || procData.taskMeta);
-                    const taskMeta = (_rawTaskMeta && typeof _rawTaskMeta === 'object') ? (Object.keys(procData.tobeTaskMeta || {}).length > 0 ? procData.tobeTaskMeta : procData.taskMeta || {}) : {};
+                    const taskMeta = (_rawTaskMeta && typeof _rawTaskMeta === 'object') ? ((procData && procData.tobeTaskMeta && Object.keys(procData.tobeTaskMeta).length > 0) ? procData.tobeTaskMeta : (procData && procData.taskMeta) || {}) : {};
                     const raciRows = Object.keys(taskMeta).length;
                     const hasRaci = raciRows > 0;
                     let boxHeight = 10;
@@ -6983,57 +6983,67 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                         
                         // RACI-Matrix (wenn vorhanden)
                         if (hasRaci && raciRows > 0) {
-                            const bpmnXml = (Object.keys(procData.tobeTaskMeta || {}).length > 0 ? procData.tobeBpmnXml : null) || procData.bpmnXml || '';
-                            const getTaskName = (taskId) => {
-                                if (!bpmnXml) return taskId;
-                                const esc = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                                const m = bpmnXml.match(new RegExp(`<(?:bpmn:|bpmn2:)?(?:userTask|serviceTask|manualTask|task)[^>]*id="${esc(taskId)}"[^>]*name="([^"]*)"`, 'i'))
-                                    || bpmnXml.match(new RegExp(`<(?:bpmn:|bpmn2:)?(?:userTask|serviceTask|manualTask|task)[^>]*name="([^"]*)"[^>]*id="${esc(taskId)}"`, 'i'));
-                                return (m && m[1]) ? m[1] : taskId;
-                            };
-                            doc.setFillColor(139, 92, 246);
-                            doc.setTextColor(255, 255, 255);
-                            doc.setFontSize(6);
-                            doc.roundedRect(margin + 20, detailY - 2, 28, 5, 1, 1, 'F');
-                            doc.text('RACI:', margin + 22, detailY + 1.5);
-                            detailY += 6;
-                            const colW = (contentWidth - 45) / 7;
-                            const rowH = 5;
-                            const raciTasks = Object.keys(taskMeta).slice(0, 8);
-                            doc.setFontSize(6);
-                            doc.setTextColor(...colors.dark);
-                            doc.setFont('helvetica', 'bold');
-                            doc.text('Task', margin + 22, detailY + 3);
-                            doc.text('R', margin + 22 + colW, detailY + 3);
-                            doc.text('A', margin + 22 + colW * 2, detailY + 3);
-                            doc.text('C', margin + 22 + colW * 3, detailY + 3);
-                            doc.text('I', margin + 22 + colW * 4, detailY + 3);
-                            doc.text('Rolle', margin + 22 + colW * 5, detailY + 3);
-                            doc.text('System', margin + 22 + colW * 6, detailY + 3);
-                            doc.setFont('helvetica', 'normal');
-                            detailY += 4;
-                            doc.setDrawColor(200, 200, 200);
-                            raciTasks.forEach((taskId, idx) => {
-                                const t = taskMeta[taskId] || {};
-                                const r = (t.raciR || t.R || '').trim();
-                                const a = (t.raciA || t.A || '').trim();
-                                const c = (t.raciC || t.C || '').trim();
-                                const i = (t.raciI || t.I || '').trim();
-                                const rolle = (t.rolle || '').trim();
-                                const sys = (t.itSystem || t.system || '').trim();
-                                const taskName = getTaskName(taskId);
-                                doc.rect(margin + 20, detailY, contentWidth - 40, rowH);
-                                doc.setFontSize(5);
-                                doc.text(doc.splitTextToSize(taskName, colW - 2)[0] || '-', margin + 22, detailY + 3.5);
-                                doc.text(r || '-', margin + 22 + colW + 2, detailY + 3.5);
-                                doc.text(a || '-', margin + 22 + colW * 2 + 2, detailY + 3.5);
-                                doc.text(c || '-', margin + 22 + colW * 3 + 2, detailY + 3.5);
-                                doc.text(i || '-', margin + 22 + colW * 4 + 2, detailY + 3.5);
-                                doc.text(doc.splitTextToSize(rolle, colW - 2)[0] || '-', margin + 22 + colW * 5, detailY + 3.5);
-                                doc.text(doc.splitTextToSize(sys, colW - 2)[0] || '-', margin + 22 + colW * 6, detailY + 3.5);
-                                detailY += rowH;
-                            });
-                            detailY += 2;
+                            try {
+                                const useTobe = procData && procData.tobeTaskMeta && Object.keys(procData.tobeTaskMeta).length > 0;
+                                const bpmnXml = (useTobe ? (procData.tobeBpmnXml || '') : '') || (procData && procData.bpmnXml) || '';
+                                const getTaskName = (taskId) => {
+                                    if (!bpmnXml) return String(taskId || '');
+                                    try {
+                                        const esc = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                                        const m = bpmnXml.match(new RegExp(`<(?:bpmn:|bpmn2:)?(?:userTask|serviceTask|manualTask|task)[^>]*id="${esc(taskId)}"[^>]*name="([^"]*)"`, 'i'))
+                                            || bpmnXml.match(new RegExp(`<(?:bpmn:|bpmn2:)?(?:userTask|serviceTask|manualTask|task)[^>]*name="([^"]*)"[^>]*id="${esc(taskId)}"`, 'i'));
+                                        return (m && m[1]) ? m[1] : String(taskId || '');
+                                    } catch (e) { return String(taskId || ''); }
+                                };
+                                doc.setFillColor(139, 92, 246);
+                                doc.setTextColor(255, 255, 255);
+                                doc.setFontSize(6);
+                                doc.roundedRect(margin + 20, detailY - 2, 28, 5, 1, 1, 'F');
+                                doc.text('RACI:', margin + 22, detailY + 1.5);
+                                detailY += 6;
+                                const colW = Math.max(10, (contentWidth - 45) / 7);
+                                const rowH = 5;
+                                const raciTasks = Object.keys(taskMeta).slice(0, 8);
+                                doc.setFontSize(6);
+                                doc.setTextColor(...colors.dark);
+                                doc.setFont('helvetica', 'bold');
+                                doc.text('Task', margin + 22, detailY + 3);
+                                doc.text('R', margin + 22 + colW, detailY + 3);
+                                doc.text('A', margin + 22 + colW * 2, detailY + 3);
+                                doc.text('C', margin + 22 + colW * 3, detailY + 3);
+                                doc.text('I', margin + 22 + colW * 4, detailY + 3);
+                                doc.text('Rolle', margin + 22 + colW * 5, detailY + 3);
+                                doc.text('System', margin + 22 + colW * 6, detailY + 3);
+                                doc.setFont('helvetica', 'normal');
+                                detailY += 4;
+                                doc.setDrawColor(200, 200, 200);
+                                raciTasks.forEach((taskId) => {
+                                    const t = taskMeta[taskId] || {};
+                                    const r = String(t.raciR || t.R || '').trim();
+                                    const a = String(t.raciA || t.A || '').trim();
+                                    const c = String(t.raciC || t.C || '').trim();
+                                    const i = String(t.raciI || t.I || '').trim();
+                                    const rolle = String(t.rolle || '').trim();
+                                    const sys = String(t.itSystem || t.system || '').trim();
+                                    const taskName = getTaskName(taskId);
+                                    doc.rect(margin + 20, detailY, contentWidth - 40, rowH);
+                                    doc.setFontSize(5);
+                                    const taskLine = (doc.splitTextToSize(taskName || '-', colW - 2) || [])[0] || '-';
+                                    doc.text(taskLine, margin + 22, detailY + 3.5);
+                                    doc.text(r || '-', margin + 22 + colW + 2, detailY + 3.5);
+                                    doc.text(a || '-', margin + 22 + colW * 2 + 2, detailY + 3.5);
+                                    doc.text(c || '-', margin + 22 + colW * 3 + 2, detailY + 3.5);
+                                    doc.text(i || '-', margin + 22 + colW * 4 + 2, detailY + 3.5);
+                                    const rolleLine = (doc.splitTextToSize(rolle || '-', colW - 2) || [])[0] || '-';
+                                    doc.text(rolleLine, margin + 22 + colW * 5, detailY + 3.5);
+                                    const sysLine = (doc.splitTextToSize(sys || '-', colW - 2) || [])[0] || '-';
+                                    doc.text(sysLine, margin + 22 + colW * 6, detailY + 3.5);
+                                    detailY += rowH;
+                                });
+                                detailY += 2;
+                            } catch (raciErr) {
+                                console.warn('RACI-Tabelle konnte nicht in PDF eingefügt werden:', raciErr);
+                            }
                         }
                     } else {
                         doc.setTextColor(...colors.muted);
@@ -7893,15 +7903,23 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             return getBpmnApiUrl();
         }
         
-        // Get OpenAI API Key from admin settings
+        // Get OpenAI API Key from admin settings (AWS api-settings)
         async function getOpenAIApiKey() {
             if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
                 try {
                     const key = await window.awsAPISettings.getFullApiKey('openai');
-                    if (key && typeof key === 'string' && key.length > 10) return key;
+                    if (key && typeof key === 'string' && key.length > 10) {
+                        const masked = key.substring(0, 7) + '...' + key.substring(key.length - 4);
+                        console.log('✅ OpenAI API-Key aus AWS geladen:', masked, '(Länge:', key.length, ')');
+                        return key;
+                    } else {
+                        console.warn('⚠️ API-Key ungültig oder zu kurz:', key ? key.length : 'null');
+                    }
                 } catch (e) {
-                    console.warn('OpenAI-Key nicht geladen:', e);
+                    console.error('❌ OpenAI-Key nicht geladen:', e.message || e);
                 }
+            } else {
+                console.warn('⚠️ awsAPISettings nicht verfügbar');
             }
             return '';
         }
@@ -7987,7 +8005,20 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 
             } catch (error) {
                 console.error('Workflow generation error:', error);
-                showWorkflowError(error.message);
+                let errMsg = error.message || 'Unbekannter Fehler';
+                
+                // Detaillierte Fehleranalyse für OpenAI-Fehler
+                const lowerMsg = errMsg.toLowerCase();
+                if (lowerMsg.includes('quota') || lowerMsg.includes('exceeded') || lowerMsg.includes('insufficient_quota')) {
+                    errMsg = 'OpenAI-Kontingent erreicht. Bitte prüfen Sie Ihr monatliches Budget unter <a href="https://platform.openai.com/account/limits" target="_blank" rel="noopener">platform.openai.com/account/limits</a> und erhöhen Sie es bei Bedarf.';
+                } else if (lowerMsg.includes('invalid_api_key') || lowerMsg.includes('incorrect api key')) {
+                    errMsg = 'Ungültiger OpenAI API-Key. Bitte prüfen Sie den Key im Admin-Panel unter API Keys.';
+                } else if (lowerMsg.includes('rate_limit') || lowerMsg.includes('429')) {
+                    errMsg = 'OpenAI Rate-Limit erreicht. Bitte warten Sie einen Moment und versuchen Sie es erneut.';
+                }
+                
+                console.error('📛 Fehlerdetails:', errMsg);
+                showWorkflowError(errMsg);
                 document.getElementById('workflowLoading').style.display = 'none';
             } finally {
                 document.getElementById('workflowGenerateLink').style.display = 'flex';

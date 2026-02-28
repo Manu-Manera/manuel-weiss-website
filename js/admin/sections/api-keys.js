@@ -506,22 +506,21 @@ class ApiKeysSection {
                 temperature: serviceData.temperature
             });
             console.log(`✅ ${service} API-Key in GlobalAPIManager gespeichert`);
-        } else {
-            // Fallback: Direkt in localStorage unter global_api_keys
-            try {
-                const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
-                globalKeys[service] = {
-                    key: serviceData.apiKey,
-                    model: serviceData.model,
-                    maxTokens: serviceData.maxTokens,
-                    temperature: serviceData.temperature,
-                    enabled: !!serviceData.apiKey
-                };
-                localStorage.setItem('global_api_keys', JSON.stringify(globalKeys));
-                console.log(`✅ ${service} API-Key in global_api_keys gespeichert`);
-            } catch (e) {
-                console.error('Fehler beim Speichern in global_api_keys:', e);
-            }
+        }
+        // IMMER in global_api_keys – Fallback für BPMN/HR-Coach wenn AWS-Key nicht geladen wird
+        try {
+            const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
+            globalKeys[service] = {
+                key: serviceData.apiKey,
+                model: serviceData.model,
+                maxTokens: serviceData.maxTokens,
+                temperature: serviceData.temperature,
+                enabled: !!serviceData.apiKey
+            };
+            localStorage.setItem('global_api_keys', JSON.stringify(globalKeys));
+            console.log(`✅ ${service} API-Key in global_api_keys gespeichert`);
+        } catch (e) {
+            console.error('Fehler beim Speichern in global_api_keys:', e);
         }
         
         // AWS Cloud-Speicherung über awsAPISettings (benutzerspezifisch)
