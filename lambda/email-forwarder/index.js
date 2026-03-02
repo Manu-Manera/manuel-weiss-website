@@ -67,6 +67,7 @@ exports.handler = async (event) => {
         // E-Mail weiterleiten
         console.log('📤 Leite E-Mail weiter an:', FORWARD_TO);
         
+        // NUR Klartext senden (kein HTML) - für bessere Kompatibilität mit GMX
         const result = await ses.sendEmail({
             Source: FROM_EMAIL,
             Destination: {
@@ -78,10 +79,6 @@ exports.handler = async (event) => {
                     Charset: 'UTF-8'
                 },
                 Body: {
-                    Html: {
-                        Data: buildForwardedEmailHtml(emailParts, rawEmail, source, destination),
-                        Charset: 'UTF-8'
-                    },
                     Text: {
                         Data: buildForwardedEmailText(emailParts, rawEmail, source, destination),
                         Charset: 'UTF-8'
@@ -503,44 +500,84 @@ function buildForwardedEmailHtml(emailParts, rawEmail, originalFrom, originalTo)
 
 /**
  * Text-Version der weitergeleiteten E-Mail erstellen
+ * Konvertiert HTML zu lesbarem Klartext
  */
 function buildForwardedEmailText(emailParts, rawEmail, originalFrom, originalTo) {
     // Für Text-Version: HTML-Tags entfernen falls HTML-Body vorhanden
     let textBody = emailParts.body;
-    if (emailParts.htmlBody && !textBody) {
-        // Einfache HTML-Tag-Entfernung für Text-Version
-        textBody = emailParts.htmlBody
-            .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-            .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-            .replace(/<[^>]+>/g, '')
-            .replace(/&nbsp;/g, ' ')
-            .replace(/&amp;/g, '&')
-            .replace(/&lt;/g, '<')
-            .replace(/&gt;/g, '>')
-            .replace(/&quot;/g, '"')
-            .replace(/&#039;/g, "'")
-            .replace(/\n\s*\n\s*\n/g, '\n\n')
-            .trim();
+    
+    if (emailParts.htmlBody) {
+        // HTML zu Klartext konvertieren
+        textBody = htmlToPlainText(emailParts.htmlBody);
+    }
+    
+    if (!textBody && emailParts.body) {
+        textBody = emailParts.body;
     }
     
     return `
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📧 WEITERGELEITETE E-MAIL
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+════════════════════════════════════════════════════════════
+  WEITERGELEITETE E-MAIL
+════════════════════════════════════════════════════════════
 
-Von: ${emailParts.from}
-An: ${originalTo}
-Datum: ${emailParts.date}
+Von:     ${emailParts.from}
+An:      ${originalTo}
+Datum:   ${emailParts.date}
 Betreff: ${emailParts.subject || '(Kein Betreff)'}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+────────────────────────────────────────────────────────────
 NACHRICHT:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+────────────────────────────────────────────────────────────
 
 ${textBody || '(Keine Nachricht)'}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+════════════════════════════════════════════════════════════
     `.trim();
+}
+
+/**
+ * HTML zu lesbarem Klartext konvertieren
+ */
+function htmlToPlainText(html) {
+    if (!html) return '';
+    
+    let text = html;
+    
+    // Entferne Style- und Script-Blöcke komplett
+    text = text.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+    text = text.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
+    text = text.replace(/<head[^>]*>[\s\S]*?<\/head>/gi, '');
+    
+    // Ersetze Block-Elemente mit Zeilenumbrüchen
+    text = text.replace(/<\/?(div|p|br|tr|li|h[1-6])[^>]*>/gi, '\n');
+    text = text.replace(/<\/?(table|tbody|thead)[^>]*>/gi, '\n');
+    text = text.replace(/<td[^>]*>/gi, '\t');
+    text = text.replace(/<\/td>/gi, '');
+    
+    // Extrahiere Link-URLs
+    text = text.replace(/<a[^>]*href=["']([^"']+)["'][^>]*>([^<]*)<\/a>/gi, '$2 ($1)');
+    
+    // Entferne alle verbleibenden HTML-Tags
+    text = text.replace(/<[^>]+>/g, '');
+    
+    // Dekodiere HTML-Entities
+    text = text.replace(/&nbsp;/gi, ' ');
+    text = text.replace(/&amp;/gi, '&');
+    text = text.replace(/&lt;/gi, '<');
+    text = text.replace(/&gt;/gi, '>');
+    text = text.replace(/&quot;/gi, '"');
+    text = text.replace(/&#039;/gi, "'");
+    text = text.replace(/&apos;/gi, "'");
+    text = text.replace(/&#(\d+);/gi, (match, dec) => String.fromCharCode(dec));
+    text = text.replace(/&#x([0-9a-f]+);/gi, (match, hex) => String.fromCharCode(parseInt(hex, 16)));
+    
+    // Bereinige mehrfache Leerzeilen und Leerzeichen
+    text = text.replace(/[ \t]+/g, ' ');
+    text = text.replace(/\n[ \t]+/g, '\n');
+    text = text.replace(/[ \t]+\n/g, '\n');
+    text = text.replace(/\n{3,}/g, '\n\n');
+    
+    return text.trim();
 }
 
 /**
