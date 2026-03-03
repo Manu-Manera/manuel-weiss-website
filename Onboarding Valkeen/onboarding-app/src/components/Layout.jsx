@@ -45,17 +45,20 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
-      {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 glass border-b border-white/5 px-4 py-3 flex items-center justify-between">
+      {/* Mobile Header - mehr Höhe und Padding */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 glass border-b border-white/5 px-5 py-4 flex items-center justify-between safe-area-top">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
             <Sparkles className="w-5 h-5 text-white" />
           </div>
-          <span className="font-bold gradient-text">Valkeen</span>
+          <div>
+            <span className="font-bold gradient-text text-lg">Valkeen</span>
+            <p className="text-xs text-white/40 -mt-0.5">Onboarding Hub</p>
+          </div>
         </div>
         <button 
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-2 rounded-xl glass"
+          className="p-3 rounded-2xl glass hover:bg-white/10 transition-colors"
         >
           {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
@@ -64,42 +67,42 @@ export default function Layout() {
       {/* Overlay for mobile */}
       {sidebarOpen && (
         <div 
-          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
           onClick={closeSidebar}
         />
       )}
 
       {/* Sidebar - fixed on desktop, overlay on mobile */}
       <aside className={`
-        fixed lg:sticky top-0 left-0 h-screen p-4 lg:p-5 flex flex-col border-r border-white/5 z-50
-        w-64 lg:w-52 xl:w-60 flex-shrink-0
+        fixed lg:sticky top-0 left-0 h-screen p-5 lg:p-6 flex flex-col border-r border-white/5 z-50
+        w-72 lg:w-56 xl:w-64 flex-shrink-0
         glass
         transition-transform duration-300 ease-in-out
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0
       `}>
         {/* Logo - hidden on mobile (shown in header) */}
-        <div className="hidden lg:flex items-center gap-3 mb-6">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-white" />
+        <div className="hidden lg:flex items-center gap-3 mb-8">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+            <Sparkles className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-base font-bold gradient-text">Valkeen</h1>
+            <h1 className="text-lg font-bold gradient-text">Valkeen</h1>
             <p className="text-xs text-white/40">Onboarding Hub</p>
           </div>
         </div>
 
-        {/* Mobile: Close button area */}
-        <div className="lg:hidden h-14" />
+        {/* Mobile: Spacer für Header */}
+        <div className="lg:hidden h-20" />
 
         {/* Quick Progress */}
         {progress.startDate && (
-          <div className="mb-5 p-3 rounded-xl bg-white/5">
-            <div className="flex items-center justify-between text-sm mb-2">
-              <span className="text-white/60 text-xs">Fortschritt</span>
-              <span className="font-bold text-indigo-400 text-sm">{totalProgress}%</span>
+          <div className="mb-6 p-4 rounded-2xl bg-white/5 border border-white/5">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-white/60 text-sm">Fortschritt</span>
+              <span className="font-bold text-indigo-400">{totalProgress}%</span>
             </div>
-            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
               <div 
                 className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-700"
                 style={{ width: `${totalProgress}%` }}
@@ -108,43 +111,43 @@ export default function Layout() {
           </div>
         )}
 
-        {/* Navigation */}
-        <nav className="flex-1 space-y-1 overflow-y-auto">
+        {/* Navigation - mehr Abstand zwischen Items */}
+        <nav className="flex-1 space-y-2 overflow-y-auto pr-1">
           {navItems.map(({ path, icon: Icon, label }) => (
             <NavLink
               key={path}
               to={path}
               onClick={closeSidebar}
               className={({ isActive }) =>
-                `nav-item flex items-center gap-3 text-sm ${
+                `nav-item flex items-center gap-4 ${
                   isActive ? 'active text-white' : 'text-white/50 hover:text-white'
                 }`
               }
             >
-              <Icon className="w-4 h-4 flex-shrink-0" />
-              <span className="font-medium truncate">{label}</span>
+              <Icon className="w-5 h-5 flex-shrink-0" />
+              <span className="font-medium">{label}</span>
             </NavLink>
           ))}
         </nav>
 
-        {/* User Info */}
-        <div className="mt-auto pt-3 border-t border-white/5">
-          <div className="flex items-center gap-3 p-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xs font-bold">
+        {/* User Info - mehr Padding */}
+        <div className="mt-auto pt-5 border-t border-white/5">
+          <div className="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 transition-colors cursor-pointer">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-bold shadow-lg shadow-indigo-500/20">
               MM
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">Manu Manera</p>
-              <p className="text-xs text-white/40">Onboarding</p>
+              <p className="font-medium truncate">Manu Manera</p>
+              <p className="text-sm text-white/40">Onboarding</p>
             </div>
           </div>
         </div>
       </aside>
 
-      {/* Main Content - takes remaining space */}
-      <main className="flex-1 min-h-screen pt-16 lg:pt-0 overflow-x-hidden">
-        <div className="p-4 sm:p-6 lg:p-8 xl:p-10 w-full">
-          <div className="max-w-6xl mx-auto">
+      {/* Main Content - mehr Abstand oben für mobile Header */}
+      <main className="flex-1 min-h-screen pt-24 sm:pt-28 lg:pt-0 overflow-x-hidden">
+        <div className="px-5 pb-8 sm:px-8 sm:pb-10 lg:p-10 xl:p-12 w-full">
+          <div className="max-w-5xl mx-auto">
             <Outlet />
           </div>
         </div>

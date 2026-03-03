@@ -85,106 +85,107 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8 lg:space-y-10">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-          <p className="text-base text-white/50">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2">Dashboard</h1>
+          <p className="text-sm sm:text-base text-white/50">
             Tag {stats.currentDay} von 90 • Phase {stats.currentPhase}
           </p>
         </div>
-        <div className="text-right">
-          <p className="text-sm text-white/40">Gestartet am</p>
-          <p className="text-lg font-medium">
+        <div className="sm:text-right">
+          <p className="text-xs sm:text-sm text-white/40">Gestartet am</p>
+          <p className="text-base sm:text-lg font-medium">
             {format(new Date(progress.startDate), 'dd. MMMM yyyy', { locale: de })}
           </p>
         </div>
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="glass-card p-6">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center">
-              <TrendingUp className="w-7 h-7 text-indigo-400" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="glass-card p-4 sm:p-6">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
+              <TrendingUp className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-400" />
             </div>
-            <div>
-              <p className="text-sm text-white/50 mb-1">Fortschritt</p>
-              <p className="text-3xl font-bold">{Math.round(stats.totalProgress)}%</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="glass-card p-6">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-green-500/20 flex items-center justify-center">
-              <CheckCircle2 className="w-7 h-7 text-green-400" />
-            </div>
-            <div>
-              <p className="text-sm text-white/50 mb-1">Erledigt</p>
-              <p className="text-3xl font-bold">{stats.completedTasks}<span className="text-lg text-white/40">/{stats.totalTasks}</span></p>
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm text-white/50 mb-0.5 sm:mb-1">Fortschritt</p>
+              <p className="text-2xl sm:text-3xl font-bold">{Math.round(stats.totalProgress)}%</p>
             </div>
           </div>
         </div>
 
-        <div className="glass-card p-6">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-purple-500/20 flex items-center justify-center">
-              <Clock className="w-7 h-7 text-purple-400" />
+        <div className="glass-card p-4 sm:p-6">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-green-500/20 flex items-center justify-center flex-shrink-0">
+              <CheckCircle2 className="w-6 h-6 sm:w-7 sm:h-7 text-green-400" />
             </div>
-            <div>
-              <p className="text-sm text-white/50 mb-1">Tag</p>
-              <p className="text-3xl font-bold">{stats.currentDay}<span className="text-lg text-white/40">/90</span></p>
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm text-white/50 mb-0.5 sm:mb-1">Erledigt</p>
+              <p className="text-2xl sm:text-3xl font-bold">{stats.completedTasks}<span className="text-base sm:text-lg text-white/40">/{stats.totalTasks}</span></p>
             </div>
           </div>
         </div>
 
-        <div className="glass-card p-6">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-amber-500/20 flex items-center justify-center">
-              <Target className="w-7 h-7 text-amber-400" />
+        <div className="glass-card p-4 sm:p-6">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+              <Clock className="w-6 h-6 sm:w-7 sm:h-7 text-purple-400" />
             </div>
-            <div>
-              <p className="text-sm text-white/50 mb-1">Meilenstein</p>
-              <p className="text-3xl font-bold">{stats.daysToMilestone}<span className="text-lg text-white/40"> Tage</span></p>
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm text-white/50 mb-0.5 sm:mb-1">Tag</p>
+              <p className="text-2xl sm:text-3xl font-bold">{stats.currentDay}<span className="text-base sm:text-lg text-white/40">/90</span></p>
+            </div>
+          </div>
+        </div>
+
+        <div className="glass-card p-4 sm:p-6">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+              <Target className="w-6 h-6 sm:w-7 sm:h-7 text-amber-400" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm text-white/50 mb-0.5 sm:mb-1">Meilenstein</p>
+              <p className="text-2xl sm:text-3xl font-bold">{stats.daysToMilestone}<span className="text-base sm:text-lg text-white/40"> Tage</span></p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8">
         {/* Progress Ring */}
-        <div className="lg:col-span-5 glass-card p-8 flex flex-col items-center justify-center">
-          <ProgressRing progress={stats.totalProgress} size={200} strokeWidth={14} />
-          <p className="mt-6 text-base text-white/50">
+        <div className="lg:col-span-5 glass-card p-6 sm:p-8 flex flex-col items-center justify-center">
+          <ProgressRing progress={stats.totalProgress} size={160} strokeWidth={12} className="sm:hidden" />
+          <ProgressRing progress={stats.totalProgress} size={200} strokeWidth={14} className="hidden sm:block" />
+          <p className="mt-4 sm:mt-6 text-sm sm:text-base text-white/50 text-center">
             {stats.completedTasks} von {stats.totalTasks} Aufgaben erledigt
           </p>
         </div>
 
         {/* Current Week */}
-        <div className="lg:col-span-7 glass-card p-8">
-          <div className="flex items-center justify-between mb-6">
+        <div className="lg:col-span-7 glass-card p-5 sm:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-5 sm:mb-6">
             <div>
-              <p className="text-sm text-white/40 uppercase tracking-wider mb-2">Aktuelle Woche</p>
-              <h2 className="text-xl font-bold">{stats.currentWeek.name}</h2>
+              <p className="text-xs sm:text-sm text-white/40 uppercase tracking-wider mb-1 sm:mb-2">Aktuelle Woche</p>
+              <h2 className="text-lg sm:text-xl font-bold">{stats.currentWeek.name}</h2>
             </div>
             <Link 
               to="/tracker" 
-              className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-2"
+              className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-2 self-start sm:self-auto"
             >
               Alle anzeigen <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
           {/* Progress Bar */}
-          <div className="mb-6">
-            <div className="flex justify-between text-sm mb-2">
+          <div className="mb-5 sm:mb-6">
+            <div className="flex justify-between text-xs sm:text-sm mb-2">
               <span className="text-white/50">Woche {stats.currentWeek.id}</span>
               <span className="font-medium">{stats.weekCompleted}/{stats.currentWeek.tasks.length}</span>
             </div>
-            <div className="h-2.5 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-2 sm:h-2.5 bg-white/10 rounded-full overflow-hidden">
               <div 
                 className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-500"
                 style={{ width: `${stats.weekProgress}%` }}
@@ -193,26 +194,26 @@ export default function Dashboard() {
           </div>
 
           {/* Tasks */}
-          <div className="space-y-3">
+          <div className="space-y-2.5 sm:space-y-3">
             {stats.currentWeek.tasks.slice(0, 4).map(task => (
               <div 
                 key={task.id}
-                className={`flex items-center gap-4 p-4 rounded-xl ${
+                className={`flex items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl ${
                   progress.tasks[task.id] ? 'bg-green-500/10' : 'bg-white/5'
                 }`}
               >
                 {progress.tasks[task.id] ? (
-                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5 sm:mt-0" />
                 ) : (
-                  <Circle className="w-5 h-5 text-white/30 flex-shrink-0" />
+                  <Circle className="w-5 h-5 text-white/30 flex-shrink-0 mt-0.5 sm:mt-0" />
                 )}
-                <span className={`text-base ${progress.tasks[task.id] ? 'text-white/40 line-through' : ''}`}>
+                <span className={`text-sm sm:text-base leading-relaxed ${progress.tasks[task.id] ? 'text-white/40 line-through' : ''}`}>
                   {task.text}
                 </span>
               </div>
             ))}
             {stats.currentWeek.tasks.length > 4 && (
-              <p className="text-sm text-white/40 text-center pt-2">
+              <p className="text-xs sm:text-sm text-white/40 text-center pt-2">
                 +{stats.currentWeek.tasks.length - 4} weitere Aufgaben
               </p>
             )}
@@ -222,8 +223,8 @@ export default function Dashboard() {
 
       {/* Phases */}
       <div>
-        <h2 className="text-lg font-semibold mb-4">Phasen-Übersicht</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <h2 className="text-base sm:text-lg font-semibold mb-4">Phasen-Übersicht</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
           {phases.map((phase) => {
             const phaseWeeks = weeks.filter(w => w.phase === phase.id);
             const phaseTasks = phaseWeeks.flatMap(w => w.tasks);
@@ -268,38 +269,38 @@ export default function Dashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Link to="/tracker" className="glass-card p-6 hover:bg-white/10 transition-colors group">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+        <Link to="/tracker" className="glass-card p-5 sm:p-6 hover:bg-white/10 transition-colors group">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center group-hover:bg-indigo-500/30 transition-colors">
-              <Zap className="w-7 h-7 text-indigo-400" />
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-indigo-500/20 flex items-center justify-center group-hover:bg-indigo-500/30 transition-colors flex-shrink-0">
+              <Zap className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-400" />
             </div>
-            <div>
-              <p className="font-semibold text-lg">Aufgaben fortsetzen</p>
+            <div className="min-w-0">
+              <p className="font-semibold text-base sm:text-lg">Aufgaben fortsetzen</p>
               <p className="text-sm text-white/50">{stats.totalTasks - stats.completedTasks} offen</p>
             </div>
           </div>
         </Link>
 
-        <Link to="/quiz" className="glass-card p-6 hover:bg-white/10 transition-colors group">
+        <Link to="/quiz" className="glass-card p-5 sm:p-6 hover:bg-white/10 transition-colors group">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-purple-500/20 flex items-center justify-center group-hover:bg-purple-500/30 transition-colors">
-              <Brain className="w-7 h-7 text-purple-400" />
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-purple-500/20 flex items-center justify-center group-hover:bg-purple-500/30 transition-colors flex-shrink-0">
+              <Brain className="w-6 h-6 sm:w-7 sm:h-7 text-purple-400" />
             </div>
-            <div>
-              <p className="font-semibold text-lg">Wissen testen</p>
+            <div className="min-w-0">
+              <p className="font-semibold text-base sm:text-lg">Wissen testen</p>
               <p className="text-sm text-white/50">Quiz starten</p>
             </div>
           </div>
         </Link>
 
-        <Link to="/resources" className="glass-card p-6 hover:bg-white/10 transition-colors group">
+        <Link to="/resources" className="glass-card p-5 sm:p-6 hover:bg-white/10 transition-colors group">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/30 transition-colors">
-              <BookOpen className="w-7 h-7 text-amber-400" />
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/30 transition-colors flex-shrink-0">
+              <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-amber-400" />
             </div>
-            <div>
-              <p className="font-semibold text-lg">Ressourcen</p>
+            <div className="min-w-0">
+              <p className="font-semibold text-base sm:text-lg">Ressourcen</p>
               <p className="text-sm text-white/50">Lernmaterial ansehen</p>
             </div>
           </div>
@@ -307,19 +308,24 @@ export default function Dashboard() {
       </div>
 
       {/* Next Milestone */}
-      <div className="glass-card p-6">
-        <div className="flex items-center gap-6">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center">
-            <Target className="w-8 h-8 text-amber-400" />
+      <div className="glass-card p-5 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+          <div className="flex items-center gap-4 flex-1">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center flex-shrink-0">
+              <Target className="w-7 h-7 sm:w-8 sm:h-8 text-amber-400" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs sm:text-sm text-white/50 mb-0.5 sm:mb-1">Nächster Meilenstein</p>
+              <p className="text-lg sm:text-xl font-bold">{stats.nextMilestone.title}</p>
+              <p className="text-xs sm:text-sm text-white/50 mt-0.5 sm:mt-1 line-clamp-2">{stats.nextMilestone.description}</p>
+            </div>
           </div>
-          <div className="flex-1">
-            <p className="text-sm text-white/50 mb-1">Nächster Meilenstein</p>
-            <p className="text-xl font-bold">{stats.nextMilestone.title}</p>
-            <p className="text-sm text-white/50 mt-1">{stats.nextMilestone.description}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-4xl font-bold gradient-text">{stats.daysToMilestone}</p>
-            <p className="text-sm text-white/50">Tage</p>
+          <div className="flex items-center justify-between sm:block sm:text-right pt-3 sm:pt-0 border-t sm:border-t-0 border-white/10">
+            <span className="text-sm text-white/50 sm:hidden">Verbleibend</span>
+            <div>
+              <p className="text-3xl sm:text-4xl font-bold gradient-text">{stats.daysToMilestone}</p>
+              <p className="text-xs sm:text-sm text-white/50">Tage</p>
+            </div>
           </div>
         </div>
       </div>
