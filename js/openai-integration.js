@@ -18,7 +18,7 @@ class OpenAIJobAnalyzer {
         } else {
             this.settings = {
                 apiKey: '',
-                model: 'gpt-4o-mini',
+                model: 'gpt-5.2',
                 language: 'auto',
                 maxRequirements: 12,
                 temperature: 0.1
@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (document.getElementById('openai-api-key')) {
             document.getElementById('openai-api-key').value = settings.apiKey || '';
-            document.getElementById('openai-model').value = settings.model || 'gpt-4o-mini';
+            document.getElementById('openai-model').value = settings.model || 'gpt-5.2';
             document.getElementById('analysis-language').value = settings.language || 'auto';
             document.getElementById('max-requirements').value = settings.maxRequirements || 12;
             document.getElementById('ai-temperature').value = settings.temperature || 0.1;

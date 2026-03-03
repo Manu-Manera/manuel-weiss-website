@@ -738,6 +738,73 @@ export class WebsiteApiStack extends cdk.Stack {
     onboardingProgressResource.addMethod('POST', new apigateway.LambdaIntegration(onboardingProgressLambda));
 
     // ========================================
+    // FLASHCARDS (KI-Lernkarten mit Leitner-System)
+    // ========================================
+
+    // DynamoDB Tabelle für Flashcard-Decks
+    const flashcardDecksTable = new dynamodb.Table(this, 'FlashcardDecksTable', {
+      tableName: 'mawps-flashcard-decks',
+      partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'deckId', type: dynamodb.AttributeType.STRING },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // DynamoDB Tabelle für Flashcards
+    const flashcardsTable = new dynamodb.Table(this, 'FlashcardsTable', {
+      tableName: 'mawps-flashcards',
+      partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'cardId', type: dynamodb.AttributeType.STRING },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // Lambda für Flashcards API
+    const flashcardsLambda = new lambda.Function(this, 'FlashcardsFunction', {
+      functionName: 'website-flashcards-api',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('../lambda/flashcards-api'),
+      role: lambdaRole,
+      timeout: cdk.Duration.seconds(120),
+      memorySize: 512,
+      environment: {
+        DECKS_TABLE: flashcardDecksTable.tableName,
+        CARDS_TABLE: flashcardsTable.tableName,
+        API_SETTINGS_TABLE: 'mawps-api-settings'
+      }
+    });
+
+    // DynamoDB Permissions für Flashcards Lambda
+    flashcardDecksTable.grantReadWriteData(flashcardsLambda);
+    flashcardsTable.grantReadWriteData(flashcardsLambda);
+
+    // /flashcards Routes
+    const flashcardsResource = this.api.root.addResource('flashcards');
+    
+    // /flashcards/decks
+    const flashcardsDecksResource = flashcardsResource.addResource('decks');
+    flashcardsDecksResource.addMethod('GET', new apigateway.LambdaIntegration(flashcardsLambda));
+    flashcardsDecksResource.addMethod('POST', new apigateway.LambdaIntegration(flashcardsLambda));
+    flashcardsDecksResource.addMethod('DELETE', new apigateway.LambdaIntegration(flashcardsLambda));
+
+    // /flashcards/cards
+    const flashcardsCardsResource = flashcardsResource.addResource('cards');
+    flashcardsCardsResource.addMethod('GET', new apigateway.LambdaIntegration(flashcardsLambda));
+
+    // /flashcards/study
+    const flashcardsStudyResource = flashcardsResource.addResource('study');
+    flashcardsStudyResource.addMethod('GET', new apigateway.LambdaIntegration(flashcardsLambda));
+
+    // /flashcards/review
+    const flashcardsReviewResource = flashcardsResource.addResource('review');
+    flashcardsReviewResource.addMethod('POST', new apigateway.LambdaIntegration(flashcardsLambda));
+
+    // /flashcards/stats
+    const flashcardsStatsResource = flashcardsResource.addResource('stats');
+    flashcardsStatsResource.addMethod('GET', new apigateway.LambdaIntegration(flashcardsLambda));
+
+    // ========================================
     // OUTPUTS
     // ========================================
     this.apiUrl = new cdk.CfnOutput(this, 'WebsiteApiUrl', {

@@ -46,7 +46,7 @@ exports.handler = async (event) => {
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-4.1',
+                model: 'gpt-5.2',
                 messages: [{ role: 'user', content: 'Test' }],
                 max_tokens: 5,
                 temperature: 0.1

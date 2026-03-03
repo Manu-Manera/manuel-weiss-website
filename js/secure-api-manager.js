@@ -125,7 +125,7 @@ class SecureAPIManager {
     saveSettings(settings) {
         try {
             const safeSettings = {
-                model: settings.model || 'gpt-4o-mini',
+                model: settings.model || 'gpt-5.2',
                 language: settings.language || 'de',
                 maxRequirements: parseInt(settings.maxRequirements) || 10,
                 temperature: parseFloat(settings.temperature) || 0.1,
@@ -154,7 +154,7 @@ class SecureAPIManager {
     // Default Einstellungen
     getDefaultSettings() {
         return {
-            model: 'gpt-4o-mini',
+            model: 'gpt-5.2',
             language: 'de',
             maxRequirements: 10,
             temperature: 0.1
@@ -204,7 +204,7 @@ class SecureAPIManager {
                     'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
-                    model: 'gpt-4o-mini',
+                    model: 'gpt-5.2',
                     messages: [{
                         role: 'user',
                         content: 'Antworte nur mit "Test erfolgreich"'

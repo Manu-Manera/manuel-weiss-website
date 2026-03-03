@@ -47,7 +47,7 @@ class GlobalAIService {
         }
 
         const requestOptions = {
-            model: options.model || 'gpt-4o-mini',
+            model: options.model || 'gpt-5.2',
             messages: messages,
             max_tokens: options.maxTokens || 500,
             temperature: options.temperature || 0.1,

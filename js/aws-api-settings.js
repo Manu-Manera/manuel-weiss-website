@@ -424,7 +424,7 @@ class AWSAPISettingsService {
         return await this.saveSettings({
             openai: {
                 apiKey,
-                model: options.model || 'gpt-4o-mini',
+                model: options.model || 'gpt-5.2',
                 maxTokens: options.maxTokens || 1000,
                 temperature: options.temperature ?? 0.7
             },
@@ -547,7 +547,7 @@ class AWSAPISettingsService {
         if (openaiKey || kiSettings.apiKey || globalKeys.openai?.key) {
             settings.openai = {
                 apiKey: openaiKey || kiSettings.apiKey || globalKeys.openai?.key,
-                model: kiSettings.model || globalKeys.openai?.model || 'gpt-4o-mini',
+                model: kiSettings.model || globalKeys.openai?.model || 'gpt-5.2',
                 maxTokens: kiSettings.maxTokens || globalKeys.openai?.maxTokens || 1000,
                 temperature: kiSettings.temperature ?? globalKeys.openai?.temperature ?? 0.7
             };

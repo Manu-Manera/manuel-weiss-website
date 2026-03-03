@@ -441,7 +441,7 @@ async function saveApiSettings(userId, data) {
             const encryptedKey = encryptNewKey(data.openai.apiKey, existingSettings.openai?.apiKey);
             settingsItem.openai = {
                 apiKey: encryptedKey,
-                model: data.openai.model || existingSettings.openai?.model || 'gpt-4.1',
+                model: data.openai.model || existingSettings.openai?.model || 'gpt-5.2',
                 maxTokens: data.openai.maxTokens || existingSettings.openai?.maxTokens || 1000,
                 temperature: data.openai.temperature ?? existingSettings.openai?.temperature ?? 0.7
             };
@@ -494,7 +494,7 @@ async function saveApiSettings(userId, data) {
                 const rawKey = settingsItem.openai.apiKey;
                 globalItem.openai = {
                     apiKey: isEncrypted(rawKey) ? decryptApiKey(rawKey, userId) : rawKey,
-                    model: settingsItem.openai.model || 'gpt-4.1',
+                    model: settingsItem.openai.model || 'gpt-5.2',
                     maxTokens: settingsItem.openai.maxTokens || 1000,
                     temperature: settingsItem.openai.temperature ?? 0.7
                 };

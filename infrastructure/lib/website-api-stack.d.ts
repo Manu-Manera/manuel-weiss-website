@@ -3,7 +3,7 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 /**
  * Website API Stack
- * Website API: AWS Lambda + API Gateway
+ * Website API: AWS Lambda + API Gateway für manuel-weiss.ch
  */
 export declare class WebsiteApiStack extends cdk.Stack {
     readonly api: apigateway.RestApi;

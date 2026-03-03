@@ -11,7 +11,7 @@ class GlobalAPIManager {
                 name: 'OpenAI',
                 description: 'KI-Analyse und Text-Generierung',
                 key: '',
-                model: 'gpt-4o-mini',
+                model: 'gpt-5.2',
                 maxTokens: 1000,
                 temperature: 0.3,
                 enabled: false

@@ -169,10 +169,16 @@ body {
 
 .nav-item {
   position: relative;
-  padding: 14px 16px;
-  border-radius: 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
   transition: all 0.2s ease;
   cursor: pointer;
+}
+
+@media (min-width: 1024px) {
+  .nav-item {
+    padding: 12px 14px;
+  }
 }
 
 .nav-item:hover {
@@ -189,8 +195,20 @@ body {
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 4px;
+  width: 3px;
   height: 50%;
   background: var(--accent-primary);
   border-radius: 0 4px 4px 0;
+}
+
+@media (max-width: 640px) {
+  .glass-card {
+    border-radius: 16px;
+    padding: 16px;
+  }
+  
+  .glass-button {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
 }
