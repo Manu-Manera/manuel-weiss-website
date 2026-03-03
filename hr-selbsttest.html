@@ -4539,6 +4539,21 @@
             renamedProcesses: {}, // { processId: "Neuer Name" }
             renamedCategories: {} // { categoryId: "Neuer Name" }
         };
+        
+        // Globale Funktion um sicherzustellen dass alle assessmentData-Felder existieren
+        function ensureAssessmentDataStructure() {
+            if (!assessmentData) assessmentData = {};
+            if (!assessmentData.vision) assessmentData.vision = {};
+            if (!assessmentData.kultur) assessmentData.kultur = {};
+            if (!assessmentData.organisation) assessmentData.organisation = {};
+            if (!assessmentData.prozesse) assessmentData.prozesse = {};
+            if (!assessmentData.customProcesses) assessmentData.customProcesses = {};
+            if (!assessmentData.customCategories) assessmentData.customCategories = [];
+            if (!assessmentData.hiddenProcesses) assessmentData.hiddenProcesses = [];
+            if (!assessmentData.hiddenCategories) assessmentData.hiddenCategories = [];
+            if (!assessmentData.renamedProcesses) assessmentData.renamedProcesses = {};
+            if (!assessmentData.renamedCategories) assessmentData.renamedCategories = {};
+        }
 
         // User-spezifischer Storage-Key (Ergebnisse bleiben nach Re-Login erhalten)
         function getHrStorageKey() {
@@ -4561,12 +4576,7 @@
                     const cloud = await window.cloudDataService.getHrSelbsttest();
                     if (cloud.hrSelbsttest && Object.keys(cloud.hrSelbsttest).length > 0) {
                         assessmentData = cloud.hrSelbsttest;
-                        if (!assessmentData.customProcesses) assessmentData.customProcesses = {};
-                        if (!assessmentData.customCategories) assessmentData.customCategories = [];
-                        if (!assessmentData.hiddenProcesses) assessmentData.hiddenProcesses = [];
-                        if (!assessmentData.hiddenCategories) assessmentData.hiddenCategories = [];
-                        if (!assessmentData.renamedProcesses) assessmentData.renamedProcesses = {};
-                        if (!assessmentData.renamedCategories) assessmentData.renamedCategories = {};
+                        ensureAssessmentDataStructure();
                         localStorage.setItem(getHrStorageKey(), JSON.stringify(assessmentData));
                         updateAllProgress();
                         return;
@@ -4579,14 +4589,11 @@
             const saved = localStorage.getItem(key);
             if (saved) {
                 assessmentData = JSON.parse(saved);
-                // Stelle sicher, dass neue Felder existieren
-                if (!assessmentData.customProcesses) assessmentData.customProcesses = {};
-                if (!assessmentData.customCategories) assessmentData.customCategories = [];
-                if (!assessmentData.hiddenProcesses) assessmentData.hiddenProcesses = [];
-                if (!assessmentData.hiddenCategories) assessmentData.hiddenCategories = [];
-                if (!assessmentData.renamedProcesses) assessmentData.renamedProcesses = {};
-                if (!assessmentData.renamedCategories) assessmentData.renamedCategories = {};
+                ensureAssessmentDataStructure();
                 updateAllProgress();
+            } else {
+                // Auch bei leerem localStorage sicherstellen dass Struktur existiert
+                ensureAssessmentDataStructure();
             }
         }
 
@@ -5274,16 +5281,21 @@
                 return;
             }
             
+            // Sicherstellen dass prozesse-Objekt existiert
+            if (!assessmentData.prozesse) assessmentData.prozesse = {};
             const data = assessmentData.prozesse[processId] || {};
             
             // Debug: Zeige gespeicherte Daten
             console.log('📊 Öffne Prozess:', processId, 'Daten:', JSON.stringify(data));
             
-            // Hilfsfunktion für Vergleich (String oder Zahl)
-            const isSelected = (storedValue, checkValue) => {
-                if (storedValue === undefined || storedValue === null) return false;
-                return parseInt(storedValue) === parseInt(checkValue);
-            };
+            // Vorberechnen der selected-Klassen für alle Bewertungen
+            const digiIstVal = data.digiIst != null ? parseInt(data.digiIst) : null;
+            const digiSollVal = data.digiSoll != null ? parseInt(data.digiSoll) : null;
+            const qualIstVal = data.qualIst != null ? parseInt(data.qualIst) : null;
+            const qualSollVal = data.qualSoll != null ? parseInt(data.qualSoll) : null;
+            const wichtigkeitVal = data.wichtigkeit != null ? parseInt(data.wichtigkeit) : null;
+            
+            console.log('📊 Parsed values - digiIst:', digiIstVal, 'digiSoll:', digiSollVal, 'qualIst:', qualIstVal, 'qualSoll:', qualSollVal, 'wichtigkeit:', wichtigkeitVal);
             
             document.getElementById('modalTitle').textContent = process.name;
             document.getElementById('modalBody').innerHTML = `
@@ -5299,7 +5311,7 @@
                             <div class="rating-column-label">IST-Zustand (1 = sehr niedrig, 5 = voll digitalisiert)</div>
                             <div class="rating-scale" data-question="modal-digi-ist">
                                 ${[1,2,3,4,5].map(v => `
-                                    <div class="rating-option ${isSelected(data.digiIst, v) ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
+                                    <div class="rating-option ${digiIstVal === v ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
                                         <div class="rating-value">${v}</div>
                                     </div>
                                 `).join('')}
@@ -5309,7 +5321,7 @@
                             <div class="rating-column-label">SOLL-Zustand</div>
                             <div class="rating-scale" data-question="modal-digi-soll">
                                 ${[1,2,3,4,5].map(v => `
-                                    <div class="rating-option ${isSelected(data.digiSoll, v) ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
+                                    <div class="rating-option ${digiSollVal === v ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
                                         <div class="rating-value">${v}</div>
                                     </div>
                                 `).join('')}
@@ -5328,7 +5340,7 @@
                             <div class="rating-column-label">IST-Zustand (1 = sehr schlecht, 5 = ausgezeichnet)</div>
                             <div class="rating-scale" data-question="modal-qual-ist">
                                 ${[1,2,3,4,5].map(v => `
-                                    <div class="rating-option ${isSelected(data.qualIst, v) ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
+                                    <div class="rating-option ${qualIstVal === v ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
                                         <div class="rating-value">${v}</div>
                                     </div>
                                 `).join('')}
@@ -5338,7 +5350,7 @@
                             <div class="rating-column-label">SOLL-Zustand</div>
                             <div class="rating-scale" data-question="modal-qual-soll">
                                 ${[1,2,3,4,5].map(v => `
-                                    <div class="rating-option ${isSelected(data.qualSoll, v) ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
+                                    <div class="rating-option ${qualSollVal === v ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
                                         <div class="rating-value">${v}</div>
                                     </div>
                                 `).join('')}
@@ -5354,7 +5366,7 @@
                     </div>
                     <div class="rating-scale" data-question="modal-wichtigkeit" style="max-width: 400px;">
                         ${[1,2,3,4,5].map(v => `
-                            <div class="rating-option ${isSelected(data.wichtigkeit, v) ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
+                            <div class="rating-option ${wichtigkeitVal === v ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
                                 <div class="rating-value">${v}</div>
                                 <div class="rating-label">${v === 1 ? 'Gering' : v === 3 ? 'Mittel' : v === 5 ? 'Sehr hoch' : ''}</div>
                             </div>
@@ -5519,6 +5531,9 @@
                 return selected ? parseInt(selected.dataset.value) : null;
             };
             
+            // Sicherstellen dass prozesse-Objekt existiert
+            if (!assessmentData.prozesse) assessmentData.prozesse = {};
+            
             // Preserve existing data if present
             const existingData = assessmentData.prozesse[processId] || {};
             
@@ -5557,28 +5572,39 @@
 
         // Update all progress bars
         function updateAllProgress() {
+            // Sicherstellen dass alle Objekte existieren
+            ensureAssessmentDataStructure();
+            
             // Vision progress
             const visionQuestions = ['vision-1', 'vision-2', 'vision-3', 'vision-4'];
-            const visionAnswered = visionQuestions.filter(q => assessmentData.vision[q]).length;
-            document.getElementById('progress-vision').style.width = `${(visionAnswered / 4) * 100}%`;
-            document.getElementById('progress-vision-text').textContent = `${visionAnswered}/4`;
+            const visionAnswered = visionQuestions.filter(q => assessmentData.vision && assessmentData.vision[q]).length;
+            const progressVision = document.getElementById('progress-vision');
+            const progressVisionText = document.getElementById('progress-vision-text');
+            if (progressVision) progressVision.style.width = `${(visionAnswered / 4) * 100}%`;
+            if (progressVisionText) progressVisionText.textContent = `${visionAnswered}/4`;
             
             // Kultur progress (9 question pairs = 18 total, but counting as 9)
-            const kulturKeys = Object.keys(assessmentData.kultur).length;
+            const kulturKeys = Object.keys(assessmentData.kultur || {}).length;
             const kulturProgress = Math.min((kulturKeys / 18) * 100, 100);
-            document.getElementById('progress-kultur').style.width = `${kulturProgress}%`;
-            document.getElementById('progress-kultur-text').textContent = `${Math.floor(kulturKeys/2)}/9`;
+            const progressKultur = document.getElementById('progress-kultur');
+            const progressKulturText = document.getElementById('progress-kultur-text');
+            if (progressKultur) progressKultur.style.width = `${kulturProgress}%`;
+            if (progressKulturText) progressKulturText.textContent = `${Math.floor(kulturKeys/2)}/9`;
             
             // Organisation progress
-            const orgKeys = Object.keys(assessmentData.organisation).length;
+            const orgKeys = Object.keys(assessmentData.organisation || {}).length;
             const orgProgress = Math.min((orgKeys / 10) * 100, 100);
-            document.getElementById('progress-organisation').style.width = `${orgProgress}%`;
-            document.getElementById('progress-organisation-text').textContent = `${orgKeys}/7`;
+            const progressOrg = document.getElementById('progress-organisation');
+            const progressOrgText = document.getElementById('progress-organisation-text');
+            if (progressOrg) progressOrg.style.width = `${orgProgress}%`;
+            if (progressOrgText) progressOrgText.textContent = `${orgKeys}/7`;
             
             // Prozesse progress (32 Prozesse in 8 Kategorien)
-            const processesCompleted = Object.keys(assessmentData.prozesse).length;
-            document.getElementById('progress-prozesse').style.width = `${(processesCompleted / 32) * 100}%`;
-            document.getElementById('progress-prozesse-text').textContent = `${processesCompleted}/32`;
+            const processesCompleted = Object.keys(assessmentData.prozesse || {}).length;
+            const progressProzesse = document.getElementById('progress-prozesse');
+            const progressProzesseText = document.getElementById('progress-prozesse-text');
+            if (progressProzesse) progressProzesse.style.width = `${(processesCompleted / 32) * 100}%`;
+            if (progressProzesseText) progressProzesseText.textContent = `${processesCompleted}/32`;
             
             // Auch die Prozess-Statistik Box in Results aktualisieren
             updateProcessStats();
@@ -5598,15 +5624,18 @@
             
             if (!circle || !text) return;
             
+            // Sicherstellen dass alle Objekte existieren
+            ensureAssessmentDataStructure();
+            
             // Gesamtfortschritt berechnen (gewichtet)
             const visionQuestions = ['vision-1', 'vision-2', 'vision-3', 'vision-4'];
-            const visionAnswered = visionQuestions.filter(q => assessmentData.vision[q]).length;
+            const visionAnswered = visionQuestions.filter(q => assessmentData.vision && assessmentData.vision[q]).length;
             const visionProgress = visionAnswered / 4;
             
-            const kulturKeys = Object.keys(assessmentData.kultur).length;
+            const kulturKeys = Object.keys(assessmentData.kultur || {}).length;
             const kulturProgress = Math.min(kulturKeys / 18, 1);
             
-            const orgKeys = Object.keys(assessmentData.organisation).length;
+            const orgKeys = Object.keys(assessmentData.organisation || {}).length;
             const orgProgress = Math.min(orgKeys / 10, 1);
             
             const processesCompleted = Object.keys(assessmentData.prozesse).length;
@@ -8048,6 +8077,7 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 }
                 
                 // Store BPMN XML AND description in assessment data
+                if (!assessmentData.prozesse) assessmentData.prozesse = {};
                 if (!assessmentData.prozesse[processId]) {
                     assessmentData.prozesse[processId] = {};
                 }
@@ -8289,6 +8319,7 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
             try {
                 const { xml } = await bpmnViewer.saveXML({ format: true });
                 
+                if (!assessmentData.prozesse) assessmentData.prozesse = {};
                 if (!assessmentData.prozesse[pid]) {
                     assessmentData.prozesse[pid] = {};
                 }
