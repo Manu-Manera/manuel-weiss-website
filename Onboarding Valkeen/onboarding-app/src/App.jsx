@@ -10,7 +10,7 @@ import Report from './pages/Report';
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/onboarding">
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
