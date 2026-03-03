@@ -8,9 +8,13 @@ import {
   Lightbulb,
   BookOpen,
   Target,
-  MessageSquare
+  MessageSquare,
+  Loader2,
+  CheckCircle,
+  AlertCircle
 } from 'lucide-react';
 import { useProgress } from '../hooks/useLocalStorage';
+import { getOpenAIApiKey } from '../services/awsService';
 import { weeks, phases } from '../data/onboardingData';
 
 const SYSTEM_PROMPT = `Du bist ein erfahrener Lerncoach und Experte für:
@@ -55,9 +59,42 @@ export default function AICoach() {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem('openai-api-key') || '');
-  const [showApiKeyInput, setShowApiKeyInput] = useState(!localStorage.getItem('openai-api-key'));
+  const [apiKey, setApiKey] = useState('');
+  const [apiKeyStatus, setApiKeyStatus] = useState('loading'); // loading, aws, local, none
+  const [showApiKeyInput, setShowApiKeyInput] = useState(false);
+  const [localApiKey, setLocalApiKey] = useState('');
   const messagesEndRef = useRef(null);
+
+  // Beim Start: API-Key aus AWS laden
+  useEffect(() => {
+    async function loadApiKey() {
+      setApiKeyStatus('loading');
+      
+      // 1. Versuche AWS
+      const awsKey = await getOpenAIApiKey();
+      if (awsKey) {
+        setApiKey(awsKey);
+        setApiKeyStatus('aws');
+        console.log('✅ API-Key aus Admin-Panel geladen');
+        return;
+      }
+      
+      // 2. Fallback: localStorage
+      const localKey = localStorage.getItem('openai-api-key');
+      if (localKey && localKey.startsWith('sk-')) {
+        setApiKey(localKey);
+        setApiKeyStatus('local');
+        console.log('✅ API-Key aus localStorage geladen');
+        return;
+      }
+      
+      // 3. Kein Key gefunden
+      setApiKeyStatus('none');
+      setShowApiKeyInput(true);
+    }
+    
+    loadApiKey();
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -67,9 +104,13 @@ export default function AICoach() {
     scrollToBottom();
   }, [messages]);
 
-  const saveApiKey = () => {
-    localStorage.setItem('openai-api-key', apiKey);
-    setShowApiKeyInput(false);
+  const saveLocalApiKey = () => {
+    if (localApiKey.startsWith('sk-')) {
+      localStorage.setItem('openai-api-key', localApiKey);
+      setApiKey(localApiKey);
+      setApiKeyStatus('local');
+      setShowApiKeyInput(false);
+    }
   };
 
   const getProgressContext = () => {
@@ -100,7 +141,7 @@ export default function AICoach() {
           'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-          model: 'gpt-4o-mini',
+          model: 'gpt-4.1',
           messages: [
             { role: 'system', content: SYSTEM_PROMPT + '\n\n' + getProgressContext() },
             ...messages.map(m => ({ role: m.role, content: m.content })),
@@ -112,7 +153,8 @@ export default function AICoach() {
       });
 
       if (!response.ok) {
-        throw new Error('API request failed');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error?.message || `API Fehler: ${response.status}`);
       }
 
       const data = await response.json();
@@ -124,9 +166,17 @@ export default function AICoach() {
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Error:', error);
+      let errorMessage = 'Entschuldigung, es gab einen Fehler bei der Verbindung.';
+      
+      if (error.message.includes('quota') || error.message.includes('exceeded')) {
+        errorMessage = 'Das OpenAI-Kontingent ist erschöpft. Bitte prüfe das Budget im Admin-Panel unter API Keys.';
+      } else if (error.message.includes('invalid_api_key')) {
+        errorMessage = 'Der API-Key ist ungültig. Bitte prüfe die Einstellungen im Admin-Panel.';
+      }
+      
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: 'Entschuldigung, es gab einen Fehler bei der Verbindung. Bitte überprüfe deinen API-Key und versuche es erneut.'
+        content: errorMessage
       }]);
     } finally {
       setIsLoading(false);
@@ -149,7 +199,36 @@ export default function AICoach() {
     }]);
   };
 
-  if (showApiKeyInput) {
+  // API-Key Status Badge
+  const ApiKeyBadge = () => {
+    if (apiKeyStatus === 'loading') {
+      return (
+        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 text-xs">
+          <Loader2 className="w-3 h-3 animate-spin" />
+          <span>Lade API-Key...</span>
+        </div>
+      );
+    }
+    if (apiKeyStatus === 'aws') {
+      return (
+        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs">
+          <CheckCircle className="w-3 h-3" />
+          <span>API-Key aus Admin-Panel</span>
+        </div>
+      );
+    }
+    if (apiKeyStatus === 'local') {
+      return (
+        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-400 text-xs">
+          <AlertCircle className="w-3 h-3" />
+          <span>Lokaler API-Key</span>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  if (showApiKeyInput && apiKeyStatus !== 'loading') {
     return (
       <div className="max-w-xl mx-auto">
         <div className="glass-card p-8 text-center">
@@ -158,19 +237,39 @@ export default function AICoach() {
           </div>
           <h2 className="text-2xl font-bold mb-2">KI-Coach einrichten</h2>
           <p className="text-white/60 mb-6">
-            Gib deinen OpenAI API-Key ein, um den KI-Coach zu nutzen.
+            {apiKeyStatus === 'none' 
+              ? 'Kein API-Key im Admin-Panel gefunden. Du kannst einen lokalen Key eingeben:'
+              : 'Gib deinen OpenAI API-Key ein, um den KI-Coach zu nutzen.'
+            }
           </p>
+          
+          {apiKeyStatus === 'none' && (
+            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-6 text-left">
+              <p className="text-sm text-yellow-400">
+                <strong>Tipp:</strong> Du kannst den API-Key zentral im{' '}
+                <a 
+                  href="/admin.html#api-keys" 
+                  target="_blank" 
+                  className="underline hover:text-yellow-300"
+                >
+                  Admin-Panel → API Keys
+                </a>{' '}
+                hinterlegen. Dann wird er automatisch geladen.
+              </p>
+            </div>
+          )}
+          
           <input
             type="password"
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
+            value={localApiKey}
+            onChange={(e) => setLocalApiKey(e.target.value)}
             placeholder="sk-..."
             className="glass-input mb-4"
           />
           <button
-            onClick={saveApiKey}
-            disabled={!apiKey.startsWith('sk-')}
-            className={`glass-button w-full ${!apiKey.startsWith('sk-') ? 'opacity-50 cursor-not-allowed' : ''}`}
+            onClick={saveLocalApiKey}
+            disabled={!localApiKey.startsWith('sk-')}
+            className={`glass-button w-full ${!localApiKey.startsWith('sk-') ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             API-Key speichern
           </button>
@@ -195,9 +294,13 @@ export default function AICoach() {
             <p className="text-sm text-white/50">Dein Sparring-Partner für PPM & Tempus</p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-3">
+          <ApiKeyBadge />
           <button
-            onClick={() => setShowApiKeyInput(true)}
+            onClick={() => {
+              setShowApiKeyInput(true);
+              setLocalApiKey('');
+            }}
             className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-sm transition-colors"
           >
             API-Key ändern
@@ -281,12 +384,12 @@ export default function AICoach() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Stelle eine Frage..."
           className="glass-input flex-1"
-          disabled={isLoading}
+          disabled={isLoading || apiKeyStatus === 'loading'}
         />
         <button
           type="submit"
-          disabled={!input.trim() || isLoading}
-          className={`glass-button px-6 ${(!input.trim() || isLoading) ? 'opacity-50 cursor-not-allowed' : ''}`}
+          disabled={!input.trim() || isLoading || apiKeyStatus === 'loading'}
+          className={`glass-button px-6 ${(!input.trim() || isLoading || apiKeyStatus === 'loading') ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           <Send className="w-5 h-5" />
         </button>

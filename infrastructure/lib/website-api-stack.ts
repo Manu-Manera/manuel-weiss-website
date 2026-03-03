@@ -704,6 +704,40 @@ export class WebsiteApiStack extends cdk.Stack {
     });
 
     // ========================================
+    // ONBOARDING PROGRESS (Valkeen Onboarding Hub)
+    // ========================================
+
+    // DynamoDB Tabelle für Onboarding-Fortschritt
+    const onboardingProgressTable = new dynamodb.Table(this, 'OnboardingProgressTable', {
+      tableName: 'mawps-onboarding-progress',
+      partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // Lambda für Onboarding-Fortschritt
+    const onboardingProgressLambda = new lambda.Function(this, 'OnboardingProgressFunction', {
+      functionName: 'website-onboarding-progress',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('../lambda/onboarding-progress'),
+      role: lambdaRole,
+      timeout: cdk.Duration.seconds(10),
+      memorySize: 128,
+      environment: {
+        ONBOARDING_TABLE: onboardingProgressTable.tableName
+      }
+    });
+
+    // DynamoDB Permissions für Onboarding Lambda
+    onboardingProgressTable.grantReadWriteData(onboardingProgressLambda);
+
+    // /onboarding-progress Route
+    const onboardingProgressResource = this.api.root.addResource('onboarding-progress');
+    onboardingProgressResource.addMethod('GET', new apigateway.LambdaIntegration(onboardingProgressLambda));
+    onboardingProgressResource.addMethod('POST', new apigateway.LambdaIntegration(onboardingProgressLambda));
+
+    // ========================================
     // OUTPUTS
     // ========================================
     this.apiUrl = new cdk.CfnOutput(this, 'WebsiteApiUrl', {

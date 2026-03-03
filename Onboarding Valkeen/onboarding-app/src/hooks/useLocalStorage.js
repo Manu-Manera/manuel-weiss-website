@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { loadProgress, saveProgress } from '../services/awsService';
 
 export function useLocalStorage(key, initialValue) {
   const [storedValue, setStoredValue] = useState(() => {
@@ -24,14 +25,102 @@ export function useLocalStorage(key, initialValue) {
   return [storedValue, setValue];
 }
 
+const DEFAULT_PROGRESS = {
+  startDate: null,
+  tasks: {},
+  quizScores: {},
+  checkpoints: {},
+  notes: {}
+};
+
 export function useProgress() {
-  const [progress, setProgress] = useLocalStorage('onboarding-progress', {
-    startDate: null,
-    tasks: {},
-    quizScores: {},
-    checkpoints: {},
-    notes: {}
-  });
+  const [progress, setProgressState] = useState(DEFAULT_PROGRESS);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncError, setLastSyncError] = useState(null);
+  const saveTimeoutRef = useRef(null);
+  const isInitializedRef = useRef(false);
+
+  // Beim Start: Lade aus AWS, dann localStorage als Fallback
+  useEffect(() => {
+    async function initProgress() {
+      setIsLoading(true);
+      
+      try {
+        // Versuche AWS zu laden
+        const awsProgress = await loadProgress();
+        
+        if (awsProgress) {
+          console.log('📥 Fortschritt aus AWS geladen');
+          setProgressState(awsProgress);
+          // Auch lokal speichern als Backup
+          localStorage.setItem('onboarding-progress', JSON.stringify(awsProgress));
+        } else {
+          // Fallback: localStorage
+          const localData = localStorage.getItem('onboarding-progress');
+          if (localData) {
+            const parsed = JSON.parse(localData);
+            console.log('📥 Fortschritt aus localStorage geladen');
+            setProgressState(parsed);
+          }
+        }
+      } catch (error) {
+        console.error('Fehler beim Laden:', error);
+        // Fallback: localStorage
+        const localData = localStorage.getItem('onboarding-progress');
+        if (localData) {
+          setProgressState(JSON.parse(localData));
+        }
+      } finally {
+        setIsLoading(false);
+        isInitializedRef.current = true;
+      }
+    }
+    
+    initProgress();
+  }, []);
+
+  // Debounced save to AWS
+  const saveToAWS = useCallback(async (newProgress) => {
+    // Clear existing timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    
+    // Debounce: Warte 2 Sekunden nach letzter Änderung
+    saveTimeoutRef.current = setTimeout(async () => {
+      setIsSyncing(true);
+      setLastSyncError(null);
+      
+      try {
+        const success = await saveProgress(newProgress);
+        if (!success) {
+          setLastSyncError('Sync fehlgeschlagen');
+        }
+      } catch (error) {
+        setLastSyncError(error.message);
+      } finally {
+        setIsSyncing(false);
+      }
+    }, 2000);
+  }, []);
+
+  // Progress updater mit AWS-Sync
+  const setProgress = useCallback((updater) => {
+    setProgressState(prev => {
+      const newProgress = typeof updater === 'function' ? updater(prev) : updater;
+      
+      // Lokal speichern (sofort)
+      localStorage.setItem('onboarding-progress', JSON.stringify(newProgress));
+      
+      // AWS speichern (debounced)
+      if (isInitializedRef.current) {
+        saveToAWS(newProgress);
+      }
+      
+      return newProgress;
+    });
+  }, [saveToAWS]);
 
   const setStartDate = (date) => {
     setProgress(prev => ({ ...prev, startDate: date }));
@@ -77,14 +166,17 @@ export function useProgress() {
     }));
   };
 
-  const resetProgress = () => {
-    setProgress({
+  const resetProgress = async () => {
+    const emptyProgress = {
       startDate: null,
       tasks: {},
       quizScores: {},
       checkpoints: {},
       notes: {}
-    });
+    };
+    setProgressState(emptyProgress);
+    localStorage.setItem('onboarding-progress', JSON.stringify(emptyProgress));
+    await saveProgress(emptyProgress);
   };
 
   const exportProgress = () => {
@@ -103,10 +195,12 @@ export function useProgress() {
   const importProgress = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         try {
           const data = JSON.parse(e.target.result);
-          setProgress(data);
+          setProgressState(data);
+          localStorage.setItem('onboarding-progress', JSON.stringify(data));
+          await saveProgress(data);
           resolve(data);
         } catch (error) {
           reject(error);
@@ -117,8 +211,24 @@ export function useProgress() {
     });
   };
 
+  // Manueller Sync
+  const syncNow = async () => {
+    setIsSyncing(true);
+    try {
+      await saveProgress(progress);
+      setLastSyncError(null);
+    } catch (error) {
+      setLastSyncError(error.message);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   return {
     progress,
+    isLoading,
+    isSyncing,
+    lastSyncError,
     setStartDate,
     toggleTask,
     setQuizScore,
@@ -126,6 +236,7 @@ export function useProgress() {
     addNote,
     resetProgress,
     exportProgress,
-    importProgress
+    importProgress,
+    syncNow
   };
 }
