@@ -2226,6 +2226,33 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
+        /* Mobile: Prozess-Modal auf volle Breite */
+        @media (max-width: 768px) {
+            .hr-process-modal {
+                max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+                max-height: 100vh !important;
+                height: 100vh !important;
+            }
+            .modal-overlay {
+                padding: 0 !important;
+            }
+            .hr-process-modal .modal-body {
+                padding: 1rem !important;
+            }
+            .hr-process-modal #bpmnViewerCanvas {
+                height: 400px !important;
+                min-width: 100% !important;
+            }
+            .hr-process-modal .bpmn-viewer-container {
+                margin-left: -1rem;
+                margin-right: -1rem;
+                width: calc(100% + 2rem);
+                border-radius: 0 !important;
+            }
+        }
         /* Desktop: Prozess-Modal breiter */
         @media (min-width: 1024px) {
             .hr-process-modal {
@@ -8000,8 +8027,17 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 // Now initialize the viewer
                 await initBpmnViewer(data.bpmnXml);
                 
-                // RACI direkt automatisch ausfüllen
-                await runModalRaciAutoFill();
+                // Warte bis der Viewer vollständig initialisiert ist
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // RACI direkt automatisch ausfüllen (mit Retry bei Fehler)
+                try {
+                    await runModalRaciAutoFill();
+                } catch (raciError) {
+                    console.warn('RACI auto-fill initial error, retrying...', raciError);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    await runModalRaciAutoFill();
+                }
                 
             } catch (error) {
                 console.error('Workflow generation error:', error);
@@ -8332,18 +8368,58 @@ Schreibe das Summary in professionellem Deutsch ohne Emojis. Beginne mit einer G
                 }
                 if (statusEl) statusEl.textContent = 'KI füllt RACI…';
                 if (btn) btn.disabled = true;
+                
+                // API-Key laden mit detailliertem Logging
+                console.log('🔑 Lade OpenAI API-Key für RACI...');
                 const apiKey = await getOpenAIApiKey();
-                if (!apiKey || apiKey.length < 10) throw new Error('OpenAI API-Key nicht konfiguriert.');
+                console.log('🔑 API-Key Länge:', apiKey ? apiKey.length : 0);
+                if (!apiKey || apiKey.length < 10) {
+                    console.error('❌ API-Key Problem:', apiKey ? `Länge nur ${apiKey.length}` : 'Kein Key');
+                    throw new Error('OpenAI API-Key nicht konfiguriert. Bitte im Admin-Panel unter API Keys hinterlegen.');
+                }
+                
                 const url = getBpmnAnalyzeApiUrl();
+                console.log('🌐 RACI API URL:', url);
                 if (!url) throw new Error('API-URL nicht konfiguriert.');
+                
                 const description = document.getElementById('modalProcessDescription')?.value?.trim() || '';
-                const res = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'analyzeRaci', bpmnXml: xml, description: description, openaiApiKey: apiKey })
-                });
-                const data = JSON.parse(await res.text()) || {};
-                if (!res.ok || !data.success) throw new Error(data.error || 'RACI-Analyse fehlgeschlagen.');
+                
+                // AbortController für Timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 Sekunden Timeout
+                
+                let data;
+                try {
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'analyzeRaci', bpmnXml: xml, description: description, openaiApiKey: apiKey }),
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeoutId);
+                    
+                    const responseText = await res.text();
+                    console.log('📥 RACI Response Status:', res.status);
+                    
+                    try {
+                        data = JSON.parse(responseText) || {};
+                    } catch (parseErr) {
+                        console.error('❌ JSON Parse Error:', responseText.substring(0, 200));
+                        throw new Error('Ungültige Server-Antwort');
+                    }
+                    
+                    if (!res.ok || !data.success) {
+                        console.error('❌ RACI API Error:', data.error || 'Unbekannt');
+                        throw new Error(data.error || 'RACI-Analyse fehlgeschlagen.');
+                    }
+                } catch (fetchErr) {
+                    clearTimeout(timeoutId);
+                    if (fetchErr.name === 'AbortError') {
+                        throw new Error('Zeitüberschreitung - bitte erneut versuchen.');
+                    }
+                    throw fetchErr;
+                }
+                
                 applyRaciToModalTaskMeta(data.raci || []);
                 refreshModalRaciTable();
                 if (statusEl) statusEl.textContent = 'RACI ausgefüllt.';
