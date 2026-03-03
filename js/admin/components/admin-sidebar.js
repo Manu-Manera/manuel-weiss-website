@@ -316,6 +316,13 @@ class AdminSidebar extends HTMLElement {
                                 <span>BPMN-Generator</span>
                             </a>
                         </li>
+                        <li class="nav-item external-link" data-tooltip="Valkeen Onboarding Hub">
+                            <a href="/onboarding/" target="_blank" rel="noopener">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Valkeen Onboarding</span>
+                                <i class="fas fa-external-link-alt" style="font-size: 0.7em; margin-left: 5px; opacity: 0.7;"></i>
+                            </a>
+                        </li>
                         <li class="nav-item" data-section="user-management" data-tooltip="Admin-User Verwaltung">
                             <a href="#user-management">
                                 <i class="fas fa-users-cog"></i>
