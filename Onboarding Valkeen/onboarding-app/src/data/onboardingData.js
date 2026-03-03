@@ -241,6 +241,9 @@ export const weeks = [
 ];
 
 export const quizQuestions = [
+  // ============================================
+  // WOCHE 1: Grundlagen & Setup (5 Fragen)
+  // ============================================
   {
     id: 1,
     week: 1,
@@ -269,6 +272,49 @@ export const quizQuestions = [
   },
   {
     id: 3,
+    week: 1,
+    question: "In welchem Gartner-Bericht ist ProSymmetry gelistet?",
+    options: [
+      "Magic Quadrant for CRM",
+      "Magic Quadrant for Enterprise Resource & Portfolio Management",
+      "Magic Quadrant for Cloud Infrastructure",
+      "Magic Quadrant for Data Analytics"
+    ],
+    correct: 1,
+    explanation: "ProSymmetry ist im Gartner Magic Quadrant für Enterprise Resource & Portfolio Management gelistet, was ihre Marktposition im PPM-Bereich unterstreicht."
+  },
+  {
+    id: 4,
+    week: 1,
+    question: "Laut McKinsey, warum ist Strategic Workforce Planning im KI-Zeitalter besonders wichtig?",
+    options: [
+      "Weil KI alle Jobs ersetzt",
+      "Weil sich Skill-Anforderungen schnell ändern und Unternehmen proaktiv planen müssen",
+      "Weil es gesetzlich vorgeschrieben ist",
+      "Weil es billiger ist als traditionelle Planung"
+    ],
+    correct: 1,
+    explanation: "McKinsey betont, dass sich durch KI die Skill-Anforderungen rapide ändern. Unternehmen müssen proaktiv ihre Workforce planen, um wettbewerbsfähig zu bleiben."
+  },
+  {
+    id: 5,
+    week: 1,
+    question: "Was ist das Hauptprodukt von ProSymmetry?",
+    options: [
+      "Microsoft Project",
+      "Tempus Resource",
+      "Jira",
+      "Asana"
+    ],
+    correct: 1,
+    explanation: "Tempus Resource ist das Hauptprodukt von ProSymmetry - eine Enterprise-Lösung für Resource Portfolio Management."
+  },
+
+  // ============================================
+  // WOCHE 2: Resource Management Grundlagen (6 Fragen)
+  // ============================================
+  {
+    id: 6,
     week: 2,
     question: "Was sind die Kernfunktionen von Resource Management?",
     options: [
@@ -281,7 +327,7 @@ export const quizQuestions = [
     explanation: "Resource Management umfasst Resource Planning, Capacity Planning, Resource Allocation, Demand Management und Skills Management."
   },
   {
-    id: 4,
+    id: 7,
     week: 2,
     question: "Was ist der Unterschied zwischen Allocation und Assignment?",
     options: [
@@ -294,7 +340,63 @@ export const quizQuestions = [
     explanation: "Allocation ist eine geplante Ressourcenzuweisung (kann generisch sein), während Assignment die konkrete Zuweisung einer spezifischen Person bedeutet."
   },
   {
-    id: 5,
+    id: 8,
+    week: 2,
+    question: "Was versteht man unter 'Capacity Planning'?",
+    options: [
+      "Die Planung von Büroräumen",
+      "Die Planung der verfügbaren Arbeitskapazität von Ressourcen über Zeit",
+      "Die Planung von IT-Infrastruktur",
+      "Die Planung von Meetings"
+    ],
+    correct: 1,
+    explanation: "Capacity Planning ist die strategische Planung der verfügbaren Arbeitskapazität von Ressourcen über einen bestimmten Zeitraum, um Über- oder Unterauslastung zu vermeiden."
+  },
+  {
+    id: 9,
+    week: 2,
+    question: "Was ist 'Demand Management' im Kontext von Resource Management?",
+    options: [
+      "Kundenanfragen bearbeiten",
+      "Die Erfassung und Priorisierung von Ressourcenanforderungen aus Projekten",
+      "Marketing-Nachfrage analysieren",
+      "Lieferkettenmanagement"
+    ],
+    correct: 1,
+    explanation: "Demand Management erfasst und priorisiert Ressourcenanforderungen aus verschiedenen Projekten und Initiativen, um eine optimale Ressourcenverteilung zu ermöglichen."
+  },
+  {
+    id: 10,
+    week: 2,
+    question: "Warum ist Skills Management wichtig für Resource Management?",
+    options: [
+      "Um Gehälter zu berechnen",
+      "Um die richtigen Ressourcen mit den passenden Fähigkeiten Projekten zuzuweisen",
+      "Um Schulungen zu verkaufen",
+      "Um Mitarbeiter zu bewerten"
+    ],
+    correct: 1,
+    explanation: "Skills Management ermöglicht es, Ressourcen basierend auf ihren Fähigkeiten optimal Projekten zuzuweisen und Skill-Gaps frühzeitig zu identifizieren."
+  },
+  {
+    id: 11,
+    week: 2,
+    question: "Was ist ein 'Generic Resource' in Tempus?",
+    options: [
+      "Ein Praktikant",
+      "Ein Platzhalter für eine noch nicht benannte Ressource mit bestimmten Skills",
+      "Ein externer Berater",
+      "Ein Manager"
+    ],
+    correct: 1,
+    explanation: "Ein Generic Resource ist ein Platzhalter für eine noch nicht identifizierte Person, definiert durch benötigte Skills und Rolle, der später durch eine Named Resource ersetzt wird."
+  },
+
+  // ============================================
+  // WOCHE 3: Project Management in Tempus (6 Fragen)
+  // ============================================
+  {
+    id: 12,
     week: 3,
     question: "Welche Views stehen einem Project Manager in Tempus zur Verfügung?",
     options: [
@@ -307,7 +409,7 @@ export const quizQuestions = [
     explanation: "Project Manager haben Zugriff auf Grid View, Gantt View und Kanban View für verschiedene Perspektiven auf ihre Projekte."
   },
   {
-    id: 6,
+    id: 13,
     week: 3,
     question: "Was ist ein Resource Request (RR)?",
     options: [
@@ -320,7 +422,63 @@ export const quizQuestions = [
     explanation: "Ein Resource Request ist eine formelle Anfrage des Project Managers an den Resource Manager für benötigte Ressourcen mit Status wie Pending, Approved, Rejected."
   },
   {
-    id: 7,
+    id: 14,
+    week: 3,
+    question: "Welche Status kann ein Resource Request haben?",
+    options: [
+      "Open, Closed",
+      "Pending, Approved, Rejected, Fulfilled",
+      "New, In Progress, Done",
+      "Draft, Published"
+    ],
+    correct: 1,
+    explanation: "Resource Requests durchlaufen typischerweise die Status: Pending (wartend), Approved (genehmigt), Rejected (abgelehnt) und Fulfilled (erfüllt)."
+  },
+  {
+    id: 15,
+    week: 3,
+    question: "Was zeigt die Gantt View in Tempus?",
+    options: [
+      "Nur Ressourcenauslastung",
+      "Zeitliche Darstellung von Projekten, Phasen und Zuweisungen auf einer Zeitachse",
+      "Nur Budgetinformationen",
+      "Nur Teamstruktur"
+    ],
+    correct: 1,
+    explanation: "Die Gantt View zeigt Projekte, Phasen und Ressourcenzuweisungen auf einer Zeitachse, ideal für die Visualisierung von Abhängigkeiten und Timelines."
+  },
+  {
+    id: 16,
+    week: 3,
+    question: "Wofür ist die Kanban View besonders geeignet?",
+    options: [
+      "Für Finanzberichte",
+      "Für die Visualisierung von Workflow-Status und agiles Arbeiten",
+      "Für Ressourcenplanung",
+      "Für Zeiterfassung"
+    ],
+    correct: 1,
+    explanation: "Die Kanban View eignet sich besonders für die Visualisierung von Workflow-Status (z.B. To Do, In Progress, Done) und unterstützt agile Arbeitsweisen."
+  },
+  {
+    id: 17,
+    week: 3,
+    question: "Was sind 'Project Attributes' in Tempus?",
+    options: [
+      "Nur der Projektname",
+      "Konfigurierbare Eigenschaften wie Status, Priorität, Kategorie, Custom Fields",
+      "Nur das Budget",
+      "Nur die Deadline"
+    ],
+    correct: 1,
+    explanation: "Project Attributes sind konfigurierbare Eigenschaften eines Projekts wie Status, Priorität, Kategorie und benutzerdefinierte Felder, die für Filterung und Reporting genutzt werden."
+  },
+
+  // ============================================
+  // WOCHE 4: Team Integration (5 Fragen)
+  // ============================================
+  {
+    id: 18,
     week: 4,
     question: "Was ist Net Availability?",
     options: [
@@ -333,7 +491,63 @@ export const quizQuestions = [
     explanation: "Net Availability zeigt die verbleibende Kapazität einer Ressource nach Abzug aller bestehenden Zuweisungen."
   },
   {
-    id: 8,
+    id: 19,
+    week: 4,
+    question: "Was ist der Unterschied zwischen Gross Capacity und Net Availability?",
+    options: [
+      "Es gibt keinen Unterschied",
+      "Gross Capacity ist die Gesamtkapazität, Net Availability ist nach Abzug von Zuweisungen",
+      "Gross ist für Manager, Net für Mitarbeiter",
+      "Gross ist monatlich, Net ist täglich"
+    ],
+    correct: 1,
+    explanation: "Gross Capacity ist die theoretische Gesamtkapazität einer Ressource, während Net Availability die tatsächlich verfügbare Kapazität nach Abzug aller Zuweisungen zeigt."
+  },
+  {
+    id: 20,
+    week: 4,
+    question: "Was ist ein 'Fortnightly Team Meeting'?",
+    options: [
+      "Ein tägliches Meeting",
+      "Ein alle zwei Wochen stattfindendes Teammeeting",
+      "Ein monatliches Meeting",
+      "Ein jährliches Meeting"
+    ],
+    correct: 1,
+    explanation: "Ein Fortnightly Meeting findet alle zwei Wochen (14 Tage) statt und dient dem regelmäßigen Austausch im Team."
+  },
+  {
+    id: 21,
+    week: 4,
+    question: "Warum sind regelmäßige Check-ins mit Kollegen wichtig beim Onboarding?",
+    options: [
+      "Um Arbeitszeit zu dokumentieren",
+      "Um Fragen zu klären, Feedback zu erhalten und sich ins Team zu integrieren",
+      "Um Überstunden zu vermeiden",
+      "Um Urlaub zu planen"
+    ],
+    correct: 1,
+    explanation: "Regelmäßige Check-ins ermöglichen es, offene Fragen zu klären, wertvolles Feedback zu erhalten und sich schneller ins Team zu integrieren."
+  },
+  {
+    id: 22,
+    week: 4,
+    question: "Was ist Valkeens Wertversprechen (Value Proposition)?",
+    options: [
+      "Günstigste Software am Markt",
+      "Expertise in PPM & Resource Management mit bewährten Implementierungsmethoden",
+      "Schnellste Implementierung",
+      "Größtes Team"
+    ],
+    correct: 1,
+    explanation: "Valkeens Wertversprechen basiert auf 15+ Jahren PPM-Expertise, bewährten Implementierungsmethoden und tiefem Produktwissen von Tempus Resource."
+  },
+
+  // ============================================
+  // WOCHE 5: Fortgeschrittene Module & PM Demo (6 Fragen)
+  // ============================================
+  {
+    id: 23,
     week: 5,
     question: "Was ist BPAFG?",
     options: [
@@ -346,7 +560,76 @@ export const quizQuestions = [
     explanation: "BPAFG (Bulk Project Allocation Flatgrid) ermöglicht die Massenbearbeitung von Ressourcenzuweisungen in verschiedenen Modi."
   },
   {
-    id: 9,
+    id: 24,
+    week: 5,
+    question: "Was ist 'Hybrid Team Planning'?",
+    options: [
+      "Planung für Remote-Arbeit",
+      "Kombination von Named Resources und Generic Resources in der Planung",
+      "Planung für verschiedene Zeitzonen",
+      "Planung für Teilzeit-Mitarbeiter"
+    ],
+    correct: 1,
+    explanation: "Hybrid Team Planning kombiniert Named Resources (konkrete Personen) mit Generic Resources (Platzhalter) für flexible und realistische Ressourcenplanung."
+  },
+  {
+    id: 25,
+    week: 5,
+    question: "Was sollte eine PM Demo in Tempus mindestens zeigen?",
+    options: [
+      "Nur die Login-Seite",
+      "UI Navigation, Projekt erstellen, Allocations, Resource Requests, verschiedene Views",
+      "Nur Berichte",
+      "Nur Admin-Einstellungen"
+    ],
+    correct: 1,
+    explanation: "Eine vollständige PM Demo zeigt UI Navigation, Projekterstellung mit Attributes, Allocations, Resource Requests und die verschiedenen Views (Grid, Gantt, Kanban)."
+  },
+  {
+    id: 26,
+    week: 5,
+    question: "Was ist ein 'Team Resource' in Tempus?",
+    options: [
+      "Ein einzelner Mitarbeiter",
+      "Eine Gruppe von Ressourcen, die als Einheit geplant werden kann",
+      "Ein externer Berater",
+      "Ein Manager"
+    ],
+    correct: 1,
+    explanation: "Ein Team Resource ist eine Gruppe von Ressourcen, die als Einheit geplant und zugewiesen werden kann, ideal für cross-funktionale Teams."
+  },
+  {
+    id: 27,
+    week: 5,
+    question: "Warum ist es wichtig, Demos intern zu präsentieren bevor man sie Kunden zeigt?",
+    options: [
+      "Um Zeit zu sparen",
+      "Um Feedback zu erhalten, Fehler zu korrigieren und Selbstvertrauen aufzubauen",
+      "Um Kollegen zu beeindrucken",
+      "Es ist nicht wichtig"
+    ],
+    correct: 1,
+    explanation: "Interne Demos ermöglichen wertvolles Feedback von erfahrenen Kollegen, helfen Fehler zu identifizieren und bauen Selbstvertrauen für Kundenpräsentationen auf."
+  },
+  {
+    id: 28,
+    week: 5,
+    question: "Was ist der Unterschied zwischen 'Soft Booking' und 'Hard Booking'?",
+    options: [
+      "Es gibt keinen Unterschied",
+      "Soft Booking ist vorläufig/tentativ, Hard Booking ist bestätigt/verbindlich",
+      "Soft ist für interne, Hard für externe Projekte",
+      "Soft ist billiger als Hard"
+    ],
+    correct: 1,
+    explanation: "Soft Booking ist eine vorläufige, tentative Zuweisung, während Hard Booking eine bestätigte, verbindliche Ressourcenzuweisung darstellt."
+  },
+
+  // ============================================
+  // WOCHE 6: RM Demo & Client Exposure (6 Fragen)
+  // ============================================
+  {
+    id: 29,
     week: 6,
     question: "Welche 3 Modi hat BPAFG?",
     options: [
@@ -359,7 +642,76 @@ export const quizQuestions = [
     explanation: "BPAFG hat drei Modi: Default Mode (Standard), RM Mode (Resource Manager-zentriert) und PM Mode (Project Manager-zentriert)."
   },
   {
-    id: 10,
+    id: 30,
+    week: 6,
+    question: "Was zeigt das 'Individual Resource Profile' in Tempus?",
+    options: [
+      "Nur den Namen",
+      "Alle Informationen einer Ressource: Skills, Zuweisungen, Verfügbarkeit, Historie",
+      "Nur das Gehalt",
+      "Nur die Abteilung"
+    ],
+    correct: 1,
+    explanation: "Das Individual Resource Profile zeigt alle relevanten Informationen einer Ressource: Skills, aktuelle und geplante Zuweisungen, Verfügbarkeit und Historie."
+  },
+  {
+    id: 31,
+    week: 6,
+    question: "Was ist ein 'Quick Reference Guide'?",
+    options: [
+      "Ein ausführliches Handbuch",
+      "Eine kompakte Übersicht der wichtigsten Funktionen und Workflows",
+      "Ein Video-Tutorial",
+      "Ein Glossar"
+    ],
+    correct: 1,
+    explanation: "Ein Quick Reference Guide ist eine kompakte, übersichtliche Zusammenfassung der wichtigsten Funktionen und Workflows für schnelles Nachschlagen."
+  },
+  {
+    id: 32,
+    week: 6,
+    question: "Warum ist 'Feature Request Tracking' wichtig?",
+    options: [
+      "Um Bugs zu dokumentieren",
+      "Um Kundenwünsche systematisch zu erfassen und an ProSymmetry weiterzuleiten",
+      "Um interne Meetings zu planen",
+      "Um Rechnungen zu erstellen"
+    ],
+    correct: 1,
+    explanation: "Feature Request Tracking erfasst systematisch Kundenwünsche und Verbesserungsvorschläge, die an ProSymmetry für zukünftige Produktentwicklung weitergeleitet werden."
+  },
+  {
+    id: 33,
+    week: 6,
+    question: "Was sollte man bei ersten Client Meetings beachten?",
+    options: [
+      "Möglichst viel reden",
+      "Aktiv zuhören, Notizen machen, Fragen stellen und vom Mentor lernen",
+      "Sofort Lösungen präsentieren",
+      "Nur beobachten ohne Interaktion"
+    ],
+    correct: 1,
+    explanation: "Bei ersten Client Meetings ist aktives Zuhören, Notizen machen und vom Mentor lernen wichtiger als selbst viel zu präsentieren."
+  },
+  {
+    id: 34,
+    week: 6,
+    question: "Was ist der Unterschied zwischen RM Mode und PM Mode in BPAFG?",
+    options: [
+      "Es gibt keinen Unterschied",
+      "RM Mode zeigt Ressourcen-zentrierte Ansicht, PM Mode zeigt Projekt-zentrierte Ansicht",
+      "RM ist für Admins, PM für User",
+      "RM ist schneller als PM"
+    ],
+    correct: 1,
+    explanation: "RM Mode bietet eine Ressourcen-zentrierte Ansicht (alle Projekte einer Ressource), während PM Mode eine Projekt-zentrierte Ansicht (alle Ressourcen eines Projekts) zeigt."
+  },
+
+  // ============================================
+  // WOCHE 7: Reporting & Portfolio Management (6 Fragen)
+  // ============================================
+  {
+    id: 35,
     week: 7,
     question: "Wofür wird What-If Scenario Planning verwendet?",
     options: [
@@ -370,6 +722,248 @@ export const quizQuestions = [
     ],
     correct: 1,
     explanation: "What-If Scenario Planning ermöglicht die Simulation verschiedener Szenarien (z.B. Projektverzögerungen, Neueinstellungen) ohne die Produktivdaten zu beeinflussen."
+  },
+  {
+    id: 36,
+    week: 7,
+    question: "Was ist RAR (Resource Availability Report)?",
+    options: [
+      "Ein Urlaubsreport",
+      "Ein Bericht über die Verfügbarkeit von Ressourcen über Zeit",
+      "Ein Finanzreport",
+      "Ein Projektstatusreport"
+    ],
+    correct: 1,
+    explanation: "Der RAR (Resource Availability Report) zeigt die Verfügbarkeit von Ressourcen über einen bestimmten Zeitraum und hilft bei der Kapazitätsplanung."
+  },
+  {
+    id: 37,
+    week: 7,
+    question: "Was ist ein Pivot Grid in Tempus?",
+    options: [
+      "Ein Diagramm",
+      "Eine flexible Tabelle zur mehrdimensionalen Datenanalyse",
+      "Ein Formular",
+      "Ein Dashboard"
+    ],
+    correct: 1,
+    explanation: "Ein Pivot Grid ist eine flexible Tabelle, die mehrdimensionale Datenanalyse ermöglicht - Daten können nach verschiedenen Dimensionen gruppiert und aggregiert werden."
+  },
+  {
+    id: 38,
+    week: 7,
+    question: "Was ist der Portfolio Planner?",
+    options: [
+      "Ein Finanzplanungstool",
+      "Ein Tool zur strategischen Planung und Priorisierung von Projekten im Portfolio",
+      "Ein Kalender",
+      "Ein Kommunikationstool"
+    ],
+    correct: 1,
+    explanation: "Der Portfolio Planner ermöglicht die strategische Planung und Priorisierung von Projekten im Portfolio unter Berücksichtigung von Ressourcen und Constraints."
+  },
+  {
+    id: 39,
+    week: 7,
+    question: "Welche Szenarien kann man mit What-If Planning simulieren?",
+    options: [
+      "Nur Budgetänderungen",
+      "Projektverzögerungen, Neueinstellungen, Ressourcenabgänge, Prioritätsänderungen",
+      "Nur Personaländerungen",
+      "Nur Terminverschiebungen"
+    ],
+    correct: 1,
+    explanation: "What-If Planning kann verschiedene Szenarien simulieren: Projektverzögerungen, Neueinstellungen, Ressourcenabgänge, Prioritätsänderungen und deren Auswirkungen."
+  },
+  {
+    id: 40,
+    week: 7,
+    question: "Was ist 'Demand Planning for Strategic Forecasting'?",
+    options: [
+      "Kurzfristige Projektplanung",
+      "Langfristige Vorhersage von Ressourcenbedarf basierend auf strategischen Initiativen",
+      "Tägliche Aufgabenplanung",
+      "Budgetplanung"
+    ],
+    correct: 1,
+    explanation: "Demand Planning for Strategic Forecasting ist die langfristige Vorhersage von Ressourcenbedarf basierend auf strategischen Initiativen und Geschäftszielen."
+  },
+
+  // ============================================
+  // WOCHE 8: BPAFG Deep Dive & Admin (7 Fragen)
+  // ============================================
+  {
+    id: 41,
+    week: 8,
+    question: "Was ist der 'New Assignment Mode' in BPAFG?",
+    options: [
+      "Ein Modus zum Löschen von Zuweisungen",
+      "Ein Modus zum schnellen Erstellen neuer Ressourcenzuweisungen",
+      "Ein Modus zum Exportieren",
+      "Ein Modus zum Importieren"
+    ],
+    correct: 1,
+    explanation: "Der New Assignment Mode in BPAFG ermöglicht das schnelle Erstellen neuer Ressourcenzuweisungen direkt im Flatgrid."
+  },
+  {
+    id: 42,
+    week: 8,
+    question: "Was ist 'Data Sync' in Tempus Admin?",
+    options: [
+      "Backup erstellen",
+      "Synchronisation von Daten zwischen Tempus und externen Systemen",
+      "Daten löschen",
+      "Daten exportieren"
+    ],
+    correct: 1,
+    explanation: "Data Sync ermöglicht die Synchronisation von Daten zwischen Tempus Resource und externen Systemen wie HR-Systemen oder ERP-Lösungen."
+  },
+  {
+    id: 43,
+    week: 8,
+    question: "Was ist 'Attribute Management' in Tempus?",
+    options: [
+      "Benutzerverwaltung",
+      "Konfiguration von benutzerdefinierten Feldern und Eigenschaften für Projekte/Ressourcen",
+      "Rechteverwaltung",
+      "Lizenzverwaltung"
+    ],
+    correct: 1,
+    explanation: "Attribute Management ermöglicht die Konfiguration von benutzerdefinierten Feldern und Eigenschaften für Projekte, Ressourcen und andere Objekte."
+  },
+  {
+    id: 44,
+    week: 8,
+    question: "Was sind 'Snapshots' in Tempus?",
+    options: [
+      "Screenshots",
+      "Zeitpunktbezogene Kopien des Datenbestands für Vergleiche und Analysen",
+      "Fotos von Mitarbeitern",
+      "Präsentationsfolien"
+    ],
+    correct: 1,
+    explanation: "Snapshots sind zeitpunktbezogene Kopien des Datenbestands, die für historische Vergleiche, Trendanalysen und Audit-Zwecke verwendet werden."
+  },
+  {
+    id: 45,
+    week: 8,
+    question: "Was sind 'Sheets' in Tempus?",
+    options: [
+      "Excel-Dateien",
+      "Konfigurierbare Ansichten und Layouts für verschiedene Benutzergruppen",
+      "Druckvorlagen",
+      "E-Mail-Templates"
+    ],
+    correct: 1,
+    explanation: "Sheets sind konfigurierbare Ansichten und Layouts, die für verschiedene Benutzergruppen und Use Cases angepasst werden können."
+  },
+  {
+    id: 46,
+    week: 8,
+    question: "Was ist 'View Management'?",
+    options: [
+      "Bildschirmeinstellungen",
+      "Verwaltung und Konfiguration von benutzerdefinierten Ansichten und Filtern",
+      "Kameraverwaltung",
+      "Präsentationsmodus"
+    ],
+    correct: 1,
+    explanation: "View Management ermöglicht die Verwaltung und Konfiguration von benutzerdefinierten Ansichten, Filtern und Spaltenanordnungen für verschiedene Benutzer."
+  },
+  {
+    id: 47,
+    week: 8,
+    question: "Was bedeutet 'Implementation Shadowing'?",
+    options: [
+      "Alleine implementieren",
+      "Erfahrene Kollegen bei Kundenimplementierungen begleiten und lernen",
+      "Im Schatten arbeiten",
+      "Dokumentation schreiben"
+    ],
+    correct: 1,
+    explanation: "Implementation Shadowing bedeutet, erfahrene Kollegen bei Kundenimplementierungen zu begleiten, um praktische Erfahrung zu sammeln und Best Practices zu lernen."
+  },
+
+  // ============================================
+  // WOCHE 9: Best Practices & Abschluss (6 Fragen)
+  // ============================================
+  {
+    id: 48,
+    week: 9,
+    question: "Was ist 'Driving Adoption' im Kontext von Tempus Resource?",
+    options: [
+      "Software verkaufen",
+      "Strategien und Maßnahmen zur erfolgreichen Einführung und Nutzung bei Kunden",
+      "Updates installieren",
+      "Lizenzen verwalten"
+    ],
+    correct: 1,
+    explanation: "Driving Adoption umfasst Strategien und Maßnahmen, um die erfolgreiche Einführung und nachhaltige Nutzung von Tempus Resource bei Kunden sicherzustellen."
+  },
+  {
+    id: 49,
+    week: 9,
+    question: "Was bedeutet 'Pushing RM Up the Slope of Enlightenment'?",
+    options: [
+      "Software-Updates durchführen",
+      "Resource Management von operativer zu strategischer Reife entwickeln",
+      "Mehr Lizenzen verkaufen",
+      "Schneller implementieren"
+    ],
+    correct: 1,
+    explanation: "Diese Metapher beschreibt die Entwicklung von Resource Management von einer operativen Funktion zu einer strategischen Capability mit echtem Business Value."
+  },
+  {
+    id: 50,
+    week: 9,
+    question: "Was ist SAFe im Kontext von Resource Management?",
+    options: [
+      "Ein Sicherheitsprotokoll",
+      "Scaled Agile Framework - ein Framework für agile Skalierung in Unternehmen",
+      "Ein Backup-System",
+      "Ein Reporting-Tool"
+    ],
+    correct: 1,
+    explanation: "SAFe (Scaled Agile Framework) ist ein Framework für die Skalierung agiler Praktiken in großen Unternehmen, das mit Tempus Resource integriert werden kann."
+  },
+  {
+    id: 51,
+    week: 9,
+    question: "Was sind Best Practices für Forecasting in Resource Management?",
+    options: [
+      "Nur historische Daten nutzen",
+      "Kombination aus historischen Daten, Pipeline-Informationen und strategischen Plänen",
+      "Nur Schätzungen verwenden",
+      "Keine Planung machen"
+    ],
+    correct: 1,
+    explanation: "Best Practices für Forecasting kombinieren historische Daten, aktuelle Pipeline-Informationen und strategische Geschäftspläne für realistische Vorhersagen."
+  },
+  {
+    id: 52,
+    week: 9,
+    question: "Was ist der Unterschied zwischen taktischer und strategischer Ressourcenplanung?",
+    options: [
+      "Es gibt keinen Unterschied",
+      "Taktisch ist kurzfristig (Wochen/Monate), strategisch ist langfristig (Quartale/Jahre)",
+      "Taktisch ist für Manager, strategisch für Mitarbeiter",
+      "Taktisch ist teurer"
+    ],
+    correct: 1,
+    explanation: "Taktische Planung fokussiert auf kurzfristige Zuweisungen (Wochen/Monate), während strategische Planung langfristige Kapazitäts- und Skill-Entwicklung (Quartale/Jahre) adressiert."
+  },
+  {
+    id: 53,
+    week: 9,
+    question: "Was sollte am Ende des 90-Tage-Onboardings erreicht sein?",
+    options: [
+      "Nur die Basics verstehen",
+      "Alle Demos präsentationsreif, BPAFG beherrscht, bereit für eigenständige Implementierungen",
+      "Nur Dokumentation gelesen",
+      "Nur Videos geschaut"
+    ],
+    correct: 1,
+    explanation: "Nach 90 Tagen sollten alle Demos (PM, RM, Reporting) präsentationsreif sein, BPAFG in allen Modi beherrscht werden und die Bereitschaft für eigenständige Implementierungen bestehen."
   }
 ];
 

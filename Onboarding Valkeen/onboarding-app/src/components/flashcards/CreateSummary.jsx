@@ -1,15 +1,14 @@
 import { useState, useRef } from 'react';
 import { Upload, FileText, Sparkles, Loader2, CheckCircle, AlertCircle, Save } from 'lucide-react';
-import { createDeck } from '../../services/awsService';
+import { createSummary } from '../../services/awsService';
 
-export default function UploadZone({ onDeckCreated }) {
+export default function CreateSummary({ onSummaryCreated }) {
   const [mode, setMode] = useState('text');
-  const [name, setName] = useState('');
+  const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(null);
-  const [preview, setPreview] = useState(null);
   const fileInputRef = useRef(null);
 
   const handleFileDrop = (e) => {
@@ -19,22 +18,19 @@ export default function UploadZone({ onDeckCreated }) {
     if (droppedFile) {
       if (droppedFile.type === 'application/pdf' || droppedFile.name.endsWith('.pdf')) {
         setFile(droppedFile);
-        setStatus({ type: 'info', message: `PDF "${droppedFile.name}" ausgewählt` });
+        setStatus({ type: 'info', message: `📄 PDF "${droppedFile.name}" ausgewählt` });
       } else if (droppedFile.type === 'text/plain' || droppedFile.name.endsWith('.txt')) {
         const reader = new FileReader();
         reader.onload = (e) => {
           setContent(e.target.result);
           setMode('text');
+          setStatus({ type: 'success', message: '✅ Text aus Datei geladen' });
         };
         reader.readAsText(droppedFile);
       } else {
-        setStatus({ type: 'error', message: 'Nur PDF oder TXT Dateien werden unterstützt' });
+        setStatus({ type: 'error', message: '❌ Nur PDF oder TXT Dateien werden unterstützt' });
       }
     }
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
   };
 
   const extractTextFromPDF = async (pdfFile) => {
@@ -43,23 +39,20 @@ export default function UploadZone({ onDeckCreated }) {
       reader.onload = async (e) => {
         try {
           const typedArray = new Uint8Array(e.target.result);
-          
           if (window.pdfjsLib) {
             const pdf = await window.pdfjsLib.getDocument(typedArray).promise;
             let fullText = '';
-            
             for (let i = 1; i <= pdf.numPages; i++) {
               const page = await pdf.getPage(i);
               const textContent = await page.getTextContent();
               const pageText = textContent.items.map(item => item.str).join(' ');
               fullText += pageText + '\n\n';
             }
-            
             resolve(fullText);
           } else {
             const text = new TextDecoder().decode(typedArray);
             const cleanText = text.replace(/[^\x20-\x7E\n\räöüÄÖÜß]/g, ' ').trim();
-            resolve(cleanText || 'PDF-Inhalt konnte nicht extrahiert werden. Bitte Text manuell eingeben.');
+            resolve(cleanText || 'PDF-Inhalt konnte nicht extrahiert werden.');
           }
         } catch (error) {
           reject(error);
@@ -71,8 +64,8 @@ export default function UploadZone({ onDeckCreated }) {
   };
 
   const handleSubmit = async () => {
-    if (!name.trim()) {
-      setStatus({ type: 'error', message: 'Bitte gib einen Namen für das Deck ein' });
+    if (!title.trim()) {
+      setStatus({ type: 'error', message: '❌ Bitte gib einen Titel ein' });
       return;
     }
 
@@ -80,47 +73,44 @@ export default function UploadZone({ onDeckCreated }) {
 
     if (mode === 'pdf' && file) {
       setLoading(true);
-      setStatus({ type: 'info', message: 'Extrahiere Text aus PDF...' });
-      
+      setStatus({ type: 'info', message: '📄 Extrahiere Text aus PDF...' });
       try {
         textContent = await extractTextFromPDF(file);
       } catch (error) {
-        setStatus({ type: 'error', message: 'PDF konnte nicht gelesen werden' });
+        setStatus({ type: 'error', message: '❌ PDF konnte nicht gelesen werden' });
         setLoading(false);
         return;
       }
     }
 
     if (!textContent || textContent.trim().length < 100) {
-      setStatus({ type: 'error', message: 'Bitte gib mindestens 100 Zeichen Text ein' });
+      setStatus({ type: 'error', message: '❌ Bitte gib mindestens 100 Zeichen Text ein' });
       setLoading(false);
       return;
     }
 
     setLoading(true);
-    setStatus({ type: 'info', message: 'KI analysiert Text und erstellt Lernkarten...' });
+    setStatus({ type: 'info', message: '🤖 KI erstellt schöne Zusammenfassung mit Emojis...' });
 
     try {
-      const result = await createDeck(name, textContent, mode === 'pdf' ? 'pdf' : 'text');
+      const result = await createSummary(title, textContent, mode === 'pdf' ? 'pdf' : 'text');
       
       if (result.success) {
-        setStatus({ type: 'success', message: `${result.deck.cardCount} Lernkarten erstellt!` });
-        setPreview(result.cards?.slice(0, 3));
+        setStatus({ type: 'success', message: '✨ Zusammenfassung erstellt und gespeichert!' });
         
         setTimeout(() => {
-          onDeckCreated(result.deck);
-          setName('');
+          onSummaryCreated(result.summary);
+          setTitle('');
           setContent('');
           setFile(null);
-          setPreview(null);
           setStatus(null);
-        }, 2000);
+        }, 1500);
       } else {
         throw new Error(result.error || 'Unbekannter Fehler');
       }
     } catch (error) {
       console.error('Fehler:', error);
-      setStatus({ type: 'error', message: error.message || 'Fehler beim Erstellen der Lernkarten' });
+      setStatus({ type: 'error', message: `❌ ${error.message}` });
     } finally {
       setLoading(false);
     }
@@ -128,6 +118,17 @@ export default function UploadZone({ onDeckCreated }) {
 
   return (
     <div className="space-y-6">
+      {/* Info Box */}
+      <div className="glass p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+        <h3 className="font-semibold text-indigo-300 mb-2">✨ So funktioniert's:</h3>
+        <ol className="text-sm text-white/70 space-y-1 list-decimal list-inside">
+          <li>Text oder PDF hochladen</li>
+          <li>KI erstellt eine <strong className="text-yellow-400">wunderschön formatierte</strong> Zusammenfassung</li>
+          <li>Zusammenfassung ansehen, exportieren oder bearbeiten</li>
+          <li>Optional: Aus der Zusammenfassung <strong className="text-green-400">Karteikarten</strong> generieren</li>
+        </ol>
+      </div>
+
       {/* Mode Toggle */}
       <div className="flex gap-2">
         <button
@@ -154,14 +155,14 @@ export default function UploadZone({ onDeckCreated }) {
         </button>
       </div>
 
-      {/* Deck Name */}
+      {/* Title */}
       <div>
-        <label className="block text-sm text-white/60 mb-2">Deck-Name</label>
+        <label className="block text-sm text-white/60 mb-2">📌 Titel der Zusammenfassung</label>
         <input
           type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="z.B. Projektmanagement Grundlagen"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="z.B. Kapitel 3: Projektmanagement Grundlagen"
           className="glass-input"
           disabled={loading}
         />
@@ -171,18 +172,18 @@ export default function UploadZone({ onDeckCreated }) {
       {mode === 'text' ? (
         <div>
           <label className="block text-sm text-white/60 mb-2">
-            Lerninhalt (Text, Notizen, Buchseiten...)
+            📝 Lerninhalt (Text, Notizen, Buchseiten...)
           </label>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Füge hier den Text ein, aus dem Lernkarten erstellt werden sollen...
+            placeholder="Füge hier den Text ein, der zusammengefasst werden soll...
 
-Tipp: Je strukturierter der Text, desto bessere Lernkarten. Kopiere z.B.:
-- Buchkapitel
-- Vorlesungsnotizen  
-- Wikipedia-Artikel
-- Zusammenfassungen"
+Tipp: Je mehr Inhalt, desto besser die Zusammenfassung! Kopiere z.B.:
+• Buchkapitel oder Skripte
+• Vorlesungsnotizen  
+• Wikipedia-Artikel
+• Fachbeiträge"
             className="glass-input h-64 resize-none"
             disabled={loading}
           />
@@ -193,7 +194,7 @@ Tipp: Je strukturierter der Text, desto bessere Lernkarten. Kopiere z.B.:
       ) : (
         <div
           onDrop={handleFileDrop}
-          onDragOver={handleDragOver}
+          onDragOver={(e) => e.preventDefault()}
           onClick={() => fileInputRef.current?.click()}
           className={`border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all ${
             file 
@@ -220,7 +221,7 @@ Tipp: Je strukturierter der Text, desto bessere Lernkarten. Kopiere z.B.:
           ) : (
             <>
               <Upload className="w-12 h-12 text-white/30 mx-auto mb-4" />
-              <p className="text-lg font-medium">PDF hierher ziehen</p>
+              <p className="text-lg font-medium">📄 PDF hierher ziehen</p>
               <p className="text-white/50 text-sm mt-2">
                 oder klicken zum Auswählen
               </p>
@@ -236,52 +237,37 @@ Tipp: Je strukturierter der Text, desto bessere Lernkarten. Kopiere z.B.:
           status.type === 'success' ? 'bg-green-500/20 text-green-300' :
           'bg-indigo-500/20 text-indigo-300'
         }`}>
-          {status.type === 'error' && <AlertCircle className="w-5 h-5" />}
-          {status.type === 'success' && <CheckCircle className="w-5 h-5" />}
-          {status.type === 'info' && <Loader2 className="w-5 h-5 animate-spin" />}
-          {status.message}
-        </div>
-      )}
-
-      {/* Preview */}
-      {preview && preview.length > 0 && (
-        <div className="space-y-3">
-          <h4 className="font-medium text-white/80">Vorschau der ersten Karten:</h4>
-          {preview.map((card, i) => (
-            <div key={i} className="glass p-4 rounded-xl">
-              <p className="text-indigo-300 text-sm mb-1">Frage:</p>
-              <p className="font-medium">{card.front}</p>
-              <p className="text-green-300 text-sm mt-3 mb-1">Antwort:</p>
-              <p className="text-white/80">{card.back}</p>
-            </div>
-          ))}
+          {status.type === 'error' && <AlertCircle className="w-5 h-5 flex-shrink-0" />}
+          {status.type === 'success' && <CheckCircle className="w-5 h-5 flex-shrink-0" />}
+          {status.type === 'info' && <Loader2 className="w-5 h-5 animate-spin flex-shrink-0" />}
+          <span>{status.message}</span>
         </div>
       )}
 
       {/* Submit Button */}
       <button
         onClick={handleSubmit}
-        disabled={loading || !name.trim() || (mode === 'text' && !content.trim()) || (mode === 'pdf' && !file)}
+        disabled={loading || !title.trim() || (mode === 'text' && !content.trim()) || (mode === 'pdf' && !file)}
         className="glass-button w-full flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed py-4 text-lg"
       >
         {loading ? (
           <>
             <Loader2 className="w-6 h-6 animate-spin" />
-            <span>KI generiert Lernkarten...</span>
+            <span>KI erstellt Zusammenfassung...</span>
           </>
         ) : (
           <>
-            <Save className="w-6 h-6" />
-            <span>Deck erstellen & speichern</span>
-            <Sparkles className="w-5 h-5 text-yellow-300" />
+            <Sparkles className="w-6 h-6" />
+            <span>Zusammenfassung erstellen</span>
+            <Save className="w-5 h-5 text-yellow-300" />
           </>
         )}
       </button>
 
       {/* Info */}
       <div className="text-center text-white/40 text-sm space-y-1">
-        <p>Die KI analysiert deinen Text und erstellt 10-20 optimierte Lernkarten</p>
-        <p className="text-xs">Das Deck wird automatisch in AWS gespeichert</p>
+        <p>🤖 Die KI erstellt eine schön formatierte Zusammenfassung mit Emojis & Highlights</p>
+        <p className="text-xs">Danach kannst du daraus Karteikarten generieren</p>
       </div>
     </div>
   );

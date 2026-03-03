@@ -7,9 +7,11 @@ import {
   Trophy, 
   Sparkles,
   ChevronRight,
+  ChevronLeft,
   Box,
   Zap,
-  Target
+  Target,
+  Undo2
 } from 'lucide-react';
 import { getStudyCards, reviewCard } from '../../services/awsService';
 
@@ -307,31 +309,56 @@ export default function StudyMode({ deck, onEnd }) {
         </div>
       </div>
 
-      {/* Answer Buttons */}
-      {flipped && (
-        <div className="flex gap-3 sm:gap-4 mt-6">
+      {/* Navigation & Answer Buttons */}
+      <div className="flex gap-3 sm:gap-4 mt-6">
+        {/* Zurück Button */}
+        <button
+          onClick={() => {
+            if (currentIndex > 0) {
+              setCurrentIndex(currentIndex - 1);
+              setFlipped(false);
+            }
+          }}
+          disabled={currentIndex === 0 || animating}
+          className="p-3 sm:p-4 rounded-xl glass text-white/50 hover:text-white hover:bg-white/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+          title="Vorherige Karte"
+        >
+          <Undo2 className="w-5 h-5 sm:w-6 sm:h-6" />
+        </button>
+
+        {/* Answer Buttons - nur wenn umgedreht */}
+        {flipped ? (
+          <>
+            <button
+              onClick={() => handleAnswer(false)}
+              disabled={animating}
+              className="flex-1 py-3 sm:py-4 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-400 font-medium transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50"
+            >
+              <X className="w-5 h-5 sm:w-6 sm:h-6" />
+              <span>Falsch</span>
+              <span className="text-xs text-red-400/60">→ Box 1</span>
+            </button>
+            <button
+              onClick={() => handleAnswer(true)}
+              disabled={animating}
+              className="flex-1 py-3 sm:py-4 rounded-xl bg-green-500/20 hover:bg-green-500/30 text-green-400 font-medium transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50"
+            >
+              <Check className="w-5 h-5 sm:w-6 sm:h-6" />
+              <span>Richtig</span>
+              <span className="text-xs text-green-400/60">
+                → Box {Math.min((currentCard?.box || 1) + 1, 5)}
+              </span>
+            </button>
+          </>
+        ) : (
           <button
-            onClick={() => handleAnswer(false)}
-            disabled={animating}
-            className="flex-1 py-3 sm:py-4 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-400 font-medium transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50"
+            onClick={() => setFlipped(true)}
+            className="flex-1 py-3 sm:py-4 rounded-xl glass hover:bg-white/10 text-white/70 font-medium transition-all flex items-center justify-center gap-2"
           >
-            <X className="w-5 h-5 sm:w-6 sm:h-6" />
-            <span>Falsch</span>
-            <span className="text-xs text-red-400/60">→ Box 1</span>
+            <span>Antwort zeigen</span>
           </button>
-          <button
-            onClick={() => handleAnswer(true)}
-            disabled={animating}
-            className="flex-1 py-3 sm:py-4 rounded-xl bg-green-500/20 hover:bg-green-500/30 text-green-400 font-medium transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50"
-          >
-            <Check className="w-5 h-5 sm:w-6 sm:h-6" />
-            <span>Richtig</span>
-            <span className="text-xs text-green-400/60">
-              → Box {Math.min((currentCard?.box || 1) + 1, 5)}
-            </span>
-          </button>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Keyboard Hint - hidden on mobile */}
       <div className="hidden sm:block text-center mt-6 text-white/30 text-sm">

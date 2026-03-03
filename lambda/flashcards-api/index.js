@@ -16,6 +16,7 @@ const s3Client = new S3Client({ region: process.env.AWS_REGION || 'eu-central-1'
 
 const DECKS_TABLE = process.env.DECKS_TABLE || 'mawps-flashcard-decks';
 const CARDS_TABLE = process.env.CARDS_TABLE || 'mawps-flashcards';
+const SUMMARIES_TABLE = process.env.SUMMARIES_TABLE || 'mawps-summaries';
 const S3_BUCKET = process.env.S3_BUCKET || 'mawps-flashcard-pdfs';
 const API_SETTINGS_TABLE = process.env.API_SETTINGS_TABLE || 'mawps-api-settings';
 
@@ -44,27 +45,77 @@ function response(statusCode, body) {
 
 async function getOpenAIApiKey() {
   try {
-    const result = await docClient.send(new GetCommand({
+    // PRIORITÄT 1: Globale Keys aus mawps-user-profiles (api-settings#global)
+    console.log('🔍 Suche API-Key in mawps-user-profiles...');
+    const globalResult = await docClient.send(new GetCommand({
       TableName: 'mawps-user-profiles',
-      Key: { id: 'global-settings' }
+      Key: { userId: 'api-settings#global' }
     }));
     
-    if (result.Item?.openai?.apiKey) {
-      return result.Item.openai.apiKey;
+    console.log('📦 DynamoDB Ergebnis:', JSON.stringify(globalResult.Item ? 'Item gefunden' : 'Kein Item', null, 2));
+    
+    if (globalResult.Item) {
+      let openaiData = globalResult.Item.openai;
+      console.log('📦 OpenAI Daten Typ:', typeof openaiData);
+      
+      // DocumentClient sollte automatisch unmarshallen, aber sicherheitshalber prüfen
+      if (openaiData) {
+        // Falls es ein Map-Objekt ist (DynamoDB native format durchgesickert)
+        if (openaiData.M) {
+          openaiData = openaiData.M;
+          if (openaiData.apiKey?.S) {
+            console.log('✅ OpenAI API-Key aus globalen Settings geladen (DynamoDB native format)');
+            return openaiData.apiKey.S;
+          }
+        }
+        
+        // Falls als String gespeichert
+        if (typeof openaiData === 'string') {
+          try {
+            openaiData = JSON.parse(openaiData);
+          } catch (e) {
+            console.warn('⚠️ Konnte OpenAI-Daten nicht parsen:', e);
+          }
+        }
+        
+        // Standard: unmarshalled object
+        if (openaiData?.apiKey && typeof openaiData.apiKey === 'string' && openaiData.apiKey.length >= 10) {
+          console.log('✅ OpenAI API-Key aus globalen Settings geladen');
+          return openaiData.apiKey;
+        }
+        
+        console.log('⚠️ OpenAI Daten gefunden aber kein gültiger apiKey:', Object.keys(openaiData));
+      }
     }
     
+    // PRIORITÄT 2: User-spezifische Keys aus mawps-api-settings
+    console.log('🔍 Suche API-Key in mawps-api-settings...');
     const settingsResult = await docClient.send(new GetCommand({
       TableName: API_SETTINGS_TABLE,
-      Key: { pk: 'api-settings#global', sk: 'openai' }
+      Key: { userId: 'global' }
     }));
     
-    if (settingsResult.Item?.apiKey) {
-      return settingsResult.Item.apiKey;
+    if (settingsResult.Item?.openai?.apiKey) {
+      console.log('✅ OpenAI API-Key aus api-settings geladen');
+      return settingsResult.Item.openai.apiKey;
     }
     
+    // PRIORITÄT 3: Alte Struktur (Fallback)
+    console.log('🔍 Suche API-Key in global-settings (Fallback)...');
+    const oldResult = await docClient.send(new GetCommand({
+      TableName: 'mawps-user-profiles',
+      Key: { userId: 'global-settings' }
+    }));
+    
+    if (oldResult.Item?.openai?.apiKey) {
+      console.log('✅ OpenAI API-Key aus alten global-settings geladen');
+      return oldResult.Item.openai.apiKey;
+    }
+    
+    console.error('❌ Kein OpenAI API-Key in allen Quellen gefunden');
     return null;
   } catch (error) {
-    console.error('Error fetching API key:', error);
+    console.error('❌ Error fetching API key:', error);
     return null;
   }
 }
@@ -102,7 +153,7 @@ Antworte NUR mit einem JSON-Array, keine Erklärungen.`
         }
       ],
       temperature: 0.7,
-      max_tokens: 4000
+      max_completion_tokens: 4000
     })
   });
 
@@ -115,7 +166,29 @@ Antworte NUR mit einem JSON-Array, keine Erklärungen.`
   return data.choices[0].message.content;
 }
 
-async function summarizeText(text, apiKey) {
+async function summarizeText(text, apiKey, beautify = false) {
+  const systemPrompt = beautify 
+    ? `Du bist ein Experte für Lernmaterialien und erstellst wunderschön formatierte Zusammenfassungen.
+
+FORMATIERUNGSREGELN:
+1. Verwende viele passende Emojis (📚 🎯 💡 ⭐ 🔑 📌 ✨ 🧠 📝 🎓 💪 🏆 ⚡ 🔥 💎)
+2. Strukturiere mit klaren Überschriften (## für Hauptthemen, ### für Unterthemen)
+3. Nutze **fett** für Schlüsselbegriffe und wichtige Konzepte
+4. Erstelle Aufzählungen mit Emojis statt Punkten
+5. Füge "💡 Merke:" Boxen für besonders wichtige Punkte ein
+6. Nutze "⚡ Quick Facts:" für schnelle Fakten
+7. Beende mit "🎯 Kernaussagen:" als Zusammenfassung der Zusammenfassung
+8. Formatiere so, dass es perfekt für Karteikarten-Erstellung geeignet ist
+9. Hebe Definitionen hervor mit "📖 Definition:"
+10. Maximal 1500 Wörter, aber inhaltsreich
+
+Das Ergebnis soll visuell ansprechend und leicht zu lernen sein!`
+    : `Du bist ein Experte für Textzusammenfassungen.
+Erstelle eine strukturierte Zusammenfassung des Textes.
+Gliedere nach Hauptthemen und wichtigsten Punkten.
+Behalte alle relevanten Fakten und Konzepte bei.
+Maximal 2000 Wörter.`;
+
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -125,21 +198,11 @@ async function summarizeText(text, apiKey) {
     body: JSON.stringify({
       model: 'gpt-5.2',
       messages: [
-        {
-          role: 'system',
-          content: `Du bist ein Experte für Textzusammenfassungen.
-Erstelle eine strukturierte Zusammenfassung des Textes.
-Gliedere nach Hauptthemen und wichtigsten Punkten.
-Behalte alle relevanten Fakten und Konzepte bei.
-Maximal 2000 Wörter.`
-        },
-        {
-          role: 'user',
-          content: `Fasse folgenden Text zusammen:\n\n${text}`
-        }
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: `Fasse folgenden Text zusammen:\n\n${text}` }
       ],
-      temperature: 0.5,
-      max_tokens: 3000
+      temperature: 0.6,
+      max_completion_tokens: 4000
     })
   });
 
@@ -150,6 +213,271 @@ Maximal 2000 Wörter.`
 
   const data = await response.json();
   return data.choices[0].message.content;
+}
+
+// ========================================
+// ZUSAMMENFASSUNGEN (Summaries)
+// ========================================
+
+async function createSummary(event) {
+  const body = JSON.parse(event.body || '{}');
+  const userId = body.userId || 'default-user';
+  const { title, content, sourceType } = body;
+
+  if (!title || !content) {
+    return response(400, { error: 'Titel und Content sind erforderlich' });
+  }
+
+  const apiKey = await getOpenAIApiKey();
+  if (!apiKey) {
+    return response(500, { error: 'OpenAI API-Key nicht konfiguriert' });
+  }
+
+  console.log(`📝 Erstelle Zusammenfassung "${title}" für User: ${userId}`);
+
+  try {
+    const summary = await summarizeText(content, apiKey, true);
+    console.log('✅ Schöne Zusammenfassung erstellt');
+
+    const summaryId = uuidv4();
+    const now = new Date().toISOString();
+    const wordCount = content.split(/\s+/).length;
+
+    await docClient.send(new PutCommand({
+      TableName: SUMMARIES_TABLE,
+      Item: {
+        userId,
+        summaryId,
+        title,
+        summary,
+        originalContent: content.substring(0, 5000),
+        sourceType: sourceType || 'text',
+        wordCount,
+        hasFlashcards: false,
+        deckId: null,
+        createdAt: now,
+        updatedAt: now
+      }
+    }));
+
+    console.log('✅ Zusammenfassung gespeichert');
+
+    return response(200, {
+      success: true,
+      summary: {
+        summaryId,
+        title,
+        summary,
+        wordCount,
+        sourceType: sourceType || 'text',
+        createdAt: now
+      }
+    });
+
+  } catch (error) {
+    console.error('Create Summary Error:', error);
+    return response(500, { error: error.message });
+  }
+}
+
+async function getSummaries(event) {
+  const userId = event.queryStringParameters?.userId || 'default-user';
+
+  try {
+    const result = await docClient.send(new QueryCommand({
+      TableName: SUMMARIES_TABLE,
+      KeyConditionExpression: 'userId = :userId',
+      ExpressionAttributeValues: {
+        ':userId': userId
+      }
+    }));
+
+    const summaries = (result.Items || []).sort((a, b) => 
+      new Date(b.createdAt) - new Date(a.createdAt)
+    );
+
+    return response(200, { summaries });
+
+  } catch (error) {
+    console.error('Get Summaries Error:', error);
+    return response(500, { error: error.message });
+  }
+}
+
+async function getSummary(event) {
+  const userId = event.queryStringParameters?.userId || 'default-user';
+  const summaryId = event.queryStringParameters?.summaryId;
+
+  if (!summaryId) {
+    return response(400, { error: 'summaryId ist erforderlich' });
+  }
+
+  try {
+    const result = await docClient.send(new GetCommand({
+      TableName: SUMMARIES_TABLE,
+      Key: { userId, summaryId }
+    }));
+
+    if (!result.Item) {
+      return response(404, { error: 'Zusammenfassung nicht gefunden' });
+    }
+
+    return response(200, { summary: result.Item });
+
+  } catch (error) {
+    console.error('Get Summary Error:', error);
+    return response(500, { error: error.message });
+  }
+}
+
+async function deleteSummary(event) {
+  const userId = event.queryStringParameters?.userId || 'default-user';
+  const summaryId = event.queryStringParameters?.summaryId;
+
+  if (!summaryId) {
+    return response(400, { error: 'summaryId ist erforderlich' });
+  }
+
+  try {
+    await docClient.send(new DeleteCommand({
+      TableName: SUMMARIES_TABLE,
+      Key: { userId, summaryId }
+    }));
+
+    console.log(`✅ Zusammenfassung ${summaryId} gelöscht`);
+    return response(200, { success: true });
+
+  } catch (error) {
+    console.error('Delete Summary Error:', error);
+    return response(500, { error: error.message });
+  }
+}
+
+async function createCardsFromSummary(event) {
+  const body = JSON.parse(event.body || '{}');
+  const userId = body.userId || 'default-user';
+  const { summaryId, deckName } = body;
+
+  if (!summaryId) {
+    return response(400, { error: 'summaryId ist erforderlich' });
+  }
+
+  const apiKey = await getOpenAIApiKey();
+  if (!apiKey) {
+    return response(500, { error: 'OpenAI API-Key nicht konfiguriert' });
+  }
+
+  try {
+    // Lade Zusammenfassung
+    const summaryResult = await docClient.send(new GetCommand({
+      TableName: SUMMARIES_TABLE,
+      Key: { userId, summaryId }
+    }));
+
+    if (!summaryResult.Item) {
+      return response(404, { error: 'Zusammenfassung nicht gefunden' });
+    }
+
+    const summaryItem = summaryResult.Item;
+    const name = deckName || summaryItem.title;
+
+    console.log(`📝 Erstelle Karteikarten aus Zusammenfassung "${name}"`);
+
+    // Generiere Karteikarten aus der Zusammenfassung
+    const flashcardsJson = await callOpenAI(
+      `Erstelle Lernkarten aus folgender Zusammenfassung. Die Zusammenfassung ist bereits gut strukturiert mit Emojis und Highlights - nutze diese Struktur für präzise Fragen:\n\n${summaryItem.summary}`,
+      apiKey
+    );
+    
+    let flashcards;
+    try {
+      const cleanJson = flashcardsJson.replace(/```json\n?|\n?```/g, '').trim();
+      flashcards = JSON.parse(cleanJson);
+    } catch (parseError) {
+      console.error('JSON Parse Error:', parseError);
+      return response(500, { error: 'Fehler beim Parsen der KI-Antwort' });
+    }
+
+    if (!Array.isArray(flashcards) || flashcards.length === 0) {
+      return response(500, { error: 'Keine Karteikarten generiert' });
+    }
+
+    console.log(`✅ ${flashcards.length} Karteikarten generiert`);
+
+    // Erstelle Deck
+    const deckId = uuidv4();
+    const now = new Date().toISOString();
+
+    await docClient.send(new PutCommand({
+      TableName: DECKS_TABLE,
+      Item: {
+        userId,
+        deckId,
+        name,
+        description: summaryItem.summary.substring(0, 500) + '...',
+        sourceType: 'summary',
+        summaryId,
+        cardCount: flashcards.length,
+        createdAt: now,
+        updatedAt: now
+      }
+    }));
+
+    // Speichere Karten
+    const cardItems = flashcards.map((card, index) => ({
+      PutRequest: {
+        Item: {
+          userId,
+          cardId: `${deckId}#${index}`,
+          deckId,
+          front: card.front,
+          back: card.back,
+          box: 1,
+          nextReview: now,
+          reviewCount: 0,
+          createdAt: now,
+          updatedAt: now
+        }
+      }
+    }));
+
+    for (let i = 0; i < cardItems.length; i += 25) {
+      const batch = cardItems.slice(i, i + 25);
+      await docClient.send(new BatchWriteCommand({
+        RequestItems: {
+          [CARDS_TABLE]: batch
+        }
+      }));
+    }
+
+    // Update Summary mit Deck-Referenz
+    await docClient.send(new UpdateCommand({
+      TableName: SUMMARIES_TABLE,
+      Key: { userId, summaryId },
+      UpdateExpression: 'SET hasFlashcards = :has, deckId = :deckId, updatedAt = :now',
+      ExpressionAttributeValues: {
+        ':has': true,
+        ':deckId': deckId,
+        ':now': now
+      }
+    }));
+
+    console.log('✅ Deck und Karten gespeichert');
+
+    return response(200, {
+      success: true,
+      deck: {
+        deckId,
+        name,
+        cardCount: flashcards.length
+      },
+      cards: flashcards
+    });
+
+  } catch (error) {
+    console.error('Create Cards From Summary Error:', error);
+    return response(500, { error: error.message });
+  }
 }
 
 function calculateNextReview(box) {
@@ -547,6 +875,27 @@ exports.handler = async (event) => {
   const method = event.httpMethod;
 
   try {
+    // ========== SUMMARIES ==========
+    if (path.includes('/flashcards/summaries') && method === 'GET') {
+      if (event.queryStringParameters?.summaryId) {
+        return await getSummary(event);
+      }
+      return await getSummaries(event);
+    }
+
+    if (path.includes('/flashcards/summaries') && method === 'POST') {
+      return await createSummary(event);
+    }
+
+    if (path.includes('/flashcards/summaries') && method === 'DELETE') {
+      return await deleteSummary(event);
+    }
+
+    if (path.includes('/flashcards/cards-from-summary') && method === 'POST') {
+      return await createCardsFromSummary(event);
+    }
+
+    // ========== DECKS ==========
     if (path.includes('/flashcards/decks') && method === 'GET') {
       return await getDecks(event);
     }
@@ -559,6 +908,7 @@ exports.handler = async (event) => {
       return await deleteDeck(event);
     }
 
+    // ========== CARDS ==========
     if (path.includes('/flashcards/cards') && method === 'GET') {
       return await getDeckCards(event);
     }

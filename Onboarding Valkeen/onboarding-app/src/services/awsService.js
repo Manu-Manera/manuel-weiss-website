@@ -269,3 +269,149 @@ export async function getFlashcardStats(userId = 'default-user') {
     };
   }
 }
+
+// ========================================
+// ZUSAMMENFASSUNGEN (Summaries)
+// ========================================
+
+/**
+ * Alle Zusammenfassungen laden
+ */
+export async function getSummaries(userId = 'default-user') {
+  try {
+    const response = await fetch(`${API_BASE}/flashcards/summaries?userId=${encodeURIComponent(userId)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ Zusammenfassungen geladen:', data.summaries?.length || 0);
+    return data.summaries || [];
+  } catch (error) {
+    console.error('❌ Fehler beim Laden der Zusammenfassungen:', error);
+    return [];
+  }
+}
+
+/**
+ * Einzelne Zusammenfassung laden
+ */
+export async function getSummary(summaryId, userId = 'default-user') {
+  try {
+    const response = await fetch(
+      `${API_BASE}/flashcards/summaries?userId=${encodeURIComponent(userId)}&summaryId=${encodeURIComponent(summaryId)}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.summary;
+  } catch (error) {
+    console.error('❌ Fehler beim Laden der Zusammenfassung:', error);
+    return null;
+  }
+}
+
+/**
+ * Neue Zusammenfassung mit KI erstellen
+ */
+export async function createSummary(title, content, sourceType = 'text', userId = 'default-user') {
+  try {
+    const response = await fetch(`${API_BASE}/flashcards/summaries`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        userId,
+        title,
+        content,
+        sourceType
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ Zusammenfassung erstellt:', data.summary?.title);
+    return data;
+  } catch (error) {
+    console.error('❌ Fehler beim Erstellen der Zusammenfassung:', error);
+    throw error;
+  }
+}
+
+/**
+ * Zusammenfassung löschen
+ */
+export async function deleteSummary(summaryId, userId = 'default-user') {
+  try {
+    const response = await fetch(
+      `${API_BASE}/flashcards/summaries?userId=${encodeURIComponent(userId)}&summaryId=${encodeURIComponent(summaryId)}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    console.log('✅ Zusammenfassung gelöscht');
+    return true;
+  } catch (error) {
+    console.error('❌ Fehler beim Löschen der Zusammenfassung:', error);
+    return false;
+  }
+}
+
+/**
+ * Karteikarten aus Zusammenfassung erstellen
+ */
+export async function createCardsFromSummary(summaryId, deckName, userId = 'default-user') {
+  try {
+    const response = await fetch(`${API_BASE}/flashcards/cards-from-summary`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        userId,
+        summaryId,
+        deckName
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ Karteikarten aus Zusammenfassung erstellt:', data.deck?.cardCount);
+    return data;
+  } catch (error) {
+    console.error('❌ Fehler beim Erstellen der Karteikarten:', error);
+    throw error;
+  }
+}

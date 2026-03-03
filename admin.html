@@ -590,23 +590,280 @@
             border-color: #4a5568;
         }
         
-        /* Responsive */
-        @media (max-width: 768px) {
+        /* ============================================
+           MOBILE RESPONSIVE STYLES
+           ============================================ */
+        
+        /* Mobile Header mit Hamburger-Menü */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 999;
+            padding: 0 1rem;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .mobile-header-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: white;
+        }
+        
+        .mobile-header-brand .avatar {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .mobile-header-brand h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .mobile-menu-btn {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            transition: all 0.2s;
+        }
+        
+        .mobile-menu-btn:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        
+        .mobile-menu-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Mobile Overlay */
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 998;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .mobile-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+        
+        /* Responsive Breakpoints */
+        @media (max-width: 1024px) {
             .admin-main {
                 margin-left: 0;
             }
             
             admin-sidebar {
                 transform: translateX(-100%);
+                width: 280px;
             }
             
-            admin-sidebar.show {
+            admin-sidebar.mobile-open {
                 transform: translateX(0);
+            }
+            
+            .mobile-header {
+                display: flex;
+            }
+            
+            .admin-content {
+                padding-top: 80px;
+                border-radius: 0;
+            }
+            
+            .admin-topbar {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .admin-content {
+                padding: 70px 1rem 1rem 1rem;
+            }
+            
+            admin-sidebar {
+                width: 85%;
+                max-width: 300px;
+            }
+            
+            /* Sidebar Scrollbar auf Mobile ausblenden */
+            admin-sidebar::-webkit-scrollbar {
+                width: 0;
+            }
+            
+            /* Notifications Dropdown auf Mobile */
+            .notifications-dropdown {
+                width: calc(100vw - 2rem);
+                max-width: 350px;
+                right: -50px;
+            }
+            
+            /* User Menu auf Mobile */
+            .user-menu-dropdown {
+                right: -10px;
+            }
+            
+            /* Search Modal auf Mobile */
+            .search-content {
+                width: 95%;
+                margin: 1rem;
+            }
+            
+            /* Cards und Grids auf Mobile */
+            .dashboard-grid,
+            .content-grid,
+            .analytics-grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            /* Buttons auf Mobile */
+            .btn, button {
+                min-height: 44px;
+                padding: 0.75rem 1rem;
+            }
+            
+            /* Form Inputs auf Mobile */
+            input, select, textarea {
+                font-size: 16px !important; /* Verhindert Zoom auf iOS */
+                min-height: 44px;
+            }
+            
+            /* Tables auf Mobile */
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            /* Section Toolbar auf Mobile */
+            .section-toolbar {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .toolbar-left, .toolbar-right {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .admin-content {
+                padding: 70px 0.75rem 0.75rem 0.75rem;
+            }
+            
+            .mobile-header {
+                padding: 0 0.75rem;
+            }
+            
+            .mobile-header-brand h3 {
+                font-size: 1rem;
+            }
+            
+            /* Noch kleinere Abstände auf sehr kleinen Screens */
+            .dashboard-stats {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 0.5rem !important;
+            }
+            
+            .stat-card {
+                padding: 0.75rem !important;
+            }
+            
+            .stat-value {
+                font-size: 1.25rem !important;
+            }
+            
+            /* Modal auf sehr kleinen Screens */
+            .search-modal.show {
+                padding-top: 5vh;
+            }
+        }
+        
+        /* Touch-freundliche Styles */
+        @media (hover: none) and (pointer: coarse) {
+            /* Größere Touch-Targets */
+            .nav-item a {
+                padding: 0.875rem 1rem !important;
+            }
+            
+            .topbar-btn {
+                width: 44px;
+                height: 44px;
+            }
+            
+            /* Kein Hover auf Touch-Geräten */
+            .nav-item:hover a {
+                background: transparent;
+            }
+            
+            .nav-item:active a {
+                background: rgba(255, 255, 255, 0.9);
+            }
+        }
+        
+        /* Landscape Mode auf Mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .mobile-header {
+                height: 50px;
+            }
+            
+            .admin-content {
+                padding-top: 60px;
+            }
+            
+            admin-sidebar .sidebar-header {
+                padding: 0.5rem 1rem;
+            }
+            
+            admin-sidebar .nav-item a {
+                padding: 0.5rem 1rem;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div class="mobile-header-brand">
+            <div class="avatar">
+                <span>MW</span>
+            </div>
+            <h3>Admin Panel</h3>
+        </div>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menü öffnen">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+    
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+    
     <div class="admin-layout">
         <!-- Web Component für Sidebar -->
         <admin-sidebar></admin-sidebar>
@@ -689,6 +946,69 @@
     
     <!-- Main Application -->
     <script src="js/admin/core/admin-application.js?v=20251020"></script>
+    
+    <!-- Mobile Menu Script -->
+    <script>
+        // Mobile Menu Toggle
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileOverlay = document.getElementById('mobileOverlay');
+            const sidebar = document.querySelector('admin-sidebar');
+            
+            function openMobileMenu() {
+                sidebar.classList.add('mobile-open');
+                mobileOverlay.classList.add('show');
+                mobileMenuBtn.innerHTML = '<i class="fas fa-times"></i>';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeMobileMenu() {
+                sidebar.classList.remove('mobile-open');
+                mobileOverlay.classList.remove('show');
+                mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+                document.body.style.overflow = '';
+            }
+            
+            function toggleMobileMenu() {
+                if (sidebar.classList.contains('mobile-open')) {
+                    closeMobileMenu();
+                } else {
+                    openMobileMenu();
+                }
+            }
+            
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+            }
+            
+            if (mobileOverlay) {
+                mobileOverlay.addEventListener('click', closeMobileMenu);
+            }
+            
+            // Schließe Menü bei Navigation
+            if (sidebar) {
+                sidebar.addEventListener('click', (e) => {
+                    if (e.target.closest('.nav-item a')) {
+                        setTimeout(closeMobileMenu, 150);
+                    }
+                });
+            }
+            
+            // Schließe Menü bei Escape-Taste
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && sidebar.classList.contains('mobile-open')) {
+                    closeMobileMenu();
+                }
+            });
+            
+            // Schließe Menü bei Resize auf Desktop
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 1024 && sidebar.classList.contains('mobile-open')) {
+                    closeMobileMenu();
+                }
+            });
+        });
+    </script>
     
     <!-- Initialize -->
     <script>
