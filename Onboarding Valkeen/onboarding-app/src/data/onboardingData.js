@@ -964,6 +964,706 @@ export const quizQuestions = [
     ],
     correct: 1,
     explanation: "Nach 90 Tagen sollten alle Demos (PM, RM, Reporting) präsentationsreif sein, BPAFG in allen Modi beherrscht werden und die Bereitschaft für eigenständige Implementierungen bestehen."
+  },
+
+  // ============================================
+  // ZUSÄTZLICHE FORTGESCHRITTENE FRAGEN (Kugelsicher)
+  // ============================================
+
+  // WOCHE 1 - Erweitert
+  {
+    id: 54,
+    week: 1,
+    question: "Welche EU-spezifische Website muss während des Onboardings studiert werden?",
+    options: [
+      "Tempus Resource US Website",
+      "Tempus Resource EU Website (EN & DE)",
+      "ProSymmetry Asia Website",
+      "Valkeen Global Website"
+    ],
+    correct: 1,
+    explanation: "Die Tempus Resource EU Website muss in beiden Sprachversionen (Englisch und Deutsch) studiert werden, da Valkeen im europäischen Markt tätig ist."
+  },
+  {
+    id: 55,
+    week: 1,
+    question: "Wer hat das 'Intro & Tempus Walkthrough' Video erstellt?",
+    options: [
+      "ProSymmetry Marketing Team",
+      "Marc",
+      "Aayushi",
+      "Donna Fitzgerald"
+    ],
+    correct: 1,
+    explanation: "Marc hat das Intro & Tempus Walkthrough Video erstellt, das als Einstieg in die Tempus Resource Plattform dient."
+  },
+  {
+    id: 56,
+    week: 1,
+    question: "Wie viele Jahre PPM-Erfahrung hat Valkeen?",
+    options: [
+      "5+ Jahre",
+      "10+ Jahre",
+      "15+ Jahre",
+      "20+ Jahre"
+    ],
+    correct: 2,
+    explanation: "Valkeen verfügt über mehr als 15 Jahre Erfahrung im Bereich Project Portfolio Management (PPM)."
+  },
+  {
+    id: 57,
+    week: 1,
+    question: "Was ist der erste Checkpoint nach Woche 1?",
+    options: [
+      "PM Demo präsentieren",
+      "Alle technischen Zugänge funktionieren und Valkeen/ProSymmetry erklären können",
+      "BPAFG beherrschen",
+      "Client Meeting besuchen"
+    ],
+    correct: 1,
+    explanation: "Der Woche 1 Checkpoint prüft: Funktionieren alle technischen Zugänge? Kann man Valkeen und ProSymmetry in 2 Sätzen erklären? Wurde das erste Walkthrough Video abgeschlossen?"
+  },
+
+  // WOCHE 2 - Erweitert
+  {
+    id: 58,
+    week: 2,
+    question: "Wie viele Tempus University Videos sollen in Woche 2 abgeschlossen werden?",
+    options: [
+      "3 Videos",
+      "5 Videos",
+      "10 Videos",
+      "Alle Videos"
+    ],
+    correct: 1,
+    explanation: "In Woche 2 sollen mindestens 5 Tempus University Videos abgeschlossen werden, um die Grundlagen zu verstehen."
+  },
+  {
+    id: 59,
+    week: 2,
+    question: "Was ist der Unterschied zwischen einer 'Named Resource' und einer 'Generic Resource'?",
+    options: [
+      "Named ist teurer",
+      "Named ist eine konkrete Person, Generic ist ein Platzhalter mit Skills/Rolle",
+      "Generic ist für externe Mitarbeiter",
+      "Es gibt keinen Unterschied"
+    ],
+    correct: 1,
+    explanation: "Eine Named Resource ist eine konkrete, identifizierte Person, während eine Generic Resource ein Platzhalter ist, der durch benötigte Skills und Rolle definiert wird."
+  },
+  {
+    id: 60,
+    week: 2,
+    question: "Was sollte man nach dem Studium der RM Feature Documentation tun?",
+    options: [
+      "Sofort Kunden beraten",
+      "Notizen zu Kernfunktionen erstellen",
+      "Eine Präsentation halten",
+      "Urlaub nehmen"
+    ],
+    correct: 1,
+    explanation: "Nach dem Studium der Dokumentation sollen eigene Notizen zu den Kernfunktionen erstellt werden, um das Gelernte zu festigen."
+  },
+  {
+    id: 61,
+    week: 2,
+    question: "Was ist 'Utilization' im Resource Management?",
+    options: [
+      "Die Anzahl der Mitarbeiter",
+      "Der Prozentsatz der genutzten Kapazität einer Ressource",
+      "Die Anzahl der Projekte",
+      "Das Budget"
+    ],
+    correct: 1,
+    explanation: "Utilization (Auslastung) ist der Prozentsatz der genutzten Kapazität einer Ressource im Verhältnis zur verfügbaren Gesamtkapazität."
+  },
+  {
+    id: 62,
+    week: 2,
+    question: "Was bedeutet 'Overallocation' einer Ressource?",
+    options: [
+      "Die Ressource hat zu wenig Arbeit",
+      "Die Ressource ist über 100% ihrer Kapazität zugewiesen",
+      "Die Ressource ist im Urlaub",
+      "Die Ressource hat gekündigt"
+    ],
+    correct: 1,
+    explanation: "Overallocation bedeutet, dass eine Ressource über ihre verfügbare Kapazität (>100%) hinaus Projekten zugewiesen wurde - ein kritisches Problem im Resource Management."
+  },
+
+  // WOCHE 3 - Erweitert
+  {
+    id: 63,
+    week: 3,
+    question: "Welches Video beschreibt 'A Day in the Life of a PM'?",
+    options: [
+      "Ein Marketing-Video",
+      "Ein Video das den typischen Arbeitsalltag eines Project Managers in Tempus zeigt",
+      "Ein Schulungsvideo für Admins",
+      "Ein Video über Buchhaltung"
+    ],
+    correct: 1,
+    explanation: "Das Video 'A Day in the Life of a PM' zeigt den typischen Arbeitsalltag eines Project Managers und wie er Tempus Resource für seine täglichen Aufgaben nutzt."
+  },
+  {
+    id: 64,
+    week: 3,
+    question: "Wie viele Case Studies sollen in Woche 3 durchgearbeitet werden?",
+    options: [
+      "1 Case Study",
+      "2 Case Studies",
+      "3 Case Studies",
+      "5 Case Studies"
+    ],
+    correct: 2,
+    explanation: "In Woche 3 sollen 3 Case Studies von ProSymmetry durchgearbeitet und zusammengefasst werden."
+  },
+  {
+    id: 65,
+    week: 3,
+    question: "Was ist ein 'Project Phase' in Tempus?",
+    options: [
+      "Ein Projektbudget",
+      "Ein zeitlicher Abschnitt eines Projekts mit eigenen Ressourcenzuweisungen",
+      "Ein Projektmanager",
+      "Eine Projektbeschreibung"
+    ],
+    correct: 1,
+    explanation: "Eine Project Phase ist ein zeitlicher Abschnitt innerhalb eines Projekts, der eigene Start-/Enddaten und Ressourcenzuweisungen haben kann."
+  },
+  {
+    id: 66,
+    week: 3,
+    question: "Was ist der Unterschied zwischen 'Comparing Projects' und 'Creating a Project' Use Cases?",
+    options: [
+      "Es gibt keinen Unterschied",
+      "Creating fokussiert auf Projekterstellung, Comparing auf Analyse mehrerer Projekte",
+      "Comparing ist für Manager, Creating für Mitarbeiter",
+      "Creating ist schwieriger"
+    ],
+    correct: 1,
+    explanation: "Creating a Project Use Cases behandeln die Erstellung neuer Projekte, während Comparing Projects Use Cases die Analyse und den Vergleich mehrerer Projekte behandeln."
+  },
+  {
+    id: 67,
+    week: 3,
+    question: "Was ist ein 'Project Tile' in Tempus?",
+    options: [
+      "Ein Bodenbelag",
+      "Eine visuelle Kachel-Darstellung eines Projekts mit Kerninformationen",
+      "Ein Projektlogo",
+      "Eine Projektrechnung"
+    ],
+    correct: 1,
+    explanation: "Ein Project Tile ist eine visuelle Kachel-Darstellung, die Kerninformationen eines Projekts kompakt anzeigt und verschiedene Views (Grid, Gantt, Kanban) unterstützt."
+  },
+
+  // WOCHE 4 - Erweitert
+  {
+    id: 68,
+    week: 4,
+    question: "Mit welchen zwei Personen sollen in Woche 4 Check-ins stattfinden?",
+    options: [
+      "CEO und CFO",
+      "Aayushi und Marc",
+      "HR und IT",
+      "Kunden und Partner"
+    ],
+    correct: 1,
+    explanation: "In Woche 4 sollen Check-ins mit Aayushi und Marc stattfinden, um Fortschritte zu besprechen und Fragen zu klären."
+  },
+  {
+    id: 69,
+    week: 4,
+    question: "Wie lang sollte die eigene Zusammenfassung in Woche 4 sein?",
+    options: [
+      "Eine halbe Seite",
+      "1-2 Seiten",
+      "5-10 Seiten",
+      "20+ Seiten"
+    ],
+    correct: 1,
+    explanation: "Die eigene Zusammenfassung des Gelernten sollte 1-2 Seiten umfassen und die wichtigsten Erkenntnisse der ersten Wochen dokumentieren."
+  },
+  {
+    id: 70,
+    week: 4,
+    question: "Wer hat das 'Report Management Walkthrough' Video erstellt?",
+    options: [
+      "ProSymmetry",
+      "Marc",
+      "Donna Fitzgerald",
+      "Aayushi"
+    ],
+    correct: 1,
+    explanation: "Marc hat das Report Management Walkthrough Video erstellt, das die Reporting-Funktionen von Tempus Resource erklärt."
+  },
+  {
+    id: 71,
+    week: 4,
+    question: "Was sind die 'Valkeen short video webcasts'?",
+    options: [
+      "Lange Schulungsvideos",
+      "Kurze, fokussierte Videos zu spezifischen Tempus-Themen",
+      "Marketing-Werbung",
+      "Kundeninterviews"
+    ],
+    correct: 1,
+    explanation: "Die Valkeen short video webcasts sind kurze, fokussierte Videos, die spezifische Funktionen und Best Practices von Tempus Resource behandeln."
+  },
+  {
+    id: 72,
+    week: 4,
+    question: "Was ist 'Resource Contention'?",
+    options: [
+      "Ressourcenzufriedenheit",
+      "Konflikt wenn mehrere Projekte dieselbe Ressource benötigen",
+      "Ressourcenurlaub",
+      "Ressourcengehalt"
+    ],
+    correct: 1,
+    explanation: "Resource Contention entsteht, wenn mehrere Projekte gleichzeitig dieselbe Ressource benötigen und um deren Kapazität konkurrieren."
+  },
+
+  // WOCHE 5 - Erweitert
+  {
+    id: 73,
+    week: 5,
+    question: "Was behandelt das Video 'Mastering Hybrid Team Planning'?",
+    options: [
+      "Remote-Arbeit",
+      "Kombination von Named und Generic Resources für flexible Planung",
+      "Teambuilding-Aktivitäten",
+      "Gehaltsverhandlungen"
+    ],
+    correct: 1,
+    explanation: "Das Video 'Mastering Hybrid Team Planning' zeigt, wie man Named Resources und Generic Resources kombiniert für flexible und realistische Ressourcenplanung."
+  },
+  {
+    id: 74,
+    week: 5,
+    question: "Was muss in der PM Demo zu 'Resources/Demand' gezeigt werden?",
+    options: [
+      "Nur Budgets",
+      "Resource Requests und deren Status (RR Status)",
+      "Nur Urlaubsanträge",
+      "Nur Gehaltsinformationen"
+    ],
+    correct: 1,
+    explanation: "In der PM Demo muss gezeigt werden, wie Resource Requests erstellt werden und wie deren Status (Pending, Approved, Rejected, Fulfilled) verwaltet wird."
+  },
+  {
+    id: 75,
+    week: 5,
+    question: "Was ist ein 'Testprojekt im Trial Environment'?",
+    options: [
+      "Ein Kundenprojekt",
+      "Ein selbst erstelltes Übungsprojekt in der Demo-Umgebung",
+      "Ein Produktionsprojekt",
+      "Ein Archivprojekt"
+    ],
+    correct: 1,
+    explanation: "Ein Testprojekt im Trial Environment ist ein selbst erstelltes Übungsprojekt in der Demo-Umgebung, um die gelernten Funktionen praktisch anzuwenden."
+  },
+  {
+    id: 76,
+    week: 5,
+    question: "Was bedeutet 'Allocation Percentage'?",
+    options: [
+      "Projektbudget in Prozent",
+      "Der Prozentsatz der Arbeitszeit, den eine Ressource einem Projekt widmet",
+      "Urlaubstage in Prozent",
+      "Überstunden in Prozent"
+    ],
+    correct: 1,
+    explanation: "Allocation Percentage gibt an, welchen Prozentsatz ihrer Arbeitszeit eine Ressource einem bestimmten Projekt oder einer Aufgabe widmet (z.B. 50% = halbe Stelle)."
+  },
+  {
+    id: 77,
+    week: 5,
+    question: "Was ist der Unterschied zwischen 'Effort' und 'Duration' in der Projektplanung?",
+    options: [
+      "Es gibt keinen Unterschied",
+      "Effort ist die Arbeitsmenge (Stunden), Duration ist die Zeitspanne (Tage/Wochen)",
+      "Duration ist wichtiger",
+      "Effort ist nur für Manager"
+    ],
+    correct: 1,
+    explanation: "Effort ist die tatsächliche Arbeitsmenge in Stunden/Tagen, während Duration die Zeitspanne ist, über die sich die Arbeit erstreckt. 40h Effort kann 1 Woche oder 2 Wochen Duration haben."
+  },
+
+  // WOCHE 6 - Erweitert
+  {
+    id: 78,
+    week: 6,
+    question: "Was zeigt die 'RM Tile' Ansicht?",
+    options: [
+      "Nur Projektinformationen",
+      "Grid-Ansicht mit Net Availability und Ressourceninformationen",
+      "Nur Finanzberichte",
+      "Nur Organigramme"
+    ],
+    correct: 1,
+    explanation: "Die RM Tile zeigt eine Grid-Ansicht mit Net Availability und allen relevanten Ressourceninformationen für Resource Manager."
+  },
+  {
+    id: 79,
+    week: 6,
+    question: "Was sollte man bei ersten Support-Emails beachten?",
+    options: [
+      "Sofort ohne Review senden",
+      "Mit Review durch erfahrene Kollegen vor dem Senden",
+      "Nur auf Deutsch schreiben",
+      "Keine Anhänge verwenden"
+    ],
+    correct: 1,
+    explanation: "Erste Support-Emails sollten immer mit Review durch erfahrene Kollegen erfolgen, um Qualität und Professionalität sicherzustellen."
+  },
+  {
+    id: 80,
+    week: 6,
+    question: "Was bedeutet 'CC in Email-Kommunikation' im Onboarding-Kontext?",
+    options: [
+      "Emails löschen",
+      "In Kopie gesetzt werden bei Kundenkommunikation zum Lernen",
+      "Emails weiterleiten",
+      "Emails archivieren"
+    ],
+    correct: 1,
+    explanation: "CC (Carbon Copy) in der Kundenkommunikation bedeutet, dass man in Kopie gesetzt wird, um von der Kommunikation zu lernen ohne aktiv beteiligt zu sein."
+  },
+  {
+    id: 81,
+    week: 6,
+    question: "Was ist ein 'Resource Pool'?",
+    options: [
+      "Ein Schwimmbad für Mitarbeiter",
+      "Eine Gruppe von Ressourcen mit ähnlichen Skills, die gemeinsam verwaltet werden",
+      "Ein Budgettopf",
+      "Ein Meetingraum"
+    ],
+    correct: 1,
+    explanation: "Ein Resource Pool ist eine Gruppe von Ressourcen mit ähnlichen Skills oder aus derselben Abteilung, die gemeinsam verwaltet und Projekten zugewiesen werden können."
+  },
+  {
+    id: 82,
+    week: 6,
+    question: "Was ist 'Resource Leveling'?",
+    options: [
+      "Ressourcen entlassen",
+      "Ausgleich von Über-/Unterauslastung durch Umverteilung von Zuweisungen",
+      "Ressourcen befördern",
+      "Ressourcen einstellen"
+    ],
+    correct: 1,
+    explanation: "Resource Leveling ist der Prozess des Ausgleichs von Über- und Unterauslastung durch Umverteilung oder zeitliche Verschiebung von Ressourcenzuweisungen."
+  },
+
+  // WOCHE 7 - Erweitert
+  {
+    id: 83,
+    week: 7,
+    question: "Was ist der Unterschied zwischen RAR und RAR2?",
+    options: [
+      "Es gibt keinen Unterschied",
+      "RAR2 ist eine erweiterte Version mit zusätzlichen Analysefunktionen",
+      "RAR ist neuer",
+      "RAR2 ist nur für Admins"
+    ],
+    correct: 1,
+    explanation: "RAR2 (Resource Availability Report 2) ist eine erweiterte Version des RAR mit zusätzlichen Analysefunktionen und Darstellungsoptionen."
+  },
+  {
+    id: 84,
+    week: 7,
+    question: "Was kann man mit einem Dashboard in Tempus machen?",
+    options: [
+      "Nur Emails lesen",
+      "KPIs und Metriken visuell darstellen und überwachen",
+      "Nur Dokumente speichern",
+      "Nur Kalender anzeigen"
+    ],
+    correct: 1,
+    explanation: "Dashboards in Tempus ermöglichen die visuelle Darstellung und Überwachung von KPIs, Metriken und wichtigen Ressourcen-/Projektinformationen."
+  },
+  {
+    id: 85,
+    week: 7,
+    question: "Wer ist Donna Fitzgerald und warum ist ihr Content relevant?",
+    options: [
+      "Eine Kundin von Valkeen",
+      "Eine Expertin für Resource Capacity Planning mit relevanten Best-Practice-Videos",
+      "Eine Mitarbeiterin von ProSymmetry",
+      "Eine Konkurrentin"
+    ],
+    correct: 1,
+    explanation: "Donna Fitzgerald ist eine anerkannte Expertin für Resource Capacity Planning, deren Videos wichtige Best Practices und Strategien vermitteln."
+  },
+  {
+    id: 86,
+    week: 7,
+    question: "Was ist ein 'Scenario' in What-If Planning?",
+    options: [
+      "Ein Backup",
+      "Eine hypothetische Situation zur Simulation von Auswirkungen",
+      "Ein Bericht",
+      "Ein Kalender"
+    ],
+    correct: 1,
+    explanation: "Ein Scenario ist eine hypothetische Situation (z.B. 'Was wenn Projekt X verzögert wird?'), deren Auswirkungen simuliert werden können ohne Produktivdaten zu ändern."
+  },
+  {
+    id: 87,
+    week: 7,
+    question: "Was ist 'Portfolio Prioritization'?",
+    options: [
+      "Projekte löschen",
+      "Projekte nach strategischer Wichtigkeit und Ressourcenverfügbarkeit ordnen",
+      "Projekte kopieren",
+      "Projekte archivieren"
+    ],
+    correct: 1,
+    explanation: "Portfolio Prioritization ist der Prozess, Projekte nach strategischer Wichtigkeit, Business Value und Ressourcenverfügbarkeit zu ordnen und zu priorisieren."
+  },
+  {
+    id: 88,
+    week: 7,
+    question: "Was ist 'Capacity vs. Demand Analysis'?",
+    options: [
+      "Budgetvergleich",
+      "Vergleich der verfügbaren Ressourcenkapazität mit dem Ressourcenbedarf",
+      "Gehaltsvergleich",
+      "Urlaubsvergleich"
+    ],
+    correct: 1,
+    explanation: "Capacity vs. Demand Analysis vergleicht die verfügbare Ressourcenkapazität mit dem Ressourcenbedarf aus Projekten, um Engpässe oder Überkapazitäten zu identifizieren."
+  },
+
+  // WOCHE 8 - Erweitert
+  {
+    id: 89,
+    week: 8,
+    question: "Was ist ein '1:1 Live Training Session BPAFG'?",
+    options: [
+      "Ein Online-Kurs",
+      "Eine persönliche Schulung mit einem erfahrenen Kollegen zu BPAFG",
+      "Ein Selbststudium",
+      "Ein Gruppenkurs"
+    ],
+    correct: 1,
+    explanation: "Die 1:1 Live Training Session ist eine persönliche, individuelle Schulung mit einem erfahrenen Kollegen, um BPAFG hands-on zu lernen."
+  },
+  {
+    id: 90,
+    week: 8,
+    question: "Was sind 'BPAFG Options'?",
+    options: [
+      "Aktienoptionen",
+      "Konfigurationseinstellungen für das Verhalten des Bulk Project Allocation Flatgrid",
+      "Urlaubsoptionen",
+      "Gehaltsoptionen"
+    ],
+    correct: 1,
+    explanation: "BPAFG Options sind Konfigurationseinstellungen, die das Verhalten und die Darstellung des Bulk Project Allocation Flatgrid anpassen."
+  },
+  {
+    id: 91,
+    week: 8,
+    question: "Was ist 'Role-Based Access Control' in Tempus Admin?",
+    options: [
+      "Rollstuhlzugang",
+      "Berechtigungssteuerung basierend auf Benutzerrollen (PM, RM, Admin)",
+      "Rollenspiele",
+      "Rollentausch"
+    ],
+    correct: 1,
+    explanation: "Role-Based Access Control steuert, welche Funktionen und Daten ein Benutzer basierend auf seiner Rolle (PM, RM, Admin, etc.) sehen und bearbeiten kann."
+  },
+  {
+    id: 92,
+    week: 8,
+    question: "Was ist der Zweck von 'Snapshots' für Audit-Zwecke?",
+    options: [
+      "Fotos machen",
+      "Nachvollziehbarkeit von Änderungen und historische Dokumentation",
+      "Screenshots erstellen",
+      "Videos aufnehmen"
+    ],
+    correct: 1,
+    explanation: "Snapshots dienen der Nachvollziehbarkeit von Änderungen und historischen Dokumentation - wichtig für Audits, Compliance und Trendanalysen."
+  },
+  {
+    id: 93,
+    week: 8,
+    question: "Was ist 'Integration' im Kontext von Data Sync?",
+    options: [
+      "Teambuilding",
+      "Verbindung von Tempus mit externen Systemen wie HR, ERP, PPM-Tools",
+      "Mitarbeiterintegration",
+      "Kulturelle Integration"
+    ],
+    correct: 1,
+    explanation: "Integration bedeutet die Verbindung von Tempus Resource mit externen Systemen wie HR-Systemen, ERP-Lösungen oder anderen PPM-Tools für automatisierten Datenaustausch."
+  },
+  {
+    id: 94,
+    week: 8,
+    question: "Was ist ein 'Custom Attribute' in Tempus?",
+    options: [
+      "Ein Standardfeld",
+      "Ein benutzerdefiniertes Feld für spezifische Kundenanforderungen",
+      "Ein Pflichtfeld",
+      "Ein verstecktes Feld"
+    ],
+    correct: 1,
+    explanation: "Custom Attributes sind benutzerdefinierte Felder, die für spezifische Kundenanforderungen erstellt werden können (z.B. Kostenstelle, Region, Skill-Level)."
+  },
+
+  // WOCHE 9 - Erweitert
+  {
+    id: 95,
+    week: 9,
+    question: "Was ist der 'Gartner Hype Cycle' und wie bezieht er sich auf 'Slope of Enlightenment'?",
+    options: [
+      "Ein Fahrrad",
+      "Ein Modell das zeigt wie Technologien von Hype zu produktiver Nutzung reifen",
+      "Ein Marketingkonzept",
+      "Ein Schulungsprogramm"
+    ],
+    correct: 1,
+    explanation: "Der Gartner Hype Cycle zeigt, wie Technologien von initialem Hype durch ein 'Tal der Enttäuschung' zum 'Slope of Enlightenment' (produktive Reife) gelangen."
+  },
+  {
+    id: 96,
+    week: 9,
+    question: "Was ist 'Change Management' im Kontext von Driving Adoption?",
+    options: [
+      "Geld wechseln",
+      "Begleitung von Organisationen bei der Einführung neuer Prozesse und Tools",
+      "Kleidung wechseln",
+      "Büro wechseln"
+    ],
+    correct: 1,
+    explanation: "Change Management begleitet Organisationen bei der Einführung neuer Prozesse und Tools wie Tempus Resource, um Akzeptanz und nachhaltige Nutzung sicherzustellen."
+  },
+  {
+    id: 97,
+    week: 9,
+    question: "Was sind 'Agile Release Trains' (ARTs) in SAFe?",
+    options: [
+      "Züge für Mitarbeiter",
+      "Teams von Teams die gemeinsam an einem Value Stream arbeiten",
+      "Software-Updates",
+      "Schulungsprogramme"
+    ],
+    correct: 1,
+    explanation: "Agile Release Trains (ARTs) sind in SAFe Teams von Teams (50-125 Personen), die gemeinsam an einem Value Stream arbeiten und synchronisiert liefern."
+  },
+  {
+    id: 98,
+    week: 9,
+    question: "Was ist 'Resource Management Maturity'?",
+    options: [
+      "Alter der Mitarbeiter",
+      "Der Reifegrad der RM-Praktiken einer Organisation (von Ad-hoc bis Optimiert)",
+      "Erfahrung des Managers",
+      "Größe des Teams"
+    ],
+    correct: 1,
+    explanation: "Resource Management Maturity beschreibt den Reifegrad der RM-Praktiken einer Organisation - von Ad-hoc/reaktiv bis zu optimiert/strategisch."
+  },
+  {
+    id: 99,
+    week: 9,
+    question: "Was ist 'Continuous Improvement' im Kontext von Best Practices?",
+    options: [
+      "Einmalige Verbesserung",
+      "Fortlaufende Optimierung von Prozessen basierend auf Feedback und Metriken",
+      "Keine Veränderung",
+      "Radikale Umstellung"
+    ],
+    correct: 1,
+    explanation: "Continuous Improvement ist die fortlaufende, iterative Optimierung von Prozessen und Praktiken basierend auf Feedback, Metriken und Lessons Learned."
+  },
+  {
+    id: 100,
+    week: 9,
+    question: "Was sind die drei Phasen des 90-Tage-Onboardings?",
+    options: [
+      "Start, Mitte, Ende",
+      "Learning & Integration, Engagement & Impact, Full Integration & Performance",
+      "Theorie, Praxis, Test",
+      "Lesen, Schreiben, Präsentieren"
+    ],
+    correct: 1,
+    explanation: "Die drei Phasen sind: Phase 1 (Tag 1-30): Learning & Integration, Phase 2 (Tag 31-60): Engagement & Impact, Phase 3 (Tag 61-90): Full Integration & Performance."
+  },
+
+  // BONUS: Übergreifende schwierige Fragen
+  {
+    id: 101,
+    week: 5,
+    question: "Was ist 'Time Phased Data' in der Ressourcenplanung?",
+    options: [
+      "Veraltete Daten",
+      "Daten die über Zeitperioden (Wochen/Monate) verteilt dargestellt werden",
+      "Echtzeit-Daten",
+      "Archivierte Daten"
+    ],
+    correct: 1,
+    explanation: "Time Phased Data zeigt Ressourcenzuweisungen, Kapazität und Auslastung verteilt über Zeitperioden (z.B. Wochen, Monate), um zeitliche Muster zu erkennen."
+  },
+  {
+    id: 102,
+    week: 6,
+    question: "Was ist 'Bench Time' im Resource Management?",
+    options: [
+      "Pausenzeit",
+      "Zeit in der eine Ressource keinem Projekt zugewiesen ist",
+      "Überstunden",
+      "Urlaubszeit"
+    ],
+    correct: 1,
+    explanation: "Bench Time ist die Zeit, in der eine Ressource verfügbar ist aber keinem Projekt zugewiesen wurde - oft ein Kostenfaktor der minimiert werden soll."
+  },
+  {
+    id: 103,
+    week: 7,
+    question: "Was ist 'Rolling Wave Planning'?",
+    options: [
+      "Wellenreiten",
+      "Detaillierte Planung für nahe Zukunft, grobe Planung für ferne Zukunft",
+      "Keine Planung",
+      "Einmalige Planung"
+    ],
+    correct: 1,
+    explanation: "Rolling Wave Planning bedeutet detaillierte Planung für die nahe Zukunft und grobe Planung für die ferne Zukunft, die kontinuierlich verfeinert wird."
+  },
+  {
+    id: 104,
+    week: 8,
+    question: "Was ist 'Baseline' in der Projektplanung?",
+    options: [
+      "Eine Linie am Boden",
+      "Der ursprünglich genehmigte Plan als Referenz für Vergleiche",
+      "Die letzte Version",
+      "Ein Entwurf"
+    ],
+    correct: 1,
+    explanation: "Eine Baseline ist der ursprünglich genehmigte Plan (Zeitplan, Budget, Ressourcen), der als Referenz für Vergleiche und Abweichungsanalysen dient."
+  },
+  {
+    id: 105,
+    week: 9,
+    question: "Was ist 'Resource Forecasting Accuracy'?",
+    options: [
+      "Wettervorhersage",
+      "Die Genauigkeit von Vorhersagen über zukünftigen Ressourcenbedarf",
+      "GPS-Genauigkeit",
+      "Zeitgenauigkeit"
+    ],
+    correct: 1,
+    explanation: "Resource Forecasting Accuracy misst, wie genau Vorhersagen über zukünftigen Ressourcenbedarf im Vergleich zum tatsächlichen Bedarf waren - ein wichtiger KPI."
   }
 ];
 
