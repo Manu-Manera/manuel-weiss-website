@@ -5276,6 +5276,15 @@
             
             const data = assessmentData.prozesse[processId] || {};
             
+            // Debug: Zeige gespeicherte Daten
+            console.log('📊 Öffne Prozess:', processId, 'Daten:', JSON.stringify(data));
+            
+            // Hilfsfunktion für Vergleich (String oder Zahl)
+            const isSelected = (storedValue, checkValue) => {
+                if (storedValue === undefined || storedValue === null) return false;
+                return parseInt(storedValue) === parseInt(checkValue);
+            };
+            
             document.getElementById('modalTitle').textContent = process.name;
             document.getElementById('modalBody').innerHTML = `
                 <input type="hidden" id="currentProcessId" value="${processId}">
@@ -5290,7 +5299,7 @@
                             <div class="rating-column-label">IST-Zustand (1 = sehr niedrig, 5 = voll digitalisiert)</div>
                             <div class="rating-scale" data-question="modal-digi-ist">
                                 ${[1,2,3,4,5].map(v => `
-                                    <div class="rating-option ${data.digiIst === v ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
+                                    <div class="rating-option ${isSelected(data.digiIst, v) ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
                                         <div class="rating-value">${v}</div>
                                     </div>
                                 `).join('')}
@@ -5300,7 +5309,7 @@
                             <div class="rating-column-label">SOLL-Zustand</div>
                             <div class="rating-scale" data-question="modal-digi-soll">
                                 ${[1,2,3,4,5].map(v => `
-                                    <div class="rating-option ${data.digiSoll === v ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
+                                    <div class="rating-option ${isSelected(data.digiSoll, v) ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
                                         <div class="rating-value">${v}</div>
                                     </div>
                                 `).join('')}
@@ -5319,7 +5328,7 @@
                             <div class="rating-column-label">IST-Zustand (1 = sehr schlecht, 5 = ausgezeichnet)</div>
                             <div class="rating-scale" data-question="modal-qual-ist">
                                 ${[1,2,3,4,5].map(v => `
-                                    <div class="rating-option ${data.qualIst === v ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
+                                    <div class="rating-option ${isSelected(data.qualIst, v) ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
                                         <div class="rating-value">${v}</div>
                                     </div>
                                 `).join('')}
@@ -5329,7 +5338,7 @@
                             <div class="rating-column-label">SOLL-Zustand</div>
                             <div class="rating-scale" data-question="modal-qual-soll">
                                 ${[1,2,3,4,5].map(v => `
-                                    <div class="rating-option ${data.qualSoll === v ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
+                                    <div class="rating-option ${isSelected(data.qualSoll, v) ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
                                         <div class="rating-value">${v}</div>
                                     </div>
                                 `).join('')}
@@ -5345,7 +5354,7 @@
                     </div>
                     <div class="rating-scale" data-question="modal-wichtigkeit" style="max-width: 400px;">
                         ${[1,2,3,4,5].map(v => `
-                            <div class="rating-option ${data.wichtigkeit === v ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
+                            <div class="rating-option ${isSelected(data.wichtigkeit, v) ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
                                 <div class="rating-value">${v}</div>
                                 <div class="rating-label">${v === 1 ? 'Gering' : v === 3 ? 'Mittel' : v === 5 ? 'Sehr hoch' : ''}</div>
                             </div>
