@@ -14,10 +14,8 @@ import {
   ListChecks,
   Monitor,
   Play,
-  Pause,
-  Users
+  Pause
 } from 'lucide-react';
-import ScenarioExercises from './ScenarioExercises';
 
 const difficultyLabels = {
   1: { label: 'Einsteiger', color: 'bg-green-500', stars: 1 },
@@ -275,7 +273,6 @@ function ExerciseDetail({ exercise, onBack, onComplete, isCompleted }) {
 }
 
 export default function ToolConfigExercises() {
-  const [activeView, setActiveView] = useState('modules');
   const [selectedModule, setSelectedModule] = useState(1);
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [completedExercises, setCompletedExercises] = useState({});
@@ -312,97 +309,67 @@ export default function ToolConfigExercises() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex gap-2 sm:gap-3 border-b border-white/10 pb-2 overflow-x-auto">
-        <button
-          onClick={() => setActiveView('modules')}
-          className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base ${
-            activeView === 'modules' 
-              ? 'bg-indigo-500 text-white' 
-              : 'text-gray-400 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          <Settings className="w-4 h-4" />
-          Modul-Übungen
-        </button>
-        <button
-          onClick={() => setActiveView('scenarios')}
-          className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base ${
-            activeView === 'scenarios' 
-              ? 'bg-purple-500 text-white' 
-              : 'text-gray-400 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          <Users className="w-4 h-4" />
-          Szenario-Übungen
-        </button>
+    <div className="glass-card p-3 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="p-2 sm:p-3 rounded-xl bg-indigo-500/20 flex-shrink-0">
+            <Settings className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-400" />
+          </div>
+          <div className="min-w-0">
+            <h3 className="text-base sm:text-xl font-bold text-white">Toolkonfiguration</h3>
+            <p className="text-xs sm:text-sm text-gray-400 hidden sm:block">Hands-on Übungen auf der Testplattform</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl self-start sm:self-auto">
+          <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-400" />
+          <span className="text-white font-medium text-sm sm:text-base">{totalCompleted}/{totalExercises}</span>
+          <span className="text-gray-400 text-xs sm:text-sm hidden sm:inline">abgeschlossen</span>
+        </div>
+      </div>
+      
+      {/* Module-Tabs - Horizontal scrollbar auf Mobile */}
+      <div className="flex gap-1.5 sm:gap-2 mb-4 sm:mb-6 overflow-x-auto pb-2 -mx-3 px-3 sm:-mx-1 sm:px-1">
+        {toolConfigExercises.map((module) => {
+          const stats = getModuleStats(module.module);
+          const isComplete = stats.completed === stats.total && stats.total > 0;
+          return (
+            <button
+              key={module.module}
+              onClick={() => setSelectedModule(module.module)}
+              className={`flex-shrink-0 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-all text-xs sm:text-sm ${
+                selectedModule === module.module
+                  ? 'bg-indigo-500 text-white'
+                  : 'bg-white/5 text-gray-400 hover:bg-white/10'
+              } ${isComplete ? 'ring-2 ring-green-500' : ''}`}
+            >
+              <span className="whitespace-nowrap">M{module.module}</span>
+              {stats.completed > 0 && (
+                <span className="ml-1 text-[10px] sm:text-xs opacity-75">
+                  {stats.completed}/{stats.total}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
-      {activeView === 'scenarios' ? (
-        <ScenarioExercises />
-      ) : (
-        <div className="glass-card p-4 sm:p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 rounded-xl bg-indigo-500/20">
-                <Settings className="w-6 h-6 text-indigo-400" />
-              </div>
-              <div>
-                <h3 className="text-lg sm:text-xl font-bold text-white">Toolkonfiguration</h3>
-                <p className="text-sm text-gray-400">Hands-on Übungen auf der Testplattform</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-xl">
-              <CheckCircle2 className="w-5 h-5 text-green-400" />
-              <span className="text-white font-medium">{totalCompleted}/{totalExercises}</span>
-              <span className="text-gray-400 text-sm">abgeschlossen</span>
-            </div>
+      {moduleData && (
+        <div>
+          <div className="mb-3 sm:mb-4">
+            <h4 className="text-sm sm:text-lg font-semibold text-white">{moduleData.title}</h4>
+            <p className="text-xs sm:text-sm text-gray-400 mt-0.5 sm:mt-1 line-clamp-2">{moduleData.description}</p>
           </div>
           
-          <div className="flex flex-wrap gap-2 mb-6 overflow-x-auto pb-2 -mx-1 px-1">
-            {toolConfigExercises.map((module) => {
-              const stats = getModuleStats(module.module);
-              const isComplete = stats.completed === stats.total && stats.total > 0;
-              return (
-                <button
-                  key={module.module}
-                  onClick={() => setSelectedModule(module.module)}
-                  className={`flex-shrink-0 px-3 sm:px-4 py-2 rounded-lg transition-all text-sm sm:text-base ${
-                    selectedModule === module.module
-                      ? 'bg-indigo-500 text-white'
-                      : 'bg-white/5 text-gray-400 hover:bg-white/10'
-                  } ${isComplete ? 'ring-2 ring-green-500' : ''}`}
-                >
-                  <span className="whitespace-nowrap">Modul {module.module}</span>
-                  {stats.completed > 0 && (
-                    <span className="ml-2 text-xs opacity-75">
-                      {stats.completed}/{stats.total}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
+          <div className="space-y-2 sm:space-y-3">
+            {exercises.map((exercise) => (
+              <ExerciseCard 
+                key={exercise.id}
+                exercise={exercise} 
+                isCompleted={completedExercises[exercise.id]}
+                onStart={() => setSelectedExercise(exercise)}
+              />
+            ))}
           </div>
-
-          {moduleData && (
-            <div>
-              <div className="mb-4">
-                <h4 className="text-base sm:text-lg font-semibold text-white">{moduleData.title}</h4>
-                <p className="text-sm text-gray-400 mt-1">{moduleData.description}</p>
-              </div>
-              
-              <div className="space-y-3">
-                {exercises.map((exercise) => (
-                  <ExerciseCard 
-                    key={exercise.id}
-                    exercise={exercise} 
-                    isCompleted={completedExercises[exercise.id]}
-                    onStart={() => setSelectedExercise(exercise)}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>

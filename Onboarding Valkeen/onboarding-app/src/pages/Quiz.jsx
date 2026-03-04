@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { 
   Brain, 
   CheckCircle2, 
@@ -9,22 +10,40 @@ import {
   Lightbulb,
   BookOpen,
   Target,
-  Settings
+  Settings,
+  Users
 } from 'lucide-react';
 import { useProgress } from '../hooks/useLocalStorage';
 import { quizQuestions, weeks } from '../data/onboardingData';
 import PracticeExercises from '../components/PracticeExercises';
 import ToolConfigExercises from '../components/ToolConfigExercises';
+import ScenarioExercises from '../components/ScenarioExercises';
 
 export default function Quiz() {
   const { progress, setQuizScore } = useProgress();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedWeek, setSelectedWeek] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [answers, setAnswers] = useState([]);
   const [quizComplete, setQuizComplete] = useState(false);
-  const [activeTab, setActiveTab] = useState('quiz');
+  
+  // Tab aus URL-Parameter oder Standard
+  const tabFromUrl = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabFromUrl || 'quiz');
+  
+  // URL-Parameter synchronisieren
+  useEffect(() => {
+    if (tabFromUrl && tabFromUrl !== activeTab) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [tabFromUrl]);
+  
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setSearchParams({ tab });
+  };
 
   const weekQuestions = useMemo(() => {
     if (!selectedWeek) return [];
@@ -79,43 +98,57 @@ export default function Quiz() {
           <p className="text-white/60 text-sm sm:text-base">Teste dein Wissen und übe mit realistischen Szenarien</p>
         </div>
 
-        <div className="flex gap-2 sm:gap-3 border-b border-white/10 pb-2 overflow-x-auto">
+        {/* Tabs - Scrollbar auf Mobile */}
+        <div className="flex gap-1.5 sm:gap-2 border-b border-white/10 pb-2 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
           <button
-            onClick={() => setActiveTab('quiz')}
-            className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base ${
+            onClick={() => handleTabChange('quiz')}
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-all whitespace-nowrap text-xs sm:text-sm ${
               activeTab === 'quiz' 
                 ? 'bg-purple-500 text-white' 
                 : 'text-gray-400 hover:text-white hover:bg-white/5'
             }`}
           >
-            <Brain className="w-4 h-4" />
-            Wissens-Quiz
+            <Brain className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            Quiz
           </button>
           <button
-            onClick={() => setActiveTab('practice')}
-            className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base ${
+            onClick={() => handleTabChange('practice')}
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-all whitespace-nowrap text-xs sm:text-sm ${
               activeTab === 'practice' 
-                ? 'bg-purple-500 text-white' 
+                ? 'bg-green-500 text-white' 
                 : 'text-gray-400 hover:text-white hover:bg-white/5'
             }`}
           >
-            <Target className="w-4 h-4" />
-            Praxisübungen
+            <Target className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            Praxis
           </button>
           <button
-            onClick={() => setActiveTab('toolconfig')}
-            className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base ${
+            onClick={() => handleTabChange('toolconfig')}
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-all whitespace-nowrap text-xs sm:text-sm ${
               activeTab === 'toolconfig' 
                 ? 'bg-indigo-500 text-white' 
                 : 'text-gray-400 hover:text-white hover:bg-white/5'
             }`}
           >
-            <Settings className="w-4 h-4" />
-            Toolkonfiguration
+            <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            Tools
+          </button>
+          <button
+            onClick={() => handleTabChange('scenarios')}
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-all whitespace-nowrap text-xs sm:text-sm ${
+              activeTab === 'scenarios' 
+                ? 'bg-amber-500 text-white' 
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            Szenarien
           </button>
         </div>
 
-        {activeTab === 'toolconfig' ? (
+        {activeTab === 'scenarios' ? (
+          <ScenarioExercises />
+        ) : activeTab === 'toolconfig' ? (
           <ToolConfigExercises />
         ) : activeTab === 'practice' ? (
           <PracticeExercises currentWeek={1} />

@@ -387,80 +387,73 @@ export default function ScenarioExercises() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="glass-card p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <div className="flex items-center gap-3">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20">
-              <Target className="w-6 h-6 text-purple-400" />
-            </div>
-            <div>
-              <h3 className="text-lg sm:text-xl font-bold text-white">Szenario-Übungen</h3>
-              <p className="text-sm text-gray-400">Realistische Situationen aus verschiedenen Perspektiven</p>
-            </div>
+    <div className="glass-card p-3 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="p-2 sm:p-3 rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex-shrink-0">
+            <Target className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400" />
           </div>
-          <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-xl">
-            <CheckCircle2 className="w-5 h-5 text-green-400" />
-            <span className="text-white font-medium">{totalCompleted}/{totalScenarios}</span>
-            <span className="text-gray-400 text-sm">abgeschlossen</span>
+          <div className="min-w-0">
+            <h3 className="text-base sm:text-xl font-bold text-white">Szenario-Übungen</h3>
+            <p className="text-xs sm:text-sm text-gray-400 hidden sm:block">Realistische Situationen aus verschiedenen Perspektiven</p>
           </div>
         </div>
-        
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 mb-6">
-          {scenarioExercises.map((cat) => {
-            const stats = getCategoryStats(cat.category);
-            const isComplete = stats.completed === stats.total && stats.total > 0;
-            const CategoryIcon = categoryIcons[cat.category] || Users;
-            
-            return (
-              <button
-                key={cat.category}
-                onClick={() => setSelectedCategory(cat.category)}
-                className={`p-3 sm:p-4 rounded-xl transition-all text-center ${
-                  selectedCategory === cat.category
-                    ? `bg-gradient-to-br ${categoryColors[cat.category]} border`
-                    : 'bg-white/5 hover:bg-white/10 border border-transparent'
-                } ${isComplete ? 'ring-2 ring-green-500' : ''}`}
-              >
-                <CategoryIcon className={`w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-2 ${
-                  selectedCategory === cat.category ? 'text-white' : 'text-gray-400'
-                }`} />
-                <p className={`text-xs sm:text-sm font-medium ${
-                  selectedCategory === cat.category ? 'text-white' : 'text-gray-400'
-                }`}>
-                  {cat.title.split('-')[0]}
-                </p>
-                {stats.completed > 0 && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    {stats.completed}/{stats.total}
-                  </p>
-                )}
-              </button>
-            );
-          })}
+        <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl self-start sm:self-auto">
+          <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-400" />
+          <span className="text-white font-medium text-sm sm:text-base">{totalCompleted}/{totalScenarios}</span>
+          <span className="text-gray-400 text-xs sm:text-sm hidden sm:inline">abgeschlossen</span>
         </div>
-
-        {categoryData && (
-          <div>
-            <div className="mb-4">
-              <h4 className="text-base sm:text-lg font-semibold text-white">{categoryData.title}</h4>
-              <p className="text-sm text-gray-400 mt-1">{categoryData.description}</p>
-            </div>
-            
-            <div className="space-y-3">
-              {scenarios.map((scenario) => (
-                <ScenarioCard 
-                  key={scenario.id}
-                  scenario={scenario} 
-                  isCompleted={completedScenarios[scenario.id]}
-                  onStart={() => setSelectedScenario(scenario)}
-                  categoryColor={categoryColors[selectedCategory]}
-                />
-              ))}
-            </div>
-          </div>
-        )}
       </div>
+      
+      {/* Kategorie-Tabs - Horizontal scrollbar auf Mobile */}
+      <div className="flex gap-1.5 sm:gap-2 mb-4 sm:mb-6 overflow-x-auto pb-2 -mx-3 px-3 sm:-mx-1 sm:px-1">
+        {scenarioExercises.map((cat) => {
+          const stats = getCategoryStats(cat.category);
+          const isComplete = stats.completed === stats.total && stats.total > 0;
+          const CategoryIcon = categoryIcons[cat.category] || Users;
+          
+          return (
+            <button
+              key={cat.category}
+              onClick={() => setSelectedCategory(cat.category)}
+              className={`flex-shrink-0 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-all text-xs sm:text-sm ${
+                selectedCategory === cat.category
+                  ? `bg-gradient-to-br ${categoryColors[cat.category]} border text-white`
+                  : 'bg-white/5 hover:bg-white/10 border border-transparent text-gray-400'
+              } ${isComplete ? 'ring-2 ring-green-500' : ''}`}
+            >
+              <CategoryIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="whitespace-nowrap">{cat.title.split('-')[0]}</span>
+              {stats.completed > 0 && (
+                <span className="text-[10px] sm:text-xs opacity-75">
+                  {stats.completed}/{stats.total}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {categoryData && (
+        <div>
+          <div className="mb-3 sm:mb-4">
+            <h4 className="text-sm sm:text-lg font-semibold text-white">{categoryData.title}</h4>
+            <p className="text-xs sm:text-sm text-gray-400 mt-0.5 sm:mt-1 line-clamp-2">{categoryData.description}</p>
+          </div>
+          
+          <div className="space-y-2 sm:space-y-3">
+            {scenarios.map((scenario) => (
+              <ScenarioCard 
+                key={scenario.id}
+                scenario={scenario} 
+                isCompleted={completedScenarios[scenario.id]}
+                onStart={() => setSelectedScenario(scenario)}
+                categoryColor={categoryColors[selectedCategory]}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

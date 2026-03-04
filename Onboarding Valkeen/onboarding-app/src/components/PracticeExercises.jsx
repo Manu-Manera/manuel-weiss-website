@@ -250,6 +250,9 @@ export default function PracticeExercises({ currentWeek = 1 }) {
     return { completed, total: week.exercises.length };
   };
 
+  const totalCompleted = Object.keys(completedExercises).length;
+  const totalExercises = practiceExercises.reduce((sum, w) => sum + w.exercises.length, 0);
+
   if (selectedExercise) {
     return (
       <ExerciseDetail 
@@ -261,66 +264,80 @@ export default function PracticeExercises({ currentWeek = 1 }) {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="glass-card p-4 sm:p-6">
-        <h3 className="text-lg sm:text-xl font-bold text-white mb-4">Praxisübungen</h3>
-        
-        <div className="flex flex-wrap gap-2 mb-6 overflow-x-auto pb-2 -mx-1 px-1">
-          {practiceExercises.map((week) => {
-            const stats = getCompletionStats(week.week);
-            const isComplete = stats.completed === stats.total && stats.total > 0;
-            return (
-              <button
-                key={week.week}
-                onClick={() => setSelectedWeek(week.week)}
-                className={`flex-shrink-0 px-3 sm:px-4 py-2 rounded-lg transition-all text-sm sm:text-base ${
-                  selectedWeek === week.week
-                    ? 'bg-purple-500 text-white'
-                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
-                } ${isComplete ? 'ring-2 ring-green-500' : ''}`}
-              >
-                <span className="whitespace-nowrap">Woche {week.week}</span>
-                {stats.completed > 0 && (
-                  <span className="ml-2 text-xs opacity-75">
-                    {stats.completed}/{stats.total}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {weekData && (
-          <div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-              <h4 className="text-base sm:text-lg font-semibold text-white">{weekData.title}</h4>
-              <span className="text-xs sm:text-sm text-gray-400">
-                {exercises.length} Übungen
-              </span>
-            </div>
-            
-            <div className="space-y-3">
-              {exercises.map((exercise) => (
-                <div key={exercise.id} className="relative">
-                  {completedExercises[exercise.id] && (
-                    <div className="absolute -left-1 sm:-left-2 top-1/2 -translate-y-1/2 z-10">
-                      <CheckCircle2 className={`w-4 h-4 sm:w-5 sm:h-5 ${
-                        completedExercises[exercise.id] === 'good' ? 'text-green-500' :
-                        completedExercises[exercise.id] === 'okay' ? 'text-yellow-500' :
-                        'text-red-500'
-                      }`} />
-                    </div>
-                  )}
-                  <ExerciseCard 
-                    exercise={exercise} 
-                    onStart={() => setSelectedExercise(exercise)}
-                  />
-                </div>
-              ))}
-            </div>
+    <div className="glass-card p-3 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="p-2 sm:p-3 rounded-xl bg-green-500/20 flex-shrink-0">
+            <Target className="w-5 h-5 sm:w-6 sm:h-6 text-green-400" />
           </div>
-        )}
+          <div className="min-w-0">
+            <h3 className="text-base sm:text-xl font-bold text-white">Praxisübungen</h3>
+            <p className="text-xs sm:text-sm text-gray-400 hidden sm:block">Story-basierte Übungen pro Woche</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl self-start sm:self-auto">
+          <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-400" />
+          <span className="text-white font-medium text-sm sm:text-base">{totalCompleted}/{totalExercises}</span>
+          <span className="text-gray-400 text-xs sm:text-sm hidden sm:inline">abgeschlossen</span>
+        </div>
       </div>
+      
+      {/* Wochen-Tabs - Horizontal scrollbar auf Mobile */}
+      <div className="flex gap-1.5 sm:gap-2 mb-4 sm:mb-6 overflow-x-auto pb-2 -mx-3 px-3 sm:-mx-1 sm:px-1">
+        {practiceExercises.map((week) => {
+          const stats = getCompletionStats(week.week);
+          const isComplete = stats.completed === stats.total && stats.total > 0;
+          return (
+            <button
+              key={week.week}
+              onClick={() => setSelectedWeek(week.week)}
+              className={`flex-shrink-0 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-all text-xs sm:text-sm ${
+                selectedWeek === week.week
+                  ? 'bg-green-500 text-white'
+                  : 'bg-white/5 text-gray-400 hover:bg-white/10'
+              } ${isComplete ? 'ring-2 ring-green-500' : ''}`}
+            >
+              <span className="whitespace-nowrap">W{week.week}</span>
+              {stats.completed > 0 && (
+                <span className="ml-1 text-[10px] sm:text-xs opacity-75">
+                  {stats.completed}/{stats.total}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {weekData && (
+        <div>
+          <div className="flex items-center justify-between gap-2 mb-3 sm:mb-4">
+            <h4 className="text-sm sm:text-lg font-semibold text-white truncate">{weekData.title}</h4>
+            <span className="text-[10px] sm:text-sm text-gray-400 flex-shrink-0">
+              {exercises.length} Übungen
+            </span>
+          </div>
+          
+          <div className="space-y-2 sm:space-y-3">
+            {exercises.map((exercise) => (
+              <div key={exercise.id} className="relative">
+                {completedExercises[exercise.id] && (
+                  <div className="absolute -left-0.5 sm:-left-2 top-1/2 -translate-y-1/2 z-10">
+                    <CheckCircle2 className={`w-3.5 h-3.5 sm:w-5 sm:h-5 ${
+                      completedExercises[exercise.id] === 'good' ? 'text-green-500' :
+                      completedExercises[exercise.id] === 'okay' ? 'text-yellow-500' :
+                      'text-red-500'
+                    }`} />
+                  </div>
+                )}
+                <ExerciseCard 
+                  exercise={exercise} 
+                  onStart={() => setSelectedExercise(exercise)}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
