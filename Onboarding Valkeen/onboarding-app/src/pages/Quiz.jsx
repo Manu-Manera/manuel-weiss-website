@@ -8,11 +8,13 @@ import {
   Trophy,
   Lightbulb,
   BookOpen,
-  Target
+  Target,
+  Settings
 } from 'lucide-react';
 import { useProgress } from '../hooks/useLocalStorage';
 import { quizQuestions, weeks } from '../data/onboardingData';
 import PracticeExercises from '../components/PracticeExercises';
+import ToolConfigExercises from '../components/ToolConfigExercises';
 
 export default function Quiz() {
   const { progress, setQuizScore } = useProgress();
@@ -100,9 +102,22 @@ export default function Quiz() {
             <Target className="w-4 h-4" />
             Praxisübungen
           </button>
+          <button
+            onClick={() => setActiveTab('toolconfig')}
+            className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base ${
+              activeTab === 'toolconfig' 
+                ? 'bg-indigo-500 text-white' 
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Settings className="w-4 h-4" />
+            Toolkonfiguration
+          </button>
         </div>
 
-        {activeTab === 'practice' ? (
+        {activeTab === 'toolconfig' ? (
+          <ToolConfigExercises />
+        ) : activeTab === 'practice' ? (
           <PracticeExercises currentWeek={1} />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">

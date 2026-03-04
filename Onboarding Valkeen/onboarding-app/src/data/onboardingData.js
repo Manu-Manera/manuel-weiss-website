@@ -2277,3 +2277,873 @@ export const practiceExercises = [
     ]
   }
 ];
+
+// ============================================
+// TOOLKONFIGURATION PRAXISÜBUNGEN
+// Hands-on Übungen auf der Testplattform
+// ============================================
+export const toolConfigExercises = [
+  // ============================================
+  // MODUL 1: Grundlegende Navigation & Setup
+  // ============================================
+  {
+    module: 1,
+    title: "Navigation & Grundeinrichtung",
+    description: "Lerne die Benutzeroberfläche kennen und richte dein erstes Setup ein",
+    exercises: [
+      {
+        id: "tc1-e1",
+        difficulty: 1,
+        title: "Dashboard erkunden",
+        scenario: "Du loggst dich zum ersten Mal in die Tempus-Testumgebung ein.",
+        task: "Navigiere durch alle Hauptbereiche der Anwendung und identifiziere: 1) Das Hauptmenü, 2) Die Schnellzugriffe, 3) Die Benutzereinstellungen, 4) Den Hilfe-Bereich.",
+        steps: [
+          "Logge dich in die Testumgebung ein",
+          "Klicke auf jeden Menüpunkt im Hauptmenü",
+          "Finde die Benutzereinstellungen (meist oben rechts)",
+          "Lokalisiere den Hilfe/Support-Bereich",
+          "Notiere dir die wichtigsten Navigationspfade"
+        ],
+        expectedResult: "Du kannst blind zu jedem Hauptbereich navigieren und weißt, wo du Hilfe findest.",
+        checkpoints: ["Hauptmenü gefunden", "Alle Bereiche besucht", "Einstellungen lokalisiert", "Hilfe gefunden"],
+        skills: ["Navigation", "UI-Verständnis"]
+      },
+      {
+        id: "tc1-e2",
+        difficulty: 1,
+        title: "Persönliches Profil einrichten",
+        scenario: "Als neuer Benutzer sollst du dein Profil vollständig einrichten.",
+        task: "Konfiguriere dein Benutzerprofil mit allen relevanten Informationen.",
+        steps: [
+          "Gehe zu den Benutzereinstellungen",
+          "Fülle alle Profilfelder aus (Name, E-Mail, Abteilung)",
+          "Lade ein Profilbild hoch (falls möglich)",
+          "Setze deine Zeitzone korrekt",
+          "Konfiguriere deine Benachrichtigungseinstellungen",
+          "Speichere die Änderungen"
+        ],
+        expectedResult: "Dein Profil ist vollständig ausgefüllt und die Einstellungen sind gespeichert.",
+        checkpoints: ["Profil ausgefüllt", "Zeitzone gesetzt", "Benachrichtigungen konfiguriert", "Gespeichert"],
+        skills: ["Profil-Setup", "Benutzereinstellungen"]
+      },
+      {
+        id: "tc1-e3",
+        difficulty: 2,
+        title: "Erste Resource anlegen",
+        scenario: "Du sollst deine erste Ressource im System anlegen - dich selbst als Testressource.",
+        task: "Erstelle eine neue Named Resource mit vollständigen Informationen.",
+        steps: [
+          "Navigiere zum Ressourcen-Bereich",
+          "Klicke auf 'Neue Ressource' oder '+' Button",
+          "Wähle 'Named Resource' als Typ",
+          "Fülle die Pflichtfelder aus: Name, E-Mail, Abteilung",
+          "Setze die Kapazität (z.B. 40h/Woche)",
+          "Füge mindestens 3 Skills hinzu",
+          "Definiere die Verfügbarkeit (Start-/Enddatum)",
+          "Speichere die Ressource"
+        ],
+        expectedResult: "Eine vollständige Named Resource ist im System angelegt und sichtbar.",
+        checkpoints: ["Ressource erstellt", "Skills hinzugefügt", "Kapazität gesetzt", "Verfügbarkeit definiert"],
+        skills: ["Resource Management", "Dateneingabe"]
+      },
+      {
+        id: "tc1-e4",
+        difficulty: 2,
+        title: "Generic Resource erstellen",
+        scenario: "Für ein zukünftiges Projekt brauchst du Platzhalter-Ressourcen.",
+        task: "Erstelle 3 Generic Resources für verschiedene Rollen.",
+        steps: [
+          "Navigiere zum Ressourcen-Bereich",
+          "Erstelle Generic Resource 1: 'Senior Developer' mit Skills: Java, Spring, AWS",
+          "Erstelle Generic Resource 2: 'UX Designer' mit Skills: Figma, User Research, Prototyping",
+          "Erstelle Generic Resource 3: 'Project Manager' mit Skills: Agile, Scrum, Stakeholder Management",
+          "Setze für alle eine Standard-Kapazität von 40h/Woche",
+          "Überprüfe, dass alle drei in der Ressourcenliste erscheinen"
+        ],
+        expectedResult: "3 Generic Resources sind angelegt und unterscheidbar durch ihre Rollen und Skills.",
+        checkpoints: ["3 Generic Resources erstellt", "Skills korrekt zugewiesen", "Kapazitäten gesetzt", "In Liste sichtbar"],
+        skills: ["Generic Resources", "Rollen-Definition"]
+      },
+      {
+        id: "tc1-e5",
+        difficulty: 2,
+        title: "Ressourcen-Attribute anpassen",
+        scenario: "Die Standard-Attribute reichen nicht aus. Du brauchst zusätzliche Felder.",
+        task: "Finde heraus, welche Custom Attributes verfügbar sind und konfiguriere eines.",
+        steps: [
+          "Gehe zu den Admin-Einstellungen oder Attribut-Management",
+          "Prüfe, welche Standard-Attribute für Ressourcen existieren",
+          "Finde die Option für Custom Attributes",
+          "Erstelle ein neues Attribut 'Kostenstelle' als Dropdown mit 3 Werten",
+          "Weise das Attribut einer bestehenden Ressource zu",
+          "Überprüfe, dass das Attribut in der Ressourcen-Ansicht erscheint"
+        ],
+        expectedResult: "Ein Custom Attribute ist erstellt und einer Ressource zugewiesen.",
+        checkpoints: ["Admin-Bereich gefunden", "Custom Attribute erstellt", "Werte definiert", "Ressource aktualisiert"],
+        skills: ["Attribute Management", "Customization"]
+      }
+    ]
+  },
+
+  // ============================================
+  // MODUL 2: Projekt-Konfiguration
+  // ============================================
+  {
+    module: 2,
+    title: "Projekt-Konfiguration",
+    description: "Erstelle und konfiguriere Projekte mit allen wichtigen Einstellungen",
+    exercises: [
+      {
+        id: "tc2-e1",
+        difficulty: 2,
+        title: "Erstes Projekt anlegen",
+        scenario: "Du sollst ein neues Softwareentwicklungsprojekt im System anlegen.",
+        task: "Erstelle ein vollständiges Projekt mit allen relevanten Metadaten.",
+        steps: [
+          "Navigiere zum Projekt-Bereich",
+          "Klicke auf 'Neues Projekt' erstellen",
+          "Vergib einen aussagekräftigen Namen: 'Website Relaunch 2024'",
+          "Setze das Startdatum auf heute",
+          "Setze das Enddatum auf +6 Monate",
+          "Wähle einen Projektstatus (z.B. 'In Planung')",
+          "Setze die Priorität auf 'Hoch'",
+          "Füge eine Projektbeschreibung hinzu",
+          "Speichere das Projekt"
+        ],
+        expectedResult: "Ein neues Projekt ist angelegt mit korrekten Daten und Metadaten.",
+        checkpoints: ["Projekt erstellt", "Daten korrekt", "Status gesetzt", "Priorität definiert"],
+        skills: ["Projekt-Erstellung", "Metadaten"]
+      },
+      {
+        id: "tc2-e2",
+        difficulty: 2,
+        title: "Projektphasen definieren",
+        scenario: "Das Projekt braucht eine klare Phasenstruktur.",
+        task: "Unterteile das Projekt in logische Phasen.",
+        steps: [
+          "Öffne das erstellte Projekt",
+          "Finde die Option für Phasen/Meilensteine",
+          "Erstelle Phase 1: 'Discovery' (2 Wochen)",
+          "Erstelle Phase 2: 'Design' (4 Wochen)",
+          "Erstelle Phase 3: 'Development' (12 Wochen)",
+          "Erstelle Phase 4: 'Testing' (4 Wochen)",
+          "Erstelle Phase 5: 'Go-Live' (2 Wochen)",
+          "Überprüfe die Timeline-Darstellung"
+        ],
+        expectedResult: "Das Projekt hat 5 definierte Phasen mit korrekten Zeiträumen.",
+        checkpoints: ["5 Phasen erstellt", "Zeiträume korrekt", "Timeline sichtbar", "Phasen sequentiell"],
+        skills: ["Projektstruktur", "Phasenplanung"]
+      },
+      {
+        id: "tc2-e3",
+        difficulty: 3,
+        title: "Ressourcen zum Projekt zuweisen",
+        scenario: "Das Projekt braucht ein Team. Weise Ressourcen zu.",
+        task: "Erstelle Allocations für verschiedene Ressourcen über verschiedene Phasen.",
+        steps: [
+          "Öffne das Projekt und gehe zu Ressourcen/Allocations",
+          "Weise den 'Senior Developer' der Development-Phase zu (100%)",
+          "Weise den 'UX Designer' der Design-Phase zu (100%)",
+          "Weise den 'Project Manager' dem gesamten Projekt zu (50%)",
+          "Erstelle eine Allocation für deine Named Resource (25% in Testing)",
+          "Überprüfe die Gesamtauslastung des Projekts",
+          "Prüfe, ob Konflikte angezeigt werden"
+        ],
+        expectedResult: "4 Ressourcen sind dem Projekt zugewiesen mit korrekten Prozentsätzen und Zeiträumen.",
+        checkpoints: ["4 Allocations erstellt", "Prozente korrekt", "Zeiträume passend", "Keine Konflikte"],
+        skills: ["Resource Allocation", "Teamplanung"]
+      },
+      {
+        id: "tc2-e4",
+        difficulty: 3,
+        title: "Resource Request erstellen",
+        scenario: "Du brauchst eine zusätzliche Ressource, die du nicht selbst zuweisen kannst.",
+        task: "Erstelle einen formellen Resource Request.",
+        steps: [
+          "Navigiere zur Resource Request Funktion",
+          "Erstelle einen neuen Request für das Projekt",
+          "Definiere die benötigte Rolle: 'QA Engineer'",
+          "Setze den Zeitraum: Testing-Phase",
+          "Setze die Allocation: 100%",
+          "Füge benötigte Skills hinzu: Selenium, Test Automation, JIRA",
+          "Schreibe eine Begründung",
+          "Setze die Priorität auf 'Hoch'",
+          "Sende den Request ab"
+        ],
+        expectedResult: "Ein Resource Request ist erstellt und wartet auf Genehmigung.",
+        checkpoints: ["Request erstellt", "Skills definiert", "Begründung vorhanden", "Request gesendet"],
+        skills: ["Resource Requests", "Bedarfsplanung"]
+      },
+      {
+        id: "tc2-e5",
+        difficulty: 3,
+        title: "Projekt-Views konfigurieren",
+        scenario: "Du möchtest verschiedene Ansichten für dein Projekt einrichten.",
+        task: "Konfiguriere und speichere verschiedene Views für das Projekt.",
+        steps: [
+          "Öffne das Projekt und wechsle zur Grid View",
+          "Passe die Spalten an: Füge 'Skills' und 'Allocation %' hinzu",
+          "Speichere diese View als 'Team-Übersicht'",
+          "Wechsle zur Gantt View",
+          "Konfiguriere die Zeitskala (Wochen)",
+          "Speichere als 'Timeline-Ansicht'",
+          "Wechsle zur Kanban View (falls verfügbar)",
+          "Konfiguriere die Spalten nach Status",
+          "Teste den Wechsel zwischen den gespeicherten Views"
+        ],
+        expectedResult: "3 verschiedene Views sind konfiguriert und gespeichert.",
+        checkpoints: ["Grid View angepasst", "Gantt konfiguriert", "Views gespeichert", "Wechsel funktioniert"],
+        skills: ["View-Konfiguration", "Personalisierung"]
+      }
+    ]
+  },
+
+  // ============================================
+  // MODUL 3: Kapazitätsplanung & Auslastung
+  // ============================================
+  {
+    module: 3,
+    title: "Kapazitätsplanung & Auslastung",
+    description: "Analysiere und optimiere die Ressourcenauslastung",
+    exercises: [
+      {
+        id: "tc3-e1",
+        difficulty: 2,
+        title: "Kapazitätsübersicht analysieren",
+        scenario: "Du sollst die aktuelle Kapazitätssituation deines Teams verstehen.",
+        task: "Finde und analysiere die Kapazitätsübersicht.",
+        steps: [
+          "Navigiere zur Kapazitätsplanung oder Auslastungsübersicht",
+          "Wähle einen Zeitraum von 3 Monaten",
+          "Filtere auf deine erstellten Ressourcen",
+          "Identifiziere: Wer hat freie Kapazität?",
+          "Identifiziere: Wer ist überbucht?",
+          "Notiere die Net Availability für jede Ressource",
+          "Exportiere die Übersicht (falls möglich)"
+        ],
+        expectedResult: "Du verstehst die Kapazitätssituation und kannst Über-/Unterauslastung erkennen.",
+        checkpoints: ["Übersicht gefunden", "Zeitraum gesetzt", "Filter angewendet", "Analyse dokumentiert"],
+        skills: ["Capacity Planning", "Analyse"]
+      },
+      {
+        id: "tc3-e2",
+        difficulty: 3,
+        title: "Überauslastung simulieren und lösen",
+        scenario: "Eine Ressource ist überbucht. Du sollst das Problem identifizieren und lösen.",
+        task: "Erstelle bewusst eine Überauslastung und löse sie dann.",
+        steps: [
+          "Wähle eine deiner Named Resources",
+          "Erstelle eine zusätzliche Allocation von 80% für ein anderes Projekt",
+          "Beobachte, wie das System die Überauslastung anzeigt",
+          "Finde die visuelle Warnung (rote Markierung o.ä.)",
+          "Lösung 1: Reduziere eine der Allocations auf 50%",
+          "Überprüfe, dass die Warnung verschwindet",
+          "Lösung 2 (alternativ): Verschiebe eine Allocation zeitlich",
+          "Dokumentiere beide Lösungsansätze"
+        ],
+        expectedResult: "Du kannst Überauslastungen erkennen und mit verschiedenen Methoden lösen.",
+        checkpoints: ["Überauslastung erstellt", "Warnung erkannt", "Lösung 1 angewendet", "Lösung 2 getestet"],
+        skills: ["Konfliktlösung", "Auslastungsoptimierung"]
+      },
+      {
+        id: "tc3-e3",
+        difficulty: 3,
+        title: "Abwesenheiten eintragen",
+        scenario: "Ressourcen haben Urlaub und Krankheitstage, die berücksichtigt werden müssen.",
+        task: "Trage verschiedene Abwesenheiten für deine Ressourcen ein.",
+        steps: [
+          "Finde den Bereich für Abwesenheiten/Time Off",
+          "Trage für eine Ressource 2 Wochen Urlaub ein",
+          "Trage für eine andere Ressource 3 Tage Krankheit ein",
+          "Trage einen Feiertag ein (falls systemweit möglich)",
+          "Überprüfe, wie sich die Net Availability ändert",
+          "Prüfe, ob Projektzuweisungen betroffen sind",
+          "Schaue, ob Warnungen für betroffene Projekte erscheinen"
+        ],
+        expectedResult: "Abwesenheiten sind eingetragen und beeinflussen die Kapazitätsberechnung.",
+        checkpoints: ["Urlaub eingetragen", "Krankheit eingetragen", "Kapazität aktualisiert", "Warnungen geprüft"],
+        skills: ["Abwesenheitsmanagement", "Kapazitätsplanung"]
+      },
+      {
+        id: "tc3-e4",
+        difficulty: 4,
+        title: "Demand vs. Capacity Analyse",
+        scenario: "Das Management will wissen, ob die Kapazität für alle geplanten Projekte reicht.",
+        task: "Erstelle eine Demand vs. Capacity Analyse.",
+        steps: [
+          "Navigiere zum Reporting oder Analytics Bereich",
+          "Finde einen Report für Demand vs. Capacity",
+          "Wähle einen Zeitraum von 6 Monaten",
+          "Analysiere: In welchen Monaten übersteigt Demand die Capacity?",
+          "Identifiziere die kritischsten Skills/Rollen",
+          "Erstelle einen Screenshot oder Export",
+          "Formuliere 3 Handlungsempfehlungen basierend auf der Analyse"
+        ],
+        expectedResult: "Eine Demand/Capacity Analyse ist erstellt mit konkreten Handlungsempfehlungen.",
+        checkpoints: ["Report gefunden", "Analyse durchgeführt", "Gaps identifiziert", "Empfehlungen formuliert"],
+        skills: ["Demand Management", "Strategische Planung"]
+      },
+      {
+        id: "tc3-e5",
+        difficulty: 4,
+        title: "What-If Szenario erstellen",
+        scenario: "Du sollst analysieren, was passiert, wenn 2 Ressourcen das Team verlassen.",
+        task: "Erstelle und analysiere ein What-If Szenario.",
+        steps: [
+          "Finde die What-If oder Szenario-Funktion",
+          "Erstelle ein neues Szenario: 'Ressourcen-Verlust Q3'",
+          "Kopiere die aktuelle Planung in das Szenario",
+          "Entferne 2 Ressourcen aus dem Szenario",
+          "Analysiere die Auswirkungen auf alle Projekte",
+          "Identifiziere die kritischsten Projekte",
+          "Dokumentiere mögliche Gegenmaßnahmen",
+          "Vergleiche Szenario mit der Baseline"
+        ],
+        expectedResult: "Ein What-If Szenario zeigt die Auswirkungen von Ressourcenverlust.",
+        checkpoints: ["Szenario erstellt", "Ressourcen entfernt", "Auswirkungen analysiert", "Maßnahmen dokumentiert"],
+        skills: ["What-If Planning", "Risikoanalyse"]
+      }
+    ]
+  },
+
+  // ============================================
+  // MODUL 4: BPAFG (Bulk Project Allocation Flatgrid)
+  // ============================================
+  {
+    module: 4,
+    title: "BPAFG Mastery",
+    description: "Meistere das Bulk Project Allocation Flatgrid für effiziente Massenbearbeitung",
+    exercises: [
+      {
+        id: "tc4-e1",
+        difficulty: 2,
+        title: "BPAFG Navigation",
+        scenario: "Du sollst das BPAFG kennenlernen und verstehen.",
+        task: "Navigiere durch alle BPAFG-Funktionen und Modi.",
+        steps: [
+          "Öffne das BPAFG (Bulk Project Allocation Flatgrid)",
+          "Identifiziere die drei Modi: Default, RM Mode, PM Mode",
+          "Wechsle in den RM Mode und beobachte die Änderung",
+          "Wechsle in den PM Mode und beobachte die Änderung",
+          "Finde die Filter-Optionen",
+          "Finde die Zeitraum-Einstellungen",
+          "Identifiziere die Farbcodierung für Auslastung"
+        ],
+        expectedResult: "Du verstehst die BPAFG-Oberfläche und kannst zwischen Modi wechseln.",
+        checkpoints: ["BPAFG geöffnet", "Modi verstanden", "Filter gefunden", "Farbcodes erkannt"],
+        skills: ["BPAFG Grundlagen", "Navigation"]
+      },
+      {
+        id: "tc4-e2",
+        difficulty: 3,
+        title: "RM Mode: Ressourcen-zentrierte Planung",
+        scenario: "Als Resource Manager willst du die Auslastung einzelner Ressourcen optimieren.",
+        task: "Nutze den RM Mode für ressourcen-zentrierte Analyse und Änderungen.",
+        steps: [
+          "Wechsle in den RM Mode",
+          "Wähle eine deiner Ressourcen aus",
+          "Betrachte alle Projekte, denen diese Ressource zugewiesen ist",
+          "Identifiziere Zeiträume mit Über-/Unterauslastung",
+          "Ändere eine Allocation direkt im Grid (z.B. von 100% auf 80%)",
+          "Füge eine neue Allocation für ein anderes Projekt hinzu",
+          "Speichere die Änderungen",
+          "Überprüfe die aktualisierte Net Availability"
+        ],
+        expectedResult: "Du kannst im RM Mode effizient die Auslastung einer Ressource verwalten.",
+        checkpoints: ["RM Mode aktiv", "Ressource analysiert", "Allocation geändert", "Neue Allocation erstellt"],
+        skills: ["BPAFG RM Mode", "Ressourcenoptimierung"]
+      },
+      {
+        id: "tc4-e3",
+        difficulty: 3,
+        title: "PM Mode: Projekt-zentrierte Planung",
+        scenario: "Als Project Manager willst du dein Projektteam im Überblick sehen und anpassen.",
+        task: "Nutze den PM Mode für projekt-zentrierte Teamverwaltung.",
+        steps: [
+          "Wechsle in den PM Mode",
+          "Wähle dein erstelltes Projekt aus",
+          "Betrachte alle zugewiesenen Ressourcen",
+          "Identifiziere Lücken in der Teambesetzung",
+          "Füge eine neue Ressource zum Team hinzu",
+          "Passe die Zeiträume einer bestehenden Allocation an",
+          "Entferne eine Allocation (falls nicht mehr benötigt)",
+          "Speichere und überprüfe die Projektübersicht"
+        ],
+        expectedResult: "Du kannst im PM Mode effizient dein Projektteam verwalten.",
+        checkpoints: ["PM Mode aktiv", "Projekt analysiert", "Ressource hinzugefügt", "Allocation angepasst"],
+        skills: ["BPAFG PM Mode", "Teammanagement"]
+      },
+      {
+        id: "tc4-e4",
+        difficulty: 4,
+        title: "Bulk-Änderungen durchführen",
+        scenario: "Mehrere Allocations müssen gleichzeitig angepasst werden.",
+        task: "Führe Massenänderungen im BPAFG durch.",
+        steps: [
+          "Öffne das BPAFG im Default Mode",
+          "Wähle mehrere Zellen gleichzeitig aus (Shift+Klick oder Drag)",
+          "Ändere alle ausgewählten Werte auf einmal",
+          "Nutze Copy/Paste für wiederkehrende Muster",
+          "Verschiebe mehrere Allocations gleichzeitig (falls möglich)",
+          "Nutze die Undo-Funktion, um Änderungen rückgängig zu machen",
+          "Speichere alle Änderungen auf einmal"
+        ],
+        expectedResult: "Du kannst effizient Massenänderungen im BPAFG durchführen.",
+        checkpoints: ["Mehrfachauswahl genutzt", "Bulk-Änderung durchgeführt", "Copy/Paste verwendet", "Undo getestet"],
+        skills: ["BPAFG Advanced", "Effizienz"]
+      },
+      {
+        id: "tc4-e5",
+        difficulty: 4,
+        title: "New Assignment Mode",
+        scenario: "Du musst schnell viele neue Zuweisungen für ein dringendes Projekt erstellen.",
+        task: "Nutze den New Assignment Mode für schnelle Zuweisungserstellung.",
+        steps: [
+          "Aktiviere den New Assignment Mode im BPAFG",
+          "Wähle das Zielprojekt aus",
+          "Erstelle 5 neue Allocations für verschiedene Ressourcen",
+          "Variiere die Prozentsätze (25%, 50%, 75%, 100%)",
+          "Variiere die Zeiträume",
+          "Überprüfe vor dem Speichern auf Konflikte",
+          "Speichere alle neuen Allocations",
+          "Verifiziere die Erstellung in der Projektübersicht"
+        ],
+        expectedResult: "5 neue Allocations sind schnell und effizient erstellt.",
+        checkpoints: ["New Assignment Mode aktiv", "5 Allocations erstellt", "Keine Konflikte", "Alle gespeichert"],
+        skills: ["BPAFG New Assignment", "Schnelle Planung"]
+      }
+    ]
+  },
+
+  // ============================================
+  // MODUL 5: Skills Management
+  // ============================================
+  {
+    module: 5,
+    title: "Skills Management",
+    description: "Konfiguriere und nutze das Skills-System für bessere Ressourcenplanung",
+    exercises: [
+      {
+        id: "tc5-e1",
+        difficulty: 2,
+        title: "Skill-Katalog erkunden",
+        scenario: "Du sollst verstehen, welche Skills im System verfügbar sind.",
+        task: "Erkunde und dokumentiere den vorhandenen Skill-Katalog.",
+        steps: [
+          "Navigiere zum Skills Management Bereich",
+          "Finde den Skill-Katalog oder die Skill-Bibliothek",
+          "Identifiziere die Skill-Kategorien (z.B. Technisch, Soft Skills)",
+          "Zähle, wie viele Skills pro Kategorie existieren",
+          "Finde heraus, ob Skills Hierarchien haben",
+          "Notiere 5 Skills, die für deine Rolle relevant sind"
+        ],
+        expectedResult: "Du verstehst die Struktur des Skill-Katalogs.",
+        checkpoints: ["Katalog gefunden", "Kategorien identifiziert", "Hierarchien verstanden", "Relevante Skills notiert"],
+        skills: ["Skills Management", "Katalog-Verständnis"]
+      },
+      {
+        id: "tc5-e2",
+        difficulty: 3,
+        title: "Neue Skills anlegen",
+        scenario: "Der Skill-Katalog ist unvollständig. Du sollst neue Skills hinzufügen.",
+        task: "Erstelle 5 neue Skills mit korrekter Kategorisierung.",
+        steps: [
+          "Gehe zum Skill-Management (Admin-Bereich)",
+          "Erstelle Skill 1: 'Tempus Resource' (Kategorie: Tools)",
+          "Erstelle Skill 2: 'Resource Management' (Kategorie: Methoden)",
+          "Erstelle Skill 3: 'Kundenberatung' (Kategorie: Soft Skills)",
+          "Erstelle Skill 4: 'AWS Cloud' (Kategorie: Technisch)",
+          "Erstelle Skill 5: 'Agile Coaching' (Kategorie: Methoden)",
+          "Überprüfe, dass alle Skills im Katalog erscheinen"
+        ],
+        expectedResult: "5 neue Skills sind korrekt kategorisiert im System angelegt.",
+        checkpoints: ["5 Skills erstellt", "Kategorien korrekt", "Im Katalog sichtbar", "Keine Duplikate"],
+        skills: ["Skill-Erstellung", "Kategorisierung"]
+      },
+      {
+        id: "tc5-e3",
+        difficulty: 3,
+        title: "Skills zu Ressourcen zuweisen",
+        scenario: "Deine Ressourcen brauchen Skill-Profile für besseres Matching.",
+        task: "Weise deinen Ressourcen passende Skills mit Proficiency-Levels zu.",
+        steps: [
+          "Öffne eine deiner Named Resources",
+          "Navigiere zum Skills-Bereich der Ressource",
+          "Füge 5 Skills hinzu",
+          "Setze für jeden Skill ein Proficiency-Level (z.B. 1-5 oder Beginner-Expert)",
+          "Wiederhole für eine zweite Ressource mit anderen Skills",
+          "Überprüfe die Skill-Profile in der Ressourcenübersicht"
+        ],
+        expectedResult: "2 Ressourcen haben vollständige Skill-Profile mit Levels.",
+        checkpoints: ["Skills zugewiesen", "Levels gesetzt", "2 Ressourcen aktualisiert", "Profile sichtbar"],
+        skills: ["Skill-Zuweisung", "Proficiency-Management"]
+      },
+      {
+        id: "tc5-e4",
+        difficulty: 4,
+        title: "Skill-basierte Suche",
+        scenario: "Du suchst Ressourcen mit bestimmten Skills für ein Projekt.",
+        task: "Nutze die Skill-Suche, um passende Ressourcen zu finden.",
+        steps: [
+          "Gehe zur Ressourcensuche oder zum Ressourcen-Filter",
+          "Suche nach Ressourcen mit Skill 'Java'",
+          "Verfeinere: Nur Ressourcen mit Level 3+ (oder 'Advanced')",
+          "Füge einen zweiten Skill als Filter hinzu",
+          "Prüfe die Verfügbarkeit der gefundenen Ressourcen",
+          "Speichere die Suche als Filter (falls möglich)",
+          "Dokumentiere die Suchergebnisse"
+        ],
+        expectedResult: "Du kannst effizient Ressourcen nach Skills und Levels filtern.",
+        checkpoints: ["Skill-Filter genutzt", "Level-Filter angewendet", "Ergebnisse relevant", "Suche gespeichert"],
+        skills: ["Skill-Suche", "Ressourcen-Matching"]
+      },
+      {
+        id: "tc5-e5",
+        difficulty: 4,
+        title: "Skill-Gap Analyse",
+        scenario: "Du sollst analysieren, welche Skills im Team fehlen.",
+        task: "Führe eine Skill-Gap Analyse durch.",
+        steps: [
+          "Definiere die benötigten Skills für ein Projekt (z.B. 5 Skills)",
+          "Analysiere, welche Ressourcen diese Skills haben",
+          "Identifiziere Gaps: Welche Skills fehlen komplett?",
+          "Identifiziere Gaps: Welche Skills haben zu niedrige Levels?",
+          "Erstelle eine Übersicht: Skill → Verfügbare Ressourcen → Gap",
+          "Formuliere Empfehlungen: Training oder Recruiting?",
+          "Dokumentiere die Analyse"
+        ],
+        expectedResult: "Eine Skill-Gap Analyse zeigt fehlende Kompetenzen und Handlungsoptionen.",
+        checkpoints: ["Benötigte Skills definiert", "Gaps identifiziert", "Analyse dokumentiert", "Empfehlungen formuliert"],
+        skills: ["Gap-Analyse", "Strategische Planung"]
+      }
+    ]
+  },
+
+  // ============================================
+  // MODUL 6: Reporting & Dashboards
+  // ============================================
+  {
+    module: 6,
+    title: "Reporting & Dashboards",
+    description: "Erstelle aussagekräftige Reports und Dashboards",
+    exercises: [
+      {
+        id: "tc6-e1",
+        difficulty: 2,
+        title: "Standard-Reports erkunden",
+        scenario: "Du sollst die verfügbaren Standard-Reports kennenlernen.",
+        task: "Finde und teste alle Standard-Reports.",
+        steps: [
+          "Navigiere zum Reporting-Bereich",
+          "Liste alle verfügbaren Standard-Reports auf",
+          "Öffne den 'Resource Availability Report' (RAR)",
+          "Öffne den 'Project Status Report'",
+          "Öffne den 'Allocation Report'",
+          "Teste verschiedene Filter und Zeiträume",
+          "Exportiere einen Report als PDF oder Excel"
+        ],
+        expectedResult: "Du kennst alle Standard-Reports und kannst sie nutzen.",
+        checkpoints: ["Reports gefunden", "RAR getestet", "Filter angewendet", "Export durchgeführt"],
+        skills: ["Reporting Basics", "Standard-Reports"]
+      },
+      {
+        id: "tc6-e2",
+        difficulty: 3,
+        title: "RAR2 konfigurieren",
+        scenario: "Du brauchst einen detaillierten Verfügbarkeitsbericht.",
+        task: "Konfiguriere den RAR2 Report für spezifische Anforderungen.",
+        steps: [
+          "Öffne den RAR2 (Resource Availability Report 2)",
+          "Setze den Zeitraum auf die nächsten 6 Monate",
+          "Filtere auf eine bestimmte Abteilung oder Skill-Gruppe",
+          "Wähle die Aggregationsebene (z.B. Woche, Monat)",
+          "Aktiviere Drill-down Funktionen",
+          "Konfiguriere die angezeigten Metriken",
+          "Speichere die Report-Konfiguration",
+          "Exportiere den konfigurierten Report"
+        ],
+        expectedResult: "Ein maßgeschneiderter RAR2 Report ist konfiguriert und exportiert.",
+        checkpoints: ["RAR2 geöffnet", "Filter konfiguriert", "Aggregation gewählt", "Report gespeichert"],
+        skills: ["RAR2", "Report-Konfiguration"]
+      },
+      {
+        id: "tc6-e3",
+        difficulty: 3,
+        title: "Dashboard erstellen",
+        scenario: "Das Management braucht ein Übersichts-Dashboard.",
+        task: "Erstelle ein benutzerdefiniertes Dashboard.",
+        steps: [
+          "Navigiere zum Dashboard-Bereich",
+          "Erstelle ein neues Dashboard: 'Management Übersicht'",
+          "Füge Widget 1 hinzu: Gesamtauslastung (Gauge/Chart)",
+          "Füge Widget 2 hinzu: Projekte nach Status (Pie Chart)",
+          "Füge Widget 3 hinzu: Top 5 überlastete Ressourcen (Liste)",
+          "Füge Widget 4 hinzu: Kapazität vs. Demand (Bar Chart)",
+          "Arrangiere die Widgets sinnvoll",
+          "Speichere und teile das Dashboard"
+        ],
+        expectedResult: "Ein Dashboard mit 4 Widgets ist erstellt und gespeichert.",
+        checkpoints: ["Dashboard erstellt", "4 Widgets hinzugefügt", "Layout angepasst", "Dashboard geteilt"],
+        skills: ["Dashboard-Erstellung", "Visualisierung"]
+      },
+      {
+        id: "tc6-e4",
+        difficulty: 4,
+        title: "Scheduled Reports einrichten",
+        scenario: "Reports sollen automatisch wöchentlich versendet werden.",
+        task: "Richte automatische Report-Versendung ein.",
+        steps: [
+          "Finde die Funktion für Scheduled/Automated Reports",
+          "Wähle einen Report für die Automatisierung",
+          "Konfiguriere den Zeitplan: Jeden Montag um 8:00 Uhr",
+          "Definiere die Empfänger (E-Mail-Adressen)",
+          "Wähle das Format (PDF, Excel)",
+          "Aktiviere den Schedule",
+          "Teste mit 'Jetzt senden' (falls verfügbar)",
+          "Dokumentiere die Konfiguration"
+        ],
+        expectedResult: "Ein automatischer Report-Versand ist eingerichtet.",
+        checkpoints: ["Schedule-Funktion gefunden", "Zeitplan konfiguriert", "Empfänger definiert", "Schedule aktiviert"],
+        skills: ["Report Automation", "Scheduling"]
+      },
+      {
+        id: "tc6-e5",
+        difficulty: 4,
+        title: "Custom Report erstellen",
+        scenario: "Die Standard-Reports reichen nicht. Du brauchst einen Custom Report.",
+        task: "Erstelle einen benutzerdefinierten Report.",
+        steps: [
+          "Finde den Report Builder oder Custom Report Bereich",
+          "Erstelle einen neuen Report: 'Projekt-Ressourcen-Matrix'",
+          "Wähle die Datenquelle: Projekte und Allocations",
+          "Definiere die Spalten: Projekt, Ressource, Rolle, Allocation %, Zeitraum",
+          "Füge Filter hinzu: Nur aktive Projekte",
+          "Füge Gruppierung hinzu: Nach Projekt",
+          "Füge Summen/Aggregationen hinzu",
+          "Speichere und teste den Report"
+        ],
+        expectedResult: "Ein Custom Report ist erstellt und liefert die gewünschten Daten.",
+        checkpoints: ["Report Builder genutzt", "Spalten definiert", "Filter angewendet", "Report funktioniert"],
+        skills: ["Custom Reporting", "Datenanalyse"]
+      }
+    ]
+  },
+
+  // ============================================
+  // MODUL 7: Administration & Berechtigungen
+  // ============================================
+  {
+    module: 7,
+    title: "Administration & Berechtigungen",
+    description: "Verstehe und konfiguriere Admin-Funktionen und Zugriffsrechte",
+    exercises: [
+      {
+        id: "tc7-e1",
+        difficulty: 3,
+        title: "Benutzerrollen verstehen",
+        scenario: "Du sollst das Berechtigungssystem verstehen.",
+        task: "Analysiere die vorhandenen Benutzerrollen und ihre Rechte.",
+        steps: [
+          "Navigiere zum Admin-Bereich für Benutzer/Rollen",
+          "Liste alle vorhandenen Rollen auf (z.B. Admin, PM, RM, Viewer)",
+          "Öffne die Details einer Rolle",
+          "Dokumentiere: Welche Rechte hat ein 'Project Manager'?",
+          "Dokumentiere: Welche Rechte hat ein 'Resource Manager'?",
+          "Identifiziere den Unterschied zwischen den Rollen",
+          "Finde heraus, wer Rollen zuweisen darf"
+        ],
+        expectedResult: "Du verstehst das Rollenkonzept und die Unterschiede zwischen Rollen.",
+        checkpoints: ["Rollen gefunden", "Rechte analysiert", "Unterschiede dokumentiert", "Zuweisung verstanden"],
+        skills: ["Berechtigungen", "Rollenkonzept"]
+      },
+      {
+        id: "tc7-e2",
+        difficulty: 3,
+        title: "Testbenutzer anlegen",
+        scenario: "Du sollst einen neuen Benutzer für Testzwecke anlegen.",
+        task: "Erstelle einen neuen Benutzer mit spezifischen Rechten.",
+        steps: [
+          "Gehe zur Benutzerverwaltung",
+          "Erstelle einen neuen Benutzer: 'Test PM'",
+          "Vergib E-Mail und temporäres Passwort",
+          "Weise die Rolle 'Project Manager' zu",
+          "Beschränke den Zugriff auf bestimmte Projekte (falls möglich)",
+          "Aktiviere den Benutzer",
+          "Teste den Login mit dem neuen Benutzer (falls möglich)",
+          "Dokumentiere die Konfiguration"
+        ],
+        expectedResult: "Ein neuer Benutzer ist angelegt und hat die korrekten Rechte.",
+        checkpoints: ["Benutzer erstellt", "Rolle zugewiesen", "Zugriff konfiguriert", "Benutzer aktiv"],
+        skills: ["Benutzerverwaltung", "Rechtezuweisung"]
+      },
+      {
+        id: "tc7-e3",
+        difficulty: 4,
+        title: "Organisationsstruktur konfigurieren",
+        scenario: "Die Organisationsstruktur muss im System abgebildet werden.",
+        task: "Konfiguriere Abteilungen und Hierarchien.",
+        steps: [
+          "Finde den Bereich für Organisationsstruktur",
+          "Erstelle eine Abteilung: 'Engineering'",
+          "Erstelle eine Unterabteilung: 'Frontend Team'",
+          "Erstelle eine Unterabteilung: 'Backend Team'",
+          "Erstelle eine zweite Hauptabteilung: 'Product'",
+          "Weise Ressourcen den Abteilungen zu",
+          "Überprüfe, dass die Hierarchie korrekt dargestellt wird",
+          "Teste Filter nach Abteilung"
+        ],
+        expectedResult: "Eine Organisationsstruktur mit Hierarchien ist konfiguriert.",
+        checkpoints: ["Abteilungen erstellt", "Hierarchie korrekt", "Ressourcen zugewiesen", "Filter funktioniert"],
+        skills: ["Org-Struktur", "Hierarchie-Management"]
+      },
+      {
+        id: "tc7-e4",
+        difficulty: 4,
+        title: "Workflow-Regeln konfigurieren",
+        scenario: "Resource Requests sollen einen Genehmigungsworkflow haben.",
+        task: "Konfiguriere einen Genehmigungsworkflow.",
+        steps: [
+          "Finde den Bereich für Workflows oder Genehmigungen",
+          "Analysiere den Standard-Workflow für Resource Requests",
+          "Konfiguriere: Wer muss genehmigen? (z.B. Resource Manager)",
+          "Konfiguriere: Gibt es Eskalation bei Timeout?",
+          "Konfiguriere: Welche Benachrichtigungen werden gesendet?",
+          "Teste den Workflow mit einem neuen Request",
+          "Dokumentiere den konfigurierten Workflow"
+        ],
+        expectedResult: "Ein Genehmigungsworkflow ist konfiguriert und getestet.",
+        checkpoints: ["Workflow gefunden", "Genehmiger konfiguriert", "Benachrichtigungen aktiv", "Workflow getestet"],
+        skills: ["Workflow-Konfiguration", "Genehmigungsprozesse"]
+      },
+      {
+        id: "tc7-e5",
+        difficulty: 5,
+        title: "System-Einstellungen optimieren",
+        scenario: "Du sollst die globalen System-Einstellungen überprüfen und optimieren.",
+        task: "Analysiere und dokumentiere alle wichtigen System-Einstellungen.",
+        steps: [
+          "Navigiere zu den globalen System-Einstellungen",
+          "Dokumentiere die Zeitzone-Einstellung",
+          "Dokumentiere die Standard-Kapazität (Stunden/Woche)",
+          "Dokumentiere die Fiscal Year Einstellungen",
+          "Prüfe die E-Mail/Benachrichtigungs-Einstellungen",
+          "Prüfe die Integrations-Einstellungen (falls vorhanden)",
+          "Prüfe die Backup/Audit-Einstellungen",
+          "Erstelle eine Dokumentation aller Einstellungen"
+        ],
+        expectedResult: "Alle wichtigen System-Einstellungen sind dokumentiert.",
+        checkpoints: ["Einstellungen gefunden", "Zeitzone dokumentiert", "Kapazität dokumentiert", "Vollständige Doku"],
+        skills: ["System-Administration", "Dokumentation"]
+      }
+    ]
+  },
+
+  // ============================================
+  // MODUL 8: Integrationen & Datenimport
+  // ============================================
+  {
+    module: 8,
+    title: "Integrationen & Datenimport",
+    description: "Lerne Datenimport und Integrationsmöglichkeiten kennen",
+    exercises: [
+      {
+        id: "tc8-e1",
+        difficulty: 3,
+        title: "CSV-Import vorbereiten",
+        scenario: "Du sollst Ressourcen aus einer Excel-Liste importieren.",
+        task: "Bereite einen CSV-Import vor und führe ihn durch.",
+        steps: [
+          "Finde die Import-Funktion für Ressourcen",
+          "Lade die Import-Vorlage herunter (falls verfügbar)",
+          "Erstelle eine CSV-Datei mit 5 Test-Ressourcen",
+          "Fülle alle Pflichtfelder: Name, E-Mail, Abteilung, Kapazität",
+          "Füge optionale Felder hinzu: Skills, Startdatum",
+          "Lade die CSV-Datei hoch",
+          "Überprüfe die Vorschau und korrigiere Fehler",
+          "Führe den Import durch und verifiziere"
+        ],
+        expectedResult: "5 Ressourcen sind erfolgreich per CSV importiert.",
+        checkpoints: ["Vorlage verstanden", "CSV erstellt", "Import durchgeführt", "Ressourcen verifiziert"],
+        skills: ["Datenimport", "CSV-Handling"]
+      },
+      {
+        id: "tc8-e2",
+        difficulty: 3,
+        title: "Projekt-Import",
+        scenario: "Mehrere Projekte sollen aus einer Datei importiert werden.",
+        task: "Importiere Projekte mit allen Metadaten.",
+        steps: [
+          "Finde die Import-Funktion für Projekte",
+          "Erstelle eine CSV mit 3 Projekten",
+          "Fülle: Name, Startdatum, Enddatum, Status, Priorität",
+          "Füge Projektbeschreibungen hinzu",
+          "Lade die Datei hoch",
+          "Mappe die Spalten zu den Systemfeldern",
+          "Überprüfe die Vorschau",
+          "Importiere und verifiziere die Projekte"
+        ],
+        expectedResult: "3 Projekte sind mit korrekten Daten importiert.",
+        checkpoints: ["CSV erstellt", "Mapping korrekt", "Import erfolgreich", "Projekte verifiziert"],
+        skills: ["Projekt-Import", "Daten-Mapping"]
+      },
+      {
+        id: "tc8-e3",
+        difficulty: 4,
+        title: "Datenexport für Analyse",
+        scenario: "Du brauchst Daten für eine externe Analyse.",
+        task: "Exportiere verschiedene Datensätze in verschiedenen Formaten.",
+        steps: [
+          "Exportiere alle Ressourcen als CSV",
+          "Exportiere alle Projekte als Excel",
+          "Exportiere Allocations für einen Zeitraum",
+          "Exportiere einen Report als PDF",
+          "Vergleiche die Export-Formate",
+          "Öffne die Dateien und prüfe die Vollständigkeit",
+          "Dokumentiere, welche Daten in welchem Format am besten exportiert werden"
+        ],
+        expectedResult: "Verschiedene Datenexporte sind durchgeführt und dokumentiert.",
+        checkpoints: ["Ressourcen exportiert", "Projekte exportiert", "Allocations exportiert", "Formate verglichen"],
+        skills: ["Datenexport", "Formatverständnis"]
+      },
+      {
+        id: "tc8-e4",
+        difficulty: 4,
+        title: "API-Dokumentation erkunden",
+        scenario: "Du sollst verstehen, welche API-Möglichkeiten es gibt.",
+        task: "Erkunde und dokumentiere die API-Funktionen.",
+        steps: [
+          "Finde die API-Dokumentation (falls verfügbar)",
+          "Identifiziere die verfügbaren Endpoints",
+          "Dokumentiere: Welche Daten können gelesen werden?",
+          "Dokumentiere: Welche Daten können geschrieben werden?",
+          "Finde Informationen zur Authentifizierung",
+          "Notiere Rate Limits oder Einschränkungen",
+          "Erstelle eine Übersicht der wichtigsten API-Funktionen"
+        ],
+        expectedResult: "Die API-Möglichkeiten sind dokumentiert und verstanden.",
+        checkpoints: ["Doku gefunden", "Endpoints identifiziert", "Auth verstanden", "Übersicht erstellt"],
+        skills: ["API-Verständnis", "Dokumentation"]
+      },
+      {
+        id: "tc8-e5",
+        difficulty: 5,
+        title: "Integration planen",
+        scenario: "Ein Kunde will Tempus mit seinem HR-System verbinden.",
+        task: "Erstelle einen Integrationsplan.",
+        steps: [
+          "Identifiziere die zu synchronisierenden Daten",
+          "Definiere die Sync-Richtung (uni- oder bidirektional)",
+          "Definiere die Sync-Frequenz",
+          "Identifiziere das Mapping: HR-Felder → Tempus-Felder",
+          "Definiere Regeln für Konflikte",
+          "Definiere Fehlerbehandlung",
+          "Erstelle einen Testplan",
+          "Dokumentiere den vollständigen Integrationsplan"
+        ],
+        expectedResult: "Ein vollständiger Integrationsplan ist dokumentiert.",
+        checkpoints: ["Daten identifiziert", "Mapping definiert", "Regeln festgelegt", "Plan dokumentiert"],
+        skills: ["Integrationsplanung", "Systemdesign"]
+      }
+    ]
+  }
+];
