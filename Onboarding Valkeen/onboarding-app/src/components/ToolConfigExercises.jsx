@@ -273,12 +273,12 @@ function ExerciseDetail({ exercise, onBack, onComplete, isCompleted }) {
 }
 
 export default function ToolConfigExercises() {
-  const [selectedModule, setSelectedModule] = useState(1);
+  const [selectedWeek, setSelectedWeek] = useState(1);
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [completedExercises, setCompletedExercises] = useState({});
 
-  const moduleData = toolConfigExercises.find(m => m.module === selectedModule);
-  const exercises = moduleData?.exercises || [];
+  const weekData = toolConfigExercises.find(w => w.week === selectedWeek);
+  const exercises = weekData?.exercises || [];
 
   const handleComplete = (exerciseId) => {
     setCompletedExercises(prev => ({
@@ -287,15 +287,15 @@ export default function ToolConfigExercises() {
     }));
   };
 
-  const getModuleStats = (moduleNum) => {
-    const module = toolConfigExercises.find(m => m.module === moduleNum);
-    if (!module) return { completed: 0, total: 0 };
-    const completed = module.exercises.filter(e => completedExercises[e.id]).length;
-    return { completed, total: module.exercises.length };
+  const getWeekStats = (weekNum) => {
+    const week = toolConfigExercises.find(w => w.week === weekNum);
+    if (!week) return { completed: 0, total: 0 };
+    const completed = week.exercises.filter(e => completedExercises[e.id]).length;
+    return { completed, total: week.exercises.length };
   };
 
   const totalCompleted = Object.keys(completedExercises).length;
-  const totalExercises = toolConfigExercises.reduce((sum, m) => sum + m.exercises.length, 0);
+  const totalExercises = toolConfigExercises.reduce((sum, w) => sum + w.exercises.length, 0);
 
   if (selectedExercise) {
     return (
@@ -327,22 +327,22 @@ export default function ToolConfigExercises() {
         </div>
       </div>
       
-      {/* Module-Tabs - Horizontal scrollbar auf Mobile */}
+      {/* Wochen-Tabs - Horizontal scrollbar auf Mobile */}
       <div className="flex gap-1.5 sm:gap-2 mb-4 sm:mb-6 overflow-x-auto pb-2 -mx-3 px-3 sm:-mx-1 sm:px-1">
-        {toolConfigExercises.map((module) => {
-          const stats = getModuleStats(module.module);
+        {toolConfigExercises.map((week) => {
+          const stats = getWeekStats(week.week);
           const isComplete = stats.completed === stats.total && stats.total > 0;
           return (
             <button
-              key={module.module}
-              onClick={() => setSelectedModule(module.module)}
+              key={week.week}
+              onClick={() => setSelectedWeek(week.week)}
               className={`flex-shrink-0 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-all text-xs sm:text-sm ${
-                selectedModule === module.module
+                selectedWeek === week.week
                   ? 'bg-indigo-500 text-white'
                   : 'bg-white/5 text-gray-400 hover:bg-white/10'
               } ${isComplete ? 'ring-2 ring-green-500' : ''}`}
             >
-              <span className="whitespace-nowrap">M{module.module}</span>
+              <span className="whitespace-nowrap">W{week.week}</span>
               {stats.completed > 0 && (
                 <span className="ml-1 text-[10px] sm:text-xs opacity-75">
                   {stats.completed}/{stats.total}
@@ -353,11 +353,10 @@ export default function ToolConfigExercises() {
         })}
       </div>
 
-      {moduleData && (
+      {weekData && (
         <div>
           <div className="mb-3 sm:mb-4">
-            <h4 className="text-sm sm:text-lg font-semibold text-white">{moduleData.title}</h4>
-            <p className="text-xs sm:text-sm text-gray-400 mt-0.5 sm:mt-1 line-clamp-2">{moduleData.description}</p>
+            <h4 className="text-sm sm:text-lg font-semibold text-white">Woche {weekData.week}: {weekData.title}</h4>
           </div>
           
           <div className="space-y-2 sm:space-y-3">

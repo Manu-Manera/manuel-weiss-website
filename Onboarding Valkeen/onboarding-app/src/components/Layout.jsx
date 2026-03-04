@@ -145,8 +145,8 @@ export default function Layout() {
       </aside>
 
       {/* Main Content - großzügiger Abstand oben für mobile Header */}
-      <main className="flex-1 min-h-screen mt-[88px] sm:mt-[96px] lg:mt-0 overflow-x-hidden">
-        <div className="px-5 pt-6 pb-10 sm:px-8 sm:pt-8 sm:pb-12 lg:p-10 xl:p-12 w-full">
+      <main className="flex-1 min-h-screen pt-[100px] sm:pt-[108px] lg:pt-0 overflow-x-hidden">
+        <div className="px-5 pt-4 pb-10 sm:px-8 sm:pt-6 sm:pb-12 lg:p-10 xl:p-12 w-full">
           <div className="max-w-5xl mx-auto">
             <Outlet />
           </div>
