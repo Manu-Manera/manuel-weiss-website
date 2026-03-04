@@ -10,8 +10,7 @@ import {
   Mail,
   Settings,
   Sparkles,
-  Database,
-  HardDrive,
+  Shield,
   Layers,
   Menu,
   X
@@ -25,6 +24,7 @@ const navItems = [
   { path: '/tracker', icon: CheckSquare, label: 'Aufgaben', description: 'Fortschritt tracken' },
   { path: '/flashcards', icon: Layers, label: 'Lernkarten', description: 'KI-Karteikarten' },
   { path: '/quiz', icon: Brain, label: 'Quiz', description: 'Wissen testen' },
+  { path: '/sso-setup', icon: Shield, label: 'SSO Setup', description: 'Azure ↔ Tempus' },
   { path: '/ai-coach', icon: MessageSquare, label: 'KI Coach', description: 'Fragen stellen' },
   { path: '/calendar', icon: Calendar, label: 'Kalender', description: 'Meilensteine' },
   { path: '/resources', icon: BookOpen, label: 'Ressourcen', description: 'Lernmaterial' },

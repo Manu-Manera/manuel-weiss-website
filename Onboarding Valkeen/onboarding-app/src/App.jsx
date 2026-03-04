@@ -8,6 +8,7 @@ import Calendar from './pages/Calendar';
 import Resources from './pages/Resources';
 import Report from './pages/Report';
 import Flashcards from './pages/Flashcards';
+import SSOSetup from './pages/SSOSetup';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="calendar" element={<Calendar />} />
           <Route path="resources" element={<Resources />} />
           <Route path="report" element={<Report />} />
+          <Route path="sso-setup" element={<SSOSetup />} />
         </Route>
       </Routes>
     </BrowserRouter>
