@@ -1742,3 +1742,538 @@ export const milestones = [
   { day: 80, title: "BPAFG Zertifizierung", description: "BPAFG in allen Modi beherrscht" },
   { day: 90, title: "Onboarding Abschluss", description: "Bereit für Implementation Shadowing" }
 ];
+
+// ============================================
+// STORYBASIERTE PRAXISÜBUNGEN PRO WOCHE
+// ============================================
+export const practiceExercises = [
+  // ============================================
+  // WOCHE 1: Grundlagen & Setup
+  // ============================================
+  {
+    week: 1,
+    title: "Grundlagen & Unternehmensverständnis",
+    exercises: [
+      {
+        id: "w1-e1",
+        difficulty: 1,
+        title: "Der Elevator Pitch",
+        scenario: "Du triffst im Aufzug den CEO eines potenziellen Kunden. Er fragt: 'Was macht Valkeen eigentlich?'",
+        task: "Formuliere einen 30-Sekunden Elevator Pitch, der Valkeen und den Mehrwert von Tempus Resource erklärt.",
+        hints: ["15+ Jahre PPM-Erfahrung", "Tempus Resource als Lösung", "Resource Portfolio Management"],
+        expectedAnswer: "Valkeen ist ein Consulting-Unternehmen mit über 15 Jahren Erfahrung im Project Portfolio Management. Wir helfen Unternehmen, ihre Ressourcen optimal einzusetzen - mit Tempus Resource, einer führenden Enterprise-Lösung für Resource Portfolio Management, die im Gartner Magic Quadrant gelistet ist.",
+        skills: ["Kommunikation", "Produktwissen"]
+      },
+      {
+        id: "w1-e2",
+        difficulty: 1,
+        title: "Partner-Verständnis",
+        scenario: "Ein Kollege fragt dich, warum ProSymmetry wichtig für Valkeen ist.",
+        task: "Erkläre die Beziehung zwischen Valkeen und ProSymmetry in 2-3 Sätzen.",
+        hints: ["Hersteller vs. Implementierungspartner", "Strategische Partnerschaft", "Gartner Magic Quadrant"],
+        expectedAnswer: "ProSymmetry ist der Hersteller von Tempus Resource und unser strategischer Partner. Während ProSymmetry das Produkt entwickelt, sind wir als Valkeen die Experten für die Implementierung und Beratung bei Kunden. Diese Partnerschaft ermöglicht uns, tiefes Produktwissen mit Implementierungserfahrung zu kombinieren.",
+        skills: ["Partnerverständnis", "Geschäftsmodell"]
+      },
+      {
+        id: "w1-e3",
+        difficulty: 2,
+        title: "Der skeptische IT-Leiter",
+        scenario: "Ein IT-Leiter sagt: 'Wir haben schon Excel für unsere Ressourcenplanung. Warum brauchen wir Tempus?'",
+        task: "Argumentiere, warum eine Enterprise-Lösung wie Tempus Resource besser ist als Excel.",
+        hints: ["Skalierbarkeit", "Echtzeit-Daten", "Kollaboration", "Reporting", "Integration"],
+        expectedAnswer: "Excel stößt bei wachsenden Teams schnell an Grenzen: Keine Echtzeit-Updates, manuelle Fehler, keine Kollaboration. Tempus Resource bietet automatische Kapazitätsberechnung, What-If-Szenarien, Integration mit HR/ERP-Systemen und professionelles Reporting. Bei 50+ Ressourcen spart das Wochen an manueller Arbeit und verhindert teure Fehlplanungen.",
+        skills: ["Argumentation", "Produktvorteile", "Kundeneinwände"]
+      },
+      {
+        id: "w1-e4",
+        difficulty: 2,
+        title: "McKinsey-Insights anwenden",
+        scenario: "Der HR-Direktor eines Kunden erwähnt, dass sie sich Sorgen um die Auswirkungen von KI auf ihre Workforce machen.",
+        task: "Erkläre basierend auf dem McKinsey-Artikel, warum Strategic Workforce Planning jetzt besonders wichtig ist.",
+        hints: ["Skill-Anforderungen ändern sich", "Proaktive Planung", "Wettbewerbsvorteil"],
+        expectedAnswer: "Laut McKinsey ändern sich durch KI die Skill-Anforderungen rapide. Unternehmen, die jetzt proaktiv ihre Workforce planen, können Skill-Gaps frühzeitig identifizieren und schließen. Mit Tempus Resource können Sie nicht nur aktuelle Ressourcen verwalten, sondern auch zukünftige Skill-Bedarfe modellieren und Ihre Workforce strategisch entwickeln.",
+        skills: ["Branchenwissen", "Strategische Argumentation"]
+      }
+    ]
+  },
+
+  // ============================================
+  // WOCHE 2: Resource Management Grundlagen
+  // ============================================
+  {
+    week: 2,
+    title: "Resource Management Grundlagen",
+    exercises: [
+      {
+        id: "w2-e1",
+        difficulty: 1,
+        title: "Die fünf Säulen erklären",
+        scenario: "Ein neuer Stakeholder fragt: 'Was genau macht Resource Management eigentlich?'",
+        task: "Erkläre die 5 Kernfunktionen von Resource Management verständlich.",
+        hints: ["Resource Planning", "Capacity Planning", "Allocation", "Demand Management", "Skills Management"],
+        expectedAnswer: "Resource Management hat 5 Kernfunktionen: 1) Resource Planning - Wer ist verfügbar? 2) Capacity Planning - Wie viel Kapazität haben wir? 3) Allocation - Wer arbeitet an was? 4) Demand Management - Was brauchen die Projekte? 5) Skills Management - Welche Fähigkeiten haben unsere Leute? Zusammen ermöglichen sie optimale Ressourcennutzung.",
+        skills: ["Grundlagenwissen", "Erklärungsfähigkeit"]
+      },
+      {
+        id: "w2-e2",
+        difficulty: 2,
+        title: "Generic vs. Named Resource",
+        scenario: "Ein Projektleiter plant ein Projekt für Q3, kennt aber noch nicht alle Teammitglieder. Er fragt: 'Wie plane ich Ressourcen, die ich noch nicht kenne?'",
+        task: "Erkläre das Konzept von Generic Resources und wann man sie verwendet.",
+        hints: ["Platzhalter", "Skills definieren", "Später ersetzen", "Frühzeitige Planung"],
+        expectedAnswer: "Sie können Generic Resources verwenden - das sind Platzhalter, die durch benötigte Skills und Rolle definiert werden, z.B. 'Senior Java Developer'. So können Sie frühzeitig planen und Kapazitätsbedarfe erkennen. Sobald Sie die konkreten Personen kennen, ersetzen Sie die Generic durch Named Resources. Das ermöglicht realistische Planung auch bei Unsicherheit.",
+        skills: ["Tempus-Konzepte", "Kundenberatung"]
+      },
+      {
+        id: "w2-e3",
+        difficulty: 2,
+        title: "Überauslastung erkennen",
+        scenario: "Eine Teamleiterin beschwert sich: 'Meine Leute sind ständig überlastet, aber im System sieht alles grün aus.'",
+        task: "Erkläre, was Overallocation ist und wie man sie in Tempus erkennt und vermeidet.",
+        hints: ["Über 100% Zuweisung", "Net Availability", "Visuelle Indikatoren", "Kapazitätsplanung"],
+        expectedAnswer: "Overallocation bedeutet, dass eine Ressource über 100% ihrer Kapazität zugewiesen ist. In Tempus sehen Sie das an der Net Availability - wenn sie negativ wird, ist die Person überbucht. Prüfen Sie die Auslastungsansicht: Rot zeigt Überauslastung. Lösung: Zuweisungen umverteilen, Timelines anpassen oder zusätzliche Ressourcen anfragen.",
+        skills: ["Problemanalyse", "Tempus-Navigation"]
+      },
+      {
+        id: "w2-e4",
+        difficulty: 3,
+        title: "Kapazitätsplanung für neues Team",
+        scenario: "Ein Kunde baut ein neues Entwicklungsteam auf (8 Personen) und will wissen, wie viel Projektkapazität sie in den nächsten 6 Monaten haben werden.",
+        task: "Beschreibe, wie du die Capacity Planning Funktion nutzen würdest, um diese Frage zu beantworten.",
+        hints: ["Gross Capacity berechnen", "Urlaub/Krankheit abziehen", "Meetings/Admin-Zeit", "Net Availability"],
+        expectedAnswer: "Ich würde: 1) Gross Capacity berechnen: 8 Personen × 40h/Woche × 26 Wochen = 8.320 Stunden. 2) Nicht-Projektzeit abziehen: ~20% für Meetings, Admin, Weiterbildung. 3) Urlaub einplanen: ~10 Tage pro Person. 4) Ergebnis: ~6.000 Stunden netto verfügbar. In Tempus können wir das visualisieren und mit dem Projektbedarf abgleichen, um Engpässe frühzeitig zu erkennen.",
+        skills: ["Kapazitätsberechnung", "Kundenberatung", "Tempus-Anwendung"]
+      },
+      {
+        id: "w2-e5",
+        difficulty: 3,
+        title: "Skills-Gap Analyse",
+        scenario: "Ein Unternehmen plant die Einführung von Cloud-Technologien, aber der CTO ist unsicher, ob das Team die nötigen Skills hat.",
+        task: "Erkläre, wie Skills Management in Tempus bei dieser Herausforderung helfen kann.",
+        hints: ["Skill-Inventar", "Gap-Analyse", "Schulungsplanung", "Recruiting-Bedarf"],
+        expectedAnswer: "Mit Tempus Skills Management können wir: 1) Aktuelles Skill-Inventar erfassen - wer hat welche Cloud-Kenntnisse? 2) Ziel-Skills für Cloud-Projekte definieren. 3) Gap-Analyse durchführen - wo fehlen Skills? 4) Maßnahmen planen: Schulungen für bestehendes Team oder Recruiting neuer Experten. 5) Fortschritt tracken. So sehen Sie genau, ob Sie bereit für Cloud-Projekte sind.",
+        skills: ["Skills Management", "Strategische Beratung"]
+      }
+    ]
+  },
+
+  // ============================================
+  // WOCHE 3: Project Management in Tempus
+  // ============================================
+  {
+    week: 3,
+    title: "Project Management in Tempus",
+    exercises: [
+      {
+        id: "w3-e1",
+        difficulty: 1,
+        title: "Resource Request erstellen",
+        scenario: "Du bist PM und brauchst einen UX Designer für dein Projekt ab nächstem Monat für 3 Monate.",
+        task: "Beschreibe, wie du einen Resource Request in Tempus erstellst und was du angeben musst.",
+        hints: ["Rolle/Skills", "Zeitraum", "Allocation %", "Priorität", "Begründung"],
+        expectedAnswer: "Ich erstelle einen Resource Request mit: Rolle: UX Designer, Skills: Figma, User Research. Zeitraum: 01.04. - 30.06. Allocation: 100% (Vollzeit). Priorität: Hoch (kritisch für Projektstart). Begründung: Neue App-Redesign erfordert dedizierte UX-Expertise. Der Request geht an den Resource Manager, der dann eine passende Ressource zuweist oder Alternativen vorschlägt.",
+        skills: ["Resource Requests", "Tempus-Workflow"]
+      },
+      {
+        id: "w3-e2",
+        difficulty: 2,
+        title: "Die richtige View wählen",
+        scenario: "Ein PM fragt: 'Ich habe Grid, Gantt und Kanban View. Wann nutze ich welche?'",
+        task: "Erkläre die Unterschiede und typischen Anwendungsfälle für jede View.",
+        hints: ["Grid für Übersicht/Daten", "Gantt für Timeline", "Kanban für Workflow/Agile"],
+        expectedAnswer: "Grid View: Beste für Datenübersicht, Filtern, Sortieren - ideal für Statusmeetings und Reports. Gantt View: Zeigt Timeline mit Abhängigkeiten - perfekt für Projektplanung und Meilenstein-Tracking. Kanban View: Visualisiert Workflow-Status (To Do, In Progress, Done) - optimal für agile Teams und tägliches Task-Management. Ich empfehle: Gantt für Planung, Kanban für Ausführung, Grid für Reporting.",
+        skills: ["Tempus-Views", "Beratungskompetenz"]
+      },
+      {
+        id: "w3-e3",
+        difficulty: 2,
+        title: "Projekt mit Phasen strukturieren",
+        scenario: "Ein Kunde will ein 6-monatiges ERP-Implementierungsprojekt in Tempus anlegen.",
+        task: "Beschreibe, wie du das Projekt mit Phasen strukturieren würdest.",
+        hints: ["Typische ERP-Phasen", "Unterschiedliche Ressourcen pro Phase", "Meilensteine"],
+        expectedAnswer: "Ich strukturiere das ERP-Projekt in Phasen: 1) Discovery (4 Wochen) - Business Analyst, Berater. 2) Design (6 Wochen) - Solution Architect, Entwickler. 3) Build (10 Wochen) - Entwickler-Team, Tester. 4) Test (4 Wochen) - QA-Team, Key User. 5) Go-Live (2 Wochen) - Support-Team, Trainer. Jede Phase hat eigene Ressourcenzuweisungen und Meilensteine. So sehen wir genau, wann welche Skills gebraucht werden.",
+        skills: ["Projektstrukturierung", "ERP-Wissen"]
+      },
+      {
+        id: "w3-e4",
+        difficulty: 3,
+        title: "Projektverzögerung managen",
+        scenario: "Dein Projekt verzögert sich um 4 Wochen. Der RM fragt, welche Auswirkungen das auf die Ressourcenplanung hat.",
+        task: "Erkläre, wie du in Tempus die Verzögerung abbildest und die Konsequenzen analysierst.",
+        hints: ["Timeline verschieben", "Ressourcenkonflikte prüfen", "Andere Projekte betroffen?", "Kommunikation"],
+        expectedAnswer: "Ich würde: 1) In Tempus die Projekt-Timeline um 4 Wochen verschieben. 2) Automatisch prüfen, ob Ressourcen dann Konflikte mit anderen Projekten haben. 3) Net Availability der betroffenen Ressourcen analysieren. 4) Falls Konflikte: Mit anderen PMs und dem RM Lösungen besprechen (Ressourcen tauschen, Prioritäten anpassen). 5) Änderungen dokumentieren und Stakeholder informieren. Tempus zeigt sofort alle Auswirkungen.",
+        skills: ["Änderungsmanagement", "Konfliktanalyse"]
+      },
+      {
+        id: "w3-e5",
+        difficulty: 3,
+        title: "Case Study präsentieren",
+        scenario: "Du sollst einem potenziellen Kunden eine ProSymmetry Case Study präsentieren und erklären, wie Tempus deren Probleme gelöst hat.",
+        task: "Wähle eine typische Case Study und erkläre die Kernpunkte: Problem, Lösung, Ergebnis.",
+        hints: ["Ausgangssituation", "Implementierte Lösung", "Messbare Ergebnisse", "Lessons Learned"],
+        expectedAnswer: "Case Study Beispiel - Globales Technologieunternehmen: Problem: 500+ Ressourcen, Excel-basierte Planung führte zu 30% Überauslastung und verpassten Deadlines. Lösung: Tempus Resource implementiert mit Skills Management und Capacity Planning. Ergebnis: Überauslastung auf 5% reduziert, Projektlieferung verbessert um 40%, ROI in 8 Monaten erreicht. Key Learning: Frühe Stakeholder-Einbindung war entscheidend für Adoption.",
+        skills: ["Präsentation", "Case Studies", "Storytelling"]
+      }
+    ]
+  },
+
+  // ============================================
+  // WOCHE 4: Team Integration & Konsolidierung
+  // ============================================
+  {
+    week: 4,
+    title: "Team Integration & Konsolidierung",
+    exercises: [
+      {
+        id: "w4-e1",
+        difficulty: 1,
+        title: "Net Availability erklären",
+        scenario: "Ein Kunde sieht in Tempus 'Net Availability: -20 Stunden' für einen Mitarbeiter und fragt, was das bedeutet.",
+        task: "Erkläre Net Availability und was negative Werte bedeuten.",
+        hints: ["Gross Capacity minus Zuweisungen", "Negative = Überbucht", "Handlungsbedarf"],
+        expectedAnswer: "Net Availability zeigt die verbleibende Kapazität nach allen Zuweisungen. Bei -20 Stunden ist die Person um 20 Stunden überbucht - sie hat mehr Arbeit zugewiesen als Kapazität verfügbar. Das ist ein Warnsignal! Wir müssen entweder Zuweisungen reduzieren, auf andere Ressourcen verteilen oder die Timeline anpassen. In Tempus sehen Sie das sofort rot markiert.",
+        skills: ["Tempus-Metriken", "Kundenkommunikation"]
+      },
+      {
+        id: "w4-e2",
+        difficulty: 2,
+        title: "Resource Contention lösen",
+        scenario: "Zwei Projektleiter wollen denselben Senior Developer für den gleichen Zeitraum. Beide sagen, ihr Projekt hat Priorität.",
+        task: "Beschreibe, wie du als Implementation Specialist diesen Konflikt moderieren würdest.",
+        hints: ["Objektive Kriterien", "Prioritäten prüfen", "Alternativen suchen", "Eskalationspfad"],
+        expectedAnswer: "Ich würde: 1) Beide Anforderungen in Tempus dokumentieren. 2) Objektive Kriterien prüfen: Projektpriorität, Business Value, Deadline-Kritikalität. 3) Net Availability des Developers analysieren - gibt es Teilzeitlösung? 4) Alternativen suchen: Andere Ressourcen mit ähnlichen Skills? 5) Falls keine Einigung: Eskalation an Management mit Daten aus Tempus. Transparenz und Fakten helfen bei der Entscheidung.",
+        skills: ["Konfliktmanagement", "Moderation"]
+      },
+      {
+        id: "w4-e3",
+        difficulty: 2,
+        title: "Valkeen Value Proposition",
+        scenario: "Ein Interessent fragt: 'Warum sollten wir Valkeen beauftragen statt direkt mit ProSymmetry zu arbeiten?'",
+        task: "Erkläre Valkeens einzigartigen Mehrwert.",
+        hints: ["Implementierungserfahrung", "Lokale Präsenz", "Beratungskompetenz", "Langfristige Partnerschaft"],
+        expectedAnswer: "Valkeen bietet: 1) 15+ Jahre PPM-Implementierungserfahrung - wir kennen die typischen Fallstricke. 2) Lokale Präsenz und Sprache - persönliche Betreuung in Ihrer Zeitzone. 3) Nicht nur Tool-Implementierung, sondern Prozessberatung - wir optimieren Ihre RM-Prozesse. 4) Langfristige Partnerschaft mit Support und Weiterentwicklung. ProSymmetry entwickelt das Produkt, wir sorgen dafür, dass es bei Ihnen funktioniert.",
+        skills: ["Value Proposition", "Vertriebsunterstützung"]
+      },
+      {
+        id: "w4-e4",
+        difficulty: 3,
+        title: "Zusammenfassung für Stakeholder",
+        scenario: "Du sollst dem Management eines Kunden eine 1-seitige Zusammenfassung schreiben, warum sie Tempus Resource einführen sollten.",
+        task: "Erstelle eine Executive Summary mit den wichtigsten Argumenten.",
+        hints: ["Business Problem", "Lösung", "Erwarteter ROI", "Nächste Schritte"],
+        expectedAnswer: "Executive Summary: Herausforderung: Ihre 200+ Ressourcen werden in Excel geplant - das führt zu Überauslastung, verpassten Deadlines und fehlender Transparenz. Lösung: Tempus Resource bietet Echtzeit-Kapazitätsplanung, automatische Konfliktwarnung und strategisches Portfolio Management. Erwarteter ROI: 20-30% Effizienzsteigerung, Reduktion von Überauslastung um 80%, bessere Projektlieferung. Nächste Schritte: 2-wöchiger Pilot mit Ihrem kritischsten Team. Investition: [Preis] mit ROI in 6-9 Monaten.",
+        skills: ["Executive Communication", "Business Case"]
+      },
+      {
+        id: "w4-e5",
+        difficulty: 3,
+        title: "Check-in Gespräch vorbereiten",
+        scenario: "Du hast morgen dein Check-in mit Marc. Du sollst deinen Lernfortschritt präsentieren und offene Fragen klären.",
+        task: "Bereite eine strukturierte Agenda für das 30-minütige Gespräch vor.",
+        hints: ["Erfolge", "Herausforderungen", "Offene Fragen", "Nächste Schritte"],
+        expectedAnswer: "Agenda Check-in mit Marc (30 Min): 1) Fortschritt (10 Min): Abgeschlossene Aufgaben, Videos gesehen, Trial Environment erkundet. 2) Highlights (5 Min): Was habe ich gut verstanden? (z.B. RM-Grundlagen, Views). 3) Herausforderungen (5 Min): Wo brauche ich Hilfe? (z.B. BPAFG noch unklar). 4) Offene Fragen (5 Min): Spezifische Fragen zu Kundenszenarien. 5) Nächste Schritte (5 Min): Was steht nächste Woche an? Feedback zu meinem Fortschritt?",
+        skills: ["Selbstorganisation", "Kommunikation"]
+      }
+    ]
+  },
+
+  // ============================================
+  // WOCHE 5: Fortgeschrittene Module & PM Demo
+  // ============================================
+  {
+    week: 5,
+    title: "Fortgeschrittene Module & PM Demo",
+    exercises: [
+      {
+        id: "w5-e1",
+        difficulty: 2,
+        title: "Hybrid Team Planning erklären",
+        scenario: "Ein Kunde plant ein Projekt für Q4, hat aber erst 3 von 8 benötigten Teammitgliedern identifiziert.",
+        task: "Erkläre, wie Hybrid Team Planning in Tempus dieses Problem löst.",
+        hints: ["Named Resources für bekannte Personen", "Generic für unbekannte", "Skills definieren", "Später ersetzen"],
+        expectedAnswer: "Mit Hybrid Team Planning können Sie: 1) Die 3 bekannten Personen als Named Resources zuweisen. 2) Für die 5 unbekannten Generic Resources erstellen (z.B. 'Backend Developer', 'QA Engineer'). 3) Skills und Verfügbarkeitsanforderungen definieren. 4) Kapazitätsplanung trotzdem durchführen. 5) Sobald Personen identifiziert sind, Generic durch Named ersetzen. So haben Sie realistische Planung ohne auf finale Teamzusammensetzung warten zu müssen.",
+        skills: ["Hybrid Planning", "Kundenberatung"]
+      },
+      {
+        id: "w5-e2",
+        difficulty: 2,
+        title: "PM Demo strukturieren",
+        scenario: "Du sollst morgen deine erste PM Demo intern präsentieren. Du hast 20 Minuten.",
+        task: "Erstelle eine Demo-Agenda mit den wichtigsten Punkten.",
+        hints: ["UI Navigation", "Projekt erstellen", "Allocations", "Resource Requests", "Views"],
+        expectedAnswer: "PM Demo Agenda (20 Min): 1) UI Übersicht (3 Min): Navigation, Menüstruktur, Personalisierung. 2) Projekt erstellen (5 Min): Neues Projekt anlegen, Attributes setzen (Status, Priorität, Kategorie). 3) Ressourcen zuweisen (5 Min): Allocations erstellen, Named vs. Generic zeigen. 4) Resource Request (3 Min): Request erstellen, Status-Workflow erklären. 5) Views (4 Min): Grid, Gantt, Kanban durchschalten, Filteroptionen zeigen. Abschluss: Fragen beantworten.",
+        skills: ["Demo-Vorbereitung", "Präsentation"]
+      },
+      {
+        id: "w5-e3",
+        difficulty: 3,
+        title: "Soft vs. Hard Booking Szenario",
+        scenario: "Ein PM hat 5 Ressourcen 'soft' gebucht für ein Projekt, das noch nicht final genehmigt ist. Jetzt will ein anderer PM eine dieser Ressourcen 'hard' buchen.",
+        task: "Erkläre den Unterschied und wie dieser Konflikt gelöst werden sollte.",
+        hints: ["Soft = tentativ", "Hard = verbindlich", "Prioritäten", "Kommunikation"],
+        expectedAnswer: "Soft Booking ist tentativ/vorläufig - die Ressource ist 'reserviert' aber nicht verbindlich. Hard Booking ist bestätigt und verbindlich. Im Konfliktfall: 1) Hard Booking hat normalerweise Vorrang. 2) Aber: Prüfen, wann das Soft-Projekt genehmigt wird. 3) Wenn bald: Mit beiden PMs sprechen, ob Teilzeit-Lösung möglich. 4) Wenn unklar: Hard Booking durchführen, Soft-Projekt muss Alternative finden. 5) Dokumentieren und transparent kommunizieren. Tempus zeigt beide Booking-Typen unterschiedlich an.",
+        skills: ["Booking-Konzepte", "Konfliktlösung"]
+      },
+      {
+        id: "w5-e4",
+        difficulty: 3,
+        title: "Team Resource konfigurieren",
+        scenario: "Ein Kunde hat ein cross-funktionales Scrum-Team (PO, SM, 4 Devs, 2 QA), das immer zusammen an Projekten arbeitet.",
+        task: "Erkläre, wie du ein Team Resource in Tempus einrichten würdest.",
+        hints: ["Team als Einheit", "Mitglieder zuordnen", "Kapazität aggregieren", "Zuweisung vereinfachen"],
+        expectedAnswer: "Ich würde ein Team Resource 'Scrum Team Alpha' erstellen: 1) Team-Mitglieder hinzufügen: PO, SM, 4 Devs, 2 QA. 2) Rollen und Skills pro Mitglied definieren. 3) Team-Kapazität wird automatisch aggregiert (8 Personen × 40h). 4) Bei Projektzuweisung kann das ganze Team mit einem Klick zugewiesen werden. 5) Individuelle Verfügbarkeit bleibt sichtbar. Vorteil: Einfachere Planung für wiederkehrende Teams, konsistente Zuweisung, Team-Auslastung auf einen Blick.",
+        skills: ["Team Resources", "Konfiguration"]
+      },
+      {
+        id: "w5-e5",
+        difficulty: 4,
+        title: "Demo-Feedback verarbeiten",
+        scenario: "Nach deiner internen PM Demo bekommst du Feedback: 'Die Allocations waren gut, aber du hast nicht erklärt, WARUM ein PM das so machen würde.'",
+        task: "Überarbeite deinen Demo-Ansatz, um mehr Business-Kontext einzubauen.",
+        hints: ["Use Case zuerst", "Problem → Lösung", "Business Value", "Kundensprache"],
+        expectedAnswer: "Verbesserter Ansatz: Statt 'Hier klicken Sie auf Allocation' → 'Als PM haben Sie das Problem, dass Sie nicht wissen, ob Ihre Ressourcen verfügbar sind. In Tempus sehen Sie sofort die Net Availability. Wenn Sie jetzt eine Allocation erstellen, prüft das System automatisch Konflikte.' Jede Funktion mit Business-Kontext einführen: 'Das löst das Problem von...' oder 'Das spart Ihnen Zeit bei...' Kunden interessiert nicht WO sie klicken, sondern WARUM.",
+        skills: ["Demo-Technik", "Storytelling", "Kundenorientierung"]
+      }
+    ]
+  },
+
+  // ============================================
+  // WOCHE 6: RM Demo & Client Exposure
+  // ============================================
+  {
+    week: 6,
+    title: "RM Demo & Client Exposure",
+    exercises: [
+      {
+        id: "w6-e1",
+        difficulty: 2,
+        title: "BPAFG Modi erklären",
+        scenario: "Ein Resource Manager fragt: 'Ich höre immer von BPAFG. Was ist das und welchen Modus brauche ich?'",
+        task: "Erkläre die drei BPAFG-Modi und wann man welchen verwendet.",
+        hints: ["Default Mode", "RM Mode", "PM Mode", "Perspektive"],
+        expectedAnswer: "BPAFG (Bulk Project Allocation Flatgrid) hat 3 Modi: 1) Default Mode: Flexible Ansicht, gut für Überblick und schnelle Änderungen. 2) RM Mode: Ressourcen-zentriert - zeigt alle Projekte EINER Ressource. Ideal für Resource Manager, die Auslastung einzelner Personen optimieren. 3) PM Mode: Projekt-zentriert - zeigt alle Ressourcen EINES Projekts. Ideal für Project Manager, die ihr Team verwalten. Wählen Sie den Modus nach Ihrer Hauptaufgabe.",
+        skills: ["BPAFG", "Beratung"]
+      },
+      {
+        id: "w6-e2",
+        difficulty: 2,
+        title: "Resource Profile analysieren",
+        scenario: "Du schaust dir das Individual Resource Profile eines Senior Developers an. Der Manager fragt: 'Ist diese Person für mein Projekt im April verfügbar?'",
+        task: "Beschreibe, welche Informationen du im Profil prüfst, um diese Frage zu beantworten.",
+        hints: ["Aktuelle Zuweisungen", "Net Availability", "Skills", "Geplanter Urlaub"],
+        expectedAnswer: "Im Individual Resource Profile prüfe ich: 1) Aktuelle Zuweisungen: Welche Projekte laufen im April? Mit welcher Allocation? 2) Net Availability für April: Gibt es freie Kapazität? 3) Skills: Passen die Fähigkeiten zum Projektbedarf? 4) Geplanter Urlaub/Abwesenheit im April. 5) Soft Bookings: Gibt es tentative Reservierungen? Basierend darauf kann ich sagen: 'Die Person hat 40% freie Kapazität im April, Skills passen, aber es gibt eine Soft Booking für ein anderes Projekt.'",
+        skills: ["Profil-Analyse", "Verfügbarkeitsprüfung"]
+      },
+      {
+        id: "w6-e3",
+        difficulty: 3,
+        title: "Erstes Client Meeting",
+        scenario: "Du wirst zu deinem ersten Client Meeting mitgenommen. Der Kunde beschwert sich: 'Unsere Ressourcenplanung ist ein Chaos. Niemand weiß, wer woran arbeitet.'",
+        task: "Wie würdest du (als Beobachter) dieses Problem in Tempus-Lösungen übersetzen?",
+        hints: ["Transparenz", "Zentrale Quelle", "Echtzeit-Updates", "Reporting"],
+        expectedAnswer: "Das Problem 'Niemand weiß, wer woran arbeitet' übersetzt sich in: 1) Fehlende zentrale Datenquelle → Tempus als Single Source of Truth. 2) Keine Echtzeit-Sicht → Live-Dashboards und Auslastungsansichten. 3) Manuelle Updates → Automatische Synchronisation. 4) Keine Transparenz → Role-based Views für PM, RM, Management. Ich würde notieren: Kunde braucht Fokus auf Transparenz und Reporting. Demo sollte Auslastungsübersicht und Dashboards betonen.",
+        skills: ["Kundenanalyse", "Lösungsmapping"]
+      },
+      {
+        id: "w6-e4",
+        difficulty: 3,
+        title: "Support-Email verfassen",
+        scenario: "Ein Kunde schreibt: 'Ich kann keine neuen Ressourcen anlegen. Der Button ist ausgegraut.' Du sollst eine Support-Antwort verfassen.",
+        task: "Schreibe eine professionelle Support-Email mit Lösungsvorschlägen.",
+        hints: ["Freundlich", "Strukturiert", "Mögliche Ursachen", "Nächste Schritte"],
+        expectedAnswer: "Betreff: Re: Ressourcen anlegen - Button ausgegraut\n\nGuten Tag Herr/Frau [Name],\n\nvielen Dank für Ihre Nachricht. Das beschriebene Verhalten kann folgende Ursachen haben:\n\n1) Berechtigungen: Ihr Benutzer hat möglicherweise keine Rechte zum Anlegen von Ressourcen. Bitte prüfen Sie mit Ihrem Admin.\n\n2) Lizenz: Die Ressourcen-Anzahl könnte das Lizenzlimit erreicht haben.\n\n3) Browser-Cache: Bitte versuchen Sie, den Cache zu leeren oder einen anderen Browser.\n\nKönnten Sie mir einen Screenshot senden? Dann kann ich die Ursache genauer eingrenzen.\n\nMit freundlichen Grüßen",
+        skills: ["Support-Kommunikation", "Problemanalyse"]
+      },
+      {
+        id: "w6-e5",
+        difficulty: 4,
+        title: "Feature Request dokumentieren",
+        scenario: "Ein Kunde wünscht sich: 'Es wäre toll, wenn Tempus automatisch eine Email schickt, wenn eine Ressource überbucht wird.'",
+        task: "Dokumentiere diesen Feature Request professionell für die Weiterleitung an ProSymmetry.",
+        hints: ["Use Case", "Business Value", "Aktuelle Workaround", "Priorität"],
+        expectedAnswer: "Feature Request #[Nummer]\n\nTitel: Automatische Email-Benachrichtigung bei Ressourcen-Überbuchung\n\nKunde: [Firma]\n\nUse Case: Resource Manager möchten proaktiv informiert werden, wenn eine Ressource über 100% Auslastung zugewiesen wird, ohne manuell prüfen zu müssen.\n\nBusiness Value: Verhindert Burnout, ermöglicht schnellere Reaktion auf Planungsprobleme, reduziert manuelle Überwachungsaufwand.\n\nAktueller Workaround: Manuelle tägliche Prüfung der Auslastungsberichte.\n\nPriorität: Mittel (3 Kunden haben ähnliches angefragt)\n\nVorgeschlagene Lösung: Konfigurierbarer Alert bei Überschreitung eines Schwellenwerts (z.B. 90%, 100%, 110%).",
+        skills: ["Feature Requests", "Dokumentation"]
+      }
+    ]
+  },
+
+  // ============================================
+  // WOCHE 7: Reporting & Portfolio Management
+  // ============================================
+  {
+    week: 7,
+    title: "Reporting & Portfolio Management",
+    exercises: [
+      {
+        id: "w7-e1",
+        difficulty: 2,
+        title: "RAR Report erklären",
+        scenario: "Ein Kunde fragt: 'Was ist der Unterschied zwischen RAR und RAR2? Welchen brauche ich?'",
+        task: "Erkläre beide Reports und ihre typischen Anwendungsfälle.",
+        hints: ["RAR = Basis", "RAR2 = erweitert", "Analysefunktionen", "Darstellung"],
+        expectedAnswer: "RAR (Resource Availability Report) ist der Basis-Bericht: Zeigt Verfügbarkeit über Zeit in einfacher Tabellenform. Gut für schnelle Übersicht. RAR2 ist die erweiterte Version mit: Mehr Filteroptionen, Drill-down-Funktionen, verschiedene Aggregationsebenen (Team, Abteilung, Skill), Export-Optionen. Empfehlung: RAR für tägliche Quick-Checks, RAR2 für Management-Reporting und tiefere Analysen.",
+        skills: ["Reporting", "Beratung"]
+      },
+      {
+        id: "w7-e2",
+        difficulty: 3,
+        title: "What-If Szenario erstellen",
+        scenario: "Das Management fragt: 'Was passiert mit unserer Kapazität, wenn wir 3 Senior Developer verlieren und 2 Projekte um 2 Monate verschieben?'",
+        task: "Beschreibe, wie du dieses What-If Szenario in Tempus modellieren würdest.",
+        hints: ["Szenario erstellen", "Ressourcen entfernen", "Projekte verschieben", "Auswirkungen analysieren"],
+        expectedAnswer: "Ich würde: 1) Neues What-If Szenario erstellen (kopiert aktuelle Daten). 2) 3 Senior Developer aus dem Szenario entfernen oder auf 0% setzen. 3) Die 2 Projekte um 2 Monate nach hinten verschieben. 4) Kapazitäts-Dashboard analysieren: Wo entstehen Engpässe? 5) Alternativen testen: Können Junior Devs übernehmen? Externe hinzuziehen? 6) Ergebnisse präsentieren: 'Ohne Maßnahmen haben wir 40% Unterkapazität in Q3. Option A: 2 Externe. Option B: Projekt C verschieben.'",
+        skills: ["What-If Planning", "Szenarioanalyse"]
+      },
+      {
+        id: "w7-e3",
+        difficulty: 3,
+        title: "Dashboard für Management",
+        scenario: "Der CIO möchte ein Dashboard, das auf einen Blick zeigt: Gesamtauslastung, kritische Projekte, Skill-Gaps.",
+        task: "Beschreibe, welche Widgets/Elemente du in diesem Dashboard einbauen würdest.",
+        hints: ["KPIs", "Visualisierungen", "Drill-down", "Alerts"],
+        expectedAnswer: "Management Dashboard Elemente: 1) Gesamtauslastung: Gauge-Chart (aktuell 85%), Trend der letzten 3 Monate. 2) Kapazität vs. Demand: Balkendiagramm pro Monat, Rot wenn Demand > Capacity. 3) Kritische Projekte: Liste mit Status-Ampel, sortiert nach Risiko. 4) Top 5 überlastete Ressourcen: Mit Prozent und Projekten. 5) Skill-Gap Heatmap: Benötigte vs. verfügbare Skills. 6) Alerts: Projekte ohne zugewiesene Ressourcen, Ressourcen mit >110% Auslastung. Alles mit Drill-down zu Details.",
+        skills: ["Dashboard-Design", "KPIs"]
+      },
+      {
+        id: "w7-e4",
+        difficulty: 4,
+        title: "Portfolio Priorisierung",
+        scenario: "Ein Kunde hat 20 Projektanfragen aber nur Kapazität für 12. Er fragt: 'Wie entscheide ich, welche Projekte wir machen?'",
+        task: "Erkläre, wie der Portfolio Planner bei dieser Entscheidung hilft.",
+        hints: ["Kriterien definieren", "Scoring", "Ressourcenabgleich", "Szenarien"],
+        expectedAnswer: "Mit dem Portfolio Planner: 1) Bewertungskriterien definieren: Strategischer Fit, ROI, Risiko, Ressourcenverfügbarkeit. 2) Alle 20 Projekte scoren (z.B. 1-5 pro Kriterium). 3) Gewichtung festlegen (z.B. Strategie 40%, ROI 30%, Risiko 20%, Ressourcen 10%). 4) Automatisches Ranking erstellen. 5) Top 12 gegen Kapazität prüfen: Passen die benötigten Skills? 6) What-If: Was wenn wir Projekt 13 statt 12 nehmen? 7) Entscheidungsvorlage für Management mit Daten untermauern.",
+        skills: ["Portfolio Management", "Priorisierung"]
+      },
+      {
+        id: "w7-e5",
+        difficulty: 4,
+        title: "Demand Forecasting präsentieren",
+        scenario: "Der VP Engineering fragt: 'Wie viele Entwickler brauchen wir in 12 Monaten basierend auf unserer Projekt-Pipeline?'",
+        task: "Beschreibe deinen Ansatz für diese strategische Forecasting-Anfrage.",
+        hints: ["Pipeline analysieren", "Historische Daten", "Wachstumsfaktoren", "Unsicherheiten"],
+        expectedAnswer: "Mein Forecasting-Ansatz: 1) Aktuelle Pipeline analysieren: Bestätigte Projekte, wahrscheinliche Projekte, mögliche Projekte. 2) Ressourcenbedarf pro Projekt schätzen (basierend auf historischen Daten ähnlicher Projekte). 3) Zeitliche Verteilung: Wann brauchen wir welche Skills? 4) Szenario-Modell: Best Case (nur bestätigte), Expected (bestätigt + 70% wahrscheinlich), Worst Case (alle). 5) Ergebnis: 'Expected Case: Wir brauchen 8 zusätzliche Entwickler bis Q4, davon 3 mit Cloud-Skills.' 6) Empfehlung: Recruiting jetzt starten, da Vorlauf 3-4 Monate.",
+        skills: ["Strategic Forecasting", "Datenanalyse"]
+      }
+    ]
+  },
+
+  // ============================================
+  // WOCHE 8: BPAFG Deep Dive & Admin
+  // ============================================
+  {
+    week: 8,
+    title: "BPAFG Deep Dive & Admin",
+    exercises: [
+      {
+        id: "w8-e1",
+        difficulty: 2,
+        title: "BPAFG Best Practices",
+        scenario: "Ein Kunde nutzt BPAFG zum ersten Mal und fragt: 'Gibt es Tipps, wie ich das effizient nutze?'",
+        task: "Gib 5 Best Practices für die BPAFG-Nutzung.",
+        hints: ["Filter nutzen", "Modus wählen", "Bulk-Änderungen", "Speichern", "Shortcuts"],
+        expectedAnswer: "BPAFG Best Practices: 1) Richtigen Modus wählen: RM Mode für Ressourcen-Fokus, PM Mode für Projekt-Fokus. 2) Filter zuerst setzen: Zeitraum, Abteilung, Projekt eingrenzen bevor Sie ändern. 3) Bulk-Änderungen nutzen: Mehrere Zellen markieren, einmal ändern. 4) Regelmäßig speichern: Änderungen gehen bei Timeout verloren. 5) Farbcodes beachten: Rot = Überauslastung, Gelb = Warnung. Bonus: Keyboard-Shortcuts lernen für schnellere Navigation.",
+        skills: ["BPAFG", "Best Practices"]
+      },
+      {
+        id: "w8-e2",
+        difficulty: 3,
+        title: "New Assignment Mode",
+        scenario: "Ein Resource Manager muss schnell 10 neue Zuweisungen für ein dringendes Projekt erstellen.",
+        task: "Erkläre, wie der New Assignment Mode in BPAFG dabei hilft.",
+        hints: ["Schnelle Erstellung", "Direkt im Grid", "Ressource + Projekt + Zeitraum", "Bulk"],
+        expectedAnswer: "Der New Assignment Mode ermöglicht schnelle Zuweisungserstellung: 1) BPAFG öffnen, New Assignment Mode aktivieren. 2) Projekt auswählen (das dringende Projekt). 3) Im Grid direkt Ressourcen auswählen und Zeitraum/Prozent eingeben. 4) Mehrere Zuweisungen in einem Durchgang erstellen. 5) Alle 10 Zuweisungen mit einem Klick speichern. Vorteil: Keine einzelnen Dialoge, alles in einer Ansicht, sofortige Konfliktanzeige wenn Ressource überbucht wird.",
+        skills: ["BPAFG Advanced", "Effizienz"]
+      },
+      {
+        id: "w8-e3",
+        difficulty: 3,
+        title: "Data Sync konfigurieren",
+        scenario: "Ein Kunde will Tempus mit seinem HR-System (Workday) verbinden, damit neue Mitarbeiter automatisch angelegt werden.",
+        task: "Erkläre den grundlegenden Ansatz für diese Integration.",
+        hints: ["API/Import", "Feldmapping", "Sync-Frequenz", "Fehlerbehandlung"],
+        expectedAnswer: "Data Sync Ansatz: 1) Datenquelle definieren: Workday API oder regelmäßiger Dateiexport. 2) Feldmapping erstellen: Workday-Felder → Tempus-Felder (Name, Abteilung, Startdatum, Skills). 3) Sync-Regeln: Nur aktive Mitarbeiter, bestimmte Abteilungen. 4) Frequenz: Täglich nachts oder bei Änderung (Webhook). 5) Fehlerbehandlung: Was bei fehlenden Pflichtfeldern? Logging und Alerts. 6) Test: Erst mit Testdaten, dann Pilotgruppe, dann Rollout. Wichtig: Datenqualität in Workday muss stimmen!",
+        skills: ["Integration", "Data Sync"]
+      },
+      {
+        id: "w8-e4",
+        difficulty: 4,
+        title: "Custom Attributes anlegen",
+        scenario: "Ein Kunde braucht ein neues Feld 'Kostenstelle' für Ressourcen, das in Reports verwendet werden soll.",
+        task: "Beschreibe den Prozess, ein Custom Attribute anzulegen und nutzbar zu machen.",
+        hints: ["Attribute Management", "Feldtyp", "Validierung", "Views", "Reports"],
+        expectedAnswer: "Custom Attribute 'Kostenstelle' anlegen: 1) Admin → Attribute Management → Neues Attribut. 2) Name: 'Kostenstelle', Typ: Dropdown (vordefinierte Werte) oder Text. 3) Entität: Resource (gilt für Ressourcen). 4) Werte definieren: Liste der Kostenstellen oder Freitext mit Validierung. 5) Pflichtfeld? Je nach Anforderung. 6) In Views einbinden: Spalte zu relevanten Sheets hinzufügen. 7) In Reports verfügbar machen: Als Filter und Gruppierung. 8) Bestehende Ressourcen: Bulk-Update oder manuelle Pflege. 9) Dokumentation für User erstellen.",
+        skills: ["Admin", "Konfiguration"]
+      },
+      {
+        id: "w8-e5",
+        difficulty: 4,
+        title: "Snapshot-Strategie entwickeln",
+        scenario: "Ein Kunde fragt: 'Wir wollen unsere Ressourcenplanung monatlich mit dem Vormonat vergleichen. Wie setzen wir das um?'",
+        task: "Entwickle eine Snapshot-Strategie für monatliche Vergleiche.",
+        hints: ["Zeitpunkt", "Automatisierung", "Benennung", "Vergleichsreports", "Aufbewahrung"],
+        expectedAnswer: "Snapshot-Strategie: 1) Zeitpunkt: Jeden 1. des Monats um 6:00 Uhr (vor Arbeitsbeginn). 2) Benennung: 'Monthly_YYYY-MM' (z.B. Monthly_2024-03). 3) Automatisierung: Scheduled Job einrichten. 4) Inhalt: Vollständiger Snapshot aller Ressourcen, Projekte, Zuweisungen. 5) Vergleichsreport erstellen: Aktuell vs. Vormonat - Delta bei Auslastung, neue/beendete Projekte. 6) Aufbewahrung: 12 Monate rollierend, Jahresend-Snapshots dauerhaft. 7) Zugriff: Nur für Management und Controlling. 8) Dokumentation: Was wurde wann gesnapshoted.",
+        skills: ["Snapshots", "Strategie"]
+      }
+    ]
+  },
+
+  // ============================================
+  // WOCHE 9: Best Practices & Abschluss
+  // ============================================
+  {
+    week: 9,
+    title: "Best Practices & Abschluss",
+    exercises: [
+      {
+        id: "w9-e1",
+        difficulty: 3,
+        title: "Adoption-Strategie entwickeln",
+        scenario: "Ein Kunde hat Tempus implementiert, aber die Nutzung ist gering. Nur 30% der User loggen sich regelmäßig ein.",
+        task: "Entwickle eine Strategie zur Steigerung der Adoption.",
+        hints: ["Ursachenanalyse", "Training", "Champions", "Quick Wins", "Management Support"],
+        expectedAnswer: "Adoption-Strategie: 1) Ursachenanalyse: Warum nutzen 70% es nicht? Interviews, Umfrage. 2) Quick Wins identifizieren: Welche Funktion löst ein echtes Problem? Damit starten. 3) Champions-Programm: Power User als Multiplikatoren ausbilden. 4) Gezieltes Training: Rollenspezifisch (PM vs. RM), kurze Sessions. 5) Management-Commitment: Führungskräfte müssen Tempus nutzen und einfordern. 6) Prozesse anpassen: Alte Excel-Prozesse abschalten. 7) Erfolge kommunizieren: 'Team X hat 20% Zeit gespart.' 8) Regelmäßige Check-ins: Monatlich Nutzung reviewen.",
+        skills: ["Change Management", "Adoption"]
+      },
+      {
+        id: "w9-e2",
+        difficulty: 3,
+        title: "RM Maturity Assessment",
+        scenario: "Ein neuer Kunde fragt: 'Wie gut sind wir eigentlich im Resource Management? Wo stehen wir im Vergleich zu anderen?'",
+        task: "Erkläre, wie du ein RM Maturity Assessment durchführen würdest.",
+        hints: ["Maturity-Stufen", "Bewertungskriterien", "Ist-Analyse", "Roadmap"],
+        expectedAnswer: "RM Maturity Assessment: 1) Maturity-Modell erklären: Level 1 (Ad-hoc) bis Level 5 (Optimiert). 2) Bewertungskriterien: Prozesse, Tools, Datenqualität, Governance, Kultur. 3) Ist-Analyse: Interviews mit PM, RM, Management. Aktuelle Prozesse dokumentieren. 4) Scoring: Jedes Kriterium bewerten (1-5). 5) Benchmark: Vergleich mit Industrie-Durchschnitt. 6) Gap-Analyse: Wo sind die größten Lücken? 7) Roadmap: Priorisierte Maßnahmen für nächstes Level. 8) Präsentation: 'Sie sind auf Level 2.5, Industrie-Durchschnitt ist 3. Mit diesen 5 Maßnahmen erreichen Sie Level 3 in 6 Monaten.'",
+        skills: ["Assessment", "Beratung"]
+      },
+      {
+        id: "w9-e3",
+        difficulty: 4,
+        title: "SAFe Integration erklären",
+        scenario: "Ein Kunde arbeitet mit SAFe (Scaled Agile Framework) und fragt, wie Tempus in ihre agile Arbeitsweise passt.",
+        task: "Erkläre die Integration von Tempus Resource mit SAFe.",
+        hints: ["ARTs", "PI Planning", "Kapazität", "Teams vs. Individuen"],
+        expectedAnswer: "Tempus + SAFe Integration: 1) Agile Release Trains (ARTs) als Team Resources abbilden. 2) PI Planning unterstützen: Kapazität pro Team für nächstes PI (10 Wochen) planen. 3) Feature-zu-Team-Zuweisung: Welches Team arbeitet an welchem Feature? 4) Kapazitätsplanung auf Team-Ebene, nicht Individuum (SAFe-Prinzip). 5) Velocity-basierte Planung: Historische Velocity als Kapazitätsgrundlage. 6) Roadmap-Visualisierung: Features über mehrere PIs. 7) Reporting: Burn-up auf Portfolio-Ebene. Wichtig: Tempus ergänzt agile Tools (Jira), ersetzt sie nicht.",
+        skills: ["SAFe", "Agile Integration"]
+      },
+      {
+        id: "w9-e4",
+        difficulty: 4,
+        title: "Implementation Shadowing vorbereiten",
+        scenario: "Nächste Woche begleitest du Marc zu einer Kundenimplementierung. Du sollst dich vorbereiten.",
+        task: "Erstelle eine Checkliste, was du vor, während und nach dem Shadowing tun solltest.",
+        hints: ["Vorbereitung", "Beobachtung", "Fragen", "Dokumentation", "Reflexion"],
+        expectedAnswer: "Shadowing-Checkliste:\n\nVORHER:\n- Kundenhintergrund lesen (Branche, Größe, Ziele)\n- Projektdokumentation durchsehen\n- Eigene Fragen vorbereiten\n- Laptop/Notizen bereit\n\nWÄHREND:\n- Aktiv zuhören, nicht unterbrechen\n- Notizen zu: Kundenreaktionen, Marcs Techniken, Probleme/Lösungen\n- Auf Körpersprache achten\n- Fragen für später notieren\n\nNACHHER:\n- Debrief mit Marc (Was lief gut? Was würde er anders machen?)\n- Eigene Reflexion: Was habe ich gelernt?\n- Dokumentation: Key Learnings festhalten\n- Follow-up Fragen klären",
+        skills: ["Shadowing", "Lernen"]
+      },
+      {
+        id: "w9-e5",
+        difficulty: 5,
+        title: "Eigenständige Implementation planen",
+        scenario: "Du bekommst deinen ersten eigenen kleinen Kunden: Ein 50-Personen-Unternehmen will Tempus für 3 Teams einführen.",
+        task: "Erstelle einen groben Implementierungsplan.",
+        hints: ["Discovery", "Konfiguration", "Migration", "Training", "Go-Live", "Support"],
+        expectedAnswer: "Implementierungsplan (8 Wochen):\n\nWoche 1-2: Discovery\n- Stakeholder-Interviews\n- Aktuelle Prozesse dokumentieren\n- Anforderungen definieren\n- Erfolgskriterien festlegen\n\nWoche 3-4: Konfiguration\n- Tempus-Instanz einrichten\n- Attribute/Views konfigurieren\n- Rollen/Rechte definieren\n- Testdaten laden\n\nWoche 5: Datenmigration\n- Ressourcen importieren\n- Projekte anlegen\n- Zuweisungen migrieren\n- Datenqualität prüfen\n\nWoche 6: Training\n- Admin-Training (1 Tag)\n- PM-Training (0.5 Tag)\n- RM-Training (0.5 Tag)\n- Übungssessions\n\nWoche 7: Pilot\n- 1 Team startet produktiv\n- Tägliche Check-ins\n- Bugs/Issues fixen\n\nWoche 8: Rollout\n- Alle 3 Teams live\n- Hypercare-Support\n- Dokumentation finalisieren",
+        skills: ["Implementation", "Projektplanung"]
+      }
+    ]
+  }
+];
