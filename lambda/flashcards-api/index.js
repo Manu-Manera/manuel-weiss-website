@@ -916,22 +916,32 @@ async function updateCard(event) {
     
     let updateExpression = 'SET updatedAt = :now';
     const expressionAttributeValues = { ':now': now };
+    const expressionAttributeNames = {};
 
     if (front) {
-      updateExpression += ', front = :front';
+      updateExpression += ', #front = :front';
       expressionAttributeValues[':front'] = front;
+      expressionAttributeNames['#front'] = 'front';
     }
     if (back) {
-      updateExpression += ', back = :back';
+      updateExpression += ', #back = :back';
       expressionAttributeValues[':back'] = back;
+      expressionAttributeNames['#back'] = 'back';
     }
 
-    await docClient.send(new UpdateCommand({
+    const updateParams = {
       TableName: CARDS_TABLE,
       Key: { userId, cardId },
       UpdateExpression: updateExpression,
       ExpressionAttributeValues: expressionAttributeValues
-    }));
+    };
+    
+    // Nur hinzufügen wenn es Attribute Names gibt
+    if (Object.keys(expressionAttributeNames).length > 0) {
+      updateParams.ExpressionAttributeNames = expressionAttributeNames;
+    }
+
+    await docClient.send(new UpdateCommand(updateParams));
 
     console.log(`✅ Karte ${cardId} aktualisiert`);
 
