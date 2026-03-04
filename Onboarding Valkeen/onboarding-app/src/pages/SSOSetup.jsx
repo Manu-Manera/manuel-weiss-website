@@ -28,7 +28,19 @@ import {
   Clock,
   X
 } from 'lucide-react';
-import { IDP_OPTIONS, ENV_OPTIONS, STEPS, AZURE_NEW_APP_URL, OKTA_APPS_URL, SAML_TOOL_URL, DEFAULT_TEMPUS_DOMAIN } from '../data/ssoSetupData';
+import {
+  IDP_OPTIONS,
+  ENV_OPTIONS,
+  STEPS,
+  SAML_IDPS,
+  OAUTH_IDPS,
+  AZURE_NEW_APP_URL,
+  AZURE_APP_REGISTRATION_URL,
+  OKTA_APPS_URL,
+  GOOGLE_CLOUD_CONSOLE_URL,
+  SAML_TOOL_URL,
+  DEFAULT_TEMPUS_DOMAIN
+} from '../data/ssoSetupData';
 
 const STORAGE_KEY = 'sso-setup-projects';
 const TEMPLATES_KEY = 'sso-setup-templates';
@@ -233,24 +245,41 @@ function getStoredUrls(project) {
 }
 
 function exportAsTxt(project) {
-  const { baseUrl, entityId, replyUrl } = getStoredUrls(project);
   const idpName = IDP_OPTIONS.find(i => i.id === project.idp)?.label || project.idp;
-  const content = `# SSO Konfiguration: ${project.clientName}
+  const baseUrl = project.baseUrl ?? computeUrls(project).baseUrl;
+  let content = `# SSO Konfiguration: ${project.clientName}
 ## IdP: ${idpName}
 ## Tempus
 - Basis-URL: ${baseUrl}
-- Entity ID: ${entityId}
+`;
+  if (SAML_IDPS.includes(project.idp)) {
+    const { entityId, replyUrl } = getStoredUrls(project);
+    content += `- Entity ID: ${entityId}
 - Reply URL: ${replyUrl}
 
 ## IdP (für Kunde)
 - Bezeichner/Entity ID: ${entityId}
 - Antwort-URL/ACS: ${replyUrl}
 
-## Tempus Schritte
-1. General Settings → Miscellaneous
-2. SAML Configuration URL: Metadaten-URL aus IdP einfügen
-3. Speichern
-
+## Tempus (General Settings → Miscellaneous → SSO)
+- SAML application id: ${entityId}
+- SAML configuration URL: ${project.samlConfigUrl || '(Metadaten-URL aus IdP einfügen)'}
+${project.samlEndpoint ? `- SAML endpoint: ${project.samlEndpoint}\n` : ''}
+- Custom label: ${project.customLabel || 'Continue With Saml'}
+`;
+  } else {
+    const clientId = project.idp === 'google' ? project.googleClientId : project.microsoftClientId;
+    const clientKey = project.idp === 'google' ? project.googleClientKey : project.microsoftClientKey;
+    const redirectUri = `${baseUrl}/sg/home/${project.idp}`;
+    content += `
+## OAuth (Tempus)
+- ${project.idp === 'google' ? 'Google' : 'Microsoft'} client id: ${clientId || '(eintragen)'}
+- ${project.idp === 'google' ? 'Google' : 'Microsoft'} client key: ${clientKey ? '••••••••' : '(eintragen)'}
+- Redirect URI: ${redirectUri}
+- Custom label: ${project.customLabel || (project.idp === 'google' ? 'Continue With Google' : 'Continue With Microsoft')}
+`;
+  }
+  content += `
 ## Benutzer
 - Resource Management → User Identity → E-Mail + SSO aktivieren
 `;
@@ -264,8 +293,11 @@ function exportAsTxt(project) {
 }
 
 function exportAsHtml(project) {
-  const { baseUrl, entityId, replyUrl } = getStoredUrls(project);
+  const baseUrl = project.baseUrl ?? computeUrls(project).baseUrl;
   const idpName = IDP_OPTIONS.find(i => i.id === project.idp)?.label || project.idp;
+  const isSaml = SAML_IDPS.includes(project.idp);
+  const entityId = isSaml ? getStoredUrls(project).entityId : '';
+  const replyUrl = isSaml ? getStoredUrls(project).replyUrl : '';
   const html = `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>SSO Setup ${project.clientName}</title>
 <style>body{font-family:sans-serif;max-width:700px;margin:40px auto;padding:20px;background:#1a1a2e;color:#eee}
@@ -275,11 +307,13 @@ h1{color:#818cf8}.box{background:#2d2d44;padding:16px;border-radius:8px;margin:1
 </style></head><body>
 <h1>SSO Setup: ${project.clientName}</h1>
 <p>IdP: <strong>${idpName}</strong></p>
-<div class="box"><strong>Entity ID:</strong><br><code>${entityId}</code></div>
+${isSaml ? `<div class="box"><strong>Entity ID:</strong><br><code>${entityId}</code></div>
 <div class="box"><strong>Reply URL:</strong><br><code>${replyUrl}</code></div>
+<div class="box"><strong>SAML configuration URL:</strong><br><code>${project.samlConfigUrl || '(aus IdP)'}</code></div>` : `<div class="box"><strong>Redirect URI:</strong><br><code>${baseUrl}/sg/home/${project.idp}</code></div>
+<div class="box"><strong>${project.idp === 'google' ? 'Google' : 'Microsoft'} client id:</strong><br><code>${project.idp === 'google' ? project.googleClientId : project.microsoftClientId || '(eintragen)'}</code></div>`}
 <h2>Tempus</h2>
-<ol><li>General Settings → Miscellaneous</li>
-<li>SAML Configuration URL: Metadaten-URL aus ${idpName} einfügen</li>
+<ol><li>General Settings → Miscellaneous → SSO</li>
+<li>${isSaml ? `SAML aktivieren, SAML Configuration URL einfügen` : `${project.idp === 'google' ? 'Google' : 'Microsoft'} aktivieren, Client ID & Key eintragen`}</li>
 <li>Speichern</li></ol>
 <h2>Benutzer</h2>
 <p>Resource Management → User Identity → E-Mail + SSO aktivieren</p>
@@ -293,9 +327,11 @@ h1{color:#818cf8}.box{background:#2d2d44;padding:16px;border-radius:8px;margin:1
 }
 
 function getEmailBody(project) {
-  const { baseUrl, entityId, replyUrl } = getStoredUrls(project);
+  const baseUrl = project.baseUrl ?? computeUrls(project).baseUrl;
   const idpName = IDP_OPTIONS.find(i => i.id === project.idp)?.label || project.idp;
-  return `Hallo,
+  if (SAML_IDPS.includes(project.idp)) {
+    const { entityId, replyUrl } = getStoredUrls(project);
+    return `Hallo,
 
 anbei die SSO-Konfigurationswerte für Tempus (${project.clientName}):
 
@@ -303,6 +339,20 @@ Entity ID: ${entityId}
 Reply URL: ${replyUrl}
 
 Bitte in ${idpName} unter der SAML-Anwendung eintragen, dann die Metadaten-URL kopieren und in Tempus unter General Settings → Miscellaneous → SAML Configuration URL einfügen.
+
+Tempus-URL: ${baseUrl}
+
+Viele Grüße`;
+  }
+  const redirectUri = `${baseUrl}/sg/home/${project.idp}`;
+  return `Hallo,
+
+anbei die SSO-Konfigurationswerte für Tempus (${project.clientName}):
+
+Redirect URI: ${redirectUri}
+${project.idp === 'google' ? 'Google' : 'Microsoft'} Client ID: ${project.idp === 'google' ? project.googleClientId : project.microsoftClientId || '(eintragen)'}
+
+Bitte in Tempus unter General Settings → Miscellaneous → SSO: ${project.idp === 'google' ? 'Google' : 'Microsoft'} aktivieren und Client ID sowie Client Key eintragen.
 
 Tempus-URL: ${baseUrl}
 
@@ -353,7 +403,19 @@ export default function SSOSetup() {
   });
 
   const project = selectedId ? getProject(selectedId) : null;
-  const currentStep = project?.currentStep ?? 1;
+  const isSaml = project && SAML_IDPS.includes(project.idp);
+  const isOAuth = project && OAUTH_IDPS.includes(project.idp);
+  const effectiveSteps = isOAuth
+    ? [
+        { id: 1, title: 'Kunde', key: 'customer' },
+        { id: 2, title: 'OAuth Client', key: 'oauth' },
+        { id: 3, title: 'Tempus', key: 'tempus' },
+        { id: 4, title: 'Benutzer', key: 'users' },
+        { id: 5, title: 'Fertig', key: 'done' }
+      ]
+    : STEPS;
+  const maxStep = effectiveSteps.length;
+  const currentStep = Math.min(project?.currentStep ?? 1, maxStep);
   const completedSteps = project?.completedSteps ?? {};
 
   const computedUrls = project ? computeUrls(project) : null;
@@ -503,7 +565,7 @@ export default function SSOSetup() {
           SSO Setup
         </h1>
         <p className="text-white/60 text-sm sm:text-base">
-          Azure, Okta und andere IdPs mit Tempus-Instanzen verknüpfen – flexibel und skalierbar
+          Tempus SSO: Password, Google, Microsoft, SAML (Azure/Okta) – alle Optionen im Primary login
         </p>
       </div>
 
@@ -653,7 +715,7 @@ export default function SSOSetup() {
                       <Building2 className="w-5 h-5 text-indigo-400 flex-shrink-0" />
                       <div className="min-w-0">
                         <p className="font-medium text-white">{p.clientName}</p>
-                        <p className="text-xs text-gray-500 truncate">{urls.entityId}</p>
+                        <p className="text-xs text-gray-500 truncate">{SAML_IDPS.includes(p.idp) ? urls.entityId : urls.baseUrl}</p>
                         <div className="flex flex-wrap gap-1 mt-1">
                           <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10">{IDP_OPTIONS.find(i => i.id === p.idp)?.label}</span>
                           {(p.tags || []).slice(0, 2).map(tag => <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300">{tag}</span>)}
@@ -663,7 +725,7 @@ export default function SSOSetup() {
                     <div className="flex items-center gap-2 flex-shrink-0">
                       {Object.keys(p.completedSteps || {}).length > 0 && (
                         <span className="text-xs text-gray-500 flex items-center gap-1">
-                          <Clock className="w-3 h-3" /> {Object.keys(p.completedSteps).length}/7
+                          <Clock className="w-3 h-3" /> {Object.keys(p.completedSteps || {}).length}/{SAML_IDPS.includes(p.idp) ? 7 : 5}
                         </span>
                       )}
                       <span className={`text-xs px-2 py-0.5 rounded ${p.status === 'done' ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-400'}`}>
@@ -694,13 +756,24 @@ export default function SSOSetup() {
             <button onClick={handleSaveAsTemplate} className="text-sm text-indigo-400 hover:text-indigo-300">Als Vorlage speichern</button>
           </div>
 
-          <StepIndicator steps={STEPS} currentStep={currentStep} completedSteps={completedSteps} />
+          <StepIndicator steps={effectiveSteps} currentStep={currentStep} completedSteps={completedSteps} />
 
           <div className="glass-card p-6">
             {/* Step 1: Kunde - bearbeitbar */}
             {currentStep === 1 && (
               <div className="space-y-6">
                 <h3 className="text-xl font-semibold text-white flex items-center gap-2"><Building2 className="w-6 h-6 text-indigo-400" /> Schritt 1: Kundendaten</h3>
+                <div className="bg-white/5 rounded-xl p-3 text-sm text-gray-400 flex flex-wrap gap-x-4 gap-y-1">
+                  <span className="text-white font-medium">Tempus SSO – Primary login:</span>
+                  <span>Password (Standard)</span>
+                  <span>•</span>
+                  <span>Google</span>
+                  <span>•</span>
+                  <span>Microsoft</span>
+                  <span>•</span>
+                  <span>SAML</span>
+                  <span className="text-indigo-300">→ Du konfigurierst: {IDP_OPTIONS.find(i => i.id === project.idp)?.label}</span>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm text-gray-400 mb-1">Kunden-Name</label>
@@ -764,8 +837,101 @@ export default function SSOSetup() {
               </div>
             )}
 
-            {/* Step 2: Werte */}
-            {currentStep === 2 && (
+            {/* Step 2: OAuth Client (nur Google/Microsoft) */}
+            {currentStep === 2 && isOAuth && (
+              <div className="space-y-6">
+                <h3 className="text-xl font-semibold text-white flex items-center gap-2"><Key className="w-6 h-6 text-indigo-400" /> Schritt 2: OAuth Client ID & Key</h3>
+                {project.idp === 'google' ? (
+                  <>
+                    <p className="text-gray-400 text-sm">Client ID und Client Key aus der Google Cloud Console holen.</p>
+                    <ol className="list-decimal list-inside space-y-3 text-gray-300">
+                      <li>Öffne <a href={GOOGLE_CLOUD_CONSOLE_URL} target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline">Google Cloud Console → APIs & Services → Credentials <ExternalLink className="w-3 h-3 inline" /></a></li>
+                      <li>OAuth 2.0 Client IDs → Create Credentials → OAuth client ID</li>
+                      <li>Application type: Web application</li>
+                      <li>Authorized redirect URIs: <code className="text-green-300">{projectUrls.baseUrl}/sg/home/google</code> <CopyButton text={`${projectUrls.baseUrl}/sg/home/google`} /></li>
+                      <li>Client ID und Client Secret kopieren – in Tempus eintragen (Schritt 3)</li>
+                    </ol>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white/5 rounded-xl p-4">
+                      <div>
+                        <label className="block text-sm text-gray-400 mb-1">Google client id (Notiz)</label>
+                        <input
+                          value={project.googleClientId || ''}
+                          onChange={(e) => updateProject(project.id, { googleClientId: e.target.value })}
+                          placeholder="z.B. xxx.apps.googleusercontent.com"
+                          className="w-full glass-input font-mono text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-gray-400 mb-1">Google client key (Notiz)</label>
+                        <input
+                          type="password"
+                          value={project.googleClientKey || ''}
+                          onChange={(e) => updateProject(project.id, { googleClientKey: e.target.value })}
+                          placeholder="Geheimnis aus Google"
+                          className="w-full glass-input font-mono text-sm"
+                        />
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label className="block text-sm text-gray-400 mb-1">Custom label (Tempus Login-Button)</label>
+                        <input
+                          value={project.customLabel || 'Continue With Google'}
+                          onChange={(e) => updateProject(project.id, { customLabel: e.target.value })}
+                          placeholder="Continue With Google"
+                          className="w-full glass-input"
+                        />
+                      </div>
+                    </div>
+                    <button onClick={() => { markStepDone(2); goToStep(3); }} className="glass-button flex items-center gap-2">Weiter <ChevronRight className="w-4 h-4" /></button>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-gray-400 text-sm">Client ID und Client Secret aus Azure App Registration holen.</p>
+                    <ol className="list-decimal list-inside space-y-3 text-gray-300">
+                      <li>Öffne <a href={AZURE_APP_REGISTRATION_URL} target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline">Azure Entra ID → App registrations → New registration <ExternalLink className="w-3 h-3 inline" /></a></li>
+                      <li>Name: z.B. „Tempus {project.clientName}"</li>
+                      <li>Supported account types: nach Bedarf (z.B. Single tenant)</li>
+                      <li>Redirect URI: Web → <code className="text-green-300">{projectUrls.baseUrl}/sg/home/microsoft</code> <CopyButton text={`${projectUrls.baseUrl}/sg/home/microsoft`} /></li>
+                      <li>Nach Erstellung: Application (client) ID und Client secrets → New client secret</li>
+                      <li>Client ID und Secret in Tempus eintragen (Schritt 3)</li>
+                    </ol>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white/5 rounded-xl p-4">
+                      <div>
+                        <label className="block text-sm text-gray-400 mb-1">Microsoft client id (Notiz)</label>
+                        <input
+                          value={project.microsoftClientId || ''}
+                          onChange={(e) => updateProject(project.id, { microsoftClientId: e.target.value })}
+                          placeholder="GUID aus Azure"
+                          className="w-full glass-input font-mono text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-gray-400 mb-1">Microsoft client key (Notiz)</label>
+                        <input
+                          type="password"
+                          value={project.microsoftClientKey || ''}
+                          onChange={(e) => updateProject(project.id, { microsoftClientKey: e.target.value })}
+                          placeholder="Client secret aus Azure"
+                          className="w-full glass-input font-mono text-sm"
+                        />
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label className="block text-sm text-gray-400 mb-1">Custom label (Tempus Login-Button)</label>
+                        <input
+                          value={project.customLabel || 'Continue With Microsoft'}
+                          onChange={(e) => updateProject(project.id, { customLabel: e.target.value })}
+                          placeholder="Continue With Microsoft"
+                          className="w-full glass-input"
+                        />
+                      </div>
+                    </div>
+                    <button onClick={() => { markStepDone(2); goToStep(3); }} className="glass-button flex items-center gap-2">Weiter <ChevronRight className="w-4 h-4" /></button>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Step 2: IdP-Werte (nur SAML) */}
+            {currentStep === 2 && isSaml && (
               <div className="space-y-6">
                 <h3 className="text-xl font-semibold text-white flex items-center gap-2"><Key className="w-6 h-6 text-indigo-400" /> Schritt 2: IdP-Werte</h3>
                 <p className="text-gray-400 text-sm">Diese Werte im Identity Provider eintragen.</p>
@@ -798,8 +964,69 @@ export default function SSOSetup() {
               </div>
             )}
 
-            {/* Step 3: IdP-spezifisch */}
-            {currentStep === 3 && (
+            {/* Step 3: Tempus konfigurieren (nur OAuth) */}
+            {currentStep === 3 && isOAuth && (
+              <div className="space-y-6">
+                <h3 className="text-xl font-semibold text-white flex items-center gap-2"><Sparkles className="w-6 h-6 text-indigo-400" /> Schritt 3: Tempus konfigurieren</h3>
+                <div className="bg-white/5 rounded-xl p-3 text-sm text-gray-400">
+                  <strong className="text-white">Tempus SSO – Primary login:</strong> Password, Google, Microsoft, SAML können parallel aktiv sein. Aktiviere {project.idp === 'google' ? 'Google' : 'Microsoft'} und trage die Werte ein.
+                </div>
+                <p className="text-gray-400 text-sm">General Settings → Miscellaneous → SSO. {project.idp === 'google' ? 'Google' : 'Microsoft'} aktivieren (Häkchen) und folgende Felder eintragen:</p>
+                <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-4 space-y-4">
+                  {project.idp === 'google' ? (
+                    <>
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">Google client id</label>
+                        <div className="flex gap-2">
+                          <input value={project.googleClientId || ''} readOnly className="flex-1 glass-input font-mono text-sm text-green-300" />
+                          <CopyButton text={project.googleClientId || ''} />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">Google client key</label>
+                        <div className="flex gap-2">
+                          <input value={project.googleClientKey ? '••••••••' : ''} readOnly className="flex-1 glass-input font-mono text-sm" />
+                          <CopyButton text={project.googleClientKey || ''} label="Kopieren" />
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">Microsoft client id</label>
+                        <div className="flex gap-2">
+                          <input value={project.microsoftClientId || ''} readOnly className="flex-1 glass-input font-mono text-sm text-green-300" />
+                          <CopyButton text={project.microsoftClientId || ''} />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">Microsoft client key</label>
+                        <div className="flex gap-2">
+                          <input value={project.microsoftClientKey ? '••••••••' : ''} readOnly className="flex-1 glass-input font-mono text-sm" />
+                          <CopyButton text={project.microsoftClientKey || ''} label="Kopieren" />
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Custom label</label>
+                    <input value={project.customLabel || (project.idp === 'google' ? 'Continue With Google' : 'Continue With Microsoft')} readOnly className="w-full glass-input" />
+                  </div>
+                </div>
+                <ol className="list-decimal list-inside space-y-2 text-gray-300 text-sm">
+                  <li>Tempus öffnen: <a href={projectUrls.baseUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline">{projectUrls.baseUrl}</a></li>
+                  <li>General Settings → Miscellaneous → SSO</li>
+                  <li>{project.idp === 'google' ? 'Google' : 'Microsoft'} aktivieren (Häkchen setzen)</li>
+                  <li>Client ID und Client Key eintragen</li>
+                  <li>Custom label anpassen (optional)</li>
+                  <li>Speichern</li>
+                </ol>
+                <button onClick={() => { markStepDone(3); goToStep(4); }} className="glass-button flex items-center gap-2">Weiter <ChevronRight className="w-4 h-4" /></button>
+              </div>
+            )}
+
+            {/* Step 3: IdP-spezifisch (nur SAML) */}
+            {currentStep === 3 && isSaml && (
               <div className="space-y-6">
                 <h3 className="text-xl font-semibold text-white flex items-center gap-2"><Shield className="w-6 h-6 text-indigo-400" /> Schritt 3: {IDP_OPTIONS.find(i => i.id === project.idp)?.label} konfigurieren</h3>
                 {project.idp === 'azure' ? (
@@ -836,8 +1063,24 @@ export default function SSOSetup() {
               </div>
             )}
 
-            {/* Step 4: Metadaten */}
-            {currentStep === 4 && (
+            {/* Step 4: Benutzer (nur OAuth) */}
+            {currentStep === 4 && isOAuth && (
+              <div className="space-y-6">
+                <h3 className="text-xl font-semibold text-white flex items-center gap-2"><Users className="w-6 h-6 text-indigo-400" /> Schritt 4: Benutzer aktivieren</h3>
+                <ol className="list-decimal list-inside space-y-3 text-gray-300">
+                  <li>Resource Management → Benutzer → User Identity</li>
+                  <li>E-Mail eintragen (muss mit {project.idp === 'google' ? 'Google' : 'Microsoft'}-Konto übereinstimmen)</li>
+                  <li>SSO aktivieren → Speichern</li>
+                </ol>
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
+                  <p className="text-amber-400 font-medium">Zuerst mit anderem Benutzer testen!</p>
+                </div>
+                <button onClick={() => { markStepDone(4); goToStep(5); updateProject(project.id, { status: 'done' }); }} className="glass-button flex items-center gap-2">Weiter <ChevronRight className="w-4 h-4" /></button>
+              </div>
+            )}
+
+            {/* Step 4: Metadaten (nur SAML) */}
+            {currentStep === 4 && isSaml && (
               <div className="space-y-6">
                 <h3 className="text-xl font-semibold text-white flex items-center gap-2"><FileText className="w-6 h-6 text-indigo-400" /> Schritt 4: Metadaten-URL</h3>
                 <ol className="list-decimal list-inside space-y-3 text-gray-300">
@@ -855,24 +1098,95 @@ export default function SSOSetup() {
               </div>
             )}
 
-            {/* Step 5: Tempus */}
-            {currentStep === 5 && (
+            {/* Step 5: Fertig (nur OAuth) */}
+            {currentStep === 5 && isOAuth && (
+              <div className="space-y-6 text-center">
+                <CheckCircle2 className="w-16 h-16 text-green-400 mx-auto" />
+                <h3 className="text-xl font-semibold text-white">SSO Setup abgeschlossen</h3>
+                <p className="text-gray-400">Der Kunde {project.clientName} kann nun per {IDP_OPTIONS.find(i => i.id === project.idp)?.label} SSO bei Tempus anmelden.</p>
+                <div className="flex flex-wrap justify-center gap-2">
+                  <button onClick={() => setSelectedId(null)} className="glass-button">Zurück</button>
+                  <a href={projectUrls.baseUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20">
+                    <ExternalLink className="w-4 h-4" /> Tempus öffnen
+                  </a>
+                  <button onClick={() => exportAsTxt(project)} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20">
+                    <Download className="w-4 h-4" /> TXT exportieren
+                  </button>
+                  <button onClick={() => exportAsHtml(project)} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20">
+                    <FileText className="w-4 h-4" /> HTML / Drucken
+                  </button>
+                  <a href={`mailto:?body=${encodeURIComponent(getEmailBody(project))}&subject=SSO%20Setup%20${encodeURIComponent(project.clientName)}`} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20">
+                    <Mail className="w-4 h-4" /> E-Mail-Vorlage
+                  </a>
+                </div>
+              </div>
+            )}
+
+            {/* Step 5: Tempus (nur SAML) */}
+            {currentStep === 5 && isSaml && (
               <div className="space-y-6">
                 <h3 className="text-xl font-semibold text-white flex items-center gap-2"><Sparkles className="w-6 h-6 text-indigo-400" /> Schritt 5: Tempus konfigurieren</h3>
-                <ol className="list-decimal list-inside space-y-3 text-gray-300">
-                  <li>In Tempus: General Settings → Miscellaneous</li>
-                  <li>SAML Configuration URL: Metadaten-URL einfügen</li>
+                <div className="bg-white/5 rounded-xl p-3 text-sm text-gray-400">
+                  <strong className="text-white">Tempus SSO – Primary login section:</strong> Password, Google, Microsoft, SAML können parallel aktiv sein. Jeder IdP hat ein Custom label (z.B. „Log In“, „Continue With Saml“).
+                </div>
+                <p className="text-gray-400 text-sm">General Settings → Miscellaneous → SSO. SAML aktivieren und folgende Felder eintragen:</p>
+                <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-4 space-y-4">
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">SAML application id</label>
+                    <div className="flex gap-2">
+                      <input
+                        value={projectUrls.entityId}
+                        onChange={(e) => updateProject(project.id, { entityId: e.target.value })}
+                        className="flex-1 glass-input font-mono text-sm text-green-300"
+                      />
+                      <CopyButton text={projectUrls.entityId} />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">SAML configuration URL</label>
+                    <input
+                      value={project.samlConfigUrl || ''}
+                      onChange={(e) => updateProject(project.id, { samlConfigUrl: e.target.value })}
+                      placeholder="Metadaten-URL aus IdP (Azure/Okta) einfügen"
+                      className="w-full glass-input font-mono text-sm"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Empfohlen: Automatische Konfiguration via Metadaten-URL</p>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">SAML endpoint (falls manuell)</label>
+                    <input
+                      value={project.samlEndpoint || ''}
+                      onChange={(e) => updateProject(project.id, { samlEndpoint: e.target.value })}
+                      placeholder="SingleSignOnService URL aus Metadaten"
+                      className="w-full glass-input font-mono text-sm"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Nur bei manueller Konfiguration. Zertifikat: <a href={SAML_TOOL_URL} target="_blank" rel="noopener noreferrer" className="text-indigo-400">samltool.com</a> → SAML certificate file in Tempus hochladen</p>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Custom label</label>
+                    <input
+                      value={project.customLabel || 'Continue With Saml'}
+                      onChange={(e) => updateProject(project.id, { customLabel: e.target.value })}
+                      placeholder="Continue With Saml"
+                      className="w-full glass-input"
+                    />
+                  </div>
+                </div>
+                <ol className="list-decimal list-inside space-y-2 text-gray-300 text-sm">
+                  <li>In Tempus: General Settings → Miscellaneous → SSO</li>
+                  <li>SAML aktivieren (Häkchen setzen)</li>
+                  <li>SAML application id: <code className="text-green-300">{projectUrls.entityId}</code></li>
+                  <li>SAML configuration URL: Metadaten-URL aus IdP einfügen</li>
+                  <li>SAML certificate file: ggf. Zertifikat hochladen</li>
+                  <li>Custom label anpassen (optional)</li>
                   <li>Speichern</li>
                 </ol>
-                <div className="bg-white/5 rounded-xl p-4">
-                  <p className="text-sm text-gray-400">Manuell: SAML Application ID: <code>{projectUrls.entityId}</code>, Endpoint + Zertifikat aus Metadaten (z.B. <a href={SAML_TOOL_URL} target="_blank" rel="noopener noreferrer" className="text-indigo-400">samltool.com</a>)</p>
-                </div>
                 <button onClick={() => { markStepDone(5); goToStep(6); }} className="glass-button flex items-center gap-2">Weiter <ChevronRight className="w-4 h-4" /></button>
               </div>
             )}
 
-            {/* Step 6: Benutzer */}
-            {currentStep === 6 && (
+            {/* Step 6: Benutzer (nur SAML) */}
+            {currentStep === 6 && isSaml && (
               <div className="space-y-6">
                 <h3 className="text-xl font-semibold text-white flex items-center gap-2"><Users className="w-6 h-6 text-indigo-400" /> Schritt 6: Benutzer aktivieren</h3>
                 <ol className="list-decimal list-inside space-y-3 text-gray-300">
@@ -887,8 +1201,8 @@ export default function SSOSetup() {
               </div>
             )}
 
-            {/* Step 7: Fertig + Export */}
-            {currentStep === 7 && (
+            {/* Step 7: Fertig + Export (nur SAML) */}
+            {currentStep === 7 && isSaml && (
               <div className="space-y-6 text-center">
                 <CheckCircle2 className="w-16 h-16 text-green-400 mx-auto" />
                 <h3 className="text-xl font-semibold text-white">SSO Setup abgeschlossen</h3>
@@ -928,11 +1242,11 @@ export default function SSOSetup() {
             )}
           </div>
 
-          {currentStep > 1 && currentStep < 7 && (
+          {currentStep > 1 && currentStep < maxStep && (
             <div className="flex justify-between mt-6">
               <button onClick={() => goToStep(currentStep - 1)} className="flex items-center gap-2 text-gray-400 hover:text-white"><ChevronLeft className="w-4 h-4" /> Zurück</button>
               <div className="flex gap-2">
-                {STEPS.map((s, i) => (
+                {effectiveSteps.map((s, i) => (
                   <button key={s.id} onClick={() => goToStep(i + 1)} className={`w-8 h-8 rounded-lg text-sm ${currentStep === i + 1 ? 'bg-indigo-500 text-white' : 'bg-white/5 hover:bg-white/10'}`}>{i + 1}</button>
                 ))}
               </div>
