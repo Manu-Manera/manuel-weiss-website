@@ -1,13 +1,13 @@
-import { Play, Trash2, Clock, CheckCircle, Layers } from 'lucide-react';
+import { Play, Trash2, Clock, CheckCircle, Layers, ChevronRight } from 'lucide-react';
 
-export default function DeckList({ decks, onStudy, onDelete }) {
+export default function DeckList({ decks, onStudy, onDelete, onSelect }) {
   if (!decks || decks.length === 0) {
     return (
       <div className="text-center py-12">
         <Layers className="w-16 h-16 text-white/20 mx-auto mb-4" />
         <h3 className="text-xl font-medium text-white/60">Noch keine Decks</h3>
         <p className="text-white/40 mt-2">
-          Erstelle dein erstes Deck im Tab "Neues Deck"
+          Erstelle zuerst eine Zusammenfassung und generiere daraus Karteikarten
         </p>
       </div>
     );
@@ -18,7 +18,8 @@ export default function DeckList({ decks, onStudy, onDelete }) {
       {decks.map(deck => (
         <div 
           key={deck.deckId} 
-          className="glass p-5 rounded-2xl hover:bg-white/5 transition-all"
+          className="glass p-5 rounded-2xl hover:bg-white/5 transition-all cursor-pointer group"
+          onClick={() => onSelect?.(deck)}
         >
           <div className="flex items-start justify-between">
             <div className="flex-1">
@@ -69,7 +70,10 @@ export default function DeckList({ decks, onStudy, onDelete }) {
             {/* Actions */}
             <div className="flex items-center gap-2 ml-4">
               <button
-                onClick={() => onStudy(deck)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onStudy(deck);
+                }}
                 disabled={!deck.dueCards && deck.totalCards > 0}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all ${
                   deck.dueCards > 0
@@ -82,12 +86,17 @@ export default function DeckList({ decks, onStudy, onDelete }) {
               </button>
               
               <button
-                onClick={() => onDelete(deck.deckId)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(deck.deckId);
+                }}
                 className="p-2 rounded-xl glass text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-all"
                 title="Deck löschen"
               >
                 <Trash2 className="w-5 h-5" />
               </button>
+
+              <ChevronRight className="w-5 h-5 text-white/30 group-hover:text-white/60 transition-all" />
             </div>
           </div>
 

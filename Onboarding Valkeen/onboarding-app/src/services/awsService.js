@@ -415,3 +415,126 @@ export async function createCardsFromSummary(summaryId, deckName, userId = 'defa
     throw error;
   }
 }
+
+// ========================================
+// EINZELNE KARTEN VERWALTEN
+// ========================================
+
+/**
+ * Alle Karten eines Decks laden
+ */
+export async function getDeckCards(deckId, userId = 'default-user') {
+  try {
+    const response = await fetch(
+      `${API_BASE}/flashcards/cards?userId=${encodeURIComponent(userId)}&deckId=${encodeURIComponent(deckId)}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ Karten geladen:', data.cards?.length || 0);
+    return data.cards || [];
+  } catch (error) {
+    console.error('❌ Fehler beim Laden der Karten:', error);
+    return [];
+  }
+}
+
+/**
+ * Neue Karte zu einem Deck hinzufügen
+ */
+export async function addCard(deckId, front, back, userId = 'default-user') {
+  try {
+    const response = await fetch(`${API_BASE}/flashcards/cards`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        userId,
+        deckId,
+        front,
+        back
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ Karte hinzugefügt:', data.card?.cardId);
+    return data.card;
+  } catch (error) {
+    console.error('❌ Fehler beim Hinzufügen der Karte:', error);
+    throw error;
+  }
+}
+
+/**
+ * Karte bearbeiten
+ */
+export async function updateCard(cardId, front, back, userId = 'default-user') {
+  try {
+    const response = await fetch(`${API_BASE}/flashcards/cards`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        userId,
+        cardId,
+        front,
+        back
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ Karte aktualisiert:', cardId);
+    return data;
+  } catch (error) {
+    console.error('❌ Fehler beim Aktualisieren der Karte:', error);
+    throw error;
+  }
+}
+
+/**
+ * Karte löschen
+ */
+export async function deleteCard(cardId, userId = 'default-user') {
+  try {
+    const response = await fetch(
+      `${API_BASE}/flashcards/cards?userId=${encodeURIComponent(userId)}&cardId=${encodeURIComponent(cardId)}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    console.log('✅ Karte gelöscht:', cardId);
+    return true;
+  } catch (error) {
+    console.error('❌ Fehler beim Löschen der Karte:', error);
+    return false;
+  }
+}

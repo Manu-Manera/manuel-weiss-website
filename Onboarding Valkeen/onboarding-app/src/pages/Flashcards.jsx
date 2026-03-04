@@ -3,6 +3,7 @@ import { Layers, Upload, BookOpen, BarChart3, Trash2, Play, Plus, FileText, Spar
 import UploadZone from '../components/flashcards/UploadZone';
 import StudyMode from '../components/flashcards/StudyMode';
 import DeckList from '../components/flashcards/DeckList';
+import DeckDetail from '../components/flashcards/DeckDetail';
 import SummaryList from '../components/flashcards/SummaryList';
 import SummaryView from '../components/flashcards/SummaryView';
 import CreateSummary from '../components/flashcards/CreateSummary';
@@ -23,6 +24,7 @@ export default function Flashcards() {
   const [loading, setLoading] = useState(true);
   const [studyDeck, setStudyDeck] = useState(null);
   const [viewSummary, setViewSummary] = useState(null);
+  const [selectedDeck, setSelectedDeck] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -115,6 +117,17 @@ export default function Flashcards() {
     return <StudyMode deck={studyDeck} onEnd={handleEndStudy} />;
   }
 
+  if (selectedDeck) {
+    return (
+      <DeckDetail
+        deck={selectedDeck}
+        onBack={() => setSelectedDeck(null)}
+        onStudy={handleStartStudy}
+        onDeckUpdated={loadData}
+      />
+    );
+  }
+
   if (viewSummary) {
     return (
       <SummaryView 
@@ -201,6 +214,7 @@ export default function Flashcards() {
                 decks={decks} 
                 onStudy={handleStartStudy}
                 onDelete={handleDeleteDeck}
+                onSelect={setSelectedDeck}
               />
             )}
 

@@ -818,6 +818,185 @@ async function getDeckCards(event) {
   }
 }
 
+async function addCard(event) {
+  const body = JSON.parse(event.body || '{}');
+  const userId = body.userId || 'default-user';
+  const { deckId, front, back } = body;
+
+  if (!deckId || !front || !back) {
+    return response(400, { error: 'deckId, front und back sind erforderlich' });
+  }
+
+  try {
+    // Hole aktuelle Karten um nächste ID zu bestimmen
+    const cardsResult = await docClient.send(new QueryCommand({
+      TableName: CARDS_TABLE,
+      KeyConditionExpression: 'userId = :userId',
+      FilterExpression: 'deckId = :deckId',
+      ExpressionAttributeValues: {
+        ':userId': userId,
+        ':deckId': deckId
+      }
+    }));
+
+    const existingCards = cardsResult.Items || [];
+    const maxIndex = existingCards.reduce((max, card) => {
+      const idx = parseInt(card.cardId.split('#')[1] || '0');
+      return idx > max ? idx : max;
+    }, -1);
+
+    const newIndex = maxIndex + 1;
+    const cardId = `${deckId}#${newIndex}`;
+    const now = new Date().toISOString();
+
+    await docClient.send(new PutCommand({
+      TableName: CARDS_TABLE,
+      Item: {
+        userId,
+        cardId,
+        deckId,
+        front,
+        back,
+        box: 1,
+        nextReview: now,
+        reviewCount: 0,
+        createdAt: now,
+        updatedAt: now
+      }
+    }));
+
+    // Update Deck cardCount
+    await docClient.send(new UpdateCommand({
+      TableName: DECKS_TABLE,
+      Key: { userId, deckId },
+      UpdateExpression: 'SET cardCount = cardCount + :one, updatedAt = :now',
+      ExpressionAttributeValues: {
+        ':one': 1,
+        ':now': now
+      }
+    }));
+
+    console.log(`✅ Karte ${cardId} hinzugefügt`);
+
+    return response(200, {
+      success: true,
+      card: {
+        cardId,
+        deckId,
+        front,
+        back,
+        box: 1,
+        nextReview: now,
+        reviewCount: 0,
+        createdAt: now
+      }
+    });
+
+  } catch (error) {
+    console.error('Add Card Error:', error);
+    return response(500, { error: error.message });
+  }
+}
+
+async function updateCard(event) {
+  const body = JSON.parse(event.body || '{}');
+  const userId = body.userId || 'default-user';
+  const { cardId, front, back } = body;
+
+  if (!cardId) {
+    return response(400, { error: 'cardId ist erforderlich' });
+  }
+
+  if (!front && !back) {
+    return response(400, { error: 'front oder back muss angegeben werden' });
+  }
+
+  try {
+    const now = new Date().toISOString();
+    
+    let updateExpression = 'SET updatedAt = :now';
+    const expressionAttributeValues = { ':now': now };
+
+    if (front) {
+      updateExpression += ', front = :front';
+      expressionAttributeValues[':front'] = front;
+    }
+    if (back) {
+      updateExpression += ', back = :back';
+      expressionAttributeValues[':back'] = back;
+    }
+
+    await docClient.send(new UpdateCommand({
+      TableName: CARDS_TABLE,
+      Key: { userId, cardId },
+      UpdateExpression: updateExpression,
+      ExpressionAttributeValues: expressionAttributeValues
+    }));
+
+    console.log(`✅ Karte ${cardId} aktualisiert`);
+
+    return response(200, {
+      success: true,
+      cardId,
+      front,
+      back
+    });
+
+  } catch (error) {
+    console.error('Update Card Error:', error);
+    return response(500, { error: error.message });
+  }
+}
+
+async function deleteCard(event) {
+  const userId = event.queryStringParameters?.userId || 'default-user';
+  const cardId = event.queryStringParameters?.cardId;
+
+  if (!cardId) {
+    return response(400, { error: 'cardId ist erforderlich' });
+  }
+
+  try {
+    // Hole Karte um deckId zu bekommen
+    const cardResult = await docClient.send(new GetCommand({
+      TableName: CARDS_TABLE,
+      Key: { userId, cardId }
+    }));
+
+    if (!cardResult.Item) {
+      return response(404, { error: 'Karte nicht gefunden' });
+    }
+
+    const deckId = cardResult.Item.deckId;
+
+    // Lösche Karte
+    await docClient.send(new DeleteCommand({
+      TableName: CARDS_TABLE,
+      Key: { userId, cardId }
+    }));
+
+    // Update Deck cardCount
+    const now = new Date().toISOString();
+    await docClient.send(new UpdateCommand({
+      TableName: DECKS_TABLE,
+      Key: { userId, deckId },
+      UpdateExpression: 'SET cardCount = cardCount - :one, updatedAt = :now',
+      ExpressionAttributeValues: {
+        ':one': 1,
+        ':now': now
+      }
+    }));
+
+    console.log(`✅ Karte ${cardId} gelöscht`);
+
+    return response(200, { success: true, cardId });
+
+  } catch (error) {
+    console.error('Delete Card Error:', error);
+    return response(500, { error: error.message });
+  }
+}
+
 async function getStats(event) {
   const userId = event.queryStringParameters?.userId || 'default-user';
 
@@ -911,6 +1090,18 @@ exports.handler = async (event) => {
     // ========== CARDS ==========
     if (path.includes('/flashcards/cards') && method === 'GET') {
       return await getDeckCards(event);
+    }
+
+    if (path.includes('/flashcards/cards') && method === 'POST') {
+      return await addCard(event);
+    }
+
+    if (path.includes('/flashcards/cards') && method === 'PUT') {
+      return await updateCard(event);
+    }
+
+    if (path.includes('/flashcards/cards') && method === 'DELETE') {
+      return await deleteCard(event);
     }
 
     if (path.includes('/flashcards/study') && method === 'GET') {
