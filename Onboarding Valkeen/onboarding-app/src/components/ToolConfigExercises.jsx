@@ -14,8 +14,10 @@ import {
   ListChecks,
   Monitor,
   Play,
-  Pause
+  Pause,
+  Users
 } from 'lucide-react';
+import ScenarioExercises from './ScenarioExercises';
 
 const difficultyLabels = {
   1: { label: 'Einsteiger', color: 'bg-green-500', stars: 1 },
@@ -273,6 +275,7 @@ function ExerciseDetail({ exercise, onBack, onComplete, isCompleted }) {
 }
 
 export default function ToolConfigExercises() {
+  const [activeView, setActiveView] = useState('modules');
   const [selectedModule, setSelectedModule] = useState(1);
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [completedExercises, setCompletedExercises] = useState({});
@@ -310,69 +313,98 @@ export default function ToolConfigExercises() {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="glass-card p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <div className="flex items-center gap-3">
-            <div className="p-3 rounded-xl bg-indigo-500/20">
-              <Settings className="w-6 h-6 text-indigo-400" />
-            </div>
-            <div>
-              <h3 className="text-lg sm:text-xl font-bold text-white">Toolkonfiguration</h3>
-              <p className="text-sm text-gray-400">Hands-on Übungen auf der Testplattform</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-xl">
-            <CheckCircle2 className="w-5 h-5 text-green-400" />
-            <span className="text-white font-medium">{totalCompleted}/{totalExercises}</span>
-            <span className="text-gray-400 text-sm">abgeschlossen</span>
-          </div>
-        </div>
-        
-        <div className="flex flex-wrap gap-2 mb-6 overflow-x-auto pb-2 -mx-1 px-1">
-          {toolConfigExercises.map((module) => {
-            const stats = getModuleStats(module.module);
-            const isComplete = stats.completed === stats.total && stats.total > 0;
-            return (
-              <button
-                key={module.module}
-                onClick={() => setSelectedModule(module.module)}
-                className={`flex-shrink-0 px-3 sm:px-4 py-2 rounded-lg transition-all text-sm sm:text-base ${
-                  selectedModule === module.module
-                    ? 'bg-indigo-500 text-white'
-                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
-                } ${isComplete ? 'ring-2 ring-green-500' : ''}`}
-              >
-                <span className="whitespace-nowrap">Modul {module.module}</span>
-                {stats.completed > 0 && (
-                  <span className="ml-2 text-xs opacity-75">
-                    {stats.completed}/{stats.total}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {moduleData && (
-          <div>
-            <div className="mb-4">
-              <h4 className="text-base sm:text-lg font-semibold text-white">{moduleData.title}</h4>
-              <p className="text-sm text-gray-400 mt-1">{moduleData.description}</p>
-            </div>
-            
-            <div className="space-y-3">
-              {exercises.map((exercise) => (
-                <ExerciseCard 
-                  key={exercise.id}
-                  exercise={exercise} 
-                  isCompleted={completedExercises[exercise.id]}
-                  onStart={() => setSelectedExercise(exercise)}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+      <div className="flex gap-2 sm:gap-3 border-b border-white/10 pb-2 overflow-x-auto">
+        <button
+          onClick={() => setActiveView('modules')}
+          className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base ${
+            activeView === 'modules' 
+              ? 'bg-indigo-500 text-white' 
+              : 'text-gray-400 hover:text-white hover:bg-white/5'
+          }`}
+        >
+          <Settings className="w-4 h-4" />
+          Modul-Übungen
+        </button>
+        <button
+          onClick={() => setActiveView('scenarios')}
+          className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg transition-all whitespace-nowrap text-sm sm:text-base ${
+            activeView === 'scenarios' 
+              ? 'bg-purple-500 text-white' 
+              : 'text-gray-400 hover:text-white hover:bg-white/5'
+          }`}
+        >
+          <Users className="w-4 h-4" />
+          Szenario-Übungen
+        </button>
       </div>
+
+      {activeView === 'scenarios' ? (
+        <ScenarioExercises />
+      ) : (
+        <div className="glass-card p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-xl bg-indigo-500/20">
+                <Settings className="w-6 h-6 text-indigo-400" />
+              </div>
+              <div>
+                <h3 className="text-lg sm:text-xl font-bold text-white">Toolkonfiguration</h3>
+                <p className="text-sm text-gray-400">Hands-on Übungen auf der Testplattform</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-xl">
+              <CheckCircle2 className="w-5 h-5 text-green-400" />
+              <span className="text-white font-medium">{totalCompleted}/{totalExercises}</span>
+              <span className="text-gray-400 text-sm">abgeschlossen</span>
+            </div>
+          </div>
+          
+          <div className="flex flex-wrap gap-2 mb-6 overflow-x-auto pb-2 -mx-1 px-1">
+            {toolConfigExercises.map((module) => {
+              const stats = getModuleStats(module.module);
+              const isComplete = stats.completed === stats.total && stats.total > 0;
+              return (
+                <button
+                  key={module.module}
+                  onClick={() => setSelectedModule(module.module)}
+                  className={`flex-shrink-0 px-3 sm:px-4 py-2 rounded-lg transition-all text-sm sm:text-base ${
+                    selectedModule === module.module
+                      ? 'bg-indigo-500 text-white'
+                      : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                  } ${isComplete ? 'ring-2 ring-green-500' : ''}`}
+                >
+                  <span className="whitespace-nowrap">Modul {module.module}</span>
+                  {stats.completed > 0 && (
+                    <span className="ml-2 text-xs opacity-75">
+                      {stats.completed}/{stats.total}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {moduleData && (
+            <div>
+              <div className="mb-4">
+                <h4 className="text-base sm:text-lg font-semibold text-white">{moduleData.title}</h4>
+                <p className="text-sm text-gray-400 mt-1">{moduleData.description}</p>
+              </div>
+              
+              <div className="space-y-3">
+                {exercises.map((exercise) => (
+                  <ExerciseCard 
+                    key={exercise.id}
+                    exercise={exercise} 
+                    isCompleted={completedExercises[exercise.id]}
+                    onStart={() => setSelectedExercise(exercise)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

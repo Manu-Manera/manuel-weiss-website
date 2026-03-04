@@ -3147,3 +3147,774 @@ export const toolConfigExercises = [
     ]
   }
 ];
+
+// ============================================
+// SZENARIOBASIERTE TOOL-ÜBUNGEN
+// Realistische Situationen aus verschiedenen Perspektiven
+// ============================================
+export const scenarioExercises = [
+  // ============================================
+  // KATEGORIE 1: Stakeholder-Perspektiven
+  // ============================================
+  {
+    category: "stakeholder",
+    title: "Stakeholder-Szenarien",
+    description: "Löse Anfragen aus der Sicht verschiedener Stakeholder",
+    icon: "Users",
+    scenarios: [
+      // --- Project Manager Perspektive ---
+      {
+        id: "sc-pm-1",
+        difficulty: 2,
+        stakeholder: "Project Manager",
+        stakeholderIcon: "Briefcase",
+        title: "Der gestresste Projektleiter",
+        situation: "Ein Project Manager ruft dich an: 'Ich habe in 30 Minuten ein Steering Committee Meeting und muss zeigen, wie mein Projekt ressourcenmäßig aufgestellt ist. Kannst du mir schnell helfen?'",
+        challenge: "Erstelle innerhalb von 10 Minuten eine aussagekräftige Projektübersicht.",
+        tasks: [
+          "Öffne das Projekt des PMs in Tempus",
+          "Wechsle zur Gantt-View für Timeline-Übersicht",
+          "Erstelle einen Screenshot der Ressourcenzuweisungen",
+          "Prüfe die Net Availability aller zugewiesenen Ressourcen",
+          "Identifiziere potenzielle Risiken (Überauslastung, Lücken)",
+          "Exportiere einen Quick-Report als PDF",
+          "Fasse die wichtigsten Punkte in 3 Bullet Points zusammen"
+        ],
+        expectedDeliverable: "PDF-Export + 3 Bullet Points für das Meeting",
+        successCriteria: ["Report in unter 10 Min erstellt", "Risiken identifiziert", "Actionable Insights"],
+        skills: ["Schnelle Navigation", "Reporting", "Stakeholder-Kommunikation"],
+        timeLimit: "10 Minuten"
+      },
+      {
+        id: "sc-pm-2",
+        difficulty: 3,
+        stakeholder: "Project Manager",
+        stakeholderIcon: "Briefcase",
+        title: "Ressourcenkonflikt eskaliert",
+        situation: "Eine PM schreibt: 'Mein Key-Developer wurde ohne Absprache einem anderen Projekt zugewiesen. Jetzt fehlt mir 50% seiner Zeit. Das gefährdet meinen Go-Live!'",
+        challenge: "Analysiere den Konflikt und finde eine Lösung.",
+        tasks: [
+          "Öffne das Profil des betroffenen Developers",
+          "Analysiere alle aktuellen Zuweisungen",
+          "Identifiziere, wer die neue Zuweisung erstellt hat",
+          "Prüfe die Prioritäten beider Projekte",
+          "Erstelle 3 Lösungsoptionen mit Vor-/Nachteilen",
+          "Dokumentiere die Situation für eine Eskalation",
+          "Bereite eine Empfehlung für das Management vor"
+        ],
+        expectedDeliverable: "Analyse-Dokument mit 3 Lösungsoptionen und Empfehlung",
+        successCriteria: ["Konflikt verstanden", "Optionen fair bewertet", "Klare Empfehlung"],
+        skills: ["Konfliktanalyse", "Diplomatie", "Lösungsorientierung"],
+        timeLimit: "20 Minuten"
+      },
+      {
+        id: "sc-pm-3",
+        difficulty: 4,
+        stakeholder: "Project Manager",
+        stakeholderIcon: "Briefcase",
+        title: "Projekt-Kickoff Support",
+        situation: "Ein neuer PM startet sein erstes Projekt in Tempus: 'Ich habe noch nie mit dem Tool gearbeitet. Kannst du mir zeigen, wie ich mein Projekt richtig aufsetze?'",
+        challenge: "Führe den PM durch das komplette Projekt-Setup.",
+        tasks: [
+          "Erstelle gemeinsam ein neues Projekt mit allen Metadaten",
+          "Erkläre die verschiedenen Projekt-Attribute",
+          "Zeige, wie man Phasen/Meilensteine anlegt",
+          "Demonstriere das Erstellen von Resource Requests",
+          "Erkläre den Unterschied zwischen Soft und Hard Booking",
+          "Zeige die verschiedenen Views (Grid, Gantt, Kanban)",
+          "Richte eine personalisierte View für den PM ein",
+          "Erkläre, wie der PM seinen Projektstatus tracken kann"
+        ],
+        expectedDeliverable: "Vollständig eingerichtetes Projekt + PM kann selbstständig arbeiten",
+        successCriteria: ["Projekt korrekt aufgesetzt", "PM versteht die Basics", "Keine offenen Fragen"],
+        skills: ["Schulung", "Geduld", "Didaktik"],
+        timeLimit: "45 Minuten"
+      },
+
+      // --- Resource Manager Perspektive ---
+      {
+        id: "sc-rm-1",
+        difficulty: 3,
+        stakeholder: "Resource Manager",
+        stakeholderIcon: "Users",
+        title: "Kapazitätsengpass Q3",
+        situation: "Die Resource Managerin meldet sich: 'Ich sehe im Q3 einen massiven Engpass bei unseren Java-Entwicklern. Kannst du mir helfen, das zu analysieren und Optionen aufzuzeigen?'",
+        challenge: "Erstelle eine detaillierte Kapazitätsanalyse mit Handlungsempfehlungen.",
+        tasks: [
+          "Öffne die Kapazitätsplanung für Q3",
+          "Filtere auf Ressourcen mit Skill 'Java'",
+          "Analysiere Demand vs. Capacity pro Monat",
+          "Identifiziere die Projekte mit höchstem Java-Bedarf",
+          "Prüfe, ob Generic Resources den Gap füllen könnten",
+          "Erstelle ein What-If Szenario: 'Was wenn wir 2 externe Java-Devs holen?'",
+          "Dokumentiere 3 Handlungsoptionen mit Kosten/Nutzen",
+          "Erstelle eine Präsentation für das Management"
+        ],
+        expectedDeliverable: "Kapazitätsanalyse + What-If Szenario + Management-Präsentation",
+        successCriteria: ["Gap quantifiziert", "Optionen bewertet", "Entscheidungsvorlage ready"],
+        skills: ["Kapazitätsplanung", "Szenarioanalyse", "Präsentation"],
+        timeLimit: "30 Minuten"
+      },
+      {
+        id: "sc-rm-2",
+        difficulty: 3,
+        stakeholder: "Resource Manager",
+        stakeholderIcon: "Users",
+        title: "Neue Abteilung onboarden",
+        situation: "Der RM sagt: 'Die Marketing-Abteilung (15 Personen) soll ab nächsten Monat auch in Tempus geführt werden. Kannst du das Setup vorbereiten?'",
+        challenge: "Bereite das Onboarding einer neuen Abteilung vor.",
+        tasks: [
+          "Erstelle die Abteilung 'Marketing' in der Org-Struktur",
+          "Definiere relevante Skills für Marketing (Content, SEO, Analytics, etc.)",
+          "Bereite eine CSV-Import-Vorlage für 15 Ressourcen vor",
+          "Definiere Standard-Kapazitäten (evtl. anders als 40h?)",
+          "Erstelle eine Rolle 'Marketing Manager' mit passenden Rechten",
+          "Plane das Training für die neuen User",
+          "Erstelle eine Checkliste für den Go-Live",
+          "Dokumentiere den Onboarding-Prozess"
+        ],
+        expectedDeliverable: "Vollständiges Onboarding-Paket für Marketing-Abteilung",
+        successCriteria: ["Struktur angelegt", "Import vorbereitet", "Training geplant"],
+        skills: ["Onboarding", "Strukturierung", "Planung"],
+        timeLimit: "40 Minuten"
+      },
+      {
+        id: "sc-rm-3",
+        difficulty: 4,
+        stakeholder: "Resource Manager",
+        stakeholderIcon: "Users",
+        title: "BPAFG Massenkorrektur",
+        situation: "Die RM ruft an: 'Wir haben gerade erfahren, dass 3 Projekte um 2 Monate verschoben werden. Ich muss alle Zuweisungen anpassen - das sind bestimmt 50+ Allocations!'",
+        challenge: "Führe eine effiziente Massenkorrektur im BPAFG durch.",
+        tasks: [
+          "Öffne das BPAFG und filtere auf die 3 betroffenen Projekte",
+          "Identifiziere alle betroffenen Allocations",
+          "Nutze Bulk-Selection um mehrere Zellen zu markieren",
+          "Verschiebe die Allocations um 2 Monate",
+          "Prüfe auf neue Konflikte durch die Verschiebung",
+          "Löse entstandene Überauslastungen",
+          "Dokumentiere alle Änderungen",
+          "Informiere die betroffenen PMs über die Änderungen"
+        ],
+        expectedDeliverable: "Alle Allocations verschoben, keine Konflikte, PMs informiert",
+        successCriteria: ["Alle 50+ Allocations angepasst", "Keine neuen Konflikte", "Dokumentiert"],
+        skills: ["BPAFG Mastery", "Effizienz", "Kommunikation"],
+        timeLimit: "25 Minuten"
+      },
+
+      // --- Management Perspektive ---
+      {
+        id: "sc-mgmt-1",
+        difficulty: 4,
+        stakeholder: "Management / C-Level",
+        stakeholderIcon: "Crown",
+        title: "Board-Präsentation vorbereiten",
+        situation: "Der CTO schreibt: 'Ich brauche für das Board-Meeting morgen eine Übersicht: Wie ausgelastet sind wir? Wo sind Risiken? Schaffen wir alle Projekte?'",
+        challenge: "Erstelle eine Executive-taugliche Übersicht in 30 Minuten.",
+        tasks: [
+          "Erstelle ein Management-Dashboard (falls nicht vorhanden)",
+          "Zeige Gesamtauslastung über alle Teams",
+          "Identifiziere die Top 5 Risiko-Projekte",
+          "Erstelle eine Demand vs. Capacity Übersicht für 6 Monate",
+          "Zeige Skill-Gaps auf strategischer Ebene",
+          "Formuliere 3 Key Insights für das Board",
+          "Exportiere alles in ein präsentationsfähiges Format",
+          "Bereite Antworten auf kritische Fragen vor"
+        ],
+        expectedDeliverable: "Executive Dashboard + 3 Key Insights + Backup-Daten",
+        successCriteria: ["Daten auf C-Level aggregiert", "Insights actionable", "Präsentationsfertig"],
+        skills: ["Executive Reporting", "Datenvisualisierung", "Strategisches Denken"],
+        timeLimit: "30 Minuten"
+      },
+      {
+        id: "sc-mgmt-2",
+        difficulty: 5,
+        stakeholder: "Management / C-Level",
+        stakeholderIcon: "Crown",
+        title: "Strategische Workforce-Planung",
+        situation: "Der VP Engineering fragt: 'Wir planen 30% Wachstum nächstes Jahr. Wie viele Leute brauchen wir? Welche Skills? Wann müssen wir anfangen zu rekrutieren?'",
+        challenge: "Erstelle eine strategische Workforce-Planung für 12 Monate.",
+        tasks: [
+          "Analysiere die aktuelle Workforce (Anzahl, Skills, Kapazität)",
+          "Berechne den Bedarf bei 30% Projektwachstum",
+          "Identifiziere kritische Skill-Gaps",
+          "Erstelle einen Recruiting-Timeline (Vorlauf beachten!)",
+          "Modelliere verschiedene Szenarien (20%, 30%, 40% Wachstum)",
+          "Berechne die Kosten pro Szenario",
+          "Erstelle eine Roadmap mit Meilensteinen",
+          "Präsentiere Empfehlungen mit Risiken"
+        ],
+        expectedDeliverable: "Strategischer Workforce-Plan mit Szenarien und Roadmap",
+        successCriteria: ["Datenbasierte Prognose", "Szenarien durchgerechnet", "Actionable Roadmap"],
+        skills: ["Strategic Planning", "Forecasting", "Business Case"],
+        timeLimit: "60 Minuten"
+      },
+
+      // --- HR Perspektive ---
+      {
+        id: "sc-hr-1",
+        difficulty: 3,
+        stakeholder: "HR / People Operations",
+        stakeholderIcon: "Heart",
+        title: "Skill-Inventur für HR",
+        situation: "Die HR-Leiterin fragt: 'Wir planen Weiterbildungsbudgets. Kannst du mir eine Übersicht geben, welche Skills wir haben und wo die größten Lücken sind?'",
+        challenge: "Erstelle eine Skill-Analyse für die HR-Planung.",
+        tasks: [
+          "Exportiere alle Ressourcen mit ihren Skills",
+          "Gruppiere Skills nach Kategorien (Tech, Soft Skills, Methoden)",
+          "Zähle, wie viele Personen jeden Skill haben",
+          "Identifiziere Skills mit weniger als 3 Personen (Risiko!)",
+          "Vergleiche mit den Projekt-Anforderungen der nächsten 6 Monate",
+          "Identifiziere die Top 5 Skill-Gaps",
+          "Schlage Weiterbildungsmaßnahmen vor",
+          "Erstelle einen Report für HR"
+        ],
+        expectedDeliverable: "Skill-Inventur + Gap-Analyse + Weiterbildungsempfehlungen",
+        successCriteria: ["Vollständige Inventur", "Gaps priorisiert", "Konkrete Empfehlungen"],
+        skills: ["Skills Management", "Analyse", "HR-Kommunikation"],
+        timeLimit: "35 Minuten"
+      },
+      {
+        id: "sc-hr-2",
+        difficulty: 3,
+        stakeholder: "HR / People Operations",
+        stakeholderIcon: "Heart",
+        title: "Onboarding neuer Mitarbeiter",
+        situation: "HR meldet: 'Nächste Woche starten 5 neue Entwickler. Kannst du sie im System anlegen und sicherstellen, dass die PMs sie zuweisen können?'",
+        challenge: "Onboarde 5 neue Mitarbeiter vollständig ins System.",
+        tasks: [
+          "Erhalte die Mitarbeiterdaten von HR (Name, E-Mail, Abteilung, Start)",
+          "Erstelle 5 neue Named Resources",
+          "Weise jedem die korrekten Skills zu (aus CV/HR-Daten)",
+          "Setze die Verfügbarkeit (Startdatum beachten!)",
+          "Erstelle Benutzerkonten mit korrekten Rollen",
+          "Informiere die zuständigen PMs über die neuen Ressourcen",
+          "Plane eine kurze Einführung für die Neuen",
+          "Dokumentiere den Onboarding-Prozess"
+        ],
+        expectedDeliverable: "5 vollständig eingerichtete Ressourcen + Benutzerkonten",
+        successCriteria: ["Alle Daten korrekt", "Skills zugewiesen", "PMs informiert"],
+        skills: ["Onboarding", "Datenqualität", "Prozessmanagement"],
+        timeLimit: "30 Minuten"
+      },
+
+      // --- IT / Admin Perspektive ---
+      {
+        id: "sc-it-1",
+        difficulty: 4,
+        stakeholder: "IT Administrator",
+        stakeholderIcon: "Shield",
+        title: "Berechtigungsaudit",
+        situation: "Der IT-Security-Beauftragte verlangt: 'Wir brauchen einen Audit aller Benutzerberechtigungen. Wer hat Admin-Rechte? Wer kann Daten exportieren?'",
+        challenge: "Führe einen vollständigen Berechtigungsaudit durch.",
+        tasks: [
+          "Exportiere alle Benutzer mit ihren Rollen",
+          "Identifiziere alle Benutzer mit Admin-Rechten",
+          "Prüfe, ob die Admin-Rechte noch berechtigt sind",
+          "Identifiziere Benutzer mit Export-Rechten",
+          "Finde inaktive Benutzer (kein Login seit 90 Tagen)",
+          "Prüfe auf 'Privilege Creep' (zu viele Rechte)",
+          "Erstelle Empfehlungen für Bereinigung",
+          "Dokumentiere den Audit für Compliance"
+        ],
+        expectedDeliverable: "Audit-Report + Bereinigungsempfehlungen",
+        successCriteria: ["Vollständiger Überblick", "Risiken identifiziert", "Compliance-konform"],
+        skills: ["Security", "Audit", "Compliance"],
+        timeLimit: "40 Minuten"
+      },
+      {
+        id: "sc-it-2",
+        difficulty: 5,
+        stakeholder: "IT Administrator",
+        stakeholderIcon: "Shield",
+        title: "System-Migration vorbereiten",
+        situation: "IT plant ein Upgrade: 'Wir migrieren auf eine neue Tempus-Version. Kannst du sicherstellen, dass alle Daten und Konfigurationen dokumentiert sind?'",
+        challenge: "Dokumentiere alle systemkritischen Konfigurationen.",
+        tasks: [
+          "Dokumentiere alle Custom Attributes",
+          "Dokumentiere alle Custom Views und Dashboards",
+          "Exportiere alle Benutzer und Rollen",
+          "Dokumentiere Workflow-Konfigurationen",
+          "Dokumentiere Integrations-Einstellungen",
+          "Erstelle eine Liste aller Scheduled Reports",
+          "Dokumentiere System-Einstellungen (Zeitzone, Fiscal Year, etc.)",
+          "Erstelle einen Rollback-Plan falls Migration fehlschlägt"
+        ],
+        expectedDeliverable: "Vollständige Konfigurations-Dokumentation + Rollback-Plan",
+        successCriteria: ["Alles dokumentiert", "Reproduzierbar", "Rollback möglich"],
+        skills: ["Dokumentation", "System-Administration", "Risikomanagement"],
+        timeLimit: "60 Minuten"
+      }
+    ]
+  },
+
+  // ============================================
+  // KATEGORIE 2: Mentor-Prüfungsszenarien
+  // ============================================
+  {
+    category: "mentor",
+    title: "Mentor-Prüfungen",
+    description: "Szenarien, wie dein Mentor dich auf Tool-Expertise testen könnte",
+    icon: "GraduationCap",
+    scenarios: [
+      {
+        id: "mt-1",
+        difficulty: 3,
+        stakeholder: "Mentor (Marc)",
+        stakeholderIcon: "GraduationCap",
+        title: "Spontaner Tool-Check",
+        situation: "Marc kommt an deinen Schreibtisch: 'Hey, zeig mir mal schnell, wie du eine Ressource mit Überauslastung findest und das Problem löst.'",
+        challenge: "Demonstriere deine Tool-Kenntnisse live ohne Vorbereitung.",
+        tasks: [
+          "Öffne die Auslastungsübersicht",
+          "Filtere auf Ressourcen mit >100% Auslastung",
+          "Wähle eine überausgelastete Ressource",
+          "Erkläre, warum sie überausgelastet ist",
+          "Zeige 2 Wege, das Problem zu lösen",
+          "Führe eine Lösung durch",
+          "Verifiziere, dass das Problem gelöst ist"
+        ],
+        expectedDeliverable: "Live-Demonstration mit Erklärung",
+        successCriteria: ["Schnelle Navigation", "Korrekte Analyse", "Saubere Lösung"],
+        mentorExpects: "Flüssige Navigation, keine Suche nach Funktionen, klare Erklärungen",
+        skills: ["Tool-Expertise", "Problemlösung", "Kommunikation"],
+        timeLimit: "5 Minuten"
+      },
+      {
+        id: "mt-2",
+        difficulty: 3,
+        stakeholder: "Mentor (Marc)",
+        stakeholderIcon: "GraduationCap",
+        title: "BPAFG Deep Dive",
+        situation: "Marc fragt: 'Erkläre mir den Unterschied zwischen RM Mode und PM Mode im BPAFG. Wann nutzt du welchen?'",
+        challenge: "Erkläre und demonstriere beide Modi mit konkreten Use Cases.",
+        tasks: [
+          "Öffne das BPAFG",
+          "Zeige den RM Mode und erkläre den Fokus (Ressourcen-zentriert)",
+          "Demonstriere einen typischen RM-Use-Case",
+          "Wechsle zum PM Mode und erkläre den Fokus (Projekt-zentriert)",
+          "Demonstriere einen typischen PM-Use-Case",
+          "Erkläre, wann du welchen Modus empfehlen würdest",
+          "Zeige den Default Mode als Alternative"
+        ],
+        expectedDeliverable: "Klare Demonstration mit Business-Kontext",
+        successCriteria: ["Modi korrekt erklärt", "Use Cases sinnvoll", "Empfehlung begründet"],
+        mentorExpects: "Verständnis des 'Warum', nicht nur des 'Wie'",
+        skills: ["BPAFG Expertise", "Didaktik", "Business-Verständnis"],
+        timeLimit: "10 Minuten"
+      },
+      {
+        id: "mt-3",
+        difficulty: 4,
+        stakeholder: "Mentor (Marc)",
+        stakeholderIcon: "GraduationCap",
+        title: "Kunden-Demo Simulation",
+        situation: "Marc sagt: 'Stell dir vor, ich bin ein Kunde, der Tempus noch nie gesehen hat. Gib mir eine 15-Minuten-Demo der wichtigsten PM-Funktionen.'",
+        challenge: "Halte eine überzeugende Demo für einen 'Kunden'.",
+        tasks: [
+          "Starte mit einem kurzen Überblick (30 Sekunden)",
+          "Zeige das Erstellen eines Projekts",
+          "Demonstriere das Zuweisen von Ressourcen",
+          "Zeige die verschiedenen Views (Gantt, Grid)",
+          "Demonstriere einen Resource Request",
+          "Zeige die Auslastungsübersicht",
+          "Beende mit dem Mehrwert für den PM",
+          "Beantworte 2-3 'Kundenfragen' von Marc"
+        ],
+        expectedDeliverable: "Professionelle 15-Minuten-Demo",
+        successCriteria: ["Strukturiert", "Kundenorientiert", "Mehrwert klar"],
+        mentorExpects: "Professionelles Auftreten, keine technischen Pannen, Kundensprache",
+        skills: ["Demo-Skills", "Präsentation", "Kundenorientierung"],
+        timeLimit: "15 Minuten"
+      },
+      {
+        id: "mt-4",
+        difficulty: 4,
+        stakeholder: "Mentor (Marc)",
+        stakeholderIcon: "GraduationCap",
+        title: "Fehlersuche Challenge",
+        situation: "Marc zeigt dir einen Screenshot: 'Ein Kunde meldet, dass seine Kapazitätsberechnung falsch aussieht. Finde heraus, was nicht stimmt.'",
+        challenge: "Debugge ein Kapazitätsproblem systematisch.",
+        tasks: [
+          "Analysiere den Screenshot (Was sieht 'falsch' aus?)",
+          "Öffne die betroffene Ressource",
+          "Prüfe die Basis-Kapazität (Stunden/Woche)",
+          "Prüfe eingetragene Abwesenheiten",
+          "Prüfe alle Allocations",
+          "Prüfe den Zeitraum der Berechnung",
+          "Identifiziere die Ursache des Problems",
+          "Erkläre die Lösung"
+        ],
+        expectedDeliverable: "Ursache identifiziert + Lösung erklärt",
+        successCriteria: ["Systematisches Vorgehen", "Ursache gefunden", "Lösung korrekt"],
+        mentorExpects: "Strukturierte Fehlersuche, nicht wildes Herumprobieren",
+        skills: ["Troubleshooting", "Analytisches Denken", "Systematik"],
+        timeLimit: "10 Minuten"
+      },
+      {
+        id: "mt-5",
+        difficulty: 5,
+        stakeholder: "Mentor (Marc)",
+        stakeholderIcon: "GraduationCap",
+        title: "Komplexes Szenario",
+        situation: "Marc beschreibt: 'Ein Kunde hat 3 Teams, die an 5 Projekten arbeiten. 2 Projekte werden verschoben, 1 Team bekommt 2 neue Mitglieder. Zeig mir, wie du das alles in Tempus abbildest.'",
+        challenge: "Manage ein komplexes Multi-Change-Szenario.",
+        tasks: [
+          "Verstehe das Szenario vollständig (Rückfragen erlaubt!)",
+          "Plane die Reihenfolge der Änderungen",
+          "Füge die 2 neuen Teammitglieder hinzu",
+          "Verschiebe die 2 Projekte",
+          "Passe alle betroffenen Allocations an",
+          "Prüfe auf Konflikte und löse sie",
+          "Dokumentiere alle Änderungen",
+          "Erstelle eine Zusammenfassung für die Stakeholder"
+        ],
+        expectedDeliverable: "Alle Änderungen sauber durchgeführt + Dokumentation",
+        successCriteria: ["Keine Fehler", "Effizientes Vorgehen", "Vollständige Doku"],
+        mentorExpects: "Überblick behalten, strukturiert arbeiten, nichts vergessen",
+        skills: ["Komplexitätsmanagement", "Planung", "Genauigkeit"],
+        timeLimit: "30 Minuten"
+      }
+    ]
+  },
+
+  // ============================================
+  // KATEGORIE 3: Chef-Prüfungsszenarien
+  // ============================================
+  {
+    category: "boss",
+    title: "Chef-Prüfungen",
+    description: "Szenarien, wie dein Chef deine Expertise und Eigenständigkeit testet",
+    icon: "Award",
+    scenarios: [
+      {
+        id: "boss-1",
+        difficulty: 4,
+        stakeholder: "Chef (Geschäftsführung)",
+        stakeholderIcon: "Award",
+        title: "Der Spontan-Kundentermin",
+        situation: "Dein Chef ruft an: 'Ich bin in 2 Stunden bei einem potenziellen Kunden. Bereite mir eine Demo-Umgebung vor, die zeigt, was Tempus kann. Der Kunde ist eine Versicherung mit 200 Mitarbeitern.'",
+        challenge: "Bereite eine branchenspezifische Demo-Umgebung vor.",
+        tasks: [
+          "Erstelle ein Demo-Projekt: 'Versicherungs-Digitalisierung'",
+          "Erstelle realistische Rollen: Underwriter, Claims Manager, IT, etc.",
+          "Erstelle 10-15 Demo-Ressourcen mit passenden Skills",
+          "Erstelle 3-4 typische Versicherungsprojekte",
+          "Füge realistische Allocations hinzu",
+          "Erstelle ein Management-Dashboard",
+          "Bereite 3 'Wow-Momente' für die Demo vor",
+          "Schreibe einen kurzen Demo-Leitfaden für deinen Chef"
+        ],
+        expectedDeliverable: "Vollständige Demo-Umgebung + Demo-Leitfaden",
+        successCriteria: ["Branchenrelevant", "Professionell", "Demo-ready"],
+        bossExpects: "Eigenständigkeit, Branchenverständnis, Qualität unter Zeitdruck",
+        skills: ["Demo-Vorbereitung", "Branchenwissen", "Zeitmanagement"],
+        timeLimit: "90 Minuten"
+      },
+      {
+        id: "boss-2",
+        difficulty: 4,
+        stakeholder: "Chef (Geschäftsführung)",
+        stakeholderIcon: "Award",
+        title: "Kunden-Eskalation",
+        situation: "Der Chef leitet eine E-Mail weiter: 'Der Kunde beschwert sich, dass die Reports falsche Zahlen zeigen. Analysiere das Problem und gib mir in 1 Stunde ein Update.'",
+        challenge: "Analysiere und löse ein kritisches Kundenproblem unter Zeitdruck.",
+        tasks: [
+          "Lies die Kunden-E-Mail genau (Was genau ist 'falsch'?)",
+          "Reproduziere das Problem in der Testumgebung",
+          "Identifiziere die Ursache (Daten? Konfiguration? Bug?)",
+          "Dokumentiere das Problem mit Screenshots",
+          "Entwickle eine Lösung oder einen Workaround",
+          "Bereite eine Kunden-Kommunikation vor",
+          "Schreibe ein Update für deinen Chef",
+          "Plane Maßnahmen, damit es nicht wieder passiert"
+        ],
+        expectedDeliverable: "Problem-Analyse + Lösung + Kunden-Kommunikation",
+        successCriteria: ["Ursache gefunden", "Lösung funktioniert", "Professionelle Kommunikation"],
+        bossExpects: "Schnelle, gründliche Analyse; keine Ausreden; Lösungsorientierung",
+        skills: ["Troubleshooting", "Krisenkommunikation", "Zeitmanagement"],
+        timeLimit: "60 Minuten"
+      },
+      {
+        id: "boss-3",
+        difficulty: 5,
+        stakeholder: "Chef (Geschäftsführung)",
+        stakeholderIcon: "Award",
+        title: "Wissenstransfer-Aufgabe",
+        situation: "Der Chef sagt: 'Wir stellen nächsten Monat einen neuen Consultant ein. Erstelle ein Trainingskonzept, wie wir ihn in 2 Wochen auf Tempus fit bekommen.'",
+        challenge: "Entwickle ein strukturiertes Trainingskonzept.",
+        tasks: [
+          "Definiere die Lernziele für einen neuen Consultant",
+          "Strukturiere das Training in sinnvolle Module",
+          "Erstelle einen Zeitplan für 2 Wochen",
+          "Definiere Übungen und Hands-on-Aufgaben",
+          "Erstelle Checklisten für jeden Meilenstein",
+          "Plane Wissenstests/Checkpoints",
+          "Bereite Demo-Szenarien für Übungen vor",
+          "Dokumentiere das Konzept so, dass es wiederverwendbar ist"
+        ],
+        expectedDeliverable: "Vollständiges Trainingskonzept + Materialien",
+        successCriteria: ["Strukturiert", "Praxisorientiert", "Skalierbar"],
+        bossExpects: "Strategisches Denken, Didaktik, Dokumentationsqualität",
+        skills: ["Training Design", "Wissensmanagement", "Dokumentation"],
+        timeLimit: "120 Minuten"
+      },
+      {
+        id: "boss-4",
+        difficulty: 5,
+        stakeholder: "Chef (Geschäftsführung)",
+        stakeholderIcon: "Award",
+        title: "Prozessoptimierung vorschlagen",
+        situation: "Der Chef fragt: 'Wir haben jetzt 10 Kunden auf Tempus. Was können wir standardisieren? Wo verlieren wir Zeit? Mach mir einen Vorschlag.'",
+        challenge: "Analysiere und optimiere interne Prozesse.",
+        tasks: [
+          "Dokumentiere den aktuellen Implementierungsprozess",
+          "Identifiziere wiederkehrende Aufgaben",
+          "Finde Zeitfresser und Ineffizienzen",
+          "Entwickle Vorlagen (Projekt-Templates, Import-Vorlagen)",
+          "Schlage Automatisierungen vor",
+          "Berechne die potenzielle Zeitersparnis",
+          "Erstelle eine Priorisierung (Quick Wins vs. langfristig)",
+          "Präsentiere deine Empfehlungen"
+        ],
+        expectedDeliverable: "Prozessanalyse + Optimierungsvorschläge + ROI-Schätzung",
+        successCriteria: ["Fundierte Analyse", "Konkrete Vorschläge", "Business Case"],
+        bossExpects: "Unternehmerisches Denken, Initiative, Umsetzbarkeit",
+        skills: ["Prozessoptimierung", "Business Analysis", "Präsentation"],
+        timeLimit: "180 Minuten"
+      },
+      {
+        id: "boss-5",
+        difficulty: 5,
+        stakeholder: "Chef (Geschäftsführung)",
+        stakeholderIcon: "Award",
+        title: "Eigenständige Kundenbetreuung",
+        situation: "Der Chef sagt: 'Ich bin nächste Woche im Urlaub. Du bist der Ansprechpartner für alle Tempus-Kunden. Hier ist die Liste mit offenen Themen.'",
+        challenge: "Manage mehrere Kunden eigenständig für eine Woche.",
+        tasks: [
+          "Gehe die Liste offener Themen durch",
+          "Priorisiere nach Dringlichkeit und Wichtigkeit",
+          "Plane deine Woche (Wann bearbeitest du was?)",
+          "Bereite dich auf mögliche Eskalationen vor",
+          "Stelle sicher, dass du alle Zugänge hast",
+          "Definiere Eskalationspfade (Wen rufst du an wenn...?)",
+          "Dokumentiere alles für das Handover",
+          "Erstelle einen Tagesbericht-Template"
+        ],
+        expectedDeliverable: "Wochenplan + Eskalationsplan + Dokumentations-Template",
+        successCriteria: ["Strukturierte Planung", "Risiken bedacht", "Selbstständigkeit"],
+        bossExpects: "Verantwortungsbewusstsein, Selbstorganisation, Professionalität",
+        skills: ["Selbstmanagement", "Kundenbetreuung", "Verantwortung"],
+        timeLimit: "60 Minuten Vorbereitung"
+      }
+    ]
+  },
+
+  // ============================================
+  // KATEGORIE 4: Kunden-Szenarien (Externe)
+  // ============================================
+  {
+    category: "customer",
+    title: "Kunden-Szenarien",
+    description: "Typische Anfragen und Probleme von echten Kunden",
+    icon: "Building",
+    scenarios: [
+      {
+        id: "cust-1",
+        difficulty: 2,
+        stakeholder: "Neuer Kunde",
+        stakeholderIcon: "Building",
+        title: "Erste Schritte Support",
+        situation: "Ein Kunde schreibt: 'Wir haben gerade mit Tempus angefangen. Ich verstehe nicht, wie ich meine Mitarbeiter anlegen soll. Können Sie mir helfen?'",
+        challenge: "Unterstütze einen Kunden bei den ersten Schritten.",
+        tasks: [
+          "Antworte freundlich und professionell",
+          "Frage nach: Wie viele Mitarbeiter? Welche Daten liegen vor?",
+          "Erkläre den Unterschied Named vs. Generic Resource",
+          "Biete 2 Optionen: Manuell anlegen oder CSV-Import",
+          "Erstelle eine kurze Schritt-für-Schritt-Anleitung",
+          "Biete einen kurzen Call an für komplexere Fragen",
+          "Sende hilfreiche Links zur Dokumentation",
+          "Follow-up: Frage nach 2 Tagen, ob alles geklappt hat"
+        ],
+        expectedDeliverable: "Hilfreiche E-Mail + Anleitung + Follow-up",
+        successCriteria: ["Freundlich", "Hilfreich", "Proaktiv"],
+        skills: ["Kundensupport", "Kommunikation", "Empathie"],
+        timeLimit: "20 Minuten"
+      },
+      {
+        id: "cust-2",
+        difficulty: 3,
+        stakeholder: "Bestehender Kunde",
+        stakeholderIcon: "Building",
+        title: "Feature Request diskutieren",
+        situation: "Ein Kunde ruft an: 'Wir bräuchten eine Funktion, die automatisch eine E-Mail schickt, wenn jemand überbucht wird. Geht das?'",
+        challenge: "Manage einen Feature Request professionell.",
+        tasks: [
+          "Höre aktiv zu und verstehe den Use Case",
+          "Frage nach: Wie oft passiert das? Wer soll informiert werden?",
+          "Prüfe, ob es einen Workaround gibt (z.B. Dashboard-Alert)",
+          "Erkläre den Feature Request Prozess",
+          "Dokumentiere den Request vollständig",
+          "Gib eine realistische Einschätzung (kein Versprechen!)",
+          "Biete den Workaround als Zwischenlösung an",
+          "Leite den Request intern weiter"
+        ],
+        expectedDeliverable: "Dokumentierter Feature Request + Workaround-Vorschlag",
+        successCriteria: ["Use Case verstanden", "Keine falschen Versprechen", "Workaround angeboten"],
+        skills: ["Anforderungsanalyse", "Erwartungsmanagement", "Dokumentation"],
+        timeLimit: "30 Minuten"
+      },
+      {
+        id: "cust-3",
+        difficulty: 4,
+        stakeholder: "Unzufriedener Kunde",
+        stakeholderIcon: "Building",
+        title: "Beschwerde-Management",
+        situation: "Ein Kunde schreibt verärgert: 'Seit dem letzten Update funktioniert der Export nicht mehr richtig. Wir haben morgen ein wichtiges Meeting und brauchen die Daten!'",
+        challenge: "Manage eine kritische Kundenbeschwerde.",
+        tasks: [
+          "Antworte sofort und zeige Verständnis",
+          "Frage nach Details: Welcher Export? Welcher Fehler?",
+          "Versuche das Problem zu reproduzieren",
+          "Finde einen Workaround für das Meeting morgen",
+          "Kommuniziere transparent über den Status",
+          "Eskaliere intern falls nötig",
+          "Halte den Kunden auf dem Laufenden",
+          "Follow-up nach dem Meeting: Ist alles gut gegangen?"
+        ],
+        expectedDeliverable: "Sofortige Hilfe + Workaround + Transparente Kommunikation",
+        successCriteria: ["Schnelle Reaktion", "Problem gelöst", "Kunde beruhigt"],
+        skills: ["Krisenmanagement", "Empathie", "Problemlösung"],
+        timeLimit: "45 Minuten"
+      },
+      {
+        id: "cust-4",
+        difficulty: 4,
+        stakeholder: "Enterprise Kunde",
+        stakeholderIcon: "Building",
+        title: "Komplexe Konfigurationsanfrage",
+        situation: "Ein großer Kunde fragt: 'Wir haben eine Matrix-Organisation. Mitarbeiter gehören zu einer Abteilung, aber arbeiten in Projekten anderer Abteilungen. Wie bilden wir das ab?'",
+        challenge: "Entwickle eine Lösung für eine komplexe Organisationsstruktur.",
+        tasks: [
+          "Verstehe die Matrix-Struktur genau (Fragen stellen!)",
+          "Analysiere die Auswirkungen auf Reporting und Berechtigungen",
+          "Entwickle 2-3 Lösungsansätze",
+          "Bewerte Vor- und Nachteile jedes Ansatzes",
+          "Empfehle die beste Lösung mit Begründung",
+          "Erstelle einen Implementierungsplan",
+          "Dokumentiere die Konfiguration",
+          "Plane ein Review nach 4 Wochen"
+        ],
+        expectedDeliverable: "Lösungskonzept + Implementierungsplan",
+        successCriteria: ["Anforderung verstanden", "Lösung praktikabel", "Gut dokumentiert"],
+        skills: ["Lösungsdesign", "Beratung", "Komplexitätsmanagement"],
+        timeLimit: "60 Minuten"
+      },
+      {
+        id: "cust-5",
+        difficulty: 5,
+        stakeholder: "Strategischer Kunde",
+        stakeholderIcon: "Building",
+        title: "Strategische Beratung",
+        situation: "Der CIO eines wichtigen Kunden fragt: 'Wir wollen unser Resource Management auf das nächste Level bringen. Was empfehlen Sie uns für die nächsten 12 Monate?'",
+        challenge: "Entwickle eine strategische Roadmap für einen Kunden.",
+        tasks: [
+          "Analysiere den aktuellen Reifegrad des Kunden",
+          "Identifiziere Quick Wins (sofort umsetzbar)",
+          "Identifiziere mittelfristige Verbesserungen",
+          "Identifiziere strategische Initiativen",
+          "Erstelle eine priorisierte Roadmap",
+          "Schätze Aufwand und Nutzen pro Initiative",
+          "Bereite eine Präsentation für den CIO vor",
+          "Plane regelmäßige Review-Meetings"
+        ],
+        expectedDeliverable: "12-Monats-Roadmap + CIO-Präsentation",
+        successCriteria: ["Strategisch wertvoll", "Realistisch", "Überzeugend"],
+        skills: ["Strategische Beratung", "Roadmap-Entwicklung", "Executive Communication"],
+        timeLimit: "120 Minuten"
+      }
+    ]
+  },
+
+  // ============================================
+  // KATEGORIE 5: Notfall-Szenarien
+  // ============================================
+  {
+    category: "emergency",
+    title: "Notfall-Szenarien",
+    description: "Kritische Situationen, die schnelles Handeln erfordern",
+    icon: "AlertTriangle",
+    scenarios: [
+      {
+        id: "emg-1",
+        difficulty: 4,
+        stakeholder: "System",
+        stakeholderIcon: "AlertTriangle",
+        title: "Daten versehentlich gelöscht",
+        situation: "Ein Kunde ruft panisch an: 'Ich habe aus Versehen ein Projekt mit allen Zuweisungen gelöscht! Das war unser wichtigstes Projekt!'",
+        challenge: "Hilf bei der Wiederherstellung gelöschter Daten.",
+        tasks: [
+          "Beruhige den Kunden",
+          "Frage: Wann genau wurde gelöscht? Welches Projekt?",
+          "Prüfe, ob es einen Papierkorb/Soft Delete gibt",
+          "Prüfe, ob es Backups gibt und wie aktuell sie sind",
+          "Kontaktiere ggf. den technischen Support",
+          "Dokumentiere, was wiederhergestellt werden kann",
+          "Kommuniziere transparent über den Status",
+          "Empfehle Maßnahmen zur Vermeidung (Berechtigungen, Bestätigungen)"
+        ],
+        expectedDeliverable: "Wiederherstellung (wenn möglich) + Präventionsempfehlungen",
+        successCriteria: ["Ruhe bewahrt", "Alle Optionen geprüft", "Transparent kommuniziert"],
+        skills: ["Krisenmanagement", "Technisches Wissen", "Kommunikation"],
+        timeLimit: "30 Minuten"
+      },
+      {
+        id: "emg-2",
+        difficulty: 4,
+        stakeholder: "System",
+        stakeholderIcon: "AlertTriangle",
+        title: "Performance-Problem",
+        situation: "Mehrere Kunden melden gleichzeitig: 'Tempus ist extrem langsam heute. Manche Seiten laden gar nicht mehr.'",
+        challenge: "Analysiere und kommuniziere ein Performance-Problem.",
+        tasks: [
+          "Verifiziere das Problem selbst",
+          "Sammle Informationen: Welche Funktionen? Seit wann?",
+          "Prüfe, ob es bekannte Wartungsarbeiten gibt",
+          "Eskaliere an den technischen Support",
+          "Kommuniziere proaktiv an alle betroffenen Kunden",
+          "Gib regelmäßige Status-Updates",
+          "Dokumentiere den Vorfall",
+          "Erstelle einen Post-Mortem nach Lösung"
+        ],
+        expectedDeliverable: "Kunden-Kommunikation + Eskalation + Dokumentation",
+        successCriteria: ["Schnelle Reaktion", "Proaktive Kommunikation", "Saubere Dokumentation"],
+        skills: ["Incident Management", "Kommunikation", "Eskalation"],
+        timeLimit: "Ongoing bis gelöst"
+      },
+      {
+        id: "emg-3",
+        difficulty: 5,
+        stakeholder: "System",
+        stakeholderIcon: "AlertTriangle",
+        title: "Sicherheitsvorfall",
+        situation: "Ein Kunde meldet: 'Ich sehe Daten von anderen Projekten, die ich nicht sehen sollte. Ist das ein Sicherheitsproblem?'",
+        challenge: "Handle einen potenziellen Sicherheitsvorfall.",
+        tasks: [
+          "Nimm die Meldung ernst und dokumentiere sofort",
+          "Frage nach Details: Welche Daten? Screenshots?",
+          "Eskaliere sofort an Security/Management",
+          "Bitte den Kunden, keine Screenshots zu teilen",
+          "Prüfe die Berechtigungskonfiguration",
+          "Isoliere das Problem (welche User betroffen?)",
+          "Kommuniziere nur abgestimmte Informationen",
+          "Dokumentiere alles für Compliance"
+        ],
+        expectedDeliverable: "Sofortige Eskalation + Dokumentation + Abgestimmte Kommunikation",
+        successCriteria: ["Sofort eskaliert", "Vertraulich behandelt", "Compliance-konform"],
+        skills: ["Security Awareness", "Eskalation", "Vertraulichkeit"],
+        timeLimit: "Sofort"
+      }
+    ]
+  }
+];
