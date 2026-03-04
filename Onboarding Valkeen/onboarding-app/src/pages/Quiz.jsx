@@ -92,9 +92,9 @@ export default function Quiz() {
 
   if (!selectedWeek) {
     return (
-      <div className="space-y-4 sm:space-y-6">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold mb-2">Wissens-Quiz & Praxis</h1>
+      <div className="space-y-6 sm:space-y-8">
+        <div className="pb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-3">Wissens-Quiz & Praxis</h1>
           <p className="text-white/60 text-sm sm:text-base">Teste dein Wissen und übe mit realistischen Szenarien</p>
         </div>
 

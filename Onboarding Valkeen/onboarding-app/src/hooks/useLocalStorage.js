@@ -30,7 +30,10 @@ const DEFAULT_PROGRESS = {
   tasks: {},
   quizScores: {},
   checkpoints: {},
-  notes: {}
+  notes: {},
+  practiceProgress: {},   // { [exerciseId]: 'needs_work'|'okay'|'good' }
+  toolConfigProgress: {}, // { [exerciseId]: true }
+  scenarioProgress: {}    // { [scenarioId]: true }
 };
 
 export function useProgress() {
@@ -52,16 +55,31 @@ export function useProgress() {
         
         if (awsProgress) {
           console.log('📥 Fortschritt aus AWS geladen');
-          setProgressState(awsProgress);
+          // Merge mit Defaults für neue Felder (Rückwärtskompatibilität)
+          const merged = {
+            ...DEFAULT_PROGRESS,
+            ...awsProgress,
+            practiceProgress: { ...DEFAULT_PROGRESS.practiceProgress, ...(awsProgress.practiceProgress || {}) },
+            toolConfigProgress: { ...DEFAULT_PROGRESS.toolConfigProgress, ...(awsProgress.toolConfigProgress || {}) },
+            scenarioProgress: { ...DEFAULT_PROGRESS.scenarioProgress, ...(awsProgress.scenarioProgress || {}) }
+          };
+          setProgressState(merged);
           // Auch lokal speichern als Backup
-          localStorage.setItem('onboarding-progress', JSON.stringify(awsProgress));
+          localStorage.setItem('onboarding-progress', JSON.stringify(merged));
         } else {
           // Fallback: localStorage
           const localData = localStorage.getItem('onboarding-progress');
           if (localData) {
             const parsed = JSON.parse(localData);
             console.log('📥 Fortschritt aus localStorage geladen');
-            setProgressState(parsed);
+            const merged = {
+              ...DEFAULT_PROGRESS,
+              ...parsed,
+              practiceProgress: { ...DEFAULT_PROGRESS.practiceProgress, ...(parsed.practiceProgress || {}) },
+              toolConfigProgress: { ...DEFAULT_PROGRESS.toolConfigProgress, ...(parsed.toolConfigProgress || {}) },
+              scenarioProgress: { ...DEFAULT_PROGRESS.scenarioProgress, ...(parsed.scenarioProgress || {}) }
+            };
+            setProgressState(merged);
           }
         }
       } catch (error) {
@@ -69,7 +87,15 @@ export function useProgress() {
         // Fallback: localStorage
         const localData = localStorage.getItem('onboarding-progress');
         if (localData) {
-          setProgressState(JSON.parse(localData));
+          const parsed = JSON.parse(localData);
+          const merged = {
+            ...DEFAULT_PROGRESS,
+            ...parsed,
+            practiceProgress: { ...DEFAULT_PROGRESS.practiceProgress, ...(parsed.practiceProgress || {}) },
+            toolConfigProgress: { ...DEFAULT_PROGRESS.toolConfigProgress, ...(parsed.toolConfigProgress || {}) },
+            scenarioProgress: { ...DEFAULT_PROGRESS.scenarioProgress, ...(parsed.scenarioProgress || {}) }
+          };
+          setProgressState(merged);
         }
       } finally {
         setIsLoading(false);
@@ -166,13 +192,47 @@ export function useProgress() {
     }));
   };
 
+  const setPracticeProgress = (exerciseId, rating) => {
+    setProgress(prev => ({
+      ...prev,
+      practiceProgress: {
+        ...prev.practiceProgress,
+        [exerciseId]: rating
+      }
+    }));
+  };
+
+  const setToolConfigProgress = (exerciseId) => {
+    setProgress(prev => ({
+      ...prev,
+      toolConfigProgress: {
+        ...prev.toolConfigProgress,
+        [exerciseId]: true
+      }
+    }));
+  };
+
+  const setScenarioProgress = (scenarioId) => {
+    setProgress(prev => ({
+      ...prev,
+      scenarioProgress: {
+        ...prev.scenarioProgress,
+        [scenarioId]: true
+      }
+    }));
+  };
+
   const resetProgress = async () => {
     const emptyProgress = {
+      ...DEFAULT_PROGRESS,
       startDate: null,
       tasks: {},
       quizScores: {},
       checkpoints: {},
-      notes: {}
+      notes: {},
+      practiceProgress: {},
+      toolConfigProgress: {},
+      scenarioProgress: {}
     };
     setProgressState(emptyProgress);
     localStorage.setItem('onboarding-progress', JSON.stringify(emptyProgress));
@@ -234,6 +294,9 @@ export function useProgress() {
     setQuizScore,
     completeCheckpoint,
     addNote,
+    setPracticeProgress,
+    setToolConfigProgress,
+    setScenarioProgress,
     resetProgress,
     exportProgress,
     importProgress,

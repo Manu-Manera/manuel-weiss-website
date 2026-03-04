@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { scenarioExercises } from '../data/onboardingData';
+import { useProgress } from '../hooks/useLocalStorage';
 import { 
   Users, 
+  User,
+  UserCheck,
   ChevronRight, 
   Star,
   CheckCircle2,
@@ -26,6 +29,8 @@ import {
 
 const iconMap = {
   Users: Users,
+  User: User,
+  UserCheck: UserCheck,
   Briefcase: Briefcase,
   Crown: Crown,
   Heart: Heart,
@@ -45,6 +50,7 @@ const difficultyLabels = {
 };
 
 const categoryColors = {
+  beginner: 'from-emerald-500/20 to-teal-500/20 border-emerald-500/30',
   stakeholder: 'from-blue-500/20 to-cyan-500/20 border-blue-500/30',
   mentor: 'from-purple-500/20 to-pink-500/20 border-purple-500/30',
   boss: 'from-amber-500/20 to-orange-500/20 border-amber-500/30',
@@ -53,6 +59,7 @@ const categoryColors = {
 };
 
 const categoryIcons = {
+  beginner: Award,
   stakeholder: Users,
   mentor: GraduationCap,
   boss: Award,
@@ -350,18 +357,16 @@ function ScenarioDetail({ scenario, category, onBack, onComplete, isCompleted })
 }
 
 export default function ScenarioExercises() {
+  const { progress, setScenarioProgress } = useProgress();
   const [selectedCategory, setSelectedCategory] = useState('stakeholder');
   const [selectedScenario, setSelectedScenario] = useState(null);
-  const [completedScenarios, setCompletedScenarios] = useState({});
+  const completedScenarios = progress.scenarioProgress || {};
 
   const categoryData = scenarioExercises.find(c => c.category === selectedCategory);
   const scenarios = categoryData?.scenarios || [];
 
   const handleComplete = (scenarioId) => {
-    setCompletedScenarios(prev => ({
-      ...prev,
-      [scenarioId]: true
-    }));
+    setScenarioProgress(scenarioId);
   };
 
   const getCategoryStats = (category) => {
@@ -387,8 +392,8 @@ export default function ScenarioExercises() {
   }
 
   return (
-    <div className="glass-card p-3 sm:p-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+    <div className="glass-card p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-5 sm:mb-6">
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="p-2 sm:p-3 rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex-shrink-0">
             <Target className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400" />

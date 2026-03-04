@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { practiceExercises } from '../data/onboardingData';
+import { useProgress } from '../hooks/useLocalStorage';
 import { 
   BookOpen, 
   ChevronRight, 
@@ -229,18 +230,16 @@ function ExerciseDetail({ exercise, onBack, onComplete }) {
 }
 
 export default function PracticeExercises({ currentWeek = 1 }) {
+  const { progress, setPracticeProgress } = useProgress();
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
   const [selectedExercise, setSelectedExercise] = useState(null);
-  const [completedExercises, setCompletedExercises] = useState({});
+  const completedExercises = progress.practiceProgress || {};
 
   const weekData = practiceExercises.find(w => w.week === selectedWeek);
   const exercises = weekData?.exercises || [];
 
   const handleComplete = (exerciseId, rating) => {
-    setCompletedExercises(prev => ({
-      ...prev,
-      [exerciseId]: rating
-    }));
+    setPracticeProgress(exerciseId, rating);
   };
 
   const getCompletionStats = (weekNum) => {
@@ -264,8 +263,8 @@ export default function PracticeExercises({ currentWeek = 1 }) {
   }
 
   return (
-    <div className="glass-card p-3 sm:p-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+    <div className="glass-card p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-5 sm:mb-6">
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="p-2 sm:p-3 rounded-xl bg-green-500/20 flex-shrink-0">
             <Target className="w-5 h-5 sm:w-6 sm:h-6 text-green-400" />

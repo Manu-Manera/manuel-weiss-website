@@ -97,11 +97,11 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6 lg:space-y-8">
-      {/* Header - Kompakter auf Mobile */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+    <div className="space-y-6 sm:space-y-8 lg:space-y-10">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 pb-1">
         <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">Dashboard</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1">Dashboard</h1>
           <p className="text-xs sm:text-sm text-white/50">
             Tag {stats.currentDay} von 90 • Phase {stats.currentPhase}
           </p>
@@ -115,7 +115,7 @@ export default function Dashboard() {
       </div>
 
       {/* Quick Stats - 2x2 Grid auf Mobile */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
         <div className="glass-card p-3 sm:p-4 lg:p-6">
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center flex-shrink-0">

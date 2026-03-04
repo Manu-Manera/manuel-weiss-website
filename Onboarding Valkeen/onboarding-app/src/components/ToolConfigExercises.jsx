@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { toolConfigExercises } from '../data/onboardingData';
+import { useProgress } from '../hooks/useLocalStorage';
 import { 
   Settings, 
   ChevronRight, 
@@ -273,18 +274,16 @@ function ExerciseDetail({ exercise, onBack, onComplete, isCompleted }) {
 }
 
 export default function ToolConfigExercises() {
+  const { progress, setToolConfigProgress } = useProgress();
   const [selectedWeek, setSelectedWeek] = useState(1);
   const [selectedExercise, setSelectedExercise] = useState(null);
-  const [completedExercises, setCompletedExercises] = useState({});
+  const completedExercises = progress.toolConfigProgress || {};
 
   const weekData = toolConfigExercises.find(w => w.week === selectedWeek);
   const exercises = weekData?.exercises || [];
 
   const handleComplete = (exerciseId) => {
-    setCompletedExercises(prev => ({
-      ...prev,
-      [exerciseId]: true
-    }));
+    setToolConfigProgress(exerciseId);
   };
 
   const getWeekStats = (weekNum) => {
@@ -309,8 +308,8 @@ export default function ToolConfigExercises() {
   }
 
   return (
-    <div className="glass-card p-3 sm:p-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+    <div className="glass-card p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-5 sm:mb-6">
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="p-2 sm:p-3 rounded-xl bg-indigo-500/20 flex-shrink-0">
             <Settings className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-400" />

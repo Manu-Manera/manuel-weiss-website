@@ -140,14 +140,14 @@ export default function Flashcards() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 sm:space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold gradient-text flex items-center gap-3">
+      <div className="pb-2">
+        <h1 className="text-2xl sm:text-3xl font-bold gradient-text flex items-center gap-3 mb-3">
           <Layers className="w-7 h-7 sm:w-8 sm:h-8" />
           KI-Lernkarten
         </h1>
-        <p className="text-white/60 mt-2 text-sm sm:text-base">
+        <p className="text-white/60 text-sm sm:text-base">
           Erstelle Zusammenfassungen und generiere daraus Karteikarten
         </p>
       </div>
