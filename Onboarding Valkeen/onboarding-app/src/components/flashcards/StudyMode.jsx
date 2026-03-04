@@ -11,7 +11,9 @@ import {
   Box,
   Zap,
   Target,
-  Undo2
+  Undo2,
+  Lock,
+  Unlock
 } from 'lucide-react';
 import { getStudyCards, reviewCard } from '../../services/awsService';
 
@@ -23,54 +25,13 @@ const LEITNER_INFO = {
   5: { label: 'Gemeistert', color: 'rgb(16, 185, 129)', interval: '14 Tage' }
 };
 
-function generateProgressiveQueue(allCards) {
-  if (!allCards || allCards.length === 0) return [];
-  
-  const queue = [];
-  const totalCards = allCards.length;
-  
-  const firstBatch = allCards.slice(0, Math.min(10, totalCards));
-  const progressiveSteps = [2, 4, 6, 8, 10];
-  
-  progressiveSteps.forEach(count => {
-    if (count <= firstBatch.length) {
-      for (let i = 0; i < count; i++) {
-        queue.push({ ...firstBatch[i], phase: `Erste ${count}` });
-      }
-    }
-  });
-  
-  if (totalCards > 10) {
-    const secondBatch = allCards.slice(10, Math.min(20, totalCards));
-    
-    const secondSteps = [2, 4, 6, 8, Math.min(10, secondBatch.length)];
-    secondSteps.forEach(count => {
-      if (count <= secondBatch.length) {
-        for (let i = 0; i < count; i++) {
-          queue.push({ ...secondBatch[i], phase: `Zweite ${count}` });
-        }
-      }
-    });
-    
-    const allTwenty = [...firstBatch, ...secondBatch];
-    allTwenty.forEach(card => {
-      queue.push({ ...card, phase: 'Alle 20 wiederholen' });
-    });
-  }
-  
-  if (totalCards > 20) {
-    const remaining = allCards.slice(20);
-    remaining.forEach(card => {
-      queue.push({ ...card, phase: 'Weitere Karten' });
-    });
-  }
-  
-  return queue;
-}
+// Karte gilt als "gelernt" wenn Box >= 3 (gelb oder besser)
+const LEARNED_BOX_THRESHOLD = 3;
 
 export default function StudyMode({ deck, onEnd }) {
   const [allCards, setAllCards] = useState([]);
-  const [studyQueue, setStudyQueue] = useState([]);
+  const [cardStates, setCardStates] = useState({}); // { cardId: { box, learned } }
+  const [unlockedCount, setUnlockedCount] = useState(2); // Start mit 2 Karten
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -78,7 +39,6 @@ export default function StudyMode({ deck, onEnd }) {
   const [completed, setCompleted] = useState(false);
   const [animating, setAnimating] = useState(false);
   const [useProgressiveMode, setUseProgressiveMode] = useState(true);
-  const [currentPhase, setCurrentPhase] = useState('');
 
   useEffect(() => {
     loadCards();
@@ -89,17 +49,21 @@ export default function StudyMode({ deck, onEnd }) {
     setCurrentIndex(0);
     setSessionStats({ correct: 0, incorrect: 0 });
     setCompleted(false);
+    setUnlockedCount(2);
     try {
       const result = await getStudyCards(deck.deckId, undefined, 100);
       const cards = result.cards || [];
       setAllCards(cards);
       
-      if (useProgressiveMode && cards.length > 5) {
-        const queue = generateProgressiveQueue(cards);
-        setStudyQueue(queue);
-      } else {
-        setStudyQueue(cards);
-      }
+      // Initialisiere Card States
+      const states = {};
+      cards.forEach(card => {
+        states[card.cardId] = {
+          box: card.box || 1,
+          learned: (card.box || 1) >= LEARNED_BOX_THRESHOLD
+        };
+      });
+      setCardStates(states);
     } catch (error) {
       console.error('Fehler beim Laden der Karten:', error);
     } finally {
@@ -107,8 +71,31 @@ export default function StudyMode({ deck, onEnd }) {
     }
   }
 
-  const cards = studyQueue;
-  const currentCard = cards[currentIndex];
+  // Berechne welche Karten aktuell freigeschaltet sind
+  const unlockedCards = useProgressiveMode 
+    ? allCards.slice(0, unlockedCount)
+    : allCards;
+  
+  // Filtere nur Karten die noch nicht gelernt sind (Box < 3)
+  const activeCards = unlockedCards.filter(card => {
+    const state = cardStates[card.cardId];
+    return !state?.learned;
+  });
+
+  // Zähle gelernte Karten in der aktuellen Gruppe
+  const learnedInCurrentBatch = unlockedCards.filter(card => {
+    const state = cardStates[card.cardId];
+    return state?.learned;
+  }).length;
+
+  // Prüfe ob alle freigeschalteten Karten gelernt sind
+  const allUnlockedLearned = learnedInCurrentBatch === unlockedCount;
+
+  // Aktuelle Karte
+  const currentCard = activeCards[currentIndex];
+  
+  // Berechne nächste Freischaltung
+  const nextUnlockAt = Math.min(unlockedCount + 2, allCards.length);
 
   async function handleAnswer(correct) {
     if (animating || !currentCard) return;
@@ -116,7 +103,17 @@ export default function StudyMode({ deck, onEnd }) {
     setAnimating(true);
 
     try {
-      await reviewCard(currentCard.cardId, correct);
+      const result = await reviewCard(currentCard.cardId, correct);
+      const newBox = result.newBox || (correct ? Math.min((currentCard.box || 1) + 1, 5) : 1);
+      
+      // Update lokalen Card State
+      setCardStates(prev => ({
+        ...prev,
+        [currentCard.cardId]: {
+          box: newBox,
+          learned: newBox >= LEARNED_BOX_THRESHOLD
+        }
+      }));
       
       setSessionStats(prev => ({
         ...prev,
@@ -124,11 +121,45 @@ export default function StudyMode({ deck, onEnd }) {
       }));
 
       setTimeout(() => {
-        if (currentIndex < cards.length - 1) {
-          setCurrentIndex(currentIndex + 1);
+        // Prüfe ob alle aktuellen Karten gelernt sind
+        const updatedStates = {
+          ...cardStates,
+          [currentCard.cardId]: {
+            box: newBox,
+            learned: newBox >= LEARNED_BOX_THRESHOLD
+          }
+        };
+        
+        const currentUnlocked = allCards.slice(0, unlockedCount);
+        const allCurrentLearned = currentUnlocked.every(card => 
+          updatedStates[card.cardId]?.learned
+        );
+        
+        if (allCurrentLearned && unlockedCount < allCards.length && useProgressiveMode) {
+          // Schalte 2 neue Karten frei
+          const newUnlockedCount = Math.min(unlockedCount + 2, allCards.length);
+          setUnlockedCount(newUnlockedCount);
+          setCurrentIndex(0);
           setFlipped(false);
         } else {
-          setCompleted(true);
+          // Berechne verbleibende aktive Karten
+          const remainingActive = currentUnlocked.filter(card => 
+            !updatedStates[card.cardId]?.learned
+          );
+          
+          if (remainingActive.length === 0) {
+            // Alle Karten gelernt
+            if (unlockedCount >= allCards.length) {
+              setCompleted(true);
+            }
+          } else if (currentIndex < remainingActive.length - 1) {
+            setCurrentIndex(currentIndex + 1);
+            setFlipped(false);
+          } else {
+            // Zurück zum Anfang der aktiven Karten
+            setCurrentIndex(0);
+            setFlipped(false);
+          }
         }
         setAnimating(false);
       }, 300);
@@ -150,7 +181,7 @@ export default function StudyMode({ deck, onEnd }) {
     );
   }
 
-  if (cards.length === 0) {
+  if (allCards.length === 0) {
     return (
       <div className="text-center py-16">
         <Trophy className="w-20 h-20 text-green-400 mx-auto mb-6" />
@@ -160,6 +191,47 @@ export default function StudyMode({ deck, onEnd }) {
         </p>
         <button onClick={onEnd} className="glass-button">
           Zurück zur Übersicht
+        </button>
+      </div>
+    );
+  }
+
+  // Wenn alle freigeschalteten Karten gelernt sind, aber noch mehr Karten da sind
+  if (activeCards.length === 0 && unlockedCount < allCards.length && useProgressiveMode) {
+    return (
+      <div className="text-center py-16 max-w-lg mx-auto">
+        <div className="relative inline-block mb-6">
+          <Unlock className="w-20 h-20 text-green-400" />
+          <Sparkles className="w-8 h-8 text-yellow-400 absolute -top-2 -right-2 animate-pulse" />
+        </div>
+        <h2 className="text-2xl font-bold mb-2">🎉 Super gemacht!</h2>
+        <p className="text-white/60 mb-4">
+          Du hast alle {unlockedCount} freigeschalteten Karten gelernt!
+        </p>
+        
+        <div className="glass-card p-6 mb-6">
+          <p className="text-white/50 text-sm mb-2">Fortschritt</p>
+          <p className="text-3xl font-bold gradient-text mb-2">
+            {unlockedCount} / {allCards.length}
+          </p>
+          <div className="h-3 bg-white/10 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all"
+              style={{ width: `${(unlockedCount / allCards.length) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        <button 
+          onClick={() => {
+            setUnlockedCount(Math.min(unlockedCount + 2, allCards.length));
+            setCurrentIndex(0);
+            setFlipped(false);
+          }}
+          className="glass-button flex items-center gap-2 mx-auto"
+        >
+          <Unlock className="w-5 h-5" />
+          Nächste 2 Karten freischalten
         </button>
       </div>
     );
@@ -235,7 +307,10 @@ export default function StudyMode({ deck, onEnd }) {
         <div className="text-center flex-1">
           <h2 className="font-semibold text-lg">{deck.name}</h2>
           <p className="text-white/50 text-sm">
-            Karte {currentIndex + 1} von {cards.length}
+            {useProgressiveMode 
+              ? `Karte ${currentIndex + 1} von ${activeCards.length} (${unlockedCount}/${allCards.length} freigeschaltet)`
+              : `Karte ${currentIndex + 1} von ${allCards.length}`
+            }
           </p>
         </div>
 
@@ -252,18 +327,30 @@ export default function StudyMode({ deck, onEnd }) {
       </div>
 
       {/* Progressive Mode Indicator */}
-      {useProgressiveMode && currentCard?.phase && (
-        <div className="flex items-center justify-center gap-2 mb-4 p-2 rounded-lg bg-indigo-500/10">
-          <Zap className="w-4 h-4 text-indigo-400" />
-          <span className="text-sm text-indigo-300">{currentCard.phase}</span>
+      {useProgressiveMode && (
+        <div className="flex items-center justify-center gap-4 mb-4 p-3 rounded-xl bg-indigo-500/10">
+          <div className="flex items-center gap-2">
+            <Unlock className="w-4 h-4 text-green-400" />
+            <span className="text-sm text-green-300">{learnedInCurrentBatch} gelernt</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Target className="w-4 h-4 text-indigo-400" />
+            <span className="text-sm text-indigo-300">{activeCards.length} noch offen</span>
+          </div>
+          {unlockedCount < allCards.length && (
+            <div className="flex items-center gap-2">
+              <Lock className="w-4 h-4 text-white/40" />
+              <span className="text-sm text-white/40">{allCards.length - unlockedCount} gesperrt</span>
+            </div>
+          )}
         </div>
       )}
 
-      {/* Progress Bar */}
+      {/* Progress Bar - zeigt Gesamtfortschritt */}
       <div className="h-2 bg-white/10 rounded-full mb-6 overflow-hidden">
         <div 
-          className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-300"
-          style={{ width: `${((currentIndex) / cards.length) * 100}%` }}
+          className="h-full bg-gradient-to-r from-indigo-500 to-green-500 rounded-full transition-all duration-300"
+          style={{ width: `${(learnedInCurrentBatch / allCards.length) * 100}%` }}
         />
       </div>
 
@@ -271,13 +358,13 @@ export default function StudyMode({ deck, onEnd }) {
       {currentCard && (
         <div className="flex flex-wrap items-center justify-center gap-2 mb-6 text-xs sm:text-sm">
           <div className="flex items-center gap-1">
-            <Box className="w-4 h-4" style={{ color: LEITNER_INFO[currentCard.box]?.color }} />
-            <span style={{ color: LEITNER_INFO[currentCard.box]?.color }}>
-              Box {currentCard.box}: {LEITNER_INFO[currentCard.box]?.label}
+            <Box className="w-4 h-4" style={{ color: LEITNER_INFO[cardStates[currentCard.cardId]?.box || currentCard.box]?.color }} />
+            <span style={{ color: LEITNER_INFO[cardStates[currentCard.cardId]?.box || currentCard.box]?.color }}>
+              Box {cardStates[currentCard.cardId]?.box || currentCard.box}: {LEITNER_INFO[cardStates[currentCard.cardId]?.box || currentCard.box]?.label}
             </span>
           </div>
           <span className="text-white/40 hidden sm:inline">
-            (nächste Wiederholung: {LEITNER_INFO[currentCard.box]?.interval})
+            (Gelernt ab Box {LEARNED_BOX_THRESHOLD})
           </span>
         </div>
       )}
@@ -326,6 +413,22 @@ export default function StudyMode({ deck, onEnd }) {
           <Undo2 className="w-5 h-5 sm:w-6 sm:h-6" />
         </button>
 
+        {/* Skip zu nächster Karte (ohne Bewertung) */}
+        {activeCards.length > 1 && (
+          <button
+            onClick={() => {
+              const nextIndex = (currentIndex + 1) % activeCards.length;
+              setCurrentIndex(nextIndex);
+              setFlipped(false);
+            }}
+            disabled={animating}
+            className="p-3 sm:p-4 rounded-xl glass text-white/50 hover:text-white hover:bg-white/10 transition-all disabled:opacity-30"
+            title="Überspringen"
+          >
+            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+          </button>
+        )}
+
         {/* Answer Buttons - nur wenn umgedreht */}
         {flipped ? (
           <>
@@ -370,16 +473,44 @@ export default function StudyMode({ deck, onEnd }) {
       </div>
 
       {/* Progressive Learning Info */}
-      {useProgressiveMode && allCards.length > 5 && (
+      {useProgressiveMode && (
         <div className="mt-8 p-4 glass rounded-xl text-sm text-white/50">
           <div className="flex items-center gap-2 mb-2">
             <Target className="w-4 h-4 text-indigo-400" />
             <span className="text-white/70 font-medium">Progressiver Lernmodus</span>
           </div>
           <p className="text-xs leading-relaxed">
-            Erst 2, dann 4, 6, 8, 10 Karten. Danach die nächsten 10 im gleichen Rhythmus, 
-            dann alle 20 zusammen wiederholen.
+            Du startest mit 2 Karten. Sobald beide auf Box {LEARNED_BOX_THRESHOLD}+ (gelb/grün) sind, 
+            werden 2 neue Karten freigeschaltet. So baust du schrittweise dein Wissen auf!
           </p>
+          
+          {/* Mini-Übersicht der freigeschalteten Karten */}
+          <div className="flex flex-wrap gap-1 mt-3">
+            {allCards.slice(0, Math.min(20, allCards.length)).map((card, idx) => {
+              const state = cardStates[card.cardId];
+              const isUnlocked = idx < unlockedCount;
+              const isLearned = state?.learned;
+              
+              return (
+                <div 
+                  key={card.cardId}
+                  className={`w-6 h-6 rounded flex items-center justify-center text-xs font-medium ${
+                    !isUnlocked 
+                      ? 'bg-white/5 text-white/20' 
+                      : isLearned 
+                        ? 'bg-green-500/30 text-green-400' 
+                        : 'bg-orange-500/30 text-orange-400'
+                  }`}
+                  title={`Karte ${idx + 1}: ${!isUnlocked ? 'Gesperrt' : isLearned ? 'Gelernt' : 'Offen'}`}
+                >
+                  {idx + 1}
+                </div>
+              );
+            })}
+            {allCards.length > 20 && (
+              <span className="text-white/30 text-xs self-center ml-1">+{allCards.length - 20}</span>
+            )}
+          </div>
         </div>
       )}
     </div>
