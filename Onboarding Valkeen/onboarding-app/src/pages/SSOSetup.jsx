@@ -816,17 +816,21 @@ export default function SSOSetup() {
                     </select>
                   </div>
                 </div>
-                <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                  <label className="block text-sm text-gray-400 mb-1">Tempus-Basis-URL</label>
+                <div className="rounded-xl p-4 border-2 border-indigo-500/40 bg-indigo-500/10">
+                  <label className="block text-sm font-medium text-indigo-300 mb-2">Tempus-Basis-URL (klicken zum Bearbeiten)</label>
                   <input
                     type="url"
+                    inputMode="url"
+                    autoComplete="url"
+                    readOnly={false}
                     value={projectUrls.baseUrl}
                     onChange={(e) => updateProject(project.id, { baseUrl: e.target.value })}
-                    className="w-full glass-input font-mono text-sm border border-white/20 bg-white/10 focus:bg-white/15 cursor-text"
+                    className="w-full px-4 py-3 rounded-lg font-mono text-sm bg-white/15 border-2 border-indigo-400/50 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 cursor-text"
+                    style={{ minHeight: 44 }}
                     placeholder="https://kunde.tempus-resource.com"
                   />
                   {!validateUrl(projectUrls.baseUrl) && projectUrls.baseUrl && <p className="text-amber-400 text-xs mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> URL-Format prüfen</p>}
-                  <button onClick={() => updateProject(project.id, computeUrls(project))} className="mt-2 text-xs text-indigo-400 hover:text-indigo-300">↺ Aus Kundendaten neu berechnen</button>
+                  <button type="button" onClick={() => updateProject(project.id, computeUrls(project))} className="mt-2 text-xs text-indigo-400 hover:text-indigo-300">↺ Aus Kundendaten neu berechnen</button>
                 </div>
                 <div>
                   <label className="block text-sm text-gray-400 mb-1">Notizen</label>

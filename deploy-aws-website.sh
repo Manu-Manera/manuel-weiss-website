@@ -65,6 +65,20 @@ done
 
 echo "🚀 Deployen zu ${SITE_URL} (S3: ${S3_BUCKET}, CloudFront: ${CLOUDFRONT_DISTRIBUTION_ID})"
 [ -n "$DRY_RUN" ] && echo "   (Dry-Run – es wird nichts hochgeladen)"
+
+# Onboarding-App bauen und nach onboarding/ kopieren (wird deployed, dist/* ist excluded)
+if [ -z "$DRY_RUN" ]; then
+  if [ -d "Onboarding Valkeen/onboarding-app" ]; then
+    echo "📦 Baue Onboarding-App …"
+    (cd "Onboarding Valkeen/onboarding-app" && npm run build 2>/dev/null) || true
+    if [ -d "Onboarding Valkeen/onboarding-app/dist" ]; then
+      rm -rf onboarding
+      mkdir -p onboarding
+      cp -r "Onboarding Valkeen/onboarding-app/dist/"* onboarding/
+      echo "   → onboarding/ aktualisiert"
+    fi
+  fi
+fi
 [ -n "$DELETE_FLAG" ] && echo "   (Mit --cleanup: entfernt in S3, was lokal fehlt – kann Minuten dauern)"
 [ -n "$QUICK" ] && echo "   (Schnellmodus: nur geänderte Dateien)"
 
@@ -80,6 +94,12 @@ if [ -n "$QUICK" ] && [ -z "$DRY_RUN" ]; then
     [[ "$f" == *.env* || "$f" == config/deploy-aws* ]] && continue
     echo "$f"
   done)
+  COUNT=$(echo "$CHANGED" | grep -c . 2>/dev/null || echo 0)
+  # onboarding/ immer mit hochladen (Build-Output, in .gitignore)
+  if [ -d "onboarding" ]; then
+    ONBOARDING_FILES=$(find onboarding -type f 2>/dev/null)
+    CHANGED=$(echo -e "${CHANGED}\n${ONBOARDING_FILES}" | grep -v '^$' | sort -u)
+  fi
   COUNT=$(echo "$CHANGED" | grep -c . 2>/dev/null || echo 0)
   if [ "$COUNT" -eq 0 ]; then
     echo "ℹ️ Keine geänderten Website-Dateien (oder nicht in einem Git-Repo). Nutze normalen Sync ohne --quick."
