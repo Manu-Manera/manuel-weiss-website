@@ -778,9 +778,11 @@ export default function SSOSetup() {
                   <div>
                     <label className="block text-sm text-gray-400 mb-1">Kunden-Name</label>
                     <input
+                      type="text"
                       value={project.clientName}
                       onChange={(e) => updateProject(project.id, { clientName: e.target.value })}
-                      className="w-full glass-input"
+                      className="w-full glass-input border border-white/20 bg-white/10 focus:bg-white/15 cursor-text"
+                      placeholder="z.B. BASF, Acme"
                     />
                   </div>
                   <div>
@@ -788,7 +790,7 @@ export default function SSOSetup() {
                     <select
                       value={project.idp || 'azure'}
                       onChange={(e) => updateProject(project.id, { idp: e.target.value })}
-                      className="w-full glass-input"
+                      className="w-full glass-input border border-white/20 bg-white/10 focus:bg-white/15 cursor-pointer"
                     >
                       {IDP_OPTIONS.map(i => <option key={i.id} value={i.id}>{i.label}</option>)}
                     </select>
@@ -796,10 +798,11 @@ export default function SSOSetup() {
                   <div>
                     <label className="block text-sm text-gray-400 mb-1">Custom Base-URL (optional)</label>
                     <input
+                      type="text"
                       value={project.customBaseUrl || ''}
                       onChange={(e) => updateProject(project.id, { customBaseUrl: e.target.value })}
                       placeholder="Leer = Standard tempus-resource.com"
-                      className="w-full glass-input"
+                      className="w-full glass-input border border-white/20 bg-white/10 focus:bg-white/15 cursor-text"
                     />
                   </div>
                   <div>
@@ -807,18 +810,19 @@ export default function SSOSetup() {
                     <select
                       value={project.environment || 'production'}
                       onChange={(e) => updateProject(project.id, { environment: e.target.value })}
-                      className="w-full glass-input"
+                      className="w-full glass-input border border-white/20 bg-white/10 focus:bg-white/15 cursor-pointer"
                     >
                       {ENV_OPTIONS.map(e => <option key={e.id} value={e.id}>{e.label}</option>)}
                     </select>
                   </div>
                 </div>
-                <div className="bg-white/5 rounded-xl p-4">
-                  <label className="block text-sm text-gray-400 mb-1">Tempus-Basis-URL (bearbeitbar)</label>
+                <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                  <label className="block text-sm text-gray-400 mb-1">Tempus-Basis-URL</label>
                   <input
+                    type="url"
                     value={projectUrls.baseUrl}
                     onChange={(e) => updateProject(project.id, { baseUrl: e.target.value })}
-                    className="w-full glass-input font-mono text-sm"
+                    className="w-full glass-input font-mono text-sm border border-white/20 bg-white/10 focus:bg-white/15 cursor-text"
                     placeholder="https://kunde.tempus-resource.com"
                   />
                   {!validateUrl(projectUrls.baseUrl) && projectUrls.baseUrl && <p className="text-amber-400 text-xs mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> URL-Format prüfen</p>}
@@ -829,7 +833,7 @@ export default function SSOSetup() {
                   <textarea
                     value={project.notes || ''}
                     onChange={(e) => updateProject(project.id, { notes: e.target.value })}
-                    className="w-full glass-input h-20"
+                    className="w-full glass-input h-20 border border-white/20 bg-white/10 focus:bg-white/15 cursor-text"
                     placeholder="Interne Notizen..."
                   />
                 </div>
