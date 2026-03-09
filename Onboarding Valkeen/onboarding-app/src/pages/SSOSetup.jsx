@@ -1046,9 +1046,22 @@ export default function SSOSetup() {
                       <li>Einmalanmeldung → SAML</li>
                       <li>Grundlegende SAML-Konfiguration → Bearbeiten:</li>
                     </ol>
-                    <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-4 space-y-2">
-                      <p><strong>Bezeichner:</strong> <code className="text-green-300">{projectUrls.entityId}</code> <CopyButton text={projectUrls.entityId} label="Kopieren" /></p>
-                      <p><strong>Antwort-URL:</strong> <code className="text-green-300">{projectUrls.replyUrl}</code> <CopyButton text={projectUrls.replyUrl} label="Kopieren" /></p>
+                    <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-4 space-y-4">
+                      <p className="text-amber-400/90 text-xs">⚠️ Klicken Sie auf den Kopier-Button – kopieren Sie nicht manuell, sonst können Zeichen wie „Kopieren“ mit in Azure landen und die Validierung schlägt fehl.</p>
+                      <div>
+                        <p className="text-sm text-gray-400 mb-1"><strong className="text-white">Bezeichner (Entity ID):</strong></p>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <code className="flex-1 min-w-0 block p-2 rounded bg-black/20 font-mono text-sm text-green-300 break-all">{projectUrls.entityId}</code>
+                          <CopyButton text={projectUrls.entityId} label="Kopieren" />
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-400 mb-1"><strong className="text-white">Antwort-URL (ACS):</strong></p>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <code className="flex-1 min-w-0 block p-2 rounded bg-black/20 font-mono text-sm text-green-300 break-all">{projectUrls.replyUrl}</code>
+                          <CopyButton text={projectUrls.replyUrl} label="Kopieren" />
+                        </div>
+                      </div>
                     </div>
                   </>
                 ) : (
@@ -1061,9 +1074,21 @@ export default function SSOSetup() {
                       <li>Audience URI (SP Entity ID): <code className="text-green-300">{projectUrls.entityId}</code></li>
                       <li>Okta füllt Entity ID ggf. automatisch – prüfen ob übereinstimmt</li>
                     </ol>
-                    <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-4 space-y-2">
-                      <p><strong>Audience URI:</strong> <code className="text-green-300">{projectUrls.entityId}</code> <CopyButton text={projectUrls.entityId} label="Kopieren" /></p>
-                      <p><strong>Single Sign-On URL:</strong> <code className="text-green-300">{projectUrls.replyUrl}</code> <CopyButton text={projectUrls.replyUrl} label="Kopieren" /></p>
+                    <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-4 space-y-4">
+                      <div>
+                        <p className="text-sm text-gray-400 mb-1"><strong className="text-white">Audience URI (SP Entity ID):</strong></p>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <code className="flex-1 min-w-0 block p-2 rounded bg-black/20 font-mono text-sm text-green-300 break-all">{projectUrls.entityId}</code>
+                          <CopyButton text={projectUrls.entityId} label="Kopieren" />
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-400 mb-1"><strong className="text-white">Single Sign-On URL:</strong></p>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <code className="flex-1 min-w-0 block p-2 rounded bg-black/20 font-mono text-sm text-green-300 break-all">{projectUrls.replyUrl}</code>
+                          <CopyButton text={projectUrls.replyUrl} label="Kopieren" />
+                        </div>
+                      </div>
                     </div>
                   </>
                 )}
