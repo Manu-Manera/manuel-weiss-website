@@ -1,0 +1,24 @@
+services:
+  excel-mapper:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - ALLOWED_ORIGINS=https://your-domain.com,https://www.your-domain.com
+      # API-Keys über UI eingeben oder hier setzen:
+      # - TEMPUS_API_BASE_URL=https://your-tempus-instance.com
+      # - TEMPUS_API_KEY=your-bearer-token
+      # - ANTHROPIC_API_KEY=sk-ant-your-key
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:3001/api/config"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
