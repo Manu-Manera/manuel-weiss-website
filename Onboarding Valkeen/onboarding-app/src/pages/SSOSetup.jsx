@@ -263,7 +263,7 @@ function exportAsTxt(project) {
 
 ## Tempus (General Settings → Miscellaneous → SSO)
 - SAML application id: ${entityId}
-- SAML configuration URL: ${project.samlConfigUrl || '(Metadaten-URL aus IdP einfügen)'}
+- SAML configuration URL: NICHT VERWENDEN (leer lassen – sonst Fehler 700016)
 ${project.samlEndpoint ? `- SAML endpoint: ${project.samlEndpoint}\n` : ''}
 - Custom label: ${project.customLabel || 'Continue With Saml'}
 `;
@@ -309,11 +309,11 @@ h1{color:#818cf8}.box{background:#2d2d44;padding:16px;border-radius:8px;margin:1
 <p>IdP: <strong>${idpName}</strong></p>
 ${isSaml ? `<div class="box"><strong>Entity ID:</strong><br><code>${entityId}</code></div>
 <div class="box"><strong>Reply URL:</strong><br><code>${replyUrl}</code></div>
-<div class="box"><strong>SAML configuration URL:</strong><br><code>${project.samlConfigUrl || '(aus IdP)'}</code></div>` : `<div class="box"><strong>Redirect URI:</strong><br><code>${baseUrl}/sg/home/${project.idp}</code></div>
+<div class="box"><strong>SAML:</strong> Manuell konfigurieren – SAML configuration URL NICHT verwenden (leer lassen).</div>` : `<div class="box"><strong>Redirect URI:</strong><br><code>${baseUrl}/sg/home/${project.idp}</code></div>
 <div class="box"><strong>${project.idp === 'google' ? 'Google' : 'Microsoft'} client id:</strong><br><code>${project.idp === 'google' ? project.googleClientId : project.microsoftClientId || '(eintragen)'}</code></div>`}
 <h2>Tempus</h2>
 <ol><li>General Settings → Miscellaneous → SSO</li>
-<li>${isSaml ? `SAML aktivieren, SAML Configuration URL einfügen` : `${project.idp === 'google' ? 'Google' : 'Microsoft'} aktivieren, Client ID & Key eintragen`}</li>
+<li>${isSaml ? `SAML aktivieren, manuell: application id + endpoint + Zertifikat (keine Metadaten-URL)` : `${project.idp === 'google' ? 'Google' : 'Microsoft'} aktivieren, Client ID & Key eintragen`}</li>
 <li>Speichern</li></ol>
 <h2>Benutzer</h2>
 <p>Resource Management → User Identity → E-Mail + SSO aktivieren</p>
@@ -338,7 +338,11 @@ anbei die SSO-Konfigurationswerte für Tempus (${project.clientName}):
 Entity ID: ${entityId}
 Reply URL: ${replyUrl}
 
-Bitte in ${idpName} unter der SAML-Anwendung eintragen, dann die Metadaten-URL kopieren und in Tempus unter General Settings → Miscellaneous → SAML Configuration URL einfügen.
+Bitte in ${idpName} unter der SAML-Anwendung eintragen. In Tempus: General Settings → Miscellaneous → SSO → SAML aktivieren und manuell eintragen:
+- SAML application id: ${entityId}
+- SAML endpoint: aus IdP-Metadaten (SingleSignOnService URL)
+- SAML certificate: aus IdP-Metadaten (X509Certificate)
+Wichtig: SAML configuration URL NICHT verwenden (leer lassen), sonst Fehler AADSTS700016.
 
 Tempus-URL: ${baseUrl}
 
@@ -1115,24 +1119,24 @@ export default function SSOSetup() {
             {/* Step 4: Metadaten (nur SAML) */}
             {currentStep === 4 && isSaml && (
               <div className="space-y-6">
-                <h3 className="text-xl font-semibold text-white flex items-center gap-2"><FileText className="w-6 h-6 text-indigo-400" /> Schritt 4: Metadaten für Tempus</h3>
-                <p className="text-gray-400 text-sm">Tempus braucht die IdP-Metadaten. Am einfachsten: die <strong>Metadaten-URL</strong> eintragen (Tempus lädt sie automatisch).</p>
+                <h3 className="text-xl font-semibold text-white flex items-center gap-2"><FileText className="w-6 h-6 text-indigo-400" /> Schritt 4: IdP-Metadaten auslesen</h3>
+                <p className="text-gray-400 text-sm">Tempus braucht <strong>SAML endpoint</strong> und <strong>Zertifikat</strong> aus dem IdP. Bei Tempus: <strong>manuelle Eintragung</strong> – keine Metadaten-URL verwenden (verursacht Fehler AADSTS700016).</p>
                 <ol className="list-decimal list-inside space-y-3 text-gray-300">
                   <li>In der {IDP_OPTIONS.find(i => i.id === project.idp)?.label}-Anwendung: Einmalanmeldung → SAML</li>
-                  <li><strong>Metadaten-URL kopieren</strong> („App-Verbundmetadaten-URL“ oder „Federation Metadata URL“)</li>
-                  <li>Format Azure: <code className="text-green-300 text-xs">https://login.microsoftonline.com/&lt;tenant-id&gt;/federationmetadata/2007-06/federationmetadata.xml</code></li>
+                  <li><strong>Metadaten-XML herunterladen</strong> („App-Verbundmetadaten-URL“ oder „Federation Metadata URL“)</li>
+                  <li>Aus der XML: <code>SingleSignOnService Location</code> → SAML endpoint. <code>&lt;X509Certificate&gt;</code> → Zertifikat (bei samltool.com formatieren)</li>
                 </ol>
                 {project.idp === 'azure' && (
                   <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-4 space-y-3">
-                    <p className="text-indigo-300 font-medium">Azure: Metadaten-URL finden</p>
-                    <p className="text-sm text-gray-300">Unter „Einmalanmeldung“ → SAML → Abschnitt „Grundlegende SAML-Konfiguration“. Dort „App-Verbundmetadaten-URL“ – diese URL kopieren (nicht die XML-Datei herunterladen).</p>
-                    <p className="text-sm text-gray-300">Falls Sie die XML heruntergeladen haben: Die Metadaten-URL hat dieselbe Domain, z.B. <code className="text-green-300">https://login.microsoftonline.com/f5e88864-xxxx/federationmetadata/2007-06/federationmetadata.xml</code> – die tenant-id steht in der XML bei <code>entityID</code> oder in den <code>Location</code>-URLs.</p>
+                    <p className="text-indigo-300 font-medium">Azure: Metadaten-XML auslesen</p>
+                    <p className="text-sm text-gray-300">App-Verbundmetadaten-URL im Browser öffnen (Einmalanmeldung → SAML → Grundlegende SAML-Konfiguration).</p>
+                    <p className="text-sm text-gray-300">Aus der XML: <code>SingleSignOnService Location</code> → SAML endpoint (z.B. <code>.../saml2</code>). <code>X509Certificate</code> → Inhalt bei samltool.com formatieren und als .cer speichern.</p>
                   </div>
                 )}
                 {project.idp === 'okta' && (
                   <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-4">
                     <p className="text-indigo-300 font-medium">Okta:</p>
-                    <p className="text-sm text-gray-300">In der SAML-App: „Identity Provider metadata“ oder Metadaten-URL kopieren.</p>
+                    <p className="text-sm text-gray-300">Identity Provider metadata herunterladen. Aus der XML: SingleSignOnService URL und X509Certificate extrahieren.</p>
                   </div>
                 )}
                 <button onClick={() => { markStepDone(4); goToStep(5); }} className="glass-button flex items-center gap-2">Weiter <ChevronRight className="w-4 h-4" /></button>
@@ -1184,18 +1188,22 @@ export default function SSOSetup() {
                     </div>
                     <p className="text-xs text-gray-500 mt-1">= Tempus Entity ID (z.B. {projectUrls.baseUrl}/sg)</p>
                   </div>
+                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+                    <p className="text-amber-300 font-medium text-sm mb-2">⚠️ Tempus: Metadaten-URL nicht verwenden!</p>
+                    <p className="text-xs text-gray-300">Tempus überschreibt bei Metadaten-URL das „SAML application id“ mit der falschen IdP-Entity-ID. Dadurch entsteht Fehler AADSTS700016. Verwenden Sie manuelle Eintragung (SAML application id, SAML endpoint, Zertifikat).</p>
+                  </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">SAML configuration URL (empfohlen)</label>
+                    <label className="block text-xs text-gray-500 mb-1">SAML configuration URL (bei Tempus weglassen)</label>
                     <input
                       value={project.samlConfigUrl || ''}
                       onChange={(e) => updateProject(project.id, { samlConfigUrl: e.target.value })}
-                      placeholder="https://login.microsoftonline.com/&lt;tenant-id&gt;/federationmetadata/2007-06/federationmetadata.xml"
+                      placeholder="Nur bei anderen Apps – nicht bei Tempus"
                       className="w-full glass-input font-mono text-sm"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Metadaten-URL aus Azure (nicht die XML-Datei). Tempus lädt sie automatisch.</p>
+                    <p className="text-xs text-amber-400/90 mt-1">Tempus: Feld leer lassen, sonst Fehler 700016</p>
                   </div>
-                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
-                    <p className="text-amber-300 font-medium text-sm mb-2">Falls Sie nur die XML-Datei haben (manuelle Eintragung):</p>
+                  <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-lg p-3">
+                    <p className="text-indigo-300 font-medium text-sm mb-2">Manuelle Eintragung aus XML:</p>
                     <p className="text-xs text-gray-300 space-y-1">
                       <strong>1. Metadaten-URL ableiten:</strong> Aus der XML die tenant-id nehmen (z.B. aus <code>entityID="https://sts.windows.net/f5e88864-xxxx/"</code> oder <code>Location="https://login.microsoftonline.com/f5e88864-xxxx/saml2"</code>). URL: <code>https://login.microsoftonline.com/&lt;tenant-id&gt;/federationmetadata/2007-06/federationmetadata.xml</code><br />
                       <strong>2. Oder manuell:</strong> SAML endpoint = <code>SingleSignOnService Location</code> (z.B. https://login.microsoftonline.com/.../saml2). Zertifikat = Inhalt von <code>&lt;X509Certificate&gt;</code> bei <a href={SAML_TOOL_URL} target="_blank" rel="noopener noreferrer" className="text-indigo-400">samltool.com</a> formatieren und als .cer hochladen.
@@ -1224,11 +1232,12 @@ export default function SSOSetup() {
                 <ol className="list-decimal list-inside space-y-2 text-gray-300 text-sm">
                   <li>In Tempus: General Settings → Miscellaneous → SSO</li>
                   <li>SAML aktivieren (Häkchen setzen)</li>
-                  <li>SAML application id: <code className="text-green-300">{projectUrls.entityId}</code></li>
-                  <li>SAML configuration URL: Metadaten-URL aus IdP einfügen</li>
-                  <li>SAML certificate file: ggf. Zertifikat hochladen</li>
+                  <li>SAML application id: <code className="text-green-300">{projectUrls.entityId}</code> (Kopier-Button nutzen)</li>
+                  <li>SAML configuration URL: <strong className="text-amber-400">leer lassen</strong> – sonst Fehler AADSTS700016</li>
+                  <li>SAML endpoint: <code>https://login.microsoftonline.com/&lt;tenant-id&gt;/saml2</code> (aus IdP-Metadaten)</li>
+                  <li>SAML certificate file: Zertifikat aus XML hochladen (X509Certificate bei samltool.com formatieren)</li>
                   <li>Custom label anpassen (optional)</li>
-                  <li>Speichern</li>
+                  <li>Speichern – Anmeldung testen</li>
                 </ol>
                 <button onClick={() => { markStepDone(5); goToStep(6); }} className="glass-button flex items-center gap-2">Weiter <ChevronRight className="w-4 h-4" /></button>
               </div>

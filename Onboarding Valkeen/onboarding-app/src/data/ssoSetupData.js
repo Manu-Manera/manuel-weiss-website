@@ -49,7 +49,7 @@ export const TEMPUS_SSO_FIELDS = {
     { key: 'samlApplicationId', label: 'SAML application id', source: 'entityId', hint: 'Entity ID / Bezeichner' },
     { key: 'samlEndpoint', label: 'SAML endpoint', source: 'metadata', hint: 'Aus IdP-Metadaten (SingleSignOnService URL)' },
     { key: 'samlCertificate', label: 'SAML certificate file', source: 'upload', hint: 'Zertifikat aus Metadaten (.cer/.pem)' },
-    { key: 'samlConfigUrl', label: 'SAML configuration URL', source: 'metadata', hint: 'Metadaten-URL aus IdP' },
+    { key: 'samlConfigUrl', label: 'SAML configuration URL', source: 'metadata', hint: 'Bei Tempus NICHT verwenden (leer lassen – sonst Fehler 700016)' },
     { key: 'customLabel', label: 'Custom label', default: 'Continue With Saml' }
   ],
   google: [
