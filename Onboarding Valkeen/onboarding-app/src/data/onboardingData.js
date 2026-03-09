@@ -247,40 +247,40 @@ export const quizQuestions = [
   {
     id: 1,
     week: 1,
-    question: "Was macht Valkeen?",
+    question: "Was ist Valkeens Kerngeschäft?",
     options: [
-      "Softwareentwicklung für Gaming",
       "Consulting für PPM und Resource Management mit Tempus Resource",
-      "Cloud-Hosting Services",
-      "Marketing-Agentur"
+      "Implementierung von ERP-Systemen wie SAP",
+      "Software-Entwicklung von Projektmanagement-Tools",
+      "Recruiting und Personalvermittlung"
     ],
-    correct: 1,
+    correct: 0,
     explanation: "Valkeen ist ein Consulting-Unternehmen mit 15+ Jahren PPM-Erfahrung, spezialisiert auf Resource Portfolio Management und Tempus Resource Implementierungen."
   },
   {
     id: 2,
     week: 1,
-    question: "Wer ist ProSymmetry?",
+    question: "Welche Rolle hat ProSymmetry in Bezug auf Valkeen?",
     options: [
-      "Ein Konkurrent von Valkeen",
+      "Ein Kunde von Valkeen für Implementierungsprojekte",
+      "Ein Konkurrent im PPM-Beratungsmarkt",
       "Der Hersteller von Tempus Resource und strategischer Partner",
-      "Ein Kunde von Valkeen",
-      "Eine Beratungsfirma"
+      "Ein Lizenzpartner für Microsoft Project"
     ],
-    correct: 1,
+    correct: 2,
     explanation: "ProSymmetry ist der Hersteller von Tempus Resource und strategischer Partner von Valkeen. Sie sind im Gartner Magic Quadrant für Enterprise Resource & Portfolio Management."
   },
   {
     id: 3,
     week: 1,
-    question: "In welchem Gartner-Bericht ist ProSymmetry gelistet?",
+    question: "In welchem Gartner Magic Quadrant ist ProSymmetry gelistet?",
     options: [
-      "Magic Quadrant for CRM",
-      "Magic Quadrant for Enterprise Resource & Portfolio Management",
       "Magic Quadrant for Cloud Infrastructure",
-      "Magic Quadrant for Data Analytics"
+      "Magic Quadrant for Data Analytics",
+      "Magic Quadrant for Enterprise Resource & Portfolio Management",
+      "Magic Quadrant for CRM"
     ],
-    correct: 1,
+    correct: 2,
     explanation: "ProSymmetry ist im Gartner Magic Quadrant für Enterprise Resource & Portfolio Management gelistet, was ihre Marktposition im PPM-Bereich unterstreicht."
   },
   {
@@ -288,25 +288,25 @@ export const quizQuestions = [
     week: 1,
     question: "Laut McKinsey, warum ist Strategic Workforce Planning im KI-Zeitalter besonders wichtig?",
     options: [
-      "Weil KI alle Jobs ersetzt",
-      "Weil sich Skill-Anforderungen schnell ändern und Unternehmen proaktiv planen müssen",
+      "Weil KI alle Jobs ersetzt und Unternehmen daher weniger Personal brauchen",
       "Weil es gesetzlich vorgeschrieben ist",
-      "Weil es billiger ist als traditionelle Planung"
+      "Weil sich Skill-Anforderungen schnell ändern und Unternehmen proaktiv planen müssen",
+      "Weil traditionelle Planung zu teuer ist und KI-gestützte Planung günstiger ist"
     ],
-    correct: 1,
+    correct: 2,
     explanation: "McKinsey betont, dass sich durch KI die Skill-Anforderungen rapide ändern. Unternehmen müssen proaktiv ihre Workforce planen, um wettbewerbsfähig zu bleiben."
   },
   {
     id: 5,
     week: 1,
-    question: "Was ist das Hauptprodukt von ProSymmetry?",
+    question: "Welches Produkt ist das Kerngeschäft von ProSymmetry?",
     options: [
       "Microsoft Project",
-      "Tempus Resource",
       "Jira",
-      "Asana"
+      "Tempus Resource",
+      "Smartsheet"
     ],
-    correct: 1,
+    correct: 2,
     explanation: "Tempus Resource ist das Hauptprodukt von ProSymmetry - eine Enterprise-Lösung für Resource Portfolio Management."
   },
 
@@ -316,40 +316,40 @@ export const quizQuestions = [
   {
     id: 6,
     week: 2,
-    question: "Was sind die Kernfunktionen von Resource Management?",
+    question: "Welche Bereiche umfasst Resource Management in Tempus?",
     options: [
-      "Nur Zeiterfassung",
       "Resource Planning, Capacity Planning, Allocation, Demand Management, Skills Management",
-      "Nur Projektplanung",
-      "Nur Budgetverwaltung"
+      "Nur Zeiterfassung und Urlaubsplanung",
+      "Projektplanung und Budgetkontrolle",
+      "Reporting und Dashboard-Erstellung"
     ],
-    correct: 1,
+    correct: 0,
     explanation: "Resource Management umfasst Resource Planning, Capacity Planning, Resource Allocation, Demand Management und Skills Management."
   },
   {
     id: 7,
     week: 2,
-    question: "Was ist der Unterschied zwischen Allocation und Assignment?",
+    question: "Was unterscheidet Allocation von Assignment in Tempus?",
     options: [
-      "Es gibt keinen Unterschied",
-      "Allocation ist geplante Zuweisung, Assignment ist konkrete Zuweisung einer Person",
       "Assignment ist für Projekte, Allocation für Ressourcen",
-      "Allocation ist nur für Manager"
+      "Allocation ist nur für Manager, Assignment für alle",
+      "Allocation ist geplante Zuweisung (kann generisch sein), Assignment ist konkrete Zuweisung einer Person",
+      "Es gibt keinen funktionalen Unterschied, nur verschiedene Begriffe"
     ],
-    correct: 1,
+    correct: 2,
     explanation: "Allocation ist eine geplante Ressourcenzuweisung (kann generisch sein), während Assignment die konkrete Zuweisung einer spezifischen Person bedeutet."
   },
   {
     id: 8,
     week: 2,
-    question: "Was versteht man unter 'Capacity Planning'?",
+    question: "Was versteht man unter 'Capacity Planning' im Resource Management?",
     options: [
-      "Die Planung von Büroräumen",
+      "Die Planung von Bürokapazitäten und Arbeitsplätzen",
+      "Die Planung von IT-Infrastruktur und Serverkapazität",
       "Die Planung der verfügbaren Arbeitskapazität von Ressourcen über Zeit",
-      "Die Planung von IT-Infrastruktur",
-      "Die Planung von Meetings"
+      "Die Planung von Meeting-Räumen und -zeiten"
     ],
-    correct: 1,
+    correct: 2,
     explanation: "Capacity Planning ist die strategische Planung der verfügbaren Arbeitskapazität von Ressourcen über einen bestimmten Zeitraum, um Über- oder Unterauslastung zu vermeiden."
   },
   {
@@ -357,12 +357,12 @@ export const quizQuestions = [
     week: 2,
     question: "Was ist 'Demand Management' im Kontext von Resource Management?",
     options: [
-      "Kundenanfragen bearbeiten",
       "Die Erfassung und Priorisierung von Ressourcenanforderungen aus Projekten",
-      "Marketing-Nachfrage analysieren",
-      "Lieferkettenmanagement"
+      "Marketing-Nachfrage und Kundendaten analysieren",
+      "Lieferketten und Beschaffung planen",
+      "Kundenanfragen und Support-Tickets bearbeiten"
     ],
-    correct: 1,
+    correct: 0,
     explanation: "Demand Management erfasst und priorisiert Ressourcenanforderungen aus verschiedenen Projekten und Initiativen, um eine optimale Ressourcenverteilung zu ermöglichen."
   },
   {
@@ -370,10 +370,10 @@ export const quizQuestions = [
     week: 2,
     question: "Warum ist Skills Management wichtig für Resource Management?",
     options: [
-      "Um Gehälter zu berechnen",
+      "Um Mitarbeiter zu bewerten und Gehaltsanpassungen zu rechtfertigen",
       "Um die richtigen Ressourcen mit den passenden Fähigkeiten Projekten zuzuweisen",
-      "Um Schulungen zu verkaufen",
-      "Um Mitarbeiter zu bewerten"
+      "Um Schulungen zu verkaufen und Zertifizierungen zu verwalten",
+      "Um Abteilungsstrukturen und Hierarchien abzubilden"
     ],
     correct: 1,
     explanation: "Skills Management ermöglicht es, Ressourcen basierend auf ihren Fähigkeiten optimal Projekten zuzuweisen und Skill-Gaps frühzeitig zu identifizieren."
@@ -383,12 +383,12 @@ export const quizQuestions = [
     week: 2,
     question: "Was ist ein 'Generic Resource' in Tempus?",
     options: [
-      "Ein Praktikant",
       "Ein Platzhalter für eine noch nicht benannte Ressource mit bestimmten Skills",
-      "Ein externer Berater",
-      "Ein Manager"
+      "Ein externer Berater oder Freelancer",
+      "Ein Praktikant oder Trainee",
+      "Eine Ressource für generische Verwaltungsaufgaben"
     ],
-    correct: 1,
+    correct: 0,
     explanation: "Ein Generic Resource ist ein Platzhalter für eine noch nicht identifizierte Person, definiert durch benötigte Skills und Rolle, der später durch eine Named Resource ersetzt wird."
   },
 
@@ -400,38 +400,38 @@ export const quizQuestions = [
     week: 3,
     question: "Welche Views stehen einem Project Manager in Tempus zur Verfügung?",
     options: [
-      "Nur Grid View",
       "Grid, Gantt, Kanban",
-      "Nur Gantt",
-      "Nur Kanban"
+      "Nur Grid und Gantt",
+      "Nur Gantt und Kanban",
+      "Grid, Gantt, Kanban und Timeline"
     ],
-    correct: 1,
+    correct: 0,
     explanation: "Project Manager haben Zugriff auf Grid View, Gantt View und Kanban View für verschiedene Perspektiven auf ihre Projekte."
   },
   {
     id: 13,
     week: 3,
-    question: "Was ist ein Resource Request (RR)?",
+    question: "Was ist ein Resource Request (RR) in Tempus?",
     options: [
-      "Eine Urlaubsanfrage",
       "Eine formelle Anfrage des PM an den RM für Ressourcen",
-      "Ein Fehlerbericht",
-      "Eine Gehaltsanfrage"
+      "Eine Urlaubs- oder Abwesenheitsanfrage einer Ressource",
+      "Ein Antrag auf zusätzliche Projektbudgets",
+      "Eine Anfrage zur Änderung von Projektattributen"
     ],
-    correct: 1,
+    correct: 0,
     explanation: "Ein Resource Request ist eine formelle Anfrage des Project Managers an den Resource Manager für benötigte Ressourcen mit Status wie Pending, Approved, Rejected."
   },
   {
     id: 14,
     week: 3,
-    question: "Welche Status kann ein Resource Request haben?",
+    question: "Welche Status kann ein Resource Request in Tempus haben?",
     options: [
-      "Open, Closed",
-      "Pending, Approved, Rejected, Fulfilled",
       "New, In Progress, Done",
-      "Draft, Published"
+      "Draft, Submitted, Published",
+      "Pending, Approved, Rejected, Fulfilled",
+      "Open, In Review, Closed"
     ],
-    correct: 1,
+    correct: 2,
     explanation: "Resource Requests durchlaufen typischerweise die Status: Pending (wartend), Approved (genehmigt), Rejected (abgelehnt) und Fulfilled (erfüllt)."
   },
   {
@@ -439,25 +439,25 @@ export const quizQuestions = [
     week: 3,
     question: "Was zeigt die Gantt View in Tempus?",
     options: [
-      "Nur Ressourcenauslastung",
+      "Nur Ressourcenauslastung und Kapazitätsdiagramme",
+      "Nur Budgetverlauf und Kostenentwicklung",
       "Zeitliche Darstellung von Projekten, Phasen und Zuweisungen auf einer Zeitachse",
-      "Nur Budgetinformationen",
-      "Nur Teamstruktur"
+      "Nur Teamstruktur und Hierarchie"
     ],
-    correct: 1,
+    correct: 2,
     explanation: "Die Gantt View zeigt Projekte, Phasen und Ressourcenzuweisungen auf einer Zeitachse, ideal für die Visualisierung von Abhängigkeiten und Timelines."
   },
   {
     id: 16,
     week: 3,
-    question: "Wofür ist die Kanban View besonders geeignet?",
+    question: "Wofür ist die Kanban View in Tempus besonders geeignet?",
     options: [
-      "Für Finanzberichte",
+      "Für Finanzberichte und Budgetplanung",
+      "Für Zeiterfassung und Stundenerfassung",
       "Für die Visualisierung von Workflow-Status und agiles Arbeiten",
-      "Für Ressourcenplanung",
-      "Für Zeiterfassung"
+      "Für Ressourcenkapazitätsplanung"
     ],
-    correct: 1,
+    correct: 2,
     explanation: "Die Kanban View eignet sich besonders für die Visualisierung von Workflow-Status (z.B. To Do, In Progress, Done) und unterstützt agile Arbeitsweisen."
   },
   {
@@ -465,12 +465,12 @@ export const quizQuestions = [
     week: 3,
     question: "Was sind 'Project Attributes' in Tempus?",
     options: [
-      "Nur der Projektname",
+      "Nur der Projektname und die Projekt-URL",
+      "Nur Budget und Deadline",
       "Konfigurierbare Eigenschaften wie Status, Priorität, Kategorie, Custom Fields",
-      "Nur das Budget",
-      "Nur die Deadline"
+      "Nur die zugewiesenen Ressourcen und deren Rollen"
     ],
-    correct: 1,
+    correct: 2,
     explanation: "Project Attributes sind konfigurierbare Eigenschaften eines Projekts wie Status, Priorität, Kategorie und benutzerdefinierte Felder, die für Filterung und Reporting genutzt werden."
   },
 

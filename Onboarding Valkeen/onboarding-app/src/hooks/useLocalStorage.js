@@ -36,6 +36,21 @@ const DEFAULT_PROGRESS = {
   scenarioProgress: {}    // { [scenarioId]: true }
 };
 
+/** Migration: Korrigiert fehlerhafte Quiz-Scores (score > total) aus alter Bug-Version */
+function fixQuizScores(quizScores) {
+  if (!quizScores || typeof quizScores !== 'object') return quizScores;
+  const fixed = {};
+  for (const [weekId, result] of Object.entries(quizScores)) {
+    if (result && typeof result.score === 'number' && typeof result.total === 'number') {
+      const score = Math.min(result.score, result.total);
+      fixed[weekId] = { ...result, score };
+    } else {
+      fixed[weekId] = result;
+    }
+  }
+  return fixed;
+}
+
 export function useProgress() {
   const [progress, setProgressState] = useState(DEFAULT_PROGRESS);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,15 +71,16 @@ export function useProgress() {
         if (awsProgress) {
           console.log('📥 Fortschritt aus AWS geladen');
           // Merge mit Defaults für neue Felder (Rückwärtskompatibilität)
+          const fixedScores = fixQuizScores(awsProgress.quizScores || {});
           const merged = {
             ...DEFAULT_PROGRESS,
             ...awsProgress,
+            quizScores: fixedScores,
             practiceProgress: { ...DEFAULT_PROGRESS.practiceProgress, ...(awsProgress.practiceProgress || {}) },
             toolConfigProgress: { ...DEFAULT_PROGRESS.toolConfigProgress, ...(awsProgress.toolConfigProgress || {}) },
             scenarioProgress: { ...DEFAULT_PROGRESS.scenarioProgress, ...(awsProgress.scenarioProgress || {}) }
           };
           setProgressState(merged);
-          // Auch lokal speichern als Backup
           localStorage.setItem('onboarding-progress', JSON.stringify(merged));
         } else {
           // Fallback: localStorage
@@ -72,14 +88,17 @@ export function useProgress() {
           if (localData) {
             const parsed = JSON.parse(localData);
             console.log('📥 Fortschritt aus localStorage geladen');
+            const fixedScores = fixQuizScores(parsed.quizScores || {});
             const merged = {
               ...DEFAULT_PROGRESS,
               ...parsed,
+              quizScores: fixedScores,
               practiceProgress: { ...DEFAULT_PROGRESS.practiceProgress, ...(parsed.practiceProgress || {}) },
               toolConfigProgress: { ...DEFAULT_PROGRESS.toolConfigProgress, ...(parsed.toolConfigProgress || {}) },
               scenarioProgress: { ...DEFAULT_PROGRESS.scenarioProgress, ...(parsed.scenarioProgress || {}) }
             };
             setProgressState(merged);
+            localStorage.setItem('onboarding-progress', JSON.stringify(merged));
           }
         }
       } catch (error) {
@@ -88,14 +107,17 @@ export function useProgress() {
         const localData = localStorage.getItem('onboarding-progress');
         if (localData) {
           const parsed = JSON.parse(localData);
+          const fixedScores = fixQuizScores(parsed.quizScores || {});
           const merged = {
             ...DEFAULT_PROGRESS,
             ...parsed,
+            quizScores: fixedScores,
             practiceProgress: { ...DEFAULT_PROGRESS.practiceProgress, ...(parsed.practiceProgress || {}) },
             toolConfigProgress: { ...DEFAULT_PROGRESS.toolConfigProgress, ...(parsed.toolConfigProgress || {}) },
             scenarioProgress: { ...DEFAULT_PROGRESS.scenarioProgress, ...(parsed.scenarioProgress || {}) }
           };
           setProgressState(merged);
+          localStorage.setItem('onboarding-progress', JSON.stringify(merged));
         }
       } finally {
         setIsLoading(false);

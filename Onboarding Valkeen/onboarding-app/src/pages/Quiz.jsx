@@ -45,13 +45,31 @@ export default function Quiz() {
     setSearchParams({ tab });
   };
 
+  const [quizSessionId, setQuizSessionId] = useState(0);
+
   const weekQuestions = useMemo(() => {
     if (!selectedWeek) return [];
     return quizQuestions.filter(q => q.week === selectedWeek);
   }, [selectedWeek]);
 
+  // Optionen pro Frage randomisieren, damit die richtige Antwort nicht immer B ist
+  const shuffledQuestions = useMemo(() => {
+    if (!selectedWeek || weekQuestions.length === 0) return [];
+    return weekQuestions.map(q => {
+      const indices = q.options.map((_, i) => i);
+      for (let i = indices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+      }
+      const shuffledOptions = indices.map(i => q.options[i]);
+      const newCorrect = indices.indexOf(q.correct);
+      return { ...q, options: shuffledOptions, correct: newCorrect };
+    });
+  }, [selectedWeek, quizSessionId, weekQuestions]);
+
   const handleStartQuiz = (weekId) => {
     setSelectedWeek(weekId);
+    setQuizSessionId(s => s + 1);
     setCurrentQuestion(0);
     setSelectedAnswer(null);
     setShowResult(false);
@@ -64,23 +82,24 @@ export default function Quiz() {
     setSelectedAnswer(index);
   };
 
+  const questionsToUse = shuffledQuestions.length > 0 ? shuffledQuestions : weekQuestions;
+
   const handleSubmitAnswer = () => {
     if (selectedAnswer === null) return;
     
-    const isCorrect = selectedAnswer === weekQuestions[currentQuestion].correct;
-    setAnswers([...answers, { questionId: weekQuestions[currentQuestion].id, isCorrect }]);
+    const isCorrect = selectedAnswer === questionsToUse[currentQuestion].correct;
+    setAnswers([...answers, { questionId: questionsToUse[currentQuestion].id, isCorrect }]);
     setShowResult(true);
   };
 
   const handleNextQuestion = () => {
-    if (currentQuestion < weekQuestions.length - 1) {
+    if (currentQuestion < questionsToUse.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
       setSelectedAnswer(null);
       setShowResult(false);
     } else {
-      const correctCount = answers.filter(a => a.isCorrect).length + 
-        (selectedAnswer === weekQuestions[currentQuestion].correct ? 1 : 0);
-      setQuizScore(selectedWeek, correctCount, weekQuestions.length);
+      const correctCount = answers.filter(a => a.isCorrect).length;
+      setQuizScore(selectedWeek, correctCount, questionsToUse.length);
       setQuizComplete(true);
     }
   };
@@ -214,7 +233,8 @@ export default function Quiz() {
 
   if (quizComplete) {
     const correctCount = answers.filter(a => a.isCorrect).length;
-    const percentage = (correctCount / weekQuestions.length) * 100;
+    const totalQuestions = questionsToUse.length;
+    const percentage = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
 
     return (
       <div className="max-w-2xl mx-auto px-1">
@@ -231,7 +251,7 @@ export default function Quiz() {
           <p className="text-white/60 mb-4 sm:mb-6 text-sm sm:text-base">Woche {selectedWeek}: {weeks.find(w => w.id === selectedWeek)?.name}</p>
 
           <div className="text-4xl sm:text-5xl font-bold gradient-text mb-2">
-            {correctCount}/{weekQuestions.length}
+            {correctCount}/{totalQuestions}
           </div>
           <p className="text-white/50 mb-6 sm:mb-8 text-sm sm:text-base">richtige Antworten</p>
 
@@ -270,14 +290,14 @@ export default function Quiz() {
     );
   }
 
-  const question = weekQuestions[currentQuestion];
+  const question = questionsToUse[currentQuestion];
 
   return (
     <div className="max-w-2xl mx-auto px-1">
       <div className="mb-4 sm:mb-6">
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs sm:text-sm text-white/50">
-            Frage {currentQuestion + 1} von {weekQuestions.length}
+            Frage {currentQuestion + 1} von {questionsToUse.length}
           </span>
           <button
             onClick={handleBackToSelection}
@@ -289,7 +309,7 @@ export default function Quiz() {
         <div className="h-1.5 sm:h-2 bg-white/10 rounded-full overflow-hidden">
           <div 
             className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-300"
-            style={{ width: `${((currentQuestion + 1) / weekQuestions.length) * 100}%` }}
+            style={{ width: `${questionsToUse.length > 0 ? ((currentQuestion + 1) / questionsToUse.length) * 100 : 0}%` }}
           />
         </div>
       </div>
