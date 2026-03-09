@@ -236,9 +236,15 @@ class AdminAuthSystem {
                         successMsg.classList.add('show');
                     }
                     
-                    // Redirect to admin panel after short delay
+                    // Redirect nach Login: ?redirect= nutzen oder /admin.html
                     setTimeout(() => {
-                        window.location.href = '/admin.html';
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const redirectPath = urlParams.get('redirect');
+                        if (redirectPath && redirectPath.startsWith('/')) {
+                            window.location.href = redirectPath;
+                        } else {
+                            window.location.href = '/admin.html';
+                        }
                     }, 1000);
                 } else {
                     this.showError('password', result.error || 'Anmeldung fehlgeschlagen');
