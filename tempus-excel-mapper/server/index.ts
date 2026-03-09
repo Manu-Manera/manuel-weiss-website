@@ -19,6 +19,7 @@ import { logAudit, getAuditLog, clearAuditLog } from './services/auditLog.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
+app.set('trust proxy', 1);
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 50 * 1024 * 1024 },
@@ -45,7 +46,7 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       fontSrc: ["'self'", 'https://fonts.gstatic.com'],
       imgSrc: ["'self'", 'data:'],
-      connectSrc: ["'self'"],
+      connectSrc: ["'self'", "https://cognito-idp.eu-central-1.amazonaws.com"],
     },
   },
   hsts: { maxAge: 31536000, includeSubDomains: true },
