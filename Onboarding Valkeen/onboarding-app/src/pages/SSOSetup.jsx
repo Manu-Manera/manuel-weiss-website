@@ -1115,16 +1115,24 @@ export default function SSOSetup() {
             {/* Step 4: Metadaten (nur SAML) */}
             {currentStep === 4 && isSaml && (
               <div className="space-y-6">
-                <h3 className="text-xl font-semibold text-white flex items-center gap-2"><FileText className="w-6 h-6 text-indigo-400" /> Schritt 4: Metadaten-URL</h3>
+                <h3 className="text-xl font-semibold text-white flex items-center gap-2"><FileText className="w-6 h-6 text-indigo-400" /> Schritt 4: Metadaten für Tempus</h3>
+                <p className="text-gray-400 text-sm">Tempus braucht die IdP-Metadaten. Am einfachsten: die <strong>Metadaten-URL</strong> eintragen (Tempus lädt sie automatisch).</p>
                 <ol className="list-decimal list-inside space-y-3 text-gray-300">
-                  <li>In der {IDP_OPTIONS.find(i => i.id === project.idp)?.label}-Anwendung: SAML-Einstellungen</li>
-                  <li>Metadaten-URL / App-Verbundmetadaten-URL kopieren</li>
-                  <li>Diese URL wird in Tempus für die automatische Konfiguration verwendet</li>
+                  <li>In der {IDP_OPTIONS.find(i => i.id === project.idp)?.label}-Anwendung: Einmalanmeldung → SAML</li>
+                  <li><strong>Metadaten-URL kopieren</strong> („App-Verbundmetadaten-URL“ oder „Federation Metadata URL“)</li>
+                  <li>Format Azure: <code className="text-green-300 text-xs">https://login.microsoftonline.com/&lt;tenant-id&gt;/federationmetadata/2007-06/federationmetadata.xml</code></li>
                 </ol>
                 {project.idp === 'azure' && (
-                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
-                    <p className="text-amber-400 font-medium">Azure:</p>
-                    <p className="text-sm text-gray-300 mt-1">Entity ID in Azure muss mit <code className="text-green-300">{projectUrls.entityId}</code> übereinstimmen.</p>
+                  <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-4 space-y-3">
+                    <p className="text-indigo-300 font-medium">Azure: Metadaten-URL finden</p>
+                    <p className="text-sm text-gray-300">Unter „Einmalanmeldung“ → SAML → Abschnitt „Grundlegende SAML-Konfiguration“. Dort „App-Verbundmetadaten-URL“ – diese URL kopieren (nicht die XML-Datei herunterladen).</p>
+                    <p className="text-sm text-gray-300">Falls Sie die XML heruntergeladen haben: Die Metadaten-URL hat dieselbe Domain, z.B. <code className="text-green-300">https://login.microsoftonline.com/f5e88864-xxxx/federationmetadata/2007-06/federationmetadata.xml</code> – die tenant-id steht in der XML bei <code>entityID</code> oder in den <code>Location</code>-URLs.</p>
+                  </div>
+                )}
+                {project.idp === 'okta' && (
+                  <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-4">
+                    <p className="text-indigo-300 font-medium">Okta:</p>
+                    <p className="text-sm text-gray-300">In der SAML-App: „Identity Provider metadata“ oder Metadaten-URL kopieren.</p>
                   </div>
                 )}
                 <button onClick={() => { markStepDone(4); goToStep(5); }} className="glass-button flex items-center gap-2">Weiter <ChevronRight className="w-4 h-4" /></button>
@@ -1174,26 +1182,34 @@ export default function SSOSetup() {
                       />
                       <CopyButton text={projectUrls.entityId} />
                     </div>
+                    <p className="text-xs text-gray-500 mt-1">= Tempus Entity ID (z.B. {projectUrls.baseUrl}/sg)</p>
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">SAML configuration URL</label>
+                    <label className="block text-xs text-gray-500 mb-1">SAML configuration URL (empfohlen)</label>
                     <input
                       value={project.samlConfigUrl || ''}
                       onChange={(e) => updateProject(project.id, { samlConfigUrl: e.target.value })}
-                      placeholder="Metadaten-URL aus IdP (Azure/Okta) einfügen"
+                      placeholder="https://login.microsoftonline.com/&lt;tenant-id&gt;/federationmetadata/2007-06/federationmetadata.xml"
                       className="w-full glass-input font-mono text-sm"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Empfohlen: Automatische Konfiguration via Metadaten-URL</p>
+                    <p className="text-xs text-gray-500 mt-1">Metadaten-URL aus Azure (nicht die XML-Datei). Tempus lädt sie automatisch.</p>
+                  </div>
+                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+                    <p className="text-amber-300 font-medium text-sm mb-2">Falls Sie nur die XML-Datei haben (manuelle Eintragung):</p>
+                    <p className="text-xs text-gray-300 space-y-1">
+                      <strong>1. Metadaten-URL ableiten:</strong> Aus der XML die tenant-id nehmen (z.B. aus <code>entityID="https://sts.windows.net/f5e88864-xxxx/"</code> oder <code>Location="https://login.microsoftonline.com/f5e88864-xxxx/saml2"</code>). URL: <code>https://login.microsoftonline.com/&lt;tenant-id&gt;/federationmetadata/2007-06/federationmetadata.xml</code><br />
+                      <strong>2. Oder manuell:</strong> SAML endpoint = <code>SingleSignOnService Location</code> (z.B. https://login.microsoftonline.com/.../saml2). Zertifikat = Inhalt von <code>&lt;X509Certificate&gt;</code> bei <a href={SAML_TOOL_URL} target="_blank" rel="noopener noreferrer" className="text-indigo-400">samltool.com</a> formatieren und als .cer hochladen.
+                    </p>
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">SAML endpoint (falls manuell)</label>
+                    <label className="block text-xs text-gray-500 mb-1">SAML endpoint (nur falls manuell)</label>
                     <input
                       value={project.samlEndpoint || ''}
                       onChange={(e) => updateProject(project.id, { samlEndpoint: e.target.value })}
-                      placeholder="SingleSignOnService URL aus Metadaten"
+                      placeholder="https://login.microsoftonline.com/&lt;tenant-id&gt;/saml2"
                       className="w-full glass-input font-mono text-sm"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Nur bei manueller Konfiguration. Zertifikat: <a href={SAML_TOOL_URL} target="_blank" rel="noopener noreferrer" className="text-indigo-400">samltool.com</a> → SAML certificate file in Tempus hochladen</p>
+                    <p className="text-xs text-gray-500 mt-1">Aus XML: <code>SingleSignOnService Location</code></p>
                   </div>
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Custom label</label>
