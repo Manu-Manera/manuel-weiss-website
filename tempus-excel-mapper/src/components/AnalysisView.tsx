@@ -9,6 +9,7 @@ import {
 export default function AnalysisView() {
   const store = useAppStore();
   const [syncing, setSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState('');
   const [generating, setGenerating] = useState(false);
 
   const analysis = store.analysis;
@@ -17,12 +18,20 @@ export default function AnalysisView() {
   const handleSyncTempus = async () => {
     if (!sessionId) return;
     setSyncing(true);
+    setSyncStatus('Tempus-Daten werden geladen…');
     store.setError(null);
     try {
+      const timer = setTimeout(() => setSyncStatus('Tempus-Daten werden geladen und AI-Analyse läuft… (kann bis zu 3 Minuten dauern)'), 5000);
       const result = await api.syncTempus(sessionId);
+      clearTimeout(timer);
       store.setTempusSyncSummary(result.summary as any);
+      if (result.analysis) {
+        store.setAnalysis(result.analysis as any);
+      }
+      setSyncStatus('');
     } catch (err: unknown) {
       store.setError(err instanceof Error ? err.message : 'Tempus-Sync fehlgeschlagen');
+      setSyncStatus('');
     } finally {
       setSyncing(false);
     }
@@ -191,6 +200,12 @@ export default function AnalysisView() {
           {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
           {syncDone ? 'Erneut synchronisieren' : 'Jetzt synchronisieren'}
         </button>
+        {syncing && syncStatus && (
+          <p className="mt-3 text-sm text-blue-600 flex items-center gap-2">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            {syncStatus}
+          </p>
+        )}
       </div>
 
       {/* Actions */}

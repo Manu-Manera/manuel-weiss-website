@@ -70,10 +70,9 @@ export default function MappingReview() {
     setBulkLoading(true);
     try {
       const filter = filterSheet !== 'all' ? { sheet: filterSheet } : undefined;
-      const result = await api.bulkMappingAction(sessionId, action, filter);
+      await api.bulkMappingAction(sessionId, action, filter);
 
-      // Refresh mappings from server
-      const fresh = await api.generateMappings(sessionId);
+      const fresh = await api.getMappings(sessionId);
       store.setMappingResult(fresh as any);
     } catch (err: unknown) {
       store.setError(err instanceof Error ? err.message : 'Bulk-Aktion fehlgeschlagen');

@@ -54,19 +54,30 @@ export async function uploadExcel(file: File, consentSessionId = 'pre-session') 
   const data = await res.json();
 
   if (!res.ok) throw new Error(data?.error || 'Upload fehlgeschlagen');
-  return data as { sessionId: string; analysis: unknown; tempusSyncSummary?: Record<string, number> };
+  return data as { sessionId: string; analysis: unknown };
 }
 
 // ── Tempus Sync ──────────────────────────────────────────────────────
 
 export async function syncTempus(sessionId: string) {
-  return request<{ ok: boolean; summary: unknown; tempusData: unknown }>('POST', `/sessions/${sessionId}/sync-tempus`);
+  const res = await fetch(`${BASE}/sessions/${sessionId}/sync-tempus`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    signal: AbortSignal.timeout(180_000),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data?.error || `Request failed: ${res.status}`);
+  return data as { ok: boolean; summary: unknown; tempusData: unknown; analysis?: unknown };
 }
 
 // ── Mappings ─────────────────────────────────────────────────────────
 
 export async function generateMappings(sessionId: string) {
   return request<unknown>('POST', `/sessions/${sessionId}/generate-mappings`);
+}
+
+export async function getMappings(sessionId: string) {
+  return request<unknown>('GET', `/sessions/${sessionId}/mappings`);
 }
 
 export async function updateMapping(sessionId: string, mappingId: string, update: { status?: string; matchedId?: number }) {
