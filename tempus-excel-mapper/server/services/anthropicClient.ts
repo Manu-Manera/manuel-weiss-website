@@ -1,5 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk';
-import type { SheetAnalysis, ColumnAnalysis } from '../types.js';
+import type {
+  SheetAnalysis, ColumnAnalysis, TemporalInterpretationResult,
+  PeriodInterpretation, PhaseInterpretation, PivotRecommendation, ProjectTimelineInsight,
+} from '../types.js';
 import type { MatchCandidate, TempusSummary } from './fuzzyMatcher.js';
 
 const ALL_TEMPUS_ENTITIES = [
@@ -143,6 +146,78 @@ const DISAMBIGUATION_TOOL = {
       },
     },
     required: ['resolutions'],
+  },
+};
+
+const TEMPORAL_INTERPRETATION_TOOL = {
+  name: 'interpret_temporal_data' as const,
+  description: 'Interpret temporal period abbreviations and project phase codes from customer Excel data for Tempus import',
+  input_schema: {
+    type: 'object' as const,
+    properties: {
+      periodInterpretations: {
+        type: 'array' as const,
+        items: {
+          type: 'object' as const,
+          properties: {
+            rawPattern: { type: 'string' as const, description: 'Original pattern or value, e.g. "CY-Q1"' },
+            meaning: { type: 'string' as const, description: 'Full human-readable meaning, e.g. "Current Year Quarter 1"' },
+            tempusTimePeriod: { type: 'string' as const, description: 'Tempus-compatible time period string, e.g. "Q1 2026"' },
+            dateRangeStart: { type: 'string' as const, description: 'ISO date for period start, e.g. "2026-01-01"' },
+            dateRangeEnd: { type: 'string' as const, description: 'ISO date for period end, e.g. "2026-03-31"' },
+            confidence: { type: 'number' as const },
+            reasoning: { type: 'string' as const },
+          },
+          required: ['rawPattern', 'meaning', 'tempusTimePeriod', 'confidence', 'reasoning'] as const,
+        },
+      },
+      phaseInterpretations: {
+        type: 'array' as const,
+        items: {
+          type: 'object' as const,
+          properties: {
+            rawCode: { type: 'string' as const, description: 'Original code, e.g. "PLN"' },
+            meaning: { type: 'string' as const, description: 'Full meaning, e.g. "Planning"' },
+            tempusField: { type: 'string' as const, description: 'Target Tempus field: "Phase", "Plan Type", or "cf:<name>"' },
+            tempusValue: { type: 'string' as const, description: 'Value to use in Tempus' },
+            confidence: { type: 'number' as const },
+            reasoning: { type: 'string' as const },
+          },
+          required: ['rawCode', 'meaning', 'tempusField', 'tempusValue', 'confidence', 'reasoning'] as const,
+        },
+      },
+      pivotUnpivotRequired: { type: 'boolean' as const, description: 'Whether the sheet needs to be unpivoted (temporal columns → rows)' },
+      pivotColumns: {
+        type: 'array' as const,
+        items: { type: 'string' as const },
+        description: 'Column names that form the temporal pivot (e.g. ["CY-Q1", "CY-Q2", ...])',
+      },
+      pivotValueDescription: { type: 'string' as const, description: 'What the values in pivot cells represent (e.g. "FTE allocation per quarter")' },
+      pivotTargetEntity: { type: 'string' as const, description: 'Target Tempus entity for unpivoted rows (e.g. "assignments")' },
+      projectTimelineInsights: {
+        type: 'array' as const,
+        items: {
+          type: 'object' as const,
+          properties: {
+            projectIdentifier: { type: 'string' as const },
+            phases: {
+              type: 'array' as const,
+              items: {
+                type: 'object' as const,
+                properties: {
+                  phase: { type: 'string' as const },
+                  period: { type: 'string' as const },
+                },
+              },
+            },
+            overallStart: { type: 'string' as const },
+            overallEnd: { type: 'string' as const },
+          },
+        },
+      },
+      summary: { type: 'string' as const, description: 'Overall summary of temporal interpretation in German' },
+    },
+    required: ['periodInterpretations', 'phaseInterpretations', 'summary'] as const,
   },
 };
 
@@ -404,6 +479,71 @@ ${tempusDataSection}
         reasoning: resolution.reasoning,
       };
     });
+  }
+
+  async interpretTemporalData(
+    sheetsWithPatterns: Array<{
+      sheetName: string;
+      temporalLayout: string;
+      headers: string[];
+      pivotColumns: string[];
+      periodPatterns: Array<{ column: string; pattern: string; examples: string[] }>;
+      phaseValues: Array<{ column: string; values: Array<{ raw: string; count: number }> }>;
+      sampleRows: Record<string, unknown>[];
+      rowCount: number;
+    }>,
+    currentYear: number,
+  ): Promise<TemporalInterpretationResult> {
+    const prompt = `Analysiere die folgenden temporalen Muster und Phasen-Codes aus einer Kunden-Excel-Datei.
+Das aktuelle Jahr ist ${currentYear}.
+
+═══ SHEETS MIT TEMPORALEN MUSTERN ═══
+${JSON.stringify(sheetsWithPatterns, null, 2)}
+
+═══ AUFGABE ═══
+1. Interpretiere JEDES temporale Muster (CY=Current Year, NY=Next Year, FY=Fiscal Year, Q1-Q4=Quartale, H1/H2=Halbjahre)
+2. Bestimme das Basisjahr aus Kontext (Dateinamen, andere Spalten, Datumswerte). Falls unklar: aktuelles Jahr (${currentYear}) verwenden
+3. Bestimme für jedes Quartal/Halbjahr den exakten Datumsbereich (dateRangeStart/End als ISO-Datum)
+4. Interpretiere JEDEN Phasen-Code (PLN, EXE, IMP, CLO, INI, etc.) semantisch
+5. Erkenne ob Pivot-Spalten vorhanden sind (z.B. CY-Q1, CY-Q2, ... als Spaltenheader)
+6. Falls Pivot: Schlage Unpivoting vor (jede Pivot-Spalte → eine Zeile mit Time Period)
+7. Erkenne Projekt-Timelines: Welches Projekt hat welche Phasen in welchem Zeitraum?
+8. Ordne Phasen-Codes dem passenden Tempus-Feld zu: "Phase" (Projekt-Phase), "Plan Type" (Assignment), oder "cf:<name>"
+
+Begründe JEDE Interpretation mit Chain-of-Thought.`;
+
+    try {
+      const response = await this.client.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 8192,
+        system: TEMPORAL_INTERPRETATION_SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: prompt }],
+        tools: [TEMPORAL_INTERPRETATION_TOOL],
+        tool_choice: { type: 'tool' as const, name: 'interpret_temporal_data' },
+      });
+
+      const toolBlock = response.content.find(b => b.type === 'tool_use');
+      if (!toolBlock || toolBlock.type !== 'tool_use') {
+        console.warn('[temporal] AI returned no tool output, using fallback');
+        return { periodInterpretations: [], phaseInterpretations: [], projectTimelineInsights: [] };
+      }
+
+      const raw = toolBlock.input as Record<string, unknown>;
+      return {
+        periodInterpretations: (raw.periodInterpretations as PeriodInterpretation[]) || [],
+        phaseInterpretations: (raw.phaseInterpretations as PhaseInterpretation[]) || [],
+        pivotRecommendation: raw.pivotUnpivotRequired ? {
+          unpivotRequired: raw.pivotUnpivotRequired as boolean,
+          pivotColumns: (raw.pivotColumns as string[]) || [],
+          valueDescription: (raw.pivotValueDescription as string) || '',
+          targetEntity: (raw.pivotTargetEntity as string) || 'assignments',
+        } : undefined,
+        projectTimelineInsights: (raw.projectTimelineInsights as ProjectTimelineInsight[]) || [],
+      };
+    } catch (err) {
+      console.error('[temporal] AI interpretation failed:', err);
+      return { periodInterpretations: [], phaseInterpretations: [], projectTimelineInsights: [] };
+    }
   }
 
   private buildLargeDatasetPrompt(schema: TempusMappingSchema, summary: TempusSummary): string {
@@ -674,6 +814,81 @@ Financials-Template wird NUR verwendet wenn:
 8. Spalten mit >90% null/leer: Trotzdem zuordnen, aber niedrige Relevanz
 9. "[object Object]" als Wert = Parsing-Fehler, ignorieren
 10. entityMappings: JEDER einzigartige Wert in Name-Spalten MUSS gegen Tempus-Daten geprüft werden`;
+
+const TEMPORAL_INTERPRETATION_SYSTEM_PROMPT = `Du bist ein Experte für die Interpretation von Zeitperioden-Abkürzungen und Projektphasen-Codes aus verschiedenen Unternehmenssystemen.
+Jedes Unternehmen nutzt eigene Konventionen — deine Aufgabe ist es, diese intelligent zu interpretieren.
+
+═══ BEKANNTE ZEITPERIODEN-MUSTER ═══
+
+CY = Current Year (laufendes Jahr)
+NY = Next Year (nächstes Jahr)
+FY = Fiscal Year (Geschäftsjahr, kann vom Kalenderjahr abweichen)
+PY = Previous Year (vorheriges Jahr)
+YTD = Year to Date
+
+Q1 = Quarter 1 (Januar-März, sofern kein abweichendes Fiskaljahr)
+Q2 = Quarter 2 (April-Juni)
+Q3 = Quarter 3 (Juli-September)
+Q4 = Quarter 4 (Oktober-Dezember)
+H1 = 1. Halbjahr (Januar-Juni)
+H2 = 2. Halbjahr (Juli-Dezember)
+
+Kombinationen: CY-Q1, NY-Q3, FY24-Q2, 2026-Q1, Q1/2026, H1-2026, etc.
+Monatsformate: Jan-26, Feb 2026, März 2026, 2026-01, etc.
+
+═══ BEKANNTE PHASEN-CODES ═══
+
+PLN / PLAN = Planning / Planung
+EXE / EXEC = Execution / Umsetzung
+IMP / IMPL = Implementation / Implementierung
+CLO / CLOSE = Closing / Abschluss
+INI / INIT = Initiation / Initiierung
+RUN = Run / Laufender Betrieb
+DEV = Development / Entwicklung
+TEST = Testing / Test
+UAT = User Acceptance Testing
+PROD = Production / Produktion
+GO = Go-Live
+HOLD = On Hold / Pausiert
+DRAFT = Entwurf
+WIP = Work in Progress
+
+═══ BEISPIELE FÜR CHAIN-OF-THOUGHT ═══
+
+BEISPIEL 1:
+Input: Spaltenheader ["Project Name", "Resource", "CY-Q1", "CY-Q2", "CY-Q3", "CY-Q4", "NY-Q1", "NY-Q2"]
+Werte unter CY-Q1: [0.5, 1.0, 0, 0.75, 0.25]
+Reasoning: "Die Spalten CY-Q1 bis NY-Q2 bilden eine Pivot-Struktur. CY = Current Year = ${new Date().getFullYear()}.
+Die numerischen Werte (0.5, 1.0) sehen aus wie FTE-Allokationen. Das Sheet enthält Project + Resource →
+es handelt sich um Assignments/Zuweisungen im Pivot-Format. Jede Zeile muss zu mehreren Assignment-Zeilen
+(eine pro Quartal) entpivotiert werden."
+→ pivotUnpivotRequired: true
+→ CY-Q1 = Q1 ${new Date().getFullYear()} = Jan-Mär ${new Date().getFullYear()}
+
+BEISPIEL 2:
+Input: Spalte "Phase" mit Werten [PLN, PLN, EXE, EXE, IMP, CLO]
+Kontext: Sheet mit "Project Name", "Start Date", "End Date", "Budget"
+Reasoning: "PLN = Planning, EXE = Execution, IMP = Implementation, CLO = Closing.
+Diese Phasen beschreiben den Projektstatus/Lebenszyklus. In Tempus entspricht das dem
+Feld 'Phase' im Projects-Template. Die Werte sollten auf die vollen englischen Bezeichnungen
+gemappt werden."
+→ tempusField: "Phase", PLN → "Planning", EXE → "Execution"
+
+BEISPIEL 3:
+Input: Spalte "Plan Type" mit Werten [PLN, EXE]
+Kontext: Assignments-Sheet mit Project, Resource, Task
+Reasoning: "Im Kontext von Assignments bedeutet PLN/EXE nicht Projektphasen, sondern Planungstypen.
+PLN = geplante Allokation, EXE = tatsächliche/aktive Allokation. In Tempus heisst das Feld 'Plan Type'."
+→ tempusField: "Plan Type", PLN → "Planned", EXE → "Actual"
+
+═══ REGELN ═══
+1. KONTEXT BEACHTEN: Gleiche Codes können je nach Sheet-Typ unterschiedliche Bedeutungen haben
+2. Wenn CY/NY ohne Jahreszahl: aktuelles Jahr (${new Date().getFullYear()}) bzw. Folgejahr verwenden
+3. Quartale auf Kalenderjahr abbilden (Q1=Jan-Mär), es sei denn Kontext deutet auf Fiskaljahr hin
+4. Immer ALLE gefundenen Muster interpretieren — lieber unsicher als auslassen
+5. Pivot-Spalten: Wenn ≥2 aufeinanderfolgende Header temporale Muster sind → Pivot-Struktur
+6. Bei Phasen-Codes immer den vollen englischen Namen als tempusValue vorschlagen
+7. Begründung muss nachvollziehbar sein — erkläre WARUM du die Interpretation gewählt hast`;
 
 const DISAMBIGUATION_SYSTEM_PROMPT = `Du löst ambigue Entity-Matches auf.
 Für jeden Fall bekommst du einen Quellwert und die Top-Kandidaten mit Ähnlichkeits-Score.

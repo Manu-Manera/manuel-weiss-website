@@ -134,6 +134,57 @@ export interface ParsedExcel {
   sheets: ParsedSheet[];
 }
 
+// ── Temporal / Phase Pattern Types ───────────────────────────────────
+
+export type TemporalPatternType = 'period_column' | 'period_value' | 'phase_value' | 'pivot_temporal';
+
+export interface TemporalPattern {
+  type: TemporalPatternType;
+  pattern: string;
+  examples: string[];
+  interpretation?: string;
+  confidence: number;
+}
+
+export interface PeriodInterpretation {
+  rawPattern: string;
+  meaning: string;
+  tempusTimePeriod: string;
+  dateRange?: { start: string; end: string };
+  confidence: number;
+  reasoning: string;
+}
+
+export interface PhaseInterpretation {
+  rawCode: string;
+  meaning: string;
+  tempusField: string;
+  tempusValue: string;
+  confidence: number;
+  reasoning: string;
+}
+
+export interface PivotRecommendation {
+  unpivotRequired: boolean;
+  pivotColumns: string[];
+  valueDescription: string;
+  targetEntity: string;
+}
+
+export interface ProjectTimelineInsight {
+  projectIdentifier: string;
+  phases: Array<{ phase: string; period: string }>;
+  overallStart?: string;
+  overallEnd?: string;
+}
+
+export interface TemporalInterpretationResult {
+  periodInterpretations: PeriodInterpretation[];
+  phaseInterpretations: PhaseInterpretation[];
+  pivotRecommendation?: PivotRecommendation;
+  projectTimelineInsights: ProjectTimelineInsight[];
+}
+
 // ── Analysis Types ───────────────────────────────────────────────────
 
 export interface ColumnAnalysis {
@@ -152,6 +203,8 @@ export interface ColumnAnalysis {
   isCustomField?: boolean;
   customFieldEntityType?: string;
   customFieldName?: string;
+  temporalPattern?: TemporalPattern;
+  isTemporalPivotColumn?: boolean;
 }
 
 export interface SheetAnalysis {
@@ -159,6 +212,9 @@ export interface SheetAnalysis {
   rowCount: number;
   columns: ColumnAnalysis[];
   suggestedEntity?: string;
+  temporalLayout?: 'standard' | 'pivot_temporal';
+  detectedPhaseValues?: Array<{ raw: string; count: number }>;
+  detectedPeriodFormat?: string;
   relationships?: Array<{
     sourceColumn: string;
     targetSheet?: string;
@@ -171,6 +227,7 @@ export interface AnalysisResult {
   fileName: string;
   sheets: SheetAnalysis[];
   aiInsights?: string;
+  temporalInterpretation?: TemporalInterpretationResult;
 }
 
 // ── Mapping Types ────────────────────────────────────────────────────
@@ -277,6 +334,7 @@ export interface Session {
   analysis?: AnalysisResult;
   tempusData?: TempusData;
   mappingResult?: MappingResult;
+  temporalInterpretation?: TemporalInterpretationResult;
   validation?: ValidationResult;
   exportBuffer?: Buffer;
   importProgress?: ImportProgress;

@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid';
 import type {
   ParsedExcel, AnalysisResult, TempusData, MappingResult,
   FieldMapping, EntityMapping, MappingStatus, MatchType, ColumnAnalysis,
-  CustomFieldMapping, TempusCustomField,
+  CustomFieldMapping, TempusCustomField, TemporalInterpretationResult,
 } from '../types.js';
 import { AnthropicClient } from './anthropicClient.js';
 import { FuzzyMatcher } from './fuzzyMatcher.js';
@@ -484,6 +484,40 @@ export async function generateMappings(
     }
   }
 
+  // ═══ TIER 1.5: Temporal pivot columns → field mappings with transformation ═══
+  for (const sheet of analysis.sheets) {
+    if (sheet.temporalLayout !== 'pivot_temporal') continue;
+    const pivotCols = sheet.columns.filter(c => c.isTemporalPivotColumn);
+    if (pivotCols.length < 2) continue;
+
+    const targetEntity = detectSheetEntity(sheet, parsed.sheets.find(s => s.name === sheet.sheetName)!);
+    for (const col of pivotCols) {
+      const alreadyMapped = fieldMappings.find(
+        fm => fm.sourceSheet === sheet.sheetName && fm.sourceColumn === col.name
+      );
+      if (alreadyMapped) continue;
+
+      fieldMappings.push({
+        id: uuid(),
+        sourceSheet: sheet.sheetName,
+        sourceColumn: col.name,
+        targetEntity: targetEntity === 'projects' ? 'assignments' : targetEntity,
+        targetField: 'Time Period',
+        matchType: 'ai_suggested',
+        confidence: 0.85,
+        reasoning: `Pivot-Spalte "${col.name}" (${col.temporalPattern?.interpretation || col.temporalPattern?.pattern || 'temporal'}) → wird beim Export als Zeitperiode entpivotiert`,
+        status: 'suggested',
+        transformation: 'unpivot',
+      });
+
+      const key = `${sheet.sheetName}.${col.name}`;
+      const idx = unmappedColumns.indexOf(key);
+      if (idx >= 0) unmappedColumns.splice(idx, 1);
+    }
+
+    console.log(`[mappingEngine] Pivot-Sheet "${sheet.sheetName}": ${pivotCols.length} temporal columns detected`);
+  }
+
   const matchedEntities = entityMappings.filter(e => !e.isNew).length;
   const newEntities = entityMappings.filter(e => e.isNew).length;
   const conflicts = entityMappings.filter(e => e.status === 'needs_review').length +
@@ -503,6 +537,124 @@ export async function generateMappings(
       conflicts,
     },
   };
+}
+
+// ── Temporal Context Analysis (called separately, results stored on session) ──
+
+export async function analyzeTemporalContext(
+  parsed: ParsedExcel,
+  analysis: AnalysisResult,
+  anthropicClient?: AnthropicClient,
+): Promise<TemporalInterpretationResult | undefined> {
+  const sheetsWithPatterns = analysis.sheets
+    .map(sheet => {
+      const parsedSheet = parsed.sheets.find(s => s.name === sheet.sheetName);
+      if (!parsedSheet) return null;
+
+      const pivotColumns = sheet.columns
+        .filter(c => c.isTemporalPivotColumn)
+        .map(c => c.name);
+
+      const periodPatterns = sheet.columns
+        .filter(c => c.temporalPattern && (c.temporalPattern.type === 'period_value' || c.temporalPattern.type === 'pivot_temporal'))
+        .map(c => ({
+          column: c.name,
+          pattern: c.temporalPattern!.pattern,
+          examples: c.temporalPattern!.examples,
+        }));
+
+      const phaseValues = sheet.columns
+        .filter(c => c.temporalPattern?.type === 'phase_value')
+        .map(c => {
+          const vals = parsedSheet.rows.map(r => r[c.name]).filter(v => v != null && v !== '');
+          const freq: Record<string, number> = {};
+          for (const v of vals) freq[String(v)] = (freq[String(v)] || 0) + 1;
+          return {
+            column: c.name,
+            values: Object.entries(freq).map(([raw, count]) => ({ raw, count })).sort((a, b) => b.count - a.count),
+          };
+        });
+
+      if (pivotColumns.length === 0 && periodPatterns.length === 0 && phaseValues.length === 0) {
+        return null;
+      }
+
+      return {
+        sheetName: sheet.sheetName,
+        temporalLayout: sheet.temporalLayout || 'standard',
+        headers: parsedSheet.headers,
+        pivotColumns,
+        periodPatterns,
+        phaseValues,
+        sampleRows: parsedSheet.rows.slice(0, 5),
+        rowCount: parsedSheet.totalRows,
+      };
+    })
+    .filter((s): s is NonNullable<typeof s> => s !== null);
+
+  if (sheetsWithPatterns.length === 0) {
+    console.log('[mappingEngine] No temporal patterns detected');
+    return undefined;
+  }
+
+  console.log(`[mappingEngine] Temporal patterns found in ${sheetsWithPatterns.length} sheet(s)`);
+
+  if (!anthropicClient) {
+    return buildFallbackTemporalResult(sheetsWithPatterns);
+  }
+
+  try {
+    const currentYear = new Date().getFullYear();
+    const result = await anthropicClient.interpretTemporalData(sheetsWithPatterns, currentYear);
+    console.log(`[mappingEngine] AI temporal interpretation: ${result.periodInterpretations.length} periods, ${result.phaseInterpretations.length} phases`);
+    return result;
+  } catch (err) {
+    console.error('[mappingEngine] AI temporal interpretation FAILED:', err instanceof Error ? err.message : err);
+    return buildFallbackTemporalResult(sheetsWithPatterns);
+  }
+}
+
+function buildFallbackTemporalResult(
+  sheetsWithPatterns: Array<{ pivotColumns: string[]; periodPatterns: Array<{ pattern: string; examples: string[] }>; phaseValues: Array<{ values: Array<{ raw: string }> }> }>,
+): TemporalInterpretationResult {
+  const currentYear = new Date().getFullYear();
+  const periodInterpretations = sheetsWithPatterns.flatMap(s =>
+    s.periodPatterns.flatMap(p =>
+      p.examples.map(ex => {
+        const qMatch = ex.match(/Q([1-4])/i);
+        const quarter = qMatch ? parseInt(qMatch[1]) : undefined;
+        const isCY = /^CY/i.test(ex);
+        const isNY = /^NY/i.test(ex);
+        const year = isNY ? currentYear + 1 : currentYear;
+        return {
+          rawPattern: ex,
+          meaning: `${isCY ? 'Current Year' : isNY ? 'Next Year' : ''} ${quarter ? `Quarter ${quarter}` : ''}`.trim() || ex,
+          tempusTimePeriod: quarter ? `Q${quarter} ${year}` : `${year}`,
+          dateRange: quarter ? {
+            start: `${year}-${String((quarter - 1) * 3 + 1).padStart(2, '0')}-01`,
+            end: `${year}-${String(quarter * 3).padStart(2, '0')}-${quarter === 1 || quarter === 4 ? '31' : '30'}`,
+          } : undefined,
+          confidence: 0.6,
+          reasoning: 'Regelbasierte Fallback-Interpretation (ohne AI)',
+        };
+      })
+    )
+  );
+
+  const phaseInterpretations = sheetsWithPatterns.flatMap(s =>
+    s.phaseValues.flatMap(pv =>
+      pv.values.map(v => ({
+        rawCode: v.raw,
+        meaning: v.raw,
+        tempusField: 'Phase',
+        tempusValue: v.raw,
+        confidence: 0.4,
+        reasoning: 'Fallback: Code erkannt aber nicht AI-interpretiert',
+      }))
+    )
+  );
+
+  return { periodInterpretations, phaseInterpretations, projectTimelineInsights: [] };
 }
 
 // ── Sheet entity detection (fixes project-vs-financials) ─────────────

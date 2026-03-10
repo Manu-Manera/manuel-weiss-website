@@ -4,9 +4,10 @@ import * as api from '../api';
 import {
   GitMerge, Check, X, AlertTriangle, ArrowRight, ArrowLeft, Loader2,
   Filter, CheckCircle, XCircle, HelpCircle, PlusCircle, ChevronDown, ChevronUp, Sparkles, Edit3,
+  Clock, Columns,
 } from 'lucide-react';
 
-type Tab = 'fields' | 'entities' | 'new';
+type Tab = 'fields' | 'entities' | 'new' | 'temporal';
 
 const STATUS_CONFIG: Record<MappingStatus, { label: string; color: string; icon: typeof Check }> = {
   suggested: { label: 'Vorschlag', color: 'bg-blue-100 text-blue-700', icon: Sparkles },
@@ -308,6 +309,11 @@ export default function MappingReview() {
           { key: 'fields' as Tab, label: 'Feld-Zuordnungen', count: mappingResult.fieldMappings.length },
           { key: 'entities' as Tab, label: 'Entitäts-Matches', count: mappingResult.entityMappings.length },
           { key: 'new' as Tab, label: 'Neue Elemente', count: newEntities.length },
+          ...( store.temporalInterpretation &&
+            (store.temporalInterpretation.periodInterpretations.length > 0 || store.temporalInterpretation.phaseInterpretations.length > 0)
+            ? [{ key: 'temporal' as Tab, label: 'Zeitperioden & Phasen', count: store.temporalInterpretation.periodInterpretations.length + store.temporalInterpretation.phaseInterpretations.length }]
+            : []
+          ),
         ]).map(tab => (
           <button
             key={tab.key}
@@ -479,6 +485,11 @@ export default function MappingReview() {
         </div>
       )}
 
+      {/* Temporal Interpretation Tab */}
+      {activeTab === 'temporal' && store.temporalInterpretation && (
+        <TemporalPanel />
+      )}
+
       {mappingResult.unmappedColumns.length > 0 && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
           <h4 className="text-sm font-semibold text-amber-800 flex items-center gap-2 mb-2">
@@ -519,6 +530,205 @@ function SummaryCard({ label, value, color, onClick }: { label: string; value: n
     >
       <p className={`text-2xl font-bold ${color}`}>{value}</p>
       <p className="text-xs text-gray-500 mt-1">{label}</p>
+    </div>
+  );
+}
+
+function TemporalPanel() {
+  const store = useAppStore();
+  const temporal = store.temporalInterpretation;
+  if (!temporal) return null;
+
+  const [editingPeriod, setEditingPeriod] = useState<number | null>(null);
+  const [editingPhase, setEditingPhase] = useState<number | null>(null);
+  const [editValue, setEditValue] = useState('');
+
+  const hasPivot = !!temporal.pivotRecommendation?.unpivotRequired;
+
+  return (
+    <div className="space-y-6">
+      {/* Pivot Warning */}
+      {hasPivot && temporal.pivotRecommendation && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-5">
+          <div className="flex items-start gap-3">
+            <Columns className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <h4 className="text-sm font-semibold text-blue-800">Pivot-Struktur erkannt</h4>
+              <p className="text-sm text-blue-700 mt-1">
+                Die Spalten <span className="font-mono text-xs bg-blue-100 px-1 rounded">{temporal.pivotRecommendation.pivotColumns.join(', ')}</span> enthalten
+                Zeitperioden als Spaltenheader. Beim Export werden diese automatisch in einzelne Zeilen umgewandelt (Unpivoting).
+              </p>
+              {temporal.pivotRecommendation.valueDescription && (
+                <p className="text-sm text-blue-600 mt-1">Werte: {temporal.pivotRecommendation.valueDescription}</p>
+              )}
+              <p className="text-xs text-blue-500 mt-2">Ziel-Entität: {temporal.pivotRecommendation.targetEntity}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Period Interpretations */}
+      {temporal.periodInterpretations.length > 0 && (
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+            <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+              <Clock className="w-4 h-4" /> Zeitperioden-Interpretation ({temporal.periodInterpretations.length})
+            </h4>
+          </div>
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 border-b border-gray-100">
+              <tr>
+                <th className="text-left px-4 py-2 font-medium text-gray-600">Original</th>
+                <th className="text-left px-4 py-2 font-medium text-gray-600">Bedeutung</th>
+                <th className="text-left px-4 py-2 font-medium text-gray-600">Tempus-Periode</th>
+                <th className="text-left px-4 py-2 font-medium text-gray-600">Datumsbereich</th>
+                <th className="text-left px-4 py-2 font-medium text-gray-600">Konfidenz</th>
+                <th className="text-left px-4 py-2 font-medium text-gray-600 w-10"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {temporal.periodInterpretations.map((p, idx) => (
+                <tr key={idx} className="border-t border-gray-50 hover:bg-gray-50">
+                  <td className="px-4 py-2 font-mono text-xs bg-gray-100 rounded">{p.rawPattern}</td>
+                  <td className="px-4 py-2 text-gray-700">{p.meaning}</td>
+                  <td className="px-4 py-2">
+                    {editingPeriod === idx ? (
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="text" value={editValue}
+                          onChange={e => setEditValue(e.target.value)}
+                          className="text-xs border rounded px-2 py-1 w-28"
+                          autoFocus
+                        />
+                        <button onClick={() => {
+                          store.updatePeriodInterpretation(idx, { tempusTimePeriod: editValue });
+                          setEditingPeriod(null);
+                        }} className="text-green-600 hover:text-green-800"><Check className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => setEditingPeriod(null)} className="text-gray-400 hover:text-gray-600"><X className="w-3.5 h-3.5" /></button>
+                      </div>
+                    ) : (
+                      <span className="font-medium text-primary-700">{p.tempusTimePeriod}</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-2 text-xs text-gray-500">
+                    {p.dateRange ? `${p.dateRange.start} – ${p.dateRange.end}` : '–'}
+                  </td>
+                  <td className="px-4 py-2">
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                      p.confidence >= 0.8 ? 'bg-green-100 text-green-700' :
+                      p.confidence >= 0.6 ? 'bg-amber-100 text-amber-700' :
+                      'bg-red-100 text-red-700'
+                    }`}>{Math.round(p.confidence * 100)}%</span>
+                  </td>
+                  <td className="px-4 py-2">
+                    <button
+                      onClick={() => { setEditingPeriod(idx); setEditValue(p.tempusTimePeriod); }}
+                      className="text-gray-400 hover:text-gray-700"
+                      title="Interpretation bearbeiten"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Phase Interpretations */}
+      {temporal.phaseInterpretations.length > 0 && (
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+            <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+              <Sparkles className="w-4 h-4" /> Phasen-Code-Interpretation ({temporal.phaseInterpretations.length})
+            </h4>
+          </div>
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 border-b border-gray-100">
+              <tr>
+                <th className="text-left px-4 py-2 font-medium text-gray-600">Code</th>
+                <th className="text-left px-4 py-2 font-medium text-gray-600">Bedeutung</th>
+                <th className="text-left px-4 py-2 font-medium text-gray-600">Tempus-Feld</th>
+                <th className="text-left px-4 py-2 font-medium text-gray-600">Tempus-Wert</th>
+                <th className="text-left px-4 py-2 font-medium text-gray-600">Konfidenz</th>
+                <th className="text-left px-4 py-2 font-medium text-gray-600 w-10"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {temporal.phaseInterpretations.map((ph, idx) => (
+                <tr key={idx} className="border-t border-gray-50 hover:bg-gray-50">
+                  <td className="px-4 py-2 font-mono text-xs font-bold bg-gray-100 rounded">{ph.rawCode}</td>
+                  <td className="px-4 py-2 text-gray-700">{ph.meaning}</td>
+                  <td className="px-4 py-2 text-gray-600">
+                    {editingPhase === idx ? (
+                      <select
+                        value={editValue}
+                        onChange={e => {
+                          store.updatePhaseInterpretation(idx, { tempusField: e.target.value });
+                          setEditingPhase(null);
+                        }}
+                        className="text-xs border rounded px-2 py-1"
+                      >
+                        <option value="Phase">Phase</option>
+                        <option value="Plan Type">Plan Type</option>
+                        <option value={`cf:${ph.rawCode}`}>Custom Field</option>
+                      </select>
+                    ) : (
+                      <span className="text-xs bg-gray-100 px-2 py-0.5 rounded">{ph.tempusField}</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-2 font-medium text-primary-700">{ph.tempusValue}</td>
+                  <td className="px-4 py-2">
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                      ph.confidence >= 0.8 ? 'bg-green-100 text-green-700' :
+                      ph.confidence >= 0.6 ? 'bg-amber-100 text-amber-700' :
+                      'bg-red-100 text-red-700'
+                    }`}>{Math.round(ph.confidence * 100)}%</span>
+                  </td>
+                  <td className="px-4 py-2">
+                    <button
+                      onClick={() => { setEditingPhase(idx); setEditValue(ph.tempusField); }}
+                      className="text-gray-400 hover:text-gray-700"
+                      title="Feld-Zuordnung bearbeiten"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Project Timeline Insights */}
+      {temporal.projectTimelineInsights.length > 0 && (
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <h4 className="text-sm font-semibold text-gray-700 mb-3">Erkannte Projekt-Timelines</h4>
+          <div className="space-y-3">
+            {temporal.projectTimelineInsights.slice(0, 10).map((pt, idx) => (
+              <div key={idx} className="flex items-start gap-3 text-sm">
+                <span className="font-medium text-gray-800 min-w-[120px]">{pt.projectIdentifier}</span>
+                <div className="flex flex-wrap gap-1">
+                  {pt.phases.map((ph, pi) => (
+                    <span key={pi} className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs">
+                      {ph.phase}: {ph.period}
+                    </span>
+                  ))}
+                </div>
+                {pt.overallStart && pt.overallEnd && (
+                  <span className="text-xs text-gray-400 ml-auto">{pt.overallStart} – {pt.overallEnd}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <p className="text-xs text-gray-400">
+        Die KI interpretiert Zeitperioden-Codes und Projektphasen automatisch. Klicken Sie auf das Bearbeitungs-Icon, um eine Interpretation zu korrigieren.
+      </p>
     </div>
   );
 }

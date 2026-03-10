@@ -40,6 +40,9 @@ export default function AnalysisView() {
     try {
       const result = await api.generateMappings(sessionId);
       store.setMappingResult(result as any);
+      if ((result as any).temporalInterpretation) {
+        store.setTemporalInterpretation((result as any).temporalInterpretation);
+      }
       if ((result as any).aiStatus) store.setAiStatus((result as any).aiStatus);
       store.setStep(3);
     } catch (err: unknown) {

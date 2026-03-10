@@ -1,7 +1,7 @@
 import ExcelJS from 'exceljs';
 import type {
   ParsedExcel, MappingResult, TempusData, FieldMapping, EntityMapping,
-  ValidationResult, ValidationIssue,
+  ValidationResult, ValidationIssue, TemporalInterpretationResult,
 } from '../types.js';
 
 // ── Tempus Template Definitions ─────────────────────────────────────
@@ -200,6 +200,7 @@ export async function generateTempusExcel(
   mappingResult: MappingResult,
   tempusData: TempusData,
   templates?: string[],
+  temporalInterpretation?: TemporalInterpretationResult,
 ): Promise<Buffer> {
   const workbook = new ExcelJS.Workbook();
   workbook.creator = 'Tempus Excel Mapper';
@@ -315,6 +316,21 @@ export async function generateTempusExcel(
               }
             }
 
+            if (temporalInterpretation && value && typeof value === 'string') {
+              if (header === 'Phase' || mapping.targetField === 'phase') {
+                const phaseMatch = temporalInterpretation.phaseInterpretations.find(
+                  pi => pi.rawCode.toLowerCase() === String(value).toLowerCase()
+                );
+                if (phaseMatch) value = phaseMatch.tempusValue;
+              }
+              if (header === 'Time Period' || mapping.targetField === 'month' || mapping.targetField === 'planType') {
+                const periodMatch = temporalInterpretation.periodInterpretations.find(
+                  pi => pi.rawPattern.toLowerCase() === String(value).toLowerCase()
+                );
+                if (periodMatch) value = periodMatch.tempusTimePeriod;
+              }
+            }
+
             if (['Start Date', 'End Date', 'Team Start Date', 'Team End Date', 'Hired On'].includes(header) && value) {
               value = formatDate(value);
             }
@@ -322,6 +338,61 @@ export async function generateTempusExcel(
             exportRow.push(value ?? '');
           }
           ws.addRow(exportRow);
+        }
+
+        // Unpivot temporal pivot columns: each pivot column → separate assignment row
+        if (temporalInterpretation?.pivotRecommendation?.unpivotRequired && templateKey === 'assignments') {
+          const pivotFMs = sheetMappings.filter(m => m.transformation === 'unpivot');
+          if (pivotFMs.length > 0) {
+            const nonPivotMappings = sheetMappings.filter(m => m.transformation !== 'unpivot');
+            const lastRowNum = ws.rowCount;
+            const pivotRowsStart = lastRowNum - sheet.rows.length + 1;
+
+            // Remove the rows we just added (they contain pivot data in wrong format)
+            // Instead we regenerate with proper unpivoting
+            for (let r = lastRowNum; r >= pivotRowsStart; r--) {
+              ws.spliceRows(r, 1);
+            }
+
+            for (const row of sheet.rows) {
+              for (const pivotFM of pivotFMs) {
+                const allocValue = row[pivotFM.sourceColumn];
+                if (allocValue == null || allocValue === '' || allocValue === 0) continue;
+
+                const exportRow: unknown[] = [];
+                for (const header of headers) {
+                  if (header === 'Time Period') {
+                    const periodMatch = temporalInterpretation.periodInterpretations.find(
+                      pi => pi.rawPattern.toLowerCase() === pivotFM.sourceColumn.toLowerCase()
+                    );
+                    exportRow.push(periodMatch?.tempusTimePeriod || pivotFM.sourceColumn);
+                  } else if (header === 'Data Input' || header === 'Project Allocation') {
+                    exportRow.push(allocValue);
+                  } else if (header === 'Import Behavior') {
+                    exportRow.push('Merge');
+                  } else {
+                    const mapping = nonPivotMappings.find(m => {
+                      if (m.targetField.startsWith('cf:')) return m.targetField.slice(3) === header;
+                      return tempusFieldToHeader(m.targetField, templateKey) === header;
+                    });
+                    if (mapping) {
+                      let val = row[mapping.sourceColumn];
+                      if (val && typeof val === 'string') {
+                        const eMatch = confirmedEntityMappings.find(
+                          em => em.sourceValue.toLowerCase() === String(val).toLowerCase() && em.matchedName
+                        );
+                        if (eMatch?.matchedName) val = eMatch.matchedName;
+                      }
+                      exportRow.push(val ?? '');
+                    } else {
+                      exportRow.push('');
+                    }
+                  }
+                }
+                ws.addRow(exportRow);
+              }
+            }
+          }
         }
       }
     }

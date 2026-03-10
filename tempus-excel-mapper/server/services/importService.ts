@@ -1,4 +1,4 @@
-import type { Session, ImportProgress, FieldMapping, EntityMapping, MappingResult, ParsedExcel, TempusData } from '../types.js';
+import type { Session, ImportProgress, FieldMapping, EntityMapping, MappingResult, ParsedExcel, TempusData, TemporalInterpretationResult } from '../types.js';
 import { TempusClient } from './tempusClient.js';
 import { logAudit } from './auditLog.js';
 
@@ -69,7 +69,7 @@ export async function importToTempus(
     });
 
     try {
-      const count = await importStep(step.entity, client, mappingResult, parsedExcel, tempusData);
+      const count = await importStep(step.entity, client, mappingResult, parsedExcel, tempusData, session.temporalInterpretation);
       stepResult.created = count;
       logAudit('import_step_completed', session.id, { entity: step.entity, created: count });
     } catch (err) {
@@ -95,12 +95,33 @@ export async function importToTempus(
   return result;
 }
 
+function applyTemporalTransform(value: string, field: string, temporal?: TemporalInterpretationResult): string {
+  if (!temporal || !value) return value;
+
+  if (field === 'phase' || field === 'Phase') {
+    const phaseMatch = temporal.phaseInterpretations.find(
+      pi => pi.rawCode.toLowerCase() === value.toLowerCase()
+    );
+    if (phaseMatch) return phaseMatch.tempusValue;
+  }
+
+  if (field === 'planType' || field === 'Plan Type' || field === 'month' || field === 'Time Period') {
+    const periodMatch = temporal.periodInterpretations.find(
+      pi => pi.rawPattern.toLowerCase() === value.toLowerCase()
+    );
+    if (periodMatch) return periodMatch.tempusTimePeriod;
+  }
+
+  return value;
+}
+
 async function importStep(
   entity: string,
   client: TempusClient,
   mappingResult: MappingResult,
   parsedExcel: ParsedExcel,
   tempusData: TempusData,
+  temporal?: TemporalInterpretationResult,
 ): Promise<number> {
   const confirmedNew = mappingResult.entityMappings.filter(
     em => em.isNew && (em.status === 'confirmed' || em.status === 'create_new')

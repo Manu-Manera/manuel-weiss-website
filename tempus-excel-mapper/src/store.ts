@@ -103,6 +103,43 @@ export interface ValidationResult {
   blockingIssues: string[];
 }
 
+export interface PeriodInterpretation {
+  rawPattern: string;
+  meaning: string;
+  tempusTimePeriod: string;
+  dateRange?: { start: string; end: string };
+  confidence: number;
+  reasoning: string;
+}
+
+export interface PhaseInterpretation {
+  rawCode: string;
+  meaning: string;
+  tempusField: string;
+  tempusValue: string;
+  confidence: number;
+  reasoning: string;
+}
+
+export interface PivotRecommendation {
+  unpivotRequired: boolean;
+  pivotColumns: string[];
+  valueDescription: string;
+  targetEntity: string;
+}
+
+export interface TemporalInterpretationResult {
+  periodInterpretations: PeriodInterpretation[];
+  phaseInterpretations: PhaseInterpretation[];
+  pivotRecommendation?: PivotRecommendation;
+  projectTimelineInsights: Array<{
+    projectIdentifier: string;
+    phases: Array<{ phase: string; period: string }>;
+    overallStart?: string;
+    overallEnd?: string;
+  }>;
+}
+
 export interface TempusSyncSummary {
   projects: number;
   resources: number;
@@ -134,6 +171,7 @@ interface AppState {
   analysis: AnalysisResult | null;
   tempusSyncSummary: TempusSyncSummary | null;
   mappingResult: MappingResult | null;
+  temporalInterpretation: TemporalInterpretationResult | null;
   aiStatus: string | null;
   validation: ValidationResult | null;
   exportReady: boolean;
@@ -150,6 +188,9 @@ interface AppState {
   setAnalysis: (a: AnalysisResult) => void;
   setTempusSyncSummary: (s: TempusSyncSummary) => void;
   setMappingResult: (m: MappingResult) => void;
+  setTemporalInterpretation: (t: TemporalInterpretationResult | null) => void;
+  updatePeriodInterpretation: (idx: number, updated: Partial<PeriodInterpretation>) => void;
+  updatePhaseInterpretation: (idx: number, updated: Partial<PhaseInterpretation>) => void;
   setAiStatus: (s: string | null) => void;
   updateFieldMapping: (id: string, status: MappingStatus) => void;
   updateEntityMapping: (id: string, status: MappingStatus) => void;
@@ -171,6 +212,7 @@ const initialState = {
   analysis: null as AnalysisResult | null,
   tempusSyncSummary: null as TempusSyncSummary | null,
   mappingResult: null as MappingResult | null,
+  temporalInterpretation: null as TemporalInterpretationResult | null,
   aiStatus: null as string | null,
   validation: null as ValidationResult | null,
   exportReady: false,
@@ -188,6 +230,24 @@ export const useAppStore = create<AppState>((set) => ({
   setAnalysis: (a) => set({ analysis: a }),
   setTempusSyncSummary: (s) => set({ tempusSyncSummary: s }),
   setMappingResult: (m) => set({ mappingResult: m }),
+  setTemporalInterpretation: (t) => set({ temporalInterpretation: t }),
+
+  updatePeriodInterpretation: (idx, updated) => set((s) => {
+    if (!s.temporalInterpretation) return s;
+    const periodInterpretations = s.temporalInterpretation.periodInterpretations.map((p, i) =>
+      i === idx ? { ...p, ...updated } : p
+    );
+    return { temporalInterpretation: { ...s.temporalInterpretation, periodInterpretations } };
+  }),
+
+  updatePhaseInterpretation: (idx, updated) => set((s) => {
+    if (!s.temporalInterpretation) return s;
+    const phaseInterpretations = s.temporalInterpretation.phaseInterpretations.map((p, i) =>
+      i === idx ? { ...p, ...updated } : p
+    );
+    return { temporalInterpretation: { ...s.temporalInterpretation, phaseInterpretations } };
+  }),
+
   setAiStatus: (s) => set({ aiStatus: s }),
 
   updateFieldMapping: (id, status) => set((s) => {

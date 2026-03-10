@@ -12,7 +12,7 @@ import type { AppConfig, Session } from './types.js';
 import { TempusClient } from './services/tempusClient.js';
 import { AnthropicClient } from './services/anthropicClient.js';
 import { parseExcel, analyzeStructure } from './services/excelParser.js';
-import { generateMappings } from './services/mappingEngine.js';
+import { generateMappings, analyzeTemporalContext } from './services/mappingEngine.js';
 import { validateMappings, generateTempusExcel, generateReport, TEMPUS_TEMPLATES } from './services/exportService.js';
 import { anonymizeSampleRows, anonymizeSampleValues, generatePiiReport } from './services/anonymizer.js';
 import { logAudit, getAuditLog, clearAuditLog } from './services/auditLog.js';
@@ -373,17 +373,21 @@ app.post('/api/sessions/:id/generate-mappings', asyncRoute(async (req, res) => {
   console.log(`[generate-mappings] session=${session.id} ai=${aiStatus} consent=${JSON.stringify(consent)}`);
   logAudit('mapping_started', session.id, { withAI: !!anthropic, aiStatus });
 
-  const mappingResult = await generateMappings(
-    session.parsedExcel,
-    session.analysis,
-    session.tempusData,
-    anthropic,
-  );
+  const [mappingResult, temporalResult] = await Promise.all([
+    generateMappings(session.parsedExcel, session.analysis, session.tempusData, anthropic),
+    analyzeTemporalContext(session.parsedExcel, session.analysis, anthropic),
+  ]);
 
   session.mappingResult = mappingResult;
-  logAudit('mapping_completed', session.id, { ...mappingResult.summary, aiStatus });
-  console.log(`[generate-mappings] completed: fields=${mappingResult.summary.mappedFields} entities=${mappingResult.summary.totalEntities} conflicts=${mappingResult.summary.conflicts} ai=${aiStatus}`);
-  res.json({ ...mappingResult, aiStatus });
+  session.temporalInterpretation = temporalResult ?? undefined;
+  logAudit('mapping_completed', session.id, { ...mappingResult.summary, aiStatus, hasTemporalData: !!temporalResult });
+  console.log(`[generate-mappings] completed: fields=${mappingResult.summary.mappedFields} entities=${mappingResult.summary.totalEntities} conflicts=${mappingResult.summary.conflicts} ai=${aiStatus} temporal=${!!temporalResult}`);
+  res.json({ ...mappingResult, temporalInterpretation: temporalResult ?? null, aiStatus });
+}));
+
+app.get('/api/sessions/:id/temporal', asyncRoute(async (req, res) => {
+  const session = getSession(req.params.id);
+  res.json(session.temporalInterpretation ?? null);
 }));
 
 app.put('/api/sessions/:id/mappings/:mappingId', asyncRoute(async (req, res) => {
@@ -516,7 +520,7 @@ app.post('/api/sessions/:id/export', asyncRoute(async (req, res) => {
   }
   const { templates } = req.body || {};
   console.log(`[export] Templates: ${templates ? JSON.stringify(templates) : 'all'}, fieldMappings=${session.mappingResult.fieldMappings.length}, entityMappings=${session.mappingResult.entityMappings.length}`);
-  const buffer = await generateTempusExcel(session.parsedExcel, session.mappingResult, session.tempusData, templates);
+  const buffer = await generateTempusExcel(session.parsedExcel, session.mappingResult, session.tempusData, templates, session.temporalInterpretation);
   session.exportBuffer = buffer;
   console.log(`[export] Success: ${Math.round(buffer.length / 1024)} KB`);
   logAudit('export_generated', session.id, { sizeKB: Math.round(buffer.length / 1024), templates });

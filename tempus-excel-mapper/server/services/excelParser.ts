@@ -1,5 +1,8 @@
 import ExcelJS from 'exceljs';
-import type { ParsedExcel, ParsedSheet, ColumnAnalysis, SheetAnalysis, AnalysisResult } from '../types.js';
+import type {
+  ParsedExcel, ParsedSheet, ColumnAnalysis, SheetAnalysis, AnalysisResult,
+  TemporalPattern, TemporalPatternType,
+} from '../types.js';
 
 export async function parseExcel(buffer: Buffer, fileName: string): Promise<ParsedExcel> {
   const workbook = new ExcelJS.Workbook();
@@ -132,6 +135,103 @@ function normalizeCell(value: unknown): unknown {
   return value;
 }
 
+// ── Temporal Pattern Detection ───────────────────────────────────────
+
+const TEMPORAL_HEADER_PATTERNS: Array<{ regex: RegExp; pattern: string; interpretation: string }> = [
+  { regex: /^CY[-/\s]?Q[1-4]$/i, pattern: 'CY-Q{n}', interpretation: 'Current Year Quarter' },
+  { regex: /^NY[-/\s]?Q[1-4]$/i, pattern: 'NY-Q{n}', interpretation: 'Next Year Quarter' },
+  { regex: /^FY\d{2,4}[-/\s]?Q[1-4]$/i, pattern: 'FY{yy}-Q{n}', interpretation: 'Fiscal Year Quarter' },
+  { regex: /^Q[1-4][-/\s]?\d{2,4}$/i, pattern: 'Q{n}-{yyyy}', interpretation: 'Quarter with Year' },
+  { regex: /^\d{4}[-/\s]?Q[1-4]$/i, pattern: '{yyyy}-Q{n}', interpretation: 'Year-Quarter' },
+  { regex: /^H[12][-/\s]?\d{2,4}$/i, pattern: 'H{n}-{yyyy}', interpretation: 'Half-Year' },
+  { regex: /^CY[-/\s]?\d{4}$/i, pattern: 'CY-{yyyy}', interpretation: 'Current Year' },
+  { regex: /^NY[-/\s]?\d{4}$/i, pattern: 'NY-{yyyy}', interpretation: 'Next Year' },
+  { regex: /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|Mär|Mai|Okt|Dez)[-/\s]?\d{2,4}$/i, pattern: '{Mon}-{yyyy}', interpretation: 'Month-Year' },
+  { regex: /^\d{4}[-/\s]?(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|Mär|Mai|Okt|Dez)$/i, pattern: '{yyyy}-{Mon}', interpretation: 'Year-Month' },
+  { regex: /^(January|February|March|April|May|June|July|August|September|October|November|December|Januar|Februar|März|Mai|Juni|Juli|Oktober|Dezember)[-/\s]?\d{2,4}$/i, pattern: '{Month}-{yyyy}', interpretation: 'Month (full)-Year' },
+];
+
+const TEMPORAL_VALUE_PATTERNS: Array<{ regex: RegExp; pattern: string }> = [
+  { regex: /^CY[-/\s]?Q[1-4]$/i, pattern: 'CY-Q{n}' },
+  { regex: /^NY[-/\s]?Q[1-4]$/i, pattern: 'NY-Q{n}' },
+  { regex: /^FY\d{2,4}[-/\s]?Q[1-4]$/i, pattern: 'FY{yy}-Q{n}' },
+  { regex: /^Q[1-4][-/\s]?\d{2,4}$/i, pattern: 'Q{n}-{yyyy}' },
+  { regex: /^\d{4}[-/\s]?Q[1-4]$/i, pattern: '{yyyy}-Q{n}' },
+  { regex: /^H[12][-/\s]?\d{2,4}$/i, pattern: 'H{n}-{yyyy}' },
+  { regex: /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|Mär|Mai|Okt|Dez)[-/\s]?\d{2,4}$/i, pattern: '{Mon}-{yyyy}' },
+];
+
+function detectTemporalPatternForHeader(header: string): TemporalPattern | undefined {
+  const trimmed = header.trim();
+  for (const { regex, pattern, interpretation } of TEMPORAL_HEADER_PATTERNS) {
+    if (regex.test(trimmed)) {
+      return {
+        type: 'pivot_temporal',
+        pattern,
+        examples: [trimmed],
+        interpretation,
+        confidence: 0.9,
+      };
+    }
+  }
+  return undefined;
+}
+
+function detectTemporalPatternInValues(values: unknown[]): TemporalPattern | undefined {
+  const stringVals = values
+    .filter(v => v != null && v !== '')
+    .map(v => String(v).trim())
+    .filter(Boolean);
+  if (stringVals.length === 0) return undefined;
+
+  const sample = stringVals.slice(0, 50);
+  for (const { regex, pattern } of TEMPORAL_VALUE_PATTERNS) {
+    const matches = sample.filter(v => regex.test(v));
+    if (matches.length >= Math.max(1, sample.length * 0.3)) {
+      return {
+        type: 'period_value',
+        pattern,
+        examples: [...new Set(matches)].slice(0, 8),
+        confidence: matches.length / sample.length,
+      };
+    }
+  }
+  return undefined;
+}
+
+function detectPhaseValues(values: unknown[]): Array<{ raw: string; count: number }> | undefined {
+  const stringVals = values
+    .filter(v => v != null && v !== '')
+    .map(v => String(v).trim());
+  if (stringVals.length === 0) return undefined;
+
+  const freq: Record<string, number> = {};
+  for (const v of stringVals) freq[v] = (freq[v] || 0) + 1;
+
+  const uniqueVals = Object.keys(freq);
+  if (uniqueVals.length < 2 || uniqueVals.length > 15) return undefined;
+
+  const allShortUpperOrCamel = uniqueVals.every(v =>
+    /^[A-Z]{2,6}$/i.test(v) || /^[A-Z][a-z]+$/.test(v)
+  );
+  if (!allShortUpperOrCamel) return undefined;
+
+  const phaseIndicators = /^(PLN|EXE|IMP|CLO|INI|PLAN|EXEC|IMPL|CLOSE|INIT|RUN|GO|HOLD|DEV|TEST|UAT|PROD|LIVE|DRAFT|ACTIVE|INACTIVE|OPEN|CLOSED|DONE|TODO|WIP|PENDING|APPROVED|CANCELLED|ARCHIVE|NEW)/i;
+  const phaseMatches = uniqueVals.filter(v => phaseIndicators.test(v));
+  if (phaseMatches.length >= 1) {
+    return uniqueVals.map(raw => ({ raw, count: freq[raw] }))
+      .sort((a, b) => b.count - a.count);
+  }
+
+  const avgLen = uniqueVals.reduce((s, v) => s + v.length, 0) / uniqueVals.length;
+  if (avgLen <= 5 && uniqueVals.length <= 8 && uniqueVals.every(v => /^[A-Z]{2,5}$/i.test(v))) {
+    return uniqueVals.map(raw => ({ raw, count: freq[raw] }))
+      .sort((a, b) => b.count - a.count);
+  }
+
+  return undefined;
+}
+
 // ── Structure Analysis ───────────────────────────────────────────────
 
 export function analyzeStructure(parsed: ParsedExcel): AnalysisResult {
@@ -139,11 +239,39 @@ export function analyzeStructure(parsed: ParsedExcel): AnalysisResult {
     const columns = analyzeColumns(sheet);
     const suggestedEntity = guessEntity(sheet.headers, columns);
 
+    const pivotCols = columns.filter(c => c.isTemporalPivotColumn);
+    const temporalLayout: 'standard' | 'pivot_temporal' =
+      pivotCols.length >= 2 ? 'pivot_temporal' : 'standard';
+
+    const allPhaseValues = new Map<string, number>();
+    for (const col of columns) {
+      if (col.temporalPattern?.type === 'phase_value') {
+        const vals = sheet.rows.map(r => r[col.name]);
+        const phases = detectPhaseValues(vals);
+        if (phases) {
+          for (const p of phases) {
+            allPhaseValues.set(p.raw, (allPhaseValues.get(p.raw) || 0) + p.count);
+          }
+        }
+      }
+    }
+
+    const detectedPhaseValues = allPhaseValues.size > 0
+      ? [...allPhaseValues.entries()].map(([raw, count]) => ({ raw, count }))
+      : undefined;
+
+    const detectedPeriodFormat = pivotCols.length > 0
+      ? pivotCols[0].temporalPattern?.pattern
+      : columns.find(c => c.temporalPattern?.type === 'period_value')?.temporalPattern?.pattern;
+
     return {
       sheetName: sheet.name,
       rowCount: sheet.totalRows,
       columns,
       suggestedEntity,
+      temporalLayout,
+      detectedPhaseValues,
+      detectedPeriodFormat,
     };
   });
 
@@ -166,6 +294,29 @@ function analyzeColumns(sheet: ParsedSheet): ColumnAnalysis[] {
 
     const unique = new Set(nonNull.map(v => String(v).toLowerCase().trim()));
 
+    const headerTemporal = detectTemporalPatternForHeader(header);
+    let temporalPattern: TemporalPattern | undefined = headerTemporal;
+    let isTemporalPivotColumn = !!headerTemporal;
+
+    if (!temporalPattern) {
+      const valueTemporal = detectTemporalPatternInValues(nonNull);
+      if (valueTemporal) {
+        temporalPattern = valueTemporal;
+      }
+    }
+
+    if (!temporalPattern && !isTemporalPivotColumn) {
+      const phases = detectPhaseValues(nonNull);
+      if (phases) {
+        temporalPattern = {
+          type: 'phase_value',
+          pattern: 'phase_codes',
+          examples: phases.slice(0, 6).map(p => p.raw),
+          confidence: 0.7,
+        };
+      }
+    }
+
     return {
       name: header,
       index,
@@ -174,6 +325,8 @@ function analyzeColumns(sheet: ParsedSheet): ColumnAnalysis[] {
       nullCount: values.length - nonNull.length,
       totalCount: values.length,
       uniqueCount: unique.size,
+      temporalPattern,
+      isTemporalPivotColumn,
     };
   });
 }
