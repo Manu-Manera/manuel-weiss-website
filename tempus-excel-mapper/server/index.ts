@@ -329,62 +329,7 @@ app.post('/api/sessions/:id/sync-tempus', asyncRoute(async (req, res) => {
   };
   logAudit('tempus_sync_completed', session.id, summary);
 
-  // AI-Analyse erst NACH Tempus-Sync, damit Tempus-Daten verglichen werden können
-  const consent = sessionConsent.get(session.id);
-  const aiConsented = consent?.aiProcessing ?? false;
-  let aiInsights: string | undefined;
-
-  if (config.anthropicApiKey && aiConsented && session.parsedExcel && session.analysis) {
-    try {
-      const anthropic = new AnthropicClient(config.anthropicApiKey);
-      const sheetsForAI = session.analysis.sheets.map(s => {
-        const parsedSheet = session.parsedExcel!.sheets.find(ps => ps.name === s.sheetName);
-        const originalRows = (parsedSheet?.rows || []).slice(0, 5);
-        const anonymizedRows = anonymizeSampleRows(originalRows, parsedSheet?.headers || []);
-        const anonymizedColumns = s.columns.map(c => ({
-          ...c,
-          sampleValues: anonymizeSampleValues(c.sampleValues, c.name),
-        }));
-        return { sheetName: s.sheetName, columns: anonymizedColumns, sampleRows: anonymizedRows };
-      });
-
-      logAudit('ai_analysis_started', session.id, { sheetsCount: sheetsForAI.length, anonymized: true });
-      const aiResult = await anthropic.analyzeStructure(sheetsForAI);
-
-      for (const aiSheet of aiResult.sheets) {
-        const sheet = session.analysis.sheets.find(s => s.sheetName === aiSheet.sheetName);
-        if (!sheet) continue;
-        if (aiSheet.suggestedEntity) sheet.suggestedEntity = aiSheet.suggestedEntity;
-        for (const aiCol of aiSheet.columns) {
-          const col = sheet.columns.find(c => c.name === aiCol.name);
-          if (!col) continue;
-          col.classification = aiCol.classification;
-          col.suggestedTempusField = aiCol.suggestedTempusField;
-          col.confidence = aiCol.confidence;
-          col.relevance = aiCol.relevance as 'high' | 'medium' | 'low';
-          col.reasoning = aiCol.reasoning;
-        }
-        if (aiResult.detectedRelationships) {
-          sheet.relationships = aiResult.detectedRelationships
-            .filter(r => r.fromSheet === aiSheet.sheetName)
-            .map(r => ({ sourceColumn: r.fromColumn, targetSheet: r.toSheet, targetColumn: r.toColumn, type: r.relationship }));
-        }
-      }
-      aiInsights = aiResult.insights;
-      session.analysis.aiInsights = aiInsights;
-      logAudit('ai_analysis_completed', session.id, { sheetsCount: sheetsForAI.length });
-    } catch (err) {
-      const errMsg = sanitizeError(err instanceof Error ? err.message : 'unknown');
-      logAudit('ai_analysis_failed', session.id, {}, 'error', errMsg);
-      aiInsights = `AI-Analyse fehlgeschlagen – regelbasierte Analyse verwendet. (${errMsg})`;
-      session.analysis.aiInsights = aiInsights;
-    }
-  } else if (config.anthropicApiKey && !aiConsented) {
-    aiInsights = 'AI-Analyse deaktiviert – keine Einwilligung für Drittland-Datenverarbeitung erteilt';
-    if (session.analysis) session.analysis.aiInsights = aiInsights;
-  }
-
-  res.json({ ok: true, summary, tempusData, aiInsights, analysis: session.analysis });
+  res.json({ ok: true, summary, tempusData });
 }));
 
 // ── MAPPING ──────────────────────────────────────────────────────────

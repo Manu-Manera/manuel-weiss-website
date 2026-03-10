@@ -142,12 +142,7 @@ export class AnthropicClient {
   }
 
   async analyzeStructure(
-    sheets: Array<{ sheetName: string; columns: ColumnAnalysis[]; sampleRows: Record<string, unknown>[] }>,
-    tempusData?: {
-      customFields: Array<{ name: string; entityType: string; dataType: string; enumMembers?: Array<{ name: string }> }>;
-      projects: Array<{ id: number; name: string }>;
-      resources: Array<{ id: number; name: string }>;
-    },
+    sheets: Array<{ sheetName: string; columns: ColumnAnalysis[]; sampleRows: Record<string, unknown>[] }>
   ): Promise<{
     sheets: Array<{
       sheetName: string;
@@ -183,17 +178,13 @@ export class AnthropicClient {
       sampleRows: s.sampleRows.slice(0, 3),
     }));
 
-    const tempusContext = tempusData
-      ? `\n\nVORHANDENE TEMPUS-DATEN (zum Abgleich nutzen):\nCustom Fields: ${JSON.stringify(tempusData.customFields.map(cf => ({ name: cf.name, entity: cf.entityType, type: cf.dataType, values: cf.enumMembers?.map(e => e.name) })))}\nProjekte (Auszug): ${tempusData.projects.slice(0, 20).map(p => p.name).join(', ')}\nRessourcen (Auszug): ${tempusData.resources.slice(0, 20).map(r => r.name).join(', ')}`
-      : '';
-
     const response = await this.client.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 4096,
       system: TEMPUS_ANALYSIS_SYSTEM_PROMPT,
       messages: [{
         role: 'user',
-        content: `Analysiere diese Excel-Struktur:\n${JSON.stringify(sheetsInfo, null, 2)}${tempusContext}`,
+        content: `Analysiere diese Excel-Struktur:\n${JSON.stringify(sheetsInfo, null, 2)}`,
       }],
       tools: [ANALYSIS_TOOL],
       tool_choice: { type: 'tool' as const, name: 'analyze_excel_structure' },
@@ -211,61 +202,50 @@ export class AnthropicClient {
     sourceSheets: Array<{ sheetName: string; columns: ColumnAnalysis[]; sampleRows: Record<string, unknown>[] }>,
     tempusSchema: TempusMappingSchema,
   ): Promise<MappingSuggestionsResult> {
-    const prompt = `Erstelle intelligente Mapping-Vorschläge für den Import dieser Excel-Daten in Tempus.
-Analysiere JEDE Spalte und JEDEN relevanten Wert – auch wenn die Zuordnung nicht offensichtlich ist.
+    const prompt = `Analysiere diese Excel-Daten und erstelle ein vollständiges Mapping für den Tempus-Import.
+Vergleiche JEDEN Wert mit den vorhandenen Tempus-Daten. Erkenne Custom Fields automatisch.
 
-QUELLE (Excel-Sheets mit Beispieldaten):
+═══ EXCEL-QUELLDATEN ═══
 ${JSON.stringify(sourceSheets.map(s => ({
-  name: s.sheetName,
+  sheetName: s.sheetName,
   columns: s.columns.map(c => ({
     name: c.name,
     type: c.inferredType,
-    samples: c.sampleValues.slice(0, 5),
+    samples: c.sampleValues.slice(0, 10),
     uniqueCount: c.uniqueCount,
     nullRatio: c.totalCount > 0 ? Math.round((c.nullCount / c.totalCount) * 100) + '%' : '0%',
   })),
-  rows: s.sampleRows.slice(0, 5),
+  sampleRows: s.sampleRows.slice(0, 10),
 })), null, 2)}
 
-ZIEL (vorhandene Tempus-Daten — hier sind ALLE 10 Import-Entitätstypen):
+═══ VORHANDENE TEMPUS-DATEN ═══
 
-1. ATTRIBUTES (Custom Fields): ${JSON.stringify(tempusSchema.customFields.map(cf => ({
-  id: cf.id, name: cf.name, entity: cf.entityType, type: cf.dataType,
-  values: cf.enumMembers?.map(e => e.name),
-})))}
+CUSTOM FIELDS (Attribute) — das sind die existierenden Attribute in Tempus:
+${JSON.stringify(tempusSchema.customFields.map(cf => ({
+  id: cf.id, name: cf.name, entityType: cf.entityType, dataType: cf.dataType,
+  selectionValues: cf.enumMembers?.map(e => e.name),
+})), null, 2)}
 
-2. RESOURCES: ${JSON.stringify(tempusSchema.resources.slice(0, 50).map(r => ({ id: r.id, name: r.name })))}
+PROJECTS (${tempusSchema.projects.length} vorhanden):
+${JSON.stringify(tempusSchema.projects.map(p => ({ id: p.id, name: p.name })), null, 2)}
 
-3. PROJECTS: ${JSON.stringify(tempusSchema.projects.slice(0, 50).map(p => ({ id: p.id, name: p.name })))}
+RESOURCES (${tempusSchema.resources.length} vorhanden):
+${JSON.stringify(tempusSchema.resources.map(r => ({ id: r.id, name: r.name })), null, 2)}
 
-4. ASSIGNMENTS: (Zuweisungen aus Projekt/Resource/Task-Kombinationen)
+ROLES: ${JSON.stringify(tempusSchema.roles.map(r => ({ id: r.id, name: r.name })))}
 
-5. ADMIN TIME: ${JSON.stringify(tempusSchema.adminTimes?.slice(0, 30).map(a => ({ id: a.id, name: a.name })) || [])}
+TASKS (${tempusSchema.tasks?.length ?? 0} vorhanden):
+${JSON.stringify(tempusSchema.tasks?.map(t => ({ id: t.id, name: t.name, projectId: t.projectId })) || [])}
 
-6. SKILLS: ${JSON.stringify(tempusSchema.skills?.slice(0, 30).map(s => ({ id: s.id, name: s.name })) || [])}
+SKILLS: ${JSON.stringify(tempusSchema.skills?.map(s => ({ id: s.id, name: s.name })) || [])}
 
-7. SHEET DATA: (Projekt/Task/Resource/Monat/Wert-Kombinationen)
+ADMIN TIMES: ${JSON.stringify(tempusSchema.adminTimes?.map(a => ({ id: a.id, name: a.name })) || [])}
 
-8. ADVANCED RATES: (Resource/Projekt/Rolle/Stundensatz-Kombinationen)
-
-9. FINANCIALS: (Projekt/Monat/Budget/Ist/Forecast)
-
-10. TEAM RESOURCE: (Team/Resource/Rolle/Anteil-Kombinationen)
-
-Rollen: ${JSON.stringify(tempusSchema.roles.map(r => ({ id: r.id, name: r.name })))}
-Tasks: ${JSON.stringify(tempusSchema.tasks?.slice(0, 30).map(t => ({ id: t.id, name: t.name })) || [])}
-
-REGELN (WICHTIG):
-1. Mappe JEDE Spalte auf ein Tempus-Feld (fieldMappings). Nutze alle 10 Entitätstypen.
-2. Spalten, die keinem Standardfeld entsprechen, aber Werte enthalten, die zu einem Custom Field passen könnten: setze isCustomField=true und schlage einen Custom-Field-Namen + Datentyp vor.
-3. Mappe alle erkennbaren Werte auf bestehende Tempus-Entitäten (entityMappings):
-   - Berücksichtige Abkürzungen, Umbenennungen, Tippfehler (z.B. "Proj Alpha" ≈ "Project Alpha")
-   - Auch partielle Matches sind wertvoll – gib dann niedrigere Confidence
-4. Werte OHNE Entsprechung in Tempus: isNew=true, suggestedAction='create_new'
-5. Confidence 0-1: 1.0=exakt gleich, 0.8-0.99=sehr ähnlich, 0.5-0.79=möglich, <0.5=unsicher
-6. Transformationen vorschlagen wenn nötig (Datumsformat, Einheiten, Status-Mapping, Enum-Zuordnung)
-7. Auch Sheet-übergreifende Zusammenhänge erkennen (z.B. Projekte in Sheet 1, Zuweisungen in Sheet 2)
-8. Bei Auswahl-/Enum-Spalten: Werte mit vorhandenen Custom-Field enumMembers abgleichen`;
+═══ AUFGABE ═══
+1. Ordne JEDE Excel-Spalte einem Tempus-Feld oder Custom Field zu (fieldMappings)
+2. Matche JEDEN einzigartigen Wert in Name-Spalten gegen Tempus-Entitäten (entityMappings)
+3. Erkenne Custom Fields und prüfe ob sie in Tempus existieren
+4. Schlage Transformationen vor wo nötig`;
 
     const response = await this.client.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -348,24 +328,88 @@ Spalten die keinem Standardfeld entsprechen, aber Daten zu einer Entität tragen
 Erkenne Beziehungen zwischen Sheets (z.B. Projekt-Referenzen in Assignments, Resource-Referenzen in Skills).
 Klassifiziere JEDE Spalte – auch ungewöhnliche oder domänenspezifische Spalten sollen einem der 10 Typen zugeordnet werden.`;
 
-const TEMPUS_MAPPING_SYSTEM_PROMPT = `Du bist ein hochspezialisierter Mapping-Experte für den Datenimport in Tempus (ProSymmetry Supergrid).
+const TEMPUS_MAPPING_SYSTEM_PROMPT = `Du bist der weltweit beste Datenintegrations-Experte für Tempus Resource (ProSymmetry Supergrid).
+Du analysierst Excel-Quelldaten und vergleichst sie mit vorhandenen Tempus-Daten, um perfekte Import-Mappings zu erstellen.
 
-Dein Ziel: Erstelle für JEDE Spalte und JEDEN relevanten Wert einen intelligenten Mapping-Vorschlag.
-Du kennst alle 10 Tempus-Import-Entitätstypen: Attributes, Resources, Projects, Assignments, Admin Time, Skills, Sheet Data, Advanced Rates, Financials, Team Resource.
+DEIN ZIEL: Erstelle für JEDE Spalte und JEDEN Wert einen intelligenten, kontextbewussten Mapping-Vorschlag.
 
-Matching-Strategie (von höchster zu niedrigster Priorität):
-1. EXAKTER MATCH: Name/Wert ist identisch mit einer Tempus-Entität → Confidence 0.95-1.0
-2. NORMALISIERTER MATCH: Gleich nach Bereinigung (Gross/Klein, Leerzeichen, Umlaute) → Confidence 0.85-0.95
-3. SEMANTISCHER MATCH: Inhaltlich gleich trotz anderer Benennung (z.B. "HR" = "Human Resources", "PM" = "Project Manager") → Confidence 0.7-0.85
-4. FUZZY MATCH: Ähnlich aber nicht sicher (Abkürzungen, Tippfehler, Teilübereinstimmung) → Confidence 0.5-0.7
-5. NEUANLAGE: Kein passender Match gefunden → isNew=true, Confidence basierend auf Datenqualität
+═══ TEMPUS-IMPORT-REIHENFOLGE (ZWINGEND) ═══
+Elemente MÜSSEN in dieser Reihenfolge angelegt werden:
+1. ATTRIBUTES (Custom Fields) — Definitionen zuerst, damit Projekte sie nutzen können
+2. RESOURCES — Mitarbeiter/Ressourcen
+3. PROJECTS — Projekte (mit Custom-Field-Werten als zusätzliche Spalten)
+4. ASSIGNMENTS — Zuweisungen (Projekt + Resource + Task)
+5. ADMIN TIME — Abwesenheiten
+6. SKILLS — Kompetenzen
+7. SHEET DATA — Planungsdaten
+8. ADVANCED RATES — Erweiterte Stundensätze
+9. FINANCIALS — Finanzdaten
+10. TEAM RESOURCE — Teamzuordnungen
 
-Besondere Intelligenz:
-- Erkenne domänenspezifische Abkürzungen und Fachjargon
-- Berücksichtige den Kontext des gesamten Sheets (wenn andere Spalten auf "Projects" hindeuten, ist "Name" wahrscheinlich projectName)
-- Bei Enum-/Auswahl-Spalten: Vergleiche Werte mit Custom-Field enumMembers
-- Schlage für Custom-Field-Kandidaten einen sinnvollen Datentyp vor (Text, Number, Date, Boolean, Selection)
-- Erkenne Datumstransformationen, Einheitenumrechnungen und Status-Mappings
+═══ CUSTOM FIELDS / ATTRIBUTE — KRITISCH ═══
+Spalten, die KEINEM Tempus-Standardfeld entsprechen, sind fast immer Custom Fields (Attribute).
 
-WICHTIG: Gib für JEDE unmapped Spalte einen Vorschlag ab – auch wenn nur mit niedriger Confidence.
-Lieber ein unsicherer Vorschlag mit guter Begründung als gar kein Vorschlag.`;
+Erkennungsmuster:
+- Sheet heisst "Project Portfolio ID" → alle Spalten darin sind Projekt-Attribute (Custom-Field-WERTE)
+- Spaltenname enthält typische Attributnamen: "Site", "Brand", "UF", "Class", "Priority", "Status", "Category", etc.
+- Spalte hat wenige wiederkehrende Werte → wahrscheinlich Selection/Enum Custom Field
+- Spalte hat freie Texte → Text Custom Field
+- Spalte hat Zahlen → Number Custom Field
+- Spalte hat Datum → Date Custom Field
+- Spalte hat nur ja/nein, true/false, active/inactive → Boolean Custom Field
+
+Für jedes erkannte Custom Field MUSST du angeben:
+- isCustomField: true
+- suggestedCustomFieldName: Der Name, unter dem das CF in Tempus existiert oder angelegt werden soll
+- suggestedDataType: "Text" | "Number" | "Date" | "Boolean" | "Selection"
+- Bei Selection: Die einzigartigen Werte als mögliche enumMembers auflisten im reasoning
+
+═══ MATCHING-STRATEGIE (INTELLIGENZ-EBENEN) ═══
+
+EBENE 1 — EXAKTER MATCH (Confidence 0.95-1.0):
+  Name/Wert ist identisch mit Tempus-Entität.
+
+EBENE 2 — NORMALISIERTER MATCH (Confidence 0.85-0.95):
+  Gleich nach Bereinigung: Gross/Klein, Leerzeichen, Umlaute, Bindestriche.
+  "project name" = "Project Name" = "ProjectName"
+
+EBENE 3 — SEMANTISCHER MATCH (Confidence 0.7-0.85):
+  Inhaltlich gleich, andere Benennung:
+  - "HR" = "Human Resources"
+  - "PM" = "Project Manager" oder "Product Management"
+  - "QC" = "Quality Control"
+  - "UF" = "Unit Function"
+  - "SAB" = Standort/Site-Abkürzung
+  - "SQP" = Qualitätsprogramm-Abkürzung
+  Berücksichtige: Branchen-Jargon, Firmen-interne Abkürzungen, Akronyme
+
+EBENE 4 — FUZZY MATCH (Confidence 0.5-0.7):
+  Ähnlich aber nicht sicher: Tippfehler, Teilübereinstimmung, Abkürzungen.
+  "Proj Alpha" ≈ "Project Alpha"
+  "J.Smith" ≈ "John Smith"
+
+EBENE 5 — KONTEXT-INFERENZ (Confidence 0.4-0.6):
+  Aus dem Kontext des Sheets ableitbar:
+  - Sheet hat "Project" im Namen → "Name"-Spalte ist projectName
+  - Sheet hat Resource-ähnliche Daten → "Name" ist resourceName
+  - Spalte neben "Project Name" mit Datumsformat → wahrscheinlich startDate/endDate
+
+EBENE 6 — NEUANLAGE (isNew=true):
+  Kein Match gefunden → suggestedAction: 'create_new'
+  Confidence basierend auf Datenqualität der Quelle.
+
+═══ SHEET-ÜBERGREIFENDE INTELLIGENZ ═══
+- Wenn Sheet 1 Projekte definiert und Sheet 2 die gleichen Projektnamen referenziert → Beziehung erkennen
+- "Functions and Roles" Sheet → Daten für Resources oder Skills
+- "Scoring" Sheet → Wahrscheinlich Custom Fields oder Financials
+- Gleiche Werte in verschiedenen Sheets = Referenz-Beziehung
+
+═══ REGELN (UNBEDINGT BEFOLGEN) ═══
+1. JEDE Spalte MUSS zugeordnet werden — lieber unsicher (niedrige Confidence) als gar nicht
+2. Kontext des GESAMTEN Sheets beachten (Sheet-Name, andere Spalten, Zeilenzahl)
+3. Custom Fields sind KEIN Fehler — sie sind ein zentraler Bestandteil von Tempus
+4. Bei Enum/Auswahl-Spalten: Werte mit vorhandenen Custom-Field enumMembers vergleichen
+5. Transformationen vorschlagen: Datumsformate, Einheiten, Status-Mapping, Enum-Zuordnung
+6. Begründung (reasoning) für JEDE Zuordnung — kurz aber nachvollziehbar
+7. Spalten mit >90% null/leer: Trotzdem zuordnen, aber niedrige Relevanz
+8. "[object Object]" als Wert = Parsing-Fehler, ignorieren`;
