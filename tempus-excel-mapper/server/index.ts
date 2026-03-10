@@ -548,6 +548,31 @@ app.get('/api/sessions/:id/download', asyncRoute(async (req, res) => {
   res.send(session.exportBuffer);
 }));
 
+app.get('/api/sessions/:id/download-single', asyncRoute(async (req, res) => {
+  const session = getSession(req.params.id);
+  if (!session.parsedExcel || !session.mappingResult || !session.tempusData) {
+    res.status(400).json({ error: 'Alle vorherigen Schritte müssen abgeschlossen sein' });
+    return;
+  }
+  const templateKey = req.query.template as string;
+  if (!templateKey || !(templateKey in TEMPUS_TEMPLATES)) {
+    res.status(400).json({ error: `Ungültiges Template: ${templateKey}` });
+    return;
+  }
+  try {
+    const buffer = await generateTempusExcel(session.parsedExcel, session.mappingResult, session.tempusData, [templateKey], session.temporalInterpretation);
+    const tmpl = TEMPUS_TEMPLATES[templateKey as keyof typeof TEMPUS_TEMPLATES];
+    const fileName = `tempus-${(tmpl as any).sheetName.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().split('T')[0]}.xlsx`;
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+    logAudit('file_downloaded', session.id, { type: 'export-single', template: templateKey });
+    res.send(buffer);
+  } catch (err) {
+    console.error(`[download-single] Template ${templateKey} FAILED:`, err instanceof Error ? err.message : err);
+    res.status(500).json({ error: `Export fehlgeschlagen: ${err instanceof Error ? err.message : 'Unbekannter Fehler'}` });
+  }
+}));
+
 app.get('/api/sessions/:id/download-report', asyncRoute(async (req, res) => {
   const session = getSession(req.params.id);
   if (!session.mappingResult || !session.validation) {

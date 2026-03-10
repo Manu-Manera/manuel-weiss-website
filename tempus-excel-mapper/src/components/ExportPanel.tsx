@@ -237,26 +237,52 @@ export default function ExportPanel() {
               </button>
             </div>
           ) : (
-            <div className="bg-green-50 rounded-xl border border-green-200 p-8 text-center space-y-6">
-              <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
-              <div>
-                <h3 className="text-xl font-bold text-green-800">Export erfolgreich!</h3>
-                <p className="text-sm text-green-600 mt-1">Die Tempus-kompatible Excel-Datei steht zum Download bereit.</p>
+            <div className="bg-green-50 rounded-xl border border-green-200 p-8 space-y-6">
+              <div className="text-center">
+                <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
+                <h3 className="text-xl font-bold text-green-800 mt-4">Export erfolgreich!</h3>
+                <p className="text-sm text-green-600 mt-1">Die Tempus-kompatiblen Excel-Dateien stehen zum Download bereit.</p>
               </div>
+
+              {/* Combined download */}
               <div className="flex items-center justify-center gap-4">
                 <button onClick={handleDownload} className="px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 flex items-center gap-2">
-                  <Download className="w-5 h-5" /> Excel herunterladen
+                  <Download className="w-5 h-5" /> Alle in einer Datei
                 </button>
                 <button onClick={handleDownloadReport} className="px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 flex items-center gap-2">
                   <FileText className="w-5 h-5" /> Mapping-Report
                 </button>
               </div>
-              <button
-                onClick={() => store.setExportReady(false)}
-                className="text-sm text-gray-500 hover:text-gray-700"
-              >
-                Erneut exportieren mit anderer Auswahl
-              </button>
+
+              {/* Individual template downloads */}
+              <div className="border-t border-green-200 pt-4">
+                <p className="text-sm font-medium text-green-800 mb-3 text-center">Einzelne Templates herunterladen:</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {templates.filter(t => selectedTemplates.has(t.key)).map(t => (
+                    <button
+                      key={t.key}
+                      onClick={() => sessionId && window.open(api.getSingleDownloadUrl(sessionId, t.key), '_blank')}
+                      className="flex items-center gap-3 p-3 bg-white rounded-lg border border-green-200 hover:border-green-400 hover:bg-green-50 transition-colors text-left"
+                    >
+                      <FileSpreadsheet className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-gray-900 truncate">{t.label}</p>
+                        <p className="text-xs text-gray-500">{t.sheetName}.xlsx</p>
+                      </div>
+                      <Download className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="text-center">
+                <button
+                  onClick={() => store.setExportReady(false)}
+                  className="text-sm text-gray-500 hover:text-gray-700"
+                >
+                  Erneut exportieren mit anderer Auswahl
+                </button>
+              </div>
             </div>
           )}
         </>

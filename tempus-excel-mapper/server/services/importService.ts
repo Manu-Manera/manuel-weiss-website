@@ -171,10 +171,26 @@ function buildCFValuePayloads(
 
   for (const cfm of cfFieldMappings) {
     const cfName = cfm.targetField.slice(3);
-    const cfDef = tempusData.customFields.find(
+
+    // Try to find the CF definition: first by direct name match, then via customFieldMappings
+    let cfDef = tempusData.customFields.find(
       cf => cf.name.toLowerCase() === cfName.toLowerCase()
         && cf.entityType.toLowerCase() === cfEntityType.toLowerCase()
     );
+
+    if (!cfDef) {
+      // Check if a customFieldMapping maps the source column to a different Tempus CF name
+      const cfMapping = mappingResult.customFieldMappings.find(
+        cm => cm.sourceColumn === cfm.sourceColumn && cm.sourceSheet === cfm.sourceSheet
+      );
+      if (cfMapping) {
+        cfDef = tempusData.customFields.find(
+          cf => cf.name.toLowerCase() === cfMapping.customFieldName.toLowerCase()
+            && cf.entityType.toLowerCase() === cfEntityType.toLowerCase()
+        );
+      }
+    }
+
     if (!cfDef) {
       console.log(`[importService] CF "${cfName}" (${cfEntityType}) not found in Tempus – skipping values`);
       continue;
@@ -233,6 +249,9 @@ async function importStep(
 ): Promise<number> {
   const confirmedNew = mappingResult.entityMappings.filter(
     em => em.isNew && (em.status === 'confirmed' || em.status === 'create_new')
+  );
+  const confirmedFieldMappings = mappingResult.fieldMappings.filter(
+    fm => fm.status === 'confirmed' || fm.status === 'suggested'
   );
 
   switch (entity) {

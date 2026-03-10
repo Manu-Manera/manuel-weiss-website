@@ -125,6 +125,10 @@ export function getDownloadUrl(sessionId: string) {
   return `${BASE}/sessions/${sessionId}/download`;
 }
 
+export function getSingleDownloadUrl(sessionId: string, templateKey: string) {
+  return `${BASE}/sessions/${sessionId}/download-single?template=${encodeURIComponent(templateKey)}`;
+}
+
 export function getReportDownloadUrl(sessionId: string) {
   return `${BASE}/sessions/${sessionId}/download-report`;
 }

@@ -402,6 +402,22 @@ export async function generateTempusExcel(
 
   addReportSheet(workbook, mappingResult);
 
+  // Sanitize: remove any shared formula references that cause ExcelJS writeBuffer to crash
+  workbook.eachSheet(sheet => {
+    sheet.eachRow(row => {
+      row.eachCell(cell => {
+        if ((cell as any).model?.sharedFormula || (cell as any).model?.formula) {
+          const val = cell.value;
+          if (typeof val === 'object' && val !== null && 'result' in (val as any)) {
+            cell.value = (val as any).result;
+          }
+          (cell as any).model.sharedFormula = undefined;
+          (cell as any).model.formula = undefined;
+        }
+      });
+    });
+  });
+
   const buffer = await workbook.xlsx.writeBuffer();
   return Buffer.from(buffer);
 }
