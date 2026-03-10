@@ -153,6 +153,7 @@ export interface TempusSyncSummary {
   advancedRates: number;
   financials: number;
   teamResources: number;
+  milestones: number;
   calendars: number;
 }
 

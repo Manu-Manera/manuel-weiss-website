@@ -109,6 +109,14 @@ const TEMPUS_FIELD_MAP: Record<string, Array<{ field: string; aliases: string[] 
     { field: 'role', aliases: ['role', 'rolle', 'team role', 'teamrolle', 'function', 'funktion'] },
     { field: 'allocationPercentage', aliases: ['allocation', 'allocation %', 'prozent', 'percentage', 'anteil', 'auslastung'] },
   ],
+  milestones: [
+    { field: 'name', aliases: ['milestone', 'milestone name', 'meilenstein', 'meilensteinname', 'gate', 'gate name', 'checkpoint'] },
+    { field: 'projectName', aliases: ['project', 'projekt', 'project name', 'projektname'] },
+    { field: 'date', aliases: ['date', 'datum', 'milestone date', 'meilensteindatum', 'target date', 'zieldatum', 'due date', 'fällig'] },
+    { field: 'description', aliases: ['description', 'beschreibung', 'notes', 'anmerkung', 'comment', 'kommentar'] },
+    { field: 'color', aliases: ['color', 'farbe', 'milestone color'] },
+    { field: 'shape', aliases: ['shape', 'form', 'milestone shape', 'symbol', 'icon'] },
+  ],
 };
 
 // Financial-sounding columns that are ACTUALLY project custom fields when in a project sheet
@@ -678,9 +686,21 @@ function detectSheetEntity(
 ): string {
   const suggested = sheet.suggestedEntity || 'unknown';
 
+  const colNames = new Set(sheet.columns.map(c => c.name.toLowerCase().trim()));
+  const sheetLower = sheet.sheetName.toLowerCase();
+
+  // Detect milestone sheets by name or columns
+  if (suggested === 'unknown' || suggested === 'tasks') {
+    const hasMilestoneName = [...colNames].some(c => c.includes('milestone') || c.includes('meilenstein') || c.includes('gate'));
+    const sheetIsMilestone = sheetLower.includes('milestone') || sheetLower.includes('meilenstein') || sheetLower.includes('gate');
+    if (sheetIsMilestone || (hasMilestoneName && [...colNames].some(c => c.includes('date') || c.includes('datum')))) {
+      console.log(`[mappingEngine] Sheet "${sheet.sheetName}" reclassified: ${suggested} → milestones`);
+      return 'milestones';
+    }
+  }
+
   // If AI suggested "financials" but the sheet has project-defining columns, it's actually a projects sheet
   if (suggested === 'financials' || suggested === 'unknown') {
-    const colNames = new Set(sheet.columns.map(c => c.name.toLowerCase().trim()));
     const hasProjectName = colNames.has('project name') || colNames.has('projektname') || colNames.has('project') || colNames.has('projekt');
     const hasStartDate = [...colNames].some(c => c.includes('start'));
     const hasEndDate = [...colNames].some(c => c.includes('end') || c.includes('ende'));
@@ -690,8 +710,6 @@ function detectSheetEntity(
       return 'projects';
     }
 
-    // Also check for portfolio-style sheets
-    const sheetLower = sheet.sheetName.toLowerCase();
     if (sheetLower.includes('project') || sheetLower.includes('portfolio') || sheetLower.includes('projekt')) {
       console.log(`[mappingEngine] Sheet "${sheet.sheetName}" reclassified: ${suggested} → projects (sheet name indicates projects)`);
       return 'projects';

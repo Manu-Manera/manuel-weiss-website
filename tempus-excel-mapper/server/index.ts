@@ -333,6 +333,7 @@ app.post('/api/sessions/:id/sync-tempus', asyncRoute(async (req, res) => {
     advancedRates: tempusData.advancedRates.length,
     financials: tempusData.financials.length,
     teamResources: tempusData.teamResources.length,
+    milestones: tempusData.milestones.length,
     calendars: tempusData.calendars.length,
   };
   console.log('[sync-tempus]', session.id, JSON.stringify(summary));

@@ -186,6 +186,7 @@ export default function AnalysisView() {
               ['roles', 'Roles'],
               ['skills', 'Skills'],
               ['adminTimes', 'Admin Times'],
+              ['milestones', 'Milestones'],
               ['calendars', 'Calendars'],
             ] as const).map(([key, label]) => (
               <div key={key} className="bg-green-50 rounded-lg p-3 text-center">

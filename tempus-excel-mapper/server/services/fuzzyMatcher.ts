@@ -115,6 +115,7 @@ export class FuzzyMatcher {
       addEntry(r.id, r.name, 'roles');
       this.stats.roles.add(r.name);
     }
+    for (const m of tempusData.milestones) addEntry(m.id, m.name, 'milestones');
 
     this.stats.totalEntries = this.entries.length;
     this.stats.projectCount = tempusData.projects.length;

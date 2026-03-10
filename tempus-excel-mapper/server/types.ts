@@ -42,6 +42,7 @@ export interface TempusCustomField {
 
 export interface TempusAssignment {
   id: number;
+  projectId: number;
   taskId: number;
   resourceId: number;
   plannedAllocations?: Array<{ month: string; value: number }>;
@@ -102,6 +103,16 @@ export interface TempusTeamResource {
   allocationPercentage?: number;
 }
 
+export interface TempusMilestone {
+  id: number;
+  projectId: number;
+  name: string;
+  description?: string;
+  date?: string;
+  color?: string;
+  shape?: string;
+}
+
 export interface TempusData {
   projects: TempusProject[];
   resources: TempusResource[];
@@ -115,6 +126,7 @@ export interface TempusData {
   advancedRates: TempusAdvancedRate[];
   financials: TempusFinancial[];
   teamResources: TempusTeamResource[];
+  milestones: TempusMilestone[];
   calendars: Array<{ id: number; name: string }>;
   fetchedAt: number;
 }

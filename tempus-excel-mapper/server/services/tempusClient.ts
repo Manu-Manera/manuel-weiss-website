@@ -1,7 +1,7 @@
 import type {
   TempusData, TempusProject, TempusResource, TempusTask, TempusCustomField,
   TempusAssignment, TempusSkill, TempusAdminTime, TempusSheetData,
-  TempusAdvancedRate, TempusFinancial, TempusTeamResource,
+  TempusAdvancedRate, TempusFinancial, TempusTeamResource, TempusMilestone,
 } from '../types.js';
 
 interface PaginatedResponse<T> {
@@ -132,6 +132,11 @@ export class TempusClient {
     try { return await this.fetchAll<TempusTeamResource>('/TeamResources'); } catch { return []; }
   }
 
+  async getMilestones(projectIds?: number[]): Promise<TempusMilestone[]> {
+    const query = projectIds?.length ? `?projectIds=${projectIds.join(',')}` : '';
+    try { return await this.fetchAll<TempusMilestone>(`/Milestones${query}`); } catch { return []; }
+  }
+
   // ── CREATE Endpoints ───────────────────────────────────────────────
 
   async createProjects(projects: unknown[]): Promise<unknown> {
@@ -182,6 +187,10 @@ export class TempusClient {
     return this.request('POST', '/TeamResources', teamResources);
   }
 
+  async createMilestones(milestones: unknown[]): Promise<unknown> {
+    return this.request('POST', '/Milestones', milestones);
+  }
+
   // ── Custom Field Values (separate endpoints per entity type) ───────
 
   async updateProjectCFValues(values: unknown[]): Promise<unknown> {
@@ -210,7 +219,7 @@ export class TempusClient {
     const [
       projects, resources, tasks, customFields, assignments,
       roles, skills, adminTimes, sheetData, advancedRates,
-      financials, teamResources, calendars,
+      financials, teamResources, milestones, calendars,
     ] = await Promise.allSettled([
       this.getProjects(),
       this.getResources(),
@@ -224,6 +233,7 @@ export class TempusClient {
       this.getAdvancedRates(),
       this.getFinancials(),
       this.getTeamResources(),
+      this.getMilestones(),
       this.getCalendars(),
     ]);
 
@@ -243,6 +253,7 @@ export class TempusClient {
       advancedRates: unwrap(advancedRates),
       financials: unwrap(financials),
       teamResources: unwrap(teamResources),
+      milestones: unwrap(milestones),
       calendars: unwrap(calendars),
       fetchedAt: Date.now(),
     };

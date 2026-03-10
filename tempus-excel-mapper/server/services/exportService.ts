@@ -61,9 +61,15 @@ export const TEMPUS_TEMPLATES = {
     sheetName: 'Financials',
     headers: ['Project', 'Category', 'Type', 'Time Period', 'Import Behavior', 'Project Cost', 'Row Id', 'Priority'],
   },
+  milestones: {
+    key: 'milestones',
+    label: '10. Milestones',
+    sheetName: 'Milestones',
+    headers: ['Project', 'Project API External Id', 'Milestone Name', 'Date', 'Description', 'Color', 'Shape', 'Import Behavior'],
+  },
   teamResources: {
     key: 'teamResources',
-    label: '10. Team Resources',
+    label: '11. Team Resources',
     sheetName: 'Team Resource Members',
     headers: ['Resource Name', 'Aggregation Unit', 'Team Member'],
   },
@@ -238,7 +244,7 @@ export async function generateTempusExcel(
 
     const headers = [...template.headers];
     const customFieldCols: string[] = [];
-    if (templateKey === 'projects' || templateKey === 'resources' || templateKey === 'assignments' || templateKey === 'financials') {
+    if (templateKey === 'projects' || templateKey === 'resources' || templateKey === 'assignments' || templateKey === 'financials' || templateKey === 'milestones') {
       for (const fm of entityMappings) {
         if (fm.targetField.startsWith('cf:')) {
           const cfName = fm.targetField.slice(3);
@@ -468,6 +474,15 @@ function tempusFieldToHeader(field: string, entity: string): string {
       budget: 'Project Cost',
       type: 'Type',
       category: 'Category',
+      importBehavior: 'Import Behavior',
+    },
+    milestones: {
+      name: 'Milestone Name',
+      projectName: 'Project',
+      date: 'Date',
+      description: 'Description',
+      color: 'Color',
+      shape: 'Shape',
       importBehavior: 'Import Behavior',
     },
     teamResources: {

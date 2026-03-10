@@ -6,23 +6,26 @@ import { TempusClient } from './tempusClient.js';
 import { logAudit } from './auditLog.js';
 
 const IMPORT_STEPS = [
-  { entity: 'customFields',      label: '1. Attributes (Custom Fields)' },
-  { entity: 'resyncCFs',         label: '   → Custom Fields synchronisieren' },
-  { entity: 'resources',         label: '2. Resources' },
-  { entity: 'resyncResources',   label: '   → Resources synchronisieren' },
-  { entity: 'projects',          label: '3. Projects' },
-  { entity: 'resyncProjects',    label: '   → Projects synchronisieren' },
-  { entity: 'projectCFValues',   label: '4. Project Custom Field Werte' },
-  { entity: 'resourceCFValues',  label: '5. Resource Custom Field Werte' },
-  { entity: 'assignments',       label: '6. Assignments' },
-  { entity: 'assignmentCFValues', label: '7. Assignment Custom Field Werte' },
-  { entity: 'adminTimes',        label: '8. Admin Times' },
-  { entity: 'skills',            label: '9. Skills' },
-  { entity: 'sheetData',         label: '10. Sheet Data' },
-  { entity: 'advancedRates',     label: '11. Resource Rates' },
-  { entity: 'financials',        label: '12. Financials' },
-  { entity: 'financialCFValues', label: '13. Financial Custom Field Werte' },
-  { entity: 'teamResources',     label: '14. Team Resource Members' },
+  { entity: 'customFields',       label: '1. Attributes (Custom Fields)' },
+  { entity: 'resyncCFs',          label: '   → Custom Fields synchronisieren' },
+  { entity: 'resources',          label: '2. Resources' },
+  { entity: 'resyncResources',    label: '   → Resources synchronisieren' },
+  { entity: 'projects',           label: '3. Projects' },
+  { entity: 'resyncProjects',     label: '   → Projects synchronisieren' },
+  { entity: 'projectCFValues',    label: '4. Project Custom Field Werte' },
+  { entity: 'resourceCFValues',   label: '5. Resource Custom Field Werte' },
+  { entity: 'milestones',         label: '6. Milestones' },
+  { entity: 'resyncMilestones',   label: '   → Milestones synchronisieren' },
+  { entity: 'milestoneCFValues',  label: '7. Milestone Custom Field Werte' },
+  { entity: 'assignments',        label: '8. Assignments' },
+  { entity: 'assignmentCFValues', label: '9. Assignment Custom Field Werte' },
+  { entity: 'adminTimes',         label: '10. Admin Times' },
+  { entity: 'skills',             label: '11. Skills' },
+  { entity: 'sheetData',          label: '12. Sheet Data' },
+  { entity: 'advancedRates',      label: '13. Resource Rates' },
+  { entity: 'financials',         label: '14. Financials' },
+  { entity: 'financialCFValues',  label: '15. Financial Custom Field Werte' },
+  { entity: 'teamResources',      label: '16. Team Resource Members' },
 ];
 
 export interface ImportResult {
@@ -360,7 +363,159 @@ async function importStep(
       return payloads.length;
     }
 
-    // ── 6. Assignments ────────────────────────────────────────────────
+    // ── 6. Milestones ───────────────────────────────────────────────
+    case 'milestones': {
+      const milestoneFieldMappings = confirmedFieldMappings.filter(fm => fm.targetEntity === 'milestones');
+      if (milestoneFieldMappings.length === 0) return 0;
+
+      const nameMapping = milestoneFieldMappings.find(
+        fm => fm.targetField === 'name'
+      );
+      const projMapping = milestoneFieldMappings.find(
+        fm => fm.targetField === 'projectName' || fm.targetField === 'project'
+      );
+      const dateMapping = milestoneFieldMappings.find(
+        fm => fm.targetField === 'date'
+      );
+      const descMapping = milestoneFieldMappings.find(
+        fm => fm.targetField === 'description'
+      );
+      const colorMapping = milestoneFieldMappings.find(
+        fm => fm.targetField === 'color'
+      );
+      const shapeMapping = milestoneFieldMappings.find(
+        fm => fm.targetField === 'shape'
+      );
+
+      if (!nameMapping) return 0;
+
+      const sheet = parsedExcel.sheets.find(s => s.name === nameMapping.sourceSheet);
+      if (!sheet) return 0;
+
+      const items: Array<Record<string, unknown>> = [];
+      const seen = new Set<string>();
+
+      for (const row of sheet.rows) {
+        const msName = String(row[nameMapping.sourceColumn] ?? '').trim();
+        if (!msName) continue;
+
+        let projectId: number | undefined;
+        if (projMapping) {
+          const projName = resolveEntityName(String(row[projMapping.sourceColumn] ?? '').trim(), mappingResult);
+          const project = tempusData.projects.find(p => p.name.toLowerCase() === projName.toLowerCase());
+          projectId = project?.id;
+        }
+        if (!projectId && tempusData.projects.length > 0) {
+          projectId = tempusData.projects[0].id;
+        }
+        if (!projectId) continue;
+
+        const key = `${projectId}:${msName}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+
+        const existing = tempusData.milestones.find(
+          m => m.projectId === projectId && m.name.toLowerCase() === msName.toLowerCase()
+        );
+        if (existing) continue;
+
+        const item: Record<string, unknown> = {
+          projectId,
+          name: msName,
+          description: descMapping ? String(row[descMapping.sourceColumn] ?? '') || null : null,
+        };
+
+        if (dateMapping) {
+          const rawDate = row[dateMapping.sourceColumn];
+          if (rawDate) {
+            const d = new Date(rawDate as string | number);
+            if (!isNaN(d.getTime())) item.date = d.toISOString();
+          }
+        }
+        if (colorMapping) {
+          const color = String(row[colorMapping.sourceColumn] ?? '').trim();
+          if (color) item.color = color;
+        }
+        if (shapeMapping) {
+          const shape = String(row[shapeMapping.sourceColumn] ?? '').trim();
+          if (shape) item.shape = shape;
+        }
+
+        items.push(item);
+      }
+
+      if (items.length === 0) return 0;
+      console.log(`[importService] Milestones: creating ${items.length}`, JSON.stringify(items[0]));
+      await client.createMilestones(items);
+      return items.length;
+    }
+
+    case 'resyncMilestones': {
+      const ms = await client.getMilestones();
+      tempusData.milestones = ms;
+      console.log(`[importService] Re-synced Milestones: ${ms.length}`);
+      return 0;
+    }
+
+    // ── 7. Milestone CF Values ─────────────────────────────────────────
+    case 'milestoneCFValues': {
+      const cfFieldMappings = mappingResult.fieldMappings.filter(
+        fm => fm.targetField.startsWith('cf:') && fm.targetEntity === 'milestones' && fm.status !== 'rejected'
+      );
+      if (cfFieldMappings.length === 0 || tempusData.milestones.length === 0) return 0;
+
+      const payloads: BulkCustomFieldValue[] = [];
+      for (const cfm of cfFieldMappings) {
+        const cfName = cfm.targetField.slice(3);
+        const cfDef = tempusData.customFields.find(
+          cf => cf.name.toLowerCase() === cfName.toLowerCase()
+            && cf.entityType.toLowerCase() === 'milestone'
+        );
+        if (!cfDef) continue;
+
+        const sheet = parsedExcel.sheets.find(s => s.name === cfm.sourceSheet);
+        if (!sheet) continue;
+
+        const msNameMapping = mappingResult.fieldMappings.find(
+          fm => fm.sourceSheet === cfm.sourceSheet && fm.targetEntity === 'milestones'
+            && (fm.targetField === 'name')
+        );
+        if (!msNameMapping) continue;
+
+        const valueToIds = new Map<string, Set<number>>();
+
+        for (const row of sheet.rows) {
+          const msName = String(row[msNameMapping.sourceColumn] ?? '').trim();
+          if (!msName) continue;
+
+          const milestone = tempusData.milestones.find(m => m.name.toLowerCase() === msName.toLowerCase());
+          if (!milestone) continue;
+
+          const cfValue = row[cfm.sourceColumn];
+          if (cfValue == null || cfValue === '') continue;
+
+          const valueStr = String(cfValue).trim();
+          if (!valueToIds.has(valueStr)) valueToIds.set(valueStr, new Set());
+          valueToIds.get(valueStr)!.add(milestone.id);
+        }
+
+        for (const [value, idSet] of valueToIds) {
+          payloads.push({
+            value,
+            customFieldId: cfDef.id,
+            entityIds: [...idSet],
+            assignmentIds: null,
+          });
+        }
+      }
+
+      if (payloads.length === 0) return 0;
+      console.log(`[importService] Milestone CF Values: ${payloads.length} value-groups`);
+      await client.updateMilestoneCFValues(payloads);
+      return payloads.length;
+    }
+
+    // ── 8. Assignments ────────────────────────────────────────────────
     case 'assignments': {
       const assignmentFieldMappings = confirmedFieldMappings.filter(fm => fm.targetEntity === 'assignments');
       if (assignmentFieldMappings.length === 0) return 0;
