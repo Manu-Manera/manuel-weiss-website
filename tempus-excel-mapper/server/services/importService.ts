@@ -362,12 +362,127 @@ async function importStep(
 
     // ── 6. Assignments ────────────────────────────────────────────────
     case 'assignments': {
-      return 0;
+      const assignmentFieldMappings = confirmedFieldMappings.filter(fm => fm.targetEntity === 'assignments');
+      if (assignmentFieldMappings.length === 0) return 0;
+
+      const projectMapping = assignmentFieldMappings.find(
+        fm => fm.targetField === 'project' || fm.targetField === 'projectName'
+      );
+      const resourceMapping = assignmentFieldMappings.find(
+        fm => fm.targetField === 'resource' || fm.targetField === 'resourceName'
+      );
+      if (!projectMapping || !resourceMapping) return 0;
+
+      const sheet = parsedExcel.sheets.find(s => s.name === projectMapping.sourceSheet);
+      if (!sheet) return 0;
+
+      const seen = new Set<string>();
+      const items: Array<Record<string, unknown>> = [];
+
+      for (const row of sheet.rows) {
+        const projName = resolveEntityName(String(row[projectMapping.sourceColumn] ?? '').trim(), mappingResult);
+        const resName = resolveEntityName(String(row[resourceMapping.sourceColumn] ?? '').trim(), mappingResult);
+        if (!projName || !resName) continue;
+
+        const project = tempusData.projects.find(p => p.name.toLowerCase() === projName.toLowerCase());
+        const resource = tempusData.resources.find(r => r.name.toLowerCase() === resName.toLowerCase());
+        if (!project || !resource) continue;
+
+        const key = `${project.id}:${resource.id}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+
+        const existingAssignment = tempusData.assignments.find(
+          a => a.projectId === project.id && a.resourceId === resource.id
+        );
+        if (existingAssignment) continue;
+
+        items.push({
+          projectId: project.id,
+          resourceId: resource.id,
+          importBehavior: 'Merge',
+        });
+      }
+
+      if (items.length === 0) return 0;
+      console.log(`[importService] Assignments: creating ${items.length}`, JSON.stringify(items[0]));
+      await client.createAssignments(items);
+
+      const updatedAssignments = await client.getAssignments();
+      tempusData.assignments = updatedAssignments;
+      console.log(`[importService] Re-synced Assignments after creation: ${updatedAssignments.length}`);
+
+      return items.length;
     }
 
     // ── 7. Assignment CF Values ───────────────────────────────────────
     case 'assignmentCFValues': {
-      return 0;
+      const cfFieldMappings = mappingResult.fieldMappings.filter(
+        fm => fm.targetField.startsWith('cf:') && fm.targetEntity === 'assignments' && fm.status !== 'rejected'
+      );
+      if (cfFieldMappings.length === 0 || tempusData.assignments.length === 0) return 0;
+
+      const payloads: BulkCustomFieldValue[] = [];
+      for (const cfm of cfFieldMappings) {
+        const cfName = cfm.targetField.slice(3);
+        const cfDef = tempusData.customFields.find(
+          cf => cf.name.toLowerCase() === cfName.toLowerCase()
+            && cf.entityType.toLowerCase() === 'assignment'
+        );
+        if (!cfDef) continue;
+
+        const sheet = parsedExcel.sheets.find(s => s.name === cfm.sourceSheet);
+        if (!sheet) continue;
+
+        const projectMapping = mappingResult.fieldMappings.find(
+          fm => fm.sourceSheet === cfm.sourceSheet && fm.targetEntity === 'assignments'
+            && (fm.targetField === 'project' || fm.targetField === 'projectName')
+        );
+        const resourceMapping = mappingResult.fieldMappings.find(
+          fm => fm.sourceSheet === cfm.sourceSheet && fm.targetEntity === 'assignments'
+            && (fm.targetField === 'resource' || fm.targetField === 'resourceName')
+        );
+        if (!projectMapping || !resourceMapping) continue;
+
+        const valueToAssignmentIds = new Map<string, Array<{ assignmentId: number }>>();
+
+        for (const row of sheet.rows) {
+          const projName = resolveEntityName(String(row[projectMapping.sourceColumn] ?? '').trim(), mappingResult);
+          const resName = resolveEntityName(String(row[resourceMapping.sourceColumn] ?? '').trim(), mappingResult);
+          const cfValue = row[cfm.sourceColumn];
+          if (!projName || !resName || cfValue == null || cfValue === '') continue;
+
+          const project = tempusData.projects.find(p => p.name.toLowerCase() === projName.toLowerCase());
+          const resource = tempusData.resources.find(r => r.name.toLowerCase() === resName.toLowerCase());
+          if (!project || !resource) continue;
+
+          const assignment = tempusData.assignments.find(
+            a => a.projectId === project.id && a.resourceId === resource.id
+          );
+          if (!assignment) continue;
+
+          const valueStr = String(cfValue).trim();
+          if (!valueToAssignmentIds.has(valueStr)) valueToAssignmentIds.set(valueStr, []);
+          const existing = valueToAssignmentIds.get(valueStr)!;
+          if (!existing.some(a => a.assignmentId === assignment.id)) {
+            existing.push({ assignmentId: assignment.id });
+          }
+        }
+
+        for (const [value, aids] of valueToAssignmentIds) {
+          payloads.push({
+            value,
+            customFieldId: cfDef.id,
+            entityIds: null,
+            assignmentIds: aids,
+          });
+        }
+      }
+
+      if (payloads.length === 0) return 0;
+      console.log(`[importService] Assignment CF Values: ${payloads.length} value-groups`);
+      await client.updateAssignmentCFValues(payloads);
+      return payloads.length;
     }
 
     // ── 8. Admin Times ────────────────────────────────────────────────
@@ -404,7 +519,63 @@ async function importStep(
 
     // ── 13. Financial CF Values ───────────────────────────────────────
     case 'financialCFValues': {
-      return 0;
+      const cfFieldMappings = mappingResult.fieldMappings.filter(
+        fm => fm.targetField.startsWith('cf:') && fm.targetEntity === 'financials' && fm.status !== 'rejected'
+      );
+      if (cfFieldMappings.length === 0) return 0;
+
+      const payloads: BulkCustomFieldValue[] = [];
+      for (const cfm of cfFieldMappings) {
+        const cfName = cfm.targetField.slice(3);
+        const cfDef = tempusData.customFields.find(
+          cf => cf.name.toLowerCase() === cfName.toLowerCase()
+            && cf.entityType.toLowerCase() === 'financialrow'
+        );
+        if (!cfDef) continue;
+
+        const sheet = parsedExcel.sheets.find(s => s.name === cfm.sourceSheet);
+        if (!sheet) continue;
+
+        const projMapping = mappingResult.fieldMappings.find(
+          fm => fm.sourceSheet === cfm.sourceSheet && fm.targetEntity === 'financials'
+            && (fm.targetField === 'project' || fm.targetField === 'projectName')
+        );
+
+        const valueToEntityIds = new Map<string, number[]>();
+
+        for (const row of sheet.rows) {
+          const cfValue = row[cfm.sourceColumn];
+          if (cfValue == null || cfValue === '') continue;
+          const valueStr = String(cfValue).trim();
+
+          let entityId: number | undefined;
+          if (projMapping) {
+            const projName = resolveEntityName(String(row[projMapping.sourceColumn] ?? '').trim(), mappingResult);
+            const project = projName ? tempusData.projects.find(p => p.name.toLowerCase() === projName.toLowerCase()) : undefined;
+            entityId = project?.id;
+          }
+
+          if (!entityId) continue;
+
+          if (!valueToEntityIds.has(valueStr)) valueToEntityIds.set(valueStr, []);
+          const existing = valueToEntityIds.get(valueStr)!;
+          if (!existing.includes(entityId)) existing.push(entityId);
+        }
+
+        for (const [value, ids] of valueToEntityIds) {
+          payloads.push({
+            value,
+            customFieldId: cfDef.id,
+            entityIds: ids,
+            assignmentIds: null,
+          });
+        }
+      }
+
+      if (payloads.length === 0) return 0;
+      console.log(`[importService] Financial CF Values: ${payloads.length} value-groups`);
+      await client.updateFinancialCFValues(payloads);
+      return payloads.length;
     }
 
     default:

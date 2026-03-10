@@ -206,9 +206,13 @@ export async function generateTempusExcel(
   workbook.creator = 'Tempus Excel Mapper';
   workbook.created = new Date();
 
-  const selectedTemplates = templates && templates.length > 0
+  let selectedTemplates = templates && templates.length > 0
     ? templates
     : Object.keys(TEMPUS_TEMPLATES);
+
+  if (!selectedTemplates.includes('attributes') && mappingResult.customFieldMappings.length > 0) {
+    selectedTemplates = ['attributes', ...selectedTemplates];
+  }
 
   const confirmedFieldMappings = mappingResult.fieldMappings.filter(
     fm => fm.status === 'confirmed' || fm.status === 'suggested'
@@ -234,7 +238,7 @@ export async function generateTempusExcel(
 
     const headers = [...template.headers];
     const customFieldCols: string[] = [];
-    if (templateKey === 'projects' || templateKey === 'resources') {
+    if (templateKey === 'projects' || templateKey === 'resources' || templateKey === 'assignments' || templateKey === 'financials') {
       for (const fm of entityMappings) {
         if (fm.targetField.startsWith('cf:')) {
           const cfName = fm.targetField.slice(3);
@@ -251,32 +255,26 @@ export async function generateTempusExcel(
     headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4472C4' } };
 
     if (templateKey === 'attributes') {
-      const cfMappings = mappingResult.customFieldMappings.filter(cf => cf.action === 'create');
-      for (const cf of cfMappings) {
+      const allCFMappings = [
+        ...mappingResult.customFieldMappings.filter(cf => cf.action === 'create'),
+        ...mappingResult.customFieldMappings.filter(cf => cf.action === 'exists'),
+      ];
+      for (const cf of allCFMappings) {
+        const tempusType = mapToTempusDataType(cf.dataType);
+        const isSelection = /selection|enum|flags/i.test(cf.dataType) || /Selection|Enum|Flags/.test(tempusType);
+        const selectionValues = isSelection && cf.uniqueValues
+          ? cf.uniqueValues.join(', ')
+          : '';
         ws.addRow([
-          cf.entityType,
+          capitalizeEntityTypeForExport(cf.entityType),
           cf.customFieldName,
-          mapToTempusDataType(cf.dataType),
+          tempusType,
           'Merge',
           'false',
           'false',
           '',
-          '',
-          '',
-        ]);
-      }
-      const existingCFs = mappingResult.customFieldMappings.filter(cf => cf.action === 'exists');
-      for (const cf of existingCFs) {
-        ws.addRow([
-          cf.entityType,
-          cf.customFieldName,
-          mapToTempusDataType(cf.dataType),
-          'Merge',
+          selectionValues,
           'false',
-          'false',
-          '',
-          '',
-          '',
         ]);
       }
     } else {
@@ -484,6 +482,16 @@ function tempusFieldToHeader(field: string, entity: string): string {
     },
   };
   return fieldMap[entity]?.[field] || formatFieldName(field);
+}
+
+function capitalizeEntityTypeForExport(et: string): string {
+  const map: Record<string, string> = {
+    project: 'Project', resource: 'Resource', assignment: 'Assignment',
+    milestone: 'Milestone', financialrow: 'FinancialRow', task: 'Task',
+    Project: 'Project', Resource: 'Resource', Assignment: 'Assignment',
+    Milestone: 'Milestone', FinancialRow: 'FinancialRow', Task: 'Task',
+  };
+  return map[et] || et;
 }
 
 function mapToTempusDataType(dt: string): string {
