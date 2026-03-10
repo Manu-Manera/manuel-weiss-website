@@ -45,9 +45,10 @@ export async function testAnthropic() {
 
 // ── Upload ───────────────────────────────────────────────────────────
 
-export async function uploadExcel(file: File) {
+export async function uploadExcel(file: File, consentSessionId = 'pre-session') {
   const formData = new FormData();
   formData.append('file', file);
+  formData.append('consentSessionId', consentSessionId);
 
   const res = await fetch(`${BASE}/upload`, { method: 'POST', body: formData });
   const data = await res.json();

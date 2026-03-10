@@ -295,6 +295,8 @@ app.post('/api/upload', uploadLimiter, upload.single('file'), asyncRoute(async (
   // AI-enhanced analysis – nur mit Consent und anonymisierten Daten
   const consent = sessionConsent.get(req.body?.consentSessionId || sessionId);
   const aiConsented = consent?.aiProcessing ?? false;
+  // Consent auch unter neuer Session-ID speichern (für generate-mappings)
+  if (consent) sessionConsent.set(sessionId, consent);
 
   if (config.anthropicApiKey && aiConsented) {
     try {
