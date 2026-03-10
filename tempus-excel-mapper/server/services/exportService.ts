@@ -153,8 +153,21 @@ export async function generateTempusExcel(
     byEntity.get(fm.targetEntity)!.push(fm);
   }
 
-  // Generate one sheet per target entity
-  for (const [entity, mappings] of byEntity) {
+  // Fixed Tempus import order
+  const ENTITY_ORDER = [
+    'customFields', 'resources', 'projects', 'assignments',
+    'adminTimes', 'skills', 'tasks', 'sheetData',
+    'advancedRates', 'financials', 'teamResources',
+  ];
+
+  const orderedEntities = [
+    ...ENTITY_ORDER.filter(e => byEntity.has(e)),
+    ...[...byEntity.keys()].filter(e => !ENTITY_ORDER.includes(e)),
+  ];
+
+  for (const entity of orderedEntities) {
+    const mappings = byEntity.get(entity);
+    if (!mappings) continue;
     const ws = workbook.addWorksheet(entityToSheetName(entity));
     const targetColumns = mappings.map(m => m.targetField);
 
@@ -225,12 +238,17 @@ export async function generateTempusExcel(
 
 function entityToSheetName(entity: string): string {
   const map: Record<string, string> = {
-    projects: 'Projects',
-    resources: 'Resources',
-    tasks: 'Tasks',
-    assignments: 'Allocation',
-    customFields: 'Attributes',
-    skills: 'Skills',
+    customFields: '1. Attributes',
+    resources: '2. Resources',
+    projects: '3. Projects',
+    assignments: '4. Assignments',
+    adminTimes: '5. Admin Time',
+    skills: '6. Skills',
+    tasks: '7. Tasks',
+    sheetData: '7. Sheet Data',
+    advancedRates: '8. Advanced Rates',
+    financials: '9. Financials',
+    teamResources: '10. Team Resource',
   };
   return map[entity] || entity;
 }

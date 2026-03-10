@@ -259,8 +259,8 @@ export async function generateMappings(
     }
   }
 
-  // Step 3: AI-enhanced mapping for ALL remaining unmapped columns
-  if (anthropicClient && unmappedColumns.length > 0) {
+  // Step 3: AI-enhanced mapping — primary analysis source (runs for all columns)
+  if (anthropicClient) {
     try {
       const sheetsForAI = analysis.sheets.map(s => {
         const parsedSheet = parsed.sheets.find(ps => ps.name === s.sheetName);

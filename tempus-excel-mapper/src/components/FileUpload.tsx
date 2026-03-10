@@ -36,7 +36,6 @@ export default function FileUpload() {
       const result = await api.uploadExcel(selectedFile);
       store.setSessionId(result.sessionId);
       store.setAnalysis(result.analysis as any);
-      if (result.tempusSyncSummary) store.setTempusSyncSummary(result.tempusSyncSummary as any);
       store.setStep(2);
     } catch (err: unknown) {
       store.setError(err instanceof Error ? err.message : 'Upload fehlgeschlagen');

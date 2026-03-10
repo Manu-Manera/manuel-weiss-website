@@ -63,17 +63,24 @@ export async function syncTempus(sessionId: string) {
   const res = await fetch(`${BASE}/sessions/${sessionId}/sync-tempus`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    signal: AbortSignal.timeout(180_000),
+    signal: AbortSignal.timeout(60_000),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data?.error || `Request failed: ${res.status}`);
-  return data as { ok: boolean; summary: unknown; tempusData: unknown; analysis?: unknown };
+  return data as { ok: boolean; summary: unknown; tempusData: unknown };
 }
 
 // ── Mappings ─────────────────────────────────────────────────────────
 
 export async function generateMappings(sessionId: string) {
-  return request<unknown>('POST', `/sessions/${sessionId}/generate-mappings`);
+  const res = await fetch(`${BASE}/sessions/${sessionId}/generate-mappings`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    signal: AbortSignal.timeout(180_000),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data?.error || `Request failed: ${res.status}`);
+  return data;
 }
 
 export async function getMappings(sessionId: string) {
@@ -112,4 +119,15 @@ export function getDownloadUrl(sessionId: string) {
 
 export function getReportDownloadUrl(sessionId: string) {
   return `${BASE}/sessions/${sessionId}/download-report`;
+}
+
+export async function importToTempus(sessionId: string) {
+  const res = await fetch(`${BASE}/sessions/${sessionId}/import`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    signal: AbortSignal.timeout(300_000),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data?.error || `Import failed: ${res.status}`);
+  return data;
 }

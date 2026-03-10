@@ -21,13 +21,8 @@ export default function AnalysisView() {
     setSyncStatus('Tempus-Daten werden geladen…');
     store.setError(null);
     try {
-      const timer = setTimeout(() => setSyncStatus('Tempus-Daten werden geladen und AI-Analyse läuft… (kann bis zu 3 Minuten dauern)'), 5000);
       const result = await api.syncTempus(sessionId);
-      clearTimeout(timer);
       store.setTempusSyncSummary(result.summary as any);
-      if (result.analysis) {
-        store.setAnalysis(result.analysis as any);
-      }
       setSyncStatus('');
     } catch (err: unknown) {
       store.setError(err instanceof Error ? err.message : 'Tempus-Sync fehlgeschlagen');
@@ -47,7 +42,7 @@ export default function AnalysisView() {
       store.setMappingResult(result as any);
       store.setStep(3);
     } catch (err: unknown) {
-      store.setError(err instanceof Error ? err.message : 'Mapping-Generierung fehlgeschlagen');
+      store.setError(err instanceof Error ? err.message : 'Analyse fehlgeschlagen');
     } finally {
       setGenerating(false);
       store.setLoading(false);
@@ -217,16 +212,26 @@ export default function AnalysisView() {
           <ArrowLeft className="w-4 h-4" /> Zurück
         </button>
 
-        <button
-          onClick={handleGenerateMappings}
-          disabled={!syncDone || generating}
-          className="px-6 py-2.5 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 disabled:opacity-50 flex items-center gap-2"
-        >
-          {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-          Mappings generieren
-          <ArrowRight className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={handleGenerateMappings}
+            disabled={!syncDone || generating}
+            className="px-6 py-2.5 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 disabled:opacity-50 flex items-center gap-2"
+          >
+            {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+            Analyse starten
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
       </div>
+      {generating && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center gap-3">
+          <Loader2 className="w-5 h-5 text-blue-600 animate-spin flex-shrink-0" />
+          <p className="text-sm text-blue-700">
+            AI analysiert Excel-Daten und vergleicht mit Tempus-Daten… (kann bis zu 3 Min. dauern)
+          </p>
+        </div>
+      )}
     </div>
   );
 }

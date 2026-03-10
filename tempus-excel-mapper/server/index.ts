@@ -16,6 +16,7 @@ import { generateMappings } from './services/mappingEngine.js';
 import { validateMappings, generateTempusExcel, generateReport } from './services/exportService.js';
 import { anonymizeSampleRows, anonymizeSampleValues, generatePiiReport } from './services/anonymizer.js';
 import { logAudit, getAuditLog, clearAuditLog } from './services/auditLog.js';
+import { importToTempus } from './services/importService.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -440,6 +441,29 @@ app.post('/api/sessions/:id/mappings/bulk-action', asyncRoute(async (req, res) =
 
   logAudit('bulk_mapping_action', session.id, { action, count });
   res.json({ ok: true, updatedCount: count });
+}));
+
+// ── IMPORT (Direct API) ─────────────────────────────────────────────
+
+app.post('/api/sessions/:id/import', asyncRoute(async (req, res) => {
+  const session = getSession(req.params.id);
+  if (!session.parsedExcel || !session.mappingResult || !session.tempusData) {
+    res.status(400).json({ error: 'Alle vorherigen Schritte müssen abgeschlossen sein' });
+    return;
+  }
+  if (!config.tempusBaseUrl || !config.tempusApiKey) {
+    res.status(400).json({ error: 'Tempus API nicht konfiguriert' });
+    return;
+  }
+
+  const client = new TempusClient(config.tempusBaseUrl, config.tempusApiKey);
+  logAudit('import_started', session.id, {});
+
+  const result = await importToTempus(session, client, (progress) => {
+    session.importProgress = progress;
+  });
+
+  res.json(result);
 }));
 
 // ── VALIDATION ───────────────────────────────────────────────────────
