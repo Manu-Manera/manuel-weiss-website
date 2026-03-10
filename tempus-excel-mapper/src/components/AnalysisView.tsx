@@ -40,6 +40,7 @@ export default function AnalysisView() {
     try {
       const result = await api.generateMappings(sessionId);
       store.setMappingResult(result as any);
+      if ((result as any).aiStatus) store.setAiStatus((result as any).aiStatus);
       store.setStep(3);
     } catch (err: unknown) {
       store.setError(err instanceof Error ? err.message : 'Analyse fehlgeschlagen');
@@ -172,11 +173,23 @@ export default function AnalysisView() {
         </h3>
 
         {syncDone && store.tempusSyncSummary ? (
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-4">
-            {Object.entries(store.tempusSyncSummary).map(([key, count]) => (
+          <div className="grid grid-cols-3 md:grid-cols-5 gap-3 mb-4">
+            {([
+              ['projects', 'Projects'],
+              ['resources', 'Resources'],
+              ['tasks', 'Tasks'],
+              ['customFields', 'Custom Fields'],
+              ['assignments', 'Assignments'],
+              ['roles', 'Roles'],
+              ['skills', 'Skills'],
+              ['adminTimes', 'Admin Times'],
+              ['calendars', 'Calendars'],
+            ] as const).map(([key, label]) => (
               <div key={key} className="bg-green-50 rounded-lg p-3 text-center">
-                <p className="text-2xl font-bold text-green-700">{count}</p>
-                <p className="text-xs text-green-600 capitalize">{key}</p>
+                <p className="text-2xl font-bold text-green-700">
+                  {(store.tempusSyncSummary as Record<string, number>)[key] ?? 0}
+                </p>
+                <p className="text-xs text-green-600">{label}</p>
               </div>
             ))}
           </div>

@@ -325,9 +325,17 @@ app.post('/api/sessions/:id/sync-tempus', asyncRoute(async (req, res) => {
     resources: tempusData.resources.length,
     tasks: tempusData.tasks.length,
     customFields: tempusData.customFields.length,
+    assignments: tempusData.assignments.length,
     roles: tempusData.roles.length,
     skills: tempusData.skills.length,
+    adminTimes: tempusData.adminTimes.length,
+    sheetData: tempusData.sheetData.length,
+    advancedRates: tempusData.advancedRates.length,
+    financials: tempusData.financials.length,
+    teamResources: tempusData.teamResources.length,
+    calendars: tempusData.calendars.length,
   };
+  console.log('[sync-tempus]', session.id, JSON.stringify(summary));
   logAudit('tempus_sync_completed', session.id, summary);
 
   res.json({ ok: true, summary, tempusData });
@@ -358,9 +366,12 @@ app.post('/api/sessions/:id/generate-mappings', asyncRoute(async (req, res) => {
 
   const consent = sessionConsent.get(session.id);
   const aiConsented = consent?.aiProcessing ?? false;
-  const anthropic = config.anthropicApiKey && aiConsented ? new AnthropicClient(config.anthropicApiKey) : undefined;
+  const hasApiKey = !!config.anthropicApiKey;
+  const anthropic = hasApiKey && aiConsented ? new AnthropicClient(config.anthropicApiKey) : undefined;
 
-  logAudit('mapping_started', session.id, { withAI: !!anthropic });
+  const aiStatus = !hasApiKey ? 'no_api_key' : !aiConsented ? 'no_consent' : 'active';
+  console.log(`[generate-mappings] session=${session.id} ai=${aiStatus} consent=${JSON.stringify(consent)}`);
+  logAudit('mapping_started', session.id, { withAI: !!anthropic, aiStatus });
 
   const mappingResult = await generateMappings(
     session.parsedExcel,
@@ -370,8 +381,9 @@ app.post('/api/sessions/:id/generate-mappings', asyncRoute(async (req, res) => {
   );
 
   session.mappingResult = mappingResult;
-  logAudit('mapping_completed', session.id, { ...mappingResult.summary });
-  res.json(mappingResult);
+  logAudit('mapping_completed', session.id, { ...mappingResult.summary, aiStatus });
+  console.log(`[generate-mappings] completed: fields=${mappingResult.summary.mappedFields} entities=${mappingResult.summary.totalEntities} conflicts=${mappingResult.summary.conflicts} ai=${aiStatus}`);
+  res.json({ ...mappingResult, aiStatus });
 }));
 
 app.put('/api/sessions/:id/mappings/:mappingId', asyncRoute(async (req, res) => {

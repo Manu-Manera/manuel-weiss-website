@@ -354,7 +354,8 @@ export async function generateMappings(
         }
       }
     } catch (err) {
-      console.error('AI mapping failed, continuing with rule-based results:', err);
+      console.error('[mappingEngine] AI mapping FAILED:', err instanceof Error ? err.message : err);
+      console.error('[mappingEngine] Falling back to rule-based results only');
     }
   }
 

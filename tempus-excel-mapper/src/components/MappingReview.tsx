@@ -151,12 +151,39 @@ export default function MappingReview() {
         </p>
       </div>
 
+      {/* AI Status */}
+      {store.aiStatus && store.aiStatus !== 'active' && (
+        <div className={`rounded-xl p-4 flex items-center gap-3 ${
+          store.aiStatus === 'no_api_key' ? 'bg-amber-50 border border-amber-200' :
+          store.aiStatus === 'no_consent' ? 'bg-amber-50 border border-amber-200' :
+          'bg-gray-50 border border-gray-200'
+        }`}>
+          <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0" />
+          <p className="text-sm text-amber-700">
+            {store.aiStatus === 'no_api_key'
+              ? 'AI-Analyse nicht verfügbar: Kein Anthropic API-Key konfiguriert. Nur regelbasiertes Matching aktiv.'
+              : store.aiStatus === 'no_consent'
+              ? 'AI-Analyse nicht aktiv: Keine Einwilligung für Drittland-Datenverarbeitung. Nur regelbasiertes Matching aktiv.'
+              : `AI-Status: ${store.aiStatus}`
+            }
+          </p>
+        </div>
+      )}
+      {store.aiStatus === 'active' && (
+        <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
+          <Sparkles className="w-5 h-5 text-green-600 flex-shrink-0" />
+          <p className="text-sm text-green-700">AI-Analyse aktiv: Alle Zuordnungen wurden mit KI-Unterstützung generiert.</p>
+        </div>
+      )}
+
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <SummaryCard label="Felder gemappt" value={mappingResult.summary.mappedFields} color="text-blue-600" />
         <SummaryCard label="Entitäten erkannt" value={mappingResult.summary.matchedEntities} color="text-green-600" />
-        <SummaryCard label="Neue Elemente" value={mappingResult.summary.newEntities} color="text-purple-600" />
-        <SummaryCard label="Konflikte" value={mappingResult.summary.conflicts} color="text-amber-600" />
+        <SummaryCard label="Neue Elemente" value={mappingResult.summary.newEntities} color="text-purple-600"
+          onClick={() => { setActiveTab('new'); setFilterStatus('all'); }} />
+        <SummaryCard label="Konflikte" value={mappingResult.summary.conflicts} color="text-amber-600"
+          onClick={() => { setFilterStatus('needs_review'); setActiveTab('fields'); }} />
         <SummaryCard label="Nicht zugeordnet" value={mappingResult.unmappedColumns.length} color="text-gray-500" />
       </div>
 
@@ -376,9 +403,12 @@ export default function MappingReview() {
   );
 }
 
-function SummaryCard({ label, value, color }: { label: string; value: number; color: string }) {
+function SummaryCard({ label, value, color, onClick }: { label: string; value: number; color: string; onClick?: () => void }) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 text-center">
+    <div
+      className={`bg-white rounded-lg border border-gray-200 p-4 text-center ${onClick ? 'cursor-pointer hover:border-gray-400 transition-colors' : ''}`}
+      onClick={onClick}
+    >
       <p className={`text-2xl font-bold ${color}`}>{value}</p>
       <p className="text-xs text-gray-500 mt-1">{label}</p>
     </div>

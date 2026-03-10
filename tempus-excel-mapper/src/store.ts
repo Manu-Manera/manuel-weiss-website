@@ -108,8 +108,15 @@ export interface TempusSyncSummary {
   resources: number;
   tasks: number;
   customFields: number;
+  assignments: number;
   roles: number;
   skills: number;
+  adminTimes: number;
+  sheetData: number;
+  advancedRates: number;
+  financials: number;
+  teamResources: number;
+  calendars: number;
 }
 
 interface AppState {
@@ -127,6 +134,7 @@ interface AppState {
   analysis: AnalysisResult | null;
   tempusSyncSummary: TempusSyncSummary | null;
   mappingResult: MappingResult | null;
+  aiStatus: string | null;
   validation: ValidationResult | null;
   exportReady: boolean;
 
@@ -142,6 +150,7 @@ interface AppState {
   setAnalysis: (a: AnalysisResult) => void;
   setTempusSyncSummary: (s: TempusSyncSummary) => void;
   setMappingResult: (m: MappingResult) => void;
+  setAiStatus: (s: string | null) => void;
   updateFieldMapping: (id: string, status: MappingStatus) => void;
   updateEntityMapping: (id: string, status: MappingStatus) => void;
   setValidation: (v: ValidationResult) => void;
@@ -161,6 +170,7 @@ const initialState = {
   analysis: null as AnalysisResult | null,
   tempusSyncSummary: null as TempusSyncSummary | null,
   mappingResult: null as MappingResult | null,
+  aiStatus: null as string | null,
   validation: null as ValidationResult | null,
   exportReady: false,
   loading: false,
@@ -177,6 +187,7 @@ export const useAppStore = create<AppState>((set) => ({
   setAnalysis: (a) => set({ analysis: a }),
   setTempusSyncSummary: (s) => set({ tempusSyncSummary: s }),
   setMappingResult: (m) => set({ mappingResult: m }),
+  setAiStatus: (s) => set({ aiStatus: s }),
 
   updateFieldMapping: (id, status) => set((s) => {
     if (!s.mappingResult) return s;
