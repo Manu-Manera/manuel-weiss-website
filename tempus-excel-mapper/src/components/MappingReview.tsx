@@ -170,22 +170,44 @@ export default function MappingReview() {
     );
   };
 
-  const ActionButtons = ({ id, status, isField }: { id: string; status: MappingStatus; isField: boolean }) => (
+  const handleCreateNewWithOriginalName = async (mappingId: string, originalName: string) => {
+    if (!sessionId) return;
+    try {
+      await api.updateMapping(sessionId, mappingId, {
+        status: 'create_new',
+        matchedName: originalName,
+      });
+      store.updateEntityMapping(mappingId, 'create_new');
+    } catch (err: unknown) {
+      store.setError(err instanceof Error ? err.message : 'Update fehlgeschlagen');
+    }
+  };
+
+  const ActionButtons = ({ id, status, isField, sourceValue }: { id: string; status: MappingStatus; isField: boolean; sourceValue?: string }) => (
     <div className="flex items-center gap-1">
       {status !== 'confirmed' && (
         <button
           onClick={() => handleUpdateMapping(id, 'confirmed', isField)}
           className="p-1 rounded hover:bg-green-100 text-green-600"
-          title="Bestätigen"
+          title="Match bestätigen: Existierender Tempus-Eintrag ist korrekt"
         >
           <Check className="w-4 h-4" />
+        </button>
+      )}
+      {!isField && sourceValue && status !== 'create_new' && (
+        <button
+          onClick={() => handleCreateNewWithOriginalName(id, sourceValue)}
+          className="p-1 rounded hover:bg-purple-100 text-purple-600"
+          title={`Als neue Entität anlegen: "${sourceValue}"`}
+        >
+          <PlusCircle className="w-4 h-4" />
         </button>
       )}
       {status !== 'rejected' && (
         <button
           onClick={() => handleUpdateMapping(id, 'rejected', isField)}
           className="p-1 rounded hover:bg-red-100 text-red-600"
-          title="Ablehnen"
+          title="Ablehnen: Dieses Mapping ignorieren"
         >
           <X className="w-4 h-4" />
         </button>
@@ -193,7 +215,7 @@ export default function MappingReview() {
       <button
         onClick={() => { setEditingReject(id); setRejectCustomValue(''); }}
         className="p-1 rounded hover:bg-blue-100 text-blue-600"
-        title="Eigenen Wert eingeben"
+        title="Anderen Namen eingeben (nur Name, keine ID nötig)"
       >
         <Edit3 className="w-4 h-4" />
       </button>
@@ -203,29 +225,34 @@ export default function MappingReview() {
   const InlineEditor = ({ id, isField }: { id: string; isField: boolean }) => {
     if (editingReject !== id) return null;
     return (
-      <div className="flex items-center gap-2 mt-2">
-        <input
-          type="text"
-          value={rejectCustomValue}
-          onChange={(e) => setRejectCustomValue(e.target.value)}
-          placeholder="Eigenen Wert eingeben…"
-          className="flex-1 text-sm border border-blue-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          autoFocus
-          onKeyDown={(e) => { if (e.key === 'Enter') handleRejectWithCustom(id, isField); if (e.key === 'Escape') setEditingReject(null); }}
-        />
-        <button
-          onClick={() => handleRejectWithCustom(id, isField)}
-          disabled={!rejectCustomValue.trim()}
-          className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50"
-        >
-          Übernehmen
-        </button>
-        <button
-          onClick={() => setEditingReject(null)}
-          className="px-2 py-1.5 text-gray-500 hover:text-gray-700 text-sm"
-        >
-          Abbrechen
-        </button>
+      <div className="mt-2 space-y-1">
+        <p className="text-xs text-gray-500">
+          {isField ? 'Neuen Feldnamen eingeben:' : 'Namen eingeben (wird als neue Entität angelegt, keine ID nötig):'}
+        </p>
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            value={rejectCustomValue}
+            onChange={(e) => setRejectCustomValue(e.target.value)}
+            placeholder={isField ? 'z.B. Project Name' : 'z.B. Project Manager Dir'}
+            className="flex-1 text-sm border border-blue-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            autoFocus
+            onKeyDown={(e) => { if (e.key === 'Enter') handleRejectWithCustom(id, isField); if (e.key === 'Escape') setEditingReject(null); }}
+          />
+          <button
+            onClick={() => handleRejectWithCustom(id, isField)}
+            disabled={!rejectCustomValue.trim()}
+            className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50"
+          >
+            Übernehmen
+          </button>
+          <button
+            onClick={() => setEditingReject(null)}
+            className="px-2 py-1.5 text-gray-500 hover:text-gray-700 text-sm"
+          >
+            Abbrechen
+          </button>
+        </div>
       </div>
     );
   };
@@ -440,7 +467,7 @@ export default function MappingReview() {
                   <td className="px-4 py-3"><ConfidenceBar value={em.confidence} /></td>
                   <td className="px-4 py-3"><StatusBadge status={em.status} /></td>
                   <td className="px-4 py-3 text-right" onClick={e => e.stopPropagation()}>
-                    <ActionButtons id={em.id} status={em.status} isField={false} />
+                    <ActionButtons id={em.id} status={em.status} isField={false} sourceValue={em.sourceValue} />
                   </td>
                 </tr>
               ))}
