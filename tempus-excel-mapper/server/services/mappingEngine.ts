@@ -267,21 +267,26 @@ export async function generateMappings(
         return {
           sheetName: s.sheetName,
           columns: s.columns,
-          sampleRows: (parsedSheet?.rows || []).slice(0, 5),
+          sampleRows: (parsedSheet?.rows || []).slice(0, 10),
         };
       });
 
       const aiResult = await anthropicClient.generateMappingSuggestions(sheetsForAI, {
-        projects: tempusData.projects.map(p => ({ id: p.id, name: p.name })),
-        resources: tempusData.resources.map(r => ({ id: r.id, name: r.name })),
+        projects: tempusData.projects.map(p => ({ id: p.id, name: p.name, startDate: p.startDate, endDate: p.endDate, externalId: p.externalId })),
+        resources: tempusData.resources.map(r => ({ id: r.id, name: r.name, externalId: r.externalId, isEnabled: r.isEnabled })),
         tasks: tempusData.tasks.map(t => ({ id: t.id, name: t.name, projectId: t.projectId })),
         customFields: tempusData.customFields.map(cf => ({
           id: cf.id, name: cf.name, entityType: cf.entityType,
           dataType: cf.dataType, enumMembers: cf.enumMembers?.map(e => ({ name: e.name })),
         })),
         roles: tempusData.roles.map(r => ({ id: r.id, name: r.name })),
-        skills: tempusData.skills.map(s => ({ id: s.id, name: s.name })),
+        skills: tempusData.skills.map(s => ({ id: s.id, name: s.name, category: (s as any).category })),
         adminTimes: tempusData.adminTimes.map(a => ({ id: a.id, name: a.name })),
+        assignments: tempusData.assignments.map(a => ({ id: a.id, taskId: a.taskId, resourceId: a.resourceId })),
+        sheetData: tempusData.sheetData.map(sd => ({ id: sd.id, projectName: sd.projectName, taskName: sd.taskName, resourceName: sd.resourceName })),
+        advancedRates: tempusData.advancedRates.map(ar => ({ id: ar.id, resourceName: ar.resourceName, projectName: ar.projectName, rate: ar.rate })),
+        financials: tempusData.financials.map(f => ({ id: f.id, projectName: f.projectName, category: f.category, type: f.type })),
+        teamResources: tempusData.teamResources.map(tr => ({ id: tr.id, teamName: tr.teamName, resourceName: tr.resourceName })),
       });
 
       // Merge AI field mapping suggestions
