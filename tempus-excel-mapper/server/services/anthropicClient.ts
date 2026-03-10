@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import type { SheetAnalysis, ColumnAnalysis } from '../types.js';
+import type { MatchCandidate, TempusSummary } from './fuzzyMatcher.js';
 
 const ALL_TEMPUS_ENTITIES = [
   'customFields', 'resources', 'projects', 'assignments',
@@ -119,6 +120,32 @@ const MAPPING_TOOL = {
   },
 };
 
+const DISAMBIGUATION_TOOL = {
+  name: 'resolve_ambiguous_matches' as const,
+  description: 'Resolve ambiguous entity matches by choosing the best candidate or marking as new',
+  input_schema: {
+    type: 'object' as const,
+    properties: {
+      resolutions: {
+        type: 'array' as const,
+        items: {
+          type: 'object' as const,
+          properties: {
+            idx: { type: 'number' as const },
+            resolvedName: { type: 'string' as const },
+            resolvedId: { type: 'number' as const },
+            confidence: { type: 'number' as const },
+            isNew: { type: 'boolean' as const },
+            reasoning: { type: 'string' as const },
+          },
+          required: ['idx', 'confidence', 'isNew', 'reasoning'],
+        },
+      },
+    },
+    required: ['resolutions'],
+  },
+};
+
 export class AnthropicClient {
   private client: Anthropic;
 
@@ -198,12 +225,23 @@ export class AnthropicClient {
     return toolBlock.input as ReturnType<AnthropicClient['analyzeStructure']> extends Promise<infer T> ? T : never;
   }
 
+  /**
+   * Tier 3: AI-based field mapping using SUMMARY stats instead of raw data.
+   * Scales to 20k+ resources because only counts + samples are sent.
+   */
   async generateMappingSuggestions(
     sourceSheets: Array<{ sheetName: string; columns: ColumnAnalysis[]; sampleRows: Record<string, unknown>[] }>,
     tempusSchema: TempusMappingSchema,
+    tempusSummary?: TempusSummary,
   ): Promise<MappingSuggestionsResult> {
+    const summary = tempusSummary;
+    const isLarge = summary?.hasLargeDataset ?? false;
+
+    const tempusDataSection = isLarge
+      ? this.buildLargeDatasetPrompt(tempusSchema, summary!)
+      : this.buildSmallDatasetPrompt(tempusSchema);
+
     const prompt = `Analysiere diese Excel-Daten und erstelle ein vollständiges Mapping für den Tempus-Import.
-Vergleiche JEDEN Wert mit den vorhandenen Tempus-Daten. Erkenne Custom Fields automatisch.
 targetField MUSS EXAKT einem Tempus-Template-Spaltennamen entsprechen (siehe System-Prompt).
 
 ═══ EXCEL-QUELLDATEN ═══
@@ -219,48 +257,15 @@ ${JSON.stringify(sourceSheets.map(s => ({
   sampleRows: s.sampleRows.slice(0, 10),
 })), null, 2)}
 
-═══ VORHANDENE TEMPUS-DATEN (zum Vergleich) ═══
-
-CUSTOM FIELDS / ATTRIBUTE (${tempusSchema.customFields.length} in Tempus vorhanden):
-${JSON.stringify(tempusSchema.customFields.map(cf => ({
-  id: cf.id, name: cf.name, entityType: cf.entityType, dataType: cf.dataType,
-  selectionValues: cf.enumMembers?.map(e => e.name),
-})), null, 2)}
-
-PROJECTS (${tempusSchema.projects.length} in Tempus vorhanden):
-${JSON.stringify(tempusSchema.projects.map(p => ({ id: p.id, name: p.name, startDate: p.startDate, endDate: p.endDate })), null, 2)}
-
-RESOURCES (${tempusSchema.resources.length} in Tempus vorhanden):
-${JSON.stringify(tempusSchema.resources.map(r => ({ id: r.id, name: r.name, isEnabled: r.isEnabled })), null, 2)}
-
-ROLES (${tempusSchema.roles.length}): ${JSON.stringify(tempusSchema.roles.map(r => ({ id: r.id, name: r.name })))}
-
-TASKS (${tempusSchema.tasks?.length ?? 0} in Tempus vorhanden):
-${JSON.stringify(tempusSchema.tasks?.map(t => ({ id: t.id, name: t.name, projectId: t.projectId })) || [])}
-
-SKILLS (${tempusSchema.skills?.length ?? 0}): ${JSON.stringify(tempusSchema.skills?.map(s => ({ id: s.id, name: s.name, category: s.category })) || [])}
-
-ADMIN TIMES (${tempusSchema.adminTimes?.length ?? 0}): ${JSON.stringify(tempusSchema.adminTimes?.map(a => ({ id: a.id, name: a.name })) || [])}
-
-ASSIGNMENTS (${tempusSchema.assignments?.length ?? 0} in Tempus vorhanden):
-${JSON.stringify((tempusSchema.assignments || []).slice(0, 100).map(a => ({ id: a.id, taskId: a.taskId, resourceId: a.resourceId })))}${(tempusSchema.assignments?.length ?? 0) > 100 ? `\n... und ${(tempusSchema.assignments?.length ?? 0) - 100} weitere` : ''}
-
-FINANCIALS (${tempusSchema.financials?.length ?? 0} in Tempus vorhanden):
-${JSON.stringify((tempusSchema.financials || []).slice(0, 50).map(f => ({ id: f.id, projectName: f.projectName, category: f.category, type: f.type })))}${(tempusSchema.financials?.length ?? 0) > 50 ? `\n... und ${(tempusSchema.financials?.length ?? 0) - 50} weitere` : ''}
-
-ADVANCED RATES (${tempusSchema.advancedRates?.length ?? 0}): ${JSON.stringify((tempusSchema.advancedRates || []).slice(0, 50).map(ar => ({ id: ar.id, resourceName: ar.resourceName, projectName: ar.projectName })))}
-
-TEAM RESOURCES (${tempusSchema.teamResources?.length ?? 0}): ${JSON.stringify((tempusSchema.teamResources || []).slice(0, 50).map(tr => ({ id: tr.id, teamName: tr.teamName, resourceName: tr.resourceName })))}
-
-SHEET DATA (${tempusSchema.sheetData?.length ?? 0}): ${(tempusSchema.sheetData?.length ?? 0) > 0 ? JSON.stringify((tempusSchema.sheetData || []).slice(0, 30).map(sd => ({ projectName: sd.projectName, taskName: sd.taskName }))) : '[]'}
+${tempusDataSection}
 
 ═══ AUFGABE ═══
 1. Ordne JEDE Excel-Spalte einem Tempus-Template-Feld zu (fieldMappings). targetField = exakter Tempus-Spaltenname oder "cf:<Name>"
-2. Matche JEDEN einzigartigen Wert in Name-/Referenz-Spalten gegen die vorhandenen Tempus-Daten (entityMappings)
-3. Was NICHT in Tempus existiert → isNew=true, suggestedAction='create_new'
-4. Erkenne Custom Fields: Prüfe ob sie in der Custom Fields Liste existieren
-5. Schlage Transformationen vor wo nötig (Datumsformate, Enum-Werte, etc.)`;
-
+2. Erkenne Custom Fields: Prüfe ob sie in der Custom Fields Liste existieren
+3. entityMappings: NUR für Werte die der algorithmische Matcher NICHT bereits gelöst hat${isLarge ? '\n4. ACHTUNG: Grosser Datensatz — Entity-Matching wurde algorithmisch vorgelöst. Fokussiere auf Spalten- und Custom-Field-Zuordnung.' : `
+4. Matche einzigartige Werte in Name-Spalten gegen die vorhandenen Tempus-Daten (entityMappings)
+5. Was NICHT in Tempus existiert → isNew=true, suggestedAction='create_new'`}
+`;
 
     const response = await this.client.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -277,6 +282,175 @@ SHEET DATA (${tempusSchema.sheetData?.length ?? 0}): ${(tempusSchema.sheetData?.
     }
 
     return toolBlock.input as MappingSuggestionsResult;
+  }
+
+  /**
+   * Tier 2: AI resolves ONLY ambiguous matches — gets top-K candidates per value.
+   * Drastically reduces token usage: instead of 20k resources, only ~5 per case.
+   */
+  async resolveAmbiguousMatches(
+    ambiguousCases: Array<{
+      sourceValue: string;
+      sourceSheet: string;
+      sourceColumn: string;
+      entityType: string;
+      topCandidates: MatchCandidate[];
+    }>,
+  ): Promise<Array<{
+    sourceValue: string;
+    resolvedMatch: string | null;
+    resolvedId: number | null;
+    confidence: number;
+    isNew: boolean;
+    reasoning: string;
+  }>> {
+    if (ambiguousCases.length === 0) return [];
+
+    const BATCH_SIZE = 40;
+    const allResults: Array<{
+      sourceValue: string;
+      resolvedMatch: string | null;
+      resolvedId: number | null;
+      confidence: number;
+      isNew: boolean;
+      reasoning: string;
+    }> = [];
+
+    for (let i = 0; i < ambiguousCases.length; i += BATCH_SIZE) {
+      const batch = ambiguousCases.slice(i, i + BATCH_SIZE);
+      const batchResults = await this.resolveAmbiguousBatch(batch);
+      allResults.push(...batchResults);
+    }
+
+    return allResults;
+  }
+
+  private async resolveAmbiguousBatch(
+    cases: Array<{
+      sourceValue: string;
+      sourceSheet: string;
+      sourceColumn: string;
+      entityType: string;
+      topCandidates: MatchCandidate[];
+    }>,
+  ): Promise<Array<{
+    sourceValue: string;
+    resolvedMatch: string | null;
+    resolvedId: number | null;
+    confidence: number;
+    isNew: boolean;
+    reasoning: string;
+  }>> {
+    const casesForPrompt = cases.map((c, idx) => ({
+      idx,
+      value: c.sourceValue,
+      entity: c.entityType,
+      sheet: c.sourceSheet,
+      column: c.sourceColumn,
+      candidates: c.topCandidates.map(tc => ({
+        name: tc.name,
+        id: tc.id,
+        score: Math.round(tc.score * 100),
+      })),
+    }));
+
+    const response = await this.client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4096,
+      system: DISAMBIGUATION_SYSTEM_PROMPT,
+      messages: [{
+        role: 'user',
+        content: `Löse diese ${cases.length} ambiguen Entity-Matches auf:\n${JSON.stringify(casesForPrompt, null, 2)}`,
+      }],
+      tools: [DISAMBIGUATION_TOOL],
+      tool_choice: { type: 'tool' as const, name: 'resolve_ambiguous_matches' },
+    });
+
+    const toolBlock = response.content.find(b => b.type === 'tool_use');
+    if (!toolBlock || toolBlock.type !== 'tool_use') {
+      return cases.map(c => ({
+        sourceValue: c.sourceValue,
+        resolvedMatch: c.topCandidates[0]?.name ?? null,
+        resolvedId: c.topCandidates[0]?.id ?? null,
+        confidence: c.topCandidates[0]?.score ?? 0,
+        isNew: !c.topCandidates[0],
+        reasoning: 'AI-Disambiguation fehlgeschlagen, bester algorithmischer Kandidat verwendet',
+      }));
+    }
+
+    const result = toolBlock.input as { resolutions: Array<{
+      idx: number; resolvedName: string | null; resolvedId: number | null;
+      confidence: number; isNew: boolean; reasoning: string;
+    }> };
+
+    return cases.map((c, idx) => {
+      const resolution = result.resolutions.find(r => r.idx === idx);
+      if (!resolution) {
+        return {
+          sourceValue: c.sourceValue,
+          resolvedMatch: c.topCandidates[0]?.name ?? null,
+          resolvedId: c.topCandidates[0]?.id ?? null,
+          confidence: c.topCandidates[0]?.score ?? 0,
+          isNew: !c.topCandidates[0],
+          reasoning: 'Keine AI-Auflösung erhalten',
+        };
+      }
+      return {
+        sourceValue: c.sourceValue,
+        resolvedMatch: resolution.resolvedName,
+        resolvedId: resolution.resolvedId,
+        confidence: resolution.confidence,
+        isNew: resolution.isNew,
+        reasoning: resolution.reasoning,
+      };
+    });
+  }
+
+  private buildLargeDatasetPrompt(schema: TempusMappingSchema, summary: TempusSummary): string {
+    return `═══ VORHANDENE TEMPUS-DATEN (ZUSAMMENFASSUNG — grosser Datensatz) ═══
+
+ACHTUNG: Der Datensatz ist gross (${summary.resourceCount} Resources, ${summary.projectCount} Projects).
+Entity-Werte-Matching wurde ALGORITHMISCH vorgelöst (Tier 1+2). Du fokussierst auf SPALTEN-ZUORDNUNG und CUSTOM FIELDS.
+
+CUSTOM FIELDS / ATTRIBUTE (${schema.customFields.length} in Tempus vorhanden):
+${JSON.stringify(schema.customFields.map(cf => ({
+  id: cf.id, name: cf.name, entityType: cf.entityType, dataType: cf.dataType,
+  selectionValues: cf.enumMembers?.map(e => e.name),
+})), null, 2)}
+
+STATISTIKEN:
+- Projects: ${summary.projectCount} vorhanden (Beispiele: ${summary.projectNameSamples.slice(0, 30).map(n => `"${n}"`).join(', ')}${summary.projectCount > 30 ? ', ...' : ''})
+- Resources: ${summary.resourceCount} vorhanden (Beispiele: ${summary.resourceNameSamples.slice(0, 30).map(n => `"${n}"`).join(', ')}${summary.resourceCount > 30 ? ', ...' : ''})
+- Tasks: ${summary.taskCount}
+- Assignments: ${summary.assignmentCount}
+- Skills: ${summary.skillCount}
+- Admin Times: ${summary.adminTimeCount}
+- Roles: ${JSON.stringify(summary.roles)}`;
+  }
+
+  private buildSmallDatasetPrompt(schema: TempusMappingSchema): string {
+    return `═══ VORHANDENE TEMPUS-DATEN (zum Vergleich) ═══
+
+CUSTOM FIELDS / ATTRIBUTE (${schema.customFields.length} in Tempus vorhanden):
+${JSON.stringify(schema.customFields.map(cf => ({
+  id: cf.id, name: cf.name, entityType: cf.entityType, dataType: cf.dataType,
+  selectionValues: cf.enumMembers?.map(e => e.name),
+})), null, 2)}
+
+PROJECTS (${schema.projects.length} in Tempus vorhanden):
+${JSON.stringify(schema.projects.map(p => ({ id: p.id, name: p.name, startDate: p.startDate, endDate: p.endDate })), null, 2)}
+
+RESOURCES (${schema.resources.length} in Tempus vorhanden):
+${JSON.stringify(schema.resources.map(r => ({ id: r.id, name: r.name, isEnabled: r.isEnabled })), null, 2)}
+
+ROLES (${schema.roles.length}): ${JSON.stringify(schema.roles.map(r => ({ id: r.id, name: r.name })))}
+
+TASKS (${schema.tasks?.length ?? 0}):
+${JSON.stringify(schema.tasks?.map(t => ({ id: t.id, name: t.name, projectId: t.projectId })) || [])}
+
+SKILLS (${schema.skills?.length ?? 0}): ${JSON.stringify(schema.skills?.map(s => ({ id: s.id, name: s.name, category: s.category })) || [])}
+
+ADMIN TIMES (${schema.adminTimes?.length ?? 0}): ${JSON.stringify(schema.adminTimes?.map(a => ({ id: a.id, name: a.name })) || [])}`;
   }
 }
 
@@ -468,10 +642,25 @@ EBENE 6 — NEUANLAGE (isNew=true):
   Kein Match gefunden → suggestedAction: 'create_new'
   Confidence basierend auf Datenqualität der Quelle.
 
+═══ KRITISCH: PROJEKT-ATTRIBUTE vs. FINANCIALS ═══
+HÄUFIGER FEHLER: Spalten wie "Budget", "Cost", "Revenue", "Forecast" in einem Projekt-Sheet sind KEINE Financials-Entitäten!
+Sie sind PROJEKT-CUSTOM-FIELDS (Attribute), die als zusätzliche Spalten im Projects-Template erscheinen.
+
+REGEL: Wenn ein Sheet eine "Project Name"/"Projekt"-Spalte hat UND finanzielle Spalten enthält:
+→ Das Sheet ist ein PROJECTS-Sheet
+→ Die finanziellen Spalten sind targetEntity="projects", targetField="cf:<Spaltenname>"
+→ Das Custom Field muss als Attribut angelegt werden (entityType="Project")
+→ Es ist KEIN Financials-Template-Import!
+
+Financials-Template wird NUR verwendet wenn:
+- Das Sheet KEINE Projekt-Definitions-Spalten hat (kein Start/End Date etc.)
+- Stattdessen: Project-Referenz + Category + Type + Time Period + Project Cost
+- Es sich um ZEITREIHEN-Finanzdaten handelt (monatliche Ist/Plan-Kosten)
+
 ═══ SHEET-ÜBERGREIFENDE INTELLIGENZ ═══
 - Wenn Sheet 1 Projekte definiert und Sheet 2 die gleichen Projektnamen referenziert → Beziehung erkennen
 - "Functions and Roles" Sheet → Daten für Resources oder Skills
-- "Scoring" Sheet → Wahrscheinlich Custom Fields oder Financials
+- "Scoring" / "Financial Summary" Sheet → Wahrscheinlich Projekt-Custom-Fields, NICHT Financials
 - Gleiche Werte in verschiedenen Sheets = Referenz-Beziehung
 
 ═══ REGELN (UNBEDINGT BEFOLGEN) ═══
@@ -485,3 +674,18 @@ EBENE 6 — NEUANLAGE (isNew=true):
 8. Spalten mit >90% null/leer: Trotzdem zuordnen, aber niedrige Relevanz
 9. "[object Object]" als Wert = Parsing-Fehler, ignorieren
 10. entityMappings: JEDER einzigartige Wert in Name-Spalten MUSS gegen Tempus-Daten geprüft werden`;
+
+const DISAMBIGUATION_SYSTEM_PROMPT = `Du löst ambigue Entity-Matches auf.
+Für jeden Fall bekommst du einen Quellwert und die Top-Kandidaten mit Ähnlichkeits-Score.
+
+Deine Aufgabe:
+1. Entscheide welcher Kandidat der richtige Match ist, ODER
+2. Markiere als isNew=true wenn keiner passt (neues Element anlegen)
+
+Berücksichtige:
+- Abkürzungen (J. Smith = John Smith, Proj = Project)
+- Umlaute und Tippfehler
+- Kontext (Sheet-Name, Spalten-Name, Entity-Typ)
+- Branchenübliche Abkürzungen
+
+Antworte für JEDEN Fall mit idx, resolvedName, resolvedId, confidence, isNew und reasoning.`;

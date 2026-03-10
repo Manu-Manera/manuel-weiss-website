@@ -5,11 +5,11 @@ import type {
   CustomFieldMapping, TempusCustomField,
 } from '../types.js';
 import { AnthropicClient } from './anthropicClient.js';
+import { FuzzyMatcher } from './fuzzyMatcher.js';
 
 // ── Tempus field schema for rule-based matching ──────────────────────
 
 const TEMPUS_FIELD_MAP: Record<string, Array<{ field: string; aliases: string[] }>> = {
-  // 1. Attributes (Custom Fields)
   customFields: [
     { field: 'entityType', aliases: ['entity type', 'entitätstyp', 'typ', 'object type', 'objekttyp'] },
     { field: 'name', aliases: ['custom field name', 'attribut', 'attributname', 'field name', 'feldname', 'attribute name'] },
@@ -18,7 +18,6 @@ const TEMPUS_FIELD_MAP: Record<string, Array<{ field: string; aliases: string[] 
     { field: 'isRequired', aliases: ['required', 'pflichtfeld', 'mandatory', 'pflicht'] },
     { field: 'isUnique', aliases: ['unique', 'eindeutig'] },
   ],
-  // 2. Resources
   resources: [
     { field: 'name', aliases: ['resource name', 'ressource', 'ressourcenname', 'name', 'mitarbeiter', 'employee', 'person'] },
     { field: 'billingRate', aliases: ['billing rate', 'stundensatz', 'rate', 'kosten', 'cost rate', 'hourly rate'] },
@@ -29,7 +28,6 @@ const TEMPUS_FIELD_MAP: Record<string, Array<{ field: string; aliases: string[] 
     { field: 'department', aliases: ['department', 'abteilung', 'team', 'bereich'] },
     { field: 'isEnabled', aliases: ['enabled', 'active', 'aktiv', 'is active'] },
   ],
-  // 3. Projects
   projects: [
     { field: 'name', aliases: ['project name', 'projektname', 'projekt', 'project'] },
     { field: 'startDate', aliases: ['start date', 'startdatum', 'von', 'start', 'begin', 'project start'] },
@@ -43,7 +41,6 @@ const TEMPUS_FIELD_MAP: Record<string, Array<{ field: string; aliases: string[] 
     { field: 'status', aliases: ['project status', 'projektstatus'] },
     { field: 'manager', aliases: ['project manager', 'projektleiter', 'pm', 'manager', 'owner'] },
   ],
-  // 4. Assignments
   assignments: [
     { field: 'projectName', aliases: ['project', 'projekt', 'project name', 'projektname'] },
     { field: 'resourceName', aliases: ['resource', 'ressource', 'resource name', 'ressourcenname', 'mitarbeiter'] },
@@ -55,7 +52,6 @@ const TEMPUS_FIELD_MAP: Record<string, Array<{ field: string; aliases: string[] 
     { field: 'startDate', aliases: ['start date', 'startdatum', 'von', 'start'] },
     { field: 'endDate', aliases: ['end date', 'enddatum', 'bis', 'ende'] },
   ],
-  // 5. Admin Time
   adminTimes: [
     { field: 'name', aliases: ['admin time', 'admin time name', 'verwaltungszeit', 'abwesenheit', 'absence', 'time off', 'leave'] },
     { field: 'resourceName', aliases: ['resource', 'ressource', 'resource name', 'mitarbeiter', 'employee'] },
@@ -66,14 +62,12 @@ const TEMPUS_FIELD_MAP: Record<string, Array<{ field: string; aliases: string[] 
     { field: 'startDate', aliases: ['start date', 'startdatum', 'von', 'start'] },
     { field: 'endDate', aliases: ['end date', 'enddatum', 'bis', 'ende'] },
   ],
-  // 6. Skills
   skills: [
     { field: 'name', aliases: ['skill', 'skill name', 'kompetenz', 'fähigkeit', 'qualification', 'qualifikation'] },
     { field: 'category', aliases: ['category', 'kategorie', 'skill category', 'gruppe', 'group'] },
     { field: 'level', aliases: ['level', 'stufe', 'proficiency', 'skill level', 'erfahrung'] },
     { field: 'resourceName', aliases: ['resource', 'ressource', 'resource name', 'mitarbeiter', 'employee'] },
   ],
-  // 7. Tasks / Schedule (Sheet Data)
   tasks: [
     { field: 'name', aliases: ['task', 'task name', 'vorgang', 'aufgabe', 'tätigkeit', 'schedule task'] },
     { field: 'projectName', aliases: ['project', 'projekt', 'project name'] },
@@ -91,7 +85,6 @@ const TEMPUS_FIELD_MAP: Record<string, Array<{ field: string; aliases: string[] 
     { field: 'value', aliases: ['value', 'wert', 'hours', 'stunden', 'amount', 'betrag'] },
     { field: 'planType', aliases: ['plan type', 'plantyp', 'type', 'typ'] },
   ],
-  // 8. Advanced Rates
   advancedRates: [
     { field: 'resourceName', aliases: ['resource', 'ressource', 'resource name', 'mitarbeiter'] },
     { field: 'projectName', aliases: ['project', 'projekt', 'project name'] },
@@ -100,7 +93,6 @@ const TEMPUS_FIELD_MAP: Record<string, Array<{ field: string; aliases: string[] 
     { field: 'effectiveDate', aliases: ['effective date', 'gültig ab', 'start date', 'ab datum', 'valid from'] },
     { field: 'roleName', aliases: ['role', 'rolle', 'role name'] },
   ],
-  // 9. Financials
   financials: [
     { field: 'projectName', aliases: ['project', 'projekt', 'project name'] },
     { field: 'month', aliases: ['month', 'monat', 'period', 'zeitraum'] },
@@ -111,7 +103,6 @@ const TEMPUS_FIELD_MAP: Record<string, Array<{ field: string; aliases: string[] 
     { field: 'type', aliases: ['type', 'typ', 'financial type', 'kostenart', 'cost type'] },
     { field: 'category', aliases: ['category', 'kategorie'] },
   ],
-  // 10. Team Resource
   teamResources: [
     { field: 'teamName', aliases: ['team', 'team name', 'teamname', 'group', 'gruppe'] },
     { field: 'resourceName', aliases: ['resource', 'ressource', 'resource name', 'mitarbeiter', 'member', 'employee'] },
@@ -120,7 +111,13 @@ const TEMPUS_FIELD_MAP: Record<string, Array<{ field: string; aliases: string[] 
   ],
 };
 
-// ── Core Mapping Engine ──────────────────────────────────────────────
+// Financial-sounding columns that are ACTUALLY project custom fields when in a project sheet
+const FINANCIAL_COLUMN_NAMES = new Set([
+  'budget', 'cost', 'revenue', 'forecast', 'actual', 'actuals', 'plan', 'plankosten',
+  'istkosten', 'umsatz', 'erlös', 'prognose', 'planned cost', 'actual cost',
+]);
+
+// ── Core Mapping Engine (3-Tier) ─────────────────────────────────────
 
 export async function generateMappings(
   parsed: ParsedExcel,
@@ -133,15 +130,21 @@ export async function generateMappings(
   const customFieldMappings: CustomFieldMapping[] = [];
   const unmappedColumns: string[] = [];
 
+  // ═══ Build FuzzyMatcher Index ═══
+  const matcher = new FuzzyMatcher();
+  matcher.buildIndex(tempusData);
+  const summary = matcher.getSummaryForAI();
+  console.log(`[mappingEngine] FuzzyMatcher index: ${summary.resourceCount} resources, ${summary.projectCount} projects, large=${summary.hasLargeDataset}`);
+
   for (const sheet of analysis.sheets) {
     const parsedSheet = parsed.sheets.find(s => s.name === sheet.sheetName);
     if (!parsedSheet) continue;
 
-    const targetEntity = sheet.suggestedEntity || 'unknown';
+    const targetEntity = detectSheetEntity(sheet, parsedSheet);
 
-    // Step 1: Rule-based field matching
+    // ═══ TIER 1a: Rule-based FIELD matching ═══
     for (const col of sheet.columns) {
-      const ruleMatch = matchFieldByRules(col.name, targetEntity);
+      const ruleMatch = matchFieldByRules(col.name, targetEntity, sheet);
       if (ruleMatch) {
         fieldMappings.push({
           id: uuid(),
@@ -159,30 +162,52 @@ export async function generateMappings(
       }
     }
 
-    // Step 2: Entity value matching (names → IDs)
+    // ═══ TIER 1b: Fuzzy ENTITY VALUE matching (replaces old O(n²) Levenshtein) ═══
     const nameColumns = findNameColumns(sheet, fieldMappings);
-    for (const { column, targetEntity: entity, targetField } of nameColumns) {
+    for (const { column, targetEntity: entity } of nameColumns) {
       const uniqueValues = getUniqueValues(parsedSheet.rows, column);
-      for (const value of uniqueValues) {
-        const match = matchEntityValue(String(value), entity, tempusData);
-        entityMappings.push({
-          id: uuid(),
-          sourceSheet: sheet.sheetName,
-          sourceColumn: column,
-          sourceValue: String(value),
-          targetEntity: entity,
-          matchedName: match?.name,
-          matchedId: match?.id,
-          matchType: match?.matchType ?? 'new_entity',
-          confidence: match?.confidence ?? 0,
-          reasoning: match?.reasoning ?? `Kein Match in Tempus gefunden für "${value}"`,
-          status: match ? (match.confidence >= 0.9 ? 'suggested' : 'needs_review') : 'create_new',
-          isNew: !match,
-        });
+      const entityTypeForMatcher = getMatcherEntityType(entity);
+
+      const batchResults = matcher.matchBatch(
+        uniqueValues.map(v => String(v)),
+        entityTypeForMatcher,
+      );
+
+      for (const [valStr, result] of batchResults) {
+        if (result.bestMatch && !result.isAmbiguous && result.bestMatch.score >= 0.85) {
+          entityMappings.push({
+            id: uuid(),
+            sourceSheet: sheet.sheetName,
+            sourceColumn: column,
+            sourceValue: valStr,
+            targetEntity: entity,
+            matchedName: result.bestMatch.name,
+            matchedId: result.bestMatch.id,
+            matchType: result.bestMatch.matchLevel === 'exact' ? 'exact' : 'fuzzy',
+            confidence: result.bestMatch.score,
+            reasoning: `Algorithmischer Match (${result.bestMatch.matchLevel}, ${Math.round(result.bestMatch.score * 100)}%): "${valStr}" → "${result.bestMatch.name}"`,
+            status: result.bestMatch.score >= 0.9 ? 'suggested' : 'needs_review',
+            isNew: false,
+          });
+        } else if (result.isNew) {
+          entityMappings.push({
+            id: uuid(),
+            sourceSheet: sheet.sheetName,
+            sourceColumn: column,
+            sourceValue: valStr,
+            targetEntity: entity,
+            matchType: 'new_entity',
+            confidence: 0,
+            reasoning: `Kein Match in Tempus gefunden für "${valStr}"`,
+            status: 'create_new',
+            isNew: true,
+          });
+        }
+        // Ambiguous cases (0.65 <= score < 0.85 with close 2nd candidate) are collected for Tier 2
       }
     }
 
-    // Step 2b: Custom-Field matching for unmapped columns
+    // ═══ TIER 1c: Custom-Field matching for unmapped columns ═══
     const cfEntityType = inferCustomFieldEntityType(sheet.sheetName, targetEntity);
     const stillUnmapped = unmappedColumns
       .filter(u => u.startsWith(`${sheet.sheetName}.`))
@@ -259,7 +284,90 @@ export async function generateMappings(
     }
   }
 
-  // Step 3: AI-enhanced mapping — primary analysis source (runs for all columns)
+  // ═══ TIER 2: AI Disambiguation (only ambiguous entity matches) ═══
+  if (anthropicClient) {
+    const ambiguousCases: Array<{
+      sourceValue: string; sourceSheet: string; sourceColumn: string;
+      entityType: string; topCandidates: import('./fuzzyMatcher.js').MatchCandidate[];
+    }> = [];
+
+    for (const sheet of analysis.sheets) {
+      const parsedSheet = parsed.sheets.find(s => s.name === sheet.sheetName);
+      if (!parsedSheet) continue;
+
+      const targetEntity = detectSheetEntity(sheet, parsedSheet);
+      const nameColumns = findNameColumns(sheet, fieldMappings);
+
+      for (const { column, targetEntity: entity } of nameColumns) {
+        const uniqueValues = getUniqueValues(parsedSheet.rows, column);
+        const entityTypeForMatcher = getMatcherEntityType(entity);
+        const batchResults = matcher.matchBatch(uniqueValues.map(v => String(v)), entityTypeForMatcher);
+
+        for (const [valStr, result] of batchResults) {
+          const alreadyMapped = entityMappings.find(
+            em => em.sourceValue === valStr && em.targetEntity === entity
+          );
+          if (alreadyMapped) continue;
+
+          if (result.isAmbiguous && result.topCandidates.length >= 2) {
+            ambiguousCases.push({
+              sourceValue: valStr,
+              sourceSheet: sheet.sheetName,
+              sourceColumn: column,
+              entityType: entity,
+              topCandidates: result.topCandidates,
+            });
+          }
+        }
+      }
+    }
+
+    if (ambiguousCases.length > 0) {
+      console.log(`[mappingEngine] Tier 2: ${ambiguousCases.length} ambiguous cases for AI disambiguation`);
+      try {
+        const resolved = await anthropicClient.resolveAmbiguousMatches(ambiguousCases);
+        for (let i = 0; i < resolved.length; i++) {
+          const r = resolved[i];
+          const c = ambiguousCases[i];
+          entityMappings.push({
+            id: uuid(),
+            sourceSheet: c.sourceSheet,
+            sourceColumn: c.sourceColumn,
+            sourceValue: r.sourceValue,
+            targetEntity: c.entityType,
+            matchedName: r.resolvedMatch ?? undefined,
+            matchedId: r.resolvedId ?? undefined,
+            matchType: 'ai_suggested',
+            confidence: r.confidence,
+            reasoning: r.reasoning,
+            status: r.isNew ? 'create_new' : (r.confidence >= 0.8 ? 'suggested' : 'needs_review'),
+            isNew: r.isNew,
+          });
+        }
+      } catch (err) {
+        console.error('[mappingEngine] Tier 2 AI disambiguation FAILED:', err instanceof Error ? err.message : err);
+        for (const c of ambiguousCases) {
+          const best = c.topCandidates[0];
+          entityMappings.push({
+            id: uuid(),
+            sourceSheet: c.sourceSheet,
+            sourceColumn: c.sourceColumn,
+            sourceValue: c.sourceValue,
+            targetEntity: c.entityType,
+            matchedName: best?.name,
+            matchedId: best?.id,
+            matchType: 'fuzzy',
+            confidence: best?.score ?? 0,
+            reasoning: `AI-Disambiguation fehlgeschlagen, bester algorithmischer Kandidat: "${best?.name}" (${Math.round((best?.score ?? 0) * 100)}%)`,
+            status: 'needs_review',
+            isNew: !best,
+          });
+        }
+      }
+    }
+  }
+
+  // ═══ TIER 3: AI Field Mapping + Custom Field Recognition ═══
   if (anthropicClient) {
     try {
       const sheetsForAI = analysis.sheets.map(s => {
@@ -271,7 +379,7 @@ export async function generateMappings(
         };
       });
 
-      const aiResult = await anthropicClient.generateMappingSuggestions(sheetsForAI, {
+      const tempusSchema = {
         projects: tempusData.projects.map(p => ({ id: p.id, name: p.name, startDate: p.startDate, endDate: p.endDate, externalId: p.externalId })),
         resources: tempusData.resources.map(r => ({ id: r.id, name: r.name, externalId: r.externalId, isEnabled: r.isEnabled })),
         tasks: tempusData.tasks.map(t => ({ id: t.id, name: t.name, projectId: t.projectId })),
@@ -282,38 +390,51 @@ export async function generateMappings(
         roles: tempusData.roles.map(r => ({ id: r.id, name: r.name })),
         skills: tempusData.skills.map(s => ({ id: s.id, name: s.name, category: (s as any).category })),
         adminTimes: tempusData.adminTimes.map(a => ({ id: a.id, name: a.name })),
-        assignments: tempusData.assignments.map(a => ({ id: a.id, taskId: a.taskId, resourceId: a.resourceId })),
-        sheetData: tempusData.sheetData.map(sd => ({ id: sd.id, projectName: sd.projectName, taskName: sd.taskName, resourceName: sd.resourceName })),
-        advancedRates: tempusData.advancedRates.map(ar => ({ id: ar.id, resourceName: ar.resourceName, projectName: ar.projectName, rate: ar.rate })),
-        financials: tempusData.financials.map(f => ({ id: f.id, projectName: f.projectName, category: f.category, type: f.type })),
-        teamResources: tempusData.teamResources.map(tr => ({ id: tr.id, teamName: tr.teamName, resourceName: tr.resourceName })),
-      });
+      };
 
-      // Merge AI field mapping suggestions
+      const aiResult = await anthropicClient.generateMappingSuggestions(
+        sheetsForAI, tempusSchema, summary,
+      );
+
+      // AI can OVERRIDE rule-based field mappings if confidence is higher
       for (const aiMapping of aiResult.fieldMappings) {
         const existing = fieldMappings.find(
           fm => fm.sourceSheet === aiMapping.sourceSheet && fm.sourceColumn === aiMapping.sourceColumn
         );
-        if (!existing) {
-          const isCustomFieldSuggestion = aiMapping.isCustomField || aiMapping.targetField?.startsWith('cf:');
 
-          fieldMappings.push({
-            id: uuid(),
-            sourceSheet: aiMapping.sourceSheet,
-            sourceColumn: aiMapping.sourceColumn,
-            targetEntity: aiMapping.targetEntity,
-            targetField: isCustomFieldSuggestion
-              ? `cf:${aiMapping.suggestedCustomFieldName || aiMapping.sourceColumn}`
-              : aiMapping.targetField,
-            matchType: 'ai_suggested',
-            confidence: aiMapping.confidence,
-            reasoning: aiMapping.reasoning,
-            status: aiMapping.confidence >= 0.8 ? 'suggested' : 'needs_review',
-            transformation: aiMapping.transformation,
-          });
+        const isCustomFieldSuggestion = aiMapping.isCustomField || aiMapping.targetField?.startsWith('cf:');
+        const aiField: FieldMapping = {
+          id: uuid(),
+          sourceSheet: aiMapping.sourceSheet,
+          sourceColumn: aiMapping.sourceColumn,
+          targetEntity: aiMapping.targetEntity,
+          targetField: isCustomFieldSuggestion
+            ? `cf:${aiMapping.suggestedCustomFieldName || aiMapping.sourceColumn}`
+            : aiMapping.targetField,
+          matchType: 'ai_suggested',
+          confidence: aiMapping.confidence,
+          reasoning: aiMapping.reasoning,
+          status: aiMapping.confidence >= 0.8 ? 'suggested' : 'needs_review',
+          transformation: aiMapping.transformation,
+        };
 
-          if (isCustomFieldSuggestion) {
-            const cfName = aiMapping.suggestedCustomFieldName || aiMapping.sourceColumn;
+        if (existing) {
+          if (aiMapping.confidence > existing.confidence) {
+            Object.assign(existing, aiField, { id: existing.id });
+          }
+        } else {
+          fieldMappings.push(aiField);
+
+          const idx = unmappedColumns.indexOf(`${aiMapping.sourceSheet}.${aiMapping.sourceColumn}`);
+          if (idx >= 0) unmappedColumns.splice(idx, 1);
+        }
+
+        if (isCustomFieldSuggestion) {
+          const cfName = aiMapping.suggestedCustomFieldName || aiMapping.sourceColumn;
+          const alreadyTracked = customFieldMappings.find(
+            cm => cm.sourceSheet === aiMapping.sourceSheet && cm.sourceColumn === aiMapping.sourceColumn
+          );
+          if (!alreadyTracked) {
             const existingCF = tempusData.customFields.find(
               cf => cf.name.toLowerCase() === cfName.toLowerCase()
             );
@@ -328,13 +449,10 @@ export async function generateMappings(
               action: existingCF ? 'exists' : 'create',
             });
           }
-
-          const idx = unmappedColumns.indexOf(`${aiMapping.sourceSheet}.${aiMapping.sourceColumn}`);
-          if (idx >= 0) unmappedColumns.splice(idx, 1);
         }
       }
 
-      // Merge AI entity suggestions (matches + new entity proposals)
+      // Merge AI entity suggestions (only for values not already matched)
       for (const aiEntity of aiResult.entityMappings) {
         const existing = entityMappings.find(
           em => em.sourceValue === aiEntity.sourceValue && em.targetEntity === aiEntity.targetEntity
@@ -358,9 +476,11 @@ export async function generateMappings(
           });
         }
       }
+
+      console.log(`[mappingEngine] Tier 3 AI completed: ${aiResult.fieldMappings.length} field suggestions, ${aiResult.entityMappings.length} entity suggestions`);
     } catch (err) {
-      console.error('[mappingEngine] AI mapping FAILED:', err instanceof Error ? err.message : err);
-      console.error('[mappingEngine] Falling back to rule-based results only');
+      console.error('[mappingEngine] Tier 3 AI mapping FAILED:', err instanceof Error ? err.message : err);
+      console.error('[mappingEngine] Using Tier 1 results only');
     }
   }
 
@@ -385,23 +505,61 @@ export async function generateMappings(
   };
 }
 
-// ── Rule-based field matching ────────────────────────────────────────
+// ── Sheet entity detection (fixes project-vs-financials) ─────────────
+
+function detectSheetEntity(
+  sheet: { sheetName: string; suggestedEntity: string; columns: ColumnAnalysis[] },
+  parsedSheet: { rows: Record<string, unknown>[] },
+): string {
+  const suggested = sheet.suggestedEntity || 'unknown';
+
+  // If AI suggested "financials" but the sheet has project-defining columns, it's actually a projects sheet
+  if (suggested === 'financials' || suggested === 'unknown') {
+    const colNames = new Set(sheet.columns.map(c => c.name.toLowerCase().trim()));
+    const hasProjectName = colNames.has('project name') || colNames.has('projektname') || colNames.has('project') || colNames.has('projekt');
+    const hasStartDate = [...colNames].some(c => c.includes('start'));
+    const hasEndDate = [...colNames].some(c => c.includes('end') || c.includes('ende'));
+
+    if (hasProjectName && (hasStartDate || hasEndDate)) {
+      console.log(`[mappingEngine] Sheet "${sheet.sheetName}" reclassified: ${suggested} → projects (has project-defining columns + dates)`);
+      return 'projects';
+    }
+
+    // Also check for portfolio-style sheets
+    const sheetLower = sheet.sheetName.toLowerCase();
+    if (sheetLower.includes('project') || sheetLower.includes('portfolio') || sheetLower.includes('projekt')) {
+      console.log(`[mappingEngine] Sheet "${sheet.sheetName}" reclassified: ${suggested} → projects (sheet name indicates projects)`);
+      return 'projects';
+    }
+  }
+
+  return suggested;
+}
+
+// ── Rule-based field matching (with financials-in-project guard) ──────
 
 function matchFieldByRules(
   columnName: string,
   suggestedEntity: string,
+  sheet: { sheetName: string; columns: ColumnAnalysis[] },
 ): { entity: string; field: string; matchType: MatchType; confidence: number; reasoning: string } | null {
   const normalized = columnName.toLowerCase().trim().replace(/\s+/g, ' ');
 
-  // Try suggested entity first, then all entities
+  // Guard: If this is a projects sheet, don't match financial-sounding columns to financials entity
+  if (suggestedEntity === 'projects' && FINANCIAL_COLUMN_NAMES.has(normalized)) {
+    return null; // Let custom field matching handle it
+  }
+
   const entityOrder = [suggestedEntity, ...Object.keys(TEMPUS_FIELD_MAP).filter(e => e !== suggestedEntity)];
 
   for (const entity of entityOrder) {
+    // Don't match to financials if sheet is classified as projects
+    if (entity === 'financials' && suggestedEntity === 'projects') continue;
+
     const fields = TEMPUS_FIELD_MAP[entity];
     if (!fields) continue;
 
     for (const { field, aliases } of fields) {
-      // Exact match
       if (aliases.includes(normalized)) {
         const isSameEntity = entity === suggestedEntity;
         return {
@@ -413,8 +571,7 @@ function matchFieldByRules(
         };
       }
 
-      // Fuzzy match (contains or partial)
-      const fuzzyScore = fuzzyMatch(normalized, aliases);
+      const fuzzyScore = simpleFuzzyMatch(normalized, aliases);
       if (fuzzyScore > 0.7) {
         return {
           entity,
@@ -430,16 +587,13 @@ function matchFieldByRules(
   return null;
 }
 
-function fuzzyMatch(input: string, targets: string[]): number {
+function simpleFuzzyMatch(input: string, targets: string[]): number {
   let best = 0;
   for (const target of targets) {
-    // Simple containment check
     if (input.includes(target) || target.includes(input)) {
       const ratio = Math.min(input.length, target.length) / Math.max(input.length, target.length);
       best = Math.max(best, ratio * 0.9);
     }
-
-    // Levenshtein-based similarity
     const sim = stringSimilarity(input, target);
     best = Math.max(best, sim);
   }
@@ -472,96 +626,22 @@ function levenshtein(a: string, b: string): number {
   return matrix[b.length][a.length];
 }
 
-// ── Entity value matching ────────────────────────────────────────────
+// ── Entity type mapping for FuzzyMatcher ─────────────────────────────
 
-function matchEntityValue(
-  value: string,
-  entityType: string,
-  tempusData: TempusData,
-): { name: string; id: number; matchType: MatchType; confidence: number; reasoning: string } | null {
-  const normalized = value.toLowerCase().trim();
-  if (!normalized) return null;
-
-  const candidates = getCandidatesForEntity(entityType, tempusData);
-  if (candidates.length === 0) return null;
-
-  // Exact match
-  const exact = candidates.find(c => c.name.toLowerCase().trim() === normalized);
-  if (exact) {
-    return {
-      name: exact.name,
-      id: exact.id,
-      matchType: 'exact',
-      confidence: 1.0,
-      reasoning: `Exakter Match: "${value}" = "${exact.name}" (ID: ${exact.id})`,
-    };
-  }
-
-  // Fuzzy match
-  let bestMatch: { name: string; id: number; score: number } | null = null;
-  for (const candidate of candidates) {
-    const score = stringSimilarity(normalized, candidate.name.toLowerCase().trim());
-    if (score > 0.75 && (!bestMatch || score > bestMatch.score)) {
-      bestMatch = { ...candidate, score };
-    }
-  }
-
-  if (bestMatch) {
-    return {
-      name: bestMatch.name,
-      id: bestMatch.id,
-      matchType: 'fuzzy',
-      confidence: bestMatch.score,
-      reasoning: `Fuzzy-Match (${Math.round(bestMatch.score * 100)}%): "${value}" ≈ "${bestMatch.name}"`,
-    };
-  }
-
-  return null;
-}
-
-function getCandidatesForEntity(
-  entityType: string,
-  tempusData: TempusData,
-): Array<{ id: number; name: string }> {
-  switch (entityType) {
-    case 'projects':
-      return tempusData.projects;
-    case 'resources':
-      return tempusData.resources;
-    case 'tasks':
-      return tempusData.tasks.map(t => ({ id: t.id, name: t.name }));
-    case 'assignments':
-      return [
-        ...tempusData.projects,
-        ...tempusData.resources,
-        ...tempusData.tasks.map(t => ({ id: t.id, name: t.name })),
-      ];
-    case 'customFields':
-      return tempusData.customFields.map(cf => ({ id: cf.id, name: cf.name }));
-    case 'skills':
-      return tempusData.skills.map(s => ({ id: s.id, name: s.name }));
-    case 'adminTimes':
-      return tempusData.adminTimes.map(a => ({ id: a.id, name: a.name }));
-    case 'advancedRates':
-      return [
-        ...tempusData.resources,
-        ...tempusData.projects,
-      ];
-    case 'financials':
-      return tempusData.projects;
-    case 'sheetData':
-      return [
-        ...tempusData.projects,
-        ...tempusData.resources,
-        ...tempusData.tasks.map(t => ({ id: t.id, name: t.name })),
-      ];
-    case 'teamResources':
-      return tempusData.resources;
-    default:
-      return [
-        ...tempusData.projects,
-        ...tempusData.resources,
-      ];
+function getMatcherEntityType(entity: string): string | undefined {
+  switch (entity) {
+    case 'projects': return 'projects';
+    case 'resources': return 'resources';
+    case 'tasks': return 'tasks';
+    case 'customFields': return 'customFields';
+    case 'skills': return 'skills';
+    case 'adminTimes': return 'adminTimes';
+    case 'assignments': return undefined; // Search all (projects + resources + tasks)
+    case 'advancedRates': return undefined;
+    case 'financials': return 'projects';
+    case 'sheetData': return undefined;
+    case 'teamResources': return 'resources';
+    default: return undefined;
   }
 }
 
@@ -673,7 +753,6 @@ function matchCustomField(
     };
   }
 
-  // Try across all entity types as fallback with lower confidence
   const otherFields = customFields.filter(cf => cf.entityType !== entityType);
   for (const cf of otherFields) {
     if (cf.name.toLowerCase().trim() === normalized) {
