@@ -8,7 +8,7 @@ import { v4 as uuid } from 'uuid';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import type { AppConfig, Session } from './types.js';
+import type { AppConfig, Session, TempusData } from './types.js';
 import { TempusClient } from './services/tempusClient.js';
 import { AnthropicClient } from './services/anthropicClient.js';
 import { parseExcel, analyzeStructure } from './services/excelParser.js';
@@ -292,6 +292,25 @@ app.post('/api/upload', uploadLimiter, upload.single('file'), asyncRoute(async (
     piiFields: generatePiiReport(sheet.headers, sheet.rows),
   }));
 
+  // Tempus-Daten VOR AI-Analyse laden (für präzisere Feld-Vorschläge)
+  let tempusData: TempusData | undefined;
+  if (config.tempusBaseUrl && config.tempusApiKey) {
+    try {
+      const client = new TempusClient(config.tempusBaseUrl, config.tempusApiKey);
+      tempusData = await client.fetchAllData();
+      logAudit('tempus_sync_at_upload', sessionId, {
+        projects: tempusData.projects.length,
+        resources: tempusData.resources.length,
+        customFields: tempusData.customFields.length,
+      });
+    } catch (err) {
+      logAudit('tempus_sync_at_upload_failed', sessionId, {}, 'error', sanitizeError(err instanceof Error ? err.message : 'unknown'));
+    }
+  }
+
+  const session: Session = { id: sessionId, createdAt: Date.now(), parsedExcel, analysis, tempusData };
+  sessions.set(sessionId, session);
+
   // AI-enhanced analysis – nur mit Consent und anonymisierten Daten
   const consent = sessionConsent.get(req.body?.consentSessionId || sessionId);
   const aiConsented = consent?.aiProcessing ?? false;
@@ -302,7 +321,7 @@ app.post('/api/upload', uploadLimiter, upload.single('file'), asyncRoute(async (
     try {
       const anthropic = new AnthropicClient(config.anthropicApiKey);
 
-      // DSGVO: Anonymisierte Daten an AI senden
+      // DSGVO: Anonymisierte Daten an AI senden (mit Tempus-Schema für präzisere Vorschläge)
       const sheetsForAI = analysis.sheets.map(s => {
         const parsedSheet = parsedExcel.sheets.find(ps => ps.name === s.sheetName);
         const originalRows = (parsedSheet?.rows || []).slice(0, 5);
@@ -321,7 +340,13 @@ app.post('/api/upload', uploadLimiter, upload.single('file'), asyncRoute(async (
 
       logAudit('ai_analysis_started', sessionId, { sheetsCount: sheetsForAI.length, anonymized: true });
 
-      const aiResult = await anthropic.analyzeStructure(sheetsForAI);
+      const AI_TIMEOUT_MS = 120_000; // 2 Min für grosse Excel-Dateien
+      const aiResult = await Promise.race([
+        anthropic.analyzeStructure(sheetsForAI, tempusData),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('AI-Analyse Zeitüberschreitung (2 Min) – bitte erneut versuchen')), AI_TIMEOUT_MS)
+        ),
+      ]);
 
       for (const aiSheet of aiResult.sheets) {
         const sheet = analysis.sheets.find(s => s.sheetName === aiSheet.sheetName);
@@ -345,19 +370,32 @@ app.post('/api/upload', uploadLimiter, upload.single('file'), asyncRoute(async (
       analysis.aiInsights = aiResult.insights;
       logAudit('ai_analysis_completed', sessionId, { sheetsCount: sheetsForAI.length });
     } catch (err) {
-      logAudit('ai_analysis_failed', sessionId, {}, 'error', sanitizeError(err instanceof Error ? err.message : 'unknown'));
-      analysis.aiInsights = 'AI-Analyse fehlgeschlagen – regelbasierte Analyse verwendet';
+      const errMsg = err instanceof Error ? err.message : 'Unbekannter Fehler';
+      logAudit('ai_analysis_failed', sessionId, {}, 'error', sanitizeError(errMsg));
+      analysis.aiInsights = `AI-Analyse fehlgeschlagen – regelbasierte Analyse verwendet. (${errMsg})`;
     }
   } else if (config.anthropicApiKey && !aiConsented) {
     analysis.aiInsights = 'AI-Analyse deaktiviert – keine Einwilligung für Drittland-Datenverarbeitung erteilt';
   }
 
-  const session: Session = { id: sessionId, createdAt: Date.now(), parsedExcel, analysis };
-  sessions.set(sessionId, session);
+  // Session bereits mit tempusData angelegt; Analysis aktualisieren
+  const session = sessions.get(sessionId)!;
+  session.analysis = analysis;
 
   logAudit('upload_completed', sessionId, { sheetsCount: parsedExcel.sheets.length, totalRows: parsedExcel.sheets.reduce((s, sh) => s + sh.totalRows, 0) });
 
-  res.json({ sessionId, analysis, piiReports });
+  const tempusSummary = tempusData
+    ? {
+        projects: tempusData.projects.length,
+        resources: tempusData.resources.length,
+        tasks: tempusData.tasks.length,
+        customFields: tempusData.customFields.length,
+        roles: tempusData.roles.length,
+        skills: tempusData.skills.length,
+      }
+    : undefined;
+
+  res.json({ sessionId, analysis, piiReports, tempusSyncSummary: tempusSummary });
 }));
 
 // ── TEMPUS DATA SYNC ─────────────────────────────────────────────────

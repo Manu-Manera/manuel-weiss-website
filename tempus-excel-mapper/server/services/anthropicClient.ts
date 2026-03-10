@@ -142,7 +142,12 @@ export class AnthropicClient {
   }
 
   async analyzeStructure(
-    sheets: Array<{ sheetName: string; columns: ColumnAnalysis[]; sampleRows: Record<string, unknown>[] }>
+    sheets: Array<{ sheetName: string; columns: ColumnAnalysis[]; sampleRows: Record<string, unknown>[] }>,
+    tempusData?: {
+      customFields: Array<{ name: string; entityType: string; dataType: string; enumMembers?: Array<{ name: string }> }>;
+      projects: Array<{ id: number; name: string }>;
+      resources: Array<{ id: number; name: string }>;
+    },
   ): Promise<{
     sheets: Array<{
       sheetName: string;
@@ -178,13 +183,17 @@ export class AnthropicClient {
       sampleRows: s.sampleRows.slice(0, 3),
     }));
 
+    const tempusContext = tempusData
+      ? `\n\nVORHANDENE TEMPUS-DATEN (zum Abgleich nutzen):\nCustom Fields: ${JSON.stringify(tempusData.customFields.map(cf => ({ name: cf.name, entity: cf.entityType, type: cf.dataType, values: cf.enumMembers?.map(e => e.name) })))}\nProjekte (Auszug): ${tempusData.projects.slice(0, 20).map(p => p.name).join(', ')}\nRessourcen (Auszug): ${tempusData.resources.slice(0, 20).map(r => r.name).join(', ')}`
+      : '';
+
     const response = await this.client.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 4096,
       system: TEMPUS_ANALYSIS_SYSTEM_PROMPT,
       messages: [{
         role: 'user',
-        content: `Analysiere diese Excel-Struktur:\n${JSON.stringify(sheetsInfo, null, 2)}`,
+        content: `Analysiere diese Excel-Struktur:\n${JSON.stringify(sheetsInfo, null, 2)}${tempusContext}`,
       }],
       tools: [ANALYSIS_TOOL],
       tool_choice: { type: 'tool' as const, name: 'analyze_excel_structure' },

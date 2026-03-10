@@ -54,7 +54,7 @@ export async function uploadExcel(file: File, consentSessionId = 'pre-session') 
   const data = await res.json();
 
   if (!res.ok) throw new Error(data?.error || 'Upload fehlgeschlagen');
-  return data as { sessionId: string; analysis: unknown };
+  return data as { sessionId: string; analysis: unknown; tempusSyncSummary?: Record<string, number> };
 }
 
 // ── Tempus Sync ──────────────────────────────────────────────────────
