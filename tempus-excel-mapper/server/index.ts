@@ -520,7 +520,14 @@ app.post('/api/sessions/:id/export', asyncRoute(async (req, res) => {
   }
   const { templates } = req.body || {};
   console.log(`[export] Templates: ${templates ? JSON.stringify(templates) : 'all'}, fieldMappings=${session.mappingResult.fieldMappings.length}, entityMappings=${session.mappingResult.entityMappings.length}`);
-  const buffer = await generateTempusExcel(session.parsedExcel, session.mappingResult, session.tempusData, templates, session.temporalInterpretation);
+  let buffer: Buffer;
+  try {
+    buffer = await generateTempusExcel(session.parsedExcel, session.mappingResult, session.tempusData, templates, session.temporalInterpretation);
+  } catch (exportErr) {
+    console.error(`[export] generateTempusExcel CRASHED:`, exportErr instanceof Error ? exportErr.message : exportErr);
+    console.error(`[export] Stack:`, exportErr instanceof Error ? exportErr.stack : '');
+    throw exportErr;
+  }
   session.exportBuffer = buffer;
   console.log(`[export] Success: ${Math.round(buffer.length / 1024)} KB`);
   logAudit('export_generated', session.id, { sizeKB: Math.round(buffer.length / 1024), templates });

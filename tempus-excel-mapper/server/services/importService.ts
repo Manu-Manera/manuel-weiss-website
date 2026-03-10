@@ -131,18 +131,40 @@ async function importStep(
     case 'customFields': {
       const newCFs = mappingResult.customFieldMappings
         .filter(cf => cf.action === 'create')
-        .map(cf => ({
-          id: null,
-          name: cf.customFieldName,
-          entityType: cf.entityType.toLowerCase(),
-          dataType: CF_DATATYPE_MAP[cf.dataType] || 'string',
-          isRequired: false,
-          isReadOnly: false,
-          isUnique: false,
-          isRichText: false,
-        }));
+        .map(cf => {
+          const apiDataType = CF_DATATYPE_MAP[cf.dataType] || 'string';
+          const isEnumType = apiDataType === 'enum' || apiDataType === 'flags';
+
+          let enumMembers: Array<{ name: string }> | undefined;
+          if (isEnumType) {
+            const sheet = parsedExcel.sheets.find(s => s.name === cf.sourceSheet);
+            if (sheet) {
+              const uniqueVals = new Set<string>();
+              for (const row of sheet.rows) {
+                const val = row[cf.sourceColumn];
+                if (val != null && val !== '') uniqueVals.add(String(val).trim());
+              }
+              enumMembers = [...uniqueVals].filter(Boolean).slice(0, 100).map(name => ({ name }));
+            }
+            if (!enumMembers || enumMembers.length === 0) {
+              enumMembers = [{ name: cf.customFieldName }];
+            }
+          }
+
+          return {
+            id: null,
+            name: cf.customFieldName,
+            entityType: cf.entityType.toLowerCase(),
+            dataType: apiDataType,
+            isRequired: false,
+            isReadOnly: false,
+            isUnique: false,
+            isRichText: false,
+            ...(isEnumType && enumMembers ? { enumMembers } : {}),
+          };
+        });
       if (newCFs.length === 0) return 0;
-      console.log(`[importService] CustomFields: creating ${newCFs.length}`, JSON.stringify(newCFs[0]));
+      console.log(`[importService] CustomFields: creating ${newCFs.length}`, JSON.stringify(newCFs.slice(0, 3)));
       await client.createCustomFields(newCFs);
       return newCFs.length;
     }
