@@ -3,12 +3,16 @@ import { TempusClient } from './tempusClient.js';
 import { logAudit } from './auditLog.js';
 
 const IMPORT_STEPS = [
-  { entity: 'customFields', label: 'Attributes (Custom Fields)' },
-  { entity: 'resources', label: 'Resources' },
-  { entity: 'projects', label: 'Projects' },
-  { entity: 'assignments', label: 'Assignments' },
-  { entity: 'adminTimes', label: 'Admin Time' },
-  { entity: 'skills', label: 'Skills' },
+  { entity: 'customFields', label: '1. Attributes (Custom Fields)' },
+  { entity: 'resources', label: '2. Resources' },
+  { entity: 'projects', label: '3. Projects' },
+  { entity: 'assignments', label: '4. Assignments' },
+  { entity: 'adminTimes', label: '5. Admin Times' },
+  { entity: 'skills', label: '6. Skills' },
+  { entity: 'sheetData', label: '7. Sheet Data' },
+  { entity: 'advancedRates', label: '8. Resource Rates' },
+  { entity: 'financials', label: '9. Financials' },
+  { entity: 'teamResources', label: '10. Team Resource Members' },
 ];
 
 export interface ImportResult {
@@ -70,6 +74,8 @@ export async function importToTempus(
     }
 
     try {
+      const items = entitiesToCreate.map(em => ({ name: em.sourceValue }));
+
       if (step.entity === 'customFields') {
         const newCFs = mappingResult.customFieldMappings
           .filter(cf => cf.action === 'create')
@@ -82,24 +88,33 @@ export async function importToTempus(
           await client.createCustomFields(newCFs);
           stepResult.created = newCFs.length;
         }
-      } else if (step.entity === 'resources') {
-        const newResources = entitiesToCreate.map(em => ({ name: em.sourceValue }));
-        if (newResources.length > 0) {
-          await client.createResources(newResources);
-          stepResult.created = newResources.length;
-        }
-      } else if (step.entity === 'projects') {
-        const newProjects = entitiesToCreate.map(em => ({ name: em.sourceValue }));
-        if (newProjects.length > 0) {
-          await client.createProjects(newProjects);
-          stepResult.created = newProjects.length;
-        }
-      } else if (step.entity === 'assignments') {
-        const newAssignments = entitiesToCreate.map(em => ({ name: em.sourceValue }));
-        if (newAssignments.length > 0) {
-          await client.createAssignments(newAssignments);
-          stepResult.created = newAssignments.length;
-        }
+      } else if (step.entity === 'resources' && items.length > 0) {
+        await client.createResources(items);
+        stepResult.created = items.length;
+      } else if (step.entity === 'projects' && items.length > 0) {
+        await client.createProjects(items);
+        stepResult.created = items.length;
+      } else if (step.entity === 'assignments' && items.length > 0) {
+        await client.createAssignments(items);
+        stepResult.created = items.length;
+      } else if (step.entity === 'adminTimes' && items.length > 0) {
+        await client.createAdminTimes(items);
+        stepResult.created = items.length;
+      } else if (step.entity === 'skills' && items.length > 0) {
+        await client.createSkills(items);
+        stepResult.created = items.length;
+      } else if (step.entity === 'sheetData' && items.length > 0) {
+        await client.createSheetData(items);
+        stepResult.created = items.length;
+      } else if (step.entity === 'advancedRates' && items.length > 0) {
+        await client.createAdvancedRates(items);
+        stepResult.created = items.length;
+      } else if (step.entity === 'financials' && items.length > 0) {
+        await client.createFinancials(items);
+        stepResult.created = items.length;
+      } else if (step.entity === 'teamResources' && items.length > 0) {
+        await client.createTeamResources(items);
+        stepResult.created = items.length;
       }
 
       logAudit('import_step_completed', session.id, {

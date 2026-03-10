@@ -158,6 +158,30 @@ export class TempusClient {
     return this.request('POST', '/Assignments', assignments);
   }
 
+  async createSkills(skills: unknown[]): Promise<unknown> {
+    return this.request('POST', '/Skills', skills);
+  }
+
+  async createAdminTimes(adminTimes: unknown[]): Promise<unknown> {
+    return this.request('POST', '/AdminTimes', adminTimes);
+  }
+
+  async createSheetData(data: unknown[]): Promise<unknown> {
+    return this.request('POST', '/SheetData', data);
+  }
+
+  async createAdvancedRates(rates: unknown[]): Promise<unknown> {
+    return this.request('POST', '/AdvancedRates', rates);
+  }
+
+  async createFinancials(financials: unknown[]): Promise<unknown> {
+    return this.request('POST', '/Financials', financials);
+  }
+
+  async createTeamResources(teamResources: unknown[]): Promise<unknown> {
+    return this.request('POST', '/TeamResources', teamResources);
+  }
+
   // ── Fetch all relevant Tempus data ─────────────────────────────────
 
   async fetchAllData(): Promise<TempusData> {
