@@ -111,6 +111,7 @@ async function importStep(
       const newCFs = mappingResult.customFieldMappings
         .filter(cf => cf.action === 'create')
         .map(cf => ({
+          id: null,
           name: cf.customFieldName,
           entityType: cf.entityType.toLowerCase(),
           dataType: CF_DATATYPE_MAP[cf.dataType] || 'string',

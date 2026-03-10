@@ -99,7 +99,7 @@ let config: AppConfig = {
 };
 
 const sessions = new Map<string, Session>();
-const SESSION_TTL = 15 * 60 * 1000; // 15 Min (reduziert für DSGVO)
+const SESSION_TTL = 60 * 60 * 1000; // 60 Min – genug für den gesamten Workflow
 
 setInterval(() => {
   const now = Date.now();
@@ -507,14 +507,18 @@ app.get('/api/templates', (_req, res) => {
 });
 
 app.post('/api/sessions/:id/export', asyncRoute(async (req, res) => {
+  console.log(`[export] Starting export for session ${req.params.id}`);
   const session = getSession(req.params.id);
   if (!session.parsedExcel || !session.mappingResult || !session.tempusData) {
+    console.log(`[export] Missing data: parsed=${!!session.parsedExcel} mappings=${!!session.mappingResult} tempus=${!!session.tempusData}`);
     res.status(400).json({ error: 'Alle vorherigen Schritte müssen abgeschlossen sein' });
     return;
   }
   const { templates } = req.body || {};
+  console.log(`[export] Templates: ${templates ? JSON.stringify(templates) : 'all'}, fieldMappings=${session.mappingResult.fieldMappings.length}, entityMappings=${session.mappingResult.entityMappings.length}`);
   const buffer = await generateTempusExcel(session.parsedExcel, session.mappingResult, session.tempusData, templates);
   session.exportBuffer = buffer;
+  console.log(`[export] Success: ${Math.round(buffer.length / 1024)} KB`);
   logAudit('export_generated', session.id, { sizeKB: Math.round(buffer.length / 1024), templates });
   res.json({ ok: true, message: 'Export bereit', size: buffer.length });
 }));

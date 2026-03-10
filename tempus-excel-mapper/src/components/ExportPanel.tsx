@@ -51,7 +51,10 @@ export default function ExportPanel() {
   };
 
   const handleExport = async () => {
-    if (!sessionId) return;
+    if (!sessionId) {
+      store.setError('Keine aktive Session – bitte lade die Excel-Datei erneut hoch.');
+      return;
+    }
     setExporting(true);
     store.setError(null);
     store.setExportReady(false);
@@ -59,10 +62,14 @@ export default function ExportPanel() {
       const selected = selectedTemplates.size === templates.length
         ? undefined
         : [...selectedTemplates];
-      await api.generateExport(sessionId, selected);
+      console.log('[ExportPanel] Starting export, templates:', selected || 'all');
+      const result = await api.generateExport(sessionId, selected);
+      console.log('[ExportPanel] Export result:', result);
       store.setExportReady(true);
     } catch (err: unknown) {
-      store.setError(err instanceof Error ? err.message : 'Export fehlgeschlagen');
+      const msg = err instanceof Error ? err.message : 'Export fehlgeschlagen';
+      console.error('[ExportPanel] Export error:', msg);
+      store.setError(msg);
     } finally {
       setExporting(false);
     }
