@@ -4,6 +4,71 @@ import type {
   ValidationResult, ValidationIssue,
 } from '../types.js';
 
+// ── Tempus Template Definitions ─────────────────────────────────────
+
+export const TEMPUS_TEMPLATES = {
+  attributes: {
+    key: 'attributes',
+    label: '1. Attributes (Custom Fields)',
+    sheetName: 'Attributes',
+    headers: ['Entity Type', 'Custom Field Name', 'Type', 'Import Behavior', 'Is Required', 'Is Unique', 'Default Value', 'Selection Values', 'Is Rich Text'],
+  },
+  resources: {
+    key: 'resources',
+    label: '2. Resources',
+    sheetName: 'Resources',
+    headers: ['Resource ID', 'API External Id', 'Resource Name', 'Billing Rate', 'Demand Planning', 'Capacity Aggregation', 'Capacity Unit', 'Import Behavior', 'Is Team Resource', 'Team Start Date', 'Team End Date', 'Is Enabled', 'Login', 'Enable SSO', 'E-Mail', 'Global Role', 'Security Group', 'Is Timesheet User', 'Is Timesheet Approver', 'Timesheet Approver', 'Is Resource Manager', 'Resource Managers', 'Department', 'Hired On'],
+  },
+  projects: {
+    key: 'projects',
+    label: '3. Projects',
+    sheetName: 'Projects',
+    headers: ['Project ID', 'API External Id', 'Project Name', 'Start Date', 'End Date', 'Import Behavior', 'Is Proposal', 'Dataset Preference', 'Security Group', 'Is Template', 'Project Priority', 'Phase', 'Benefit'],
+  },
+  assignments: {
+    key: 'assignments',
+    label: '4. Assignments',
+    sheetName: 'Assignments',
+    headers: ['Project', 'Project API External Id', 'Resource', 'Resource API External Id', 'Task', 'Data Input', 'Plan Type', 'Allocation Type', 'Time Period', 'Import Behavior', 'Id', 'Action', 'Project Allocation', 'Priority', 'Complete'],
+  },
+  adminTimes: {
+    key: 'adminTimes',
+    label: '5. Admin Times',
+    sheetName: 'Admin Times',
+    headers: ['Resource Name', 'Aggregation Unit', 'Admin Time Type'],
+  },
+  skills: {
+    key: 'skills',
+    label: '6. Skills',
+    sheetName: 'Skills',
+    headers: ['Skill Name', 'Type', 'Import Behavior', 'Category Names', 'Description', 'Track Expiration'],
+  },
+  sheetData: {
+    key: 'sheetData',
+    label: '7. Sheet Data',
+    sheetName: 'Sheet Data',
+    headers: ['Entity Type', 'Project Name', 'Template Name'],
+  },
+  advancedRates: {
+    key: 'advancedRates',
+    label: '8. Advanced Rates',
+    sheetName: 'Resource Rates',
+    headers: ['Resource Name', 'Rate', 'Start Date', 'End Date'],
+  },
+  financials: {
+    key: 'financials',
+    label: '9. Financials',
+    sheetName: 'Financials',
+    headers: ['Project', 'Category', 'Type', 'Time Period', 'Import Behavior', 'Project Cost', 'Row Id', 'Priority'],
+  },
+  teamResources: {
+    key: 'teamResources',
+    label: '10. Team Resources',
+    sheetName: 'Team Resource Members',
+    headers: ['Resource Name', 'Aggregation Unit', 'Team Member'],
+  },
+} as const;
+
 // ── Validation ───────────────────────────────────────────────────────
 
 export function validateMappings(
@@ -134,10 +199,15 @@ export async function generateTempusExcel(
   parsed: ParsedExcel,
   mappingResult: MappingResult,
   tempusData: TempusData,
+  templates?: string[],
 ): Promise<Buffer> {
   const workbook = new ExcelJS.Workbook();
   workbook.creator = 'Tempus Excel Mapper';
   workbook.created = new Date();
+
+  const selectedTemplates = templates && templates.length > 0
+    ? templates
+    : Object.keys(TEMPUS_TEMPLATES);
 
   const confirmedFieldMappings = mappingResult.fieldMappings.filter(
     fm => fm.status === 'confirmed' || fm.status === 'suggested'
@@ -146,79 +216,119 @@ export async function generateTempusExcel(
     em => em.status === 'confirmed' || em.status === 'suggested' || em.status === 'create_new'
   );
 
-  // Group field mappings by target entity
   const byEntity = new Map<string, FieldMapping[]>();
   for (const fm of confirmedFieldMappings) {
     if (!byEntity.has(fm.targetEntity)) byEntity.set(fm.targetEntity, []);
     byEntity.get(fm.targetEntity)!.push(fm);
   }
 
-  // Fixed Tempus import order
-  const ENTITY_ORDER = [
-    'customFields', 'resources', 'projects', 'assignments',
-    'adminTimes', 'skills', 'tasks', 'sheetData',
-    'advancedRates', 'financials', 'teamResources',
-  ];
+  for (const templateKey of selectedTemplates) {
+    const template = TEMPUS_TEMPLATES[templateKey as keyof typeof TEMPUS_TEMPLATES];
+    if (!template) continue;
 
-  const orderedEntities = [
-    ...ENTITY_ORDER.filter(e => byEntity.has(e)),
-    ...[...byEntity.keys()].filter(e => !ENTITY_ORDER.includes(e)),
-  ];
+    const entityMappings = byEntity.get(templateKey) || [];
+    if (entityMappings.length === 0 && templateKey !== 'attributes') continue;
 
-  for (const entity of orderedEntities) {
-    const mappings = byEntity.get(entity);
-    if (!mappings) continue;
-    const ws = workbook.addWorksheet(entityToSheetName(entity));
-    const targetColumns = mappings.map(m => m.targetField);
+    const ws = workbook.addWorksheet(template.sheetName);
 
-    // Header row
-    const headerRow = ws.addRow(targetColumns.map(formatFieldName));
-    headerRow.font = { bold: true };
-    headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4472C4' } };
-    headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-
-    // Data rows – collect from all source sheets
-    const sourceSheets = [...new Set(mappings.map(m => m.sourceSheet))];
-    for (const sheetName of sourceSheets) {
-      const sheet = parsed.sheets.find(s => s.name === sheetName);
-      if (!sheet) continue;
-
-      const sheetMappings = mappings.filter(m => m.sourceSheet === sheetName);
-
-      for (const row of sheet.rows) {
-        const exportRow: unknown[] = [];
-        for (const targetCol of targetColumns) {
-          const mapping = sheetMappings.find(m => m.targetField === targetCol);
-          if (!mapping) {
-            exportRow.push('');
-            continue;
+    const headers = [...template.headers];
+    const customFieldCols: string[] = [];
+    if (templateKey === 'projects' || templateKey === 'resources') {
+      for (const fm of entityMappings) {
+        if (fm.targetField.startsWith('cf:')) {
+          const cfName = fm.targetField.slice(3);
+          if (!headers.includes(cfName)) {
+            headers.push(cfName);
+            customFieldCols.push(cfName);
           }
-
-          let value = row[mapping.sourceColumn];
-
-          // Apply entity ID resolution
-          if (['projectName', 'resourceName', 'taskName', 'name'].includes(targetCol) && value) {
-            const entityMatch = confirmedEntityMappings.find(
-              em => em.sourceValue.toLowerCase() === String(value).toLowerCase() &&
-                em.matchedId != null
-            );
-            if (entityMatch && targetCol !== 'name') {
-              value = entityMatch.matchedId;
-            }
-          }
-
-          // Apply date transformation
-          if (['startDate', 'endDate'].includes(targetCol) && value) {
-            value = formatDate(value);
-          }
-
-          exportRow.push(value ?? '');
         }
-        ws.addRow(exportRow);
       }
     }
 
-    // Auto-width columns
+    const headerRow = ws.addRow(headers);
+    headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4472C4' } };
+
+    if (templateKey === 'attributes') {
+      const cfMappings = mappingResult.customFieldMappings.filter(cf => cf.action === 'create');
+      for (const cf of cfMappings) {
+        ws.addRow([
+          cf.entityType,
+          cf.customFieldName,
+          mapToTempusDataType(cf.dataType),
+          'Merge',
+          'false',
+          'false',
+          '',
+          '',
+          '',
+        ]);
+      }
+      const existingCFs = mappingResult.customFieldMappings.filter(cf => cf.action === 'exists');
+      for (const cf of existingCFs) {
+        ws.addRow([
+          cf.entityType,
+          cf.customFieldName,
+          mapToTempusDataType(cf.dataType),
+          'Merge',
+          'false',
+          'false',
+          '',
+          '',
+          '',
+        ]);
+      }
+    } else {
+      const sourceSheets = [...new Set(entityMappings.map(m => m.sourceSheet))];
+      for (const sheetName of sourceSheets) {
+        const sheet = parsed.sheets.find(s => s.name === sheetName);
+        if (!sheet) continue;
+
+        const sheetMappings = entityMappings.filter(m => m.sourceSheet === sheetName);
+
+        for (const row of sheet.rows) {
+          const exportRow: unknown[] = [];
+          for (const header of headers) {
+            const mapping = sheetMappings.find(m => {
+              if (m.targetField.startsWith('cf:')) {
+                return m.targetField.slice(3) === header;
+              }
+              return tempusFieldToHeader(m.targetField, templateKey) === header;
+            });
+
+            if (!mapping) {
+              if (header === 'Import Behavior') { exportRow.push('Merge'); continue; }
+              if (header === 'Is Enabled') { exportRow.push('true'); continue; }
+              if (header === 'Is Proposal') { exportRow.push('false'); continue; }
+              if (header === 'Is Template') { exportRow.push('false'); continue; }
+              if (header === 'Is Team Resource') { exportRow.push('false'); continue; }
+              if (header === 'Demand Planning') { exportRow.push('false'); continue; }
+              exportRow.push('');
+              continue;
+            }
+
+            let value = row[mapping.sourceColumn];
+
+            if (value && typeof value === 'string') {
+              const entityMatch = confirmedEntityMappings.find(
+                em => em.sourceValue.toLowerCase() === String(value).toLowerCase() && em.matchedName
+              );
+              if (entityMatch && entityMatch.matchedName) {
+                value = entityMatch.matchedName;
+              }
+            }
+
+            if (['Start Date', 'End Date', 'Team Start Date', 'Team End Date', 'Hired On'].includes(header) && value) {
+              value = formatDate(value);
+            }
+
+            exportRow.push(value ?? '');
+          }
+          ws.addRow(exportRow);
+        }
+      }
+    }
+
     ws.columns.forEach(col => {
       let maxLen = 10;
       col.eachCell?.({ includeEmpty: false }, cell => {
@@ -229,28 +339,109 @@ export async function generateTempusExcel(
     });
   }
 
-  // Add mapping report sheet
   addReportSheet(workbook, mappingResult);
 
   const buffer = await workbook.xlsx.writeBuffer();
   return Buffer.from(buffer);
 }
 
-function entityToSheetName(entity: string): string {
-  const map: Record<string, string> = {
-    customFields: '1. Attributes',
-    resources: '2. Resources',
-    projects: '3. Projects',
-    assignments: '4. Assignments',
-    adminTimes: '5. Admin Time',
-    skills: '6. Skills',
-    tasks: '7. Tasks',
-    sheetData: '7. Sheet Data',
-    advancedRates: '8. Advanced Rates',
-    financials: '9. Financials',
-    teamResources: '10. Team Resource',
+function tempusFieldToHeader(field: string, entity: string): string {
+  const fieldMap: Record<string, Record<string, string>> = {
+    projects: {
+      name: 'Project Name',
+      startDate: 'Start Date',
+      endDate: 'End Date',
+      externalId: 'API External Id',
+      priority: 'Project Priority',
+      phase: 'Phase',
+      benefit: 'Benefit',
+      importBehavior: 'Import Behavior',
+      isLocked: 'Is Template',
+      status: 'Project Priority',
+      manager: 'Security Group',
+    },
+    resources: {
+      name: 'Resource Name',
+      billingRate: 'Billing Rate',
+      capacityUnit: 'Capacity Unit',
+      globalRole: 'Global Role',
+      externalId: 'API External Id',
+      email: 'E-Mail',
+      department: 'Department',
+      isEnabled: 'Is Enabled',
+      importBehavior: 'Import Behavior',
+    },
+    assignments: {
+      projectName: 'Project',
+      resourceName: 'Resource',
+      taskName: 'Task',
+      planType: 'Plan Type',
+      allocation: 'Project Allocation',
+      month: 'Time Period',
+      priority: 'Priority',
+      startDate: 'Start Date',
+      endDate: 'End Date',
+      importBehavior: 'Import Behavior',
+    },
+    adminTimes: {
+      name: 'Admin Time Type',
+      resourceName: 'Resource Name',
+      type: 'Admin Time Type',
+      hours: 'Aggregation Unit',
+    },
+    skills: {
+      name: 'Skill Name',
+      category: 'Category Names',
+      level: 'Type',
+      resourceName: 'Resource Name',
+      importBehavior: 'Import Behavior',
+    },
+    sheetData: {
+      projectName: 'Project Name',
+      taskName: 'Template Name',
+      resourceName: 'Resource Name',
+    },
+    advancedRates: {
+      resourceName: 'Resource Name',
+      projectName: 'Project Name',
+      rate: 'Rate',
+      effectiveDate: 'Start Date',
+    },
+    financials: {
+      projectName: 'Project',
+      month: 'Time Period',
+      budget: 'Project Cost',
+      type: 'Type',
+      category: 'Category',
+      importBehavior: 'Import Behavior',
+    },
+    teamResources: {
+      teamName: 'Resource Name',
+      resourceName: 'Team Member',
+      role: 'Aggregation Unit',
+    },
+    customFields: {
+      entityType: 'Entity Type',
+      name: 'Custom Field Name',
+      dataType: 'Type',
+    },
   };
-  return map[entity] || entity;
+  return fieldMap[entity]?.[field] || formatFieldName(field);
+}
+
+function mapToTempusDataType(dt: string): string {
+  const map: Record<string, string> = {
+    Text: 'String',
+    String: 'String',
+    Number: 'Number',
+    Date: 'Date',
+    Boolean: 'Boolean',
+    Selection: 'Selection',
+    'Multi-Selection': 'Multi-Selection',
+    Currency: 'Currency',
+    'Precision Number': 'Precision Number',
+  };
+  return map[dt] || dt;
 }
 
 function formatFieldName(field: string): string {
