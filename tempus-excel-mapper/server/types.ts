@@ -272,6 +272,15 @@ export interface CustomFieldMapping {
   tempusFieldId?: number;
   dataType: string;
   action: 'exists' | 'create';
+  uniqueValues?: string[];
+  sampleValues?: unknown[];
+}
+
+export interface BulkCustomFieldValue {
+  value: string | number | boolean;
+  customFieldId: number;
+  entityIds?: number[] | null;
+  assignmentIds?: Array<{ assignmentId: number }> | null;
 }
 
 export interface MappingResult {

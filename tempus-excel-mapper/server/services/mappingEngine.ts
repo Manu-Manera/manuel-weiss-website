@@ -235,6 +235,8 @@ export async function generateMappings(
           status: cfMatch.confidence >= 0.9 ? 'suggested' : 'needs_review',
         });
 
+        const cfColValues = parsedSheet.rows.map(r => r[colName]).filter(v => v != null && v !== '');
+        const cfUniqueVals = [...new Set(cfColValues.map(v => String(v).trim()))];
         customFieldMappings.push({
           sourceColumn: colName,
           sourceSheet: sheet.sheetName,
@@ -244,6 +246,8 @@ export async function generateMappings(
           tempusFieldId: cfMatch.tempusField.id,
           dataType: cfMatch.tempusField.dataType,
           action: 'exists',
+          uniqueValues: cfUniqueVals.slice(0, 100),
+          sampleValues: cfColValues.slice(0, 5),
         });
 
         const key = `${sheet.sheetName}.${colName}`;
@@ -267,6 +271,8 @@ export async function generateMappings(
           status: 'needs_review',
         });
 
+        const newCfColValues = parsedSheet.rows.map(r => r[colName]).filter(v => v != null && v !== '');
+        const newCfUniqueVals = [...new Set(newCfColValues.map(v => String(v).trim()))];
         customFieldMappings.push({
           sourceColumn: colName,
           sourceSheet: sheet.sheetName,
@@ -275,6 +281,8 @@ export async function generateMappings(
           existsInTempus: false,
           dataType: inferredType,
           action: 'create',
+          uniqueValues: newCfUniqueVals.slice(0, 100),
+          sampleValues: newCfColValues.slice(0, 5),
         });
 
         const key = `${sheet.sheetName}.${colName}`;
@@ -438,6 +446,9 @@ export async function generateMappings(
             const existingCF = tempusData.customFields.find(
               cf => cf.name.toLowerCase() === cfName.toLowerCase()
             );
+            const aiParsedSheet = parsed.sheets.find(s => s.name === aiMapping.sourceSheet);
+            const aiCfColValues = aiParsedSheet?.rows.map(r => r[aiMapping.sourceColumn]).filter(v => v != null && v !== '') || [];
+            const aiCfUniqueVals = [...new Set(aiCfColValues.map(v => String(v).trim()))];
             customFieldMappings.push({
               sourceColumn: aiMapping.sourceColumn,
               sourceSheet: aiMapping.sourceSheet,
@@ -447,6 +458,8 @@ export async function generateMappings(
               tempusFieldId: existingCF?.id,
               dataType: aiMapping.suggestedDataType || existingCF?.dataType || 'Text',
               action: existingCF ? 'exists' : 'create',
+              uniqueValues: aiCfUniqueVals.slice(0, 100),
+              sampleValues: aiCfColValues.slice(0, 5),
             });
           }
         }

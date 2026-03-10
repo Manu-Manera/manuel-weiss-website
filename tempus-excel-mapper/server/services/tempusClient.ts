@@ -182,6 +182,28 @@ export class TempusClient {
     return this.request('POST', '/TeamResources', teamResources);
   }
 
+  // ── Custom Field Values (separate endpoints per entity type) ───────
+
+  async updateProjectCFValues(values: unknown[]): Promise<unknown> {
+    return this.request('PUT', '/Projects/CustomFieldValues', values);
+  }
+
+  async updateResourceCFValues(values: unknown[]): Promise<unknown> {
+    return this.request('PUT', '/Resources/CustomFieldValues', values);
+  }
+
+  async updateAssignmentCFValues(values: unknown[]): Promise<unknown> {
+    return this.request('PUT', '/Assignments/CustomFieldValues', values);
+  }
+
+  async updateMilestoneCFValues(values: unknown[]): Promise<unknown> {
+    return this.request('PUT', '/Milestones/CustomFieldValues', values);
+  }
+
+  async updateFinancialCFValues(values: unknown[]): Promise<unknown> {
+    return this.request('PUT', '/ProjectFinancials/CustomFieldValues', values);
+  }
+
   // ── Fetch all relevant Tempus data ─────────────────────────────────
 
   async fetchAllData(): Promise<TempusData> {
