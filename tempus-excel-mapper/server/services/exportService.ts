@@ -4,7 +4,7 @@ import type {
   ValidationResult, ValidationIssue, TemporalInterpretationResult,
 } from '../types.js';
 
-// ── Tempus Template Definitions ─────────────────────────────────────
+// ── Tempus Template Definitions (exact match to Tempus import format) ─
 
 export const TEMPUS_TEMPLATES = {
   attributes: {
@@ -12,66 +12,163 @@ export const TEMPUS_TEMPLATES = {
     label: '1. Attributes (Custom Fields)',
     sheetName: 'Attributes',
     headers: ['Entity Type', 'Custom Field Name', 'Type', 'Import Behavior', 'Is Required', 'Is Unique', 'Default Value', 'Selection Values', 'Is Rich Text'],
+    instructions: [
+      'Entity Type: Project, Resource, Assignment, Milestone, FinancialRow, Task',
+      'Type: String, Number, Date, Boolean, Selection, Multi-Selection, Currency, Precision Number, Url, Hierarchy, Workflow, Flags, Rich Text',
+      'Import Behavior: Merge (update if exists, create if new), Insert (only create new), Delete',
+      'Is Required / Is Unique / Is Rich Text: true or false',
+      'Selection Values: Comma-separated list of values for Selection/Multi-Selection/Flags types',
+      'Default Value: Optional default value for the field',
+      'IMPORTANT: Import this file FIRST before any other templates',
+    ],
   },
   resources: {
     key: 'resources',
     label: '2. Resources',
     sheetName: 'Resources',
     headers: ['Resource ID', 'API External Id', 'Resource Name', 'Billing Rate', 'Demand Planning', 'Capacity Aggregation', 'Capacity Unit', 'Import Behavior', 'Is Team Resource', 'Team Start Date', 'Team End Date', 'Is Enabled', 'Login', 'Enable SSO', 'E-Mail', 'Global Role', 'Security Group', 'Is Timesheet User', 'Is Timesheet Approver', 'Timesheet Approver', 'Is Resource Manager', 'Resource Managers', 'Department', 'Hired On'],
+    instructions: [
+      'Resource ID: Leave empty for new resources (auto-assigned by Tempus)',
+      'API External Id: Optional external identifier for API integrations',
+      'Resource Name: Required – Full name of the resource',
+      'Import Behavior: Merge, Insert, or Delete',
+      'Capacity Unit: Hours, FTE, or Days',
+      'Is Team Resource / Is Enabled / Enable SSO / Is Timesheet User: true or false',
+      'Global Role: Must match an existing role name in Tempus',
+      'Security Group: Must match an existing security group name in Tempus',
+      'Dates: Use YYYY-MM-DD format (e.g. 2026-01-15)',
+      'Custom field columns can be added after the standard columns',
+    ],
   },
   projects: {
     key: 'projects',
     label: '3. Projects',
     sheetName: 'Projects',
     headers: ['Project ID', 'API External Id', 'Project Name', 'Start Date', 'End Date', 'Import Behavior', 'Is Proposal', 'Dataset Preference', 'Security Group', 'Is Template', 'Project Priority', 'Phase', 'Benefit'],
+    instructions: [
+      'Project ID: Leave empty for new projects (auto-assigned by Tempus)',
+      'API External Id: Optional external identifier',
+      'Project Name: Required – Unique project name',
+      'Start Date / End Date: YYYY-MM-DD format',
+      'Import Behavior: Merge (update existing + create new), Insert, or Delete',
+      'Is Proposal / Is Template: true or false',
+      'Dataset Preference: Planned, Actual, or leave empty for default',
+      'Project Priority: Integer value (lower = higher priority)',
+      'Phase: Must match a Phase name configured in Tempus',
+      'Benefit: Numeric value',
+      'Custom field columns can be added after the standard columns',
+    ],
   },
   assignments: {
     key: 'assignments',
     label: '4. Assignments',
     sheetName: 'Assignments',
     headers: ['Project', 'Project API External Id', 'Resource', 'Resource API External Id', 'Task', 'Data Input', 'Plan Type', 'Allocation Type', 'Time Period', 'Import Behavior', 'Id', 'Action', 'Project Allocation', 'Priority', 'Complete'],
+    instructions: [
+      'Project: Project name (must exist in Tempus)',
+      'Resource: Resource name (must exist in Tempus)',
+      'Task: Optional task name within the project',
+      'Data Input: Allocation value (hours, FTE, etc.)',
+      'Plan Type: Planned or Actual',
+      'Allocation Type: Hours, FTE, Percentage, or Days',
+      'Time Period: Month in format YYYY-MM (e.g. 2026-03) or specific date',
+      'Import Behavior: Merge, Insert, or Delete',
+      'Id: Leave empty for new assignments',
+      'Action: Replace, Append, or leave empty for default',
+      'Project Allocation: Total allocation for the project',
+      'Priority: Integer priority value',
+      'Complete: Percentage complete (0-100)',
+      'Custom field columns can be added after the standard columns',
+    ],
   },
   adminTimes: {
     key: 'adminTimes',
     label: '5. Admin Times',
     sheetName: 'Admin Times',
     headers: ['Resource Name', 'Aggregation Unit', 'Admin Time Type'],
+    instructions: [
+      'Resource Name: Must match an existing resource in Tempus',
+      'Aggregation Unit: Hours, FTE, or Days',
+      'Admin Time Type: Must match an existing admin time type in Tempus',
+    ],
   },
   skills: {
     key: 'skills',
     label: '6. Skills',
     sheetName: 'Skills',
     headers: ['Skill Name', 'Type', 'Import Behavior', 'Category Names', 'Description', 'Track Expiration'],
+    instructions: [
+      'Skill Name: Required – Name of the skill',
+      'Type: Skill value type (e.g. Proficiency, Yes/No)',
+      'Import Behavior: Merge, Insert, or Delete',
+      'Category Names: Comma-separated skill categories',
+      'Track Expiration: true or false',
+    ],
   },
   sheetData: {
     key: 'sheetData',
     label: '7. Sheet Data',
     sheetName: 'Sheet Data',
     headers: ['Entity Type', 'Project Name', 'Template Name'],
+    instructions: [
+      'Entity Type: Project, Resource, or Assignment',
+      'Project Name: Name of the project to assign the sheet to',
+      'Template Name: Name of the sheet data template in Tempus',
+    ],
   },
   advancedRates: {
     key: 'advancedRates',
     label: '8. Advanced Rates',
     sheetName: 'Resource Rates',
     headers: ['Resource Name', 'Rate', 'Start Date', 'End Date'],
+    instructions: [
+      'Resource Name: Must match an existing resource in Tempus',
+      'Rate: Numeric billing/cost rate value',
+      'Start Date / End Date: YYYY-MM-DD format for rate effective period',
+    ],
   },
   financials: {
     key: 'financials',
     label: '9. Financials',
     sheetName: 'Financials',
     headers: ['Project', 'Category', 'Type', 'Time Period', 'Import Behavior', 'Project Cost', 'Row Id', 'Priority'],
+    instructions: [
+      'Project: Project name (must exist in Tempus)',
+      'Category: Financial category name',
+      'Type: Financial type name',
+      'Time Period: Month in YYYY-MM format',
+      'Import Behavior: Merge, Insert, or Delete',
+      'Project Cost: Numeric cost value',
+      'Row Id: Leave empty for new entries',
+      'Priority: Integer priority value',
+      'Custom field columns can be added after the standard columns',
+    ],
   },
   milestones: {
     key: 'milestones',
     label: '10. Milestones',
     sheetName: 'Milestones',
     headers: ['Project', 'Project API External Id', 'Milestone Name', 'Date', 'Description', 'Color', 'Shape', 'Import Behavior'],
+    instructions: [
+      'Project: Project name (must exist in Tempus)',
+      'Milestone Name: Required – Unique name within the project',
+      'Date: YYYY-MM-DD format',
+      'Color: HotPink, PaleVioletRed, DarkCyan, DodgerBlue, MediumPurple, Gold, Orange, LimeGreen, or other CSS color names',
+      'Shape: Diamond, Square, Circle, Triangle, Star',
+      'Import Behavior: Merge, Insert, or Delete',
+      'Custom field columns can be added after the standard columns',
+    ],
   },
   teamResources: {
     key: 'teamResources',
     label: '11. Team Resources',
     sheetName: 'Team Resource Members',
     headers: ['Resource Name', 'Aggregation Unit', 'Team Member'],
+    instructions: [
+      'Resource Name: Team resource name (must be a Team Resource in Tempus)',
+      'Aggregation Unit: Hours, FTE, or Days',
+      'Team Member: Name of the individual resource to add as team member',
+    ],
   },
 } as const;
 
@@ -233,6 +330,39 @@ export async function generateTempusExcel(
     byEntity.get(fm.targetEntity)!.push(fm);
   }
 
+  // ── Add Instructions sheet ──────────────────────────────────────────
+  const wsInstr = workbook.addWorksheet('Instructions');
+  const instrTitle = wsInstr.addRow(['Tempus Import – Instructions']);
+  instrTitle.font = { bold: true, size: 14, color: { argb: 'FF1E3A5F' } };
+  wsInstr.mergeCells(1, 1, 1, 3);
+  wsInstr.addRow([]);
+  wsInstr.addRow(['This workbook was generated by Tempus Excel Mapper.']);
+  wsInstr.addRow(['Import the sheets into Tempus in the correct order (Attributes first, then Resources, Projects, etc.).']);
+  wsInstr.addRow([]);
+
+  const instrHeaderRow = wsInstr.addRow(['Sheet', 'Import Order', 'Notes']);
+  instrHeaderRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+  instrHeaderRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4472C4' } };
+
+  for (const tKey of selectedTemplates) {
+    const t = TEMPUS_TEMPLATES[tKey as keyof typeof TEMPUS_TEMPLATES];
+    if (!t) continue;
+    wsInstr.addRow([(t as any).sheetName, (t as any).label, ((t as any).instructions || [])[0] || '']);
+  }
+  wsInstr.addRow([]);
+
+  const generalNotes = wsInstr.addRow(['General Notes:']);
+  generalNotes.font = { bold: true };
+  wsInstr.addRow(['- Import Behavior: "Merge" updates existing and creates new entries. "Insert" only creates. "Delete" removes.']);
+  wsInstr.addRow(['- Dates must be in YYYY-MM-DD format (e.g. 2026-03-15).']);
+  wsInstr.addRow(['- Boolean fields: Use "true" or "false" (lowercase).']);
+  wsInstr.addRow(['- Custom field columns appear after the standard columns. Their names must exactly match the custom field names in Tempus.']);
+  wsInstr.addRow(['- Leave ID columns empty for new entries – Tempus assigns IDs automatically.']);
+  wsInstr.addRow(['- Each sheet can be imported separately in Tempus under Settings > Excel Import.']);
+
+  wsInstr.columns = [{ width: 30 }, { width: 40 }, { width: 80 }];
+
+  // ── Generate data sheets ──────────────────────────────────────────
   for (const templateKey of selectedTemplates) {
     const template = TEMPUS_TEMPLATES[templateKey as keyof typeof TEMPUS_TEMPLATES];
     if (!template) continue;
@@ -242,9 +372,12 @@ export async function generateTempusExcel(
 
     const ws = workbook.addWorksheet(template.sheetName);
 
+    // Build headers: standard columns + custom field columns
     const headers = [...template.headers];
     const customFieldCols: string[] = [];
-    if (templateKey === 'projects' || templateKey === 'resources' || templateKey === 'assignments' || templateKey === 'financials' || templateKey === 'milestones') {
+
+    // Add CF columns from field mappings
+    if (['projects', 'resources', 'assignments', 'financials', 'milestones'].includes(templateKey)) {
       for (const fm of entityMappings) {
         if (fm.targetField.startsWith('cf:')) {
           const cfName = fm.targetField.slice(3);
@@ -254,11 +387,24 @@ export async function generateTempusExcel(
           }
         }
       }
+      // Also add CFs from customFieldMappings for this entity type
+      const entityTypeLower = templateKey.toLowerCase();
+      for (const cm of mappingResult.customFieldMappings) {
+        const cmEntity = cm.entityType.toLowerCase();
+        if (cmEntity === entityTypeLower || cmEntity === entityTypeLower.replace(/s$/, '')) {
+          if (!headers.includes(cm.customFieldName)) {
+            headers.push(cm.customFieldName);
+            customFieldCols.push(cm.customFieldName);
+          }
+        }
+      }
     }
 
+    // Write header row
     const headerRow = ws.addRow(headers);
     headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
     headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4472C4' } };
+    headerRow.alignment = { wrapText: true };
 
     if (templateKey === 'attributes') {
       const allCFMappings = [
@@ -276,8 +422,8 @@ export async function generateTempusExcel(
           cf.customFieldName,
           tempusType,
           'Merge',
-          'false',
-          'false',
+          cf.existsInTempus ? '' : 'false',
+          cf.existsInTempus ? '' : 'false',
           '',
           selectionValues,
           'false',
@@ -339,21 +485,40 @@ export async function generateTempusExcel(
           for (const row of sheet.rows) {
             const exportRow: unknown[] = [];
             for (const header of headers) {
-              const mapping = sheetMappings.find(m => {
-                if (m.targetField.startsWith('cf:')) {
-                  return m.targetField.slice(3) === header;
-                }
+              // Find mapping: first by cf: prefix, then by header name, also check customFieldMappings
+              let mapping = sheetMappings.find(m => {
+                if (m.targetField.startsWith('cf:')) return m.targetField.slice(3) === header;
                 return tempusFieldToHeader(m.targetField, templateKey) === header;
               });
 
+              // If no direct mapping, check if a customFieldMapping matches this header
+              if (!mapping && customFieldCols.includes(header)) {
+                const cfm = mappingResult.customFieldMappings.find(
+                  cm => cm.customFieldName === header && cm.sourceSheet === sheetName
+                );
+                if (cfm) {
+                  const val = row[cfm.sourceColumn];
+                  exportRow.push(val ?? '');
+                  continue;
+                }
+              }
+
               if (!mapping) {
+                // Defaults for standard columns
                 if (header === 'Import Behavior') { exportRow.push('Merge'); continue; }
+                if (header === 'Is Enabled') { exportRow.push('true'); continue; }
+                if (header === 'Is Proposal' || header === 'Is Template' || header === 'Is Team Resource'
+                  || header === 'Enable SSO' || header === 'Is Timesheet User'
+                  || header === 'Is Timesheet Approver' || header === 'Is Resource Manager') {
+                  exportRow.push('false'); continue;
+                }
                 exportRow.push('');
                 continue;
               }
 
               let value = row[mapping.sourceColumn];
 
+              // Entity name resolution
               if (value && typeof value === 'string') {
                 const entityMatch = confirmedEntityMappings.find(
                   em => em.sourceValue.toLowerCase() === String(value).toLowerCase() && em.matchedName
@@ -363,6 +528,7 @@ export async function generateTempusExcel(
                 }
               }
 
+              // Temporal transformations
               if (temporalInterpretation && value && typeof value === 'string') {
                 if (header === 'Phase' || mapping.targetField === 'phase') {
                   const phaseMatch = temporalInterpretation.phaseInterpretations.find(
@@ -378,7 +544,8 @@ export async function generateTempusExcel(
                 }
               }
 
-              if (['Start Date', 'End Date', 'Team Start Date', 'Team End Date', 'Hired On'].includes(header) && value) {
+              // Date formatting (YYYY-MM-DD)
+              if (['Start Date', 'End Date', 'Team Start Date', 'Team End Date', 'Hired On', 'Date'].includes(header) && value) {
                 value = formatDate(value);
               }
 
