@@ -415,6 +415,7 @@ app.put('/api/sessions/:id/mappings/:mappingId', asyncRoute(async (req, res) => 
       em.matchedName = matchedName;
       em.sourceValue = matchedName;
     }
+    if (targetEntity) em.targetEntity = targetEntity;
     if (status === 'confirmed') em.matchType = 'user_confirmed';
     if (status === 'create_new') { em.isNew = true; em.matchType = 'user_confirmed'; }
     res.json({ ok: true, mapping: em });
