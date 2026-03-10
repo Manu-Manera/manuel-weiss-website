@@ -59,9 +59,21 @@ export interface EntityMapping {
   isNew: boolean;
 }
 
+export interface CustomFieldMapping {
+  sourceColumn: string;
+  sourceSheet: string;
+  customFieldName: string;
+  entityType: string;
+  existsInTempus: boolean;
+  tempusFieldId?: number;
+  dataType: string;
+  action: 'exists' | 'create';
+}
+
 export interface MappingResult {
   fieldMappings: FieldMapping[];
   entityMappings: EntityMapping[];
+  customFieldMappings: CustomFieldMapping[];
   unmappedColumns: string[];
   summary: {
     totalFields: number;

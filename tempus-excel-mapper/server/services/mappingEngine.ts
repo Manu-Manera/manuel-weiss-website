@@ -2,6 +2,7 @@ import { v4 as uuid } from 'uuid';
 import type {
   ParsedExcel, AnalysisResult, TempusData, MappingResult,
   FieldMapping, EntityMapping, MappingStatus, MatchType, ColumnAnalysis,
+  CustomFieldMapping, TempusCustomField,
 } from '../types.js';
 import { AnthropicClient } from './anthropicClient.js';
 
@@ -61,6 +62,7 @@ export async function generateMappings(
 ): Promise<MappingResult> {
   const fieldMappings: FieldMapping[] = [];
   const entityMappings: EntityMapping[] = [];
+  const customFieldMappings: CustomFieldMapping[] = [];
   const unmappedColumns: string[] = [];
 
   for (const sheet of analysis.sheets) {
@@ -109,6 +111,82 @@ export async function generateMappings(
           status: match ? (match.confidence >= 0.9 ? 'suggested' : 'needs_review') : 'create_new',
           isNew: !match,
         });
+      }
+    }
+
+    // Step 2b: Custom-Field matching for unmapped columns
+    const cfEntityType = inferCustomFieldEntityType(sheet.sheetName, targetEntity);
+    const stillUnmapped = unmappedColumns
+      .filter(u => u.startsWith(`${sheet.sheetName}.`))
+      .map(u => u.slice(sheet.sheetName.length + 1));
+
+    for (const colName of stillUnmapped) {
+      const col = sheet.columns.find(c => c.name === colName);
+      if (!col) continue;
+
+      const cfMatch = matchCustomField(colName, cfEntityType, tempusData.customFields);
+      if (cfMatch) {
+        col.isCustomField = true;
+        col.customFieldEntityType = cfEntityType;
+        col.customFieldName = cfMatch.tempusField.name;
+
+        fieldMappings.push({
+          id: uuid(),
+          sourceSheet: sheet.sheetName,
+          sourceColumn: colName,
+          targetEntity: entityTypeToTargetEntity(cfEntityType),
+          targetField: `cf:${cfMatch.tempusField.name}`,
+          matchType: cfMatch.matchType,
+          confidence: cfMatch.confidence,
+          reasoning: cfMatch.reasoning,
+          status: cfMatch.confidence >= 0.9 ? 'suggested' : 'needs_review',
+        });
+
+        customFieldMappings.push({
+          sourceColumn: colName,
+          sourceSheet: sheet.sheetName,
+          customFieldName: cfMatch.tempusField.name,
+          entityType: cfEntityType,
+          existsInTempus: true,
+          tempusFieldId: cfMatch.tempusField.id,
+          dataType: cfMatch.tempusField.dataType,
+          action: 'exists',
+        });
+
+        const key = `${sheet.sheetName}.${colName}`;
+        const idx = unmappedColumns.indexOf(key);
+        if (idx >= 0) unmappedColumns.splice(idx, 1);
+      } else {
+        const inferredType = inferCustomFieldDataType(col);
+        col.isCustomField = true;
+        col.customFieldEntityType = cfEntityType;
+        col.customFieldName = colName;
+
+        fieldMappings.push({
+          id: uuid(),
+          sourceSheet: sheet.sheetName,
+          sourceColumn: colName,
+          targetEntity: entityTypeToTargetEntity(cfEntityType),
+          targetField: `cf:${colName}`,
+          matchType: 'new_entity',
+          confidence: 0.6,
+          reasoning: `Kein bestehendes Custom Field gefunden – wird als neues Attribut "${colName}" (${inferredType}) angelegt`,
+          status: 'needs_review',
+        });
+
+        customFieldMappings.push({
+          sourceColumn: colName,
+          sourceSheet: sheet.sheetName,
+          customFieldName: colName,
+          entityType: cfEntityType,
+          existsInTempus: false,
+          dataType: inferredType,
+          action: 'create',
+        });
+
+        const key = `${sheet.sheetName}.${colName}`;
+        const idx = unmappedColumns.indexOf(key);
+        if (idx >= 0) unmappedColumns.splice(idx, 1);
       }
     }
   }
@@ -193,6 +271,7 @@ export async function generateMappings(
   return {
     fieldMappings,
     entityMappings,
+    customFieldMappings,
     unmappedColumns,
     summary: {
       totalFields: fieldMappings.length + unmappedColumns.length,
@@ -376,4 +455,97 @@ function getUniqueValues(rows: Record<string, unknown>[], column: string): unkno
     }
   }
   return unique;
+}
+
+// ── Custom-Field matching helpers ────────────────────────────────────
+
+function inferCustomFieldEntityType(sheetName: string, suggestedEntity: string): string {
+  const lower = sheetName.toLowerCase();
+  if (/project|portfolio/.test(lower)) return 'Project';
+  if (/resource|ressource/.test(lower)) return 'Resource';
+  if (/task|vorgang/.test(lower)) return 'Task';
+
+  switch (suggestedEntity) {
+    case 'projects': return 'Project';
+    case 'resources': return 'Resource';
+    case 'tasks': return 'Task';
+    case 'assignments': return 'Project';
+    default: return 'Project';
+  }
+}
+
+function entityTypeToTargetEntity(cfEntityType: string): string {
+  switch (cfEntityType) {
+    case 'Project': return 'projects';
+    case 'Resource': return 'resources';
+    case 'Task': return 'tasks';
+    default: return 'projects';
+  }
+}
+
+function matchCustomField(
+  columnName: string,
+  entityType: string,
+  customFields: TempusCustomField[],
+): { tempusField: TempusCustomField; matchType: MatchType; confidence: number; reasoning: string } | null {
+  const normalized = columnName.toLowerCase().trim().replace(/\s+/g, ' ');
+  const relevantFields = customFields.filter(cf => cf.entityType === entityType);
+
+  for (const cf of relevantFields) {
+    if (cf.name.toLowerCase().trim() === normalized) {
+      return {
+        tempusField: cf,
+        matchType: 'exact',
+        confidence: 0.95,
+        reasoning: `Exakter Custom-Field-Match: "${columnName}" → ${cf.name} (ID: ${cf.id})`,
+      };
+    }
+  }
+
+  let bestMatch: { cf: TempusCustomField; score: number } | null = null;
+  for (const cf of relevantFields) {
+    const score = stringSimilarity(normalized, cf.name.toLowerCase().trim());
+    if (score > 0.7 && (!bestMatch || score > bestMatch.score)) {
+      bestMatch = { cf, score };
+    }
+  }
+
+  if (bestMatch) {
+    return {
+      tempusField: bestMatch.cf,
+      matchType: 'fuzzy',
+      confidence: bestMatch.score * 0.9,
+      reasoning: `Fuzzy Custom-Field-Match (${Math.round(bestMatch.score * 100)}%): "${columnName}" ≈ ${bestMatch.cf.name} (ID: ${bestMatch.cf.id})`,
+    };
+  }
+
+  // Try across all entity types as fallback with lower confidence
+  const otherFields = customFields.filter(cf => cf.entityType !== entityType);
+  for (const cf of otherFields) {
+    if (cf.name.toLowerCase().trim() === normalized) {
+      return {
+        tempusField: cf,
+        matchType: 'fuzzy',
+        confidence: 0.7,
+        reasoning: `Custom-Field-Match (anderer Entity-Typ ${cf.entityType}): "${columnName}" → ${cf.name} (ID: ${cf.id})`,
+      };
+    }
+  }
+
+  return null;
+}
+
+function inferCustomFieldDataType(col: ColumnAnalysis): string {
+  switch (col.inferredType) {
+    case 'number': return 'Number';
+    case 'date': return 'Date';
+    case 'boolean': return 'Boolean';
+    case 'string': {
+      if (col.uniqueCount > 0 && col.uniqueCount <= 20 && col.totalCount > col.uniqueCount * 2) {
+        return 'Selection';
+      }
+      return 'Text';
+    }
+    default: return 'Text';
+  }
 }

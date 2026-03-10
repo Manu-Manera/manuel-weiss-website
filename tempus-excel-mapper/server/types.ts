@@ -99,6 +99,9 @@ export interface ColumnAnalysis {
   confidence?: number;
   relevance?: 'high' | 'medium' | 'low';
   reasoning?: string;
+  isCustomField?: boolean;
+  customFieldEntityType?: string;
+  customFieldName?: string;
 }
 
 export interface SheetAnalysis {
@@ -153,9 +156,21 @@ export interface EntityMapping {
   isNew: boolean;
 }
 
+export interface CustomFieldMapping {
+  sourceColumn: string;
+  sourceSheet: string;
+  customFieldName: string;
+  entityType: string;
+  existsInTempus: boolean;
+  tempusFieldId?: number;
+  dataType: string;
+  action: 'exists' | 'create';
+}
+
 export interface MappingResult {
   fieldMappings: FieldMapping[];
   entityMappings: EntityMapping[];
+  customFieldMappings: CustomFieldMapping[];
   unmappedColumns: string[];
   summary: {
     totalFields: number;
@@ -195,6 +210,16 @@ export interface AppConfig {
   anthropicApiKey: string;
 }
 
+export interface ImportProgress {
+  currentStep: number;
+  totalSteps: number;
+  stepLabel: string;
+  created: number;
+  skipped: number;
+  failed: number;
+  errors: string[];
+}
+
 export interface Session {
   id: string;
   createdAt: number;
@@ -204,4 +229,5 @@ export interface Session {
   mappingResult?: MappingResult;
   validation?: ValidationResult;
   exportBuffer?: Buffer;
+  importProgress?: ImportProgress;
 }
