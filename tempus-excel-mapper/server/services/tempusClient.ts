@@ -159,6 +159,10 @@ export class TempusClient {
     return this.request('PUT', '/CustomFields', fields);
   }
 
+  async updateProjects(projects: unknown[]): Promise<unknown> {
+    return this.request('PUT', '/Projects', projects);
+  }
+
   async createAssignments(assignments: unknown[]): Promise<unknown> {
     return this.request('POST', '/Assignments', assignments);
   }

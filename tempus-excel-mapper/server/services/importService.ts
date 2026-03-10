@@ -6,26 +6,27 @@ import { TempusClient } from './tempusClient.js';
 import { logAudit } from './auditLog.js';
 
 const IMPORT_STEPS = [
-  { entity: 'customFields',       label: '1. Attributes (Custom Fields)' },
-  { entity: 'resyncCFs',          label: '   → Custom Fields synchronisieren' },
-  { entity: 'resources',          label: '2. Resources' },
-  { entity: 'resyncResources',    label: '   → Resources synchronisieren' },
-  { entity: 'projects',           label: '3. Projects' },
-  { entity: 'resyncProjects',     label: '   → Projects synchronisieren' },
-  { entity: 'projectCFValues',    label: '4. Project Custom Field Werte' },
-  { entity: 'resourceCFValues',   label: '5. Resource Custom Field Werte' },
-  { entity: 'milestones',         label: '6. Milestones' },
-  { entity: 'resyncMilestones',   label: '   → Milestones synchronisieren' },
-  { entity: 'milestoneCFValues',  label: '7. Milestone Custom Field Werte' },
-  { entity: 'assignments',        label: '8. Assignments' },
-  { entity: 'assignmentCFValues', label: '9. Assignment Custom Field Werte' },
-  { entity: 'adminTimes',         label: '10. Admin Times' },
-  { entity: 'skills',             label: '11. Skills' },
-  { entity: 'sheetData',          label: '12. Sheet Data' },
-  { entity: 'advancedRates',      label: '13. Resource Rates' },
-  { entity: 'financials',         label: '14. Financials' },
-  { entity: 'financialCFValues',  label: '15. Financial Custom Field Werte' },
-  { entity: 'teamResources',      label: '16. Team Resource Members' },
+  { entity: 'customFields',        label: '1. Attributes (Custom Fields)' },
+  { entity: 'resyncCFs',           label: '   → Custom Fields synchronisieren' },
+  { entity: 'resources',           label: '2. Resources' },
+  { entity: 'resyncResources',     label: '   → Resources synchronisieren' },
+  { entity: 'projects',            label: '3. Projects' },
+  { entity: 'resyncProjects',      label: '   → Projects synchronisieren' },
+  { entity: 'updateProjectFields', label: '4. Projektdaten aktualisieren (Datum, Phase…)' },
+  { entity: 'projectCFValues',     label: '5. Project Custom Field Werte' },
+  { entity: 'resourceCFValues',    label: '6. Resource Custom Field Werte' },
+  { entity: 'milestones',          label: '7. Milestones' },
+  { entity: 'resyncMilestones',    label: '   → Milestones synchronisieren' },
+  { entity: 'milestoneCFValues',   label: '8. Milestone Custom Field Werte' },
+  { entity: 'assignments',         label: '9. Assignments' },
+  { entity: 'assignmentCFValues',  label: '10. Assignment Custom Field Werte' },
+  { entity: 'adminTimes',          label: '11. Admin Times' },
+  { entity: 'skills',              label: '12. Skills' },
+  { entity: 'sheetData',           label: '13. Sheet Data' },
+  { entity: 'advancedRates',       label: '14. Resource Rates' },
+  { entity: 'financials',          label: '15. Financials' },
+  { entity: 'financialCFValues',   label: '16. Financial Custom Field Werte' },
+  { entity: 'teamResources',       label: '17. Team Resource Members' },
 ];
 
 export interface ImportResult {
@@ -158,53 +159,42 @@ function buildCFValuePayloads(
   parsedExcel: ParsedExcel,
   tempusData: TempusData,
 ): BulkCustomFieldValue[] {
-  const cfFieldMappings = mappingResult.fieldMappings.filter(
-    fm => fm.targetField.startsWith('cf:') && fm.targetEntity === targetEntityKey && fm.status !== 'rejected'
-  );
-  if (cfFieldMappings.length === 0) return [];
-
   const entities: Array<{ id: number; name: string }> =
     targetEntityKey === 'projects' ? tempusData.projects :
     targetEntityKey === 'resources' ? tempusData.resources : [];
 
   const payloads: BulkCustomFieldValue[] = [];
 
-  for (const cfm of cfFieldMappings) {
-    const cfName = cfm.targetField.slice(3);
+  // Source 1: fieldMappings with cf: prefix
+  const cfFieldMappings = mappingResult.fieldMappings.filter(
+    fm => fm.targetField.startsWith('cf:') && fm.targetEntity === targetEntityKey && fm.status !== 'rejected'
+  );
 
-    // Try to find the CF definition: first by direct name match, then via customFieldMappings
-    let cfDef = tempusData.customFields.find(
-      cf => cf.name.toLowerCase() === cfName.toLowerCase()
-        && cf.entityType.toLowerCase() === cfEntityType.toLowerCase()
-    );
+  // Source 2: customFieldMappings matching this entity type (primary source for CF values)
+  const cfEntityMappings = mappingResult.customFieldMappings.filter(
+    cm => cm.entityType.toLowerCase() === cfEntityType.toLowerCase()
+      || cm.entityType.toLowerCase() === targetEntityKey.toLowerCase()
+  );
 
-    if (!cfDef) {
-      // Check if a customFieldMapping maps the source column to a different Tempus CF name
-      const cfMapping = mappingResult.customFieldMappings.find(
-        cm => cm.sourceColumn === cfm.sourceColumn && cm.sourceSheet === cfm.sourceSheet
-      );
-      if (cfMapping) {
-        cfDef = tempusData.customFields.find(
-          cf => cf.name.toLowerCase() === cfMapping.customFieldName.toLowerCase()
-            && cf.entityType.toLowerCase() === cfEntityType.toLowerCase()
-        );
-      }
-    }
+  // Collect all CF source columns to process (deduplicated)
+  const processedCols = new Set<string>();
 
-    if (!cfDef) {
-      console.log(`[importService] CF "${cfName}" (${cfEntityType}) not found in Tempus – skipping values`);
-      continue;
-    }
+  // Helper: process a source column against a Tempus CF definition
+  const processCFColumn = (sourceSheet: string, sourceColumn: string, cfDef: { id: number; name: string }) => {
+    const colKey = `${sourceSheet}:${sourceColumn}`;
+    if (processedCols.has(colKey)) return;
+    processedCols.add(colKey);
 
     const nameMapping = mappingResult.fieldMappings.find(
-      fm => fm.sourceSheet === cfm.sourceSheet
+      fm => fm.sourceSheet === sourceSheet
         && fm.targetEntity === targetEntityKey
-        && (fm.targetField === 'name' || fm.targetField === 'projectName' || fm.targetField === 'resourceName')
+        && (fm.targetField === 'name' || fm.targetField === 'projectName' || fm.targetField === 'resourceName'
+          || fm.targetField === 'project' || fm.targetField === 'resource')
     );
-    if (!nameMapping) continue;
+    if (!nameMapping) return;
 
-    const sheet = parsedExcel.sheets.find(s => s.name === cfm.sourceSheet);
-    if (!sheet) continue;
+    const sheet = parsedExcel.sheets.find(s => s.name === sourceSheet);
+    if (!sheet) return;
 
     const valueToIds = new Map<string, Set<number>>();
 
@@ -216,7 +206,7 @@ function buildCFValuePayloads(
       const entity = entities.find(e => e.name.toLowerCase() === resolvedName.toLowerCase());
       if (!entity) continue;
 
-      const cfValue = row[cfm.sourceColumn];
+      const cfValue = row[sourceColumn];
       if (cfValue == null || cfValue === '') continue;
 
       const valueStr = String(cfValue).trim();
@@ -232,6 +222,46 @@ function buildCFValuePayloads(
         assignmentIds: null,
       });
     }
+  };
+
+  // Process fieldMappings (cf: prefix)
+  for (const cfm of cfFieldMappings) {
+    const cfName = cfm.targetField.slice(3);
+    let cfDef = tempusData.customFields.find(
+      cf => cf.name.toLowerCase() === cfName.toLowerCase()
+        && cf.entityType.toLowerCase() === cfEntityType.toLowerCase()
+    );
+    if (!cfDef) {
+      const cfMapping = mappingResult.customFieldMappings.find(
+        cm => cm.sourceColumn === cfm.sourceColumn && cm.sourceSheet === cfm.sourceSheet
+      );
+      if (cfMapping) {
+        cfDef = tempusData.customFields.find(
+          cf => cf.name.toLowerCase() === cfMapping.customFieldName.toLowerCase()
+        );
+      }
+    }
+    if (!cfDef) {
+      cfDef = tempusData.customFields.find(cf => cf.name.toLowerCase() === cfName.toLowerCase());
+    }
+    if (!cfDef) {
+      console.log(`[importService] CF "${cfName}" (${cfEntityType}) not found – skipping`);
+      continue;
+    }
+    processCFColumn(cfm.sourceSheet, cfm.sourceColumn, cfDef);
+  }
+
+  // Process customFieldMappings (may contain CFs not in fieldMappings)
+  for (const cm of cfEntityMappings) {
+    const cfDef = tempusData.customFields.find(
+      cf => cf.name.toLowerCase() === cm.customFieldName.toLowerCase()
+        && cf.entityType.toLowerCase() === cfEntityType.toLowerCase()
+    );
+    if (!cfDef) {
+      console.log(`[importService] CF "${cm.customFieldName}" (${cfEntityType}) from customFieldMappings not found – skipping`);
+      continue;
+    }
+    processCFColumn(cm.sourceSheet, cm.sourceColumn, cfDef);
   }
 
   return payloads;
@@ -364,7 +394,108 @@ async function importStep(
       return items.length;
     }
 
-    // ── 4. Project CF Values ──────────────────────────────────────────
+    // ── 4. Update existing project fields (dates, phase, etc.) ────────
+    case 'updateProjectFields': {
+      const projectFieldMappings = confirmedFieldMappings.filter(fm => fm.targetEntity === 'projects');
+      if (projectFieldMappings.length === 0) return 0;
+
+      const startDateFM = projectFieldMappings.find(fm => fm.targetField === 'startDate');
+      const endDateFM = projectFieldMappings.find(fm => fm.targetField === 'endDate');
+      const phaseFM = projectFieldMappings.find(fm => fm.targetField === 'phase');
+      const benefitFM = projectFieldMappings.find(fm => fm.targetField === 'benefit');
+      const priorityFM = projectFieldMappings.find(fm => fm.targetField === 'priority');
+
+      if (!startDateFM && !endDateFM && !phaseFM && !benefitFM && !priorityFM) return 0;
+
+      const sheet = parsedExcel.sheets.find(s => s.name === (startDateFM || endDateFM || phaseFM || benefitFM || priorityFM)!.sourceSheet);
+      if (!sheet) return 0;
+
+      const nameFM = projectFieldMappings.find(fm => fm.targetField === 'name' || fm.targetField === 'projectName');
+      if (!nameFM) return 0;
+
+      const updates: Array<Record<string, unknown>> = [];
+
+      for (const row of sheet.rows) {
+        const rawName = String(row[nameFM.sourceColumn] ?? '').trim();
+        if (!rawName) continue;
+
+        const resolvedName = resolveEntityName(rawName, mappingResult);
+        const project = tempusData.projects.find(p => p.name.toLowerCase() === resolvedName.toLowerCase());
+        if (!project) continue;
+
+        const update: Record<string, unknown> = {
+          id: project.id,
+          name: project.name,
+          updateSecurityGroup: false,
+          updateProjectDates: false,
+          updateFinancialDates: false,
+          updateWorkflow: false,
+          updateAssignmentWorkflow: false,
+          updateProjectWorkflow: false,
+          updateLock: false,
+        };
+
+        let hasChanges = false;
+
+        if (startDateFM) {
+          const rawDate = row[startDateFM.sourceColumn];
+          if (rawDate) {
+            const d = new Date(rawDate as string | number);
+            if (!isNaN(d.getTime())) {
+              update.startDate = d.toISOString();
+              update.updateProjectDates = true;
+              hasChanges = true;
+            }
+          }
+        }
+
+        if (endDateFM) {
+          const rawDate = row[endDateFM.sourceColumn];
+          if (rawDate) {
+            const d = new Date(rawDate as string | number);
+            if (!isNaN(d.getTime())) {
+              update.endDate = d.toISOString();
+              update.updateProjectDates = true;
+              hasChanges = true;
+            }
+          }
+        }
+
+        if (phaseFM) {
+          const rawPhase = String(row[phaseFM.sourceColumn] ?? '').trim();
+          if (rawPhase) {
+            const transformed = applyTemporalTransform(rawPhase, 'phase', temporal);
+            update.phase = transformed;
+            hasChanges = true;
+          }
+        }
+
+        if (benefitFM) {
+          const val = row[benefitFM.sourceColumn];
+          if (val != null && val !== '') {
+            update.benefit = typeof val === 'number' ? val : parseFloat(String(val)) || 0;
+            hasChanges = true;
+          }
+        }
+
+        if (priorityFM) {
+          const val = row[priorityFM.sourceColumn];
+          if (val != null && val !== '') {
+            update.priority = typeof val === 'number' ? val : parseInt(String(val)) || 0;
+            hasChanges = true;
+          }
+        }
+
+        if (hasChanges) updates.push(update);
+      }
+
+      if (updates.length === 0) return 0;
+      console.log(`[importService] Updating ${updates.length} projects with dates/fields`, JSON.stringify(updates[0]));
+      await client.updateProjects(updates);
+      return updates.length;
+    }
+
+    // ── 5. Project CF Values ──────────────────────────────────────────
     case 'projectCFValues': {
       const payloads = buildCFValuePayloads('Project', 'projects', mappingResult, parsedExcel, tempusData);
       if (payloads.length === 0) return 0;

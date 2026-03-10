@@ -402,17 +402,21 @@ export async function generateTempusExcel(
 
   addReportSheet(workbook, mappingResult);
 
-  // Sanitize: remove any shared formula references that cause ExcelJS writeBuffer to crash
+  // Sanitize: ExcelJS crashes on shared formula references when writing new workbooks.
+  // We rebuild each cell value as a plain value to strip any formula metadata.
   workbook.eachSheet(sheet => {
-    sheet.eachRow(row => {
-      row.eachCell(cell => {
-        if ((cell as any).model?.sharedFormula || (cell as any).model?.formula) {
-          const val = cell.value;
-          if (typeof val === 'object' && val !== null && 'result' in (val as any)) {
-            cell.value = (val as any).result;
+    sheet.eachRow({ includeEmpty: false }, row => {
+      row.eachCell({ includeEmpty: false }, cell => {
+        const model = (cell as any).model;
+        if (model && (model.sharedFormula !== undefined || model.formula !== undefined)) {
+          // Extract the computed result if it's a formula cell
+          let plainValue = cell.value;
+          if (typeof plainValue === 'object' && plainValue !== null) {
+            if ('result' in (plainValue as any)) plainValue = (plainValue as any).result;
+            else if ('sharedFormula' in (plainValue as any)) plainValue = (plainValue as any).result ?? '';
           }
-          (cell as any).model.sharedFormula = undefined;
-          (cell as any).model.formula = undefined;
+          // Overwrite with plain value — this clears formula metadata
+          cell.value = plainValue ?? '';
         }
       });
     });
