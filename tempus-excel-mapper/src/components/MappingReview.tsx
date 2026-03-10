@@ -78,6 +78,29 @@ export default function MappingReview() {
     }
   };
 
+  const ENTITY_TYPES = [
+    { value: 'projects', label: 'Projects' },
+    { value: 'resources', label: 'Resources' },
+    { value: 'assignments', label: 'Assignments' },
+    { value: 'customFields', label: 'Custom Fields' },
+    { value: 'skills', label: 'Skills' },
+    { value: 'adminTimes', label: 'Admin Times' },
+    { value: 'financials', label: 'Financials' },
+    { value: 'sheetData', label: 'Sheet Data' },
+    { value: 'advancedRates', label: 'Advanced Rates' },
+    { value: 'teamResources', label: 'Team Resources' },
+  ];
+
+  const handleEntityTypeChange = async (mappingId: string, newEntity: string) => {
+    if (!sessionId) return;
+    try {
+      await api.updateMapping(sessionId, mappingId, { targetEntity: newEntity });
+      store.updateEntityMappingEntity(mappingId, newEntity);
+    } catch (err: unknown) {
+      store.setError(err instanceof Error ? err.message : 'Update fehlgeschlagen');
+    }
+  };
+
   const handleRejectWithCustom = async (mappingId: string, isField: boolean) => {
     if (!sessionId || !rejectCustomValue.trim()) return;
     try {
@@ -391,7 +414,17 @@ export default function MappingReview() {
                       <span className="font-medium">{em.sourceValue}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-gray-600">{em.targetEntity}</td>
+                  <td className="px-4 py-3">
+                    <select
+                      value={em.targetEntity}
+                      onChange={(e) => handleEntityTypeChange(em.id, e.target.value)}
+                      className="text-sm border border-gray-300 rounded-lg px-2 py-1 bg-white hover:border-gray-400 focus:ring-2 focus:ring-primary-500 focus:outline-none"
+                    >
+                      {ENTITY_TYPES.map(et => (
+                        <option key={et.value} value={et.value}>{et.label}</option>
+                      ))}
+                    </select>
+                  </td>
                   <td className="px-4 py-3">
                     {em.isNew ? (
                       <span className="text-purple-600 flex items-center gap-1">

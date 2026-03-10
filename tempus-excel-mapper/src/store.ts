@@ -153,6 +153,7 @@ interface AppState {
   setAiStatus: (s: string | null) => void;
   updateFieldMapping: (id: string, status: MappingStatus) => void;
   updateEntityMapping: (id: string, status: MappingStatus) => void;
+  updateEntityMappingEntity: (id: string, targetEntity: string) => void;
   setValidation: (v: ValidationResult) => void;
   setExportReady: (ready: boolean) => void;
   setLoading: (loading: boolean) => void;
@@ -201,6 +202,14 @@ export const useAppStore = create<AppState>((set) => ({
     if (!s.mappingResult) return s;
     const entityMappings = s.mappingResult.entityMappings.map(em =>
       em.id === id ? { ...em, status, matchType: status === 'confirmed' ? 'user_confirmed' : em.matchType } : em
+    );
+    return { mappingResult: { ...s.mappingResult, entityMappings } };
+  }),
+
+  updateEntityMappingEntity: (id, targetEntity) => set((s) => {
+    if (!s.mappingResult) return s;
+    const entityMappings = s.mappingResult.entityMappings.map(em =>
+      em.id === id ? { ...em, targetEntity } : em
     );
     return { mappingResult: { ...s.mappingResult, entityMappings } };
   }),

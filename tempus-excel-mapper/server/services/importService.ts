@@ -1,4 +1,4 @@
-import type { Session, ImportProgress, FieldMapping, EntityMapping } from '../types.js';
+import type { Session, ImportProgress, FieldMapping, EntityMapping, MappingResult, ParsedExcel, TempusData } from '../types.js';
 import { TempusClient } from './tempusClient.js';
 import { logAudit } from './auditLog.js';
 
@@ -29,6 +29,17 @@ export interface ImportResult {
   totalFailed: number;
 }
 
+const CF_DATATYPE_MAP: Record<string, string> = {
+  Text: 'string', String: 'string', string: 'string',
+  Number: 'int', number: 'int', Integer: 'int',
+  'Precision Number': 'double', Double: 'double', Float: 'double', double: 'double',
+  Date: 'date', date: 'date',
+  Boolean: 'bool', bool: 'bool', boolean: 'bool',
+  Currency: 'currency', currency: 'currency',
+  Selection: 'enum', 'Multi-Selection': 'flags',
+  enum: 'enum', flags: 'flags',
+};
+
 export async function importToTempus(
   session: Session,
   client: TempusClient,
@@ -38,14 +49,6 @@ export async function importToTempus(
   if (!mappingResult || !parsedExcel || !tempusData) {
     throw new Error('Session ist nicht vollständig – Mappings, Excel und Tempus-Daten erforderlich');
   }
-
-  const confirmedNew = mappingResult.entityMappings.filter(
-    em => em.isNew && (em.status === 'confirmed' || em.status === 'create_new')
-  );
-
-  const confirmedFields = mappingResult.fieldMappings.filter(
-    fm => fm.status === 'confirmed' || fm.status === 'suggested'
-  );
 
   const result: ImportResult = {
     success: true,
@@ -58,43 +61,17 @@ export async function importToTempus(
     const step = IMPORT_STEPS[i];
     const stepResult = { entity: step.entity, label: step.label, created: 0, skipped: 0, failed: 0, errors: [] as string[] };
 
-    const progress: ImportProgress = {
+    onProgress?.({
       currentStep: i + 1,
       totalSteps: IMPORT_STEPS.length,
       stepLabel: step.label,
-      created: 0,
-      skipped: 0,
-      failed: 0,
-      errors: [],
-    };
-    onProgress?.(progress);
+      created: 0, skipped: 0, failed: 0, errors: [],
+    });
 
     try {
-      if (step.entity === 'customFields') {
-        const newCFs = mappingResult.customFieldMappings
-          .filter(cf => cf.action === 'create')
-          .map(cf => ({
-            name: cf.customFieldName,
-            entityType: cf.entityType,
-            dataType: cf.dataType,
-          }));
-        if (newCFs.length > 0) {
-          await client.createCustomFields(newCFs);
-          stepResult.created = newCFs.length;
-        }
-      } else {
-        const items = buildImportPayload(step.entity, confirmedNew, confirmedFields, parsedExcel, mappingResult);
-        if (items.length > 0) {
-          console.log(`[importService] Step ${step.label}: ${items.length} items, sample:`, JSON.stringify(items[0]).slice(0, 200));
-          await callCreateMethod(client, step.entity, items);
-          stepResult.created = items.length;
-        }
-      }
-
-      logAudit('import_step_completed', session.id, {
-        entity: step.entity,
-        created: stepResult.created,
-      });
+      const count = await importStep(step.entity, client, mappingResult, parsedExcel, tempusData);
+      stepResult.created = count;
+      logAudit('import_step_completed', session.id, { entity: step.entity, created: count });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       stepResult.failed = 1;
@@ -118,137 +95,111 @@ export async function importToTempus(
   return result;
 }
 
-/**
- * Build proper API payload from Excel data + confirmed field mappings.
- * Instead of just { name }, constructs full entity objects with all mapped fields.
- */
-function buildImportPayload(
-  entityType: string,
-  confirmedNew: EntityMapping[],
-  confirmedFields: FieldMapping[],
-  parsedExcel: { sheets: Array<{ name: string; rows: Record<string, unknown>[] }> },
-  mappingResult: { entityMappings: EntityMapping[] },
-): unknown[] {
-  const entityFields = confirmedFields.filter(fm => fm.targetEntity === entityType);
-  if (entityFields.length === 0) {
-    return confirmedNew
-      .filter(em => em.targetEntity === entityType)
-      .map(em => ({ name: em.sourceValue || em.matchedName }));
-  }
+async function importStep(
+  entity: string,
+  client: TempusClient,
+  mappingResult: MappingResult,
+  parsedExcel: ParsedExcel,
+  tempusData: TempusData,
+): Promise<number> {
+  const confirmedNew = mappingResult.entityMappings.filter(
+    em => em.isNew && (em.status === 'confirmed' || em.status === 'create_new')
+  );
 
-  const sourceSheets = [...new Set(entityFields.map(fm => fm.sourceSheet))];
-  const items: Record<string, unknown>[] = [];
-
-  for (const sheetName of sourceSheets) {
-    const sheet = parsedExcel.sheets.find(s => s.name === sheetName);
-    if (!sheet) continue;
-
-    const sheetFields = entityFields.filter(fm => fm.sourceSheet === sheetName);
-
-    for (const row of sheet.rows) {
-      const item: Record<string, unknown> = {};
-      let hasData = false;
-
-      for (const fm of sheetFields) {
-        let value = row[fm.sourceColumn];
-        if (value == null || value === '') continue;
-
-        // Resolve entity name matches (e.g. fuzzy-matched project names → actual Tempus names)
-        if (typeof value === 'string') {
-          const entityMatch = mappingResult.entityMappings.find(
-            em => em.sourceValue.toLowerCase() === String(value).toLowerCase() && em.matchedName
-          );
-          if (entityMatch?.matchedName) value = entityMatch.matchedName;
-        }
-
-        const apiField = tempusFieldFromMapping(fm.targetField, entityType);
-        if (apiField) {
-          item[apiField] = value;
-          hasData = true;
-        }
-      }
-
-      if (hasData) items.push(item);
-    }
-  }
-
-  return items;
-}
-
-function tempusFieldFromMapping(targetField: string, entityType: string): string | null {
-  if (targetField.startsWith('cf:')) return null; // Custom field values handled separately
-
-  const fieldMap: Record<string, Record<string, string>> = {
-    resources: {
-      'Resource Name': 'name', 'name': 'name',
-      'Billing Rate': 'billingRate', 'billingRate': 'billingRate',
-      'E-Mail': 'email', 'email': 'email',
-      'Global Role': 'globalRoleName', 'globalRole': 'globalRoleName',
-      'Department': 'department', 'department': 'department',
-      'API External Id': 'externalId', 'externalId': 'externalId',
-      'Capacity Unit': 'capacityUnit', 'capacityUnit': 'capacityUnit',
-      'Is Enabled': 'isEnabled', 'isEnabled': 'isEnabled',
-    },
-    projects: {
-      'Project Name': 'name', 'name': 'name',
-      'Start Date': 'startDate', 'startDate': 'startDate',
-      'End Date': 'endDate', 'endDate': 'endDate',
-      'API External Id': 'externalId', 'externalId': 'externalId',
-      'Project Priority': 'priority', 'priority': 'priority',
-      'Phase': 'phase', 'phase': 'phase',
-      'Benefit': 'benefit', 'benefit': 'benefit',
-    },
-    assignments: {
-      'Project': 'projectName', 'projectName': 'projectName',
-      'Resource': 'resourceName', 'resourceName': 'resourceName',
-      'Task': 'taskName', 'taskName': 'taskName',
-      'Plan Type': 'planType', 'planType': 'planType',
-      'Project Allocation': 'allocation', 'allocation': 'allocation',
-      'Priority': 'priority', 'priority': 'priority',
-    },
-    skills: {
-      'Skill Name': 'name', 'name': 'name',
-      'Category Names': 'categoryName', 'category': 'categoryName',
-    },
-    adminTimes: {
-      'Admin Time Type': 'name', 'name': 'name',
-      'Resource Name': 'resourceName', 'resourceName': 'resourceName',
-    },
-    sheetData: {
-      'Project Name': 'projectName', 'projectName': 'projectName',
-      'Template Name': 'templateName', 'taskName': 'templateName',
-    },
-    advancedRates: {
-      'Resource Name': 'resourceName', 'resourceName': 'resourceName',
-      'Rate': 'rate', 'rate': 'rate',
-      'Start Date': 'startDate', 'effectiveDate': 'startDate',
-    },
-    financials: {
-      'Project': 'projectName', 'projectName': 'projectName',
-      'Category': 'category', 'category': 'category',
-      'Type': 'type', 'type': 'type',
-      'Project Cost': 'amount', 'budget': 'amount',
-    },
-    teamResources: {
-      'Resource Name': 'resourceName', 'teamName': 'resourceName',
-      'Team Member': 'teamMemberName', 'resourceName': 'teamMemberName',
-    },
-  };
-
-  return fieldMap[entityType]?.[targetField] ?? null;
-}
-
-async function callCreateMethod(client: TempusClient, entity: string, items: unknown[]): Promise<void> {
   switch (entity) {
-    case 'resources': await client.createResources(items); break;
-    case 'projects': await client.createProjects(items); break;
-    case 'assignments': await client.createAssignments(items); break;
-    case 'adminTimes': await client.createAdminTimes(items); break;
-    case 'skills': await client.createSkills(items); break;
-    case 'sheetData': await client.createSheetData(items); break;
-    case 'advancedRates': await client.createAdvancedRates(items); break;
-    case 'financials': await client.createFinancials(items); break;
-    case 'teamResources': await client.createTeamResources(items); break;
-    default: console.warn(`[importService] Unbekannter Entity-Typ: ${entity}`);
+    case 'customFields': {
+      const newCFs = mappingResult.customFieldMappings
+        .filter(cf => cf.action === 'create')
+        .map(cf => ({
+          name: cf.customFieldName,
+          entityType: cf.entityType.toLowerCase(),
+          dataType: CF_DATATYPE_MAP[cf.dataType] || 'string',
+          isRequired: false,
+          isReadOnly: false,
+          isUnique: false,
+          isRichText: false,
+        }));
+      if (newCFs.length === 0) return 0;
+      console.log(`[importService] CustomFields: creating ${newCFs.length}`, JSON.stringify(newCFs[0]));
+      await client.createCustomFields(newCFs);
+      return newCFs.length;
+    }
+
+    case 'resources': {
+      const items = confirmedNew
+        .filter(em => em.targetEntity === 'resources')
+        .map(em => ({
+          name: em.sourceValue || em.matchedName,
+          updateGlobalRole: false,
+          updateDefaultRate: false,
+          updateAdvancedRate: false,
+          updateSecurityGroup: false,
+          isEnabled: true,
+          isTeamResource: false,
+          updateAutoCalculateRate: false,
+        }));
+      if (items.length === 0) return 0;
+      console.log(`[importService] Resources: creating ${items.length}`, JSON.stringify(items[0]));
+      await client.createResources(items);
+      return items.length;
+    }
+
+    case 'projects': {
+      const items = confirmedNew
+        .filter(em => em.targetEntity === 'projects')
+        .map(em => ({
+          name: em.sourceValue || em.matchedName,
+          updateSecurityGroup: false,
+          updateProjectDates: false,
+          updateFinancialDates: false,
+          updateWorkflow: false,
+          updateAssignmentWorkflow: false,
+          updateProjectWorkflow: false,
+          updateLock: false,
+        }));
+      if (items.length === 0) return 0;
+      console.log(`[importService] Projects: creating ${items.length}`, JSON.stringify(items[0]));
+      await client.createProjects(items);
+      return items.length;
+    }
+
+    case 'assignments': {
+      // Assignments require taskId + resourceId (integers) — can only create if IDs are resolved
+      return 0;
+    }
+
+    case 'adminTimes': {
+      const items = confirmedNew
+        .filter(em => em.targetEntity === 'adminTimes')
+        .map(em => ({
+          id: 0,
+          name: em.sourceValue || em.matchedName,
+        }));
+      if (items.length === 0) return 0;
+      console.log(`[importService] AdminTimes: creating ${items.length}`, JSON.stringify(items[0]));
+      await client.createAdminTimes(items);
+      return items.length;
+    }
+
+    case 'skills': {
+      // Skills require a valid skillValueTypeId — fetch existing to determine
+      const existingSkills = tempusData.skills;
+      const defaultValueTypeId = (existingSkills as any)[0]?.skillValueTypeId ?? 1;
+      const items = confirmedNew
+        .filter(em => em.targetEntity === 'skills')
+        .map(em => ({
+          name: em.sourceValue || em.matchedName,
+          skillValueTypeId: defaultValueTypeId,
+          description: '',
+          trackExpiration: false,
+        }));
+      if (items.length === 0) return 0;
+      console.log(`[importService] Skills: creating ${items.length}, valueTypeId=${defaultValueTypeId}`, JSON.stringify(items[0]));
+      await client.createSkills(items);
+      return items.length;
+    }
+
+    default:
+      return 0;
   }
 }
