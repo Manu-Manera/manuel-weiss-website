@@ -44,7 +44,7 @@ export class TempusClient {
 
   async testConnection(): Promise<{ ok: boolean; message: string; projectCount?: number }> {
     try {
-      const data = await this.request<PaginatedResponse<TempusProject>>('GET', '/Projects?page=1&pageSize=5');
+      const data = await this.request<PaginatedResponse<TempusProject>>('GET', '/Projects?page=1&pageSize=10');
       const count = data?.items?.length ?? 0;
       return { ok: true, message: `Verbindung erfolgreich (${count} Projekte gefunden)`, projectCount: count };
     } catch (err: unknown) {
