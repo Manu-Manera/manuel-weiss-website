@@ -394,11 +394,14 @@ app.put('/api/sessions/:id/mappings/:mappingId', asyncRoute(async (req, res) => 
   }
 
   const mappingId = paramStr(req.params.mappingId);
-  const { status, matchedId, matchedName } = req.body;
+  const { status, matchedId, matchedName, targetField, targetEntity } = req.body;
 
   const fm = session.mappingResult.fieldMappings.find(f => f.id === mappingId);
   if (fm) {
     if (status) fm.status = status;
+    if (targetField) fm.targetField = targetField;
+    if (targetEntity) fm.targetEntity = targetEntity;
+    if (matchedName) fm.reasoning = `Manuell geändert: ${matchedName}`;
     if (status === 'confirmed') fm.matchType = 'user_confirmed';
     res.json({ ok: true, mapping: fm });
     return;
@@ -408,8 +411,12 @@ app.put('/api/sessions/:id/mappings/:mappingId', asyncRoute(async (req, res) => 
   if (em) {
     if (status) em.status = status;
     if (matchedId !== undefined) em.matchedId = matchedId;
-    if (matchedName !== undefined) em.matchedName = matchedName;
+    if (matchedName !== undefined) {
+      em.matchedName = matchedName;
+      em.sourceValue = matchedName;
+    }
     if (status === 'confirmed') em.matchType = 'user_confirmed';
+    if (status === 'create_new') { em.isNew = true; em.matchType = 'user_confirmed'; }
     res.json({ ok: true, mapping: em });
     return;
   }

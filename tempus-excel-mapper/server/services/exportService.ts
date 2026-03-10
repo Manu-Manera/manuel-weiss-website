@@ -297,12 +297,9 @@ export async function generateTempusExcel(
             });
 
             if (!mapping) {
+              // Required Tempus defaults — marked with [DEFAULT] comment in report
               if (header === 'Import Behavior') { exportRow.push('Merge'); continue; }
-              if (header === 'Is Enabled') { exportRow.push('true'); continue; }
-              if (header === 'Is Proposal') { exportRow.push('false'); continue; }
-              if (header === 'Is Template') { exportRow.push('false'); continue; }
-              if (header === 'Is Team Resource') { exportRow.push('false'); continue; }
-              if (header === 'Demand Planning') { exportRow.push('false'); continue; }
+              // All other unmapped columns: preserve as empty
               exportRow.push('');
               continue;
             }

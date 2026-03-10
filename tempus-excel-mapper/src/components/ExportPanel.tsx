@@ -3,7 +3,7 @@ import { useAppStore } from '../store';
 import * as api from '../api';
 import {
   Download, FileSpreadsheet, FileText, Loader2, ArrowLeft,
-  CheckCircle, RotateCcw, Sparkles, Upload, AlertTriangle, Check,
+  CheckCircle, RotateCcw, Sparkles, Upload, AlertTriangle, Check, X,
 } from 'lucide-react';
 
 type ExportMode = 'excel' | 'api';
@@ -108,6 +108,17 @@ export default function ExportPanel() {
           Erstelle Tempus-kompatible Excel-Dateien oder importiere direkt via API.
         </p>
       </div>
+
+      {/* Error Display */}
+      {store.error && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3">
+          <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0" />
+          <p className="text-sm text-red-700 flex-1">{store.error}</p>
+          <button onClick={() => store.setError(null)} className="text-red-400 hover:text-red-600">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Mode Toggle */}
       <div className="flex bg-gray-100 rounded-lg p-1">

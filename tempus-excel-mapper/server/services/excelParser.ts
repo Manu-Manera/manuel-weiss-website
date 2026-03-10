@@ -3,8 +3,25 @@ import type { ParsedExcel, ParsedSheet, ColumnAnalysis, SheetAnalysis, AnalysisR
 
 export async function parseExcel(buffer: Buffer, fileName: string): Promise<ParsedExcel> {
   const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.load(buffer as unknown as ExcelJS.Buffer);
+  try {
+    await workbook.xlsx.load(buffer as unknown as ExcelJS.Buffer);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes('Shared Formula') || msg.includes('shared formula')) {
+      console.warn('[excelParser] Shared-Formula-Fehler – Zellen mit Formeln werden als Werte gelesen');
+      const wb2 = new ExcelJS.Workbook();
+      await wb2.xlsx.load(buffer as unknown as ExcelJS.Buffer, {
+        ignoreNodes: ['dataValidations'],
+      } as any);
+      return parseWorkbook(wb2, fileName);
+    }
+    throw err;
+  }
 
+  return parseWorkbook(workbook, fileName);
+}
+
+function parseWorkbook(workbook: ExcelJS.Workbook, fileName: string): ParsedExcel {
   const sheets: ParsedSheet[] = [];
 
   for (const worksheet of workbook.worksheets) {

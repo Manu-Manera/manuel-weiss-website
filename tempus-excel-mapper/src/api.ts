@@ -87,7 +87,7 @@ export async function getMappings(sessionId: string) {
   return request<unknown>('GET', `/sessions/${sessionId}/mappings`);
 }
 
-export async function updateMapping(sessionId: string, mappingId: string, update: { status?: string; matchedId?: number }) {
+export async function updateMapping(sessionId: string, mappingId: string, update: { status?: string; matchedId?: number; matchedName?: string; targetField?: string; targetEntity?: string }) {
   return request<{ ok: boolean }>('PUT', `/sessions/${sessionId}/mappings/${mappingId}`, update);
 }
 
