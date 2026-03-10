@@ -6,7 +6,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3001
-      - ALLOWED_ORIGINS=https://your-domain.com,https://www.your-domain.com
+      - ALLOWED_ORIGINS=https://excel-mapper.manuel-weiss.ch,https://manuel-weiss.ch,https://www.manuel-weiss.ch
       # API-Keys über UI eingeben oder hier setzen:
       # - TEMPUS_API_BASE_URL=https://your-tempus-instance.com
       # - TEMPUS_API_KEY=your-bearer-token
