@@ -1,12 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppStore } from '../store';
 import * as api from '../api';
 import {
   Download, FileSpreadsheet, FileText, Loader2, ArrowLeft,
-  CheckCircle, RotateCcw, Sparkles, Upload, AlertTriangle,
+  CheckCircle, RotateCcw, Sparkles, Upload, AlertTriangle, Check,
 } from 'lucide-react';
 
 type ExportMode = 'excel' | 'api';
+
+interface TemplateInfo {
+  key: string;
+  label: string;
+  sheetName: string;
+}
 
 export default function ExportPanel() {
   const store = useAppStore();
@@ -14,17 +20,46 @@ export default function ExportPanel() {
   const [exporting, setExporting] = useState(false);
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<any>(null);
+  const [templates, setTemplates] = useState<TemplateInfo[]>([]);
+  const [selectedTemplates, setSelectedTemplates] = useState<Set<string>>(new Set());
 
   const sessionId = store.sessionId;
   const mappingResult = store.mappingResult;
   const validation = store.validation;
 
+  useEffect(() => {
+    api.getTemplates().then(t => {
+      setTemplates(t);
+      setSelectedTemplates(new Set(t.map(x => x.key)));
+    }).catch(() => {});
+  }, []);
+
+  const toggleTemplate = (key: string) => {
+    setSelectedTemplates(prev => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  };
+
+  const toggleAll = () => {
+    if (selectedTemplates.size === templates.length) {
+      setSelectedTemplates(new Set());
+    } else {
+      setSelectedTemplates(new Set(templates.map(t => t.key)));
+    }
+  };
+
   const handleExport = async () => {
     if (!sessionId) return;
     setExporting(true);
     store.setError(null);
+    store.setExportReady(false);
     try {
-      await api.generateExport(sessionId);
+      const selected = selectedTemplates.size === templates.length
+        ? undefined
+        : [...selectedTemplates];
+      await api.generateExport(sessionId, selected);
       store.setExportReady(true);
     } catch (err: unknown) {
       store.setError(err instanceof Error ? err.message : 'Export fehlgeschlagen');
@@ -63,14 +98,14 @@ export default function ExportPanel() {
   const newEntities = mappingResult?.entityMappings.filter(em => em.isNew && em.status !== 'rejected').length ?? 0;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
+    <div className="max-w-3xl mx-auto space-y-8">
       <div>
         <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
           <Download className="w-7 h-7 text-primary-600" />
           Export / Import
         </h2>
         <p className="mt-2 text-gray-600">
-          Wähle, ob du eine Tempus-kompatible Excel-Datei erstellen oder direkt via API importieren möchtest.
+          Erstelle Tempus-kompatible Excel-Dateien oder importiere direkt via API.
         </p>
       </div>
 
@@ -122,20 +157,65 @@ export default function ExportPanel() {
       {/* Excel Export Mode */}
       {mode === 'excel' && (
         <>
+          {/* Template Selection */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Tempus-Templates auswählen</h3>
+              <button
+                onClick={toggleAll}
+                className="text-sm text-primary-600 hover:text-primary-800 font-medium"
+              >
+                {selectedTemplates.size === templates.length ? 'Keine auswählen' : 'Alle auswählen'}
+              </button>
+            </div>
+            <p className="text-sm text-gray-500">
+              Wähle die Templates, die in der Export-Datei enthalten sein sollen.
+              Jedes Template erzeugt ein separates Sheet im exakten Tempus-Import-Format.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {templates.map(t => (
+                <label
+                  key={t.key}
+                  className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                    selectedTemplates.has(t.key)
+                      ? 'border-primary-300 bg-primary-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                    selectedTemplates.has(t.key)
+                      ? 'border-primary-600 bg-primary-600'
+                      : 'border-gray-300'
+                  }`}>
+                    {selectedTemplates.has(t.key) && <Check className="w-3 h-3 text-white" />}
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={selectedTemplates.has(t.key)}
+                    onChange={() => toggleTemplate(t.key)}
+                    className="sr-only"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{t.label}</p>
+                    <p className="text-xs text-gray-500">Sheet: {t.sheetName}</p>
+                  </div>
+                </label>
+              ))}
+            </div>
+          </div>
+
           {!store.exportReady ? (
-            <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-              <Sparkles className="w-12 h-12 text-primary-400 mx-auto mb-4" />
-              <p className="text-gray-600 mb-6">
-                Erstelle eine Tempus-kompatible Excel-Datei in der korrekten Import-Reihenfolge
-                (Attributes → Resources → Projects → Assignments → …).
-              </p>
+            <div className="text-center">
               <button
                 onClick={handleExport}
-                disabled={exporting}
-                className="px-8 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 disabled:opacity-50 flex items-center gap-2 mx-auto"
+                disabled={exporting || selectedTemplates.size === 0}
+                className="px-8 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 disabled:opacity-50 inline-flex items-center gap-2"
               >
                 {exporting ? <Loader2 className="w-5 h-5 animate-spin" /> : <FileSpreadsheet className="w-5 h-5" />}
-                Export erstellen
+                {selectedTemplates.size === templates.length
+                  ? 'Alle Templates exportieren'
+                  : `${selectedTemplates.size} Template(s) exportieren`
+                }
               </button>
             </div>
           ) : (
@@ -153,6 +233,12 @@ export default function ExportPanel() {
                   <FileText className="w-5 h-5" /> Mapping-Report
                 </button>
               </div>
+              <button
+                onClick={() => store.setExportReady(false)}
+                className="text-sm text-gray-500 hover:text-gray-700"
+              >
+                Erneut exportieren mit anderer Auswahl
+              </button>
             </div>
           )}
         </>
@@ -179,7 +265,7 @@ export default function ExportPanel() {
           </button>
           {importing && (
             <p className="mt-4 text-sm text-blue-600">
-              Elemente werden in Tempus angelegt (Attributes → Resources → Projects → …)
+              Elemente werden in Tempus angelegt (Attributes, Resources, Projects, …)
             </p>
           )}
         </div>

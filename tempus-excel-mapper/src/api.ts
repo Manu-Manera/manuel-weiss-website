@@ -109,8 +109,12 @@ export async function getValidation(sessionId: string) {
 
 // ── Export ────────────────────────────────────────────────────────────
 
-export async function generateExport(sessionId: string) {
-  return request<{ ok: boolean; message: string }>('POST', `/sessions/${sessionId}/export`);
+export async function getTemplates() {
+  return request<Array<{ key: string; label: string; sheetName: string }>>('GET', '/templates');
+}
+
+export async function generateExport(sessionId: string, templates?: string[]) {
+  return request<{ ok: boolean; message: string }>('POST', `/sessions/${sessionId}/export`, { templates });
 }
 
 export function getDownloadUrl(sessionId: string) {

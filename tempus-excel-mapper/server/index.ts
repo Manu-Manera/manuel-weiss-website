@@ -13,7 +13,7 @@ import { TempusClient } from './services/tempusClient.js';
 import { AnthropicClient } from './services/anthropicClient.js';
 import { parseExcel, analyzeStructure } from './services/excelParser.js';
 import { generateMappings } from './services/mappingEngine.js';
-import { validateMappings, generateTempusExcel, generateReport } from './services/exportService.js';
+import { validateMappings, generateTempusExcel, generateReport, TEMPUS_TEMPLATES } from './services/exportService.js';
 import { anonymizeSampleRows, anonymizeSampleValues, generatePiiReport } from './services/anonymizer.js';
 import { logAudit, getAuditLog, clearAuditLog } from './services/auditLog.js';
 import { importToTempus } from './services/importService.js';
@@ -494,15 +494,20 @@ app.get('/api/sessions/:id/validation', asyncRoute(async (req, res) => {
 
 // ── EXPORT ───────────────────────────────────────────────────────────
 
+app.get('/api/templates', (_req, res) => {
+  res.json(Object.entries(TEMPUS_TEMPLATES).map(([key, t]) => ({ key, label: (t as any).label, sheetName: (t as any).sheetName })));
+});
+
 app.post('/api/sessions/:id/export', asyncRoute(async (req, res) => {
   const session = getSession(req.params.id);
   if (!session.parsedExcel || !session.mappingResult || !session.tempusData) {
     res.status(400).json({ error: 'Alle vorherigen Schritte müssen abgeschlossen sein' });
     return;
   }
-  const buffer = await generateTempusExcel(session.parsedExcel, session.mappingResult, session.tempusData);
+  const { templates } = req.body || {};
+  const buffer = await generateTempusExcel(session.parsedExcel, session.mappingResult, session.tempusData, templates);
   session.exportBuffer = buffer;
-  logAudit('export_generated', session.id, { sizeKB: Math.round(buffer.length / 1024) });
+  logAudit('export_generated', session.id, { sizeKB: Math.round(buffer.length / 1024), templates });
   res.json({ ok: true, message: 'Export bereit', size: buffer.length });
 }));
 
