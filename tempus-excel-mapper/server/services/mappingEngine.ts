@@ -9,46 +9,114 @@ import { AnthropicClient } from './anthropicClient.js';
 // ── Tempus field schema for rule-based matching ──────────────────────
 
 const TEMPUS_FIELD_MAP: Record<string, Array<{ field: string; aliases: string[] }>> = {
+  // 1. Attributes (Custom Fields)
+  customFields: [
+    { field: 'entityType', aliases: ['entity type', 'entitätstyp', 'typ', 'object type', 'objekttyp'] },
+    { field: 'name', aliases: ['custom field name', 'attribut', 'attributname', 'field name', 'feldname', 'attribute name'] },
+    { field: 'dataType', aliases: ['type', 'datentyp', 'data type', 'field type', 'feldtyp'] },
+    { field: 'selectionValues', aliases: ['selection values', 'auswahlwerte', 'werte', 'values', 'enum values', 'optionen', 'options'] },
+    { field: 'isRequired', aliases: ['required', 'pflichtfeld', 'mandatory', 'pflicht'] },
+    { field: 'isUnique', aliases: ['unique', 'eindeutig'] },
+  ],
+  // 2. Resources
+  resources: [
+    { field: 'name', aliases: ['resource name', 'ressource', 'ressourcenname', 'name', 'mitarbeiter', 'employee', 'person'] },
+    { field: 'billingRate', aliases: ['billing rate', 'stundensatz', 'rate', 'kosten', 'cost rate', 'hourly rate'] },
+    { field: 'capacityUnit', aliases: ['capacity unit', 'kapazitätseinheit', 'capacity', 'kapazität'] },
+    { field: 'globalRole', aliases: ['global role', 'rolle', 'role', 'funktion', 'position'] },
+    { field: 'externalId', aliases: ['external id', 'ext id', 'externe id', 'resource id'] },
+    { field: 'email', aliases: ['email', 'e-mail', 'mail', 'email address'] },
+    { field: 'department', aliases: ['department', 'abteilung', 'team', 'bereich'] },
+    { field: 'isEnabled', aliases: ['enabled', 'active', 'aktiv', 'is active'] },
+  ],
+  // 3. Projects
   projects: [
     { field: 'name', aliases: ['project name', 'projektname', 'projekt', 'project'] },
-    { field: 'startDate', aliases: ['start date', 'startdatum', 'von', 'start', 'begin'] },
-    { field: 'endDate', aliases: ['end date', 'enddatum', 'bis', 'ende', 'end'] },
-    { field: 'externalId', aliases: ['external id', 'api external id', 'externe id', 'ext id'] },
+    { field: 'startDate', aliases: ['start date', 'startdatum', 'von', 'start', 'begin', 'project start'] },
+    { field: 'endDate', aliases: ['end date', 'enddatum', 'bis', 'ende', 'end', 'project end'] },
+    { field: 'externalId', aliases: ['external id', 'api external id', 'externe id', 'ext id', 'project id'] },
     { field: 'priority', aliases: ['project priority', 'priority', 'priorität', 'prio'] },
-    { field: 'phase', aliases: ['phase', 'projektphase'] },
-    { field: 'benefit', aliases: ['benefit', 'nutzen'] },
+    { field: 'phase', aliases: ['phase', 'projektphase', 'project phase'] },
+    { field: 'benefit', aliases: ['benefit', 'nutzen', 'project benefit'] },
     { field: 'importBehavior', aliases: ['import behavior', 'importverhalten'] },
+    { field: 'isLocked', aliases: ['locked', 'gesperrt', 'is locked'] },
+    { field: 'status', aliases: ['project status', 'projektstatus'] },
+    { field: 'manager', aliases: ['project manager', 'projektleiter', 'pm', 'manager', 'owner'] },
   ],
-  resources: [
-    { field: 'name', aliases: ['resource name', 'ressource', 'ressourcenname', 'name', 'mitarbeiter'] },
-    { field: 'billingRate', aliases: ['billing rate', 'stundensatz', 'rate', 'kosten'] },
-    { field: 'capacityUnit', aliases: ['capacity unit', 'kapazitätseinheit', 'capacity'] },
-    { field: 'globalRole', aliases: ['global role', 'rolle', 'role'] },
-    { field: 'externalId', aliases: ['external id', 'ext id', 'externe id'] },
-    { field: 'email', aliases: ['email', 'e-mail', 'mail'] },
+  // 4. Assignments
+  assignments: [
+    { field: 'projectName', aliases: ['project', 'projekt', 'project name', 'projektname'] },
+    { field: 'resourceName', aliases: ['resource', 'ressource', 'resource name', 'ressourcenname', 'mitarbeiter'] },
+    { field: 'taskName', aliases: ['task', 'vorgang', 'task name', 'aufgabe'] },
+    { field: 'priority', aliases: ['priority', 'priorität', 'assignment priority'] },
+    { field: 'planType', aliases: ['plan type', 'plantyp', 'planungstyp'] },
+    { field: 'allocation', aliases: ['planned allocation', 'allocation', 'zuweisung', 'stunden', 'hours', 'auslastung'] },
+    { field: 'month', aliases: ['month', 'monat', 'zeitraum', 'period'] },
+    { field: 'startDate', aliases: ['start date', 'startdatum', 'von', 'start'] },
+    { field: 'endDate', aliases: ['end date', 'enddatum', 'bis', 'ende'] },
   ],
+  // 5. Admin Time
+  adminTimes: [
+    { field: 'name', aliases: ['admin time', 'admin time name', 'verwaltungszeit', 'abwesenheit', 'absence', 'time off', 'leave'] },
+    { field: 'resourceName', aliases: ['resource', 'ressource', 'resource name', 'mitarbeiter', 'employee'] },
+    { field: 'date', aliases: ['date', 'datum', 'day', 'tag'] },
+    { field: 'month', aliases: ['month', 'monat', 'period', 'zeitraum'] },
+    { field: 'hours', aliases: ['hours', 'stunden', 'duration', 'dauer', 'time', 'zeit'] },
+    { field: 'type', aliases: ['type', 'typ', 'category', 'kategorie', 'admin type', 'absence type', 'abwesenheitstyp'] },
+    { field: 'startDate', aliases: ['start date', 'startdatum', 'von', 'start'] },
+    { field: 'endDate', aliases: ['end date', 'enddatum', 'bis', 'ende'] },
+  ],
+  // 6. Skills
+  skills: [
+    { field: 'name', aliases: ['skill', 'skill name', 'kompetenz', 'fähigkeit', 'qualification', 'qualifikation'] },
+    { field: 'category', aliases: ['category', 'kategorie', 'skill category', 'gruppe', 'group'] },
+    { field: 'level', aliases: ['level', 'stufe', 'proficiency', 'skill level', 'erfahrung'] },
+    { field: 'resourceName', aliases: ['resource', 'ressource', 'resource name', 'mitarbeiter', 'employee'] },
+  ],
+  // 7. Tasks / Schedule (Sheet Data)
   tasks: [
-    { field: 'name', aliases: ['task', 'task name', 'vorgang', 'aufgabe', 'tätigkeit'] },
+    { field: 'name', aliases: ['task', 'task name', 'vorgang', 'aufgabe', 'tätigkeit', 'schedule task'] },
     { field: 'projectName', aliases: ['project', 'projekt', 'project name'] },
     { field: 'startDate', aliases: ['start date', 'start', 'startdatum'] },
-    { field: 'duration', aliases: ['duration', 'dauer', 'tage'] },
-    { field: 'planType', aliases: ['plan type', 'plantyp', 'allocation'] },
+    { field: 'duration', aliases: ['duration', 'dauer', 'tage', 'days'] },
+    { field: 'planType', aliases: ['plan type', 'plantyp', 'allocation type'] },
     { field: 'status', aliases: ['status', 'task status', 'schedule task status'] },
+    { field: 'milestone', aliases: ['milestone', 'meilenstein', 'is milestone'] },
   ],
-  assignments: [
+  sheetData: [
     { field: 'projectName', aliases: ['project', 'projekt', 'project name'] },
+    { field: 'taskName', aliases: ['task', 'task name', 'vorgang'] },
     { field: 'resourceName', aliases: ['resource', 'ressource', 'resource name'] },
-    { field: 'taskName', aliases: ['task', 'vorgang', 'task name'] },
-    { field: 'priority', aliases: ['priority', 'priorität'] },
-    { field: 'planType', aliases: ['plan type', 'plantyp'] },
-    { field: 'allocation', aliases: ['planned allocation', 'allocation', 'zuweisung', 'stunden', 'hours'] },
-    { field: 'month', aliases: ['month', 'monat', 'zeitraum'] },
+    { field: 'month', aliases: ['month', 'monat', 'period', 'zeitraum'] },
+    { field: 'value', aliases: ['value', 'wert', 'hours', 'stunden', 'amount', 'betrag'] },
+    { field: 'planType', aliases: ['plan type', 'plantyp', 'type', 'typ'] },
   ],
-  customFields: [
-    { field: 'entityType', aliases: ['entity type', 'entitätstyp', 'typ'] },
-    { field: 'name', aliases: ['custom field name', 'attribut', 'attributname', 'name'] },
-    { field: 'dataType', aliases: ['type', 'datentyp', 'data type'] },
-    { field: 'selectionValues', aliases: ['selection values', 'auswahlwerte', 'werte', 'values'] },
+  // 8. Advanced Rates
+  advancedRates: [
+    { field: 'resourceName', aliases: ['resource', 'ressource', 'resource name', 'mitarbeiter'] },
+    { field: 'projectName', aliases: ['project', 'projekt', 'project name'] },
+    { field: 'rate', aliases: ['rate', 'stundensatz', 'billing rate', 'cost rate', 'tarif'] },
+    { field: 'currency', aliases: ['currency', 'währung', 'curr'] },
+    { field: 'effectiveDate', aliases: ['effective date', 'gültig ab', 'start date', 'ab datum', 'valid from'] },
+    { field: 'roleName', aliases: ['role', 'rolle', 'role name'] },
+  ],
+  // 9. Financials
+  financials: [
+    { field: 'projectName', aliases: ['project', 'projekt', 'project name'] },
+    { field: 'month', aliases: ['month', 'monat', 'period', 'zeitraum'] },
+    { field: 'budget', aliases: ['budget', 'plan', 'planned cost', 'plankosten'] },
+    { field: 'actual', aliases: ['actual', 'ist', 'actual cost', 'istkosten', 'actuals'] },
+    { field: 'forecast', aliases: ['forecast', 'prognose', 'estimated', 'schätzung'] },
+    { field: 'revenue', aliases: ['revenue', 'umsatz', 'erlös', 'income', 'einnahmen'] },
+    { field: 'type', aliases: ['type', 'typ', 'financial type', 'kostenart', 'cost type'] },
+    { field: 'category', aliases: ['category', 'kategorie'] },
+  ],
+  // 10. Team Resource
+  teamResources: [
+    { field: 'teamName', aliases: ['team', 'team name', 'teamname', 'group', 'gruppe'] },
+    { field: 'resourceName', aliases: ['resource', 'ressource', 'resource name', 'mitarbeiter', 'member', 'employee'] },
+    { field: 'role', aliases: ['role', 'rolle', 'team role', 'teamrolle', 'function', 'funktion'] },
+    { field: 'allocationPercentage', aliases: ['allocation', 'allocation %', 'prozent', 'percentage', 'anteil', 'auslastung'] },
   ],
 };
 
@@ -191,7 +259,7 @@ export async function generateMappings(
     }
   }
 
-  // Step 3: AI-enhanced mapping (if Anthropic client available)
+  // Step 3: AI-enhanced mapping for ALL remaining unmapped columns
   if (anthropicClient && unmappedColumns.length > 0) {
     try {
       const sheetsForAI = analysis.sheets.map(s => {
@@ -212,37 +280,62 @@ export async function generateMappings(
           dataType: cf.dataType, enumMembers: cf.enumMembers?.map(e => ({ name: e.name })),
         })),
         roles: tempusData.roles.map(r => ({ id: r.id, name: r.name })),
+        skills: tempusData.skills.map(s => ({ id: s.id, name: s.name })),
+        adminTimes: tempusData.adminTimes.map(a => ({ id: a.id, name: a.name })),
       });
 
-      // Merge AI suggestions for unmapped columns
+      // Merge AI field mapping suggestions
       for (const aiMapping of aiResult.fieldMappings) {
         const existing = fieldMappings.find(
           fm => fm.sourceSheet === aiMapping.sourceSheet && fm.sourceColumn === aiMapping.sourceColumn
         );
         if (!existing) {
+          const isCustomFieldSuggestion = aiMapping.isCustomField || aiMapping.targetField?.startsWith('cf:');
+
           fieldMappings.push({
             id: uuid(),
             sourceSheet: aiMapping.sourceSheet,
             sourceColumn: aiMapping.sourceColumn,
             targetEntity: aiMapping.targetEntity,
-            targetField: aiMapping.targetField,
+            targetField: isCustomFieldSuggestion
+              ? `cf:${aiMapping.suggestedCustomFieldName || aiMapping.sourceColumn}`
+              : aiMapping.targetField,
             matchType: 'ai_suggested',
             confidence: aiMapping.confidence,
             reasoning: aiMapping.reasoning,
             status: aiMapping.confidence >= 0.8 ? 'suggested' : 'needs_review',
             transformation: aiMapping.transformation,
           });
+
+          if (isCustomFieldSuggestion) {
+            const cfName = aiMapping.suggestedCustomFieldName || aiMapping.sourceColumn;
+            const existingCF = tempusData.customFields.find(
+              cf => cf.name.toLowerCase() === cfName.toLowerCase()
+            );
+            customFieldMappings.push({
+              sourceColumn: aiMapping.sourceColumn,
+              sourceSheet: aiMapping.sourceSheet,
+              customFieldName: cfName,
+              entityType: inferCustomFieldEntityType(aiMapping.sourceSheet, aiMapping.targetEntity),
+              existsInTempus: !!existingCF,
+              tempusFieldId: existingCF?.id,
+              dataType: aiMapping.suggestedDataType || existingCF?.dataType || 'Text',
+              action: existingCF ? 'exists' : 'create',
+            });
+          }
+
           const idx = unmappedColumns.indexOf(`${aiMapping.sourceSheet}.${aiMapping.sourceColumn}`);
           if (idx >= 0) unmappedColumns.splice(idx, 1);
         }
       }
 
-      // Merge AI entity suggestions
+      // Merge AI entity suggestions (matches + new entity proposals)
       for (const aiEntity of aiResult.entityMappings) {
         const existing = entityMappings.find(
           em => em.sourceValue === aiEntity.sourceValue && em.targetEntity === aiEntity.targetEntity
         );
         if (!existing && aiEntity.sourceSheet) {
+          const action = aiEntity.suggestedAction || (aiEntity.isNew ? 'create_new' : 'needs_review');
           entityMappings.push({
             id: uuid(),
             sourceSheet: aiEntity.sourceSheet,
@@ -253,7 +346,9 @@ export async function generateMappings(
             matchType: 'ai_suggested',
             confidence: aiEntity.confidence,
             reasoning: aiEntity.reasoning,
-            status: aiEntity.isNew ? 'create_new' : 'needs_review',
+            status: action === 'create_new' ? 'create_new'
+              : action === 'match_existing' ? 'suggested'
+              : 'needs_review',
             isNew: aiEntity.isNew,
           });
         }
@@ -381,14 +476,8 @@ function matchEntityValue(
   const normalized = value.toLowerCase().trim();
   if (!normalized) return null;
 
-  let candidates: Array<{ id: number; name: string }> = [];
-  if (entityType === 'projects' || entityType === 'assignments') {
-    candidates = tempusData.projects;
-  } else if (entityType === 'resources' || entityType === 'assignments') {
-    candidates = [...candidates, ...tempusData.resources];
-  } else if (entityType === 'tasks') {
-    candidates = tempusData.tasks.map(t => ({ id: t.id, name: t.name }));
-  }
+  const candidates = getCandidatesForEntity(entityType, tempusData);
+  if (candidates.length === 0) return null;
 
   // Exact match
   const exact = candidates.find(c => c.name.toLowerCase().trim() === normalized);
@@ -424,7 +513,57 @@ function matchEntityValue(
   return null;
 }
 
+function getCandidatesForEntity(
+  entityType: string,
+  tempusData: TempusData,
+): Array<{ id: number; name: string }> {
+  switch (entityType) {
+    case 'projects':
+      return tempusData.projects;
+    case 'resources':
+      return tempusData.resources;
+    case 'tasks':
+      return tempusData.tasks.map(t => ({ id: t.id, name: t.name }));
+    case 'assignments':
+      return [
+        ...tempusData.projects,
+        ...tempusData.resources,
+        ...tempusData.tasks.map(t => ({ id: t.id, name: t.name })),
+      ];
+    case 'customFields':
+      return tempusData.customFields.map(cf => ({ id: cf.id, name: cf.name }));
+    case 'skills':
+      return tempusData.skills.map(s => ({ id: s.id, name: s.name }));
+    case 'adminTimes':
+      return tempusData.adminTimes.map(a => ({ id: a.id, name: a.name }));
+    case 'advancedRates':
+      return [
+        ...tempusData.resources,
+        ...tempusData.projects,
+      ];
+    case 'financials':
+      return tempusData.projects;
+    case 'sheetData':
+      return [
+        ...tempusData.projects,
+        ...tempusData.resources,
+        ...tempusData.tasks.map(t => ({ id: t.id, name: t.name })),
+      ];
+    case 'teamResources':
+      return tempusData.resources;
+    default:
+      return [
+        ...tempusData.projects,
+        ...tempusData.resources,
+      ];
+  }
+}
+
 // ── Helpers ──────────────────────────────────────────────────────────
+
+const NAME_FIELDS = new Set([
+  'name', 'projectName', 'resourceName', 'taskName', 'teamName', 'roleName',
+]);
 
 function findNameColumns(
   sheet: { sheetName: string; columns: ColumnAnalysis[] },
@@ -433,7 +572,7 @@ function findNameColumns(
   return fieldMappings
     .filter(fm =>
       fm.sourceSheet === sheet.sheetName &&
-      ['name', 'projectName', 'resourceName', 'taskName'].includes(fm.targetField)
+      NAME_FIELDS.has(fm.targetField)
     )
     .map(fm => ({
       column: fm.sourceColumn,
@@ -462,13 +601,22 @@ function getUniqueValues(rows: Record<string, unknown>[], column: string): unkno
 function inferCustomFieldEntityType(sheetName: string, suggestedEntity: string): string {
   const lower = sheetName.toLowerCase();
   if (/project|portfolio/.test(lower)) return 'Project';
-  if (/resource|ressource/.test(lower)) return 'Resource';
-  if (/task|vorgang/.test(lower)) return 'Task';
+  if (/resource|ressource|mitarbeiter|employee/.test(lower)) return 'Resource';
+  if (/task|vorgang|schedule/.test(lower)) return 'Task';
 
   switch (suggestedEntity) {
-    case 'projects': return 'Project';
-    case 'resources': return 'Resource';
-    case 'tasks': return 'Task';
+    case 'projects':
+    case 'financials':
+    case 'advancedRates':
+      return 'Project';
+    case 'resources':
+    case 'teamResources':
+    case 'skills':
+    case 'adminTimes':
+      return 'Resource';
+    case 'tasks':
+    case 'sheetData':
+      return 'Task';
     case 'assignments': return 'Project';
     default: return 'Project';
   }

@@ -176,16 +176,28 @@ function inferType(value: unknown): string {
 
 function guessEntity(headers: string[], columns: ColumnAnalysis[]): string {
   const h = headers.map(h => h.toLowerCase());
+
   const hasProject = h.some(c => /project|projekt/i.test(c));
-  const hasResource = h.some(c => /resource|ressource/i.test(c));
-  const hasTask = h.some(c => /task|vorgang|aufgabe/i.test(c));
+  const hasResource = h.some(c => /resource|ressource|mitarbeiter|employee/i.test(c));
+  const hasTask = h.some(c => /task|vorgang|aufgabe|schedule\s*task/i.test(c));
   const hasCustomField = h.some(c => /custom\s*field|attribut|entity\s*type/i.test(c));
-  const hasSkill = h.some(c => /skill|kompetenz/i.test(c));
+  const hasSkill = h.some(c => /skill|kompetenz|qualifikation/i.test(c));
   const hasAllocation = h.some(c => /allocation|zuweisung|plan\s*type/i.test(c));
+  const hasAdminTime = h.some(c => /admin\s*time|abwesenheit|absence|leave|time\s*off/i.test(c));
+  const hasRate = h.some(c => /\brate\b|stundensatz|billing|tarif/i.test(c));
+  const hasBudget = h.some(c => /budget|actual|forecast|financial|finanzen|kosten/i.test(c));
+  const hasTeam = h.some(c => /\bteam\b|team\s*name/i.test(c));
+  const hasMonth = h.some(c => /month|monat|period/i.test(c));
 
   if (hasCustomField) return 'customFields';
+  if (hasAdminTime) return 'adminTimes';
+  if (hasSkill && !hasProject) return 'skills';
+  if (hasTeam && hasResource) return 'teamResources';
+  if (hasRate && hasResource && hasProject) return 'advancedRates';
+  if (hasBudget && hasProject) return 'financials';
   if (hasTask && hasResource && hasProject) return 'assignments';
-  if (hasAllocation) return 'assignments';
+  if (hasAllocation && hasResource) return 'assignments';
+  if (hasTask && hasMonth && hasResource) return 'sheetData';
   if (hasProject && h.some(c => /start|end|date|datum/i.test(c))) return 'projects';
   if (hasResource && !hasProject) return 'resources';
   if (hasTask) return 'tasks';

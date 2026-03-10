@@ -1,4 +1,8 @@
-import type { TempusData, TempusProject, TempusResource, TempusTask, TempusCustomField } from '../types.js';
+import type {
+  TempusData, TempusProject, TempusResource, TempusTask, TempusCustomField,
+  TempusAssignment, TempusSkill, TempusAdminTime, TempusSheetData,
+  TempusAdvancedRate, TempusFinancial, TempusTeamResource,
+} from '../types.js';
 
 interface PaginatedResponse<T> {
   items?: T[];
@@ -107,9 +111,25 @@ export class TempusClient {
     return this.fetchAll('/Calendars');
   }
 
-  async getAssignments(projectIds?: number[]): Promise<unknown[]> {
+  async getAssignments(projectIds?: number[]): Promise<TempusAssignment[]> {
     const query = projectIds?.length ? `?projectIds=${projectIds.join(',')}` : '';
-    return this.fetchAll(`/Assignments${query}`);
+    return this.fetchAll<TempusAssignment>(`/Assignments${query}`);
+  }
+
+  async getSheetData(): Promise<TempusSheetData[]> {
+    try { return await this.fetchAll<TempusSheetData>('/SheetData'); } catch { return []; }
+  }
+
+  async getAdvancedRates(): Promise<TempusAdvancedRate[]> {
+    try { return await this.fetchAll<TempusAdvancedRate>('/AdvancedRates'); } catch { return []; }
+  }
+
+  async getFinancials(): Promise<TempusFinancial[]> {
+    try { return await this.fetchAll<TempusFinancial>('/Financials'); } catch { return []; }
+  }
+
+  async getTeamResources(): Promise<TempusTeamResource[]> {
+    try { return await this.fetchAll<TempusTeamResource>('/TeamResources'); } catch { return []; }
   }
 
   // ── CREATE Endpoints ───────────────────────────────────────────────
@@ -141,17 +161,25 @@ export class TempusClient {
   // ── Fetch all relevant Tempus data ─────────────────────────────────
 
   async fetchAllData(): Promise<TempusData> {
-    const [projects, resources, tasks, customFields, roles, skills, adminTimes, calendars] =
-      await Promise.allSettled([
-        this.getProjects(),
-        this.getResources(),
-        this.getTasks(),
-        this.getCustomFields(),
-        this.getRoles(),
-        this.getSkills(),
-        this.getAdminTimes(),
-        this.getCalendars(),
-      ]);
+    const [
+      projects, resources, tasks, customFields, assignments,
+      roles, skills, adminTimes, sheetData, advancedRates,
+      financials, teamResources, calendars,
+    ] = await Promise.allSettled([
+      this.getProjects(),
+      this.getResources(),
+      this.getTasks(),
+      this.getCustomFields(),
+      this.getAssignments(),
+      this.getRoles(),
+      this.getSkills(),
+      this.getAdminTimes(),
+      this.getSheetData(),
+      this.getAdvancedRates(),
+      this.getFinancials(),
+      this.getTeamResources(),
+      this.getCalendars(),
+    ]);
 
     const unwrap = <T>(result: PromiseSettledResult<T[]>): T[] =>
       result.status === 'fulfilled' ? result.value : [];
@@ -161,9 +189,14 @@ export class TempusClient {
       resources: unwrap(resources),
       tasks: unwrap(tasks),
       customFields: unwrap(customFields),
+      assignments: unwrap(assignments),
       roles: unwrap(roles),
       skills: unwrap(skills),
       adminTimes: unwrap(adminTimes),
+      sheetData: unwrap(sheetData),
+      advancedRates: unwrap(advancedRates),
+      financials: unwrap(financials),
+      teamResources: unwrap(teamResources),
       calendars: unwrap(calendars),
       fetchedAt: Date.now(),
     };

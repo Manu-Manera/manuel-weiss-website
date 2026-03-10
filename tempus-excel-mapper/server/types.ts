@@ -55,6 +55,51 @@ export interface TempusRole {
 export interface TempusSkill {
   id: number;
   name: string;
+  category?: string;
+}
+
+export interface TempusAdminTime {
+  id: number;
+  name: string;
+  resourceId?: number;
+  resourceName?: string;
+}
+
+export interface TempusSheetData {
+  id: number;
+  projectName?: string;
+  taskName?: string;
+  resourceName?: string;
+  month?: string;
+  value?: number;
+  planType?: string;
+}
+
+export interface TempusAdvancedRate {
+  id: number;
+  resourceName?: string;
+  projectName?: string;
+  rate?: number;
+  currency?: string;
+  effectiveDate?: string;
+}
+
+export interface TempusFinancial {
+  id: number;
+  projectName?: string;
+  month?: string;
+  budget?: number;
+  actual?: number;
+  forecast?: number;
+  type?: string;
+}
+
+export interface TempusTeamResource {
+  id: number;
+  teamName?: string;
+  resourceName?: string;
+  role?: string;
+  allocationPercentage?: number;
 }
 
 export interface TempusData {
@@ -62,9 +107,14 @@ export interface TempusData {
   resources: TempusResource[];
   tasks: TempusTask[];
   customFields: TempusCustomField[];
+  assignments: TempusAssignment[];
   roles: TempusRole[];
   skills: TempusSkill[];
-  adminTimes: Array<{ id: number; name: string }>;
+  adminTimes: TempusAdminTime[];
+  sheetData: TempusSheetData[];
+  advancedRates: TempusAdvancedRate[];
+  financials: TempusFinancial[];
+  teamResources: TempusTeamResource[];
   calendars: Array<{ id: number; name: string }>;
   fetchedAt: number;
 }
