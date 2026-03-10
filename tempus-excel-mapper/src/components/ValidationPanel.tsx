@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAppStore } from '../store';
 import * as api from '../api';
 import {
-  ShieldCheck, AlertTriangle, AlertCircle, Info, ArrowRight, ArrowLeft, Loader2, CheckCircle,
+  ShieldCheck, AlertTriangle, AlertCircle, Info, ArrowRight, ArrowLeft, Loader2, CheckCircle, Download, FileSpreadsheet,
 } from 'lucide-react';
 
 export default function ValidationPanel() {
@@ -128,15 +128,28 @@ export default function ValidationPanel() {
             </div>
           )}
 
-          {/* Re-validate */}
-          <button
-            onClick={handleValidate}
-            disabled={validating}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 flex items-center gap-2"
-          >
-            {validating ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
-            Erneut validieren
-          </button>
+          {/* Actions */}
+          <div className="flex items-center gap-3 flex-wrap">
+            <button
+              onClick={handleValidate}
+              disabled={validating}
+              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 flex items-center gap-2"
+            >
+              {validating ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+              Erneut validieren
+            </button>
+
+            {sessionId && (
+              <a
+                href={api.getReportDownloadUrl(sessionId)}
+                className="px-4 py-2 bg-primary-50 text-primary-700 border border-primary-200 rounded-lg text-sm hover:bg-primary-100 hover:border-primary-300 transition-colors flex items-center gap-2 no-underline"
+              >
+                <FileSpreadsheet className="w-4 h-4" />
+                Mapping-Report herunterladen
+                <Download className="w-3.5 h-3.5" />
+              </a>
+            )}
+          </div>
         </>
       )}
 

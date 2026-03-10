@@ -468,7 +468,6 @@ function addReportSheet(workbook: ExcelJS.Workbook, mappingResult: MappingResult
   ws.addRow([`Erstellt: ${new Date().toISOString()}`]);
   ws.addRow([]);
 
-  // Summary
   ws.addRow(['Zusammenfassung']);
   const summaryHeader = ws.addRow(['Metrik', 'Wert']);
   summaryHeader.font = { bold: true };
@@ -479,7 +478,6 @@ function addReportSheet(workbook: ExcelJS.Workbook, mappingResult: MappingResult
   ws.addRow(['Neue Entitäten', mappingResult.summary.newEntities]);
   ws.addRow([]);
 
-  // Field mappings
   ws.addRow(['Feld-Zuordnungen']);
   const fmHeader = ws.addRow(['Quelle (Sheet.Spalte)', 'Ziel', 'Match-Typ', 'Confidence', 'Status', 'Begründung']);
   fmHeader.font = { bold: true };
@@ -495,7 +493,6 @@ function addReportSheet(workbook: ExcelJS.Workbook, mappingResult: MappingResult
   }
   ws.addRow([]);
 
-  // New entities
   const newEntities = mappingResult.entityMappings.filter(em => em.isNew);
   if (newEntities.length > 0) {
     ws.addRow(['Neue Entitäten (anzulegen)']);
@@ -509,30 +506,395 @@ function addReportSheet(workbook: ExcelJS.Workbook, mappingResult: MappingResult
   ws.columns.forEach(col => { col.width = 25; });
 }
 
+// ── Styling helpers for the comprehensive report ────────────────────
+
+const COLORS = {
+  headerBg: 'FF1E3A5F',
+  headerFont: 'FFFFFFFF',
+  sectionBg: 'FFE8EEF5',
+  errorBg: 'FFFDE8E8',
+  errorFont: 'FFDC2626',
+  warningBg: 'FFFFFBEB',
+  warningFont: 'FFD97706',
+  infoBg: 'FFEFF6FF',
+  infoFont: 'FF2563EB',
+  confirmedBg: 'FFF0FDF4',
+  rejectedBg: 'FFFEF2F2',
+  createNewBg: 'FFFFFBEB',
+  needsReviewBg: 'FFFFF7ED',
+  borderColor: 'FFD1D5DB',
+};
+
+function styleHeaderRow(row: ExcelJS.Row, colCount: number): void {
+  row.font = { bold: true, color: { argb: COLORS.headerFont }, size: 11 };
+  row.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: COLORS.headerBg } };
+  row.alignment = { vertical: 'middle', wrapText: true };
+  for (let i = 1; i <= colCount; i++) {
+    row.getCell(i).border = {
+      bottom: { style: 'thin', color: { argb: COLORS.borderColor } },
+    };
+  }
+}
+
+function styleSectionTitle(ws: ExcelJS.Worksheet, title: string, colSpan: number): void {
+  const row = ws.addRow([title]);
+  row.font = { bold: true, size: 13, color: { argb: COLORS.headerBg } };
+  ws.mergeCells(row.number, 1, row.number, colSpan);
+  ws.addRow([]);
+}
+
+function statusLabel(status: string): string {
+  switch (status) {
+    case 'confirmed': return '✅ Bestätigt';
+    case 'rejected': return '❌ Abgelehnt';
+    case 'create_new': return '🆕 Neu anlegen';
+    case 'needs_review': return '⚠️ Prüfen';
+    case 'suggested': return '💡 Vorschlag';
+    default: return status;
+  }
+}
+
+function matchTypeLabel(matchType: string): string {
+  switch (matchType) {
+    case 'exact': return 'Exakt';
+    case 'fuzzy': return 'Fuzzy';
+    case 'ai_suggested': return 'KI-Vorschlag';
+    case 'user_confirmed': return 'Manuell bestätigt';
+    case 'new_entity': return 'Neue Entität';
+    default: return matchType;
+  }
+}
+
+function severityLabel(severity: string): string {
+  switch (severity) {
+    case 'error': return '🔴 Fehler';
+    case 'warning': return '🟡 Warnung';
+    case 'info': return '🔵 Hinweis';
+    default: return severity;
+  }
+}
+
+function statusRowFill(status: string): ExcelJS.Fill | undefined {
+  switch (status) {
+    case 'confirmed': return { type: 'pattern', pattern: 'solid', fgColor: { argb: COLORS.confirmedBg } };
+    case 'rejected': return { type: 'pattern', pattern: 'solid', fgColor: { argb: COLORS.rejectedBg } };
+    case 'create_new': return { type: 'pattern', pattern: 'solid', fgColor: { argb: COLORS.createNewBg } };
+    case 'needs_review': return { type: 'pattern', pattern: 'solid', fgColor: { argb: COLORS.needsReviewBg } };
+    default: return undefined;
+  }
+}
+
+export interface ReportContext {
+  mappingResult: MappingResult;
+  validation: ValidationResult;
+  parsedExcel?: ParsedExcel;
+  tempusData?: TempusData;
+}
+
 export async function generateReport(
   mappingResult: MappingResult,
   validation: ValidationResult,
+  parsedExcel?: ParsedExcel,
+  tempusData?: TempusData,
 ): Promise<Buffer> {
   const workbook = new ExcelJS.Workbook();
+  workbook.creator = 'Tempus Excel Mapper';
+  workbook.created = new Date();
 
-  const ws = workbook.addWorksheet('Validierungsreport');
-  ws.addRow(['Tempus Import – Validierungsreport']);
-  ws.addRow([`Erstellt: ${new Date().toISOString()}`]);
-  ws.addRow([]);
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
-  const header = ws.addRow(['Schweregrad', 'Kategorie', 'Nachricht', 'Sheet', 'Spalte', 'Vorschlag']);
-  header.font = { bold: true };
+  // ── Sheet 1: Übersicht ──────────────────────────────────────────────
 
-  for (const issue of validation.issues) {
-    const row = ws.addRow([
-      issue.severity, issue.category, issue.message,
-      issue.sheet || '', issue.column || '', issue.suggestion || '',
-    ]);
-    if (issue.severity === 'error') row.font = { color: { argb: 'FFFF0000' } };
-    if (issue.severity === 'warning') row.font = { color: { argb: 'FFFF8C00' } };
+  const wsOverview = workbook.addWorksheet('Übersicht');
+
+  const titleRow = wsOverview.addRow(['Tempus Import – Mapping Report']);
+  titleRow.font = { bold: true, size: 16, color: { argb: COLORS.headerBg } };
+  wsOverview.mergeCells(1, 1, 1, 4);
+  wsOverview.addRow([`Erstellt: ${dateStr}`]).font = { italic: true, color: { argb: 'FF6B7280' } };
+  if (parsedExcel) {
+    wsOverview.addRow([`Quelldatei: ${parsedExcel.fileName}`]).font = { italic: true, color: { argb: 'FF6B7280' } };
+  }
+  wsOverview.addRow([]);
+
+  styleSectionTitle(wsOverview, 'Mapping-Zusammenfassung', 4);
+  const mHeader = wsOverview.addRow(['Metrik', 'Wert', 'Details', '']);
+  styleHeaderRow(mHeader, 4);
+
+  const s = mappingResult.summary;
+  wsOverview.addRow(['Felder gesamt', s.totalFields, `${s.mappedFields} zugeordnet, ${s.totalFields - s.mappedFields} offen`, '']);
+  wsOverview.addRow(['Felder zugeordnet', s.mappedFields, `${Math.round(s.mappedFields / Math.max(s.totalFields, 1) * 100)}%`, '']);
+  wsOverview.addRow(['Nicht zugeordnete Spalten', mappingResult.unmappedColumns.length, mappingResult.unmappedColumns.slice(0, 5).join(', ') + (mappingResult.unmappedColumns.length > 5 ? ' ...' : ''), '']);
+  wsOverview.addRow(['Entitäten gesamt', s.totalEntities, `${s.matchedEntities} gematchte + ${s.newEntities} neue`, '']);
+  wsOverview.addRow(['Gematchte Entitäten', s.matchedEntities, '', '']);
+  wsOverview.addRow(['Neue Entitäten (anlegen)', s.newEntities, '', '']);
+  wsOverview.addRow(['Konflikte', s.conflicts, s.conflicts > 0 ? 'Siehe Feld-Zuordnungen' : '', '']);
+  wsOverview.addRow(['Custom Fields', mappingResult.customFieldMappings.length,
+    `${mappingResult.customFieldMappings.filter(c => c.action === 'create').length} neu, ${mappingResult.customFieldMappings.filter(c => c.action === 'exists').length} vorhanden`, '']);
+  wsOverview.addRow([]);
+
+  styleSectionTitle(wsOverview, 'Validierung', 4);
+  const vHeader = wsOverview.addRow(['Ergebnis', 'Fehler', 'Warnungen', 'Hinweise']);
+  styleHeaderRow(vHeader, 4);
+  const vRow = wsOverview.addRow([
+    validation.isValid ? '✅ Bestanden' : '❌ Fehler vorhanden',
+    validation.summary.errors,
+    validation.summary.warnings,
+    validation.summary.infos,
+  ]);
+  if (!validation.isValid) vRow.getCell(1).font = { bold: true, color: { argb: COLORS.errorFont } };
+  else vRow.getCell(1).font = { bold: true, color: { argb: 'FF16A34A' } };
+  wsOverview.addRow([]);
+
+  if (parsedExcel) {
+    styleSectionTitle(wsOverview, 'Excel-Quelldatei', 4);
+    const shHeader = wsOverview.addRow(['Sheet', 'Zeilen', 'Spalten', 'Erkannter Entitätstyp']);
+    styleHeaderRow(shHeader, 4);
+    for (const sheet of parsedExcel.sheets) {
+      wsOverview.addRow([sheet.name, sheet.totalRows, sheet.headers.length, '–']);
+    }
+    wsOverview.addRow([]);
   }
 
-  ws.columns.forEach(col => { col.width = 30; });
+  if (tempusData) {
+    styleSectionTitle(wsOverview, 'Tempus-Bestand (zum Zeitpunkt der Analyse)', 4);
+    const tHeader = wsOverview.addRow(['Entitätstyp', 'Anzahl', '', '']);
+    styleHeaderRow(tHeader, 4);
+    wsOverview.addRow(['Projekte', tempusData.projects.length, '', '']);
+    wsOverview.addRow(['Ressourcen', tempusData.resources.length, '', '']);
+    wsOverview.addRow(['Aufgaben (Tasks)', tempusData.tasks.length, '', '']);
+    wsOverview.addRow(['Custom Fields', tempusData.customFields.length, '', '']);
+    wsOverview.addRow(['Zuweisungen (Assignments)', tempusData.assignments.length, '', '']);
+    wsOverview.addRow(['Rollen', tempusData.roles.length, '', '']);
+    wsOverview.addRow(['Skills', tempusData.skills.length, '', '']);
+    wsOverview.addRow(['Admin Times', tempusData.adminTimes.length, '', '']);
+    wsOverview.addRow(['Financials', tempusData.financials.length, '', '']);
+    wsOverview.addRow(['Team Resources', tempusData.teamResources.length, '', '']);
+    wsOverview.addRow([]);
+  }
+
+  if (validation.blockingIssues.length > 0) {
+    styleSectionTitle(wsOverview, 'Blockierende Probleme', 4);
+    for (const issue of validation.blockingIssues) {
+      const r = wsOverview.addRow([`⛔ ${issue}`, '', '', '']);
+      r.font = { bold: true, color: { argb: COLORS.errorFont } };
+    }
+  }
+
+  wsOverview.columns = [{ width: 32 }, { width: 14 }, { width: 45 }, { width: 20 }];
+
+  // ── Sheet 2: Feld-Zuordnungen ─────────────────────────────────────
+
+  const wsFields = workbook.addWorksheet('Feld-Zuordnungen');
+  const fmHeaders = ['#', 'Quell-Sheet', 'Quell-Spalte', 'Ziel-Entität', 'Ziel-Feld', 'Match-Typ', 'Confidence', 'Status', 'Transformation', 'Begründung'];
+  const fmH = wsFields.addRow(fmHeaders);
+  styleHeaderRow(fmH, fmHeaders.length);
+
+  const sortedFields = [...mappingResult.fieldMappings].sort((a, b) => {
+    const statusOrder = { needs_review: 0, suggested: 1, rejected: 2, create_new: 3, confirmed: 4 };
+    return (statusOrder[a.status] ?? 5) - (statusOrder[b.status] ?? 5);
+  });
+
+  sortedFields.forEach((fm, idx) => {
+    const row = wsFields.addRow([
+      idx + 1,
+      fm.sourceSheet,
+      fm.sourceColumn,
+      fm.targetEntity,
+      fm.targetField,
+      matchTypeLabel(fm.matchType),
+      Math.round(fm.confidence * 100),
+      statusLabel(fm.status),
+      fm.transformation || '–',
+      fm.reasoning,
+    ]);
+    const fill = statusRowFill(fm.status);
+    if (fill) row.fill = fill;
+    row.getCell(7).numFmt = '0"%"';
+    row.alignment = { wrapText: true, vertical: 'top' };
+  });
+
+  wsFields.columns = [
+    { width: 5 }, { width: 18 }, { width: 22 }, { width: 18 }, { width: 22 },
+    { width: 16 }, { width: 12 }, { width: 18 }, { width: 18 }, { width: 50 },
+  ];
+
+  wsFields.autoFilter = { from: { row: 1, column: 1 }, to: { row: sortedFields.length + 1, column: fmHeaders.length } };
+
+  // ── Sheet 3: Entitäts-Zuordnungen ─────────────────────────────────
+
+  const wsEntities = workbook.addWorksheet('Entitäts-Zuordnungen');
+  const emHeaders = ['#', 'Quell-Sheet', 'Quell-Spalte', 'Quell-Wert', 'Ziel-Entität', 'Gematchter Name', 'Tempus ID', 'Neu?', 'Match-Typ', 'Confidence', 'Status', 'Begründung'];
+  const emH = wsEntities.addRow(emHeaders);
+  styleHeaderRow(emH, emHeaders.length);
+
+  const sortedEntities = [...mappingResult.entityMappings].sort((a, b) => {
+    const statusOrder = { needs_review: 0, create_new: 1, suggested: 2, rejected: 3, confirmed: 4 };
+    return (statusOrder[a.status] ?? 5) - (statusOrder[b.status] ?? 5);
+  });
+
+  sortedEntities.forEach((em, idx) => {
+    const row = wsEntities.addRow([
+      idx + 1,
+      em.sourceSheet,
+      em.sourceColumn,
+      em.sourceValue,
+      em.targetEntity,
+      em.matchedName || '–',
+      em.matchedId ?? '–',
+      em.isNew ? 'Ja' : 'Nein',
+      matchTypeLabel(em.matchType),
+      Math.round(em.confidence * 100),
+      statusLabel(em.status),
+      em.reasoning,
+    ]);
+    const fill = statusRowFill(em.status);
+    if (fill) row.fill = fill;
+    row.getCell(10).numFmt = '0"%"';
+    row.alignment = { wrapText: true, vertical: 'top' };
+  });
+
+  wsEntities.columns = [
+    { width: 5 }, { width: 16 }, { width: 18 }, { width: 28 }, { width: 16 }, { width: 28 },
+    { width: 10 }, { width: 7 }, { width: 16 }, { width: 12 }, { width: 18 }, { width: 50 },
+  ];
+
+  wsEntities.autoFilter = { from: { row: 1, column: 1 }, to: { row: sortedEntities.length + 1, column: emHeaders.length } };
+
+  // ── Sheet 4: Custom Fields ────────────────────────────────────────
+
+  if (mappingResult.customFieldMappings.length > 0) {
+    const wsCf = workbook.addWorksheet('Custom Fields');
+    const cfHeaders = ['#', 'Quell-Sheet', 'Quell-Spalte', 'Custom Field Name', 'Entitätstyp', 'Datentyp', 'In Tempus vorhanden?', 'Tempus-ID', 'Aktion'];
+    const cfH = wsCf.addRow(cfHeaders);
+    styleHeaderRow(cfH, cfHeaders.length);
+
+    mappingResult.customFieldMappings.forEach((cf, idx) => {
+      const row = wsCf.addRow([
+        idx + 1,
+        cf.sourceSheet,
+        cf.sourceColumn,
+        cf.customFieldName,
+        cf.entityType,
+        cf.dataType,
+        cf.existsInTempus ? 'Ja' : 'Nein',
+        cf.tempusFieldId ?? '–',
+        cf.action === 'create' ? '🆕 Neu anlegen' : '✅ Vorhanden',
+      ]);
+      if (cf.action === 'create') {
+        row.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: COLORS.createNewBg } };
+      }
+    });
+
+    wsCf.columns = [
+      { width: 5 }, { width: 16 }, { width: 22 }, { width: 28 }, { width: 16 },
+      { width: 14 }, { width: 18 }, { width: 12 }, { width: 18 },
+    ];
+
+    wsCf.autoFilter = { from: { row: 1, column: 1 }, to: { row: mappingResult.customFieldMappings.length + 1, column: cfHeaders.length } };
+  }
+
+  // ── Sheet 5: Nicht zugeordnete Spalten ────────────────────────────
+
+  if (mappingResult.unmappedColumns.length > 0) {
+    const wsUnmapped = workbook.addWorksheet('Nicht zugeordnet');
+    const uHeaders = ['#', 'Spaltenbezeichnung', 'Hinweis'];
+    const uH = wsUnmapped.addRow(uHeaders);
+    styleHeaderRow(uH, uHeaders.length);
+
+    mappingResult.unmappedColumns.forEach((col, idx) => {
+      wsUnmapped.addRow([
+        idx + 1,
+        col,
+        'Keine automatische Zuordnung gefunden – ggf. manuell zuweisen oder ignorieren',
+      ]);
+    });
+
+    wsUnmapped.columns = [{ width: 5 }, { width: 35 }, { width: 60 }];
+  }
+
+  // ── Sheet 6: Validierung ──────────────────────────────────────────
+
+  const wsVal = workbook.addWorksheet('Validierung');
+  const valHeaders = ['#', 'Schweregrad', 'Kategorie', 'Nachricht', 'Sheet', 'Spalte', 'Vorschlag'];
+  const valH = wsVal.addRow(valHeaders);
+  styleHeaderRow(valH, valHeaders.length);
+
+  const severityOrder = { error: 0, warning: 1, info: 2 };
+  const sortedIssues = [...validation.issues].sort(
+    (a, b) => (severityOrder[a.severity] ?? 3) - (severityOrder[b.severity] ?? 3)
+  );
+
+  sortedIssues.forEach((issue, idx) => {
+    const row = wsVal.addRow([
+      idx + 1,
+      severityLabel(issue.severity),
+      issue.category,
+      issue.message,
+      issue.sheet || '–',
+      issue.column || '–',
+      issue.suggestion || '–',
+    ]);
+    row.alignment = { wrapText: true, vertical: 'top' };
+    switch (issue.severity) {
+      case 'error':
+        row.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: COLORS.errorBg } };
+        row.getCell(2).font = { bold: true, color: { argb: COLORS.errorFont } };
+        break;
+      case 'warning':
+        row.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: COLORS.warningBg } };
+        row.getCell(2).font = { bold: true, color: { argb: COLORS.warningFont } };
+        break;
+      case 'info':
+        row.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: COLORS.infoBg } };
+        row.getCell(2).font = { color: { argb: COLORS.infoFont } };
+        break;
+    }
+  });
+
+  wsVal.columns = [
+    { width: 5 }, { width: 16 }, { width: 24 }, { width: 55 },
+    { width: 18 }, { width: 18 }, { width: 40 },
+  ];
+
+  wsVal.autoFilter = { from: { row: 1, column: 1 }, to: { row: sortedIssues.length + 1, column: valHeaders.length } };
+
+  // ── Sheet 7: Status-Legende ───────────────────────────────────────
+
+  const wsLegend = workbook.addWorksheet('Legende');
+  const legTitleRow = wsLegend.addRow(['Legende']);
+  legTitleRow.font = { bold: true, size: 14, color: { argb: COLORS.headerBg } };
+  wsLegend.addRow([]);
+
+  wsLegend.addRow(['Mapping-Status']).font = { bold: true, size: 12 };
+  wsLegend.addRow(['✅ Bestätigt', 'Die Zuordnung wurde manuell oder automatisch bestätigt.']);
+  wsLegend.addRow(['💡 Vorschlag', 'Automatisch vorgeschlagene Zuordnung, noch nicht geprüft.']);
+  wsLegend.addRow(['⚠️ Prüfen', 'Geringe Konfidenz – manuelle Prüfung empfohlen.']);
+  wsLegend.addRow(['❌ Abgelehnt', 'Zuordnung wurde abgelehnt und wird ignoriert.']);
+  wsLegend.addRow(['🆕 Neu anlegen', 'Wird als neue Entität in Tempus angelegt.']);
+  wsLegend.addRow([]);
+
+  wsLegend.addRow(['Match-Typen']).font = { bold: true, size: 12 };
+  wsLegend.addRow(['Exakt', 'Exakte Namensübereinstimmung.']);
+  wsLegend.addRow(['Fuzzy', 'Ähnlichkeitsbasierter Match (Levenshtein/Token-Ratio).']);
+  wsLegend.addRow(['KI-Vorschlag', 'Semantisch durch KI zugeordnet.']);
+  wsLegend.addRow(['Manuell bestätigt', 'Vom Benutzer manuell zugewiesen.']);
+  wsLegend.addRow(['Neue Entität', 'Kein Match – wird neu angelegt.']);
+  wsLegend.addRow([]);
+
+  wsLegend.addRow(['Validierungs-Schweregrade']).font = { bold: true, size: 12 };
+  wsLegend.addRow(['🔴 Fehler', 'Blockierendes Problem – muss vor Export/Import behoben werden.']);
+  wsLegend.addRow(['🟡 Warnung', 'Potenzielles Problem – empfohlene Prüfung.']);
+  wsLegend.addRow(['🔵 Hinweis', 'Informativ – keine Aktion erforderlich.']);
+  wsLegend.addRow([]);
+
+  wsLegend.addRow(['Confidence (Konfidenz)']).font = { bold: true, size: 12 };
+  wsLegend.addRow(['90–100%', 'Sehr hohe Übereinstimmung.']);
+  wsLegend.addRow(['70–89%', 'Gute Übereinstimmung, evtl. Prüfung.']);
+  wsLegend.addRow(['50–69%', 'Moderate Übereinstimmung – Prüfung empfohlen.']);
+  wsLegend.addRow(['< 50%', 'Geringe Übereinstimmung – manuelle Zuordnung empfohlen.']);
+
+  wsLegend.columns = [{ width: 22 }, { width: 65 }];
 
   const buffer = await workbook.xlsx.writeBuffer();
   return Buffer.from(buffer);

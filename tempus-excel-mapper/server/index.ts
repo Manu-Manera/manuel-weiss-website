@@ -542,7 +542,12 @@ app.get('/api/sessions/:id/download-report', asyncRoute(async (req, res) => {
     res.status(400).json({ error: 'Mapping und Validierung erforderlich' });
     return;
   }
-  const buffer = await generateReport(session.mappingResult, session.validation);
+  const buffer = await generateReport(
+    session.mappingResult,
+    session.validation,
+    session.parsedExcel,
+    session.tempusData,
+  );
   const fileName = `tempus-mapping-report-${new Date().toISOString().split('T')[0]}.xlsx`;
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
