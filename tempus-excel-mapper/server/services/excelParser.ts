@@ -177,12 +177,24 @@ function normalizeCell(value: unknown): unknown {
   if (value instanceof Date) return value.toISOString();
   if (typeof value === 'object' && value !== null) {
     const obj = value as Record<string, unknown>;
-    if ('result' in obj) return obj.result;
+    // Formula cells: extract computed result, discard formula metadata
+    if ('result' in obj) {
+      const result = obj.result;
+      if (result instanceof Date) return result.toISOString();
+      return result ?? '';
+    }
+    if ('formula' in obj || 'sharedFormula' in obj) return '';
     if ('text' in obj) return obj.text;
     if ('richText' in obj) {
       const rt = obj.richText as Array<{ text: string }>;
       return rt.map(r => r.text).join('');
     }
+    // Hyperlink objects
+    if ('hyperlink' in obj && 'text' in obj) return obj.text;
+    // Error objects
+    if ('error' in obj) return '';
+    // Unknown object — convert to string to prevent formula injection
+    return String(value);
   }
   return value;
 }

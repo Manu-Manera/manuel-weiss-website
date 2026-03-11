@@ -19,7 +19,8 @@ const IMPORT_STEPS = [
   { entity: 'milestones',          label: '7. Milestones' },
   { entity: 'resyncMilestones',    label: '   → Milestones synchronisieren' },
   { entity: 'milestoneCFValues',   label: '8. Milestone Custom Field Werte' },
-  { entity: 'assignments',         label: '9. Assignments' },
+  { entity: 'autoAssignments',     label: '9a. Projekt-Ressource-Verknüpfungen (aus Rollen-Spalten)' },
+  { entity: 'assignments',         label: '9b. Assignments' },
   { entity: 'assignmentCFValues',  label: '10. Assignment Custom Field Werte' },
   { entity: 'adminTimes',          label: '11. Admin Times' },
   { entity: 'skills',              label: '12. Skills' },
@@ -775,7 +776,90 @@ async function importStep(
       return payloads.length;
     }
 
-    // ── 8. Assignments ────────────────────────────────────────────────
+    // ── 9a. Auto-Assignments: Detect resource names in project CF columns ──
+    case 'autoAssignments': {
+      if (tempusData.projects.length === 0 || tempusData.resources.length === 0) return 0;
+
+      const projectFMs = fieldsByEntity('projects');
+      const nameFM = projectFMs.find(fm => fm.targetField === 'name' || fm.targetField === 'projectName');
+      if (!nameFM) return 0;
+
+      // Find CF columns that contain resource names (e.g. Sponsor, Lead/PM, Project Manager)
+      const resourceNameSet = new Set(tempusData.resources.map(r => r.name.toLowerCase().trim()));
+      const roleIndicatorPatterns = /sponsor|lead|manager|pm|owner|verantwortlich|leiter|coordinator|director/i;
+
+      const cfColumns = projectFMs.filter(fm =>
+        fm.targetField.startsWith('cf:') && roleIndicatorPatterns.test(fm.sourceColumn)
+      );
+
+      if (cfColumns.length === 0) {
+        console.log(`[importService] autoAssignments: no role-like CF columns found in project mappings`);
+        return 0;
+      }
+
+      console.log(`[importService] autoAssignments: checking ${cfColumns.length} role-like columns: ${cfColumns.map(c => c.sourceColumn).join(', ')}`);
+
+      const seen = new Set<string>();
+      const items: Array<Record<string, unknown>> = [];
+
+      for (const cfFM of cfColumns) {
+        const sheet = parsedExcel.sheets.find(s => s.name === cfFM.sourceSheet);
+        if (!sheet) continue;
+
+        for (const row of sheet.rows) {
+          const projName = String(row[nameFM.sourceColumn] ?? '').trim();
+          if (!projName) continue;
+
+          const resolvedProjName = resolveEntityName(projName, mappingResult);
+          const project = tempusData.projects.find(p => p.name.toLowerCase() === resolvedProjName.toLowerCase());
+          if (!project) continue;
+
+          const rawResName = String(row[cfFM.sourceColumn] ?? '').trim();
+          if (!rawResName) continue;
+
+          // Handle comma-separated names (e.g. "John Smith, Jane Doe")
+          const resNames = rawResName.includes(',') ? rawResName.split(',').map(n => n.trim()) : [rawResName];
+
+          for (const singleName of resNames) {
+            if (!singleName) continue;
+            const resolvedResName = resolveEntityName(singleName, mappingResult);
+            const resource = tempusData.resources.find(r => r.name.toLowerCase() === resolvedResName.toLowerCase());
+            if (!resource) continue;
+
+            const key = `${project.id}:${resource.id}`;
+            if (seen.has(key)) continue;
+            seen.add(key);
+
+            const existingAssignment = tempusData.assignments.find(
+              a => a.projectId === project.id && a.resourceId === resource.id
+            );
+            if (existingAssignment) continue;
+
+            items.push({
+              projectId: project.id,
+              resourceId: resource.id,
+              importBehavior: 'Merge',
+            });
+          }
+        }
+      }
+
+      if (items.length === 0) {
+        console.log(`[importService] autoAssignments: no new assignments to create`);
+        return 0;
+      }
+
+      console.log(`[importService] autoAssignments: creating ${items.length} assignments from role columns`, JSON.stringify(items.slice(0, 3)));
+      await client.createAssignments(items);
+
+      const updatedAssignments = await client.getAssignments();
+      tempusData.assignments = updatedAssignments;
+      console.log(`[importService] Re-synced Assignments: ${updatedAssignments.length}`);
+
+      return items.length;
+    }
+
+    // ── 9b. Assignments ────────────────────────────────────────────────
     case 'assignments': {
       const assignmentFieldMappings = fieldsByEntity('assignments');
       if (assignmentFieldMappings.length === 0) return 0;

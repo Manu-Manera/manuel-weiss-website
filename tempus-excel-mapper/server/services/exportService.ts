@@ -349,7 +349,7 @@ export async function generateTempusExcel(
                   );
                   exportRow.push(periodMatch?.tempusTimePeriod || pivotFM.sourceColumn);
                 } else if (header === 'Data Input' || header === 'Project Allocation') {
-                  exportRow.push(allocValue);
+                  exportRow.push(toPlainValue(allocValue));
                 } else if (header === 'Import Behavior') {
                   exportRow.push('Merge');
                 } else {
@@ -365,7 +365,7 @@ export async function generateTempusExcel(
                       );
                       if (eMatch?.matchedName) val = eMatch.matchedName;
                     }
-                    exportRow.push(val ?? '');
+                    exportRow.push(toPlainValue(val));
                   } else {
                     exportRow.push('');
                   }
@@ -421,7 +421,7 @@ export async function generateTempusExcel(
                 value = formatDate(value);
               }
 
-              exportRow.push(value ?? '');
+              exportRow.push(toPlainValue(value));
             }
             ws.addRow(exportRow);
           }
@@ -445,7 +445,7 @@ export async function generateTempusExcel(
   addReportSheet(workbook, mappingResult);
 
   // ExcelJS can produce corrupt files when cell models have formula metadata.
-  // The only reliable fix is to rebuild the entire workbook with plain values only.
+  // Rebuild entirely with plain values, aggressively stripping any non-primitive.
   const cleanWorkbook = new ExcelJS.Workbook();
   cleanWorkbook.creator = 'Tempus Excel Mapper';
   cleanWorkbook.created = new Date();
@@ -458,16 +458,8 @@ export async function generateTempusExcel(
 
       srcRow.eachCell({ includeEmpty: false }, (srcCell, colNum) => {
         const destCell = destRow.getCell(colNum);
+        destCell.value = toPlainValue(srcCell.value);
 
-        // Extract the plain value — resolve any formula objects
-        let val = srcCell.value;
-        if (typeof val === 'object' && val !== null) {
-          if ('result' in (val as any)) val = (val as any).result;
-          if ('formula' in (val as any) && !('result' in (val as any))) val = '';
-        }
-        destCell.value = val ?? '';
-
-        // Copy styling
         if (srcCell.font) destCell.font = { ...srcCell.font };
         if (srcCell.fill && (srcCell.fill as any).pattern) destCell.fill = { ...srcCell.fill } as any;
         if (srcCell.alignment) destCell.alignment = { ...srcCell.alignment };
@@ -476,22 +468,77 @@ export async function generateTempusExcel(
       destRow.commit();
     });
 
-    // Copy column widths
     srcSheet.columns.forEach((col, idx) => {
-      if (col.width) {
-        const destCol = destSheet.getColumn(idx + 1);
-        destCol.width = col.width;
-      }
-    });
-
-    // Copy merged cells
-    (srcSheet as any)._merges?.forEach?.((merge: string) => {
-      try { destSheet.mergeCells(merge); } catch { /* ignore merge errors */ }
+      if (col.width) destSheet.getColumn(idx + 1).width = col.width;
     });
   });
 
-  const buffer = await cleanWorkbook.xlsx.writeBuffer();
-  return Buffer.from(buffer);
+  try {
+    const buffer = await cleanWorkbook.xlsx.writeBuffer();
+    return Buffer.from(buffer);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`[export] cleanWorkbook.writeBuffer failed: ${msg}`);
+
+    // Last resort: build a minimal workbook with addRow only (no cell-level copy)
+    console.log('[export] Attempting minimal fallback export...');
+    const fallbackWb = new ExcelJS.Workbook();
+    fallbackWb.creator = 'Tempus Excel Mapper';
+    fallbackWb.created = new Date();
+
+    workbook.eachSheet(srcSheet => {
+      const ws = fallbackWb.addWorksheet(srcSheet.name);
+      srcSheet.eachRow({ includeEmpty: false }, (srcRow, rowNum) => {
+        const vals: (string | number | boolean)[] = [];
+        srcRow.eachCell({ includeEmpty: true }, (cell, colNum) => {
+          while (vals.length < colNum - 1) vals.push('');
+          const v = toPlainValue(cell.value);
+          vals.push(typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean' ? v : String(v ?? ''));
+        });
+        const row = ws.addRow(vals);
+        if (rowNum === 1) {
+          row.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+          row.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4472C4' } };
+        }
+      });
+      ws.columns.forEach(col => {
+        let maxLen = 10;
+        col.eachCell?.({ includeEmpty: false }, c => {
+          const len = String(c.value ?? '').length;
+          if (len > maxLen) maxLen = len;
+        });
+        col.width = Math.min(maxLen + 4, 40);
+      });
+    });
+
+    const buffer = await fallbackWb.xlsx.writeBuffer();
+    return Buffer.from(buffer);
+  }
+}
+
+function toPlainValue(value: unknown): string | number | boolean | Date {
+  if (value == null) return '';
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return value;
+  if (value instanceof Date) return value;
+  if (typeof value === 'object') {
+    const obj = value as Record<string, unknown>;
+    // Formula cells — extract computed result
+    if ('result' in obj) {
+      const r = obj.result;
+      if (r == null) return '';
+      if (typeof r === 'string' || typeof r === 'number' || typeof r === 'boolean') return r;
+      if (r instanceof Date) return r;
+      return String(r);
+    }
+    if ('formula' in obj || 'sharedFormula' in obj) return '';
+    if ('text' in obj && typeof obj.text === 'string') return obj.text;
+    if ('richText' in obj && Array.isArray(obj.richText)) {
+      return (obj.richText as Array<{ text: string }>).map(r => r.text).join('');
+    }
+    if ('error' in obj) return '';
+    return String(value);
+  }
+  return String(value);
 }
 
 function tempusFieldToHeader(field: string, entity: string): string {
