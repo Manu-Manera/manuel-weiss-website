@@ -402,27 +402,53 @@ export async function generateTempusExcel(
 
   addReportSheet(workbook, mappingResult);
 
-  // Sanitize: ExcelJS crashes on shared formula references when writing new workbooks.
-  // We rebuild each cell value as a plain value to strip any formula metadata.
-  workbook.eachSheet(sheet => {
-    sheet.eachRow({ includeEmpty: false }, row => {
-      row.eachCell({ includeEmpty: false }, cell => {
-        const model = (cell as any).model;
-        if (model && (model.sharedFormula !== undefined || model.formula !== undefined)) {
-          // Extract the computed result if it's a formula cell
-          let plainValue = cell.value;
-          if (typeof plainValue === 'object' && plainValue !== null) {
-            if ('result' in (plainValue as any)) plainValue = (plainValue as any).result;
-            else if ('sharedFormula' in (plainValue as any)) plainValue = (plainValue as any).result ?? '';
-          }
-          // Overwrite with plain value — this clears formula metadata
-          cell.value = plainValue ?? '';
+  // ExcelJS can produce corrupt files when cell models have formula metadata.
+  // The only reliable fix is to rebuild the entire workbook with plain values only.
+  const cleanWorkbook = new ExcelJS.Workbook();
+  cleanWorkbook.creator = 'Tempus Excel Mapper';
+  cleanWorkbook.created = new Date();
+
+  workbook.eachSheet(srcSheet => {
+    const destSheet = cleanWorkbook.addWorksheet(srcSheet.name);
+
+    srcSheet.eachRow({ includeEmpty: false }, (srcRow, rowNum) => {
+      const destRow = destSheet.getRow(rowNum);
+
+      srcRow.eachCell({ includeEmpty: false }, (srcCell, colNum) => {
+        const destCell = destRow.getCell(colNum);
+
+        // Extract the plain value — resolve any formula objects
+        let val = srcCell.value;
+        if (typeof val === 'object' && val !== null) {
+          if ('result' in (val as any)) val = (val as any).result;
+          if ('formula' in (val as any) && !('result' in (val as any))) val = '';
         }
+        destCell.value = val ?? '';
+
+        // Copy styling
+        if (srcCell.font) destCell.font = { ...srcCell.font };
+        if (srcCell.fill && (srcCell.fill as any).pattern) destCell.fill = { ...srcCell.fill } as any;
+        if (srcCell.alignment) destCell.alignment = { ...srcCell.alignment };
       });
+
+      destRow.commit();
+    });
+
+    // Copy column widths
+    srcSheet.columns.forEach((col, idx) => {
+      if (col.width) {
+        const destCol = destSheet.getColumn(idx + 1);
+        destCol.width = col.width;
+      }
+    });
+
+    // Copy merged cells
+    (srcSheet as any)._merges?.forEach?.((merge: string) => {
+      try { destSheet.mergeCells(merge); } catch { /* ignore merge errors */ }
     });
   });
 
-  const buffer = await workbook.xlsx.writeBuffer();
+  const buffer = await cleanWorkbook.xlsx.writeBuffer();
   return Buffer.from(buffer);
 }
 
