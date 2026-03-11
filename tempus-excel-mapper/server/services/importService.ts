@@ -287,8 +287,21 @@ async function importStep(
   switch (entity) {
     // ── 1. Custom Fields ──────────────────────────────────────────────
     case 'customFields': {
+      // Double-check against current Tempus CFs to avoid duplicates
+      const existingCFNames = new Set(
+        tempusData.customFields.map(cf => `${cf.entityType.toLowerCase()}:${cf.name.toLowerCase()}`)
+      );
+
       const newCFs = mappingResult.customFieldMappings
-        .filter(cf => cf.action === 'create')
+        .filter(cf => {
+          if (cf.action !== 'create') return false;
+          const key = `${cf.entityType.toLowerCase()}:${cf.customFieldName.toLowerCase()}`;
+          if (existingCFNames.has(key)) {
+            console.log(`[importService] CF "${cf.customFieldName}" (${cf.entityType}) already exists in Tempus – skipping creation`);
+            return false;
+          }
+          return true;
+        })
         .map(cf => {
           const apiDataType = CF_DATATYPE_MAP[cf.dataType] || 'string';
           const isEnumType = apiDataType === 'Enum' || apiDataType === 'Flags';
