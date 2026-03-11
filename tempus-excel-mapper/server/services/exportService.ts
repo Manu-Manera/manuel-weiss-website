@@ -199,6 +199,28 @@ export function validateMappings(
   };
 }
 
+// ── Entity key normalization ──────────────────────────────────────────
+
+const ENTITY_KEY_MAP: Record<string, string> = {
+  project: 'projects', projects: 'projects', Project: 'projects',
+  resource: 'resources', resources: 'resources', Resource: 'resources',
+  assignment: 'assignments', assignments: 'assignments', Assignment: 'assignments',
+  milestone: 'milestones', milestones: 'milestones', Milestone: 'milestones',
+  financial: 'financials', financials: 'financials', Financial: 'financials', Financials: 'financials',
+  skill: 'skills', skills: 'skills', Skill: 'skills',
+  admintime: 'adminTimes', admintimes: 'adminTimes', adminTimes: 'adminTimes', AdminTime: 'adminTimes',
+  task: 'tasks', tasks: 'tasks', Task: 'tasks',
+  sheetdata: 'sheetData', sheetData: 'sheetData', SheetData: 'sheetData',
+  advancedrate: 'advancedRates', advancedrates: 'advancedRates', advancedRates: 'advancedRates',
+  teamresource: 'teamResources', teamresources: 'teamResources', teamResources: 'teamResources',
+  customfield: 'customFields', customfields: 'customFields', customFields: 'customFields',
+  attribute: 'attributes', attributes: 'attributes',
+};
+
+export function normalizeEntityKey(entity: string): string {
+  return ENTITY_KEY_MAP[entity] || ENTITY_KEY_MAP[entity.toLowerCase()] || entity;
+}
+
 // ── Export ────────────────────────────────────────────────────────────
 
 export async function generateTempusExcel(
@@ -227,10 +249,17 @@ export async function generateTempusExcel(
     em => em.status === 'confirmed' || em.status === 'suggested' || em.status === 'create_new'
   );
 
+  // Normalize entity keys so AI-generated names like 'Project' match template key 'projects'
   const byEntity = new Map<string, FieldMapping[]>();
   for (const fm of confirmedFieldMappings) {
-    if (!byEntity.has(fm.targetEntity)) byEntity.set(fm.targetEntity, []);
-    byEntity.get(fm.targetEntity)!.push(fm);
+    const key = normalizeEntityKey(fm.targetEntity);
+    if (!byEntity.has(key)) byEntity.set(key, []);
+    byEntity.get(key)!.push(fm);
+  }
+
+  console.log(`[export] byEntity keys: ${[...byEntity.keys()].join(', ')}`);
+  for (const [key, fms] of byEntity) {
+    console.log(`[export]   ${key}: ${fms.length} mappings (fields: ${fms.map(m => m.targetField).join(', ')})`);
   }
 
   for (const templateKey of selectedTemplates) {
@@ -238,7 +267,11 @@ export async function generateTempusExcel(
     if (!template) continue;
 
     const entityMappings = byEntity.get(templateKey) || [];
-    if (entityMappings.length === 0 && templateKey !== 'attributes') continue;
+    if (entityMappings.length === 0 && templateKey !== 'attributes') {
+      console.log(`[export] Template "${templateKey}": no field mappings found – skipping`);
+      continue;
+    }
+    console.log(`[export] Template "${templateKey}": ${entityMappings.length} mappings`);
 
     const ws = workbook.addWorksheet(template.sheetName);
 
@@ -285,11 +318,17 @@ export async function generateTempusExcel(
       }
     } else {
       const sourceSheets = [...new Set(entityMappings.map(m => m.sourceSheet))];
+      console.log(`[export] Template "${templateKey}": source sheets = [${sourceSheets.join(', ')}]`);
+
       for (const sheetName of sourceSheets) {
         const sheet = parsed.sheets.find(s => s.name === sheetName);
-        if (!sheet) continue;
+        if (!sheet) { console.log(`[export]   Sheet "${sheetName}" not found in parsed data`); continue; }
 
         const sheetMappings = entityMappings.filter(m => m.sourceSheet === sheetName);
+        console.log(`[export]   Sheet "${sheetName}": ${sheet.rows.length} rows, ${sheetMappings.length} field mappings`);
+        for (const m of sheetMappings) {
+          console.log(`[export]     ${m.sourceColumn} → ${m.targetField} (header: ${tempusFieldToHeader(m.targetField, templateKey)})`);
+        }
         const pivotFMs = sheetMappings.filter(m => m.transformation === 'unpivot');
         const isPivotUnpivot = pivotFMs.length > 0
           && temporalInterpretation?.pivotRecommendation?.unpivotRequired
@@ -389,6 +428,9 @@ export async function generateTempusExcel(
         }
       }
     }
+
+    const dataRowCount = ws.rowCount - 1;
+    console.log(`[export] Template "${templateKey}": wrote ${dataRowCount} data rows (total rows incl. header: ${ws.rowCount})`);
 
     ws.columns.forEach(col => {
       let maxLen = 10;

@@ -4,6 +4,7 @@ import type {
 } from '../types.js';
 import { TempusClient } from './tempusClient.js';
 import { logAudit } from './auditLog.js';
+import { normalizeEntityKey } from './exportService.js';
 
 const IMPORT_STEPS = [
   { entity: 'customFields',        label: '1. Attributes (Custom Fields)' },
@@ -113,6 +114,39 @@ export async function importToTempus(
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
+function parseFlexDate(value: unknown): string | null {
+  if (value == null || value === '') return null;
+  if (value instanceof Date) {
+    return isNaN(value.getTime()) ? null : value.toISOString();
+  }
+  if (typeof value === 'number' && value > 1000) {
+    // Excel serial number
+    const d = new Date((value - 25569) * 86400 * 1000);
+    return isNaN(d.getTime()) ? null : d.toISOString();
+  }
+  const str = String(value).trim();
+  // ISO format: 2026-01-15 or 2026-01-15T00:00:00
+  if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+    const d = new Date(str);
+    return isNaN(d.getTime()) ? null : d.toISOString();
+  }
+  // German format: 15.01.2026
+  const de = str.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+  if (de) {
+    const d = new Date(`${de[3]}-${de[2].padStart(2, '0')}-${de[1].padStart(2, '0')}T00:00:00Z`);
+    return isNaN(d.getTime()) ? null : d.toISOString();
+  }
+  // US format: 01/15/2026
+  const us = str.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (us) {
+    const d = new Date(`${us[3]}-${us[1].padStart(2, '0')}-${us[2].padStart(2, '0')}T00:00:00Z`);
+    return isNaN(d.getTime()) ? null : d.toISOString();
+  }
+  // Fallback: try Date constructor
+  const d = new Date(str);
+  return isNaN(d.getTime()) ? null : d.toISOString();
+}
+
 function applyTemporalTransform(value: string, field: string, temporal?: TemporalInterpretationResult): string {
   if (!temporal || !value) return value;
 
@@ -165,9 +199,9 @@ function buildCFValuePayloads(
 
   const payloads: BulkCustomFieldValue[] = [];
 
-  // Source 1: fieldMappings with cf: prefix
+  // Source 1: fieldMappings with cf: prefix (normalize entity key)
   const cfFieldMappings = mappingResult.fieldMappings.filter(
-    fm => fm.targetField.startsWith('cf:') && fm.targetEntity === targetEntityKey && fm.status !== 'rejected'
+    fm => fm.targetField.startsWith('cf:') && normalizeEntityKey(fm.targetEntity) === targetEntityKey && fm.status !== 'rejected'
   );
 
   // Source 2: customFieldMappings matching this entity type (primary source for CF values)
@@ -187,7 +221,7 @@ function buildCFValuePayloads(
 
     const nameMapping = mappingResult.fieldMappings.find(
       fm => fm.sourceSheet === sourceSheet
-        && fm.targetEntity === targetEntityKey
+        && normalizeEntityKey(fm.targetEntity) === targetEntityKey
         && (fm.targetField === 'name' || fm.targetField === 'projectName' || fm.targetField === 'resourceName'
           || fm.targetField === 'project' || fm.targetField === 'resource')
     );
@@ -284,6 +318,12 @@ async function importStep(
     fm => fm.status === 'confirmed' || fm.status === 'suggested'
   );
 
+  // Normalize entity keys for all lookups
+  const fieldsByEntity = (entityKey: string) =>
+    confirmedFieldMappings.filter(fm => normalizeEntityKey(fm.targetEntity) === entityKey);
+  const entitiesByType = (entityKey: string) =>
+    confirmedNew.filter(em => normalizeEntityKey(em.targetEntity) === entityKey);
+
   switch (entity) {
     // ── 1. Custom Fields ──────────────────────────────────────────────
     case 'customFields': {
@@ -369,8 +409,7 @@ async function importStep(
 
     // ── 2. Resources ──────────────────────────────────────────────────
     case 'resources': {
-      const items = confirmedNew
-        .filter(em => em.targetEntity === 'resources')
+      const items = entitiesByType('resources')
         .map(em => ({
           name: em.sourceValue || em.matchedName,
           updateGlobalRole: false,
@@ -389,10 +428,24 @@ async function importStep(
 
     // ── 3. Projects ───────────────────────────────────────────────────
     case 'projects': {
-      const items = confirmedNew
-        .filter(em => em.targetEntity === 'projects')
-        .map(em => ({
-          name: em.sourceValue || em.matchedName,
+      const newProjectEntities = entitiesByType('projects');
+      if (newProjectEntities.length === 0) return 0;
+
+      // Try to enrich new projects with dates/phase from source data
+      const projFieldMappings = fieldsByEntity('projects');
+      const startDateFM = projFieldMappings.find(fm => fm.targetField === 'startDate');
+      const endDateFM = projFieldMappings.find(fm => fm.targetField === 'endDate');
+      const phaseFM = projFieldMappings.find(fm => fm.targetField === 'phase');
+      const nameFM = projFieldMappings.find(fm => fm.targetField === 'name' || fm.targetField === 'projectName');
+
+      const sourceSheet = nameFM
+        ? parsedExcel.sheets.find(s => s.name === nameFM.sourceSheet)
+        : undefined;
+
+      const items = newProjectEntities.map(em => {
+        const name = em.sourceValue || em.matchedName;
+        const item: Record<string, unknown> = {
+          name,
           updateSecurityGroup: false,
           updateProjectDates: false,
           updateFinancialDates: false,
@@ -400,8 +453,38 @@ async function importStep(
           updateAssignmentWorkflow: false,
           updateProjectWorkflow: false,
           updateLock: false,
-        }));
-      if (items.length === 0) return 0;
+        };
+
+        if (sourceSheet && nameFM) {
+          const row = sourceSheet.rows.find(r =>
+            String(r[nameFM.sourceColumn] ?? '').trim().toLowerCase() === String(name).trim().toLowerCase()
+          );
+          if (row) {
+            if (startDateFM) {
+              const rawDate = row[startDateFM.sourceColumn];
+              if (rawDate) {
+                const d = parseFlexDate(rawDate);
+                if (d) { item.startDate = d; item.updateProjectDates = true; }
+              }
+            }
+            if (endDateFM) {
+              const rawDate = row[endDateFM.sourceColumn];
+              if (rawDate) {
+                const d = parseFlexDate(rawDate);
+                if (d) { item.endDate = d; item.updateProjectDates = true; }
+              }
+            }
+            if (phaseFM) {
+              const rawPhase = String(row[phaseFM.sourceColumn] ?? '').trim();
+              if (rawPhase) {
+                item.phase = applyTemporalTransform(rawPhase, 'phase', temporal);
+              }
+            }
+          }
+        }
+        return item;
+      });
+
       console.log(`[importService] Projects: creating ${items.length}`, JSON.stringify(items[0]));
       await client.createProjects(items);
       return items.length;
@@ -409,7 +492,8 @@ async function importStep(
 
     // ── 4. Update existing project fields (dates, phase, etc.) ────────
     case 'updateProjectFields': {
-      const projectFieldMappings = confirmedFieldMappings.filter(fm => fm.targetEntity === 'projects');
+      const projectFieldMappings = fieldsByEntity('projects');
+      console.log(`[importService] updateProjectFields: found ${projectFieldMappings.length} field mappings for projects`);
       if (projectFieldMappings.length === 0) return 0;
 
       const startDateFM = projectFieldMappings.find(fm => fm.targetField === 'startDate');
@@ -418,13 +502,20 @@ async function importStep(
       const benefitFM = projectFieldMappings.find(fm => fm.targetField === 'benefit');
       const priorityFM = projectFieldMappings.find(fm => fm.targetField === 'priority');
 
+      console.log(`[importService] updateProjectFields: startDate=${startDateFM?.sourceColumn || 'none'}, endDate=${endDateFM?.sourceColumn || 'none'}, phase=${phaseFM?.sourceColumn || 'none'}, benefit=${benefitFM?.sourceColumn || 'none'}, priority=${priorityFM?.sourceColumn || 'none'}`);
+
       if (!startDateFM && !endDateFM && !phaseFM && !benefitFM && !priorityFM) return 0;
 
       const sheet = parsedExcel.sheets.find(s => s.name === (startDateFM || endDateFM || phaseFM || benefitFM || priorityFM)!.sourceSheet);
       if (!sheet) return 0;
 
       const nameFM = projectFieldMappings.find(fm => fm.targetField === 'name' || fm.targetField === 'projectName');
-      if (!nameFM) return 0;
+      if (!nameFM) {
+        console.log(`[importService] updateProjectFields: no name mapping found – cannot match projects`);
+        return 0;
+      }
+
+      console.log(`[importService] updateProjectFields: name column="${nameFM.sourceColumn}", sheet="${sheet.name}", ${sheet.rows.length} rows, ${tempusData.projects.length} Tempus projects`);
 
       const updates: Array<Record<string, unknown>> = [];
 
@@ -434,7 +525,10 @@ async function importStep(
 
         const resolvedName = resolveEntityName(rawName, mappingResult);
         const project = tempusData.projects.find(p => p.name.toLowerCase() === resolvedName.toLowerCase());
-        if (!project) continue;
+        if (!project) {
+          console.log(`[importService] updateProjectFields: project "${resolvedName}" not found in Tempus`);
+          continue;
+        }
 
         const update: Record<string, unknown> = {
           id: project.id,
@@ -453,9 +547,9 @@ async function importStep(
         if (startDateFM) {
           const rawDate = row[startDateFM.sourceColumn];
           if (rawDate) {
-            const d = new Date(rawDate as string | number);
-            if (!isNaN(d.getTime())) {
-              update.startDate = d.toISOString();
+            const d = parseFlexDate(rawDate);
+            if (d) {
+              update.startDate = d;
               update.updateProjectDates = true;
               hasChanges = true;
             }
@@ -465,9 +559,9 @@ async function importStep(
         if (endDateFM) {
           const rawDate = row[endDateFM.sourceColumn];
           if (rawDate) {
-            const d = new Date(rawDate as string | number);
-            if (!isNaN(d.getTime())) {
-              update.endDate = d.toISOString();
+            const d = parseFlexDate(rawDate);
+            if (d) {
+              update.endDate = d;
               update.updateProjectDates = true;
               hasChanges = true;
             }
@@ -502,7 +596,10 @@ async function importStep(
         if (hasChanges) updates.push(update);
       }
 
-      if (updates.length === 0) return 0;
+      if (updates.length === 0) {
+        console.log(`[importService] updateProjectFields: no projects to update`);
+        return 0;
+      }
       console.log(`[importService] Updating ${updates.length} projects with dates/fields`, JSON.stringify(updates[0]));
       await client.updateProjects(updates);
       return updates.length;
@@ -511,7 +608,7 @@ async function importStep(
     // ── 5. Project CF Values ──────────────────────────────────────────
     case 'projectCFValues': {
       const payloads = buildCFValuePayloads('Project', 'projects', mappingResult, parsedExcel, tempusData);
-      if (payloads.length === 0) return 0;
+      if (payloads.length === 0) { console.log(`[importService] Project CF Values: no payloads`); return 0; }
       console.log(`[importService] Project CF Values: ${payloads.length} value-groups`);
       await client.updateProjectCFValues(payloads);
       return payloads.length;
@@ -520,7 +617,7 @@ async function importStep(
     // ── 5. Resource CF Values ─────────────────────────────────────────
     case 'resourceCFValues': {
       const payloads = buildCFValuePayloads('Resource', 'resources', mappingResult, parsedExcel, tempusData);
-      if (payloads.length === 0) return 0;
+      if (payloads.length === 0) { console.log(`[importService] Resource CF Values: no payloads`); return 0; }
       console.log(`[importService] Resource CF Values: ${payloads.length} value-groups`);
       await client.updateResourceCFValues(payloads);
       return payloads.length;
@@ -528,7 +625,7 @@ async function importStep(
 
     // ── 6. Milestones ───────────────────────────────────────────────
     case 'milestones': {
-      const milestoneFieldMappings = confirmedFieldMappings.filter(fm => fm.targetEntity === 'milestones');
+      const milestoneFieldMappings = fieldsByEntity('milestones');
       if (milestoneFieldMappings.length === 0) return 0;
 
       const nameMapping = milestoneFieldMappings.find(
@@ -623,7 +720,7 @@ async function importStep(
     // ── 7. Milestone CF Values ─────────────────────────────────────────
     case 'milestoneCFValues': {
       const cfFieldMappings = mappingResult.fieldMappings.filter(
-        fm => fm.targetField.startsWith('cf:') && fm.targetEntity === 'milestones' && fm.status !== 'rejected'
+        fm => fm.targetField.startsWith('cf:') && normalizeEntityKey(fm.targetEntity) === 'milestones' && fm.status !== 'rejected'
       );
       if (cfFieldMappings.length === 0 || tempusData.milestones.length === 0) return 0;
 
@@ -640,7 +737,7 @@ async function importStep(
         if (!sheet) continue;
 
         const msNameMapping = mappingResult.fieldMappings.find(
-          fm => fm.sourceSheet === cfm.sourceSheet && fm.targetEntity === 'milestones'
+          fm => fm.sourceSheet === cfm.sourceSheet && normalizeEntityKey(fm.targetEntity) === 'milestones'
             && (fm.targetField === 'name')
         );
         if (!msNameMapping) continue;
@@ -680,7 +777,7 @@ async function importStep(
 
     // ── 8. Assignments ────────────────────────────────────────────────
     case 'assignments': {
-      const assignmentFieldMappings = confirmedFieldMappings.filter(fm => fm.targetEntity === 'assignments');
+      const assignmentFieldMappings = fieldsByEntity('assignments');
       if (assignmentFieldMappings.length === 0) return 0;
 
       const projectMapping = assignmentFieldMappings.find(
@@ -736,7 +833,7 @@ async function importStep(
     // ── 7. Assignment CF Values ───────────────────────────────────────
     case 'assignmentCFValues': {
       const cfFieldMappings = mappingResult.fieldMappings.filter(
-        fm => fm.targetField.startsWith('cf:') && fm.targetEntity === 'assignments' && fm.status !== 'rejected'
+        fm => fm.targetField.startsWith('cf:') && normalizeEntityKey(fm.targetEntity) === 'assignments' && fm.status !== 'rejected'
       );
       if (cfFieldMappings.length === 0 || tempusData.assignments.length === 0) return 0;
 
@@ -753,11 +850,11 @@ async function importStep(
         if (!sheet) continue;
 
         const projectMapping = mappingResult.fieldMappings.find(
-          fm => fm.sourceSheet === cfm.sourceSheet && fm.targetEntity === 'assignments'
+          fm => fm.sourceSheet === cfm.sourceSheet && normalizeEntityKey(fm.targetEntity) === 'assignments'
             && (fm.targetField === 'project' || fm.targetField === 'projectName')
         );
         const resourceMapping = mappingResult.fieldMappings.find(
-          fm => fm.sourceSheet === cfm.sourceSheet && fm.targetEntity === 'assignments'
+          fm => fm.sourceSheet === cfm.sourceSheet && normalizeEntityKey(fm.targetEntity) === 'assignments'
             && (fm.targetField === 'resource' || fm.targetField === 'resourceName')
         );
         if (!projectMapping || !resourceMapping) continue;
@@ -805,8 +902,7 @@ async function importStep(
 
     // ── 8. Admin Times ────────────────────────────────────────────────
     case 'adminTimes': {
-      const items = confirmedNew
-        .filter(em => em.targetEntity === 'adminTimes')
+      const items = entitiesByType('adminTimes')
         .map(em => ({
           id: 0,
           name: em.sourceValue || em.matchedName,
@@ -821,8 +917,7 @@ async function importStep(
     case 'skills': {
       const existingSkills = tempusData.skills;
       const defaultValueTypeId = (existingSkills as any)[0]?.skillValueTypeId ?? 1;
-      const items = confirmedNew
-        .filter(em => em.targetEntity === 'skills')
+      const items = entitiesByType('skills')
         .map(em => ({
           name: em.sourceValue || em.matchedName,
           skillValueTypeId: defaultValueTypeId,
@@ -838,7 +933,7 @@ async function importStep(
     // ── 13. Financial CF Values ───────────────────────────────────────
     case 'financialCFValues': {
       const cfFieldMappings = mappingResult.fieldMappings.filter(
-        fm => fm.targetField.startsWith('cf:') && fm.targetEntity === 'financials' && fm.status !== 'rejected'
+        fm => fm.targetField.startsWith('cf:') && normalizeEntityKey(fm.targetEntity) === 'financials' && fm.status !== 'rejected'
       );
       if (cfFieldMappings.length === 0) return 0;
 
@@ -855,7 +950,7 @@ async function importStep(
         if (!sheet) continue;
 
         const projMapping = mappingResult.fieldMappings.find(
-          fm => fm.sourceSheet === cfm.sourceSheet && fm.targetEntity === 'financials'
+          fm => fm.sourceSheet === cfm.sourceSheet && normalizeEntityKey(fm.targetEntity) === 'financials'
             && (fm.targetField === 'project' || fm.targetField === 'projectName')
         );
 
