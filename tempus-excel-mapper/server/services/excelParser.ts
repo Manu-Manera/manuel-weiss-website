@@ -6,22 +6,74 @@ import type {
 
 export async function parseExcel(buffer: Buffer, fileName: string): Promise<ParsedExcel> {
   const workbook = new ExcelJS.Workbook();
-  try {
-    await workbook.xlsx.load(buffer as unknown as ExcelJS.Buffer);
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    if (msg.includes('Shared Formula') || msg.includes('shared formula')) {
-      console.warn('[excelParser] Shared-Formula-Fehler – Zellen mit Formeln werden als Werte gelesen');
-      const wb2 = new ExcelJS.Workbook();
-      await wb2.xlsx.load(buffer as unknown as ExcelJS.Buffer, {
+
+  // Try multiple loading strategies for problematic Excel files
+  const loadStrategies = [
+    // Strategy 1: Normal load
+    async () => {
+      await workbook.xlsx.load(buffer as unknown as ExcelJS.Buffer);
+      return workbook;
+    },
+    // Strategy 2: Ignore data validations (helps with some formula issues)
+    async () => {
+      const wb = new ExcelJS.Workbook();
+      await wb.xlsx.load(buffer as unknown as ExcelJS.Buffer, {
         ignoreNodes: ['dataValidations'],
       } as any);
-      return parseWorkbook(wb2, fileName);
+      return wb;
+    },
+    // Strategy 3: Ignore both data validations and extLst (extended properties)
+    async () => {
+      const wb = new ExcelJS.Workbook();
+      await wb.xlsx.load(buffer as unknown as ExcelJS.Buffer, {
+        ignoreNodes: ['dataValidations', 'extLst'],
+      } as any);
+      return wb;
+    },
+    // Strategy 4: Use xlsx library as fallback (if available) or manual cell extraction
+    async () => {
+      console.warn('[excelParser] All ExcelJS strategies failed – attempting cell-by-cell extraction');
+      const wb = new ExcelJS.Workbook();
+      // Load with maximum tolerance
+      await wb.xlsx.load(buffer as unknown as ExcelJS.Buffer, {
+        ignoreNodes: ['dataValidations', 'extLst', 'sheetViews', 'conditionalFormatting'],
+      } as any);
+      // Post-process: convert any formula cells to their values
+      wb.eachSheet(sheet => {
+        sheet.eachRow({ includeEmpty: false }, row => {
+          row.eachCell({ includeEmpty: false }, cell => {
+            if (cell.type === ExcelJS.ValueType.Formula) {
+              const formula = cell.value as ExcelJS.CellFormulaValue;
+              cell.value = formula.result ?? '';
+            }
+          });
+        });
+      });
+      return wb;
+    },
+  ];
+
+  let lastError: Error | null = null;
+  for (let i = 0; i < loadStrategies.length; i++) {
+    try {
+      const wb = await loadStrategies[i]();
+      if (i > 0) {
+        console.log(`[excelParser] Successfully loaded with strategy ${i + 1}`);
+      }
+      return parseWorkbook(wb, fileName);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.warn(`[excelParser] Strategy ${i + 1} failed: ${msg.slice(0, 100)}`);
+      lastError = err instanceof Error ? err : new Error(msg);
+
+      // If it's not a formula-related error, don't try other strategies
+      if (!msg.includes('Formula') && !msg.includes('formula') && !msg.includes('cell')) {
+        throw err;
+      }
     }
-    throw err;
   }
 
-  return parseWorkbook(workbook, fileName);
+  throw lastError || new Error('Failed to parse Excel file');
 }
 
 function parseWorkbook(workbook: ExcelJS.Workbook, fileName: string): ParsedExcel {
