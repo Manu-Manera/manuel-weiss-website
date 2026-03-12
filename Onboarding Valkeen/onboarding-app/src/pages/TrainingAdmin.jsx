@@ -54,8 +54,8 @@ export default function TrainingAdmin() {
       setConfig(mergeConfig(saved));
       setError(null);
     } catch (e) {
-      setError(e.message);
       setConfig(mergeConfig({}));
+      setError(e.message);
     } finally {
       setLoading(false);
     }
@@ -64,8 +64,12 @@ export default function TrainingAdmin() {
   async function handleSave() {
     try {
       setSaving(true);
-      await saveTrainingConfig(config);
       setError(null);
+      const result = await saveTrainingConfig(config);
+      if (result?.local) {
+        setError('Lokal gespeichert (API nicht erreichbar – CDK deploy ausführen für AWS)');
+        setTimeout(() => setError(null), 4000);
+      }
     } catch (e) {
       setError(e.message);
     } finally {
@@ -134,7 +138,9 @@ export default function TrainingAdmin() {
       </div>
 
       {error && (
-        <div className="glass-card p-4 border border-red-500/30 bg-red-500/10 text-red-400">
+        <div className={`glass-card p-4 ${
+          error.includes('Lokal gespeichert') ? 'border-amber-500/30 bg-amber-500/10 text-amber-400' : 'border-red-500/30 bg-red-500/10 text-red-400'
+        }`}>
           {error}
         </div>
       )}

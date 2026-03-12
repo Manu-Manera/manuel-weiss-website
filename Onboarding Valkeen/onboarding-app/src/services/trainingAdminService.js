@@ -1,27 +1,40 @@
 /**
  * Training Admin API Service
  * Lädt/speichert Training-Config und generiert Upload-URLs für Screenshots
+ * Fallback: localStorage wenn API nicht erreichbar
  */
 
 const API_BASE = 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
+const STORAGE_KEY = 'training-admin-config-local';
 
 export async function getTrainingConfig() {
-  const res = await fetch(`${API_BASE}/training-admin/config`, {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' }
-  });
-  if (!res.ok) throw new Error('Config konnte nicht geladen werden');
-  return res.json();
+  try {
+    const res = await fetch(`${API_BASE}/training-admin/config`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    if (res.ok) return res.json();
+    throw new Error('API nicht verfügbar');
+  } catch (e) {
+    const local = localStorage.getItem(STORAGE_KEY);
+    if (local) return JSON.parse(local);
+    return {};
+  }
 }
 
 export async function saveTrainingConfig(config) {
-  const res = await fetch(`${API_BASE}/training-admin/config`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(config)
-  });
-  if (!res.ok) throw new Error('Config konnte nicht gespeichert werden');
-  return res.json();
+  try {
+    const res = await fetch(`${API_BASE}/training-admin/config`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config)
+    });
+    if (res.ok) return res.json();
+    throw new Error('API nicht verfügbar');
+  } catch (e) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+    return { success: true, local: true };
+  }
 }
 
 export async function getUploadUrl(editId, contentType = 'image/png') {
