@@ -120,7 +120,11 @@
     /* Training-Tabs */
     .training-tabs {
       display: flex;
+      flex-wrap: wrap;
       gap: 0.5rem;
+    }
+    .training-tabs button.advanced {
+      border-left: 2px solid var(--warning);
     }
     .training-tabs button {
       background: var(--bg-card);
@@ -502,8 +506,11 @@
       </div>
       <div class="training-tabs">
         <button type="button" class="active" onclick="switchTraining('rm')">Resource Manager</button>
+        <button type="button" class="advanced" onclick="switchTraining('rmAdv')">RM Advanced</button>
         <button type="button" onclick="switchTraining('pm')">Project Manager</button>
+        <button type="button" class="advanced" onclick="switchTraining('pmAdv')">PM Advanced</button>
         <button type="button" onclick="switchTraining('admin')">Admin</button>
+        <button type="button" class="advanced" onclick="switchTraining('adminAdv')">Admin Advanced</button>
       </div>
     </header>
 
@@ -1701,6 +1708,547 @@
     </main>
     </div><!-- /adminPanel -->
 
+    <!-- RM Advanced Training -->
+    <div id="rmAdvPanel" class="training-panel">
+    <div class="use-case-banner" style="border-left: 4px solid var(--warning);">
+      <h2>🔥 RM Advanced – Expertenwissen</h2>
+      <p>Du beherrschst die Grundlagen – jetzt geht es in die Tiefe: Kapazitätsanalyse, BPAFG-Modi, Hybrid Planning, Resource Leveling, What-If. <strong>Schwierige Aufgaben und Quizfragen</strong> erfordern tiefes Tool- und Fachwissen.</p>
+      <div class="resource-grid">
+        <div class="resource-chip"><strong>Net Availability</strong> <span>Formel, FTE</span></div>
+        <div class="resource-chip"><strong>BPAFG Modi</strong> <span>RM vs PM vs Default</span></div>
+        <div class="resource-chip"><strong>Hybrid Planning</strong> <span>Generic → Named</span></div>
+        <div class="resource-chip"><strong>Resource Leveling</strong> <span>Strategien</span></div>
+        <div class="resource-chip"><strong>RAR</strong> <span>Interpretation</span></div>
+        <div class="resource-chip"><strong>What-If</strong> <span>Szenarien</span></div>
+      </div>
+    </div>
+    <nav class="toc-nav">
+      <h3>📑 Advanced Inhalte</h3>
+      <ul>
+        <li><a href="#" onclick="showChapterRmAdv(1); return false;">1. Kapazitätsanalyse & Überbuchung</a></li>
+        <li><a href="#" onclick="showChapterRmAdv(2); return false;">2. BPAFG Modi – RM vs PM vs Default</a></li>
+        <li><a href="#" onclick="showChapterRmAdv(3); return false;">3. Hybrid Team Planning</a></li>
+        <li><a href="#" onclick="showChapterRmAdv(4); return false;">4. Resource Request Workflow</a></li>
+        <li><a href="#" onclick="showChapterRmAdv(5); return false;">5. What-If & RAR</a></li>
+      </ul>
+    </nav>
+    <nav class="chapter-nav" id="chapterNavRmAdv"></nav>
+    <main id="chaptersRmAdv">
+      <section class="chapter active" data-chapter="1" data-training="rmAdv">
+        <div class="chapter-header"><h2>Advanced 1: Kapazitätsanalyse & Überbuchung</h2><p class="duration">⏱ ca. 25 Min</p></div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Net Availability</h3>
+          <ul>
+            <li><strong>Net Availability</strong> = Base Capacity − Project Availability − Non-Project Availability (Time Off, Admin, etc.)</li>
+            <li>FTE vs. Stunden: 1 FTE = 100% einer Ressource; bei 0.5 FTE halbe Kapazität</li>
+            <li>Überbuchung: Project Availability &gt; Net Availability → rote Kennzeichnung</li>
+            <li>Ramp-up/Ramp-down: Allokation steigt/sinkt über Zeit</li>
+          </ul>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe: Überbuchung auflösen</h3>
+          <p><em>Brad Pitt hat 80% Base Capacity. Er ist zu 90% auf Projekte verteilt, 10% auf NPA. Net Availability ist 0%. Du musst die Überbuchung analysieren und eine konkrete Umverteilung vorschlagen – welche Zuweisung reduzierst du zuerst und warum?</em></p>
+          <ol>
+            <li>Berechne Net Availability für Brad Pitt (Base 80%, Project 90%, NPA 10%).</li>
+            <li>Identifiziere die Überbuchung und priorisiere: Welche Zuweisung hat die niedrigste Priorität?</li>
+            <li>Erstelle einen Umverteilungsplan mit mindestens 2 Alternativ-Ressourcen.</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="rmAdv1">
+          <h3>📝 Quiz Advanced 1</h3>
+          <div class="quiz-question">
+            <p>1. Eine Ressource hat Base Capacity 100%, Project Availability 85%, NPA 15%. Wie hoch ist Net Availability?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="rmAdv1q1" value="a"> 0%</label>
+              <label class="quiz-option"><input type="radio" name="rmAdv1q1" value="b"> 15%</label>
+              <label class="quiz-option"><input type="radio" name="rmAdv1q1" value="c"> 85%</label>
+              <label class="quiz-option"><input type="radio" name="rmAdv1q1" value="d"> 100%</label>
+            </div>
+          </div>
+          <div class="quiz-question">
+            <p>2. Wann zeigt Tempus eine Überbuchung an?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="rmAdv1q2" value="a"> Wenn Project Availability &lt; Base Capacity</label>
+              <label class="quiz-option"><input type="radio" name="rmAdv1q2" value="b"> Wenn Project Availability + NPA &gt; Base Capacity</label>
+              <label class="quiz-option"><input type="radio" name="rmAdv1q2" value="c"> Wenn Net Availability negativ ist</label>
+              <label class="quiz-option"><input type="radio" name="rmAdv1q2" value="d"> b und c</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizRmAdv(1, ['a','d'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultRmAdv1" style="display:none;"></div>
+        </div>
+      </section>
+      <section class="chapter" data-chapter="2" data-training="rmAdv">
+        <div class="chapter-header"><h2>Advanced 2: BPAFG Modi</h2><p class="duration">⏱ ca. 20 Min</p></div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Default vs RM vs PM Mode</h3>
+          <ul>
+            <li><strong>Default:</strong> Flexible Ansicht, Zeilen = Ressourcen oder Projekte je nach Kontext</li>
+            <li><strong>RM Mode:</strong> Ressourcen-zentriert – eine Zeile pro Ressource, alle Projekte dieser Ressource</li>
+            <li><strong>PM Mode:</strong> Projekt-zentriert – eine Zeile pro Projekt, alle Ressourcen dieses Projekts</li>
+            <li>New Assignment Mode: Schnelle Bulk-Erstellung ohne Projekt-Checkout</li>
+          </ul>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe: Modus-Wahl begründen</h3>
+          <p><em>Ein PM beschwert sich: «Ich will alle Ressourcen meines Projekts sehen und schnell 5 neue Zuweisungen hinzufügen.» Ein RM will «alle Projekte von Taylor Swift sehen und eine Überbuchung auflösen». Welchen Modus empfiehlst du jeweils – und warum nicht den anderen?</em></p>
+        </div>
+        <div class="quiz-section" data-quiz="rmAdv2">
+          <h3>📝 Quiz Advanced 2</h3>
+          <div class="quiz-question">
+            <p>1. Im RM Mode siehst du eine Zeile pro …</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="rmAdv2q1" value="a"> Projekt</label>
+              <label class="quiz-option"><input type="radio" name="rmAdv2q1" value="b"> Ressource</label>
+              <label class="quiz-option"><input type="radio" name="rmAdv2q1" value="c"> Task</label>
+            </div>
+          </div>
+          <div class="quiz-question">
+            <p>2. Wann ist New Assignment Mode sinnvoll?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="rmAdv2q2" value="a"> Nur für Admins</label>
+              <label class="quiz-option"><input type="radio" name="rmAdv2q2" value="b"> Wenn viele neue Zuweisungen ohne Projekt-Checkout erstellt werden</label>
+              <label class="quiz-option"><input type="radio" name="rmAdv2q2" value="c"> Nur im PM Mode</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizRmAdv(2, ['b','b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultRmAdv2" style="display:none;"></div>
+        </div>
+      </section>
+      <section class="chapter" data-chapter="3" data-training="rmAdv">
+        <div class="chapter-header"><h2>Advanced 3: Hybrid Team Planning</h2><p class="duration">⏱ ca. 25 Min</p></div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Generic vs Named</h3>
+          <ul>
+            <li><strong>Generic Resource:</strong> Platzhalter (z.B. «1x Java Dev») – für Demand Planning ohne konkrete Person</li>
+            <li><strong>Named Resource:</strong> Konkrete Person</li>
+            <li><strong>Conversion:</strong> Generic → Named ersetzen wenn Person bekannt</li>
+            <li>Skill-Matching: Generic Resource mit Skills → Named mit passenden Skills</li>
+          </ul>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe: Generic zu Named konvertieren</h3>
+          <p><em>Projekt «Cloud Migration» hat 3 Generic Resources: «2x Java Dev», «1x DevOps». Du hast 2 Java-Entwickler und 1 DevOps verfügbar. Du musst die Generics durch Named ersetzen und dabei Skills, Verfügbarkeit und Priorität berücksichtigen. Dokumentiere deine Entscheidung.</em></p>
+        </div>
+        <div class="quiz-section" data-quiz="rmAdv3">
+          <h3>📝 Quiz Advanced 3</h3>
+          <div class="quiz-question">
+            <p>1. Wann nutzt man Generic Resources?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="rmAdv3q1" value="a"> Nur für externe Berater</label>
+              <label class="quiz-option"><input type="radio" name="rmAdv3q1" value="b"> Für Demand Planning ohne konkrete Person</label>
+              <label class="quiz-option"><input type="radio" name="rmAdv3q1" value="c"> Wenn die Person noch nicht eingestellt ist</label>
+              <label class="quiz-option"><input type="radio" name="rmAdv3q1" value="d"> b und c</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizRmAdv(3, ['d'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultRmAdv3" style="display:none;"></div>
+        </div>
+      </section>
+      <section class="chapter" data-chapter="4" data-training="rmAdv">
+        <div class="chapter-header"><h2>Advanced 4: Resource Request Workflow</h2><p class="duration">⏱ ca. 20 Min</p></div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Status-Lifecycle</h3>
+          <ul>
+            <li>Submitted → Pending → Approved / Rejected / Partial</li>
+            <li><strong>Partial:</strong> RM weist nur teilweise zu (z.B. 50% statt 100%)</li>
+            <li>RM kann Alternative vorschlagen</li>
+          </ul>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe: Partial Request handhaben</h3>
+          <p><em>Ein PM fordert 100% eines Java Dev für 3 Monate. Du hast nur 50% verfügbar. Du musst die Request als Partial approven, eine Alternative vorschlagen und dokumentieren, warum du welche Entscheidung getroffen hast.</em></p>
+        </div>
+        <div class="quiz-section" data-quiz="rmAdv4">
+          <h3>📝 Quiz Advanced 4</h3>
+          <div class="quiz-question">
+            <p>1. Was bedeutet «Partial» bei einer Resource Request?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="rmAdv4q1" value="a"> Die Request wurde abgelehnt</label>
+              <label class="quiz-option"><input type="radio" name="rmAdv4q1" value="b"> RM weist nur teilweise zu (z.B. 50% statt 100%)</label>
+              <label class="quiz-option"><input type="radio" name="rmAdv4q1" value="c"> Die Request ist noch in Bearbeitung</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizRmAdv(4, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultRmAdv4" style="display:none;"></div>
+        </div>
+      </section>
+      <section class="chapter" data-chapter="5" data-training="rmAdv">
+        <div class="chapter-header"><h2>Advanced 5: What-If & RAR</h2><p class="duration">⏱ ca. 25 Min</p></div>
+        <div class="theory-card">
+          <h3>📚 Theorie: RAR & What-If</h3>
+          <ul>
+            <li><strong>RAR (Resource Availability Report):</strong> Verfügbarkeit über Zeit, Kapazität vs. Demand</li>
+            <li><strong>What-If:</strong> Szenarien ohne Produktivdaten zu ändern</li>
+            <li>Simulation: Neue Projektverzögerung, Neueinstellung, Ressourcenabgang</li>
+          </ul>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe: What-If Szenario</h3>
+          <p><em>Du simulierst: «Projekt X verzögert sich um 2 Monate – alle Ressourcen bleiben gebunden.» Welche Auswirkungen hat das auf die Net Availability für dein Team? Erstelle ein What-If-Szenario und dokumentiere die Ergebnisse.</em></p>
+        </div>
+        <div class="quiz-section" data-quiz="rmAdv5">
+          <h3>📝 Quiz Advanced 5</h3>
+          <div class="quiz-question">
+            <p>1. Was ist der Hauptvorteil von What-If?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="rmAdv5q1" value="a"> Schnellere Berechnungen</label>
+              <label class="quiz-option"><input type="radio" name="rmAdv5q1" value="b"> Szenarien ohne Produktivdaten zu ändern</label>
+              <label class="quiz-option"><input type="radio" name="rmAdv5q1" value="c"> Automatische Zuweisungen</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizRmAdv(5, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultRmAdv5" style="display:none;"></div>
+        </div>
+      </section>
+    </main>
+    </div><!-- /rmAdvPanel -->
+
+    <!-- PM Advanced Training -->
+    <div id="pmAdvPanel" class="training-panel">
+    <div class="use-case-banner" style="border-left: 4px solid var(--warning);">
+      <h2>🔥 PM Advanced – Expertenwissen</h2>
+      <p>Tiefes Verständnis: BPAFG New Assignment Mode, Soft vs Hard Booking, Snapshot-Vergleiche, Resource Request Lifecycle, Ramp-up/Ramp-down. <strong>Schwierige Aufgaben und Quizfragen</strong>.</p>
+      <div class="resource-grid">
+        <div class="resource-chip"><strong>New Assignment</strong> <span>Bulk</span></div>
+        <div class="resource-chip"><strong>Soft vs Hard</strong> <span>Booking</span></div>
+        <div class="resource-chip"><strong>Snapshot</strong> <span>Vergleiche</span></div>
+        <div class="resource-chip"><strong>Ramp-up</strong> <span>Allocation</span></div>
+        <div class="resource-chip"><strong>RR Lifecycle</strong> <span>Status</span></div>
+      </div>
+    </div>
+    <nav class="toc-nav">
+      <h3>📑 Advanced Inhalte</h3>
+      <ul>
+        <li><a href="#" onclick="showChapterPmAdv(1); return false;">1. BPAFG New Assignment Mode</a></li>
+        <li><a href="#" onclick="showChapterPmAdv(2); return false;">2. Soft vs Hard Booking</a></li>
+        <li><a href="#" onclick="showChapterPmAdv(3); return false;">3. Snapshot-Vergleiche</a></li>
+        <li><a href="#" onclick="showChapterPmAdv(4); return false;">4. Resource Request Lifecycle</a></li>
+        <li><a href="#" onclick="showChapterPmAdv(5); return false;">5. Ramp-up & Advanced Allocation</a></li>
+      </ul>
+    </nav>
+    <nav class="chapter-nav" id="chapterNavPmAdv"></nav>
+    <main id="chaptersPmAdv">
+      <section class="chapter active" data-chapter="1" data-training="pmAdv">
+        <div class="chapter-header"><h2>Advanced 1: BPAFG New Assignment Mode</h2><p class="duration">⏱ ca. 25 Min</p></div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Bulk-Erstellung</h3>
+          <ul>
+            <li>New Assignment Mode: Schnell neue Zuweisungen ohne Projekt-Checkout</li>
+            <li>Ressource + Projekt + Zeitraum + Allocation direkt im Grid</li>
+            <li>Ideal für PM: Viele Zuweisungen auf einmal</li>
+          </ul>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe: 10 Zuweisungen in 5 Min</h3>
+          <p><em>Du musst für «Blockbuster App 2025» 10 neue Zuweisungen erstellen: 3 Devs (je 100%), 2 Designer (je 50%), 1 PM (25%). Nutze den New Assignment Mode – dokumentiere die Schritte und Zeit.</em></p>
+        </div>
+        <div class="quiz-section" data-quiz="pmAdv1">
+          <h3>📝 Quiz Advanced 1</h3>
+          <div class="quiz-question">
+            <p>1. Wofür ist New Assignment Mode gedacht?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="pmAdv1q1" value="a"> Nur für Admins</label>
+              <label class="quiz-option"><input type="radio" name="pmAdv1q1" value="b"> Schnelle Bulk-Erstellung ohne Projekt-Checkout</label>
+              <label class="quiz-option"><input type="radio" name="pmAdv1q1" value="c"> Nur für Single Project Allocation</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizPmAdv(1, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultPmAdv1" style="display:none;"></div>
+        </div>
+      </section>
+      <section class="chapter" data-chapter="2" data-training="pmAdv">
+        <div class="chapter-header"><h2>Advanced 2: Soft vs Hard Booking</h2><p class="duration">⏱ ca. 20 Min</p></div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Booking-Typen</h3>
+          <ul>
+            <li><strong>Soft (Tentative):</strong> Vorläufig, nicht verbindlich</li>
+            <li><strong>Hard (Confirmed):</strong> Verbindlich</li>
+            <li>Wann Soft? Bei früher Planung, Unsicherheit. Wann Hard? Bei Freigabe.</li>
+          </ul>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe: Booking-Strategie</h3>
+          <p><em>Du planst 6 Monate im Voraus. Wann nutzt du Soft, wann Hard? Dokumentiere eine Entscheidungsmatrix für dein Projekt.</em></p>
+        </div>
+        <div class="quiz-section" data-quiz="pmAdv2">
+          <h3>📝 Quiz Advanced 2</h3>
+          <div class="quiz-question">
+            <p>1. Wann wählst du Soft Booking?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="pmAdv2q1" value="a"> Bei Freigabe durch PMO</label>
+              <label class="quiz-option"><input type="radio" name="pmAdv2q1" value="b"> Bei früher Planung, Unsicherheit</label>
+              <label class="quiz-option"><input type="radio" name="pmAdv2q1" value="c"> Nie</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizPmAdv(2, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultPmAdv2" style="display:none;"></div>
+        </div>
+      </section>
+      <section class="chapter" data-chapter="3" data-training="pmAdv">
+        <div class="chapter-header"><h2>Advanced 3: Snapshot-Vergleiche</h2><p class="duration">⏱ ca. 25 Min</p></div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Snapshots</h3>
+          <ul>
+            <li>Snapshot = Zeitpunkt-Foto der Planung</li>
+            <li>Vergleich: Baseline vs. aktueller Plan vs. What-If</li>
+            <li>Portfolio-Änderungen über Zeit erkennen</li>
+          </ul>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe: Plan vs. Baseline</h3>
+          <p><em>Du vergleichst den aktuellen Plan mit der Q1-Baseline. Welche Projekte haben sich verzögert? Welche Ressourcen sind neu? Erstelle eine Analyse.</em></p>
+        </div>
+        <div class="quiz-section" data-quiz="pmAdv3">
+          <h3>📝 Quiz Advanced 3</h3>
+          <div class="quiz-question">
+            <p>1. Wann erstellst du einen Snapshot?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="pmAdv3q1" value="a"> Nur bei Go-Live</label>
+              <label class="quiz-option"><input type="radio" name="pmAdv3q1" value="b"> Für Vergleiche, Baseline, Pre-Release</label>
+              <label class="quiz-option"><input type="radio" name="pmAdv3q1" value="c"> Täglich</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizPmAdv(3, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultPmAdv3" style="display:none;"></div>
+        </div>
+      </section>
+      <section class="chapter" data-chapter="4" data-training="pmAdv">
+        <div class="chapter-header"><h2>Advanced 4: Resource Request Lifecycle</h2><p class="duration">⏱ ca. 20 Min</p></div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Status-Lifecycle</h3>
+          <ul>
+            <li>Submitted → Pending → Approved / Rejected / Partial</li>
+            <li>Partial: RM weist nur teilweise zu – PM muss reagieren</li>
+          </ul>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe: Partial Request handhaben</h3>
+          <p><em>Deine Request wurde als Partial approviert – 50% statt 100%. Du musst entscheiden: Akzeptieren oder alternative Ressource anfragen?</em></p>
+        </div>
+        <div class="quiz-section" data-quiz="pmAdv4">
+          <h3>📝 Quiz Advanced 4</h3>
+          <div class="quiz-question">
+            <p>1. Bei Partial Approval – was musst du als PM tun?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="pmAdv4q1" value="a"> Nichts</label>
+              <label class="quiz-option"><input type="radio" name="pmAdv4q1" value="b"> Akzeptieren oder neue Request stellen</label>
+              <label class="quiz-option"><input type="radio" name="pmAdv4q1" value="c"> Die Request löschen</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizPmAdv(4, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultPmAdv4" style="display:none;"></div>
+        </div>
+      </section>
+      <section class="chapter" data-chapter="5" data-training="pmAdv">
+        <div class="chapter-header"><h2>Advanced 5: Ramp-up & Advanced Allocation</h2><p class="duration">⏱ ca. 25 Min</p></div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Ramp-up</h3>
+          <ul>
+            <li>Ramp-up: Allokation steigt über Zeit (z.B. 30% → 50% → 100%)</li>
+            <li>Ramp-down: Allokation sinkt</li>
+            <li>Partial Allocation pro Monat unterschiedlich</li>
+          </ul>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe: Ramp-up planen</h3>
+          <p><em>Ein neuer Entwickler startet am 1.4. – 30% Apr, 60% Mai, 100% Juni. Erstelle die Zuweisung mit korrekter Ramp-up-Kurve.</em></p>
+        </div>
+        <div class="quiz-section" data-quiz="pmAdv5">
+          <h3>📝 Quiz Advanced 5</h3>
+          <div class="quiz-question">
+            <p>1. Ramp-up bedeutet …</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="pmAdv5q1" value="a"> Projekt verzögert sich</label>
+              <label class="quiz-option"><input type="radio" name="pmAdv5q1" value="b"> Allokation steigt über Zeit</label>
+              <label class="quiz-option"><input type="radio" name="pmAdv5q1" value="c"> Ressource wird gekündigt</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizPmAdv(5, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultPmAdv5" style="display:none;"></div>
+        </div>
+      </section>
+    </main>
+    </div><!-- /pmAdvPanel -->
+
+    <!-- Admin Advanced Training -->
+    <div id="adminAdvPanel" class="training-panel">
+    <div class="use-case-banner" style="border-left: 4px solid var(--warning);">
+      <h2>🔥 Admin Advanced – Expertenwissen</h2>
+      <p>Data Sync Troubleshooting, Security Groups, View-Konfiguration, Snapshot-Strategie, Upgrade-Prozess. <strong>Schwierige Aufgaben und Quizfragen</strong> für Admins.</p>
+      <div class="resource-grid">
+        <div class="resource-chip"><strong>Data Sync</strong> <span>Troubleshooting</span></div>
+        <div class="resource-chip"><strong>Security Groups</strong> <span>Berechtigungen</span></div>
+        <div class="resource-chip"><strong>View Config</strong> <span>Advanced</span></div>
+        <div class="resource-chip"><strong>Snapshot</strong> <span>Strategie</span></div>
+        <div class="resource-chip"><strong>Upgrade</strong> <span>Sandbox</span></div>
+      </div>
+    </div>
+    <nav class="toc-nav">
+      <h3>📑 Advanced Inhalte</h3>
+      <ul>
+        <li><a href="#" onclick="showChapterAdminAdv(1); return false;">1. Data Sync Troubleshooting</a></li>
+        <li><a href="#" onclick="showChapterAdminAdv(2); return false;">2. Security Groups</a></li>
+        <li><a href="#" onclick="showChapterAdminAdv(3); return false;">3. View-Konfiguration Advanced</a></li>
+        <li><a href="#" onclick="showChapterAdminAdv(4); return false;">4. Snapshot-Strategie</a></li>
+        <li><a href="#" onclick="showChapterAdminAdv(5); return false;">5. Upgrade & Sandbox</a></li>
+      </ul>
+    </nav>
+    <nav class="chapter-nav" id="chapterNavAdminAdv"></nav>
+    <main id="chaptersAdminAdv">
+      <section class="chapter active" data-chapter="1" data-training="adminAdv">
+        <div class="chapter-header"><h2>Advanced 1: Data Sync Troubleshooting</h2><p class="duration">⏱ ca. 30 Min</p></div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Fehlertypen</h3>
+          <ul>
+            <li><strong>Mapping:</strong> Feld in Quelle nicht gefunden oder falsch gemappt</li>
+            <li><strong>Duplikate:</strong> Doppelte Einträge in Ziel</li>
+            <li><strong>Validierung:</strong> Pflichtfeld leer, Format falsch</li>
+            <li>Log-Reihenfolge: Abhängigkeiten prüfen (z.B. Ressourcen vor Projekten)</li>
+          </ul>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe: Sync-Fehler analysieren</h3>
+          <p><em>Das Log zeigt: «Mapping error: Resource 'Primary Role' not found». Die HR-Quelle hat ein Feld «Rolle». Du musst das Mapping korrigieren und dokumentieren, warum der Fehler auftrat.</em></p>
+        </div>
+        <div class="quiz-section" data-quiz="adminAdv1">
+          <h3>📝 Quiz Advanced 1</h3>
+          <div class="quiz-question">
+            <p>1. «Validierung: Pflichtfeld leer» – was bedeutet das?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="adminAdv1q1" value="a"> Mapping-Fehler</label>
+              <label class="quiz-option"><input type="radio" name="adminAdv1q1" value="b"> Ein Pflichtfeld in der Quelle ist leer</label>
+              <label class="quiz-option"><input type="radio" name="adminAdv1q1" value="c"> Duplikat</label>
+            </div>
+          </div>
+          <div class="quiz-question">
+            <p>2. Warum ist die Reihenfolge der Sync-Jobs wichtig?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="adminAdv1q2" value="a"> Es ist egal</label>
+              <label class="quiz-option"><input type="radio" name="adminAdv1q2" value="b"> Abhängigkeiten (z.B. Ressourcen vor Projekten)</label>
+              <label class="quiz-option"><input type="radio" name="adminAdv1q2" value="c"> Nur für Performance</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizAdminAdv(1, ['b','b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultAdminAdv1" style="display:none;"></div>
+        </div>
+      </section>
+      <section class="chapter" data-chapter="2" data-training="adminAdv">
+        <div class="chapter-header"><h2>Advanced 2: Security Groups</h2><p class="duration">⏱ ca. 25 Min</p></div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Berechtigungen</h3>
+          <ul>
+            <li>Security Groups: Zugriff auf Bereiche (RM, PM, Admin, Reports)</li>
+            <li>Lizenzierung: Full, Executive, Timesheet</li>
+            <li>Berechtigungsmatrix: Wer darf was sehen/bearbeiten?</li>
+          </ul>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe: Berechtigungsmatrix</h3>
+          <p><em>Du erstellst eine Matrix: PMO (alle Projekte lesen), RM (alle Ressourcen), PM (nur eigene Projekte), Developer (nur Zuweisungen). Welche Security Groups und Lizenztypen?</em></p>
+        </div>
+        <div class="quiz-section" data-quiz="adminAdv2">
+          <h3>📝 Quiz Advanced 2</h3>
+          <div class="quiz-question">
+            <p>1. Ein Executive User darf …</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="adminAdv2q1" value="a"> Alles bearbeiten</label>
+              <label class="quiz-option"><input type="radio" name="adminAdv2q1" value="b"> Nur lesen</label>
+              <label class="quiz-option"><input type="radio" name="adminAdv2q1" value="c"> Nur Timesheets</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizAdminAdv(2, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultAdminAdv2" style="display:none;"></div>
+        </div>
+      </section>
+      <section class="chapter" data-chapter="3" data-training="adminAdv">
+        <div class="chapter-header"><h2>Advanced 3: View-Konfiguration Advanced</h2><p class="duration">⏱ ca. 30 Min</p></div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Spalten, Filter, Gruppierung</h3>
+          <ul>
+            <li>Custom Spalten: Welche Attribute sichtbar?</li>
+            <li>Filter: Kombinierbar, gespeichert in View</li>
+            <li>Gruppierung: Nach Team, Role, Projekt</li>
+            <li>Public Views: Berechtigungen für Stakeholder</li>
+          </ul>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe: Überbuchungs-View</h3>
+          <p><em>Du erstellst eine RM-View, die nur überbuchte Ressourcen zeigt, gruppiert nach Team, mit Spalten: Name, Net Availability, Project Availability, Überbuchung %. Dokumentiere die Konfiguration.</em></p>
+        </div>
+        <div class="quiz-section" data-quiz="adminAdv3">
+          <h3>📝 Quiz Advanced 3</h3>
+          <div class="quiz-question">
+            <p>1. Public Views können …</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="adminAdv3q1" value="a"> Von jedem bearbeitet werden</label>
+              <label class="quiz-option"><input type="radio" name="adminAdv3q1" value="b"> Nur geklont, nicht bearbeitet</label>
+              <label class="quiz-option"><input type="radio" name="adminAdv3q1" value="c"> Gelöscht werden</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizAdminAdv(3, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultAdminAdv3" style="display:none;"></div>
+        </div>
+      </section>
+      <section class="chapter" data-chapter="4" data-training="adminAdv">
+        <div class="chapter-header"><h2>Advanced 4: Snapshot-Strategie</h2><p class="duration">⏱ ca. 25 Min</p></div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Snapshot-Typen</h3>
+          <ul>
+            <li>Q-Baseline: Quartalsbeginn</li>
+            <li>Pre-Release: Vor jedem Upgrade</li>
+            <li>Monats-Snapshot: Für Reporting</li>
+          </ul>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe: Snapshot-Strategie</h3>
+          <p><em>Du definierst eine Snapshot-Strategie für Releases: Wann welcher Snapshot? Wer erstellt? Wer hat Zugriff?</em></p>
+        </div>
+        <div class="quiz-section" data-quiz="adminAdv4">
+          <h3>📝 Quiz Advanced 4</h3>
+          <div class="quiz-question">
+            <p>1. Pre-Release-Snapshot wird erstellt …</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="adminAdv4q1" value="a"> Monatlich</label>
+              <label class="quiz-option"><input type="radio" name="adminAdv4q1" value="b"> Vor jedem Upgrade</label>
+              <label class="quiz-option"><input type="radio" name="adminAdv4q1" value="c"> Nie</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizAdminAdv(4, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultAdminAdv4" style="display:none;"></div>
+        </div>
+      </section>
+      <section class="chapter" data-chapter="5" data-training="adminAdv">
+        <div class="chapter-header"><h2>Advanced 5: Upgrade & Sandbox</h2><p class="duration">⏱ ca. 30 Min</p></div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Upgrade-Prozess</h3>
+          <ul>
+            <li>Sandbox: Erst testen, dann Produktiv</li>
+            <li>Backup: Snapshot vor Upgrade</li>
+            <li>Release-Notes: Breaking Changes prüfen</li>
+          </ul>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe: Upgrade-Checkliste</h3>
+          <p><em>Ein Major-Release steht an. Erstelle eine Checkliste mit 15 Punkten für Sandbox-Test, Backup, Kommunikation und Rollback.</em></p>
+        </div>
+        <div class="quiz-section" data-quiz="adminAdv5">
+          <h3>📝 Quiz Advanced 5</h3>
+          <div class="quiz-question">
+            <p>1. Warum Sandbox vor Produktiv-Upgrade?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="adminAdv5q1" value="a"> Schneller</label>
+              <label class="quiz-option"><input type="radio" name="adminAdv5q1" value="b"> Erst testen, dann Produktiv</label>
+              <label class="quiz-option"><input type="radio" name="adminAdv5q1" value="c"> Nicht nötig</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizAdminAdv(5, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultAdminAdv5" style="display:none;"></div>
+        </div>
+      </section>
+    </main>
+    </div><!-- /adminAdvPanel -->
+
     <footer>
       <p>© Valkeen GmbH · Tempus Resource · www.valkeen.com</p>
       <p>Basierend auf: Consolidated User Training Resource Manager & Project Manager SHS IT 10.0</p>
@@ -1722,22 +2270,22 @@
     };
 
     function switchTraining(which) {
+      const tabMap = { rm: 0, rmAdv: 1, pm: 2, pmAdv: 3, admin: 4, adminAdv: 5 };
       document.querySelectorAll('.training-tabs button').forEach((b, i) => {
-        b.classList.toggle('active', (which === 'rm' && i === 0) || (which === 'pm' && i === 1) || (which === 'admin' && i === 2));
+        b.classList.toggle('active', tabMap[which] === i);
       });
       document.getElementById('rmPanel').classList.toggle('active', which === 'rm');
+      document.getElementById('rmAdvPanel').classList.toggle('active', which === 'rmAdv');
       document.getElementById('pmPanel').classList.toggle('active', which === 'pm');
+      document.getElementById('pmAdvPanel').classList.toggle('active', which === 'pmAdv');
       document.getElementById('adminPanel').classList.toggle('active', which === 'admin');
-      if (which === 'rm') {
-        buildChapterNav();
-        showChapter(1);
-      } else if (which === 'pm') {
-        buildChapterNavPM();
-        showChapterPM(1);
-      } else {
-        buildChapterNavAdmin();
-        showChapterAdmin(1);
-      }
+      document.getElementById('adminAdvPanel').classList.toggle('active', which === 'adminAdv');
+      if (which === 'rm') { buildChapterNav(); showChapter(1); }
+      else if (which === 'rmAdv') { buildChapterNavRmAdv(); showChapterRmAdv(1); }
+      else if (which === 'pm') { buildChapterNavPM(); showChapterPM(1); }
+      else if (which === 'pmAdv') { buildChapterNavPmAdv(); showChapterPmAdv(1); }
+      else if (which === 'admin') { buildChapterNavAdmin(); showChapterAdmin(1); }
+      else { buildChapterNavAdminAdv(); showChapterAdminAdv(1); }
     }
 
     function buildChapterNav() {
@@ -1775,6 +2323,118 @@
         if (i === 1) btn.classList.add('active');
         nav.appendChild(btn);
       }
+    }
+
+    function buildChapterNavRmAdv() {
+      const nav = document.getElementById('chapterNavRmAdv');
+      if (!nav) return;
+      nav.innerHTML = '';
+      for (let i = 1; i <= 5; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = `Kapitel ${i}`;
+        btn.onclick = () => showChapterRmAdv(i);
+        if (i === 1) btn.classList.add('active');
+        nav.appendChild(btn);
+      }
+    }
+    function showChapterRmAdv(num) {
+      document.querySelectorAll('#rmAdvPanel .chapter').forEach(c => {
+        c.classList.toggle('active', parseInt(c.dataset.chapter) === num);
+      });
+      document.querySelectorAll('#rmAdvPanel .chapter-nav button').forEach((b, i) => {
+        b.classList.toggle('active', i + 1 === num);
+      });
+      document.getElementById('progressFill').style.width = (num / 5 * 100) + '%';
+    }
+    function checkQuizRmAdv(chapter, correctAnswers) {
+      const names = chapter === 1 ? ['rmAdv1q1','rmAdv1q2'] : chapter === 2 ? ['rmAdv2q1','rmAdv2q2'] : chapter === 3 ? ['rmAdv3q1'] : chapter === 4 ? ['rmAdv4q1'] : ['rmAdv5q1'];
+      runCheckQuiz('rmAdv', chapter, names, correctAnswers);
+    }
+
+    function buildChapterNavPmAdv() {
+      const nav = document.getElementById('chapterNavPmAdv');
+      if (!nav) return;
+      nav.innerHTML = '';
+      for (let i = 1; i <= 5; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = `Kapitel ${i}`;
+        btn.onclick = () => showChapterPmAdv(i);
+        if (i === 1) btn.classList.add('active');
+        nav.appendChild(btn);
+      }
+    }
+    function showChapterPmAdv(num) {
+      document.querySelectorAll('#pmAdvPanel .chapter').forEach(c => {
+        c.classList.toggle('active', parseInt(c.dataset.chapter) === num);
+      });
+      document.querySelectorAll('#pmAdvPanel .chapter-nav button').forEach((b, i) => {
+        b.classList.toggle('active', i + 1 === num);
+      });
+      document.getElementById('progressFill').style.width = (num / 5 * 100) + '%';
+    }
+    function checkQuizPmAdv(chapter, correctAnswers) {
+      const names = [`pmAdv${chapter}q1`];
+      runCheckQuiz('pmAdv', chapter, names, correctAnswers);
+    }
+
+    function buildChapterNavAdminAdv() {
+      const nav = document.getElementById('chapterNavAdminAdv');
+      if (!nav) return;
+      nav.innerHTML = '';
+      for (let i = 1; i <= 5; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = `Kapitel ${i}`;
+        btn.onclick = () => showChapterAdminAdv(i);
+        if (i === 1) btn.classList.add('active');
+        nav.appendChild(btn);
+      }
+    }
+    function showChapterAdminAdv(num) {
+      document.querySelectorAll('#adminAdvPanel .chapter').forEach(c => {
+        c.classList.toggle('active', parseInt(c.dataset.chapter) === num);
+      });
+      document.querySelectorAll('#adminAdvPanel .chapter-nav button').forEach((b, i) => {
+        b.classList.toggle('active', i + 1 === num);
+      });
+      document.getElementById('progressFill').style.width = (num / 5 * 100) + '%';
+    }
+    function checkQuizAdminAdv(chapter, correctAnswers) {
+      const names = chapter === 1 ? ['adminAdv1q1','adminAdv1q2'] : [`adminAdv${chapter}q1`];
+      runCheckQuiz('adminAdv', chapter, names, correctAnswers);
+    }
+
+    function runCheckQuiz(prefix, chapter, names, correctAnswers) {
+      let correct = 0;
+      const section = document.querySelector(`[data-quiz="${prefix}${chapter}"]`);
+      names.forEach((name, i) => {
+        const selected = document.querySelector(`input[name="${name}"]:checked`);
+        const options = section?.querySelectorAll(`input[name="${name}"]`);
+        const parent = options?.[0]?.closest('.quiz-options');
+        parent?.querySelectorAll('.quiz-option').forEach(opt => {
+          opt.classList.remove('correct', 'incorrect');
+          const span = opt.querySelector('.feedback');
+          if (span) span.remove();
+        });
+        options?.forEach((opt) => {
+          const label = opt.closest('.quiz-option');
+          const val = opt.value;
+          const isCorrect = val === correctAnswers[i];
+          const wasSelected = selected?.value === val;
+          if (wasSelected && isCorrect) { correct++; label?.classList.add('correct'); const fb = document.createElement('span'); fb.className = 'feedback'; fb.textContent = '✓ Richtig'; label?.appendChild(fb); }
+          else if (wasSelected && !isCorrect) { label?.classList.add('incorrect'); const fb = document.createElement('span'); fb.className = 'feedback'; fb.textContent = '✗ Falsch'; label?.appendChild(fb); }
+          else if (isCorrect) { label?.classList.add('correct'); const fb = document.createElement('span'); fb.className = 'feedback'; fb.textContent = '✓ Richtige Antwort'; label?.appendChild(fb); }
+        });
+      });
+      const total = correctAnswers.length;
+      const pct = (correct / total) * 100;
+      const resultEl = document.getElementById(`quizResult${prefix.charAt(0).toUpperCase() + prefix.slice(1)}${chapter}`);
+      if (resultEl) {
+        resultEl.style.display = 'block';
+        resultEl.className = 'quiz-result ' + (pct === 100 ? 'good' : pct >= 50 ? 'partial' : 'poor');
+        resultEl.textContent = `${correct}/${total} richtig (${Math.round(pct)}%)` + (pct === 100 ? ' – Perfekt! 🎉' : pct >= 50 ? ' – Gut!' : ' – Nochmal versuchen!');
+      }
+      const btn = section?.querySelector('.quiz-submit');
+      if (btn) btn.disabled = true;
     }
 
     function showChapterAdmin(num) {
@@ -1934,11 +2594,12 @@
       if (btn) btn.disabled = true;
     }
 
-    if (window.location.hash === '#admin') {
-      switchTraining('admin');
-    } else {
-      buildChapterNav();
-    }
+    const hash = window.location.hash;
+    if (hash === '#admin') switchTraining('admin');
+    else if (hash === '#rmAdv') switchTraining('rmAdv');
+    else if (hash === '#pmAdv') switchTraining('pmAdv');
+    else if (hash === '#adminAdv') switchTraining('adminAdv');
+    else buildChapterNav();
   </script>
 </body>
 </html>

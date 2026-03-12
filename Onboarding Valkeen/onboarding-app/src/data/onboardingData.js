@@ -1721,7 +1721,15 @@ export const resources = [
     category: "Admin",
     items: [
       { name: "Admin Training (Interaktiv)", url: "https://manuel-weiss.ch/Onboarding%20Valkeen/docs/Tempus_Resource_Manager_Training_Interaktiv.html#admin", type: "docs" },
+      { name: "Admin Advanced (Interaktiv)", url: "https://manuel-weiss.ch/Onboarding%20Valkeen/docs/Tempus_Resource_Manager_Training_Interaktiv.html#adminAdv", type: "docs" },
       { name: "Tempus Support & Documentation", url: "https://support.tempusresource.com/hc/en-us", type: "docs" }
+    ]
+  },
+  {
+    category: "Advanced Trainings",
+    items: [
+      { name: "RM Advanced (Interaktiv)", url: "https://manuel-weiss.ch/Onboarding%20Valkeen/docs/Tempus_Resource_Manager_Training_Interaktiv.html#rmAdv", type: "docs" },
+      { name: "PM Advanced (Interaktiv)", url: "https://manuel-weiss.ch/Onboarding%20Valkeen/docs/Tempus_Resource_Manager_Training_Interaktiv.html#pmAdv", type: "docs" }
     ]
   },
   {
