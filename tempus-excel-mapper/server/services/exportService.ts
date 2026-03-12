@@ -294,27 +294,57 @@ export async function generateTempusExcel(
     headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4472C4' } };
 
     if (templateKey === 'attributes') {
-      const allCFMappings = [
-        ...mappingResult.customFieldMappings.filter(cf => cf.action === 'create'),
-        ...mappingResult.customFieldMappings.filter(cf => cf.action === 'exists'),
-      ];
-      for (const cf of allCFMappings) {
-        const tempusType = mapToTempusDataType(cf.dataType);
-        const isSelection = /selection|enum|flags/i.test(cf.dataType) || /Selection|Enum|Flags/.test(tempusType);
-        const selectionValues = isSelection && cf.uniqueValues
-          ? cf.uniqueValues.join(', ')
-          : '';
-        ws.addRow([
-          capitalizeEntityTypeForExport(cf.entityType),
-          cf.customFieldName,
-          tempusType,
-          'Merge',
-          false,  // Is Required - boolean not string
-          false,  // Is Unique - boolean not string
-          '',     // Default Value
-          selectionValues,
-          false,  // Is Rich Text - boolean not string
-        ]);
+      // Prefer source Attributes sheet data when it exists (Quelle Attributes → Ziel customFields)
+      const cfFieldMappings = byEntity.get('customFields') || [];
+      const attributesSheetName = parsed.sheets.find(s =>
+        /attribute/i.test(s.name) && cfFieldMappings.some(fm => fm.sourceSheet === s.name)
+      )?.name;
+
+      if (attributesSheetName) {
+        const attSheet = parsed.sheets.find(s => s.name === attributesSheetName);
+        const attMappings = cfFieldMappings.filter(m => m.sourceSheet === attributesSheetName);
+        if (attSheet && attMappings.length > 0) {
+          const targetToHeader: Record<string, string> = {
+            entityType: 'Entity Type',
+            name: 'Custom Field Name',
+            customFieldName: 'Custom Field Name',
+            dataType: 'Type',
+            importBehavior: 'Import Behavior',
+            isRequired: 'Is Required',
+            isUnique: 'Is Unique',
+            defaultValue: 'Default Value',
+            selectionValues: 'Selection Values',
+            isRichText: 'Is Rich Text',
+          };
+          const headerToSource = new Map<string, string>();
+          for (const m of attMappings) {
+            const h = targetToHeader[m.targetField] ?? tempusFieldToHeader(m.targetField, 'customFields');
+            if (h && !headerToSource.has(h)) headerToSource.set(h, m.sourceColumn);
+          }
+          for (const row of attSheet.rows) {
+            const exportRow = headers.map(h => {
+              const srcCol = headerToSource.get(h);
+              if (!srcCol) {
+                if (h === 'Import Behavior') return 'Merge';
+                if (h === 'Is Required' || h === 'Is Unique' || h === 'Is Rich Text') return false;
+                return '';
+              }
+              let val = row[srcCol];
+              if (h === 'Entity Type' && val) val = capitalizeEntityTypeForExport(String(val));
+              if (h === 'Type' && val) val = mapToTempusDataType(String(val));
+              if ((h === 'Is Required' || h === 'Is Unique' || h === 'Is Rich Text') && val !== undefined && val !== null) {
+                val = /^(true|ja|yes|1)$/i.test(String(val));
+              }
+              return toPlainValue(val ?? '');
+            });
+            ws.addRow(exportRow);
+          }
+          console.log(`[export] Attributes: used source sheet "${attributesSheetName}" (${attSheet.rows.length} rows)`);
+        } else {
+          fallbackAttributesFromCFMappings(ws, mappingResult);
+        }
+      } else {
+        fallbackAttributesFromCFMappings(ws, mappingResult);
       }
     } else {
       const sourceSheets = [...new Set(entityMappings.map(m => m.sourceSheet))];
@@ -514,6 +544,35 @@ export async function generateTempusExcel(
     const buffer = await fallbackWb.xlsx.writeBuffer();
     return Buffer.from(buffer);
   }
+}
+
+function fallbackAttributesFromCFMappings(
+  ws: ExcelJS.Worksheet,
+  mappingResult: MappingResult,
+): void {
+  const allCFMappings = [
+    ...mappingResult.customFieldMappings.filter(cf => cf.action === 'create'),
+    ...mappingResult.customFieldMappings.filter(cf => cf.action === 'exists'),
+  ];
+  for (const cf of allCFMappings) {
+    const tempusType = mapToTempusDataType(cf.dataType);
+    const isSelection = /selection|enum|flags/i.test(cf.dataType) || /Selection|Enum|Flags/.test(tempusType);
+    const selectionValues = isSelection && cf.uniqueValues
+      ? cf.uniqueValues.join(', ')
+      : '';
+    ws.addRow([
+      capitalizeEntityTypeForExport(cf.entityType),
+      cf.customFieldName,
+      tempusType,
+      'Merge',
+      false,
+      false,
+      '',
+      selectionValues,
+      false,
+    ]);
+  }
+  console.log(`[export] Attributes: used customFieldMappings fallback (${allCFMappings.length} rows)`);
 }
 
 function toPlainValue(value: unknown): string | number | boolean | Date {
