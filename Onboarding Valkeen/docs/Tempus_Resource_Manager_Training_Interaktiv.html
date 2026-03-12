@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tempus Training | Resource Manager & Project Manager | Stern & Co</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0f0f14;
+      --bg-secondary: #16161d;
+      --bg-card: #1c1c26;
+      --bg-card-hover: #232330;
+      --accent: #00d4aa;
+      --accent-dim: #00a884;
+      --accent-glow: rgba(0, 212, 170, 0.25);
+      --text-primary: #e8e8ed;
+      --text-secondary: #a0a0b0;
+      --text-muted: #6b6b7a;
+      --border: #2a2a38;
+      --success: #00d4aa;
+      --error: #ff6b6b;
+      --warning: #ffd93d;
+      --radius: 12px;
+      --radius-lg: 20px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.4);
+      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Animated gradient background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60vh;
+      background: radial-gradient(ellipse 80% 50% at 50% -20%, var(--accent-glow), transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header & Logo */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .tempus-logo {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dim) 100%);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--bg-primary);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-text {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .logo-text span {
+      color: var(--accent);
+    }
+
+    .badge {
+      background: var(--bg-card);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    /* Training-Tabs */
+    .training-tabs {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .training-tabs button {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: var(--transition);
+    }
+    .training-tabs button:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+      border-color: var(--accent);
+    }
+    .training-tabs button.active {
+      background: var(--accent);
+      color: var(--bg-primary);
+      border-color: var(--accent);
+    }
+    .training-panel { display: none; }
+    .training-panel.active { display: block; }
+
+    /* Use Case Banner */
+    .use-case-banner {
+      background: linear-gradient(135deg, var(--bg-card) 0%, rgba(0, 212, 170, 0.08) 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-bottom: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .use-case-banner::before {
+      content: '🎬';
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      font-size: 2.5rem;
+      opacity: 0.5;
+    }
+
+    .use-case-banner h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--accent);
+    }
+
+    .use-case-banner p {
+      color: var(--text-secondary);
+      margin-bottom: 1.25rem;
+    }
+
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .resource-chip {
+      background: var(--bg-secondary);
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .resource-chip strong {
+      color: var(--text-primary);
+    }
+
+    .resource-chip span {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    /* Chapter Navigation */
+    .chapter-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .chapter-nav button {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+
+    .chapter-nav button:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+      border-color: var(--accent);
+    }
+
+    .chapter-nav button.active {
+      background: var(--accent);
+      color: var(--bg-primary);
+      border-color: var(--accent);
+    }
+
+    /* Chapter Content */
+    .chapter {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .chapter.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .chapter-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .chapter-header h2 {
+      font-size: 1.75rem;
+      margin-bottom: 0.25rem;
+      color: var(--text-primary);
+    }
+
+    .duration {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* Task Cards */
+    .task-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      transition: var(--transition);
+    }
+
+    .task-card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(0, 212, 170, 0.3);
+    }
+
+    .theory-card {
+      background: rgba(0, 212, 170, 0.06);
+      border: 1px solid rgba(0, 212, 170, 0.2);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .theory-card h3 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      color: var(--accent);
+    }
+
+    .theory-card ul, .theory-card ol {
+      margin: 0.5rem 0 0 1rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .theory-card li { margin-bottom: 0.25rem; }
+
+    .fig-inline { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1rem 0; align-items: flex-start; }
+    .fig-inline .fig-item { flex: 0 0 auto; max-width: 380px; }
+    .fig-inline .fig-item img { width: 100%; max-width: 380px; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); border: 1px solid var(--border); }
+    .fig-inline .fig-caption { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.25rem; padding: 0.25rem 0.5rem; background: var(--bg-secondary); border-radius: 4px; }
+    .fig-inline .fig-caption::before { content: "📍 "; }
+    .ui-guide { background: rgba(0,212,170,0.08); border: 1px solid rgba(0,212,170,0.2); border-radius: 8px; padding: 0.75rem 1rem; margin: 1rem 0; font-size: 0.85rem; color: var(--text-secondary); }
+
+    .toc-nav {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .toc-nav h3 { font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--text-secondary); }
+    .toc-nav ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .toc-nav a { color: var(--accent); text-decoration: none; font-size: 0.85rem; padding: 0.25rem 0.5rem; border-radius: 6px; }
+    .toc-nav a:hover { background: rgba(0,212,170,0.1); }
+
+    .task-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.75rem;
+      color: var(--accent);
+    }
+
+    .task-card ol {
+      margin-left: 1.25rem;
+      color: var(--text-secondary);
+    }
+
+    .task-card li {
+      margin-bottom: 0.5rem;
+    }
+
+    /* Quiz Section */
+    .quiz-section {
+      background: linear-gradient(135deg, rgba(0, 212, 170, 0.06) 0%, var(--bg-card) 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+
+    .quiz-section h3 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .quiz-question {
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .quiz-question:last-of-type {
+      border-bottom: none;
+    }
+
+    .quiz-question p:first-child {
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .quiz-option {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.95rem;
+    }
+
+    .quiz-option:hover {
+      border-color: var(--accent);
+      background: var(--bg-card-hover);
+    }
+
+    .quiz-option input {
+      accent-color: var(--accent);
+      width: 18px;
+      height: 18px;
+    }
+
+    .quiz-option.correct {
+      border-color: var(--success);
+      background: rgba(0, 212, 170, 0.1);
+    }
+
+    .quiz-option.incorrect {
+      border-color: var(--error);
+      background: rgba(255, 107, 107, 0.08);
+    }
+
+    .quiz-option .feedback {
+      margin-left: auto;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .quiz-option.correct .feedback { color: var(--success); }
+    .quiz-option.incorrect .feedback { color: var(--error); }
+
+    .quiz-submit {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      background: var(--accent);
+      color: var(--bg-primary);
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .quiz-submit:hover {
+      background: var(--accent-dim);
+      transform: translateY(-1px);
+    }
+
+    .quiz-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .quiz-result {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .quiz-result.good {
+      background: rgba(0, 212, 170, 0.15);
+      color: var(--success);
+    }
+
+    .quiz-result.partial {
+      background: rgba(255, 217, 61, 0.15);
+      color: var(--warning);
+    }
+
+    .quiz-result.poor {
+      background: rgba(255, 107, 107, 0.15);
+      color: var(--error);
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* Progress indicator */
+    .progress-bar {
+      height: 4px;
+      background: var(--bg-secondary);
+      border-radius: 2px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-dim));
+      border-radius: 2px;
+      transition: width 0.5s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo-section">
+        <div class="tempus-logo">TR</div>
+        <div class="logo-text">Tempus <span>Resource</span></div>
+      </div>
+      <div class="training-tabs">
+        <button type="button" class="active" onclick="switchTraining('rm')">Resource Manager</button>
+        <button type="button" onclick="switchTraining('pm')">Project Manager</button>
+      </div>
+    </header>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 11%;"></div>
+    </div>
+
+    <!-- Resource Manager Training -->
+    <div id="rmPanel" class="training-panel active">
+    <div class="use-case-banner">
+      <h2>🎬 Stern & Co – Die Agentur</h2>
+      <p>Du bist Resource Manager bei «Stern & Co», einer kreativen Agentur. Dein Team besteht aus prominenten Persönlichkeiten – und du verteilst sie optimal auf Projekte!</p>
+      <div class="resource-grid">
+        <div class="resource-chip"><strong>Brad Pitt</strong> <span>Dev</span></div>
+        <div class="resource-chip"><strong>Meryl Streep</strong> <span>PM</span></div>
+        <div class="resource-chip"><strong>Taylor Swift</strong> <span>Marketing</span></div>
+        <div class="resource-chip"><strong>Dwayne Johnson</strong> <span>IT</span></div>
+        <div class="resource-chip"><strong>Angela Merkel</strong> <span>Compliance</span></div>
+        <div class="resource-chip"><strong>Roger Federer</strong> <span>DevOps</span></div>
+        <div class="resource-chip"><strong>Heidi Klum</strong> <span>UX</span></div>
+        <div class="resource-chip"><strong>Elon Musk</strong> <span>R&D</span></div>
+      </div>
+    </div>
+
+    <nav class="toc-nav">
+      <h3>📑 Inhaltsverzeichnis</h3>
+      <ul>
+        <li><a href="#" onclick="showChapter(1); return false;">1. Anmeldung & Navigation</a></li>
+        <li><a href="#" onclick="showChapter(2); return false;">2. Benachrichtigungen</a></li>
+        <li><a href="#" onclick="showChapter(3); return false;">3. Resource Management Grid</a></li>
+        <li><a href="#" onclick="showChapter(4); return false;">4. Net Availability</a></li>
+        <li><a href="#" onclick="showChapter(5); return false;">5. Resource Requests</a></li>
+        <li><a href="#" onclick="showChapter(6); return false;">6. Requests erstellen</a></li>
+        <li><a href="#" onclick="showChapter(7); return false;">7. Non-Project Activities</a></li>
+        <li><a href="#" onclick="showChapter(8); return false;">8. BPA Flatgrid</a></li>
+        <li><a href="#" onclick="showChapter(9); return false;">9. Reports</a></li>
+        <li><a href="Tempus_Workflow_Einrichtung.html">Workflow-Einrichtung</a></li>
+      </ul>
+    </nav>
+
+    <nav class="chapter-nav" id="chapterNav"></nav>
+
+    <main id="chapters">
+      <!-- Kapitel 1 -->
+      <section class="chapter active" data-chapter="1">
+        <div class="chapter-header">
+          <h2>Kapitel 1: Anmeldung & Navigation</h2>
+          <p class="duration">⏱ ca. 10 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Logging In & Homepage</h3>
+          <ul>
+            <li>Tempus im Browser öffnen (Chrome empfohlen)</li>
+            <li>Oranger Button <strong>Healthineers-ID Login</strong> → Anmelden</li>
+            <li><strong>6 Tiles:</strong> Project Management, Resource Management, Resource Requests, BPA Flatgrid, Report Management, Bulk Resource Capacities</li>
+            <li><strong>Task Bar:</strong> Tempus-Logo → Homepage | Glocke → Benachrichtigungen | Hamburger → Navigation</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Login-Button zentriert · Tiles unter der Task Bar</div>
+          <div class="fig-inline">
+            <div class="fig-item"><img src="screenshots/inline/login_p7_2.png" alt="Homepage"><div class="fig-caption">Homepage mit Kacheln (Project Management, Resource Management, etc.)</div></div>
+            <div class="fig-item"><img src="screenshots/inline/login_p7_1.png" alt="Login"><div class="fig-caption">Login-Seite mit Healthineers ID Login Button</div></div>
+            <div class="fig-item"><img src="screenshots/inline/homepage_p8_4.png" alt="Filter"><div class="fig-caption">Projektliste mit Suchfeld und Filter</div></div>
+          </div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 1.1: Einloggen & Homepage erkunden</h3>
+          <ol>
+            <li>Öffne Tempus Resource in deinem Browser (Chrome empfohlen).</li>
+            <li>Klicke auf <strong>Healthineers-ID Login</strong> und melde dich an.</li>
+            <li>Identifiziere alle <strong>6 Tiles</strong> auf der Homepage.</li>
+            <li>Klicke auf das <strong>Tempus-Logo</strong> oben links – wohin führt es?</li>
+            <li>Öffne das <strong>Hamburger-Menü</strong> und erkunde die Bereiche.</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="1">
+          <h3>📝 Quiz Kapitel 1</h3>
+          <div class="quiz-question">
+            <p>1. Welcher Browser wird für Tempus empfohlen?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="q1" value="a"> Firefox</label>
+              <label class="quiz-option"><input type="radio" name="q1" value="b"> Safari</label>
+              <label class="quiz-option"><input type="radio" name="q1" value="c"> Google Chrome</label>
+              <label class="quiz-option"><input type="radio" name="q1" value="d"> Edge</label>
+            </div>
+          </div>
+          <div class="quiz-question">
+            <p>2. Was passiert beim Klick auf das Tempus-Logo?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="q2" value="a"> Logout</label>
+              <label class="quiz-option"><input type="radio" name="q2" value="b"> Zurück zur Homepage</label>
+              <label class="quiz-option"><input type="radio" name="q2" value="c"> Einstellungen</label>
+              <label class="quiz-option"><input type="radio" name="q2" value="d"> Suche</label>
+            </div>
+          </div>
+          <div class="quiz-question">
+            <p>3. Wo findest du Benachrichtigungen?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="q3" value="a"> Unter dem Hamburger-Menü</label>
+              <label class="quiz-option"><input type="radio" name="q3" value="b"> Beim Glocken-Icon</label>
+              <label class="quiz-option"><input type="radio" name="q3" value="c"> In den Tiles</label>
+              <label class="quiz-option"><input type="radio" name="q3" value="d"> Im Username-Menü</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuiz(1, ['c','b','b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResult1" style="display:none;"></div>
+        </div>
+      </section>
+
+      <!-- Kapitel 2 -->
+      <section class="chapter" data-chapter="2">
+        <div class="chapter-header">
+          <h2>Kapitel 2: Benachrichtigungen</h2>
+          <p class="duration">⏱ ca. 10 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Subscriptions</h3>
+          <ul>
+            <li>Username-Menü → <strong>Subscriptions</strong></li>
+            <li>Tab <strong>Resource Request</strong>: «Resource request management» → «Submitted» aktivieren</li>
+            <li>Benachrichtigung bei neuer Resource Request für deine Ressourcen</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Username oben rechts → Subscriptions → Tab Resource Request</div>
+          <div class="fig-inline">
+            <div class="fig-item"><img src="screenshots/inline/subscriptions_p10_2.png" alt="Subscriptions"><div class="fig-caption">Resource request management → Submitted aktivieren</div></div>
+            <div class="fig-item"><img src="screenshots/inline/subscriptions_p10_1.png" alt="Resource Request Tab"><div class="fig-caption">Tab «Resource Request» im Dialog</div></div>
+          </div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 2.1: Resource-Request-Benachrichtigungen</h3>
+          <p><em>Taylor Swift wurde für «Blockbuster App 2025» angefragt – du willst sofort informiert werden!</em></p>
+          <ol>
+            <li>Klicke auf deinen <strong>Benutzernamen</strong> oben rechts.</li>
+            <li>Wähle <strong>Subscriptions</strong>.</li>
+            <li>Gehe zum Tab <strong>Resource Request</strong>.</li>
+            <li>Aktiviere «Resource request management» → «Submitted».</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="2">
+          <h3>📝 Quiz Kapitel 2</h3>
+          <div class="quiz-question">
+            <p>1. Wann wirst du bei «Submitted» benachrichtigt?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="q4" value="a"> Wenn du eine Anfrage absendest</label>
+              <label class="quiz-option"><input type="radio" name="q4" value="b"> Wenn eine neue Resource Request für deine Ressourcen eingereicht wird</label>
+              <label class="quiz-option"><input type="radio" name="q4" value="c"> Wenn eine Anfrage abgelehnt wird</label>
+            </div>
+          </div>
+          <div class="quiz-question">
+            <p>2. Wo findest du Subscriptions?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="q5" value="a"> Unter dem Glocken-Icon</label>
+              <label class="quiz-option"><input type="radio" name="q5" value="b"> Im Username-Menü</label>
+              <label class="quiz-option"><input type="radio" name="q5" value="c"> In den Tiles</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuiz(2, ['b','b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResult2" style="display:none;"></div>
+        </div>
+      </section>
+
+      <!-- Kapitel 3 -->
+      <section class="chapter" data-chapter="3">
+        <div class="chapter-header">
+          <h2>Kapitel 3: Resource Management Grid</h2>
+          <p class="duration">⏱ ca. 12 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Grid & Attribute</h3>
+          <ul>
+            <li>Suche (contains), Filter, Group By, Quick Filter «My resources»</li>
+            <li>Stift-Icon = Bearbeiten bei Hover über Zelle</li>
+            <li>Advanced Tooltip: Hover über Ressourcennamen → Bereiche anzeigen</li>
+            <li>Capacity Start/End Date <strong>nicht</strong> ändern – Datenverlust!</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Resource Management Tile → Grid, Suchfeld oben links</div>
+          <div class="fig-inline">
+            <div class="fig-item"><img src="screenshots/inline/resource_grid_p15_5.png" alt="Attributes"><div class="fig-caption">Ressource → SHS IT Attributes</div></div>
+            <div class="fig-item"><img src="screenshots/inline/resource_grid_p16_1.png" alt="Workflow"><div class="fig-caption">Attributes: Resource Managers, Is Resource Manager</div></div>
+            <div class="fig-item"><img src="screenshots/inline/resource_grid_p12_3.png" alt="Kontextmenü"><div class="fig-caption">Kontextmenü (Attributes & Identity, Capacity, Sheets)</div></div>
+          </div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 3.1: Brad Pitt finden & Attribute prüfen</h3>
+          <ol>
+            <li>Klicke auf <strong>Resource Management</strong>.</li>
+            <li>Suche nach «Brad» im Suchfeld.</li>
+            <li>Wende den Quick-Filter «My resources» an.</li>
+            <li>Hover über den Namen – welche Bereiche zeigt der Advanced Tooltip?</li>
+            <li>Öffne sein Profil und prüfe Attributes & Capacity.</li>
+          </ol>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 3.2: Heidi Klum – Rolle aktualisieren</h3>
+          <ol>
+            <li>Suche Heidi Klum, hover über die Rollen-Zelle.</li>
+            <li>Klicke auf das Bearbeiten-Icon (Stift) und ändere die Rolle.</li>
+            <li>Speichere.</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="3">
+          <h3>📝 Quiz Kapitel 3</h3>
+          <div class="quiz-question">
+            <p>1. Was bedeutet das Stift-Icon neben einer Zelle?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="q6" value="a"> Löschen</label>
+              <label class="quiz-option"><input type="radio" name="q6" value="b"> Bearbeiten/Anzeigen</label>
+              <label class="quiz-option"><input type="radio" name="q6" value="c"> Kopieren</label>
+            </div>
+          </div>
+          <div class="quiz-question">
+            <p>2. Solltest du Capacity Start/End Date als Filter ändern?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="q7" value="a"> Ja, immer</label>
+              <label class="quiz-option"><input type="radio" name="q7" value="b"> Nein – kann zu Datenverlust führen</label>
+              <label class="quiz-option"><input type="radio" name="q7" value="c"> Nur bei neuen Ressourcen</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuiz(3, ['b','b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResult3" style="display:none;"></div>
+        </div>
+      </section>
+
+      <!-- Kapitel 4 -->
+      <section class="chapter" data-chapter="4">
+        <div class="chapter-header">
+          <h2>Kapitel 4: Net Availability Grid</h2>
+          <p class="duration">⏱ ca. 12 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Net Availability</h3>
+          <ul>
+            <li>Zeigt Über- und Unterauslastung, Ressourcenlücken</li>
+            <li>Heatmap: <strong>Grün</strong> = unterbucht, <strong>Rot</strong> = überbucht</li>
+            <li>Impact Assessment: Klick auf Zelle → Projekte, Zeit, Auslastung %</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Oben rechts im Resource Management Grid → Net Availability</div>
+          <div class="fig-inline">
+            <div class="fig-item"><img src="screenshots/inline/net_availability_p18_2.png" alt="Net Availability"><div class="fig-caption">Net Availability Button & Options</div></div>
+            <div class="fig-item"><img src="screenshots/inline/net_availability_p18_4.png" alt="Impact Assessment"><div class="fig-caption">Impact Assessment beim Klick auf Zelle</div></div>
+          </div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 4.1: Über- und Unterauslastung prüfen</h3>
+          <p><em>Ist Elon Musk überbucht? Wer hat noch Kapazität?</em></p>
+          <ol>
+            <li>Klicke oben rechts auf <strong>Net Availability</strong>.</li>
+            <li>Setze den Zeitraum (z.B. Q1 2025).</li>
+            <li>Suche Elon Musk – welche Farbe? (Rot = überbucht, Grün = unterbucht)</li>
+            <li>Klicke auf eine Zelle – was zeigt der Impact Assessment View?</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="4">
+          <h3>📝 Quiz Kapitel 4</h3>
+          <div class="quiz-question">
+            <p>1. Was bedeutet Rot im Net Availability Grid?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="q8" value="a"> Unterauslastung</label>
+              <label class="quiz-option"><input type="radio" name="q8" value="b"> Überauslastung</label>
+              <label class="quiz-option"><input type="radio" name="q8" value="c"> Keine Daten</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuiz(4, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResult4" style="display:none;"></div>
+        </div>
+      </section>
+
+      <!-- Kapitel 5 -->
+      <section class="chapter" data-chapter="5">
+        <div class="chapter-header">
+          <h2>Kapitel 5: Resource Requests bearbeiten</h2>
+          <p class="duration">⏱ ca. 15 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Resource Request Screen</h3>
+          <ul>
+            <li>Nur <strong>Pending</strong> können bearbeitet werden</li>
+            <li>Replace: Ersatz wählen → Redistribute → Apply Changes</li>
+            <li>Approve: Nur für benannte Ressource; Reject: Button rot</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Resource Requests Tile → Pending-Liste → Anfrage öffnen</div>
+          <div class="fig-inline">
+            <div class="fig-item"><img src="screenshots/inline/resource_requests_p21_3.png" alt="Allokations-Grid"><div class="fig-caption">Allokations-Grid (Ressourcen, Monatsspalten)</div></div>
+            <div class="fig-item"><img src="screenshots/inline/resource_requests_p23_5.png" alt="Delegate"><div class="fig-caption">Approve/Reject/Delegate, Delegate-Dropdown</div></div>
+          </div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 5.1: Roger Federer ersetzen durch Dwayne Johnson</h3>
+          <p><em>Roger ist ausgelastet – Dwayne Johnson übernimmt «Cloud Migration».</em></p>
+          <ol>
+            <li>Öffne <strong>Resource Requests</strong> und filtere nach Pending.</li>
+            <li>Öffne die entsprechende Anfrage.</li>
+            <li>Wähle Dwayne Johnson als Ersatz im unteren Grid.</li>
+            <li>Klicke <strong>Redistribute</strong> und dann <strong>Apply Changes</strong>.</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="5">
+          <h3>📝 Quiz Kapitel 5</h3>
+          <div class="quiz-question">
+            <p>1. Welche Anfragen kannst du bearbeiten?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="q9" value="a"> Alle</label>
+              <label class="quiz-option"><input type="radio" name="q9" value="b"> Nur Pending</label>
+              <label class="quiz-option"><input type="radio" name="q9" value="c"> Nur Approved</label>
+            </div>
+          </div>
+          <div class="quiz-question">
+            <p>2. Solltest du eine generische (Demand Planning) Ressource genehmigen?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="q9b" value="a"> Ja</label>
+              <label class="quiz-option"><input type="radio" name="q9b" value="b"> Nein – nur benannte Ressourcen</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuiz(5, ['b','b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResult5" style="display:none;"></div>
+        </div>
+      </section>
+
+      <!-- Kapitel 6 -->
+      <section class="chapter" data-chapter="6">
+        <div class="chapter-header">
+          <h2>Kapitel 6: Resource Requests erstellen</h2>
+          <p class="duration">⏱ ca. 12 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Creating Resource Requests</h3>
+          <ul>
+            <li>Project Management → Projekt öffnen</li>
+            <li><strong>Checkout</strong> vor Bearbeitung</li>
+            <li>«Type a new resource» → Type-ahead</li>
+            <li>Save and Check In</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Project Management → Projekt → Checkout → blaue Zelle «Type a new resource»</div>
+          <div class="fig-inline">
+            <div class="fig-item"><img src="screenshots/inline/creating_requests_p24_5.png" alt="Type a new resource"><div class="fig-caption">Blaue Zelle «Type a new resource» – Ressource eingeben</div></div>
+            <div class="fig-item"><img src="screenshots/inline/creating_requests_p25_3.png" alt="Allocation"><div class="fig-caption">Monatsspalten für Allokation</div></div>
+          </div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 6.1: Meryl Streep für «Blockbuster App 2025» anfordern</h3>
+          <ol>
+            <li>Öffne <strong>Project Management</strong> → «Blockbuster App 2025».</li>
+            <li>Klicke <strong>Checkout</strong>.</li>
+            <li>Gib Meryl Streep in «Type a new resource» ein.</li>
+            <li>Trage Allokation in Stunden/Monat ein und speichere.</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="6">
+          <h3>📝 Quiz Kapitel 6</h3>
+          <div class="quiz-question">
+            <p>1. Was musst du tun, bevor du Änderungen am Projekt vornimmst?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="q10" value="a"> Logout</label>
+              <label class="quiz-option"><input type="radio" name="q10" value="b"> Checkout</label>
+              <label class="quiz-option"><input type="radio" name="q10" value="c"> Filter setzen</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuiz(6, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResult6" style="display:none;"></div>
+        </div>
+      </section>
+
+      <!-- Kapitel 7 -->
+      <section class="chapter" data-chapter="7">
+        <div class="chapter-header">
+          <h2>Kapitel 7: Non-Project Activities</h2>
+          <p class="duration">⏱ ca. 12 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Non-Project Activities</h3>
+          <ul>
+            <li>Absence, Admin, Run, Change – wichtig für echte Netto-Kapazität</li>
+            <li>Project Management → Org Unit suchen → Non-Project Activities</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Project Management → Projektbaum → Org Unit → Non-Project Activities</div>
+          <div class="fig-inline">
+            <div class="fig-item"><img src="screenshots/inline/nonproject_p26_3.jpg" alt="Non-Project"><div class="fig-caption">Non-Project Activities – Checkout, Tasks (Generic, Absence)</div></div>
+            <div class="fig-item"><img src="screenshots/inline/nonproject_p27_7.png" alt="Bulk assignment"><div class="fig-caption">Bulk assignment – Ressourcen zu Absence/Admin zuweisen</div></div>
+          </div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 7.1: Abwesenheit für Angela Merkel</h3>
+          <p><em>Angela Merkel hat im März 2 Tage Urlaub.</em></p>
+          <ol>
+            <li>Öffne Project Management und suche deine Org Unit.</li>
+            <li>Öffne das Non-Project Activities-Projekt.</li>
+            <li>Checkout, gruppiere nach Task, wähle Angela Merkel.</li>
+            <li>Trage bei Absence 16h für März ein (2 Tage).</li>
+            <li>Save and Check In.</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="7">
+          <h3>📝 Quiz Kapitel 7</h3>
+          <div class="quiz-question">
+            <p>1. Warum sind Non-Project Activities wichtig?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="q11" value="a"> Sie sind optional</label>
+              <label class="quiz-option"><input type="radio" name="q11" value="b"> Sie zeigen die echte Netto-Kapazität</label>
+              <label class="quiz-option"><input type="radio" name="q11" value="c"> Nur für Urlaub</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuiz(7, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResult7" style="display:none;"></div>
+        </div>
+      </section>
+
+      <!-- Kapitel 8 -->
+      <section class="chapter" data-chapter="8">
+        <div class="chapter-header">
+          <h2>Kapitel 8: BPA Flatgrid</h2>
+          <p class="duration">⏱ ca. 15 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: BPA Flatgrid</h3>
+          <ul>
+            <li>Resource-Modus: für RM empfohlen</li>
+            <li>Public Views: «For SAP RMs», «Non-Project Activities»</li>
+            <li>Lila Uhr-Icon = ausstehende Resource Request</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> BPA Flatgrid Tile → View-Auswahl oben</div>
+          <div class="fig-inline">
+            <div class="fig-item"><img src="screenshots/inline/bpa_flatgrid_p32_3.png" alt="View-Auswahl"><div class="fig-caption">View-Auswahl: Resources & Projects, Public View</div></div>
+            <div class="fig-item"><img src="screenshots/inline/bpa_flatgrid_p35_1.png" alt="Options"><div class="fig-caption">BPA Flatgrid Options (Heatmap, Filter by Resource Request)</div></div>
+          </div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 8.1: Team-Auslastung & Non-Project Activities</h3>
+          <ol>
+            <li>Öffne <strong>Bulk Project Allocation Flatgrid</strong>.</li>
+            <li>Klone die View «For SAP RMs» und wähle alle deine Ressourcen.</li>
+            <li>Klone «Non-Project Activities» und bearbeite Allokationen.</li>
+            <li>Filtere nach Pending und genehmige eine Resource Request direkt im Grid.</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="8">
+          <h3>📝 Quiz Kapitel 8</h3>
+          <div class="quiz-question">
+            <p>1. Was bedeutet das lila Uhr-Icon im BPA Flatgrid?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="q12" value="a"> Feiertag</label>
+              <label class="quiz-option"><input type="radio" name="q12" value="b"> Ausstehende Resource Request</label>
+              <label class="quiz-option"><input type="radio" name="q12" value="c"> Überstunden</label>
+            </div>
+          </div>
+          <div class="quiz-question">
+            <p>2. Welcher Modus ist für Resource Manager empfohlen?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="q13" value="a"> Project</label>
+              <label class="quiz-option"><input type="radio" name="q13" value="b"> Default</label>
+              <label class="quiz-option"><input type="radio" name="q13" value="c"> Resource</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuiz(8, ['b','c'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResult8" style="display:none;"></div>
+        </div>
+      </section>
+
+      <!-- Kapitel 9 -->
+      <section class="chapter" data-chapter="9">
+        <div class="chapter-header">
+          <h2>Kapitel 9: Reports</h2>
+          <p class="duration">⏱ ca. 10 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Reports</h3>
+          <ul>
+            <li>Report Management → Report suchen und öffnen</li>
+            <li>Export: Excel, CSV, PDF</li>
+            <li>Files-Tab: 24 Stunden herunterladbar</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Report Management Tile → Report-Liste → Export-Button</div>
+          <div class="fig-inline">
+            <div class="fig-item"><img src="screenshots/inline/reports_p37_2.png" alt="Report Management"><div class="fig-caption">Report Management – Report list, Report folder, Files</div></div>
+            <div class="fig-item"><img src="screenshots/inline/reports_p37_3.png" alt="Report-Liste"><div class="fig-caption">Report-Liste mit Name, Description, Owner</div></div>
+            <div class="fig-item"><img src="screenshots/inline/reports_p37_4.png" alt="Report"><div class="fig-caption">Geöffneter Report mit Beschreibung</div></div>
+          </div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 9.1: Report öffnen und exportieren</h3>
+          <ol>
+            <li>Öffne <strong>Report Management</strong>.</li>
+            <li>Suche einen Report und öffne ihn.</li>
+            <li>Exportiere als Excel, CSV oder PDF.</li>
+            <li>Prüfe den Files-Tab – wie lange sind Reports herunterladbar?</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="9">
+          <h3>📝 Quiz Kapitel 9</h3>
+          <div class="quiz-question">
+            <p>1. Wie lange sind exportierte Reports im Files-Tab verfügbar?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="q14" value="a"> 1 Stunde</label>
+              <label class="quiz-option"><input type="radio" name="q14" value="b"> 24 Stunden</label>
+              <label class="quiz-option"><input type="radio" name="q14" value="c"> 7 Tage</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuiz(9, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResult9" style="display:none;"></div>
+        </div>
+      </section>
+    </main>
+    </div><!-- /rmPanel -->
+
+    <!-- Project Manager Training -->
+    <div id="pmPanel" class="training-panel">
+    <div class="use-case-banner">
+      <h2>🎬 Stern & Co – Die Agentur</h2>
+      <p>Du bist <strong>Project Manager</strong> bei «Stern & Co» – du planst Projekte, forderst Ressourcen an und verteilst dein Team optimal auf Tasks!</p>
+      <div class="resource-grid">
+        <div class="resource-chip"><strong>Blockbuster App 2025</strong> <span>Projekt</span></div>
+        <div class="resource-chip"><strong>Cloud Migration</strong> <span>Projekt</span></div>
+        <div class="resource-chip"><strong>Social Media Relaunch</strong> <span>Projekt</span></div>
+        <div class="resource-chip"><strong>Compliance Update Q2</strong> <span>Projekt</span></div>
+        <div class="resource-chip"><strong>Meryl Streep</strong> <span>PM</span></div>
+        <div class="resource-chip"><strong>Brad Pitt</strong> <span>Dev</span></div>
+      </div>
+    </div>
+
+    <nav class="toc-nav">
+      <h3>📑 Inhaltsverzeichnis</h3>
+      <ul>
+        <li><a href="#" onclick="showChapterPM(1); return false;">1. Anmeldung & Navigation</a></li>
+        <li><a href="#" onclick="showChapterPM(2); return false;">2. Benachrichtigungen</a></li>
+        <li><a href="#" onclick="showChapterPM(3); return false;">3. Project Management Grid</a></li>
+        <li><a href="#" onclick="showChapterPM(4); return false;">4. Single Project Allocation</a></li>
+        <li><a href="#" onclick="showChapterPM(5); return false;">5. Advanced Assignment Options</a></li>
+        <li><a href="#" onclick="showChapterPM(6); return false;">6. Resource Request Status</a></li>
+        <li><a href="#" onclick="showChapterPM(7); return false;">7. BPA Flatgrid</a></li>
+        <li><a href="#" onclick="showChapterPM(8); return false;">8. Pending Resource Requests</a></li>
+        <li><a href="Tempus_Workflow_Einrichtung.html">Workflow-Einrichtung</a></li>
+      </ul>
+    </nav>
+
+    <nav class="chapter-nav" id="chapterNavPM"></nav>
+
+    <main id="chaptersPM">
+      <section class="chapter active" data-chapter="1" data-training="pm">
+        <div class="chapter-header">
+          <h2>Kapitel 1: Anmeldung & Navigation</h2>
+          <p class="duration">⏱ ca. 10 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Logging In & Homepage</h3>
+          <ul>
+            <li>Tempus im Browser öffnen (Chrome empfohlen)</li>
+            <li>Oranger Button <strong>Healthineers-ID Login</strong> → Anmelden</li>
+            <li><strong>3 Tiles für PM:</strong> Project Management, Bulk Project Allocation Flatgrid, Resource Requests</li>
+            <li><strong>Task Bar:</strong> Tempus-Logo → Homepage | Glocke → Benachrichtigungen | Hamburger → Navigation</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Login-Button zentriert · 3 Tiles unter der Task Bar</div>
+          <div class="fig-inline">
+            <div class="fig-item"><img src="screenshots/inline_pm/pm_login_p5_1.png" alt="Login"><div class="fig-caption">Login-Seite mit Healthineers ID Login</div></div>
+            <div class="fig-item"><img src="screenshots/inline_pm/pm_login_p5_2.png" alt="Homepage"><div class="fig-caption">Homepage mit PM-Tiles</div></div>
+            <div class="fig-item"><img src="screenshots/inline_pm/pm_homepage_p6_4.png" alt="Task Bar"><div class="fig-caption">Task Bar, Navigation</div></div>
+          </div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 1.1: Einloggen & Homepage erkunden</h3>
+          <ol>
+            <li>Öffne Tempus Resource in Chrome.</li>
+            <li>Klicke auf <strong>Healthineers-ID Login</strong> und melde dich an.</li>
+            <li>Identifiziere die <strong>3 PM-Tiles</strong> auf der Homepage.</li>
+            <li>Teste die Task Bar: Tempus-Logo, Glocke, Hamburger-Menü.</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="pm1">
+          <h3>📝 Quiz Kapitel 1</h3>
+          <div class="quiz-question">
+            <p>1. Wie viele Tiles hat ein Project Manager auf der Homepage?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="pm1q1" value="a"> 6</label>
+              <label class="quiz-option"><input type="radio" name="pm1q1" value="b"> 3</label>
+              <label class="quiz-option"><input type="radio" name="pm1q1" value="c"> 4</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizPM(1, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultPM1" style="display:none;"></div>
+        </div>
+      </section>
+
+      <section class="chapter" data-chapter="2" data-training="pm">
+        <div class="chapter-header">
+          <h2>Kapitel 2: Benachrichtigungen</h2>
+          <p class="duration">⏱ ca. 10 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Subscriptions für Project Manager</h3>
+          <ul>
+            <li>Username-Menü → <strong>Subscriptions</strong></li>
+            <li><strong>Tab Project:</strong> Projekte hinzufügen → Attributes, Allocations, Deleted aktivieren</li>
+            <li><strong>Tab Resource Request:</strong> Outcomes für Resource Requests (Approved, Rejected, etc.)</li>
+            <li>Nicht alle Projekte auswählen – Abbestellen ist aufwändig!</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Username oben rechts → Subscriptions → Tab Project / Resource Request</div>
+          <div class="fig-inline">
+            <div class="fig-item"><img src="screenshots/inline_pm/pm_subscriptions_p7_1.png" alt="Subscriptions"><div class="fig-caption">Subscriptions – Project & Resource Request Tab</div></div>
+          </div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 2.1: Projekt-Benachrichtigungen</h3>
+          <ol>
+            <li>Öffne Subscriptions über deinen Benutzernamen.</li>
+            <li>Tab <strong>Project</strong>: Füge «Blockbuster App 2025» hinzu.</li>
+            <li>Aktiviere <strong>Attributes</strong>, <strong>Allocations</strong>, <strong>Deleted</strong>.</li>
+            <li>Tab <strong>Resource Request</strong>: Aktiviere gewünschte Outcomes.</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="pm2">
+          <h3>📝 Quiz Kapitel 2</h3>
+          <div class="quiz-question">
+            <p>1. Warum solltest du nicht «alle Projekte» in Subscriptions wählen?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="pm2q1" value="a"> Es funktioniert nicht</label>
+              <label class="quiz-option"><input type="radio" name="pm2q1" value="b"> Jedes muss manuell abbestellt werden</label>
+              <label class="quiz-option"><input type="radio" name="pm2q1" value="c"> Nur Admins dürfen das</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizPM(2, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultPM2" style="display:none;"></div>
+        </div>
+      </section>
+
+      <section class="chapter" data-chapter="3" data-training="pm">
+        <div class="chapter-header">
+          <h2>Kapitel 3: Project Management Grid</h2>
+          <p class="duration">⏱ ca. 12 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Grid & Views</h3>
+          <ul>
+            <li>Project Management Tile → Projektliste mit gesamter Projekt-Repository</li>
+            <li><strong>Suche:</strong> «contains»-Logik · <strong>Filter:</strong> beliebig kombinierbar</li>
+            <li><strong>Group By:</strong> Nach Attribut gruppieren · <strong>Quick Filter:</strong> z.B. «My projects»</li>
+            <li><strong>Public Views</strong> (blaues Auge): Nur klonen, nicht bearbeiten!</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Project Management Tile → Grid, Suchfeld oben</div>
+          <div class="fig-inline">
+            <div class="fig-item"><img src="screenshots/inline_pm/pm_project_grid_p8_3.png" alt="Grid"><div class="fig-caption">Project Management Grid – Suche, Filter</div></div>
+            <div class="fig-item"><img src="screenshots/inline_pm/pm_project_grid_p8_4.png" alt="Views"><div class="fig-caption">Views: Lock, Default, Edit, Clone, Delete</div></div>
+            <div class="fig-item"><img src="screenshots/inline_pm/pm_project_grid_p9_10.png" alt="Public Views"><div class="fig-caption">Public Views (blaues Auge) – klonen zum Bearbeiten</div></div>
+          </div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 3.1: Blockbuster App finden & View klonen</h3>
+          <ol>
+            <li>Öffne <strong>Project Management</strong>.</li>
+            <li>Suche nach «Blockbuster» im Suchfeld.</li>
+            <li>Wende Quick-Filter «My projects» an.</li>
+            <li>Klone eine Public View und öffne «Blockbuster App 2025».</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="pm3">
+          <h3>📝 Quiz Kapitel 3</h3>
+          <div class="quiz-question">
+            <p>1. Was bedeutet das blaue Auge bei einer View?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="pm3q1" value="a"> Bearbeitbar</label>
+              <label class="quiz-option"><input type="radio" name="pm3q1" value="b"> Public View – nur klonen</label>
+              <label class="quiz-option"><input type="radio" name="pm3q1" value="c"> Privat</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizPM(3, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultPM3" style="display:none;"></div>
+        </div>
+      </section>
+
+      <section class="chapter" data-chapter="4" data-training="pm">
+        <div class="chapter-header">
+          <h2>Kapitel 4: Single Project Allocation Grid</h2>
+          <p class="duration">⏱ ca. 15 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Projekt bearbeiten</h3>
+          <ul>
+            <li>Projektname anklicken → Single Project Allocation Grid</li>
+            <li><strong>Checkout</strong> vor jeder Änderung!</li>
+            <li><strong>Add assignment:</strong> Ressourcen links, Tasks rechts → Add</li>
+            <li><strong>Type a new Task:</strong> Grüne Zeile am Ende der Task-Liste</li>
+            <li>Allokation in Stunden (empfohlen) auf Monatsebene eintragen</li>
+            <li><strong>Save and Check In</strong> oder Release zum Verwerfen</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Projekt anklicken → Checkout → Grid-Optionen im Ribbon</div>
+          <div class="fig-inline">
+            <div class="fig-item"><img src="screenshots/inline_pm/pm_single_project_p10_2.png" alt="Checkout"><div class="fig-caption">Projektname & Checkout-Button oben</div></div>
+            <div class="fig-item"><img src="screenshots/inline_pm/pm_single_project_p11_6.png" alt="Options"><div class="fig-caption">Options: Total Column, Heatmap, Tasks to Show</div></div>
+            <div class="fig-item"><img src="screenshots/inline_pm/pm_single_project_p12_2.png" alt="Add assignment"><div class="fig-caption">Add assignment – Ressourcen & Tasks auswählen</div></div>
+          </div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 4.1: Meryl Streep für Blockbuster anfordern</h3>
+          <ol>
+            <li>Öffne «Blockbuster App 2025» → <strong>Checkout</strong>.</li>
+            <li>Klicke <strong>Add assignment</strong> → wähle Meryl Streep und einen Task → Add.</li>
+            <li>Trage Allokation (z.B. 80h/Monat) in die Monatsspalten ein.</li>
+            <li><strong>Save and Check In</strong>.</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="pm4">
+          <h3>📝 Quiz Kapitel 4</h3>
+          <div class="quiz-question">
+            <p>1. Was musst du tun, bevor du Änderungen am Projekt vornimmst?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="pm4q1" value="a"> Logout</label>
+              <label class="quiz-option"><input type="radio" name="pm4q1" value="b"> Checkout</label>
+              <label class="quiz-option"><input type="radio" name="pm4q1" value="c"> Filter setzen</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizPM(4, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultPM4" style="display:none;"></div>
+        </div>
+      </section>
+
+      <section class="chapter" data-chapter="5" data-training="pm">
+        <div class="chapter-header">
+          <h2>Kapitel 5: Advanced Assignment Options</h2>
+          <p class="duration">⏱ ca. 8 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Clone & Shift</h3>
+          <ul>
+            <li>Ellipse neben Ressourcennamen → <strong>Assignment Options</strong></li>
+            <li><strong>Clone:</strong> Assignment kopieren → neues Startdatum, Task oder Ressource</li>
+            <li><strong>Shift:</strong> Assignment verschieben → neues Startdatum eingeben</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Ellipse (⋯) neben Ressourcennamen im Grid</div>
+          <div class="fig-inline">
+            <div class="fig-item"><img src="screenshots/inline_pm/pm_assignment_options_p13_1.png" alt="Clone"><div class="fig-caption">Assignment Options – Clone</div></div>
+            <div class="fig-item"><img src="screenshots/inline_pm/pm_assignment_options_p13_2.png" alt="Shift"><div class="fig-caption">Assignment Options – Shift</div></div>
+          </div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 5.1: Assignment klonen</h3>
+          <ol>
+            <li>Öffne ein Projekt mit Allokationen → Checkout.</li>
+            <li>Klicke auf die Ellipse neben einer Ressource.</li>
+            <li>Wähle <strong>Assignment Options</strong> → <strong>Clone</strong>.</li>
+            <li>Verschiebe das Assignment auf ein anderes Startdatum.</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="pm5">
+          <h3>📝 Quiz Kapitel 5</h3>
+          <div class="quiz-question">
+            <p>1. Wofür nutzt du «Shift»?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="pm5q1" value="a"> Assignment löschen</label>
+              <label class="quiz-option"><input type="radio" name="pm5q1" value="b"> Assignment auf neues Startdatum verschieben</label>
+              <label class="quiz-option"><input type="radio" name="pm5q1" value="c"> Ressource ersetzen</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizPM(5, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultPM5" style="display:none;"></div>
+        </div>
+      </section>
+
+      <section class="chapter" data-chapter="6" data-training="pm">
+        <div class="chapter-header">
+          <h2>Kapitel 6: Resource Request Status</h2>
+          <p class="duration">⏱ ca. 5 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Status-Icons</h3>
+          <ul>
+            <li>Im Single Project Allocation Grid links neben dem Ressourcennamen:</li>
+            <li>🕐 <strong>Pending</strong> – ausstehende Resource Request</li>
+            <li>✓ <strong>Approved</strong> – genehmigt</li>
+            <li>✗ <strong>Rejected</strong> – abgelehnt</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Links neben Ressourcennamen im Allocation Grid</div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 6.1: Status prüfen</h3>
+          <ol>
+            <li>Öffne ein Projekt mit Resource Requests.</li>
+            <li>Identifiziere Pending-, Approved- und Rejected-Icons.</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="chapter" data-chapter="7" data-training="pm">
+        <div class="chapter-header">
+          <h2>Kapitel 7: BPA Flatgrid</h2>
+          <p class="duration">⏱ ca. 15 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Bulk Project Allocation Flatgrid</h3>
+          <ul>
+            <li>Für PM mit mehreren Projekten – BPA Flatgrid Tile</li>
+            <li><strong>Project-Modus</strong> (empfohlen für PM): Projekte wählen → Ressourcen werden auto-selektiert</li>
+            <li>Zeitraum oben, Resource/Project-Menü, Insert Columns, Group By, Options</li>
+            <li><strong>Update:</strong> Zelle direkt bearbeiten · <strong>Add assignment:</strong> Projekt, Ressource, Task wählen</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Bulk Project Allocation Flatgrid Tile → Project-Modus</div>
+          <div class="fig-inline">
+            <div class="fig-item"><img src="screenshots/inline_pm/pm_bpa_flatgrid_p15_1.png" alt="BPA"><div class="fig-caption">BPA Flatgrid – Zeitraum, Resource/Project</div></div>
+            <div class="fig-item"><img src="screenshots/inline_pm/pm_bpa_flatgrid_p17_1.png" alt="Options"><div class="fig-caption">Options: Total Row, Heatmap, Filter</div></div>
+            <div class="fig-item"><img src="screenshots/inline_pm/pm_bpa_flatgrid_p18_1.png" alt="Projects"><div class="fig-caption">Projekte suchen & auswählen</div></div>
+          </div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 7.1: Mehrere Projekte im BPA Flatgrid</h3>
+          <ol>
+            <li>Öffne <strong>Bulk Project Allocation Flatgrid</strong>.</li>
+            <li>Wähle <strong>Project-Modus</strong>.</li>
+            <li>Suche und wähle «Blockbuster App 2025» und «Cloud Migration».</li>
+            <li>Bearbeite eine Allokation direkt in der Zelle.</li>
+            <li>Klicke <strong>Add assignment</strong> und füge eine neue Ressource hinzu.</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="pm7">
+          <h3>📝 Quiz Kapitel 7</h3>
+          <div class="quiz-question">
+            <p>1. Welcher Modus ist für Project Manager im BPA Flatgrid empfohlen?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="pm7q1" value="a"> Resource</label>
+              <label class="quiz-option"><input type="radio" name="pm7q1" value="b"> Project</label>
+              <label class="quiz-option"><input type="radio" name="pm7q1" value="c"> Default</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizPM(7, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultPM7" style="display:none;"></div>
+        </div>
+      </section>
+
+      <section class="chapter" data-chapter="8" data-training="pm">
+        <div class="chapter-header">
+          <h2>Kapitel 8: Pending Resource Requests</h2>
+          <p class="duration">⏱ ca. 5 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Pending filtern</h3>
+          <ul>
+            <li>Im BPA Flatgrid: <strong>Options</strong> → <strong>Filter by Resource Request Status</strong></li>
+            <li>Checkbox <strong>Pending</strong> aktivieren → Grid zeigt nur ausstehende Requests</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> BPA Flatgrid → Options → Filter by Resource Request Status</div>
+          <div class="fig-inline">
+            <div class="fig-item"><img src="screenshots/inline_pm/pm_pending_requests_p20_1.png" alt="Filter"><div class="fig-caption">Filter by Resource Request Status</div></div>
+            <div class="fig-item"><img src="screenshots/inline_pm/pm_pending_requests_p20_2.png" alt="Pending"><div class="fig-caption">Pending-Checkbox aktivieren</div></div>
+          </div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 8.1: Pending Requests anzeigen</h3>
+          <ol>
+            <li>Öffne BPA Flatgrid.</li>
+            <li>Options → Filter by Resource Request Status → <strong>Pending</strong> aktivieren.</li>
+            <li>Prüfe, welche Requests ausstehen.</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="pm8">
+          <h3>📝 Quiz Kapitel 8</h3>
+          <div class="quiz-question">
+            <p>1. Wo findest du den Filter für Pending Resource Requests?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="pm8q1" value="a"> Unter dem Hamburger-Menü</label>
+              <label class="quiz-option"><input type="radio" name="pm8q1" value="b"> Im Options-Menü des BPA Flatgrid</label>
+              <label class="quiz-option"><input type="radio" name="pm8q1" value="c"> In den Subscriptions</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizPM(8, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultPM8" style="display:none;"></div>
+        </div>
+      </section>
+    </main>
+    </div><!-- /pmPanel -->
+
+    <footer>
+      <p>© Valkeen GmbH · Tempus Resource · www.valkeen.com</p>
+      <p>Basierend auf: Consolidated User Training Resource Manager & Project Manager SHS IT 10.0</p>
+      <p><a href="Tempus_Workflow_Einrichtung.html" style="color: var(--accent);">→ Workflow-Einrichtung</a></p>
+    </footer>
+  </div>
+
+  <script>
+    const QUIZ_MAPPING = {
+      1: ['q1','q2','q3'],
+      2: ['q4','q5'],
+      3: ['q6','q7'],
+      4: ['q8'],
+      5: ['q9','q9b'],
+      6: ['q10'],
+      7: ['q11'],
+      8: ['q12','q13'],
+      9: ['q14']
+    };
+
+    function switchTraining(which) {
+      document.querySelectorAll('.training-tabs button').forEach((b, i) => {
+        b.classList.toggle('active', (which === 'rm' && i === 0) || (which === 'pm' && i === 1));
+      });
+      document.getElementById('rmPanel').classList.toggle('active', which === 'rm');
+      document.getElementById('pmPanel').classList.toggle('active', which === 'pm');
+      if (which === 'rm') {
+        buildChapterNav();
+        showChapter(1);
+      } else {
+        buildChapterNavPM();
+        showChapterPM(1);
+      }
+    }
+
+    function buildChapterNav() {
+      const nav = document.getElementById('chapterNav');
+      nav.innerHTML = '';
+      for (let i = 1; i <= 9; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = `Kapitel ${i}`;
+        btn.onclick = () => showChapter(i);
+        if (i === 1) btn.classList.add('active');
+        nav.appendChild(btn);
+      }
+    }
+
+    function buildChapterNavPM() {
+      const nav = document.getElementById('chapterNavPM');
+      nav.innerHTML = '';
+      for (let i = 1; i <= 8; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = `Kapitel ${i}`;
+        btn.onclick = () => showChapterPM(i);
+        if (i === 1) btn.classList.add('active');
+        nav.appendChild(btn);
+      }
+    }
+
+    function showChapter(num) {
+      document.querySelectorAll('#rmPanel .chapter').forEach(c => {
+        c.classList.toggle('active', parseInt(c.dataset.chapter) === num);
+      });
+      document.querySelectorAll('#rmPanel .chapter-nav button').forEach((b, i) => {
+        b.classList.toggle('active', i + 1 === num);
+      });
+      document.getElementById('progressFill').style.width = (num / 9 * 100) + '%';
+    }
+
+    function showChapterPM(num) {
+      document.querySelectorAll('#pmPanel .chapter').forEach(c => {
+        c.classList.toggle('active', parseInt(c.dataset.chapter) === num);
+      });
+      document.querySelectorAll('#pmPanel .chapter-nav button').forEach((b, i) => {
+        b.classList.toggle('active', i + 1 === num);
+      });
+      document.getElementById('progressFill').style.width = (num / 8 * 100) + '%';
+    }
+
+    function checkQuizPM(chapter, correctAnswers) {
+      const names = [`pm${chapter}q1`];
+      let correct = 0;
+      const section = document.querySelector(`[data-quiz="pm${chapter}"]`);
+      names.forEach((name, i) => {
+        const selected = document.querySelector(`input[name="${name}"]:checked`);
+        const options = section?.querySelectorAll(`input[name="${name}"]`);
+        const parent = options?.[0]?.closest('.quiz-options');
+        parent?.querySelectorAll('.quiz-option').forEach(opt => {
+          opt.classList.remove('correct', 'incorrect');
+          const span = opt.querySelector('.feedback');
+          if (span) span.remove();
+        });
+        options?.forEach((opt) => {
+          const label = opt.closest('.quiz-option');
+          const val = opt.value;
+          const isCorrect = val === correctAnswers[i];
+          const wasSelected = selected?.value === val;
+          if (wasSelected && isCorrect) { correct++; label?.classList.add('correct'); const fb = document.createElement('span'); fb.className = 'feedback'; fb.textContent = '✓ Richtig'; label?.appendChild(fb); }
+          else if (wasSelected && !isCorrect) { label?.classList.add('incorrect'); const fb = document.createElement('span'); fb.className = 'feedback'; fb.textContent = '✗ Falsch'; label?.appendChild(fb); }
+          else if (isCorrect) { label?.classList.add('correct'); const fb = document.createElement('span'); fb.className = 'feedback'; fb.textContent = '✓ Richtige Antwort'; label?.appendChild(fb); }
+        });
+      });
+      const total = correctAnswers.length;
+      const pct = (correct / total) * 100;
+      const resultEl = document.getElementById(`quizResultPM${chapter}`);
+      if (resultEl) {
+        resultEl.style.display = 'block';
+        resultEl.className = 'quiz-result ' + (pct === 100 ? 'good' : pct >= 50 ? 'partial' : 'poor');
+        resultEl.textContent = `${correct}/${total} richtig (${Math.round(pct)}%)` + (pct === 100 ? ' – Perfekt! 🎉' : pct >= 50 ? ' – Gut!' : ' – Nochmal versuchen!');
+      }
+      const btn = section?.querySelector('.quiz-submit');
+      if (btn) btn.disabled = true;
+    }
+
+    function checkQuiz(chapter, correctAnswers) {
+      const names = QUIZ_MAPPING[chapter];
+      let correct = 0;
+      const section = document.querySelector(`[data-quiz="${chapter}"]`);
+
+      names.forEach((name, i) => {
+        const selected = document.querySelector(`input[name="${name}"]:checked`);
+        const options = section.querySelectorAll(`input[name="${name}"]`);
+        const parent = options[0]?.closest('.quiz-options');
+
+        parent?.querySelectorAll('.quiz-option').forEach(opt => {
+          opt.classList.remove('correct', 'incorrect');
+          const radio = opt.querySelector('input');
+          const span = opt.querySelector('.feedback');
+          if (span) span.remove();
+        });
+
+        options.forEach((opt) => {
+          const label = opt.closest('.quiz-option');
+          const val = opt.value;
+          const isCorrect = val === correctAnswers[i];
+          const wasSelected = selected?.value === val;
+
+          if (wasSelected && isCorrect) {
+            correct++;
+            label.classList.add('correct');
+            const fb = document.createElement('span');
+            fb.className = 'feedback';
+            fb.textContent = '✓ Richtig';
+            label.appendChild(fb);
+          } else if (wasSelected && !isCorrect) {
+            label.classList.add('incorrect');
+            const fb = document.createElement('span');
+            fb.className = 'feedback';
+            fb.textContent = '✗ Falsch';
+            label.appendChild(fb);
+          } else if (isCorrect) {
+            label.classList.add('correct');
+            const fb = document.createElement('span');
+            fb.className = 'feedback';
+            fb.textContent = '✓ Richtige Antwort';
+            label.appendChild(fb);
+          }
+        });
+      });
+
+      const total = correctAnswers.length;
+      const pct = (correct / total) * 100;
+      const resultEl = document.getElementById(`quizResult${chapter}`);
+      resultEl.style.display = 'block';
+      resultEl.className = 'quiz-result ' + (pct === 100 ? 'good' : pct >= 50 ? 'partial' : 'poor');
+      resultEl.textContent = `${correct}/${total} richtig (${Math.round(pct)}%)` + (pct === 100 ? ' – Perfekt! 🎉' : pct >= 50 ? ' – Gut!' : ' – Nochmal versuchen!');
+
+      const btn = section.querySelector('.quiz-submit');
+      if (btn) btn.disabled = true;
+    }
+
+    buildChapterNav();
+  </script>
+</body>
+</html>
