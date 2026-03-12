@@ -503,6 +503,7 @@
       <div class="training-tabs">
         <button type="button" class="active" onclick="switchTraining('rm')">Resource Manager</button>
         <button type="button" onclick="switchTraining('pm')">Project Manager</button>
+        <button type="button" onclick="switchTraining('admin')">Admin</button>
       </div>
     </header>
 
@@ -1381,6 +1382,325 @@
     </main>
     </div><!-- /pmPanel -->
 
+    <!-- Admin Training -->
+    <div id="adminPanel" class="training-panel">
+    <div class="use-case-banner">
+      <h2>🎬 Stern & Co – Admin-Workshop</h2>
+      <p>Du bist <strong>Administrator</strong> bei «Stern & Co» – du konfigurierst Tempus, überwachst den Data Sync, legst Attribute und Views an und planst Upgrades. Single Point of Contact für technische Fragen!</p>
+      <div class="resource-grid">
+        <div class="resource-chip"><strong>Data Sync</strong> <span>HR, ERP, PPM</span></div>
+        <div class="resource-chip"><strong>Attribute</strong> <span>Custom Fields</span></div>
+        <div class="resource-chip"><strong>Views</strong> <span>RM, PM, Public</span></div>
+        <div class="resource-chip"><strong>Snapshots</strong> <span>Baseline, Pre-Release</span></div>
+        <div class="resource-chip"><strong>Lizenzierung</strong> <span>Full, Executive, Timesheet</span></div>
+        <div class="resource-chip"><strong>Upgrades</strong> <span>Sandbox, Go-Live</span></div>
+      </div>
+    </div>
+
+    <nav class="toc-nav">
+      <h3>📑 Inhaltsverzeichnis</h3>
+      <ul>
+        <li><a href="#" onclick="showChapterAdmin(1); return false;">1. Rolle des Admins</a></li>
+        <li><a href="#" onclick="showChapterAdmin(2); return false;">2. Data Sync & Fehlerbehandlung</a></li>
+        <li><a href="#" onclick="showChapterAdmin(3); return false;">3. Attribute Management</a></li>
+        <li><a href="#" onclick="showChapterAdmin(4); return false;">4. View Management</a></li>
+        <li><a href="#" onclick="showChapterAdmin(5); return false;">5. Snapshots & Sheets</a></li>
+        <li><a href="#" onclick="showChapterAdmin(6); return false;">6. Lizenzierung & Verträge</a></li>
+        <li><a href="#" onclick="showChapterAdmin(7); return false;">7. Implementierung & Upgrades</a></li>
+        <li><a href="#" onclick="showChapterAdmin(8); return false;">8. Checkpoint</a></li>
+        <li><a href="Tempus_Workflow_Einrichtung.html">Workflow-Einrichtung</a></li>
+      </ul>
+    </nav>
+
+    <nav class="chapter-nav" id="chapterNavAdmin"></nav>
+
+    <main id="chaptersAdmin">
+      <section class="chapter active" data-chapter="1" data-training="admin">
+        <div class="chapter-header">
+          <h2>Modul 1: Rolle des Admins</h2>
+          <p class="duration">⏱ ca. 10 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Aufgaben eines Tempus-Admins</h3>
+          <ul>
+            <li><strong>Data Sync</strong> überwachen und Fehler beheben</li>
+            <li><strong>Attribute, Views und Sheets</strong> konfigurieren</li>
+            <li><strong>Berechtigungen und Lizenzierung</strong> verwalten</li>
+            <li><strong>Upgrades und Releases</strong> planen</li>
+            <li><strong>Single Point of Contact</strong> für technische Fragen</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Admin-Bereich → Configurations, System Settings, Data Sync</div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 1.1: Admin-Rolle verstehen</h3>
+          <p><em>Du übernimmst die Admin-Rolle bei Stern & Co – du erkundest die Admin-Oberfläche und identifizierst, wo du Data Sync, Attribute und Views konfigurierst.</em></p>
+          <ol>
+            <li>Öffne den Admin-Bereich in Tempus.</li>
+            <li>Navigiere zu Configurations, Data Sync und System Settings.</li>
+            <li>Notiere die 5 Hauptaufgaben eines Admins.</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="chapter" data-chapter="2" data-training="admin">
+        <div class="chapter-header">
+          <h2>Modul 2: Data Sync & Fehlerbehandlung</h2>
+          <p class="duration">⏱ ca. 20 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Data Sync</h3>
+          <ul>
+            <li><strong>Datenquellen:</strong> HR, ERP, PPM-Systeme</li>
+            <li><strong>Sync-Intervalle</strong> und Abhängigkeiten</li>
+            <li><strong>Fehlertypen:</strong> Mapping (Feld nicht gefunden), Duplikate, Validierung (Pflichtfeld leer)</li>
+            <li><strong>Log-Analyse</strong> und Eskalation</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Admin → Data Sync → Log</div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 2.1: Sync-Log analysieren</h3>
+          <p><em>Über Nacht wurden neue Ressourcen aus dem HR-System synchronisiert – aber der Sync zeigt Fehler. Du musst das Log analysieren und die Ursache finden.</em></p>
+          <ol>
+            <li>Öffne das Sync-Log der letzten 24 Stunden.</li>
+            <li>Identifiziere mindestens einen Fehlertyp (Mapping, Duplikate, Validierung).</li>
+            <li>Dokumentiere Ursache und Lösungsvorschlag.</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="admin2">
+          <h3>📝 Quiz Modul 2</h3>
+          <div class="quiz-question">
+            <p>1. Welcher Fehlertyp bedeutet «Feld nicht gefunden»?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="admin2q1" value="a"> Duplikate</label>
+              <label class="quiz-option"><input type="radio" name="admin2q1" value="b"> Mapping</label>
+              <label class="quiz-option"><input type="radio" name="admin2q1" value="c"> Validierung</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizAdmin(2, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultAdmin2" style="display:none;"></div>
+        </div>
+      </section>
+
+      <section class="chapter" data-chapter="3" data-training="admin">
+        <div class="chapter-header">
+          <h2>Modul 3: Attribute Management</h2>
+          <p class="duration">⏱ ca. 25 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Custom Fields</h3>
+          <ul>
+            <li>Custom Fields für <strong>Projekte</strong> und <strong>Ressourcen</strong></li>
+            <li><strong>SYSTEM</strong> = Out of the box (Standard-Attribute, nicht löschbar)</li>
+            <li><strong>Attributlayout:</strong> Ganz rechts – festlegen und Vorschau ansehen</li>
+            <li>Hierarchien, Workflows, Pflichtfelder, Validierung</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Admin → Attribute → Projekt-Attribute / Ressourcen-Attribute</div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 3.1: Attribut «Priorität» anlegen</h3>
+          <p><em>Das PMO will Projekte nach Priorität (High/Medium/Low) filtern – du legst ein neues Projekt-Attribut an und machst es zum Pflichtfeld.</em></p>
+          <ol>
+            <li>Lege ein neues Projekt-Attribut «Priorität» an (Picklist: High, Medium, Low).</li>
+            <li>Konfiguriere es als Pflichtfeld für neue Projekte.</li>
+            <li>Teste mit einem Testprojekt – Priorität muss gesetzt werden.</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="admin3">
+          <h3>📝 Quiz Modul 3</h3>
+          <div class="quiz-question">
+            <p>1. Was bedeutet «SYSTEM» bei einem Attribut?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="admin3q1" value="a"> Vom Admin erstellt</label>
+              <label class="quiz-option"><input type="radio" name="admin3q1" value="b"> Out of the box, Standard-Attribut</label>
+              <label class="quiz-option"><input type="radio" name="admin3q1" value="c"> Nur für System-Projekte</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizAdmin(3, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultAdmin3" style="display:none;"></div>
+        </div>
+      </section>
+
+      <section class="chapter" data-chapter="4" data-training="admin">
+        <div class="chapter-header">
+          <h2>Modul 4: View Management</h2>
+          <p class="duration">⏱ ca. 30 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Views</h3>
+          <ul>
+            <li>Views erstellen, teilen, Berechtigungen</li>
+            <li><strong>Public Views</strong> (blaues Auge) – für Stakeholders, Ansichtsverwaltung</li>
+            <li>Spalten, Gruppierung, Filter</li>
+            <li><strong>RM-Views</strong> vs. <strong>PM-Views</strong></li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Resource Management / Project Management → View-Dropdown</div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 4.1: RM-View für Team-Lead</h3>
+          <p><em>Ein Team-Lead mit 12 Entwicklern braucht eine Übersicht – er will Überbuchungen, verfügbare Kapazität und Auslastung pro Ressource sehen. Du entwirfst die View.</em></p>
+          <ol>
+            <li>Entwirf eine View für einen Team-Lead mit 12 Entwicklern.</li>
+            <li>Welche Spalten? (Name, Primary Role, Team, Net Availability, Project Availability, Base Capacity)</li>
+            <li>Nach was gruppieren? Welche Filter? Begründe jede Entscheidung.</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="admin4">
+          <h3>📝 Quiz Modul 4</h3>
+          <div class="quiz-question">
+            <p>1. Wofür braucht ein Team-Lead «Net Availability»?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="admin4q1" value="a"> Nur Lesen</label>
+              <label class="quiz-option"><input type="radio" name="admin4q1" value="b"> Überbuchungen sehen</label>
+              <label class="quiz-option"><input type="radio" name="admin4q1" value="c"> Projekte bearbeiten</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizAdmin(4, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultAdmin4" style="display:none;"></div>
+        </div>
+      </section>
+
+      <section class="chapter" data-chapter="5" data-training="admin">
+        <div class="chapter-header">
+          <h2>Modul 5: Snapshots & Sheets</h2>
+          <p class="duration">⏱ ca. 25 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Snapshots</h3>
+          <ul>
+            <li>Snapshot = <strong>Zeitmaschine</strong> für Vergleiche</li>
+            <li><strong>Typen:</strong> Q-Baseline, Pre-Release, Monats-Snapshot</li>
+            <li><strong>Sheets:</strong> Konfiguration, Berechtigungen</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Admin → Snapshots / Sheets</div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 5.1: Snapshot-Strategie</h3>
+          <p><em>Vor dem nächsten Release-Upgrade und für die Jahresplanung brauchst du eine klare Snapshot-Strategie – du definierst mindestens 3 Typen mit Zweck und Zeitpunkt.</em></p>
+          <ol>
+            <li>Definiere mindestens 3 Snapshot-Typen (z.B. Q1-Baseline, Pre-Release, Monats-Snapshot).</li>
+            <li>Zweck und Zeitpunkt für jeden dokumentieren.</li>
+            <li>Dokumentiere die Strategie für deine Organisation.</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="admin5">
+          <h3>📝 Quiz Modul 5</h3>
+          <div class="quiz-question">
+            <p>1. Wann erstellst du einen Pre-Release-Snapshot?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="admin5q1" value="a"> Ende des Monats</label>
+              <label class="quiz-option"><input type="radio" name="admin5q1" value="b"> Vor jedem Upgrade</label>
+              <label class="quiz-option"><input type="radio" name="admin5q1" value="c"> Bei Freigabe des Jahresplans</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizAdmin(5, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultAdmin5" style="display:none;"></div>
+        </div>
+      </section>
+
+      <section class="chapter" data-chapter="6" data-training="admin">
+        <div class="chapter-header">
+          <h2>Modul 6: Lizenzierung & Verträge</h2>
+          <p class="duration">⏱ ca. 20 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Lizenztypen</h3>
+          <ul>
+            <li><strong>Full User:</strong> Jeder, der schreibt/ändert (PM, RM, Admin)</li>
+            <li><strong>Executive User:</strong> Nur Lesen (CFO, PMO-Überblick)</li>
+            <li><strong>Timesheet User:</strong> Zuweisungen sehen, Stunden tracken (Entwickler)</li>
+            <li>Resource Workgroup, API, Sandbox, DB Exporter</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Admin → Lizenzierung / Verträge</div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 6.1: Lizenz-Matrix</h3>
+          <p><em>Die Geschäftsführung will die Lizenzkosten optimieren – du ordnest jeder Rolle den passenden Lizenztyp zu und erstellst eine Matrix für deine Organisation.</em></p>
+          <ol>
+            <li>Ordne zu: PMO, CFO, Entwickler, Admin, PM (Full/Executive/Timesheet).</li>
+            <li>Erstelle eine Matrix mit Rolle, Lizenz und Begründung.</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="admin6">
+          <h3>📝 Quiz Modul 6</h3>
+          <div class="quiz-question">
+            <p>1. Welche Lizenz benötigt ein CFO, der nur Reports liest?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="admin6q1" value="a"> Full User</label>
+              <label class="quiz-option"><input type="radio" name="admin6q1" value="b"> Executive User</label>
+              <label class="quiz-option"><input type="radio" name="admin6q1" value="c"> Timesheet User</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizAdmin(6, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultAdmin6" style="display:none;"></div>
+        </div>
+      </section>
+
+      <section class="chapter" data-chapter="7" data-training="admin">
+        <div class="chapter-header">
+          <h2>Modul 7: Implementierung & Upgrades</h2>
+          <p class="duration">⏱ ca. 25 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Release-Prozess</h3>
+          <ul>
+            <li><strong>Sandbox-Test</strong> vor Produktiv</li>
+            <li><strong>Go-Live-Checkliste:</strong> Daten, Prozess, Schulung, Technik</li>
+            <li><strong>Upgrade:</strong> Termin, Backup, Kommunikation</li>
+          </ul>
+          <div class="ui-guide">📍 <strong>Wo?</strong> Release-Notes, Sandbox-Environment</div>
+        </div>
+        <div class="task-card">
+          <h3>Aufgabe 7.1: Upgrade-Checkliste</h3>
+          <p><em>Ein Release-Upgrade steht an – du erstellst eine Checkliste mit mindestens 10 Punkten in 4 Kategorien, damit nichts vergessen geht.</em></p>
+          <ol>
+            <li>Erstelle eine Checkliste für ein Release-Upgrade.</li>
+            <li>Mindestens 10 Punkte in 4 Kategorien: Daten, Prozess, Schulung, Technik.</li>
+          </ol>
+        </div>
+        <div class="quiz-section" data-quiz="admin7">
+          <h3>📝 Quiz Modul 7</h3>
+          <div class="quiz-question">
+            <p>1. Was gehört zur Kategorie «Daten» bei einem Upgrade?</p>
+            <div class="quiz-options">
+              <label class="quiz-option"><input type="radio" name="admin7q1" value="a"> Release-Notes lesen</label>
+              <label class="quiz-option"><input type="radio" name="admin7q1" value="b"> Backup, Snapshot vor Upgrade</label>
+              <label class="quiz-option"><input type="radio" name="admin7q1" value="c"> Downtime ankündigen</label>
+            </div>
+          </div>
+          <button class="quiz-submit" onclick="checkQuizAdmin(7, ['b'])">Antworten prüfen</button>
+          <div class="quiz-result" id="quizResultAdmin7" style="display:none;"></div>
+        </div>
+      </section>
+
+      <section class="chapter" data-chapter="8" data-training="admin">
+        <div class="chapter-header">
+          <h2>Modul 8: Checkpoint – Selbstüberprüfung</h2>
+          <p class="duration">⏱ ca. 10 Minuten</p>
+        </div>
+        <div class="theory-card">
+          <h3>📚 Theorie: Healthcheck</h3>
+          <ul>
+            <li><strong>Fähigkeiten:</strong> Skills, Prozesse, Rollen</li>
+            <li><strong>Finanzen:</strong> Lizenzierung, Budget</li>
+            <li><strong>Start with General Settings</strong> – Admin-Konfiguration zuerst</li>
+          </ul>
+        </div>
+        <div class="task-card">
+          <h3>Checkpoint – Selbstüberprüfung</h3>
+          <p><em>Du überprüfst, ob du die Admin-Grundlagen beherrschst – alle Punkte abhaken!</em></p>
+          <ul style="list-style: none; padding: 0;">
+            <li>☐ Ich kann Data-Sync-Fehler analysieren</li>
+            <li>☐ Ich habe ein Attribut angelegt</li>
+            <li>☐ Ich habe eine View konzipiert</li>
+            <li>☐ Ich kenne die Snapshot-Strategie</li>
+            <li>☐ Ich kann Lizenztypen zuordnen</li>
+            <li>☐ Ich habe eine Upgrade-Checkliste erstellt</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+    </div><!-- /adminPanel -->
+
     <footer>
       <p>© Valkeen GmbH · Tempus Resource · www.valkeen.com</p>
       <p>Basierend auf: Consolidated User Training Resource Manager & Project Manager SHS IT 10.0</p>
@@ -1403,16 +1723,20 @@
 
     function switchTraining(which) {
       document.querySelectorAll('.training-tabs button').forEach((b, i) => {
-        b.classList.toggle('active', (which === 'rm' && i === 0) || (which === 'pm' && i === 1));
+        b.classList.toggle('active', (which === 'rm' && i === 0) || (which === 'pm' && i === 1) || (which === 'admin' && i === 2));
       });
       document.getElementById('rmPanel').classList.toggle('active', which === 'rm');
       document.getElementById('pmPanel').classList.toggle('active', which === 'pm');
+      document.getElementById('adminPanel').classList.toggle('active', which === 'admin');
       if (which === 'rm') {
         buildChapterNav();
         showChapter(1);
-      } else {
+      } else if (which === 'pm') {
         buildChapterNavPM();
         showChapterPM(1);
+      } else {
+        buildChapterNavAdmin();
+        showChapterAdmin(1);
       }
     }
 
@@ -1438,6 +1762,64 @@
         if (i === 1) btn.classList.add('active');
         nav.appendChild(btn);
       }
+    }
+
+    function buildChapterNavAdmin() {
+      const nav = document.getElementById('chapterNavAdmin');
+      if (!nav) return;
+      nav.innerHTML = '';
+      for (let i = 1; i <= 8; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = `Kapitel ${i}`;
+        btn.onclick = () => showChapterAdmin(i);
+        if (i === 1) btn.classList.add('active');
+        nav.appendChild(btn);
+      }
+    }
+
+    function showChapterAdmin(num) {
+      document.querySelectorAll('#adminPanel .chapter').forEach(c => {
+        c.classList.toggle('active', parseInt(c.dataset.chapter) === num);
+      });
+      document.querySelectorAll('#adminPanel .chapter-nav button').forEach((b, i) => {
+        b.classList.toggle('active', i + 1 === num);
+      });
+      document.getElementById('progressFill').style.width = (num / 8 * 100) + '%';
+    }
+
+    function checkQuizAdmin(chapter, correctAnswers) {
+      const names = [`admin${chapter}q1`];
+      let correct = 0;
+      const section = document.querySelector(`[data-quiz="admin${chapter}"]`);
+      names.forEach((name, i) => {
+        const selected = document.querySelector(`input[name="${name}"]:checked`);
+        const options = section?.querySelectorAll(`input[name="${name}"]`);
+        const parent = options?.[0]?.closest('.quiz-options');
+        parent?.querySelectorAll('.quiz-option').forEach(opt => {
+          opt.classList.remove('correct', 'incorrect');
+          const span = opt.querySelector('.feedback');
+          if (span) span.remove();
+        });
+        options?.forEach((opt) => {
+          const label = opt.closest('.quiz-option');
+          const val = opt.value;
+          const isCorrect = val === correctAnswers[i];
+          const wasSelected = selected?.value === val;
+          if (wasSelected && isCorrect) { correct++; label?.classList.add('correct'); const fb = document.createElement('span'); fb.className = 'feedback'; fb.textContent = '✓ Richtig'; label?.appendChild(fb); }
+          else if (wasSelected && !isCorrect) { label?.classList.add('incorrect'); const fb = document.createElement('span'); fb.className = 'feedback'; fb.textContent = '✗ Falsch'; label?.appendChild(fb); }
+          else if (isCorrect) { label?.classList.add('correct'); const fb = document.createElement('span'); fb.className = 'feedback'; fb.textContent = '✓ Richtige Antwort'; label?.appendChild(fb); }
+        });
+      });
+      const total = correctAnswers.length;
+      const pct = (correct / total) * 100;
+      const resultEl = document.getElementById(`quizResultAdmin${chapter}`);
+      if (resultEl) {
+        resultEl.style.display = 'block';
+        resultEl.className = 'quiz-result ' + (pct === 100 ? 'good' : pct >= 50 ? 'partial' : 'poor');
+        resultEl.textContent = `${correct}/${total} richtig (${Math.round(pct)}%)` + (pct === 100 ? ' – Perfekt! 🎉' : pct >= 50 ? ' – Gut!' : ' – Nochmal versuchen!');
+      }
+      const btn = section?.querySelector('.quiz-submit');
+      if (btn) btn.disabled = true;
     }
 
     function showChapter(num) {
@@ -1552,7 +1934,11 @@
       if (btn) btn.disabled = true;
     }
 
-    buildChapterNav();
+    if (window.location.hash === '#admin') {
+      switchTraining('admin');
+    } else {
+      buildChapterNav();
+    }
   </script>
 </body>
 </html>

@@ -1718,6 +1718,13 @@ export const resources = [
     ]
   },
   {
+    category: "Admin",
+    items: [
+      { name: "Admin Training (Interaktiv)", url: "https://manuel-weiss.ch/Onboarding%20Valkeen/docs/Tempus_Resource_Manager_Training_Interaktiv.html#admin", type: "docs" },
+      { name: "Tempus Support & Documentation", url: "https://support.tempusresource.com/hc/en-us", type: "docs" }
+    ]
+  },
+  {
     category: "Best Practices",
     items: [
       { name: "Resource Capacity Planning (Donna Fitzgerald)", url: "https://www.youtube.com/watch?v=yNIvXmV0Qnc&list=PLYivXGs-R5AQ09hiQatYW0Cf8lpPbboj6", type: "video" },
