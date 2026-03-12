@@ -20,6 +20,22 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 
+
+def _load_env():
+    """Lädt .env vor Konfiguration."""
+    env_path = Path(__file__).parent / ".env"
+    if env_path.exists():
+        for line in env_path.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, _, val = line.partition("=")
+                key, val = key.strip(), val.strip().strip('"\'')
+                if key and key not in os.environ:
+                    os.environ[key] = val
+
+
+_load_env()
+
 # ── Konfiguration ───────────────────────────────────────────────────
 
 BASE_URL = os.environ.get("TEMPUS_BASE_URL", "https://trial5.tempus-resource.com/slot4").rstrip("/")
@@ -46,6 +62,7 @@ PROJECTS = [
     ("Cloud Migration", "2026-02-01", "2026-08-31", "stern-cloud-migration"),
     ("Social Media Relaunch", "2026-03-01", "2026-06-30", "stern-social-media-relaunch"),
     ("Compliance Update Q2", "2026-04-01", "2026-06-30", "stern-compliance-update-q2"),
+    ("Innovation Sprint April-Mai", "2026-04-01", "2026-05-31", "stern-innovation-sprint-apr-mai"),
 ]
 
 # Projekt-Zeiträume: (Start-Datum, Anzahl Monate) – Allokation nur im Projektzeitraum
@@ -54,10 +71,11 @@ PROJECT_PERIODS = {
     "Cloud Migration": ("2026-02-01", 7),  # Feb–Aug
     "Social Media Relaunch": ("2026-03-01", 4),  # Mar–Jun
     "Compliance Update Q2": ("2026-04-01", 3),  # Apr–Jun
+    "Innovation Sprint April-Mai": ("2026-04-01", 2),  # Apr–Mai (nur für Elon Überauslastung)
 }
 
 # Assignments für Über-/Unterauslastung (Stunden/Monat pro Projekt)
-# Elon Musk: überbucht (240h); Taylor Swift: unterbucht (80h); Rest: ausgeglichen
+# Elon Musk: überbucht in Apr–Mai (240h); Taylor Swift: unterbucht (80h); Rest: ausgeglichen
 ASSIGNMENTS = [
     ("Brad Pitt", "Blockbuster App 2026", 160),  # ausgeglichen
     ("Meryl Streep", "Blockbuster App 2026", 160),
@@ -67,21 +85,13 @@ ASSIGNMENTS = [
     ("Roger Federer", "Cloud Migration", 160),
     ("Heidi Klum", "Blockbuster App 2026", 100),  # unterbucht
     ("Elon Musk", "Blockbuster App 2026", 120),  # 120h
-    ("Elon Musk", "Cloud Migration", 120),  # +120h = 240h → überbucht
+    ("Elon Musk", "Innovation Sprint April-Mai", 120),  # +120h in Apr–Mai = 240h → überbucht
 ]
 
 
 def load_env_file():
     """Lädt .env aus dem Script-Verzeichnis, falls vorhanden."""
-    env_path = Path(__file__).parent / ".env"
-    if env_path.exists():
-        for line in env_path.read_text().splitlines():
-            line = line.strip()
-            if line and not line.startswith("#") and "=" in line:
-                key, _, val = line.partition("=")
-                key, val = key.strip(), val.strip().strip('"\'')
-                if key and key not in os.environ:
-                    os.environ[key] = val
+    _load_env()
 
 
 def api_request(method: str, path: str, body=None) -> dict | list:
@@ -160,11 +170,53 @@ def get_resources_by_external_ids() -> dict[str, dict]:
 
 
 def get_projects_by_external_ids() -> dict[str, dict]:
-    """Gibt Projekte nach externalId zurück."""
+    """Gibt Projekte nach externalId zurück. Erstellt fehlende Projekte."""
     ext_ids = [p[3] for p in PROJECTS]
-    data = api_request("GET", f"/Projects?externalIds={','.join(ext_ids)}")
-    items = data.get("items", data if isinstance(data, list) else [])
-    return {p["externalId"]: p for p in items if p.get("externalId")}
+    result: dict[str, dict] = {}
+
+    # API gibt 400 wenn ein externalId fehlt – daher alle Projekte laden und filtern
+    try:
+        all_items = []
+        page = 1
+        while True:
+            data = api_request("GET", f"/Projects?page={page}&pageSize=200")
+            items = data.get("items", []) if isinstance(data, dict) else []
+            if not items:
+                break
+            all_items.extend(items)
+            if len(items) < 200:
+                break
+            page += 1
+        for p in all_items:
+            eid = p.get("externalId")
+            if eid and eid in ext_ids:
+                result[eid] = p
+    except Exception:
+        pass
+
+    # Fehlende Projekte anlegen
+    missing = [p for p in PROJECTS if p[3] not in result]
+    if missing:
+        print("  Fehlende Projekte anlegen …")
+    for name, start, end, ext_id in PROJECTS:
+        if ext_id in result:
+            continue
+        payload = {
+            "name": name,
+            "externalId": ext_id,
+            "updateSecurityGroup": False,
+            "updateProjectDates": True,
+            "startDate": f"{start}T00:00:00Z",
+            "endDate": f"{end}T23:59:59Z",
+        }
+        try:
+            res = api_request("POST", "/Projects", [payload])
+            if isinstance(res, list) and len(res) > 0:
+                result[ext_id] = {"id": res[0], "name": name, "externalId": ext_id}
+                print(f"  ✓ Projekt angelegt: {name} (ID {res[0]})")
+        except Exception as e:
+            print(f"  ✗ Projekt {name}: {e}")
+    return result
 
 
 def get_tasks(project_ids: list[int]) -> list[dict]:
@@ -341,7 +393,7 @@ def main():
     print("Fertig!")
     print()
     print("Use Case Über-/Unterauslastung:")
-    print("  • Elon Musk: überbucht (240h bei 160h Kapazität) → rot im Net Availability Grid")
+    print("  • Elon Musk: überbucht in Apr–Mai 2026 (240h bei 160h Kapazität) → rot im Net Availability Grid")
     print("  • Taylor Swift, Angela Merkel, Heidi Klum: unterbucht → grün")
     print("  • Brad Pitt, Meryl Streep, Dwayne Johnson, Roger Federer: ausgeglichen")
     print()

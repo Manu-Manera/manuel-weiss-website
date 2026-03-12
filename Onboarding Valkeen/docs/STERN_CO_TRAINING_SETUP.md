@@ -6,7 +6,7 @@ Use Case für das Tempus Resource Manager Training (Net Availability Grid, Kapaz
 
 | Ressource      | Kapazität | Allokation              | Status        |
 |----------------|-----------|-------------------------|---------------|
-| Elon Musk      | 160h/Monat| 240h (Blockbuster+Cloud)| **Überbucht** (rot) |
+| Elon Musk      | 160h/Monat| 240h in Apr–Mai (Blockbuster+Innovation Sprint)| **Überbucht** (rot) |
 | Taylor Swift   | 160h/Monat| 80h (Social Media)      | Unterbucht (grün) |
 | Angela Merkel  | 160h/Monat| 120h (Compliance)       | Unterbucht (grün) |
 | Heidi Klum     | 160h/Monat| 100h (Blockbuster)      | Unterbucht (grün) |
@@ -18,8 +18,9 @@ Use Case für das Tempus Resource Manager Training (Net Availability Grid, Kapaz
 
 ```bash
 cd "Onboarding Valkeen/scripts"
-export TEMPUS_BASE_URL="https://trial5.tempus-resource.com/slot4"
-export TEMPUS_API_KEY="dein-api-key"
+
+# Credentials: .env im Script-Ordner ODER export
+# .env: TEMPUS_BASE_URL=..., TEMPUS_API_KEY=...
 
 # Vollständig: Ressourcen, Projekte, Assignments
 python setup_stern_co_training_data.py
@@ -28,7 +29,7 @@ python setup_stern_co_training_data.py
 python setup_stern_co_training_data.py --capacity-only
 ```
 
-**Hinweis:** Die Kapazitäts-API kann je nach Tempus-Konfiguration fehlschlagen. In dem Fall Option 2 nutzen.
+**Hinweis:** Die Kapazitäts-API kann je nach Tempus-Konfiguration fehlschlagen. In dem Fall Option 2 nutzen. Bei 401 „Token abgelaufen“: Neuen API-Key in Tempus erstellen und in `.env` eintragen.
 
 ### Option 2: Excel-Import (QRG: How to Populate Excel Templates)
 
@@ -68,5 +69,5 @@ Details: [TEMPUS_WORKFLOW_SETUP_PLAN.md](TEMPUS_WORKFLOW_SETUP_PLAN.md)
 
 1. Tempus öffnen → Resource Management
 2. Net Availability (oben rechts)
-3. Zeitraum z.B. Q1–Q2 2026 wählen
-4. **Elon Musk** sollte rot (überbucht), **Taylor Swift** etc. grün (unterbucht) erscheinen
+3. Zeitraum z.B. April–Mai 2026 wählen (Elon überbucht)
+4. **Elon Musk** sollte in April–Mai rot (überbucht), **Taylor Swift** etc. grün (unterbucht) erscheinen

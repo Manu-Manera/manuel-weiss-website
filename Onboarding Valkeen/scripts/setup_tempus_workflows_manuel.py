@@ -19,6 +19,21 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 
+
+def _load_env():
+    env_path = Path(__file__).parent / ".env"
+    if env_path.exists():
+        for line in env_path.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, _, val = line.partition("=")
+                key, val = key.strip(), val.strip().strip('"\'')
+                if key and key not in os.environ:
+                    os.environ[key] = val
+
+
+_load_env()
+
 BASE_URL = os.environ.get("TEMPUS_BASE_URL", "https://trial5.tempus-resource.com/slot4").rstrip("/")
 API_KEY = os.environ.get("TEMPUS_API_KEY", "")
 
@@ -33,6 +48,7 @@ STERN_CO_RESOURCE_EXT_IDS = [
 STERN_CO_PROJECT_EXT_IDS = [
     "stern-blockbuster-app-2026", "stern-cloud-migration",
     "stern-social-media-relaunch", "stern-compliance-update-q2",
+    "stern-innovation-sprint-apr-mai",
 ]
 
 # Mögliche Custom-Field-Namen (tenant-spezifisch)
@@ -43,15 +59,7 @@ CF_PROJECT_MANAGER = ["Project Manager", "ProjectManager", "Project Manager (Res
 
 
 def load_env_file():
-    env_path = Path(__file__).parent / ".env"
-    if env_path.exists():
-        for line in env_path.read_text().splitlines():
-            line = line.strip()
-            if line and not line.startswith("#") and "=" in line:
-                key, _, val = line.partition("=")
-                key, val = key.strip(), val.strip().strip('"\'')
-                if key and key not in os.environ:
-                    os.environ[key] = val
+    _load_env()
 
 
 def api_request(method: str, path: str, body=None) -> dict | list:

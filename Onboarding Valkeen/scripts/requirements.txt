@@ -1,0 +1,2 @@
+# Für generate_stern_co_excel_import.py
+openpyxl>=3.0.0

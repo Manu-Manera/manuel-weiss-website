@@ -38,7 +38,11 @@ export class TempusClient {
 
     if (!res.ok) {
       const status = res.status;
-      if (status === 401) throw new Error('Ungültiger API-Key oder fehlende Berechtigung');
+      const detail = text?.trim() ? ` – ${text.slice(0, 150)}` : '';
+      if (status === 401) {
+        console.warn(`[tempusClient] 401 Unauthorized for ${url}`, { apiKeyPrefix: this.apiKey.slice(0, 8) + '...', responseBody: text?.slice(0, 200) });
+        throw new Error(`Ungültiger API-Key oder fehlende Berechtigung${detail}`);
+      }
       if (status === 429) throw new Error('Rate Limit erreicht – bitte warten');
       throw new Error(`Tempus API ${status}: ${text.slice(0, 200)}`);
     }

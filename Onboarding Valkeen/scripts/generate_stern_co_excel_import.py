@@ -37,6 +37,7 @@ RESOURCES = [
 MANUEL_EXT_ID = "valkeen-manuel"
 
 # (Resource, Projekt, Task, h/Monat) – Task "Generic" = Projekt-Level
+# Elon Musk: überbucht nur in Apr–Mai 2026 (Blockbuster 120h + Innovation Sprint 120h = 240h)
 ASSIGNMENTS = [
     ("Brad Pitt", "Blockbuster App 2026", "Generic", 160),
     ("Meryl Streep", "Blockbuster App 2026", "Generic", 160),
@@ -46,7 +47,7 @@ ASSIGNMENTS = [
     ("Roger Federer", "Cloud Migration", "Generic", 160),
     ("Heidi Klum", "Blockbuster App 2026", "Generic", 100),  # unterbucht
     ("Elon Musk", "Blockbuster App 2026", "Generic", 120),
-    ("Elon Musk", "Cloud Migration", "Generic", 120),  # überbucht (240h)
+    ("Elon Musk", "Innovation Sprint April-Mai", "Generic", 120),  # überbucht in Apr–Mai (240h)
 ]
 
 # Monats-Spalten 2026 (Tempus-Format: YYYY-MM-DD 00:00:00)
@@ -57,11 +58,13 @@ MONTH_HEADERS = [
 ]
 
 # Projekt-Zeiträume: nur Monate im Projekt befüllt (Rest 0)
+# Monat 0=Jan, 1=Feb, 2=Mar, 3=Apr, 4=Mai, 5=Jun, ...
 PROJECT_MONTHS = {
     "Blockbuster App 2026": list(range(12)),  # Jan–Dez (0–11)
     "Cloud Migration": list(range(1, 8)),  # Feb–Aug (1–7)
     "Social Media Relaunch": list(range(2, 6)),  # Mar–Jun (2–5)
     "Compliance Update Q2": list(range(3, 6)),  # Apr–Jun (3–5)
+    "Innovation Sprint April-Mai": [3, 4],  # Apr–Mai (3, 4)
 }
 
 
@@ -124,6 +127,7 @@ def create_assignments_excel():
         "Cloud Migration": "stern-cloud-migration",
         "Social Media Relaunch": "stern-social-media-relaunch",
         "Compliance Update Q2": "stern-compliance-update-q2",
+        "Innovation Sprint April-Mai": "stern-innovation-sprint-apr-mai",
     }
 
     for res_name, proj_name, task, hours in ASSIGNMENTS:

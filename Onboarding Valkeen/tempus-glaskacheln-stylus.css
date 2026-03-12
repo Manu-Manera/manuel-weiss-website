@@ -1,0 +1,200 @@
+/* ==UserStyle==
+@name         Tempus Glaskacheln
+@namespace    github.com/openstyles/stylus
+@version      1.0.0
+@description Glaskacheln mit abgerundeten Ecken für Tempus Startseite
+@author      -
+@match       https://trial5.tempus-resource.com/*
+@match       https://*.tempus-resource.com/*
+==/UserStyle== */
+
+/* ============================================
+   Tempus Startseite – Glaskacheln (optimiert)
+   Für Chrome mit Stylus-Erweiterung
+   ============================================ */
+
+/* Basis: sehr abgerundete Ecken + Glaseffekt */
+.sg_navtile {
+  border-radius: 28px !important;
+  overflow: hidden !important;
+  position: relative !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease !important;
+}
+
+/* Glaseffekt: stärkerer Glanz oben */
+.sg_navtile::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.2) 30%,
+    rgba(255, 255, 255, 0.05) 60%,
+    transparent 100%
+  ) !important;
+  border-radius: 28px !important;
+  pointer-events: none !important;
+}
+
+/* Hover: mehr Glanz */
+.sg_navtile:hover {
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 
+    0 16px 48px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 2px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+.sg_navtile:hover::before {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(255, 255, 255, 0.25) 30%,
+    rgba(255, 255, 255, 0.08) 60%,
+    transparent 100%
+  ) !important;
+}
+
+/* ========== Dunkelmodus (dunkler Hintergrund) ========== */
+body.dark .sg_navtile,
+[data-theme="dark"] .sg_navtile,
+html.dark .sg_navtile,
+.dark-mode .sg_navtile,
+[class*="dark"] .sg_navtile {
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+body.dark .sg_navtile:hover,
+[data-theme="dark"] .sg_navtile:hover,
+html.dark .sg_navtile:hover,
+.dark-mode .sg_navtile:hover,
+[class*="dark"] .sg_navtile:hover {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 
+    0 16px 48px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 2px 0 rgba(255, 255, 255, 0.35) !important;
+}
+
+body.dark .sg_navtile::before,
+[data-theme="dark"] .sg_navtile::before,
+html.dark .sg_navtile::before,
+.dark-mode .sg_navtile::before,
+[class*="dark"] .sg_navtile::before {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(255, 255, 255, 0.1) 35%,
+    rgba(255, 255, 255, 0.02) 60%,
+    transparent 100%
+  ) !important;
+}
+
+body.dark .sg_navtile:hover::before,
+[data-theme="dark"] .sg_navtile:hover::before,
+html.dark .sg_navtile:hover::before,
+.dark-mode .sg_navtile:hover::before,
+[class*="dark"] .sg_navtile:hover::before {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.38) 0%,
+    rgba(255, 255, 255, 0.14) 35%,
+    rgba(255, 255, 255, 0.04) 60%,
+    transparent 100%
+  ) !important;
+}
+
+/* System-Preferenz Dunkelmodus (falls Tempus mitschaltet) */
+@media (prefers-color-scheme: dark) {
+  .sg_navtile {
+    border-color: rgba(255, 255, 255, 0.2) !important;
+  }
+  .sg_navtile::before {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.3) 0%,
+      rgba(255, 255, 255, 0.1) 40%,
+      transparent 100%
+    ) !important;
+  }
+}
+
+/* ========== Kleinere Kacheln (small, medium, ohne .large) ========== */
+.sg_navtile.small,
+.sg_navtile.medium,
+.sg_navtile:not(.large) {
+  border-radius: 20px !important;
+  box-shadow: 
+    0 6px 24px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45) !important;
+}
+
+.sg_navtile.small::before,
+.sg_navtile.medium::before,
+.sg_navtile:not(.large)::before {
+  border-radius: 20px !important;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(255, 255, 255, 0.15) 35%,
+    rgba(255, 255, 255, 0.03) 65%,
+    transparent 100%
+  ) !important;
+}
+
+.sg_navtile.small:hover,
+.sg_navtile.medium:hover,
+.sg_navtile:not(.large):hover {
+  box-shadow: 
+    0 12px 36px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55) !important;
+}
+
+/* Kleinere Kacheln im Dunkelmodus */
+body.dark .sg_navtile.small,
+body.dark .sg_navtile.medium,
+body.dark .sg_navtile:not(.large),
+[data-theme="dark"] .sg_navtile.small,
+[data-theme="dark"] .sg_navtile.medium,
+[data-theme="dark"] .sg_navtile:not(.large) {
+  box-shadow: 
+    0 6px 24px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+body.dark .sg_navtile.small::before,
+body.dark .sg_navtile.medium::before,
+body.dark .sg_navtile:not(.large)::before,
+[data-theme="dark"] .sg_navtile.small::before,
+[data-theme="dark"] .sg_navtile.medium::before,
+[data-theme="dark"] .sg_navtile:not(.large)::before {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.08) 40%,
+    transparent 100%
+  ) !important;
+}
+
+/* ========== Optionale Anpassungen (auskommentieren zum Testen) ========== */
+
+/* Noch stärker abgerundet (Pillen-Look): */
+/* .sg_navtile { border-radius: 36px !important; } */
+/* .sg_navtile::before { border-radius: 36px !important; } */
+
+/* Frosted Glass: Kacheln transparenter machen */
+/* .sg_navtile { background: rgba(255,255,255,0.08) !important; } */
