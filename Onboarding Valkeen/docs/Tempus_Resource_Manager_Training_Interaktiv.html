@@ -409,6 +409,40 @@
     .dashboard-card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary); }
     .dashboard-card p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
     .dashboard-card .meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.75rem; }
+    .dashboard-card .progress-wrap { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .dashboard-card .progress-ring {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .dashboard-card .progress-ring::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: conic-gradient(var(--accent) calc(var(--pct, 0) * 3.6deg), var(--border) 0);
+    }
+    .dashboard-card .progress-ring-inner {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--accent);
+      position: relative;
+      z-index: 1;
+    }
+    .dashboard-card .progress-ring.complete .progress-ring-inner { color: var(--success); }
+    .dashboard-card .progress-info { flex: 1; min-width: 0; }
+    .dashboard-card .progress-label { font-size: 0.75rem; color: var(--text-muted); }
+    .dashboard-card .progress-chapters { font-size: 0.85rem; color: var(--accent); font-weight: 500; }
     .dashboard-hero {
       text-align: center;
       padding: 2rem 0 1rem;
@@ -416,6 +450,48 @@
     }
     .dashboard-hero h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }
     .dashboard-hero p { color: var(--text-secondary); font-size: 1rem; }
+    .dashboard-overall {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      padding: 1.5rem 2rem;
+      background: linear-gradient(135deg, var(--bg-card) 0%, rgba(0, 212, 170, 0.06) 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 2rem;
+    }
+    .dashboard-overall-ring {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .dashboard-overall-ring::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: conic-gradient(var(--accent) calc(var(--overall-pct, 0) * 3.6deg), var(--border) 0);
+    }
+    .dashboard-overall-ring-inner {
+      width: 62px; height: 62px;
+      border-radius: 50%;
+      background: var(--bg-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--accent);
+      position: relative;
+      z-index: 1;
+    }
+    .dashboard-overall-info { text-align: left; }
+    .dashboard-overall-info strong { font-size: 1.1rem; }
+    .dashboard-overall-info span { color: var(--text-muted); font-size: 0.9rem; }
 
     /* Quiz Section */
     .quiz-section {
@@ -602,36 +678,87 @@
         <h1>Tempus Resource Training</h1>
         <p>Wähle dein Training – Grundlagen oder Advanced mit schwierigen Aufgaben und Musterlösungen.</p>
       </div>
-      <div class="dashboard-grid">
-        <a href="#" class="dashboard-card" onclick="switchTraining('rm'); return false;">
+      <div class="dashboard-overall" id="dashboardOverall">
+        <div class="dashboard-overall-ring" id="overallRing">
+          <div class="dashboard-overall-ring-inner" id="overallRingInner">0%</div>
+        </div>
+        <div class="dashboard-overall-info">
+          <strong>Gesamtfortschritt</strong><br>
+          <span id="overallText">0 von 40 Modulen bearbeitet</span>
+        </div>
+      </div>
+      <div class="dashboard-grid" id="dashboardGrid">
+        <a href="#" class="dashboard-card" data-training="rm" data-total="9" onclick="goToTraining('rm'); return false;">
+          <div class="progress-wrap">
+            <div class="progress-ring" id="progressRing-rm"><div class="progress-ring-inner" id="progressRingInner-rm">0%</div></div>
+            <div class="progress-info">
+              <div class="progress-label">Lernfortschritt</div>
+              <div class="progress-chapters" id="progressChapters-rm">0 von 9 Kapiteln</div>
+            </div>
+          </div>
           <h3>Resource Manager</h3>
           <p>9 Kapitel: Anmeldung, Benachrichtigungen, Grid, Net Availability, Resource Requests, BPA Flatgrid, Reports.</p>
-          <span class="meta">⏱ ca. 90 Min · Grundlagen</span>
+          <span class="meta">⏱ ca. 90 Min · Grundlagen · Klicken zum Fortsetzen</span>
         </a>
-        <a href="#" class="dashboard-card advanced" onclick="switchTraining('rmAdv'); return false;">
+        <a href="#" class="dashboard-card advanced" data-training="rmAdv" data-total="5" onclick="goToTraining('rmAdv'); return false;">
+          <div class="progress-wrap">
+            <div class="progress-ring" id="progressRing-rmAdv"><div class="progress-ring-inner" id="progressRingInner-rmAdv">0%</div></div>
+            <div class="progress-info">
+              <div class="progress-label">Lernfortschritt</div>
+              <div class="progress-chapters" id="progressChapters-rmAdv">0 von 5 Kapiteln</div>
+            </div>
+          </div>
           <h3>RM Advanced</h3>
           <p>5 Kapitel: Kapazitätsanalyse, BPAFG Modi, Hybrid Planning, Resource Request Workflow, What-If & RAR.</p>
-          <span class="meta">⏱ ca. 2 h · Mit Musterlösungen</span>
+          <span class="meta">⏱ ca. 2 h · Mit Musterlösungen · Klicken zum Fortsetzen</span>
         </a>
-        <a href="#" class="dashboard-card" onclick="switchTraining('pm'); return false;">
+        <a href="#" class="dashboard-card" data-training="pm" data-total="8" onclick="goToTraining('pm'); return false;">
+          <div class="progress-wrap">
+            <div class="progress-ring" id="progressRing-pm"><div class="progress-ring-inner" id="progressRingInner-pm">0%</div></div>
+            <div class="progress-info">
+              <div class="progress-label">Lernfortschritt</div>
+              <div class="progress-chapters" id="progressChapters-pm">0 von 8 Kapiteln</div>
+            </div>
+          </div>
           <h3>Project Manager</h3>
           <p>8 Kapitel: Anmeldung, Subscriptions, Grid, Single Project Allocation, BPAFG, Resource Requests.</p>
-          <span class="meta">⏱ ca. 75 Min · Grundlagen</span>
+          <span class="meta">⏱ ca. 75 Min · Grundlagen · Klicken zum Fortsetzen</span>
         </a>
-        <a href="#" class="dashboard-card advanced" onclick="switchTraining('pmAdv'); return false;">
+        <a href="#" class="dashboard-card advanced" data-training="pmAdv" data-total="5" onclick="goToTraining('pmAdv'); return false;">
+          <div class="progress-wrap">
+            <div class="progress-ring" id="progressRing-pmAdv"><div class="progress-ring-inner" id="progressRingInner-pmAdv">0%</div></div>
+            <div class="progress-info">
+              <div class="progress-label">Lernfortschritt</div>
+              <div class="progress-chapters" id="progressChapters-pmAdv">0 von 5 Kapiteln</div>
+            </div>
+          </div>
           <h3>PM Advanced</h3>
           <p>5 Kapitel: New Assignment Mode, Soft vs Hard Booking, Snapshots, RR Lifecycle, Ramp-up.</p>
-          <span class="meta">⏱ ca. 2 h · Mit Musterlösungen</span>
+          <span class="meta">⏱ ca. 2 h · Mit Musterlösungen · Klicken zum Fortsetzen</span>
         </a>
-        <a href="#" class="dashboard-card" onclick="switchTraining('admin'); return false;">
+        <a href="#" class="dashboard-card" data-training="admin" data-total="8" onclick="goToTraining('admin'); return false;">
+          <div class="progress-wrap">
+            <div class="progress-ring" id="progressRing-admin"><div class="progress-ring-inner" id="progressRingInner-admin">0%</div></div>
+            <div class="progress-info">
+              <div class="progress-label">Lernfortschritt</div>
+              <div class="progress-chapters" id="progressChapters-admin">0 von 8 Kapiteln</div>
+            </div>
+          </div>
           <h3>Admin</h3>
           <p>8 Module: Rolle, Data Sync, Attribute, Views, Snapshots, Lizenzierung, Upgrades, Checkpoint.</p>
-          <span class="meta">⏱ ca. 2,5 h · Grundlagen</span>
+          <span class="meta">⏱ ca. 2,5 h · Grundlagen · Klicken zum Fortsetzen</span>
         </a>
-        <a href="#" class="dashboard-card advanced" onclick="switchTraining('adminAdv'); return false;">
+        <a href="#" class="dashboard-card advanced" data-training="adminAdv" data-total="5" onclick="goToTraining('adminAdv'); return false;">
+          <div class="progress-wrap">
+            <div class="progress-ring" id="progressRing-adminAdv"><div class="progress-ring-inner" id="progressRingInner-adminAdv">0%</div></div>
+            <div class="progress-info">
+              <div class="progress-label">Lernfortschritt</div>
+              <div class="progress-chapters" id="progressChapters-adminAdv">0 von 5 Kapiteln</div>
+            </div>
+          </div>
           <h3>Admin Advanced</h3>
           <p>5 Module: Data Sync Troubleshooting, Security Groups, View-Konfiguration, Snapshot-Strategie, Upgrade.</p>
-          <span class="meta">⏱ ca. 2,5 h · Mit Musterlösungen</span>
+          <span class="meta">⏱ ca. 2,5 h · Mit Musterlösungen · Klicken zum Fortsetzen</span>
         </a>
       </div>
       <p style="text-align: center; margin-top: 2rem;"><a href="Tempus_Workflow_Einrichtung.html" style="color: var(--accent);">→ Workflow-Einrichtung</a></p>
@@ -2511,6 +2638,54 @@
   </div>
 
   <script>
+    const PROGRESS_KEY = 'tempus-training-progress';
+    const TRAINING_TOTALS = { rm: 9, rmAdv: 5, pm: 8, pmAdv: 5, admin: 8, adminAdv: 5 };
+
+    function getProgress() {
+      try {
+        const d = localStorage.getItem(PROGRESS_KEY);
+        return d ? JSON.parse(d) : {};
+      } catch (_) { return {}; }
+    }
+    function saveProgress(training, chapter) {
+      const p = getProgress();
+      const cur = p[training] || 0;
+      if (chapter > cur) {
+        p[training] = chapter;
+        try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); } catch (_) {}
+      }
+    }
+    function goToTraining(id) {
+      const p = getProgress();
+      const chapter = Math.max(1, p[id] || 1);
+      switchTraining(id, chapter);
+    }
+    function updateDashboardProgress() {
+      const p = getProgress();
+      let totalCh = 0, totalMax = 0;
+      ['rm','rmAdv','pm','pmAdv','admin','adminAdv'].forEach(id => {
+        const ch = p[id] || 0;
+        const total = TRAINING_TOTALS[id];
+        totalCh += ch;
+        totalMax += total;
+        const pct = total ? Math.round((ch / total) * 100) : 0;
+        const ring = document.getElementById('progressRing-' + id);
+        const inner = document.getElementById('progressRingInner-' + id);
+        const chapters = document.getElementById('progressChapters-' + id);
+        if (ring) ring.style.setProperty('--pct', pct);
+        if (inner) inner.textContent = pct + '%';
+        if (ring) ring.classList.toggle('complete', pct >= 100);
+        if (chapters) chapters.textContent = ch >= total && total > 0 ? total + ' von ' + total + ' abgeschlossen ✓' : ch + ' von ' + total + ' Kapiteln';
+      });
+      const overallPct = totalMax ? Math.round((totalCh / totalMax) * 100) : 0;
+      const overallRing = document.getElementById('overallRing');
+      const overallInner = document.getElementById('overallRingInner');
+      const overallText = document.getElementById('overallText');
+      if (overallRing) overallRing.style.setProperty('--overall-pct', overallPct);
+      if (overallInner) overallInner.textContent = overallPct + '%';
+      if (overallText) overallText.textContent = totalCh + ' von ' + totalMax + ' Modulen bearbeitet';
+    }
+
     const QUIZ_MAPPING = {
       1: ['q1','q2','q3'],
       2: ['q4','q5'],
@@ -2523,7 +2698,7 @@
       9: ['q14']
     };
 
-    function switchTraining(which) {
+    function switchTraining(which, chapter) {
       const tabMap = { dashboard: 0, rm: 1, rmAdv: 2, pm: 3, pmAdv: 4, admin: 5, adminAdv: 6 };
       document.querySelectorAll('.training-tabs button').forEach((b, i) => {
         b.classList.toggle('active', tabMap[which] === i);
@@ -2536,13 +2711,14 @@
       document.getElementById('adminPanel').classList.toggle('active', which === 'admin');
       document.getElementById('adminAdvPanel').classList.toggle('active', which === 'adminAdv');
       document.getElementById('progressBar').style.display = which === 'dashboard' ? 'none' : 'block';
-      if (which === 'dashboard') return;
-      if (which === 'rm') { buildChapterNav(); showChapter(1); }
-      else if (which === 'rmAdv') { buildChapterNavRmAdv(); showChapterRmAdv(1); }
-      else if (which === 'pm') { buildChapterNavPM(); showChapterPM(1); }
-      else if (which === 'pmAdv') { buildChapterNavPmAdv(); showChapterPmAdv(1); }
-      else if (which === 'admin') { buildChapterNavAdmin(); showChapterAdmin(1); }
-      else { buildChapterNavAdminAdv(); showChapterAdminAdv(1); }
+      if (which === 'dashboard') { updateDashboardProgress(); return; }
+      const ch = Math.max(1, Math.min(chapter || 1, TRAINING_TOTALS[which] || 1));
+      if (which === 'rm') { buildChapterNav(); showChapter(ch); }
+      else if (which === 'rmAdv') { buildChapterNavRmAdv(); showChapterRmAdv(ch); }
+      else if (which === 'pm') { buildChapterNavPM(); showChapterPM(ch); }
+      else if (which === 'pmAdv') { buildChapterNavPmAdv(); showChapterPmAdv(ch); }
+      else if (which === 'admin') { buildChapterNavAdmin(); showChapterAdmin(ch); }
+      else { buildChapterNavAdminAdv(); showChapterAdminAdv(ch); }
     }
 
     function buildChapterNav() {
@@ -2595,6 +2771,7 @@
       }
     }
     function showChapterRmAdv(num) {
+      saveProgress('rmAdv', num);
       document.querySelectorAll('#rmAdvPanel .chapter').forEach(c => {
         c.classList.toggle('active', parseInt(c.dataset.chapter) === num);
       });
@@ -2621,6 +2798,7 @@
       }
     }
     function showChapterPmAdv(num) {
+      saveProgress('pmAdv', num);
       document.querySelectorAll('#pmAdvPanel .chapter').forEach(c => {
         c.classList.toggle('active', parseInt(c.dataset.chapter) === num);
       });
@@ -2647,6 +2825,7 @@
       }
     }
     function showChapterAdminAdv(num) {
+      saveProgress('adminAdv', num);
       document.querySelectorAll('#adminAdvPanel .chapter').forEach(c => {
         c.classList.toggle('active', parseInt(c.dataset.chapter) === num);
       });
@@ -2695,6 +2874,7 @@
     }
 
     function showChapterAdmin(num) {
+      saveProgress('admin', num);
       document.querySelectorAll('#adminPanel .chapter').forEach(c => {
         c.classList.toggle('active', parseInt(c.dataset.chapter) === num);
       });
@@ -2740,6 +2920,7 @@
     }
 
     function showChapter(num) {
+      saveProgress('rm', num);
       document.querySelectorAll('#rmPanel .chapter').forEach(c => {
         c.classList.toggle('active', parseInt(c.dataset.chapter) === num);
       });
@@ -2750,6 +2931,7 @@
     }
 
     function showChapterPM(num) {
+      saveProgress('pm', num);
       document.querySelectorAll('#pmPanel .chapter').forEach(c => {
         c.classList.toggle('active', parseInt(c.dataset.chapter) === num);
       });
@@ -2852,12 +3034,13 @@
     }
 
     const hash = window.location.hash;
-    if (hash === '#admin') switchTraining('admin');
-    else if (hash === '#rmAdv') switchTraining('rmAdv');
-    else if (hash === '#pmAdv') switchTraining('pmAdv');
-    else if (hash === '#adminAdv') switchTraining('adminAdv');
-    else if (hash === '#rm') switchTraining('rm');
-    else if (hash === '#pm') switchTraining('pm');
+    const p = getProgress();
+    if (hash === '#admin') switchTraining('admin', p.admin || 1);
+    else if (hash === '#rmAdv') switchTraining('rmAdv', p.rmAdv || 1);
+    else if (hash === '#pmAdv') switchTraining('pmAdv', p.pmAdv || 1);
+    else if (hash === '#adminAdv') switchTraining('adminAdv', p.adminAdv || 1);
+    else if (hash === '#rm') switchTraining('rm', p.rm || 1);
+    else if (hash === '#pm') switchTraining('pm', p.pm || 1);
     else switchTraining('dashboard');
   </script>
 </body>
