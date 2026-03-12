@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tempus – Workflow-Einrichtung</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0f0f14;
+      --bg-secondary: #16161d;
+      --bg-card: #1c1c26;
+      --bg-card-hover: #232330;
+      --accent: #00d4aa;
+      --accent-dim: #00a884;
+      --accent-glow: rgba(0, 212, 170, 0.25);
+      --text-primary: #e8e8ed;
+      --text-secondary: #a0a0b0;
+      --text-muted: #6b6b7a;
+      --border: #2a2a38;
+      --success: #00d4aa;
+      --radius: 12px;
+      --radius-lg: 20px;
+      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Outfit', -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 60vh;
+      background: radial-gradient(ellipse 80% 50% at 50% -20%, var(--accent-glow), transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+    h1 {
+      color: var(--text-primary);
+      font-size: 1.75rem;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      color: var(--accent);
+      font-size: 1.25rem;
+      margin-top: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    h3 {
+      color: var(--text-primary);
+      font-size: 1rem;
+      margin-top: 1rem;
+    }
+    p { color: var(--text-secondary); margin: 0.5rem 0; }
+    .theory {
+      background: linear-gradient(135deg, var(--bg-card) 0%, rgba(0, 212, 170, 0.06) 100%);
+      border: 1px solid var(--border);
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+      border-radius: var(--radius);
+    }
+    .theory h3 { color: var(--accent); margin-top: 0; }
+    .practice {
+      background: linear-gradient(135deg, rgba(0, 212, 170, 0.08) 0%, var(--bg-card) 100%);
+      border-left: 4px solid var(--accent);
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+    .practice h3 { color: var(--accent); }
+    .ui-guide {
+      background: rgba(0, 212, 170, 0.08);
+      border: 1px solid rgba(0, 212, 170, 0.2);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    .fig-inline { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1rem 0; align-items: flex-start; }
+    .fig-inline .fig-item { flex: 0 0 auto; max-width: 380px; }
+    .fig-inline .fig-item img { width: 100%; max-width: 380px; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); border: 1px solid var(--border); }
+    .fig-inline .fig-caption { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; padding: 0.25rem 0.5rem; background: var(--bg-secondary); border-radius: 4px; }
+    .fig-inline .fig-caption::before { content: "📍 "; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.9rem; }
+    th, td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; }
+    th { background: var(--bg-card); font-weight: 600; color: var(--text-primary); }
+    td { color: var(--text-secondary); }
+    ul { margin: 0.5rem 0; padding-left: 1.25rem; color: var(--text-secondary); }
+    ol { margin: 0.5rem 0; padding-left: 1.25rem; color: var(--text-secondary); }
+    ol li, ul li { margin-bottom: 0.25rem; }
+    pre {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      padding: 1rem;
+      border-radius: var(--radius);
+      font-size: 0.85rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      border: 1px solid var(--border);
+    }
+    code { font-family: 'JetBrains Mono', monospace; background: var(--bg-secondary); padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.9em; }
+    .duration { color: var(--text-muted); font-size: 0.9rem; }
+    .toc {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: var(--radius);
+    }
+    .toc ul { list-style: none; padding: 0; margin: 0; }
+    .toc a { color: var(--accent); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+    .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+    footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.9rem; }
+    footer a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <h1>Tempus – Workflow-Einrichtung</h1>
+    <p class="subtitle"><strong>Resource Request Workflow:</strong> Rollen, Status & User als RM/PM verbinden<br>
+    <strong>Valkeen GmbH</strong> · www.valkeen.com</p>
+
+    <nav class="toc">
+      <h2>📑 Inhaltsverzeichnis</h2>
+      <ul>
+        <li><a href="#ueberblick">Überblick: Resource Request Workflow</a></li>
+        <li><a href="#rollen">Rollen & Attribute</a></li>
+        <li><a href="#user-ui">User als RM & PM (UI)</a></li>
+        <li><a href="#user-api">User als RM & PM (API)</a></li>
+        <li><a href="#excel">Excel-Alternative</a></li>
+        <li><a href="#pruefen">Prüfen & Testen</a></li>
+      </ul>
+    </nav>
+
+    <hr>
+
+    <h2 id="ueberblick">Überblick: Resource Request Workflow</h2>
+    <p class="duration">⏱ ca. 5 Minuten</p>
+
+    <div class="theory">
+      <h3>📚 Theorie: Ablauf</h3>
+      <p>Der Resource Request Workflow ist in Tempus eingebaut:</p>
+      <ol>
+        <li><strong>PM</strong> erstellt Resource Request (Project Management → Checkout → «Type a new resource»)</li>
+        <li>Status = <strong>Pending</strong></li>
+        <li><strong>RM</strong> erhält Benachrichtigung (wenn Subscriptions aktiv)</li>
+        <li><strong>RM</strong> öffnet Resource Requests → wählt Approve / Replace / Reject</li>
+        <li>Status wechselt zu <strong>Approved</strong> oder <strong>Rejected</strong></li>
+      </ol>
+      <p><strong>Voraussetzung:</strong> Jede Ressource braucht einen zugewiesenen <strong>Resource Manager</strong>. Der RM muss <strong>Is Resource Manager</strong> = true haben.</p>
+    </div>
+
+    <div class="ui-guide">
+      <strong>Wo findest du was?</strong> <strong>Resource Requests:</strong> Tile «Resource Requests» auf der Homepage (rotes Badge = Anzahl Pending). <strong>Status:</strong> In der Liste filterbar (Pending, Approved, Rejected, …).
+    </div>
+
+    <hr>
+
+    <h2 id="rollen">Rollen & Attribute</h2>
+    <p class="duration">⏱ ca. 5 Minuten</p>
+
+    <div class="theory">
+      <h3>📚 Theorie: Benötigte Attribute</h3>
+      <table>
+        <tr><th>Attribut</th><th>Entität</th><th>Wo in Tempus</th><th>Bedeutung</th></tr>
+        <tr><td>Resource Managers</td><td>Resource</td><td>Attributes & Identity</td><td>Wer managed diese Ressource? (z.B. User)</td></tr>
+        <tr><td>Is Resource Manager</td><td>Resource</td><td>Attributes & Identity</td><td>Ist diese Person ein RM? (Ja/Nein)</td></tr>
+        <tr><td>Require Resource Manager Approval</td><td>Resource</td><td>Attributes & Identity</td><td>Muss RM Assignments genehmigen? (Ja)</td></tr>
+        <tr><td>Project Manager</td><td>Projekt</td><td>Projekt-Attribute</td><td>Wer ist PM für dieses Projekt?</td></tr>
+      </table>
+      <p><em>Hinweis:</em> Attribute-Namen können je nach Tenant variieren (z.B. «SHS IT Attributes»).</p>
+    </div>
+
+    <div class="ui-guide">
+      <strong>Wo findest du die Attribute?</strong> <strong>Resource:</strong> Resource Management → Ressource öffnen (Klick auf Name) → Tab «Attributes & Identity» → Sektion mit Custom Fields. <strong>Projekt:</strong> Project Management → Projekt öffnen → Attributes.
+    </div>
+
+    <hr>
+
+    <h2 id="user-ui">User als RM & PM einrichten (UI)</h2>
+    <p class="duration">⏱ ca. 10 Minuten</p>
+
+    <div class="practice">
+      <h3>🛠 Schritt 1: User anlegen</h3>
+      <ol>
+        <li>Resource Management → <strong>Plus</strong> (oben links)</li>
+        <li>Name: <strong>User</strong> → Create</li>
+        <li>Capacity Start/End Date, Feiertagskalender setzen</li>
+      </ol>
+    </div>
+
+    <div class="practice">
+      <h3>🛠 Schritt 2: User als Resource Manager markieren</h3>
+      <ol>
+        <li>User öffnen (Klick auf Name)</li>
+        <li>Tab <strong>Attributes & Identity</strong></li>
+        <li><strong>Is Resource Manager</strong> = <strong>Ja</strong></li>
+        <li>Speichern</li>
+      </ol>
+    </div>
+
+    <div class="practice">
+      <h3>🛠 Schritt 3: Stern & Co Ressourcen → User als RM</h3>
+      <ol>
+        <li>Für jede Ressource (Brad Pitt, Meryl Streep, Taylor Swift, …):</li>
+        <li>Ressource öffnen → Attributes & Identity</li>
+        <li><strong>Resource Managers</strong> = <strong>User</strong></li>
+        <li><strong>Require Resource Manager Approval</strong> = <strong>Ja</strong></li>
+        <li>Speichern</li>
+      </ol>
+    </div>
+
+    <div class="practice">
+      <h3>🛠 Schritt 4: Stern & Co Projekte → User als PM</h3>
+      <ol>
+        <li>Falls das Attribut «Project Manager» existiert:</li>
+        <li>Projekt öffnen (Blockbuster App 2025, Cloud Migration, …)</li>
+        <li><strong>Project Manager</strong> = <strong>User</strong></li>
+        <li>Speichern</li>
+      </ol>
+    </div>
+
+    <div class="practice">
+      <h3>🛠 Schritt 5: Subscriptions für User</h3>
+      <ol>
+        <li>Als <strong>User</strong> einloggen</li>
+        <li><strong>Username</strong> (oben rechts) → <strong>Subscriptions</strong></li>
+        <li>Tab <strong>Resource Request</strong> → <strong>Resource request management</strong> → <strong>Submitted</strong> aktivieren</li>
+        <li>Speichern</li>
+      </ol>
+    </div>
+
+    <div class="ui-guide">
+      <strong>Wo findest du Subscriptions?</strong> Oben rechts auf deinen <strong>Benutzernamen</strong> klicken → <strong>Subscriptions</strong> im Dropdown-Menü.
+    </div>
+
+    <hr>
+
+    <h2 id="user-api">User als RM & PM (API-Script)</h2>
+    <p class="duration">⏱ ca. 5 Minuten</p>
+
+    <div class="theory">
+      <h3>📚 Theorie: Automatisierung</h3>
+      <p>Das Script <code>setup_tempus_workflows_manuel.py</code> legt den User an und verbindet ihn mit Stern & Co Ressourcen und Projekten via Tempus Supergrid API.</p>
+    </div>
+
+    <div class="practice">
+      <h3>🛠 Verwendung</h3>
+      <pre>cd "Onboarding Valkeen/scripts"
+export TEMPUS_BASE_URL="https://trial5.tempus-resource.com/slot4"
+export TEMPUS_API_KEY="&lt;dein-api-key&gt;"
+
+# 1. Zuerst: Custom Fields der Instanz prüfen
+python setup_tempus_workflows_manuel.py --explore
+
+# 2. User anlegen und verbinden
+python setup_tempus_workflows_manuel.py --setup</pre>
+      <p>Falls Custom-Field-Namen abweichen: Script anpassen oder manuell in der UI einrichten.</p>
+    </div>
+
+    <hr>
+
+    <h2 id="excel">Excel-Alternative</h2>
+    <p class="duration">⏱ ca. 5 Minuten</p>
+
+    <div class="theory">
+      <h3>📚 Theorie: Resources-Excel mit RM</h3>
+      <p>Das Script <code>generate_stern_co_excel_import.py</code> erzeugt eine Resources-Excel mit:</p>
+      <ul>
+        <li><strong>Resource Managers</strong> = User (für alle Stern & Co Ressourcen)</li>
+        <li><strong>User</strong> als zusätzliche Ressource mit <strong>Is Resource Manager</strong> = TRUE</li>
+      </ul>
+    </div>
+
+    <div class="practice">
+      <h3>🛠 Verwendung</h3>
+      <pre>cd "Onboarding Valkeen/scripts"
+pip install openpyxl
+python generate_stern_co_excel_import.py</pre>
+      <p>Erzeugt <code>docs/Stern_Co_Resources.xlsx</code>. Importieren via Tempus Excel Data Sync → Resources.</p>
+    </div>
+
+    <hr>
+
+    <h2 id="pruefen">Prüfen & Testen</h2>
+    <p class="duration">⏱ ca. 5 Minuten</p>
+
+    <div class="practice">
+      <h3>🛠 Checkliste</h3>
+      <ol>
+        <li>Als <strong>User</strong> einloggen</li>
+        <li>Resource Management → Quick Filter <strong>«My resources»</strong> → Stern & Co Ressourcen sichtbar?</li>
+        <li>Resource Requests → Pending-Anfragen sichtbar? (Falls PM eine erstellt hat)</li>
+        <li>Subscriptions: Resource Request → Submitted aktiv?</li>
+      </ol>
+    </div>
+
+    <div class="ui-guide">
+      <strong>Wo findest du «My resources»?</strong> Resource Management → oben im Grid → Quick-Filter-Dropdown (oft neben «All resources») → «My resources» wählen.
+    </div>
+
+    <hr>
+
+    <p><em>Workflow-Einrichtung abgeschlossen. Viel Erfolg!</em></p>
+
+    <footer>
+      <p>© Valkeen GmbH · Tempus Resource · www.valkeen.com</p>
+      <p><a href="Tempus_Resource_Manager_Training_Interaktiv.html">← Zurück zum Training</a></p>
+    </footer>
+  </div>
+</body>
+</html>

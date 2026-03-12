@@ -3,8 +3,6 @@
  * Wird verwendet wenn keine Config in AWS existiert
  */
 
-const DOCS_BASE = '/Onboarding Valkeen/docs/';
-
 export const DEFAULT_TABS = [
   { id: 'dashboard', label: 'Dashboard', advanced: false },
   { id: 'rm', label: 'Resource Manager', advanced: false },
@@ -68,9 +66,21 @@ export const DEFAULT_SCREENSHOTS = [
   { id: 'pm_pending_requests_p20_2', src: 'screenshots/inline_pm/pm_pending_requests_p20_2.png', caption: 'Pending-Checkbox aktivieren', alt: 'Pending' }
 ];
 
-export const FONT_OPTIONS = [
-  { value: 'Outfit', label: 'Outfit' },
-  { value: 'JetBrains Mono', label: 'JetBrains Mono' },
-  { value: 'Inter', label: 'Inter' },
-  { value: 'system-ui', label: 'System' }
-];
+/** Generiert eine eindeutige ID */
+export function genId() {
+  return 'id_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
+}
+
+/** Leerer Block für neue Inhalte */
+export function createBlock(type) {
+  const id = genId();
+  if (type === 'text') return { id, type: 'text', title: '', content: '' };
+  if (type === 'image') return { id, type: 'image', src: '', caption: '', alt: '' };
+  if (type === 'quiz') return { id, type: 'quiz', questions: [{ id: genId(), text: '', options: ['', '', '', ''], correctIndex: 0 }] };
+  return { id, type: 'text', title: '', content: '' };
+}
+
+/** Leere Quiz-Frage */
+export function createQuizQuestion() {
+  return { id: genId(), text: '', options: ['', '', '', ''], correctIndex: 0 };
+}

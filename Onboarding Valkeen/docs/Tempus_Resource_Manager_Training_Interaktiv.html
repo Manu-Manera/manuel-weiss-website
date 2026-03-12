@@ -2662,10 +2662,29 @@
           logoLabelEl.innerHTML = p.length > 1 ? p[0] + ' <span>' + p.slice(1).join(' ') + '</span>' : cfg.logo.logoLabel;
         }
         const tabIds = ['tab-dashboard','tab-rm','tab-rmAdv','tab-pm','tab-pmAdv','tab-admin','tab-adminAdv'];
-        (cfg.tabs || []).forEach((t, i) => {
-          const btn = document.querySelector('[data-edit-id="' + tabIds[i] + '"]');
-          if (btn && t.label) btn.textContent = t.label;
-        });
+        const tabs = cfg.tabs || [];
+        if (tabs.length) {
+          const tabBar = document.querySelector('.training-tabs');
+          if (tabBar) {
+            tabBar.innerHTML = tabs.map((t, i) => {
+              const cls = (i === 0 ? 'active ' : '') + (t.advanced ? 'advanced ' : '');
+              return '<button type="button" class="' + cls + '" data-edit-id="tab-' + t.id + '" onclick="switchTraining(\'' + t.id.replace(/'/g, "\\'") + '\')">' + (t.label || t.id) + '</button>';
+            }).join('');
+          }
+          tabs.forEach(t => {
+            let panel = document.getElementById(t.id + 'Panel');
+            if (!panel) {
+              panel = document.createElement('div');
+              panel.id = t.id + 'Panel';
+              panel.className = 'training-panel';
+              document.querySelector('.container').appendChild(panel);
+            }
+          });
+          window.TRAINING_TABS = tabs.map(t => t.id);
+          document.querySelectorAll('.training-panel').forEach(p => p.classList.remove('active'));
+          const firstPanel = document.getElementById(tabs[0].id + 'Panel');
+          if (firstPanel) firstPanel.classList.add('active');
+        }
         const titleEl = document.querySelector('[data-edit-id="dashboard-title"]');
         if (titleEl && cfg.dashboard?.title) titleEl.textContent = cfg.dashboard.title;
         const subtitleEl = document.querySelector('[data-edit-id="dashboard-subtitle"]');
@@ -2681,7 +2700,66 @@
             if (cap && sc.caption) cap.textContent = sc.caption;
           });
         }
+        window.TRAINING_CONFIG = cfg;
+        if (cfg.pages) applyDynamicPages(cfg.pages);
       } catch (e) { console.warn('Training config:', e); }
+    }
+    function renderBlocks(blocks) {
+      if (!blocks || !blocks.length) return '';
+      let html = '';
+      blocks.forEach((b, i) => {
+        if (b.type === 'text') {
+          html += '<div class="theory-card"><h3>' + (b.title || '') + '</h3><div>' + (b.content || '').replace(/\n/g, '<br>') + '</div></div>';
+        } else if (b.type === 'image') {
+          const src = b.src && (b.src.startsWith('http') ? b.src : new URL(b.src, window.location.href).href);
+          html += '<div class="fig-inline"><div class="fig-item"><img src="' + (src || '') + '" alt="' + (b.alt || '') + '"><div class="fig-caption">' + (b.caption || '') + '</div></div></div>';
+        } else if (b.type === 'quiz' && b.questions && b.questions.length) {
+          html += '<div class="quiz-section" data-quiz="dyn' + i + '"><h3>📝 Quiz</h3>';
+          b.questions.forEach((q, qi) => {
+            const name = 'dyn_' + i + '_q' + qi;
+            html += '<div class="quiz-question"><p>' + (qi + 1) + '. ' + (q.text || '') + '</p><div class="quiz-options">';
+            (q.options || []).forEach((opt, oi) => {
+              html += '<label class="quiz-option"><input type="radio" name="' + name + '" value="' + String.fromCharCode(97 + oi) + '"> ' + (opt || '') + '</label>';
+            });
+            html += '</div></div>';
+          });
+          const correct = b.questions.map(q => String.fromCharCode(97 + (q.correctIndex || 0)));
+          html += '<button class="quiz-submit" onclick="checkQuizDyn(' + i + ',\'' + correct.join(',') + '\')">Antworten prüfen</button>';
+          html += '<div class="quiz-result" id="quizResultDyn' + i + '" style="display:none;"></div></div>';
+        }
+      });
+      return html;
+    }
+    function applyDynamicPages(pages) {
+      Object.keys(pages).forEach(tabId => {
+        const blocks = pages[tabId]?.blocks;
+        if (!blocks || !blocks.length) return;
+        const panel = document.getElementById(tabId + 'Panel');
+        if (panel) {
+          panel.innerHTML = '<div class="chapter active">' + renderBlocks(blocks) + '</div>';
+        }
+      });
+    }
+    function checkQuizDyn(idx, correctStr) {
+      const correct = correctStr.split(',');
+      const section = document.querySelector('[data-quiz="dyn' + idx + '"]');
+      if (!section) return;
+      let correctCount = 0;
+      correct.forEach((c, i) => {
+        const name = 'dyn_' + idx + '_q' + i;
+        const sel = section.querySelector('input[name="' + name + '"]:checked');
+        if (sel && sel.value === c) correctCount++;
+      });
+      const total = correct.length;
+      const pct = total ? Math.round((correctCount / total) * 100) : 0;
+      const resultEl = document.getElementById('quizResultDyn' + idx);
+      if (resultEl) {
+        resultEl.style.display = 'block';
+        resultEl.className = 'quiz-result ' + (pct === 100 ? 'good' : pct >= 50 ? 'partial' : 'poor');
+        resultEl.textContent = correctCount + '/' + total + ' richtig (' + pct + '%)' + (pct === 100 ? ' – Perfekt! 🎉' : pct >= 50 ? ' – Gut!' : ' – Nochmal versuchen!');
+      }
+      const btn = section.querySelector('.quiz-submit');
+      if (btn) btn.disabled = true;
     }
     applyTrainingConfig();
 
@@ -2743,17 +2821,15 @@
     };
 
     function switchTraining(which, chapter) {
-      const tabMap = { dashboard: 0, rm: 1, rmAdv: 2, pm: 3, pmAdv: 4, admin: 5, adminAdv: 6 };
+      const tabIds = window.TRAINING_TABS || ['dashboard', 'rm', 'rmAdv', 'pm', 'pmAdv', 'admin', 'adminAdv'];
+      const idx = tabIds.indexOf(which);
       document.querySelectorAll('.training-tabs button').forEach((b, i) => {
-        b.classList.toggle('active', tabMap[which] === i);
+        b.classList.toggle('active', i === idx);
       });
-      document.getElementById('dashboardPanel').classList.toggle('active', which === 'dashboard');
-      document.getElementById('rmPanel').classList.toggle('active', which === 'rm');
-      document.getElementById('rmAdvPanel').classList.toggle('active', which === 'rmAdv');
-      document.getElementById('pmPanel').classList.toggle('active', which === 'pm');
-      document.getElementById('pmAdvPanel').classList.toggle('active', which === 'pmAdv');
-      document.getElementById('adminPanel').classList.toggle('active', which === 'admin');
-      document.getElementById('adminAdvPanel').classList.toggle('active', which === 'adminAdv');
+      tabIds.forEach(id => {
+        const panel = document.getElementById(id + 'Panel');
+        if (panel) panel.classList.toggle('active', id === which);
+      });
       document.getElementById('progressBar').style.display = which === 'dashboard' ? 'none' : 'block';
       if (which === 'dashboard') { updateDashboardProgress(); return; }
       const ch = Math.max(1, Math.min(chapter || 1, TRAINING_TOTALS[which] || 1));
