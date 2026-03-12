@@ -340,6 +340,65 @@
       margin-bottom: 0.5rem;
     }
 
+    /* Musterlösung Card */
+    .solution-card {
+      background: linear-gradient(135deg, rgba(0, 212, 170, 0.08) 0%, var(--bg-card) 100%);
+      border: 1px solid rgba(0, 212, 170, 0.3);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      margin-top: 0.5rem;
+    }
+    .solution-card h4 {
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .solution-card h4::before { content: '✓'; background: var(--success); color: var(--bg-primary); width: 1.5rem; height: 1.5rem; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; }
+    .solution-card .begruendung { font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); font-style: italic; }
+
+    /* Dashboard */
+    .dashboard-panel {
+      padding: 0;
+    }
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+      margin-top: 2rem;
+    }
+    .dashboard-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .dashboard-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+    .dashboard-card.advanced { border-left: 4px solid var(--warning); }
+    .dashboard-card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary); }
+    .dashboard-card p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+    .dashboard-card .meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.75rem; }
+    .dashboard-hero {
+      text-align: center;
+      padding: 2rem 0 1rem;
+      margin-bottom: 1rem;
+    }
+    .dashboard-hero h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+    .dashboard-hero p { color: var(--text-secondary); font-size: 1rem; }
+
     /* Quiz Section */
     .quiz-section {
       background: linear-gradient(135deg, rgba(0, 212, 170, 0.06) 0%, var(--bg-card) 100%);
@@ -505,7 +564,8 @@
         <div class="logo-text">Tempus <span>Resource</span></div>
       </div>
       <div class="training-tabs">
-        <button type="button" class="active" onclick="switchTraining('rm')">Resource Manager</button>
+        <button type="button" class="active" onclick="switchTraining('dashboard')">Dashboard</button>
+        <button type="button" onclick="switchTraining('rm')">Resource Manager</button>
         <button type="button" class="advanced" onclick="switchTraining('rmAdv')">RM Advanced</button>
         <button type="button" onclick="switchTraining('pm')">Project Manager</button>
         <button type="button" class="advanced" onclick="switchTraining('pmAdv')">PM Advanced</button>
@@ -514,12 +574,53 @@
       </div>
     </header>
 
-    <div class="progress-bar">
+    <div class="progress-bar" id="progressBar" style="display: none;">
       <div class="progress-fill" id="progressFill" style="width: 11%;"></div>
     </div>
 
+    <!-- Dashboard -->
+    <div id="dashboardPanel" class="training-panel active dashboard-panel">
+      <div class="dashboard-hero">
+        <h1>Tempus Resource Training</h1>
+        <p>Wähle dein Training – Grundlagen oder Advanced mit schwierigen Aufgaben und Musterlösungen.</p>
+      </div>
+      <div class="dashboard-grid">
+        <a href="#" class="dashboard-card" onclick="switchTraining('rm'); return false;">
+          <h3>Resource Manager</h3>
+          <p>9 Kapitel: Anmeldung, Benachrichtigungen, Grid, Net Availability, Resource Requests, BPA Flatgrid, Reports.</p>
+          <span class="meta">⏱ ca. 90 Min · Grundlagen</span>
+        </a>
+        <a href="#" class="dashboard-card advanced" onclick="switchTraining('rmAdv'); return false;">
+          <h3>RM Advanced</h3>
+          <p>5 Kapitel: Kapazitätsanalyse, BPAFG Modi, Hybrid Planning, Resource Request Workflow, What-If & RAR.</p>
+          <span class="meta">⏱ ca. 2 h · Mit Musterlösungen</span>
+        </a>
+        <a href="#" class="dashboard-card" onclick="switchTraining('pm'); return false;">
+          <h3>Project Manager</h3>
+          <p>8 Kapitel: Anmeldung, Subscriptions, Grid, Single Project Allocation, BPAFG, Resource Requests.</p>
+          <span class="meta">⏱ ca. 75 Min · Grundlagen</span>
+        </a>
+        <a href="#" class="dashboard-card advanced" onclick="switchTraining('pmAdv'); return false;">
+          <h3>PM Advanced</h3>
+          <p>5 Kapitel: New Assignment Mode, Soft vs Hard Booking, Snapshots, RR Lifecycle, Ramp-up.</p>
+          <span class="meta">⏱ ca. 2 h · Mit Musterlösungen</span>
+        </a>
+        <a href="#" class="dashboard-card" onclick="switchTraining('admin'); return false;">
+          <h3>Admin</h3>
+          <p>8 Module: Rolle, Data Sync, Attribute, Views, Snapshots, Lizenzierung, Upgrades, Checkpoint.</p>
+          <span class="meta">⏱ ca. 2,5 h · Grundlagen</span>
+        </a>
+        <a href="#" class="dashboard-card advanced" onclick="switchTraining('adminAdv'); return false;">
+          <h3>Admin Advanced</h3>
+          <p>5 Module: Data Sync Troubleshooting, Security Groups, View-Konfiguration, Snapshot-Strategie, Upgrade.</p>
+          <span class="meta">⏱ ca. 2,5 h · Mit Musterlösungen</span>
+        </a>
+      </div>
+      <p style="text-align: center; margin-top: 2rem;"><a href="Tempus_Workflow_Einrichtung.html" style="color: var(--accent);">→ Workflow-Einrichtung</a></p>
+    </div>
+
     <!-- Resource Manager Training -->
-    <div id="rmPanel" class="training-panel active">
+    <div id="rmPanel" class="training-panel">
     <div class="use-case-banner">
       <h2>🎬 Stern & Co – Die Agentur</h2>
       <p>Du bist Resource Manager bei «Stern & Co», einer kreativen Agentur. Dein Team besteht aus prominenten Persönlichkeiten – und du verteilst sie optimal auf Projekte!</p>
@@ -1754,6 +1855,13 @@
             <li>Erstelle einen Umverteilungsplan mit mindestens 2 Alternativ-Ressourcen.</li>
           </ol>
         </div>
+        <div class="solution-card">
+          <h4>Musterlösung</h4>
+          <p><strong>1. Net Availability:</strong> Base 80% − Project 90% − NPA 10% = −20%. Net Availability ist negativ (0% angezeigt, da Tempus keine negativen Werte zeigt) – Brad ist überbucht.</p>
+          <p><strong>2. Priorisierung:</strong> Zuerst die Zuweisung mit niedrigster Priorität reduzieren (z.B. «Blockbuster App» 20% → 0% oder verschieben). Kriterien: Projekt-Priorität, Deadline, Kritikalität.</p>
+          <p><strong>3. Umverteilung:</strong> 20% an Roger Federer (DevOps, verfügbar) oder Dwayne Johnson (IT) umverteilen. Beide haben Net Availability &gt; 20%.</p>
+          <p class="begruendung"><strong>Begründung:</strong> Überbuchung entsteht, wenn Project + NPA &gt; Base. Die Reduktion muss bei der am wenigsten kritischen Zuweisung erfolgen. Alternativ-Ressourcen müssen passende Skills und ausreichende Verfügbarkeit haben.</p>
+        </div>
         <div class="quiz-section" data-quiz="rmAdv1">
           <h3>📝 Quiz Advanced 1</h3>
           <div class="quiz-question">
@@ -1793,6 +1901,12 @@
           <h3>Aufgabe: Modus-Wahl begründen</h3>
           <p><em>Ein PM beschwert sich: «Ich will alle Ressourcen meines Projekts sehen und schnell 5 neue Zuweisungen hinzufügen.» Ein RM will «alle Projekte von Taylor Swift sehen und eine Überbuchung auflösen». Welchen Modus empfiehlst du jeweils – und warum nicht den anderen?</em></p>
         </div>
+        <div class="solution-card">
+          <h4>Musterlösung</h4>
+          <p><strong>PM:</strong> PM Mode – eine Zeile pro Projekt, alle Ressourcen des Projekts sichtbar. New Assignment Mode für die 5 Zuweisungen. RM Mode wäre falsch, da er ressourcen-zentriert ist.</p>
+          <p><strong>RM:</strong> RM Mode – eine Zeile pro Ressource (Taylor Swift), alle ihre Projekte in einer Zeile. So siehst du sofort die Gesamtauslastung und kannst Überbuchung auflösen. PM Mode zeigt nur ein Projekt pro Zeile.</p>
+          <p class="begruendung"><strong>Begründung:</strong> Die Modus-Wahl hängt von der Perspektive ab: Projekt-zentriert (PM) vs. Ressourcen-zentriert (RM). Default ist flexibel, aber für klare Aufgaben ist der spezifische Modus effizienter.</p>
+        </div>
         <div class="quiz-section" data-quiz="rmAdv2">
           <h3>📝 Quiz Advanced 2</h3>
           <div class="quiz-question">
@@ -1830,6 +1944,13 @@
           <h3>Aufgabe: Generic zu Named konvertieren</h3>
           <p><em>Projekt «Cloud Migration» hat 3 Generic Resources: «2x Java Dev», «1x DevOps». Du hast 2 Java-Entwickler und 1 DevOps verfügbar. Du musst die Generics durch Named ersetzen und dabei Skills, Verfügbarkeit und Priorität berücksichtigen. Dokumentiere deine Entscheidung.</em></p>
         </div>
+        <div class="solution-card">
+          <h4>Musterlösung</h4>
+          <p><strong>2x Java Dev:</strong> Brad Pitt + Roger Federer (beide Java-Skills, Net Availability prüfen). Falls einer überbucht: Elon Musk (R&D, Java) als Alternative.</p>
+          <p><strong>1x DevOps:</strong> Roger Federer (DevOps-Skill) – falls er schon für Java genutzt wird, Dwayne Johnson (IT/DevOps) prüfen.</p>
+          <p><strong>Reihenfolge:</strong> Zuerst DevOps (nur 1 Stelle), dann die 2 Java-Devs. Skill-Matching über Ressourcen-Attribute, Verfügbarkeit über Net Availability.</p>
+          <p class="begruendung"><strong>Begründung:</strong> Generic → Named erfolgt über «Replace» oder manuelle Zuweisung. Skills müssen passen, Net Availability muss ausreichen. Bei Konflikten: Priorität des Projekts und Kritikalität der Rolle entscheiden.</p>
+        </div>
         <div class="quiz-section" data-quiz="rmAdv3">
           <h3>📝 Quiz Advanced 3</h3>
           <div class="quiz-question">
@@ -1859,6 +1980,13 @@
           <h3>Aufgabe: Partial Request handhaben</h3>
           <p><em>Ein PM fordert 100% eines Java Dev für 3 Monate. Du hast nur 50% verfügbar. Du musst die Request als Partial approven, eine Alternative vorschlagen und dokumentieren, warum du welche Entscheidung getroffen hast.</em></p>
         </div>
+        <div class="solution-card">
+          <h4>Musterlösung</h4>
+          <p><strong>1. Partial Approval:</strong> Request als «Partial» approven – 50% statt 100% zuweisen. Im Kommentar: «Nur 50% verfügbar. Alternative: 2x 50% von Brad Pitt + Roger Federer.»</p>
+          <p><strong>2. Alternative:</strong> Zwei Java-Devs mit je 50% vorschlagen, falls Kapazität vorhanden. Oder: Zeitraum erweitern (6 Monate à 50%).</p>
+          <p><strong>3. Dokumentation:</strong> «Partial gewählt, weil: (a) 50% sofort verfügbar, (b) PM kann mit 50% starten oder Alternative annehmen, (c) Rejection wäre zu hart – PM hat Optionen.»</p>
+          <p class="begruendung"><strong>Begründung:</strong> Partial ist besser als Rejection, wenn der PM mit weniger Kapazität starten kann. Die Alternative muss konkret und umsetzbar sein. Kommunikation ist entscheidend.</p>
+        </div>
         <div class="quiz-section" data-quiz="rmAdv4">
           <h3>📝 Quiz Advanced 4</h3>
           <div class="quiz-question">
@@ -1886,6 +2014,13 @@
         <div class="task-card">
           <h3>Aufgabe: What-If Szenario</h3>
           <p><em>Du simulierst: «Projekt X verzögert sich um 2 Monate – alle Ressourcen bleiben gebunden.» Welche Auswirkungen hat das auf die Net Availability für dein Team? Erstelle ein What-If-Szenario und dokumentiere die Ergebnisse.</em></p>
+        </div>
+        <div class="solution-card">
+          <h4>Musterlösung</h4>
+          <p><strong>1. What-If anlegen:</strong> Neues What-If-Szenario erstellen, Projekt X auswählen, Enddatum um 2 Monate verschieben (Clone & Shift oder manuell).</p>
+          <p><strong>2. Auswirkungen:</strong> Alle Ressourcen von Projekt X bleiben 2 Monate länger gebunden → Net Availability für diese Ressourcen sinkt in den betroffenen Monaten. Andere Projekte, die diese Ressourcen brauchen, haben weniger Kapazität.</p>
+          <p><strong>3. Dokumentation:</strong> «Ressource A: Net Av. sinkt von 20% auf 0% in Monat 5–6. Ressource B: Überbuchung in Monat 6. Konflikt mit Projekt Y.»</p>
+          <p class="begruendung"><strong>Begründung:</strong> What-If ändert keine Produktivdaten. Du siehst sofort die Kaskadeneffekte: Welche Ressourcen sind betroffen? Welche Projekte kollidieren? Das ermöglicht proaktive Entscheidungen (z.B. Projekt Y verschieben oder andere Ressource suchen).</p>
         </div>
         <div class="quiz-section" data-quiz="rmAdv5">
           <h3>📝 Quiz Advanced 5</h3>
@@ -1943,6 +2078,12 @@
           <h3>Aufgabe: 10 Zuweisungen in 5 Min</h3>
           <p><em>Du musst für «Blockbuster App 2025» 10 neue Zuweisungen erstellen: 3 Devs (je 100%), 2 Designer (je 50%), 1 PM (25%). Nutze den New Assignment Mode – dokumentiere die Schritte und Zeit.</em></p>
         </div>
+        <div class="solution-card">
+          <h4>Musterlösung</h4>
+          <p><strong>Schritte:</strong> (1) BPAFG öffnen, PM Mode wählen. (2) New Assignment Mode aktivieren. (3) Projekt «Blockbuster App 2025» auswählen. (4) Für jede Zuweisung: Ressource + Zeitraum + Allocation eintragen. Reihenfolge: 3× Dev (Brad, Roger, Elon) 100%, 2× Designer (Heidi, Taylor) 50%, 1× PM (Meryl) 25%.</p>
+          <p><strong>Zeit:</strong> Ca. 30 Sekunden pro Zuweisung = 5 Min für 10. Ohne Checkout deutlich schneller als Single Project Allocation.</p>
+          <p class="begruendung"><strong>Begründung:</strong> New Assignment Mode umgeht den Projekt-Checkout – du arbeitest direkt im Flatgrid. PM Mode zeigt das Projekt, du fügst Zeilen hinzu. Bulk-Erstellung spart Zeit bei vielen Zuweisungen.</p>
+        </div>
         <div class="quiz-section" data-quiz="pmAdv1">
           <h3>📝 Quiz Advanced 1</h3>
           <div class="quiz-question">
@@ -1970,6 +2111,16 @@
         <div class="task-card">
           <h3>Aufgabe: Booking-Strategie</h3>
           <p><em>Du planst 6 Monate im Voraus. Wann nutzt du Soft, wann Hard? Dokumentiere eine Entscheidungsmatrix für dein Projekt.</em></p>
+        </div>
+        <div class="solution-card">
+          <h4>Musterlösung</h4>
+          <p><strong>Entscheidungsmatrix:</strong></p>
+          <ul style="margin: 0.5rem 0 0 1rem;">
+            <li><strong>Soft:</strong> Planung &gt; 3 Monate im Voraus, unbestätigte Ressource, Budget noch nicht freigegeben, Projekt in früher Phase</li>
+            <li><strong>Hard:</strong> Planung &lt; 3 Monate, Ressource bestätigt, PMO-Freigabe, Projekt in Execution</li>
+          </ul>
+          <p><strong>Beispiel 6 Monate:</strong> Monat 1–2: Soft (unsicher). Monat 3–4: Soft, bei Freigabe → Hard. Monat 5–6: Hard für kritische Ressourcen.</p>
+          <p class="begruendung"><strong>Begründung:</strong> Soft signalisiert «vorläufig» – RM kann umplanen. Hard ist verbindlich – Änderungen erfordern Abstimmung. Je näher der Zeitpunkt, desto mehr Hard. Die Grenze (z.B. 3 Monate) ist organisationsspezifisch.</p>
         </div>
         <div class="quiz-section" data-quiz="pmAdv2">
           <h3>📝 Quiz Advanced 2</h3>
@@ -1999,6 +2150,12 @@
           <h3>Aufgabe: Plan vs. Baseline</h3>
           <p><em>Du vergleichst den aktuellen Plan mit der Q1-Baseline. Welche Projekte haben sich verzögert? Welche Ressourcen sind neu? Erstelle eine Analyse.</em></p>
         </div>
+        <div class="solution-card">
+          <h4>Musterlösung</h4>
+          <p><strong>Vorgehen:</strong> (1) Snapshot «Q1-Baseline» öffnen. (2) Aktuellen Plan laden. (3) Snapshot-Vergleich aktivieren (Compare). (4) Spalten: Projekt, Baseline-Enddatum, Aktuelles Enddatum, Delta. (5) Filter: Delta ≠ 0 für Verzögerungen.</p>
+          <p><strong>Analyse:</strong> «Projekt X: +2 Monate Verzögerung. Ursache: Ressource A abgesprungen. Projekt Y: Neue Ressource B (ersetzt C). Projekt Z: Unverändert.»</p>
+          <p class="begruendung"><strong>Begründung:</strong> Snapshots sind Zeitpunkt-Fotos. Der Vergleich zeigt Abweichungen – wichtig für SteerCos, PMO-Reporting und Kapazitätsplanung. Ohne Baseline keine Aussage über «Plan vs. Soll».</p>
+        </div>
         <div class="quiz-section" data-quiz="pmAdv3">
           <h3>📝 Quiz Advanced 3</h3>
           <div class="quiz-question">
@@ -2025,6 +2182,13 @@
         <div class="task-card">
           <h3>Aufgabe: Partial Request handhaben</h3>
           <p><em>Deine Request wurde als Partial approviert – 50% statt 100%. Du musst entscheiden: Akzeptieren oder alternative Ressource anfragen?</em></p>
+        </div>
+        <div class="solution-card">
+          <h4>Musterlösung</h4>
+          <p><strong>Option A – Akzeptieren:</strong> Wenn 50% ausreichen (z.B. Phase kann mit Teilzeit starten, andere Ressource ergänzt). Zuweisung prüfen, ggf. zweite Ressource für restliche 50% anfordern.</p>
+          <p><strong>Option B – Alternative anfragen:</strong> Neue Resource Request: «2× 50% Java Dev» oder «1× 100% ab Monat 4». Begründung im Request vermerken.</p>
+          <p><strong>Entscheidung:</strong> Kritische Phase? → Option B. Flexibel? → Option A. Immer: RM-Kommentar lesen, ggf. Rückfrage stellen.</p>
+          <p class="begruendung"><strong>Begründung:</strong> Partial ist kein Rejection – der RM hat eine Lösung angeboten. Als PM musst du bewerten, ob sie passt. Kommunikation mit RM vermeidet Missverständnisse.</p>
         </div>
         <div class="quiz-section" data-quiz="pmAdv4">
           <h3>📝 Quiz Advanced 4</h3>
@@ -2053,6 +2217,12 @@
         <div class="task-card">
           <h3>Aufgabe: Ramp-up planen</h3>
           <p><em>Ein neuer Entwickler startet am 1.4. – 30% Apr, 60% Mai, 100% Juni. Erstelle die Zuweisung mit korrekter Ramp-up-Kurve.</em></p>
+        </div>
+        <div class="solution-card">
+          <h4>Musterlösung</h4>
+          <p><strong>Vorgehen:</strong> Single Project Allocation oder BPAFG. Zuweisung anlegen: Zeitraum 01.04.–30.06. In den Monatsspalten: April 30%, Mai 60%, Juni 100% eintragen (Stunden oder % je nach View).</p>
+          <p><strong>Alternative (Stunden):</strong> Bei 160h/Monat: Apr 48h, Mai 96h, Jun 160h. Tempus berechnet die Gesamtstunden automatisch.</p>
+          <p class="begruendung"><strong>Begründung:</strong> Ramp-up modelliert die Einarbeitung – der Entwickler ist nicht sofort 100% produktiv. Die Staffelung hilft bei realistischer Kapazitätsplanung und vermeidet Überbuchung in den ersten Wochen.</p>
         </div>
         <div class="quiz-section" data-quiz="pmAdv5">
           <h3>📝 Quiz Advanced 5</h3>
@@ -2111,6 +2281,12 @@
           <h3>Aufgabe: Sync-Fehler analysieren</h3>
           <p><em>Das Log zeigt: «Mapping error: Resource 'Primary Role' not found». Die HR-Quelle hat ein Feld «Rolle». Du musst das Mapping korrigieren und dokumentieren, warum der Fehler auftrat.</em></p>
         </div>
+        <div class="solution-card">
+          <h4>Musterlösung</h4>
+          <p><strong>Ursache:</strong> Das Feld «Primary Role» in Tempus ist nicht mit dem Quellfeld «Rolle» aus dem HR-System gemappt. Oder: Das Quellfeld heisst anders (z.B. «role», «JobTitle»).</p>
+          <p><strong>Lösung:</strong> Data Sync Konfiguration öffnen → Resource Mapping → «Primary Role» dem Quellfeld «Rolle» zuordnen. Falls «Rolle» nicht existiert: Feldnamen in der Quelle prüfen (Case-sensitivity, Leerzeichen).</p>
+          <p class="begruendung"><strong>Begründung:</strong> Mapping-Fehler entstehen bei Feldnamen-Unterschieden oder fehlenden Zuordnungen. Die Sync-Log-Meldung nennt das Ziel-Feld – in der Konfiguration muss die Quelle korrekt verknüpft werden. Nach Änderung: Sync erneut ausführen.</p>
+        </div>
         <div class="quiz-section" data-quiz="adminAdv1">
           <h3>📝 Quiz Advanced 1</h3>
           <div class="quiz-question">
@@ -2147,6 +2323,14 @@
           <h3>Aufgabe: Berechtigungsmatrix</h3>
           <p><em>Du erstellst eine Matrix: PMO (alle Projekte lesen), RM (alle Ressourcen), PM (nur eigene Projekte), Developer (nur Zuweisungen). Welche Security Groups und Lizenztypen?</em></p>
         </div>
+        <div class="solution-card">
+          <h4>Musterlösung</h4>
+          <p><strong>PMO:</strong> Executive User (nur Lesen), Security Group mit Zugriff auf Project Management, Reports. Filter: alle Projekte.</p>
+          <p><strong>RM:</strong> Full User, Security Group Resource Management. Zugriff auf alle Ressourcen, BPAFG, Resource Requests.</p>
+          <p><strong>PM:</strong> Full User, Security Group Project Management. Filter: «My projects» oder projektbasierte Berechtigung.</p>
+          <p><strong>Developer:</strong> Timesheet User. Sieht nur eigene Zuweisungen, kann Stunden erfassen. Kein Zugriff auf Portfolio-Planung.</p>
+          <p class="begruendung"><strong>Begründung:</strong> Lizenztyp bestimmt Lesen/Schreiben (Full vs Executive vs Timesheet). Security Groups begrenzen die sichtbaren Bereiche. Die Kombination ergibt die Berechtigungsmatrix.</p>
+        </div>
         <div class="quiz-section" data-quiz="adminAdv2">
           <h3>📝 Quiz Advanced 2</h3>
           <div class="quiz-question">
@@ -2176,6 +2360,13 @@
           <h3>Aufgabe: Überbuchungs-View</h3>
           <p><em>Du erstellst eine RM-View, die nur überbuchte Ressourcen zeigt, gruppiert nach Team, mit Spalten: Name, Net Availability, Project Availability, Überbuchung %. Dokumentiere die Konfiguration.</em></p>
         </div>
+        <div class="solution-card">
+          <h4>Musterlösung</h4>
+          <p><strong>Spalten:</strong> Name, Primary Role, Team, Base Capacity, Project Availability, Net Availability, ggf. «Überbuchung %» (berechnet: Project − Base).</p>
+          <p><strong>Filter:</strong> Net Availability &lt; 0 ODER Project Availability &gt; Base Capacity. So werden nur überbuchte Ressourcen angezeigt.</p>
+          <p><strong>Gruppierung:</strong> Group By «Team» – so siehst du pro Team, wer überbucht ist.</p>
+          <p class="begruendung"><strong>Begründung:</strong> Die View dient dem RM zur schnellen Identifikation von Überbuchungen. Der Filter muss die Bedingung «überbucht» korrekt abbilden. Gruppierung nach Team ermöglicht priorisierte Bearbeitung (z.B. kritisches Team zuerst).</p>
+        </div>
         <div class="quiz-section" data-quiz="adminAdv3">
           <h3>📝 Quiz Advanced 3</h3>
           <div class="quiz-question">
@@ -2204,6 +2395,14 @@
           <h3>Aufgabe: Snapshot-Strategie</h3>
           <p><em>Du definierst eine Snapshot-Strategie für Releases: Wann welcher Snapshot? Wer erstellt? Wer hat Zugriff?</em></p>
         </div>
+        <div class="solution-card">
+          <h4>Musterlösung</h4>
+          <p><strong>Q-Baseline:</strong> Erster Werktag des Quartals. Admin erstellt. Zugriff: PMO, RM, PM (für Vergleiche).</p>
+          <p><strong>Pre-Release:</strong> 1–2 Tage vor jedem Upgrade. Admin erstellt. Zugriff: Admin (für Rollback-Vergleich).</p>
+          <p><strong>Monats-Snapshot:</strong> Letzter Werktag des Monats. Admin oder automatisiert. Zugriff: PMO für Reporting.</p>
+          <p><strong>Naming:</strong> «Q1-2025-Baseline», «Pre-Release-2025-03», «2025-02-Monat».</p>
+          <p class="begruendung"><strong>Begründung:</strong> Klare Regeln verhindern, dass Snapshots vergessen werden. Pre-Release ist kritisch für Upgrades – bei Problemen kann verglichen werden. Die Dokumentation ist Teil der Admin-Prozesse.</p>
+        </div>
         <div class="quiz-section" data-quiz="adminAdv4">
           <h3>📝 Quiz Advanced 4</h3>
           <div class="quiz-question">
@@ -2231,6 +2430,13 @@
         <div class="task-card">
           <h3>Aufgabe: Upgrade-Checkliste</h3>
           <p><em>Ein Major-Release steht an. Erstelle eine Checkliste mit 15 Punkten für Sandbox-Test, Backup, Kommunikation und Rollback.</em></p>
+        </div>
+        <div class="solution-card">
+          <h4>Musterlösung</h4>
+          <p><strong>Daten:</strong> (1) Pre-Release-Snapshot erstellen, (2) Backup bestätigen, (3) Release-Notes lesen, (4) Breaking Changes prüfen, (5) Custom Fields/Views auf Kompatibilität prüfen.</p>
+          <p><strong>Prozess:</strong> (6) Sandbox-Upgrade durchführen, (7) Kritische Funktionen testen, (8) User Acceptance in Sandbox, (9) Downtime-Fenster festlegen, (10) Go-Live-Termin kommunizieren.</p>
+          <p><strong>Technik:</strong> (11) Upgrade in Produktiv ausführen, (12) Post-Upgrade-Checks, (13) Rollback-Plan bereithalten, (14) Rollback testen (optional), (15) Dokumentation aktualisieren.</p>
+          <p class="begruendung"><strong>Begründung:</strong> Sandbox zuerst verhindert Überraschungen in Produktiv. Backup und Snapshot ermöglichen Rollback. Kommunikation reduziert User-Frust. Die 15 Punkte decken Daten, Prozess, Technik und Schulung ab.</p>
         </div>
         <div class="quiz-section" data-quiz="adminAdv5">
           <h3>📝 Quiz Advanced 5</h3>
@@ -2270,16 +2476,19 @@
     };
 
     function switchTraining(which) {
-      const tabMap = { rm: 0, rmAdv: 1, pm: 2, pmAdv: 3, admin: 4, adminAdv: 5 };
+      const tabMap = { dashboard: 0, rm: 1, rmAdv: 2, pm: 3, pmAdv: 4, admin: 5, adminAdv: 6 };
       document.querySelectorAll('.training-tabs button').forEach((b, i) => {
         b.classList.toggle('active', tabMap[which] === i);
       });
+      document.getElementById('dashboardPanel').classList.toggle('active', which === 'dashboard');
       document.getElementById('rmPanel').classList.toggle('active', which === 'rm');
       document.getElementById('rmAdvPanel').classList.toggle('active', which === 'rmAdv');
       document.getElementById('pmPanel').classList.toggle('active', which === 'pm');
       document.getElementById('pmAdvPanel').classList.toggle('active', which === 'pmAdv');
       document.getElementById('adminPanel').classList.toggle('active', which === 'admin');
       document.getElementById('adminAdvPanel').classList.toggle('active', which === 'adminAdv');
+      document.getElementById('progressBar').style.display = which === 'dashboard' ? 'none' : 'block';
+      if (which === 'dashboard') return;
       if (which === 'rm') { buildChapterNav(); showChapter(1); }
       else if (which === 'rmAdv') { buildChapterNavRmAdv(); showChapterRmAdv(1); }
       else if (which === 'pm') { buildChapterNavPM(); showChapterPM(1); }
@@ -2599,7 +2808,9 @@
     else if (hash === '#rmAdv') switchTraining('rmAdv');
     else if (hash === '#pmAdv') switchTraining('pmAdv');
     else if (hash === '#adminAdv') switchTraining('adminAdv');
-    else buildChapterNav();
+    else if (hash === '#rm') switchTraining('rm');
+    else if (hash === '#pm') switchTraining('pm');
+    else switchTraining('dashboard');
   </script>
 </body>
 </html>
