@@ -8,6 +8,7 @@ import AICoach from './pages/AICoach';
 import Calendar from './pages/Calendar';
 import Resources from './pages/Resources';
 import Report from './pages/Report';
+import Training from './pages/Training';
 import Flashcards from './pages/Flashcards';
 import SSOSetup from './pages/SSOSetup';
 
@@ -68,6 +69,7 @@ function App() {
           <Route path="calendar" element={<Calendar />} />
           <Route path="resources" element={<Resources />} />
           <Route path="report" element={<Report />} />
+          <Route path="training" element={<Training />} />
           <Route path="sso-setup" element={<SSOSetup />} />
         </Route>
       </Routes>

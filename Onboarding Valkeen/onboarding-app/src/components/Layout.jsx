@@ -8,6 +8,7 @@ import {
   Calendar, 
   BookOpen,
   Mail,
+  GraduationCap,
   Settings,
   Sparkles,
   Shield,
@@ -29,6 +30,7 @@ const navItems = [
   { path: '/calendar', icon: Calendar, label: 'Kalender', description: 'Meilensteine' },
   { path: '/resources', icon: BookOpen, label: 'Ressourcen', description: 'Lernmaterial' },
   { path: '/report', icon: Mail, label: 'Report', description: 'Exportieren' },
+  { path: '/training', icon: GraduationCap, label: 'Training', description: 'Tempus RM/PM/Admin' },
 ];
 
 export default function Layout() {
