@@ -738,6 +738,41 @@ export class WebsiteApiStack extends cdk.Stack {
     onboardingProgressResource.addMethod('POST', new apigateway.LambdaIntegration(onboardingProgressLambda));
 
     // ========================================
+    // TRAINING ADMIN (Tempus Training Inhalte bearbeiten)
+    // ========================================
+
+    const trainingAdminLambda = new lambda.Function(this, 'TrainingAdminFunction', {
+      functionName: 'website-training-admin-api',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('../lambda/training-admin-api'),
+      role: lambdaRole,
+      timeout: cdk.Duration.seconds(30),
+      memorySize: 256,
+      environment: {
+        TRAINING_BUCKET: 'manuel-weiss-website'
+      }
+    });
+
+    trainingAdminLambda.addToRolePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['s3:GetObject', 's3:PutObject', 's3:ListBucket'],
+      resources: [
+        'arn:aws:s3:::manuel-weiss-website',
+        'arn:aws:s3:::manuel-weiss-website/training-admin/*'
+      ]
+    }));
+
+    const trainingAdminResource = this.api.root.addResource('training-admin');
+    const trainingAdminConfigResource = trainingAdminResource.addResource('config');
+    trainingAdminConfigResource.addMethod('GET', new apigateway.LambdaIntegration(trainingAdminLambda));
+    trainingAdminConfigResource.addMethod('PUT', new apigateway.LambdaIntegration(trainingAdminLambda));
+    const trainingAdminUploadResource = trainingAdminResource.addResource('upload-url');
+    trainingAdminUploadResource.addMethod('POST', new apigateway.LambdaIntegration(trainingAdminLambda));
+    const trainingAdminScreenshotsResource = trainingAdminResource.addResource('screenshots');
+    trainingAdminScreenshotsResource.addMethod('GET', new apigateway.LambdaIntegration(trainingAdminLambda));
+
+    // ========================================
     // FLASHCARDS (KI-Lernkarten mit Leitner-System)
     // ========================================
 

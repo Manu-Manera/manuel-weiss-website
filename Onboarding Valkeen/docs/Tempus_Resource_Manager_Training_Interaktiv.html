@@ -654,17 +654,17 @@
   <div class="container">
     <header>
       <div class="logo-section">
-        <div class="tempus-logo">TR</div>
-        <div class="logo-text">Tempus <span>Resource</span></div>
+        <div class="tempus-logo" data-edit-id="logo-text">TR</div>
+        <div class="logo-text" data-edit-id="logo-label">Tempus <span>Resource</span></div>
       </div>
       <div class="training-tabs">
-        <button type="button" class="active" onclick="switchTraining('dashboard')">Dashboard</button>
-        <button type="button" onclick="switchTraining('rm')">Resource Manager</button>
-        <button type="button" class="advanced" onclick="switchTraining('rmAdv')">RM Advanced</button>
-        <button type="button" onclick="switchTraining('pm')">Project Manager</button>
-        <button type="button" class="advanced" onclick="switchTraining('pmAdv')">PM Advanced</button>
-        <button type="button" onclick="switchTraining('admin')">Admin</button>
-        <button type="button" class="advanced" onclick="switchTraining('adminAdv')">Admin Advanced</button>
+        <button type="button" class="active" data-edit-id="tab-dashboard" onclick="switchTraining('dashboard')">Dashboard</button>
+        <button type="button" data-edit-id="tab-rm" onclick="switchTraining('rm')">Resource Manager</button>
+        <button type="button" class="advanced" data-edit-id="tab-rmAdv" onclick="switchTraining('rmAdv')">RM Advanced</button>
+        <button type="button" data-edit-id="tab-pm" onclick="switchTraining('pm')">Project Manager</button>
+        <button type="button" class="advanced" data-edit-id="tab-pmAdv" onclick="switchTraining('pmAdv')">PM Advanced</button>
+        <button type="button" data-edit-id="tab-admin" onclick="switchTraining('admin')">Admin</button>
+        <button type="button" class="advanced" data-edit-id="tab-adminAdv" onclick="switchTraining('adminAdv')">Admin Advanced</button>
       </div>
     </header>
 
@@ -675,8 +675,8 @@
     <!-- Dashboard -->
     <div id="dashboardPanel" class="training-panel active dashboard-panel">
       <div class="dashboard-hero">
-        <h1>Tempus Resource Training</h1>
-        <p>Wähle dein Training – Grundlagen oder Advanced mit schwierigen Aufgaben und Musterlösungen.</p>
+        <h1 data-edit-id="dashboard-title">Tempus Resource Training</h1>
+        <p data-edit-id="dashboard-subtitle">Wähle dein Training – Grundlagen oder Advanced mit schwierigen Aufgaben und Musterlösungen.</p>
       </div>
       <div class="dashboard-overall" id="dashboardOverall">
         <div class="dashboard-overall-ring" id="overallRing">
@@ -816,9 +816,9 @@
           </ul>
           <div class="ui-guide">📍 <strong>Wo?</strong> Login-Button zentriert · Tiles unter der Task Bar</div>
           <div class="fig-inline">
-            <div class="fig-item"><img src="screenshots/inline/login_p7_2.png" alt="Homepage"><div class="fig-caption">Homepage mit Kacheln (Project Management, Resource Management, etc.)</div></div>
-            <div class="fig-item"><img src="screenshots/inline/login_p7_1.png" alt="Login"><div class="fig-caption">Login-Seite mit Healthineers ID Login Button</div></div>
-            <div class="fig-item"><img src="screenshots/inline/homepage_p8_4.png" alt="Filter"><div class="fig-caption">Projektliste mit Suchfeld und Filter</div></div>
+            <div class="fig-item" data-edit-id="login_p7_2"><img src="screenshots/inline/login_p7_2.png" alt="Homepage"><div class="fig-caption">Homepage mit Kacheln (Project Management, Resource Management, etc.)</div></div>
+            <div class="fig-item" data-edit-id="login_p7_1"><img src="screenshots/inline/login_p7_1.png" alt="Login"><div class="fig-caption">Login-Seite mit Healthineers ID Login Button</div></div>
+            <div class="fig-item" data-edit-id="homepage_p8_4"><img src="screenshots/inline/homepage_p8_4.png" alt="Filter"><div class="fig-caption">Projektliste mit Suchfeld und Filter</div></div>
           </div>
         </div>
         <div class="task-card">
@@ -881,8 +881,8 @@
           </ul>
           <div class="ui-guide">📍 <strong>Wo?</strong> Username oben rechts → Subscriptions → Tab Resource Request</div>
           <div class="fig-inline">
-            <div class="fig-item"><img src="screenshots/inline/subscriptions_p10_2.png" alt="Subscriptions"><div class="fig-caption">Resource request management → Submitted aktivieren</div></div>
-            <div class="fig-item"><img src="screenshots/inline/subscriptions_p10_1.png" alt="Resource Request Tab"><div class="fig-caption">Tab «Resource Request» im Dialog</div></div>
+            <div class="fig-item" data-edit-id="subscriptions_p10_2"><img src="screenshots/inline/subscriptions_p10_2.png" alt="Subscriptions"><div class="fig-caption">Resource request management → Submitted aktivieren</div></div>
+            <div class="fig-item" data-edit-id="subscriptions_p10_1"><img src="screenshots/inline/subscriptions_p10_1.png" alt="Resource Request Tab"><div class="fig-caption">Tab «Resource Request» im Dialog</div></div>
           </div>
         </div>
         <div class="task-card">
@@ -934,9 +934,9 @@
           </ul>
           <div class="ui-guide">📍 <strong>Wo?</strong> Resource Management Tile → Grid, Suchfeld oben links</div>
           <div class="fig-inline">
-            <div class="fig-item"><img src="screenshots/inline/resource_grid_p15_5.png" alt="Attributes"><div class="fig-caption">Ressource → SHS IT Attributes</div></div>
-            <div class="fig-item"><img src="screenshots/inline/resource_grid_p16_1.png" alt="Workflow"><div class="fig-caption">Attributes: Resource Managers, Is Resource Manager</div></div>
-            <div class="fig-item"><img src="screenshots/inline/resource_grid_p12_3.png" alt="Kontextmenü"><div class="fig-caption">Kontextmenü (Attributes & Identity, Capacity, Sheets)</div></div>
+            <div class="fig-item" data-edit-id="resource_grid_p15_5"><img src="screenshots/inline/resource_grid_p15_5.png" alt="Attributes"><div class="fig-caption">Ressource → SHS IT Attributes</div></div>
+            <div class="fig-item" data-edit-id="resource_grid_p16_1"><img src="screenshots/inline/resource_grid_p16_1.png" alt="Workflow"><div class="fig-caption">Attributes: Resource Managers, Is Resource Manager</div></div>
+            <div class="fig-item" data-edit-id="resource_grid_p12_3"><img src="screenshots/inline/resource_grid_p12_3.png" alt="Kontextmenü"><div class="fig-caption">Kontextmenü (Attributes & Identity, Capacity, Sheets)</div></div>
           </div>
         </div>
         <div class="task-card">
@@ -997,8 +997,8 @@
           </ul>
           <div class="ui-guide">📍 <strong>Wo?</strong> Oben rechts im Resource Management Grid → Net Availability</div>
           <div class="fig-inline">
-            <div class="fig-item"><img src="screenshots/inline/net_availability_p18_2.png" alt="Net Availability"><div class="fig-caption">Net Availability Button & Options</div></div>
-            <div class="fig-item"><img src="screenshots/inline/net_availability_p18_4.png" alt="Impact Assessment"><div class="fig-caption">Impact Assessment beim Klick auf Zelle</div></div>
+            <div class="fig-item" data-edit-id="net_availability_p18_2"><img src="screenshots/inline/net_availability_p18_2.png" alt="Net Availability"><div class="fig-caption">Net Availability Button & Options</div></div>
+            <div class="fig-item" data-edit-id="net_availability_p18_4"><img src="screenshots/inline/net_availability_p18_4.png" alt="Impact Assessment"><div class="fig-caption">Impact Assessment beim Klick auf Zelle</div></div>
           </div>
         </div>
         <div class="task-card">
@@ -1041,8 +1041,8 @@
           </ul>
           <div class="ui-guide">📍 <strong>Wo?</strong> Resource Requests Tile → Pending-Liste → Anfrage öffnen</div>
           <div class="fig-inline">
-            <div class="fig-item"><img src="screenshots/inline/resource_requests_p21_3.png" alt="Allokations-Grid"><div class="fig-caption">Allokations-Grid (Ressourcen, Monatsspalten)</div></div>
-            <div class="fig-item"><img src="screenshots/inline/resource_requests_p23_5.png" alt="Delegate"><div class="fig-caption">Approve/Reject/Delegate, Delegate-Dropdown</div></div>
+            <div class="fig-item" data-edit-id="resource_requests_p21_3"><img src="screenshots/inline/resource_requests_p21_3.png" alt="Allokations-Grid"><div class="fig-caption">Allokations-Grid (Ressourcen, Monatsspalten)</div></div>
+            <div class="fig-item" data-edit-id="resource_requests_p23_5"><img src="screenshots/inline/resource_requests_p23_5.png" alt="Delegate"><div class="fig-caption">Approve/Reject/Delegate, Delegate-Dropdown</div></div>
           </div>
         </div>
         <div class="task-card">
@@ -1093,8 +1093,8 @@
           </ul>
           <div class="ui-guide">📍 <strong>Wo?</strong> Project Management → Projekt → Checkout → blaue Zelle «Type a new resource»</div>
           <div class="fig-inline">
-            <div class="fig-item"><img src="screenshots/inline/creating_requests_p24_5.png" alt="Type a new resource"><div class="fig-caption">Blaue Zelle «Type a new resource» – Ressource eingeben</div></div>
-            <div class="fig-item"><img src="screenshots/inline/creating_requests_p25_3.png" alt="Allocation"><div class="fig-caption">Monatsspalten für Allokation</div></div>
+            <div class="fig-item" data-edit-id="creating_requests_p24_5"><img src="screenshots/inline/creating_requests_p24_5.png" alt="Type a new resource"><div class="fig-caption">Blaue Zelle «Type a new resource» – Ressource eingeben</div></div>
+            <div class="fig-item" data-edit-id="creating_requests_p25_3"><img src="screenshots/inline/creating_requests_p25_3.png" alt="Allocation"><div class="fig-caption">Monatsspalten für Allokation</div></div>
           </div>
         </div>
         <div class="task-card">
@@ -1136,8 +1136,8 @@
           </ul>
           <div class="ui-guide">📍 <strong>Wo?</strong> Project Management → Projektbaum → Org Unit → Non-Project Activities</div>
           <div class="fig-inline">
-            <div class="fig-item"><img src="screenshots/inline/nonproject_p26_3.jpg" alt="Non-Project"><div class="fig-caption">Non-Project Activities – Checkout, Tasks (Generic, Absence)</div></div>
-            <div class="fig-item"><img src="screenshots/inline/nonproject_p27_7.png" alt="Bulk assignment"><div class="fig-caption">Bulk assignment – Ressourcen zu Absence/Admin zuweisen</div></div>
+            <div class="fig-item" data-edit-id="nonproject_p26_3"><img src="screenshots/inline/nonproject_p26_3.jpg" alt="Non-Project"><div class="fig-caption">Non-Project Activities – Checkout, Tasks (Generic, Absence)</div></div>
+            <div class="fig-item" data-edit-id="nonproject_p27_7"><img src="screenshots/inline/nonproject_p27_7.png" alt="Bulk assignment"><div class="fig-caption">Bulk assignment – Ressourcen zu Absence/Admin zuweisen</div></div>
           </div>
         </div>
         <div class="task-card">
@@ -1181,8 +1181,8 @@
           </ul>
           <div class="ui-guide">📍 <strong>Wo?</strong> BPA Flatgrid Tile → View-Auswahl oben</div>
           <div class="fig-inline">
-            <div class="fig-item"><img src="screenshots/inline/bpa_flatgrid_p32_3.png" alt="View-Auswahl"><div class="fig-caption">View-Auswahl: Resources & Projects, Public View</div></div>
-            <div class="fig-item"><img src="screenshots/inline/bpa_flatgrid_p35_1.png" alt="Options"><div class="fig-caption">BPA Flatgrid Options (Heatmap, Filter by Resource Request)</div></div>
+            <div class="fig-item" data-edit-id="bpa_flatgrid_p32_3"><img src="screenshots/inline/bpa_flatgrid_p32_3.png" alt="View-Auswahl"><div class="fig-caption">View-Auswahl: Resources & Projects, Public View</div></div>
+            <div class="fig-item" data-edit-id="bpa_flatgrid_p35_1"><img src="screenshots/inline/bpa_flatgrid_p35_1.png" alt="Options"><div class="fig-caption">BPA Flatgrid Options (Heatmap, Filter by Resource Request)</div></div>
           </div>
         </div>
         <div class="task-card">
@@ -1233,9 +1233,9 @@
           </ul>
           <div class="ui-guide">📍 <strong>Wo?</strong> Report Management Tile → Report-Liste → Export-Button</div>
           <div class="fig-inline">
-            <div class="fig-item"><img src="screenshots/inline/reports_p37_2.png" alt="Report Management"><div class="fig-caption">Report Management – Report list, Report folder, Files</div></div>
-            <div class="fig-item"><img src="screenshots/inline/reports_p37_3.png" alt="Report-Liste"><div class="fig-caption">Report-Liste mit Name, Description, Owner</div></div>
-            <div class="fig-item"><img src="screenshots/inline/reports_p37_4.png" alt="Report"><div class="fig-caption">Geöffneter Report mit Beschreibung</div></div>
+            <div class="fig-item" data-edit-id="reports_p37_2"><img src="screenshots/inline/reports_p37_2.png" alt="Report Management"><div class="fig-caption">Report Management – Report list, Report folder, Files</div></div>
+            <div class="fig-item" data-edit-id="reports_p37_3"><img src="screenshots/inline/reports_p37_3.png" alt="Report-Liste"><div class="fig-caption">Report-Liste mit Name, Description, Owner</div></div>
+            <div class="fig-item" data-edit-id="reports_p37_4"><img src="screenshots/inline/reports_p37_4.png" alt="Report"><div class="fig-caption">Geöffneter Report mit Beschreibung</div></div>
           </div>
         </div>
         <div class="task-card">
@@ -1313,9 +1313,9 @@
           </ul>
           <div class="ui-guide">📍 <strong>Wo?</strong> Login-Button zentriert · 3 Tiles unter der Task Bar</div>
           <div class="fig-inline">
-            <div class="fig-item"><img src="screenshots/inline_pm/pm_login_p5_1.png" alt="Login"><div class="fig-caption">Login-Seite mit Healthineers ID Login</div></div>
-            <div class="fig-item"><img src="screenshots/inline_pm/pm_login_p5_2.png" alt="Homepage"><div class="fig-caption">Homepage mit PM-Tiles</div></div>
-            <div class="fig-item"><img src="screenshots/inline_pm/pm_homepage_p6_4.png" alt="Task Bar"><div class="fig-caption">Task Bar, Navigation</div></div>
+            <div class="fig-item" data-edit-id="pm_login_p5_1"><img src="screenshots/inline_pm/pm_login_p5_1.png" alt="Login"><div class="fig-caption">Login-Seite mit Healthineers ID Login</div></div>
+            <div class="fig-item" data-edit-id="pm_login_p5_2"><img src="screenshots/inline_pm/pm_login_p5_2.png" alt="Homepage"><div class="fig-caption">Homepage mit PM-Tiles</div></div>
+            <div class="fig-item" data-edit-id="pm_homepage_p6_4"><img src="screenshots/inline_pm/pm_homepage_p6_4.png" alt="Task Bar"><div class="fig-caption">Task Bar, Navigation</div></div>
           </div>
         </div>
         <div class="task-card">
@@ -1358,7 +1358,7 @@
           </ul>
           <div class="ui-guide">📍 <strong>Wo?</strong> Username oben rechts → Subscriptions → Tab Project / Resource Request</div>
           <div class="fig-inline">
-            <div class="fig-item"><img src="screenshots/inline_pm/pm_subscriptions_p7_1.png" alt="Subscriptions"><div class="fig-caption">Subscriptions – Project & Resource Request Tab</div></div>
+            <div class="fig-item" data-edit-id="pm_subscriptions_p7_1"><img src="screenshots/inline_pm/pm_subscriptions_p7_1.png" alt="Subscriptions"><div class="fig-caption">Subscriptions – Project & Resource Request Tab</div></div>
           </div>
         </div>
         <div class="task-card">
@@ -1401,9 +1401,9 @@
           </ul>
           <div class="ui-guide">📍 <strong>Wo?</strong> Project Management Tile → Grid, Suchfeld oben</div>
           <div class="fig-inline">
-            <div class="fig-item"><img src="screenshots/inline_pm/pm_project_grid_p8_3.png" alt="Grid"><div class="fig-caption">Project Management Grid – Suche, Filter</div></div>
-            <div class="fig-item"><img src="screenshots/inline_pm/pm_project_grid_p8_4.png" alt="Views"><div class="fig-caption">Views: Lock, Default, Edit, Clone, Delete</div></div>
-            <div class="fig-item"><img src="screenshots/inline_pm/pm_project_grid_p9_10.png" alt="Public Views"><div class="fig-caption">Public Views (blaues Auge) – klonen zum Bearbeiten</div></div>
+            <div class="fig-item" data-edit-id="pm_project_grid_p8_3"><img src="screenshots/inline_pm/pm_project_grid_p8_3.png" alt="Grid"><div class="fig-caption">Project Management Grid – Suche, Filter</div></div>
+            <div class="fig-item" data-edit-id="pm_project_grid_p8_4"><img src="screenshots/inline_pm/pm_project_grid_p8_4.png" alt="Views"><div class="fig-caption">Views: Lock, Default, Edit, Clone, Delete</div></div>
+            <div class="fig-item" data-edit-id="pm_project_grid_p9_10"><img src="screenshots/inline_pm/pm_project_grid_p9_10.png" alt="Public Views"><div class="fig-caption">Public Views (blaues Auge) – klonen zum Bearbeiten</div></div>
           </div>
         </div>
         <div class="task-card">
@@ -1448,9 +1448,9 @@
           </ul>
           <div class="ui-guide">📍 <strong>Wo?</strong> Projekt anklicken → Checkout → Grid-Optionen im Ribbon</div>
           <div class="fig-inline">
-            <div class="fig-item"><img src="screenshots/inline_pm/pm_single_project_p10_2.png" alt="Checkout"><div class="fig-caption">Projektname & Checkout-Button oben</div></div>
-            <div class="fig-item"><img src="screenshots/inline_pm/pm_single_project_p11_6.png" alt="Options"><div class="fig-caption">Options: Total Column, Heatmap, Tasks to Show</div></div>
-            <div class="fig-item"><img src="screenshots/inline_pm/pm_single_project_p12_2.png" alt="Add assignment"><div class="fig-caption">Add assignment – Ressourcen & Tasks auswählen</div></div>
+            <div class="fig-item" data-edit-id="pm_single_project_p10_2"><img src="screenshots/inline_pm/pm_single_project_p10_2.png" alt="Checkout"><div class="fig-caption">Projektname & Checkout-Button oben</div></div>
+            <div class="fig-item" data-edit-id="pm_single_project_p11_6"><img src="screenshots/inline_pm/pm_single_project_p11_6.png" alt="Options"><div class="fig-caption">Options: Total Column, Heatmap, Tasks to Show</div></div>
+            <div class="fig-item" data-edit-id="pm_single_project_p12_2"><img src="screenshots/inline_pm/pm_single_project_p12_2.png" alt="Add assignment"><div class="fig-caption">Add assignment – Ressourcen & Tasks auswählen</div></div>
           </div>
         </div>
         <div class="task-card">
@@ -1492,8 +1492,8 @@
           </ul>
           <div class="ui-guide">📍 <strong>Wo?</strong> Ellipse (⋯) neben Ressourcennamen im Grid</div>
           <div class="fig-inline">
-            <div class="fig-item"><img src="screenshots/inline_pm/pm_assignment_options_p13_1.png" alt="Clone"><div class="fig-caption">Assignment Options – Clone</div></div>
-            <div class="fig-item"><img src="screenshots/inline_pm/pm_assignment_options_p13_2.png" alt="Shift"><div class="fig-caption">Assignment Options – Shift</div></div>
+            <div class="fig-item" data-edit-id="pm_assignment_options_p13_1"><img src="screenshots/inline_pm/pm_assignment_options_p13_1.png" alt="Clone"><div class="fig-caption">Assignment Options – Clone</div></div>
+            <div class="fig-item" data-edit-id="pm_assignment_options_p13_2"><img src="screenshots/inline_pm/pm_assignment_options_p13_2.png" alt="Shift"><div class="fig-caption">Assignment Options – Shift</div></div>
           </div>
         </div>
         <div class="task-card">
@@ -1561,9 +1561,9 @@
           </ul>
           <div class="ui-guide">📍 <strong>Wo?</strong> Bulk Project Allocation Flatgrid Tile → Project-Modus</div>
           <div class="fig-inline">
-            <div class="fig-item"><img src="screenshots/inline_pm/pm_bpa_flatgrid_p15_1.png" alt="BPA"><div class="fig-caption">BPA Flatgrid – Zeitraum, Resource/Project</div></div>
-            <div class="fig-item"><img src="screenshots/inline_pm/pm_bpa_flatgrid_p17_1.png" alt="Options"><div class="fig-caption">Options: Total Row, Heatmap, Filter</div></div>
-            <div class="fig-item"><img src="screenshots/inline_pm/pm_bpa_flatgrid_p18_1.png" alt="Projects"><div class="fig-caption">Projekte suchen & auswählen</div></div>
+            <div class="fig-item" data-edit-id="pm_bpa_flatgrid_p15_1"><img src="screenshots/inline_pm/pm_bpa_flatgrid_p15_1.png" alt="BPA"><div class="fig-caption">BPA Flatgrid – Zeitraum, Resource/Project</div></div>
+            <div class="fig-item" data-edit-id="pm_bpa_flatgrid_p17_1"><img src="screenshots/inline_pm/pm_bpa_flatgrid_p17_1.png" alt="Options"><div class="fig-caption">Options: Total Row, Heatmap, Filter</div></div>
+            <div class="fig-item" data-edit-id="pm_bpa_flatgrid_p18_1"><img src="screenshots/inline_pm/pm_bpa_flatgrid_p18_1.png" alt="Projects"><div class="fig-caption">Projekte suchen & auswählen</div></div>
           </div>
         </div>
         <div class="task-card">
@@ -1605,8 +1605,8 @@
           </ul>
           <div class="ui-guide">📍 <strong>Wo?</strong> BPA Flatgrid → Options → Filter by Resource Request Status</div>
           <div class="fig-inline">
-            <div class="fig-item"><img src="screenshots/inline_pm/pm_pending_requests_p20_1.png" alt="Filter"><div class="fig-caption">Filter by Resource Request Status</div></div>
-            <div class="fig-item"><img src="screenshots/inline_pm/pm_pending_requests_p20_2.png" alt="Pending"><div class="fig-caption">Pending-Checkbox aktivieren</div></div>
+            <div class="fig-item" data-edit-id="pm_pending_requests_p20_1"><img src="screenshots/inline_pm/pm_pending_requests_p20_1.png" alt="Filter"><div class="fig-caption">Filter by Resource Request Status</div></div>
+            <div class="fig-item" data-edit-id="pm_pending_requests_p20_2"><img src="screenshots/inline_pm/pm_pending_requests_p20_2.png" alt="Pending"><div class="fig-caption">Pending-Checkbox aktivieren</div></div>
           </div>
         </div>
         <div class="task-card">
@@ -2640,6 +2640,50 @@
   <script>
     const PROGRESS_KEY = 'tempus-training-progress';
     const TRAINING_TOTALS = { rm: 9, rmAdv: 5, pm: 8, pmAdv: 5, admin: 8, adminAdv: 5 };
+    const TRAINING_CONFIG_API = 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1/training-admin/config';
+
+    async function applyTrainingConfig() {
+      try {
+        const res = await fetch(TRAINING_CONFIG_API);
+        if (!res.ok) return;
+        const cfg = await res.json();
+        if (!cfg || Object.keys(cfg).length === 0) return;
+        const logoTextEl = document.querySelector('[data-edit-id="logo-text"]');
+        if (logoTextEl) {
+          if (cfg.logo?.logoImageUrl) {
+            logoTextEl.innerHTML = '<img src="' + cfg.logo.logoImageUrl + '" alt="Logo" style="width:48px;height:48px;object-fit:contain;">';
+          } else if (cfg.logo?.logoText) {
+            logoTextEl.textContent = cfg.logo.logoText;
+          }
+        }
+        const logoLabelEl = document.querySelector('[data-edit-id="logo-label"]');
+        if (logoLabelEl && cfg.logo?.logoLabel) {
+          const p = cfg.logo.logoLabel.split(' ');
+          logoLabelEl.innerHTML = p.length > 1 ? p[0] + ' <span>' + p.slice(1).join(' ') + '</span>' : cfg.logo.logoLabel;
+        }
+        const tabIds = ['tab-dashboard','tab-rm','tab-rmAdv','tab-pm','tab-pmAdv','tab-admin','tab-adminAdv'];
+        (cfg.tabs || []).forEach((t, i) => {
+          const btn = document.querySelector('[data-edit-id="' + tabIds[i] + '"]');
+          if (btn && t.label) btn.textContent = t.label;
+        });
+        const titleEl = document.querySelector('[data-edit-id="dashboard-title"]');
+        if (titleEl && cfg.dashboard?.title) titleEl.textContent = cfg.dashboard.title;
+        const subtitleEl = document.querySelector('[data-edit-id="dashboard-subtitle"]');
+        if (subtitleEl && cfg.dashboard?.subtitle) subtitleEl.textContent = cfg.dashboard.subtitle;
+        if (cfg.screenshots) {
+          Object.entries(cfg.screenshots).forEach(([id, sc]) => {
+            const item = document.querySelector('[data-edit-id="' + id + '"]');
+            if (!item) return;
+            const img = item.querySelector('img');
+            const cap = item.querySelector('.fig-caption');
+            if (img && sc.src) img.src = sc.src.startsWith('http') ? sc.src : new URL(sc.src, window.location.href).href;
+            if (img && sc.alt) img.alt = sc.alt;
+            if (cap && sc.caption) cap.textContent = sc.caption;
+          });
+        }
+      } catch (e) { console.warn('Training config:', e); }
+    }
+    applyTrainingConfig();
 
     function getProgress() {
       try {

@@ -9,6 +9,7 @@ import Calendar from './pages/Calendar';
 import Resources from './pages/Resources';
 import Report from './pages/Report';
 import Training from './pages/Training';
+import TrainingAdmin from './pages/TrainingAdmin';
 import Flashcards from './pages/Flashcards';
 import SSOSetup from './pages/SSOSetup';
 
@@ -70,6 +71,7 @@ function App() {
           <Route path="resources" element={<Resources />} />
           <Route path="report" element={<Report />} />
           <Route path="training" element={<Training />} />
+          <Route path="training-admin" element={<TrainingAdmin />} />
           <Route path="sso-setup" element={<SSOSetup />} />
         </Route>
       </Routes>

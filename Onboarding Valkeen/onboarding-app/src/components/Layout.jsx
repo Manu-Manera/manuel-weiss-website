@@ -31,6 +31,7 @@ const navItems = [
   { path: '/resources', icon: BookOpen, label: 'Ressourcen', description: 'Lernmaterial' },
   { path: '/report', icon: Mail, label: 'Report', description: 'Exportieren' },
   { path: '/training', icon: GraduationCap, label: 'Training', description: 'Tempus RM/PM/Admin' },
+  { path: '/training-admin', icon: Settings, label: 'Training Admin', description: 'Inhalte bearbeiten' },
 ];
 
 export default function Layout() {
