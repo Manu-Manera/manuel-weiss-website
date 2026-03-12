@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tempus Resource Manager – Praktische Übungen</title>
+<style>
+body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; line-height: 1.5; max-width: 800px; margin: 0 auto; padding: 2cm; }
+h1 { color: #1a365d; font-size: 22pt; border-bottom: 2px solid #2b6cb0; padding-bottom: 8px; }
+h2 { color: #2b6cb0; font-size: 16pt; margin-top: 24px; }
+h3 { color: #2d3748; font-size: 13pt; margin-top: 16px; }
+.use-case { background: #ebf8ff; border-left: 4px solid #3182ce; padding: 12px; margin: 16px 0; }
+.task { background: #f7fafc; border: 1px solid #e2e8f0; padding: 16px; margin: 12px 0; }
+.quiz { background: #f0fff4; border: 1px solid #9ae6b4; padding: 16px; margin: 16px 0; }
+.quiz-question { font-weight: bold; margin: 12px 0 6px 0; }
+.answer { margin-left: 20px; margin-bottom: 4px; }
+.duration { color: #718096; font-style: italic; }
+table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+th, td { border: 1px solid #cbd5e0; padding: 8px; text-align: left; }
+th { background: #edf2f7; }
+</style>
+</head>
+<body>
+
+<h1>Tempus Resource Manager – Praktische Übungen</h1>
+<p><strong>Basierend auf:</strong> Consolidated User Training Resource Manager SHS IT 10.0<br>
+<strong>Valkeen GmbH</strong> · www.valkeen.com</p>
+
+<div class="use-case">
+<h2>🎬 Der Use Case: «Stern & Co – Die Agentur»</h2>
+<p>Stell dir vor, du bist Resource Manager bei <strong>«Stern & Co»</strong>, einer kreativen Agentur, die digitale Projekte für prominente Kunden umsetzt. Dein Team besteht aus bekannten Persönlichkeiten – und du musst sie optimal auf Projekte verteilen!</p>
+<table>
+<tr><th>Ressource</th><th>Rolle</th><th>Org Unit</th></tr>
+<tr><td>Brad Pitt</td><td>Senior Developer</td><td>Dev Team Alpha</td></tr>
+<tr><td>Meryl Streep</td><td>Projekt Managerin</td><td>PM Office</td></tr>
+<tr><td>Taylor Swift</td><td>Marketing Specialist</td><td>Marketing</td></tr>
+<tr><td>Dwayne Johnson</td><td>IT Infrastructure</td><td>Tech Ops</td></tr>
+<tr><td>Angela Merkel</td><td>Compliance Officer</td><td>Legal & Compliance</td></tr>
+<tr><td>Roger Federer</td><td>DevOps Lead</td><td>Dev Team Alpha</td></tr>
+<tr><td>Heidi Klum</td><td>UX Designerin</td><td>Design Studio</td></tr>
+<tr><td>Elon Musk</td><td>Innovation Lead</td><td>R&D</td></tr>
+</table>
+<p><strong>Projekte:</strong> «Blockbuster App 2026», «Cloud Migration», «Social Media Relaunch», «Compliance Update Q2»</p>
+</div>
+
+<hr>
+
+<h2>Kapitel 1: Anmeldung & Navigation</h2>
+<p class="duration">⏱ ca. 10 Minuten</p>
+
+<div class="task">
+<h3>Aufgabe 1.1: Einloggen & Homepage erkunden</h3>
+<ol>
+<li>Öffne Tempus Resource in deinem Browser (Chrome empfohlen).</li>
+<li>Klicke auf <strong>Healthineers-ID Login</strong> und melde dich an.</li>
+<li>Identifiziere alle <strong>6 Tiles</strong> auf der Homepage: Project Management, Resource Management, Resource Requests, Bulk Project Allocation Flatgrid, Report Management, Bulk Resource Capacities.</li>
+<li>Klicke auf das <strong>Tempus-Logo</strong> oben links – wohin führt es?</li>
+<li>Öffne das <strong>Hamburger-Menü</strong> und zähle, wie viele Bereiche du erreichen kannst.</li>
+</ol>
+</div>
+
+<div class="quiz">
+<h3>📝 Quiz Kapitel 1</h3>
+<p class="quiz-question">1. Welcher Browser wird für Tempus empfohlen?</p>
+<p class="answer">a) Firefox &nbsp; b) Safari &nbsp; c) Google Chrome &nbsp; d) Edge</p>
+
+<p class="quiz-question">2. Was passiert, wenn du auf das Tempus-Logo klickst?</p>
+<p class="answer">a) Logout &nbsp; b) Zurück zur Homepage &nbsp; c) Einstellungen &nbsp; d) Suche</p>
+
+<p class="quiz-question">3. Wo findest du Benachrichtigungen?</p>
+<p class="answer">a) Unter dem Hamburger-Menü &nbsp; b) Beim Glocken-Icon &nbsp; c) In den Tiles &nbsp; d) Im Username-Menü</p>
+</div>
+
+<hr>
+
+<h2>Kapitel 2: Benachrichtigungen einrichten</h2>
+<p class="duration">⏱ ca. 10 Minuten</p>
+
+<div class="task">
+<h3>Aufgabe 2.1: Resource-Request-Benachrichtigungen</h3>
+<p><em>Szenario:</em> Taylor Swift wurde gerade für «Blockbuster App 2026» angefragt. Du willst sofort informiert werden!</p>
+<ol>
+<li>Klicke auf deinen <strong>Benutzernamen</strong> oben rechts.</li>
+<li>Wähle <strong>Subscriptions</strong> (Abonnements).</li>
+<li>Gehe zum Tab <strong>Resource Request</strong>.</li>
+<li>Aktiviere die Benachrichtigung für <strong>«Resource request management» → «Submitted»</strong>.</li>
+<li>Falls du auch Ressourcen anforderst: Aktiviere <strong>«Resource request (submitter)»</strong> für die gewünschten Outcomes.</li>
+</ol>
+</div>
+
+<div class="quiz">
+<h3>📝 Quiz Kapitel 2</h3>
+<p class="quiz-question">1. Wann wirst du benachrichtigt, wenn «Submitted» aktiviert ist?</p>
+<p class="answer">a) Wenn du eine Anfrage absendest &nbsp; b) Wenn eine neue Resource Request für deine Ressourcen eingereicht wird &nbsp; c) Wenn eine Anfrage abgelehnt wird</p>
+
+<p class="quiz-question">2. Wo findest du die Subscriptions?</p>
+<p class="answer">a) Unter dem Glocken-Icon &nbsp; b) Im Username-Menü &nbsp; c) In den Tiles</p>
+</div>
+
+<hr>
+
+<h2>Kapitel 3: Resource Management Grid</h2>
+<p class="duration">⏱ ca. 12 Minuten</p>
+
+<div class="task">
+<h3>Aufgabe 3.1: Brad Pitt finden & Attribute prüfen</h3>
+<ol>
+<li>Klicke auf den Tile <strong>Resource Management</strong>.</li>
+<li>Suche nach <strong>«Brad»</strong> im Suchfeld (Contains-Logik).</li>
+<li>Wende den Quick-Filter <strong>«My resources»</strong> an – siehst du Brad Pitt?</li>
+<li>Hover über den Namen – welche Bereiche zeigt der Advanced Tooltip?</li>
+<li>Klicke auf <strong>Brad Pitt</strong> und öffne sein Profil. Prüfe die Tabs <strong>Attributes & Identity</strong> und <strong>Capacity</strong>.</li>
+</ol>
+
+<h3>Aufgabe 3.2: Heidi Klum – Rolle aktualisieren</h3>
+<ol>
+<li>Suche <strong>Heidi Klum</strong> im Resource Management Grid.</li>
+<li>Hover über die Zelle mit ihrer Rolle (z.B. «UX Designerin»).</li>
+<li>Klicke auf das <strong>Bearbeiten-Icon</strong> (Stift) rechts neben der Zelle.</li>
+<li>Ändere die Rolle auf <strong>«Lead UX Designerin»</strong> (falls möglich) und klicke <strong>Save</strong>.</li>
+</ol>
+
+<h3>Aufgabe 3.3: Neuen Ressourcen anlegen – «Greta Thunberg»</h3>
+<p><em>Szenario:</em> Die Agentur stellt eine neue Nachhaltigkeits-Beraterin ein.</p>
+<ol>
+<li>Klicke auf das <strong>Plus-Zeichen</strong> im Resource Management Tile oder Grid.</li>
+<li>Gib den Namen <strong>Greta Thunberg</strong> ein und klicke <strong>Create</strong>.</li>
+<li>Setze <strong>Capacity Start Date</strong> und <strong>Capacity End Date</strong> (z.B. bis 2029 für unbefristet).</li>
+<li>Wähle einen <strong>Feiertagskalender</strong> (z.B. Zürich) aus dem Dropdown.</li>
+<li>Gehe zu <strong>Attributes & Identity</strong> → <strong>SHS IT Attributes</strong> und trage Resource Manager, Is Resource Manager, Require Resource Manager Approval ein.</li>
+<li>Speichere mit <strong>Save</strong>.</li>
+</ol>
+</div>
+
+<div class="quiz">
+<h3>📝 Quiz Kapitel 3</h3>
+<p class="quiz-question">1. Was bedeutet das Stift-Icon neben einer Zelle?</p>
+<p class="answer">a) Löschen &nbsp; b) Bearbeiten/Anzeigen &nbsp; c) Kopieren &nbsp; d) Sperren</p>
+
+<p class="quiz-question">2. Solltest du die Capacity Start/End Date eines Ressourcen als Filter ändern?</p>
+<p class="answer">a) Ja, immer &nbsp; b) Nein – kann zu Datenverlust führen &nbsp; c) Nur bei neuen Ressourcen</p>
+
+<p class="quiz-question">3. Wie viele Resource Manager kannst du pro Ressource zuweisen?</p>
+<p class="answer">a) 1 &nbsp; b) 3 &nbsp; c) 5 &nbsp; d) Unbegrenzt</p>
+</div>
+
+<hr>
+
+<h2>Kapitel 4: Net Availability Grid</h2>
+<p class="duration">⏱ ca. 12 Minuten</p>
+
+<div class="task">
+<h3>Aufgabe 4.1: Über- und Unterauslastung prüfen</h3>
+<p><em>Szenario:</em> Du willst sehen, ob Elon Musk überbucht ist und wer noch Kapazität hat.</p>
+<ol>
+<li>Im Resource Management Grid: Klicke oben rechts auf <strong>Net Availability</strong>.</li>
+<li>Setze den Zeitraum mit dem Date-Picker (z.B. Q1 2026).</li>
+<li>Nutze die Quick-Select-Option neben dem End-Datum für beliebte Zeiträume.</li>
+<li>Suche nach <strong>Elon Musk</strong> – welche Farbe hat seine Zelle? (Rot = überbucht, Grün = unterbucht)</li>
+<li>Klicke auf eine Zelle – was zeigt der <strong>Impact Assessment View</strong>? (Projekte, Zeit, Auslastung %)</li>
+<li>Ändere im Options-Menü: <strong>Show only deficits</strong> bzw. <strong>Show only surpluses</strong>.</li>
+</ol>
+</div>
+
+<div class="quiz">
+<h3>📝 Quiz Kapitel 4</h3>
+<p class="quiz-question">1. Was bedeutet Rot im Net Availability Grid?</p>
+<p class="answer">a) Unterauslastung &nbsp; b) Überauslastung &nbsp; c) Keine Daten &nbsp; d) Feiertag</p>
+
+<p class="quiz-question">2. Welche Infos zeigt der Impact Assessment View?</p>
+<p class="answer">a) Nur Projekte &nbsp; b) Projekte, Zeit, Auslastung % &nbsp; c) Nur Auslastung</p>
+</div>
+
+<hr>
+
+<h2>Kapitel 5: Resource Requests bearbeiten</h2>
+<p class="duration">⏱ ca. 15 Minuten</p>
+
+<div class="task">
+<h3>Aufgabe 5.1: Ausstehende Anfragen prüfen</h3>
+<ol>
+<li>Klicke auf den Tile <strong>Resource Requests</strong> (rotes Badge = Anzahl ausstehender Anfragen).</li>
+<li>Filtere nach <strong>Status = Pending</strong>.</li>
+<li>Gruppiere nach <strong>Project Name</strong> oder <strong>Resource Name</strong>.</li>
+<li>Klicke auf eine <strong>Pending</strong>-Anfrage, um sie zu öffnen.</li>
+</ol>
+
+<h3>Aufgabe 5.2: Anfrage genehmigen oder ersetzen</h3>
+<p><em>Szenario:</em> Roger Federer wurde für «Cloud Migration» angefragt, ist aber ausgelastet. Du willst Dwayne Johnson stattdessen einsetzen.</p>
+<ol>
+<li>Öffne die entsprechende Resource Request.</li>
+<li>Klicke auf <strong>Assignment Attributes</strong> – welche Infos siehst du?</li>
+<li>Wähle im unteren Grid <strong>Dwayne Johnson</strong> als Ersatz (er erscheint im oberen Grid).</li>
+<li>Klicke <strong>Redistribute</strong>, um die Kapazität zu übernehmen.</li>
+<li>Klicke <strong>Apply Changes</strong> (Replace-Icon).</li>
+</ol>
+
+<h3>Aufgabe 5.3: Anfrage ablehnen oder delegieren</h3>
+<ol>
+<li>Öffne eine andere Pending-Anfrage.</li>
+<li>Teste <strong>Reject</strong> (Button wird rot) und <strong>Apply Changes</strong> – oder wähle <strong>Delegate</strong> und weise einen anderen Resource Manager zu.</li>
+</ol>
+</div>
+
+<div class="quiz">
+<h3>📝 Quiz Kapitel 5</h3>
+<p class="quiz-question">1. Welche Anfragen kannst du bearbeiten?</p>
+<p class="answer">a) Alle &nbsp; b) Nur Pending &nbsp; c) Nur Approved &nbsp; d) Nur Rejected</p>
+
+<p class="quiz-question">2. Was macht «Redistribute»?</p>
+<p class="answer">a) Löscht die Anfrage &nbsp; b) Kopiert die angeforderte Kapazität auf den Ersatz-Ressourcen &nbsp; c) Delegiert die Anfrage</p>
+
+<p class="quiz-question">3. Solltest du eine generische (Demand Planning) Ressource genehmigen?</p>
+<p class="answer">a) Ja &nbsp; b) Nein – nur benannte Ressourcen genehmigen</p>
+</div>
+
+<hr>
+
+<h2>Kapitel 6: Resource Requests erstellen</h2>
+<p class="duration">⏱ ca. 12 Minuten</p>
+
+<div class="task">
+<h3>Aufgabe 6.1: Meryl Streep für «Blockbuster App 2026» anfordern</h3>
+<ol>
+<li>Klicke auf <strong>Project Management</strong> und öffne das Projekt <strong>«Blockbuster App 2026»</strong>.</li>
+<li>Klicke <strong>Checkout</strong> neben dem Projektnamen.</li>
+<li>Erweitere das Grid mit dem Pfeil über der Name-Spalte.</li>
+<li>Klicke in eine blaue Zelle «Type a new resource» und gib <strong>Meryl Streep</strong> ein (Type-ahead).</li>
+<li>Trage die Allokation in <strong>Stunden pro Monat</strong> ein.</li>
+<li>Füge ggf. <strong>Module</strong>, <strong>Role</strong>, <strong>Skills</strong> hinzu.</li>
+<li>Klicke <strong>Save and Check In</strong>.</li>
+</ol>
+
+<h3>Aufgabe 6.2: Bulk Assignment – mehrere Ressourcen</h3>
+<ol>
+<li>Klicke <strong>Add assignment</strong>.</li>
+<li>Wähle links Ressourcen (z.B. Taylor Swift, Heidi Klum) und rechts Tasks.</li>
+<li>Klicke <strong>Add</strong>.</li>
+<li>Gib die Allokationen ein und speichere.</li>
+</ol>
+</div>
+
+<div class="quiz">
+<h3>📝 Quiz Kapitel 6</h3>
+<p class="quiz-question">1. Was musst du tun, bevor du Änderungen am Projekt vornehmen kannst?</p>
+<p class="answer">a) Logout &nbsp; b) Checkout &nbsp; c) Filter setzen &nbsp; d) View wechseln</p>
+
+<p class="quiz-question">2. Welche Granularität wird für SHS empfohlen?</p>
+<p class="answer">a) Tag &nbsp; b) Woche &nbsp; c) Monat &nbsp; d) Jahr</p>
+</div>
+
+<hr>
+
+<h2>Kapitel 7: Non-Project Activities</h2>
+<p class="duration">⏱ ca. 12 Minuten</p>
+
+<div class="task">
+<h3>Aufgabe 7.1: Abwesenheit für Angela Merkel eintragen</h3>
+<p><em>Szenario:</em> Angela Merkel hat im März 2 Tage Urlaub.</p>
+<ol>
+<li>Öffne <strong>Project Management</strong> und suche nach deiner <strong>Org Unit</strong>.</li>
+<li>Öffne das <strong>Non-Project Activities</strong>-Projekt (Absence, Admin, Run, Change).</li>
+<li>Klicke <strong>Checkout</strong> und erweitere das Grid.</li>
+<li>Gruppiere nach <strong>Task</strong> – siehst du Absence, Admin, etc.?</li>
+<li>Klicke in eine blaue Zelle und wähle <strong>Angela Merkel</strong>.</li>
+<li>Trage bei <strong>Absence</strong> die Stunden für März ein (z.B. 16h für 2 Tage).</li>
+<li>Speichere mit <strong>Save and Check In</strong>.</li>
+</ol>
+</div>
+
+<div class="quiz">
+<h3>📝 Quiz Kapitel 7</h3>
+<p class="quiz-question">1. Warum sind Non-Project Activities wichtig?</p>
+<p class="answer">a) Sie sind optional &nbsp; b) Sie zeigen die echte Netto-Kapazität &nbsp; c) Nur für Urlaub</p>
+
+<p class="quiz-question">2. Welche Kategorien gibt es typischerweise?</p>
+<p class="answer">a) Nur Absence &nbsp; b) Absence, Admin, Run, Change &nbsp; c) Nur Admin</p>
+</div>
+
+<hr>
+
+<h2>Kapitel 8: BPA Flatgrid</h2>
+<p class="duration">⏱ ca. 15 Minuten</p>
+
+<div class="task">
+<h3>Aufgabe 8.1: Team-Auslastung anzeigen</h3>
+<ol>
+<li>Klicke auf <strong>Bulk Project Allocation Flatgrid</strong>.</li>
+<li>Klone die Public View <strong>«For SAP RMs»</strong> (oder vergleichbar) über das View-Management.</li>
+<li>Öffne das Resource- und Project-Menü – wähle <strong>Resource</strong>-Modus.</li>
+<li>Wähle alle deine Ressourcen (z.B. Brad, Meryl, Taylor, Dwayne, etc.).</li>
+<li>Prüfe die Auslastung im Grid – Heatmap aktivieren?</li>
+</ol>
+
+<h3>Aufgabe 8.2: Non-Project Activities im BPA bearbeiten</h3>
+<ol>
+<li>Klone die View <strong>«Non-Project Activities»</strong>.</li>
+<li>Suche dein Org-Unit-Non-Project-Activities-Projekt und wähle es.</li>
+<li>Bearbeite Allokationen direkt in den Zellen.</li>
+<li>Speichere mit <strong>Save</strong>.</li>
+</ol>
+
+<h3>Aufgabe 8.3: Resource Request im BPA genehmigen</h3>
+<ol>
+<li>Filtere nach <strong>Resource Request Status = Pending</strong> (Options-Menü).</li>
+<li>Finde die lila Uhr-Icons bei ausstehenden Anfragen.</li>
+<li>Klicke auf die Ellipse neben dem Ressourcennamen → <strong>Approve resource request</strong> oder <strong>Open resource request</strong>.</li>
+</ol>
+</div>
+
+<div class="quiz">
+<h3>📝 Quiz Kapitel 8</h3>
+<p class="quiz-question">1. Was bedeutet das lila Uhr-Icon im BPA Flatgrid?</p>
+<p class="answer">a) Feiertag &nbsp; b) Ausstehende Resource Request &nbsp; c) Überstunden</p>
+
+<p class="quiz-question">2. Welcher Modus ist für Resource Manager empfohlen?</p>
+<p class="answer">a) Project &nbsp; b) Default &nbsp; c) Resource</p>
+</div>
+
+<hr>
+
+<h2>Kapitel 9: Reports</h2>
+<p class="duration">⏱ ca. 10 Minuten</p>
+
+<div class="task">
+<h3>Aufgabe 9.1: Report öffnen und exportieren</h3>
+<ol>
+<li>Klicke auf <strong>Report Management</strong>.</li>
+<li>Suche einen relevanten Report (z.B. nach «Resource» oder «Allocation»).</li>
+<li>Öffne den Report durch Klick auf die Zeile.</li>
+<li>Exportiere als Excel, CSV oder PDF über das Export-Icon.</li>
+<li>Prüfe den <strong>Files</strong>-Tab – wie lange sind exportierte Reports herunterladbar?</li>
+</ol>
+</div>
+
+<div class="quiz">
+<h3>📝 Quiz Kapitel 9</h3>
+<p class="quiz-question">1. Wie lange sind exportierte Reports im Files-Tab verfügbar?</p>
+<p class="answer">a) 1 Stunde &nbsp; b) 24 Stunden &nbsp; c) 7 Tage &nbsp; d) Unbegrenzt</p>
+
+<p class="quiz-question">2. Wo kannst du die Spaltenbreite in Pivot-Reports ändern?</p>
+<p class="answer">a) Nicht möglich &nbsp; b) Über den Column Splitter ziehen &nbsp; c) In den Einstellungen</p>
+</div>
+
+<hr>
+<p><em>Ende der Übungen. Viel Erfolg beim Tempus Resource Manager Training!</em></p>
+<p>© Valkeen GmbH · Tempus Resource · www.valkeen.com</p>
+
+</body>
+</html>

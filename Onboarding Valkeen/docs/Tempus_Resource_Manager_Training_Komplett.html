@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tempus Resource Manager – Theorie & Praxis</title>
+<style>
+body { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 11pt; line-height: 1.6; max-width: 820px; margin: 0 auto; padding: 2rem; color: #1a202c; }
+h1 { color: #1a365d; font-size: 1.75rem; border-bottom: 2px solid #2b6cb0; padding-bottom: 0.5rem; }
+h2 { color: #2b6cb0; font-size: 1.25rem; margin-top: 2rem; }
+h3 { color: #2d3748; font-size: 1rem; margin-top: 1rem; }
+.use-case { background: linear-gradient(135deg, #ebf8ff 0%, #e6fffa 100%); border-left: 4px solid #3182ce; padding: 1rem 1.25rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+.theory { background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 8px; }
+.theory h3 { color: #2b6cb0; margin-top: 0; }
+.practice { background: linear-gradient(135deg, #f0fff4 0%, #e6fffa 100%); border-left: 4px solid #38a169; padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+.practice h3 { color: #276749; }
+.quiz { background: #fffaf0; border: 1px solid #ed8936; padding: 1rem 1.25rem; margin: 1rem 0; border-radius: 8px; }
+.quiz-question { font-weight: 600; margin: 0.75rem 0 0.25rem 0; }
+.duration { color: #718096; font-size: 0.9rem; }
+.toc { background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.25rem; margin: 1.5rem 0; border-radius: 8px; }
+.toc h2 { margin-top: 0; font-size: 1rem; }
+.toc ul { list-style: none; padding: 0; margin: 0; }
+.toc li { margin: 0.25rem 0; }
+.toc a { color: #2b6cb0; text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+
+/* Text-Block statt Vollseiten-Screenshot */
+.ui-guide { background: #edf2f7; border-radius: 8px; padding: 1rem 1.25rem; margin: 1rem 0; font-size: 0.9rem; }
+.ui-guide strong { color: #2d3748; }
+
+/* Inline-Bilder – grösser für bessere Lesbarkeit, scharf beim Zoomen */
+.fig-inline { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1rem 0; align-items: flex-start; }
+.fig-inline .fig-item { flex: 0 0 auto; max-width: 380px; }
+.fig-inline .fig-item img { width: 100%; max-width: 380px; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; }
+.fig-inline .fig-caption { font-size: 0.75rem; color: #4a5568; margin-top: 0.25rem; padding: 0.25rem 0.5rem; background: #f7fafc; border-radius: 4px; }
+.fig-inline .fig-caption::before { content: "📍 "; }
+
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.9rem; }
+th, td { border: 1px solid #cbd5e0; padding: 0.5rem 0.75rem; text-align: left; }
+th { background: #edf2f7; font-weight: 600; }
+ul { margin: 0.5rem 0; padding-left: 1.25rem; }
+</style>
+</head>
+<body>
+
+<h1>Tempus Resource Manager – Theorie & Praxis</h1>
+<p><strong>Basierend auf:</strong> Consolidated User Training Resource Manager SHS IT 10.0 · <strong>Valkeen GmbH</strong> · www.valkeen.com</p>
+
+<div class="use-case">
+<h2>🎬 Der Use Case: «Stern & Co – Die Agentur»</h2>
+<p>Stell dir vor, du bist Resource Manager bei <strong>«Stern & Co»</strong>, einer kreativen Agentur. Dein Team: Brad Pitt, Meryl Streep, Taylor Swift, Dwayne Johnson, Angela Merkel, Roger Federer, Heidi Klum, Elon Musk. <strong>Projekte:</strong> Blockbuster App 2026, Cloud Migration, Social Media Relaunch, Compliance Update Q2.</p>
+</div>
+
+<nav class="toc" id="toc">
+<h2>📑 Inhaltsverzeichnis</h2>
+<ul>
+<li><a href="#kapitel0">Overview · Shortcuts</a></li>
+<li><a href="#kapitel1">Logging In · Homepage</a></li>
+<li><a href="#kapitel2">Subscriptions</a></li>
+<li><a href="#kapitel3">Resource Management Grid</a></li>
+<li><a href="#kapitel4">Net Availability Grid</a></li>
+<li><a href="#kapitel5">Resource Requests</a></li>
+<li><a href="#kapitel6">Creating Resource Requests</a></li>
+<li><a href="#kapitel7">Non-Project Activities</a></li>
+<li><a href="#kapitel8">BPA Flatgrid</a></li>
+<li><a href="#kapitel9">Reports</a></li>
+<li><a href="#workflow">Workflow-Einrichtung</a></li>
+</ul>
+</nav>
+
+<hr>
+
+<h2 id="kapitel0">Kapitel 0: Übersicht & Shortcuts</h2>
+<p class="duration">⏱ ca. 5 Minuten</p>
+
+<div class="theory">
+<h3>📚 Theorie: Übersicht</h3>
+<ul>
+<li><strong>User Access:</strong> Tempus-Zugang variiert je nach Setup. Ressourcen loggen sich via SSO ein.</li>
+<li><strong>Ressourcentypen:</strong> Named Resources vs. Demand Planning (Platzhalter).</li>
+<li><strong>Projekttypen:</strong> Standard, Opportunities, Non-Project Activities (Absence, Admin, Run, Change).</li>
+<li><strong>Assignments:</strong> Verknüpfung Ressource ↔ Projekt. Zeit-Einheiten: Hours, FTE, Mandays.</li>
+<li><strong>Resource Request Workflow:</strong> RM müssen Assignments genehmigen (Approve, Replace, Reject).</li>
+</ul>
+</div>
+
+<div class="theory">
+<h3>📚 Theorie: Tempus Shortcuts</h3>
+<ul>
+<li>Spalten sortieren: Klick auf Spaltenkopf</li>
+<li>Kopieren: Ctrl+C / Ctrl+V</li>
+<li>Icons: 🔴 Papierkorb = Löschen · ✏️ Stift = Bearbeiten · 🔒 = Gesperrt · 🔔 = Benachrichtigung</li>
+</ul>
+</div>
+
+<div class="ui-guide">
+<strong>Wo findest du was?</strong> Nach dem Login: <strong>6 Tiles</strong> auf der Homepage (Project Management, Resource Management, Resource Requests, BPA Flatgrid, Report Management, Bulk Resource Capacities). <strong>Task Bar</strong> oben: Tempus-Logo links, Glocke, Hamburger-Menü, Username rechts.
+</div>
+
+<div class="practice">
+<h3>🛠 Praxis: Stern & Co – Erste Schritte</h3>
+<ol>
+<li>Öffne Tempus Resource in Chrome.</li>
+<li>Klicke auf <strong>Healthineers-ID Login</strong> und melde dich an.</li>
+<li>Identifiziere alle <strong>6 Tiles</strong> auf der Homepage.</li>
+</ol>
+</div>
+
+<div class="quiz">
+<h3>📝 Quiz Kapitel 0</h3>
+<p class="quiz-question">1. Welche Ressourcentypen gibt es?</p>
+<p>a) Nur Named Resources &nbsp; b) Named Resources und Demand Planning &nbsp; c) Nur Demand Planning</p>
+<p class="quiz-question">2. Was müssen Resource Manager bei Resource Requests tun?</p>
+<p>a) Nichts &nbsp; b) Assignments genehmigen (Approve, Replace, Reject) &nbsp; c) Nur erstellen</p>
+</div>
+
+<hr>
+
+<h2 id="kapitel1">Kapitel 1: Anmeldung & Navigation</h2>
+<p class="duration">⏱ ca. 10 Minuten</p>
+
+<div class="theory">
+<h3>📚 Theorie: Logging In & Homepage</h3>
+<ol>
+<li>Tempus Resource im Browser öffnen (Chrome empfohlen).</li>
+<li>Klicke auf den orangen Button <strong>Healthineers-ID Login</strong>.</li>
+<li>Mit Standard-Credentials anmelden.</li>
+</ol>
+<p>Alle RM-User haben Zugang zu: <strong>Project Management</strong>, <strong>Resource Management</strong>, <strong>Resource Requests</strong>, <strong>BPA Flatgrid</strong>, <strong>Report Management</strong>, <strong>Bulk Resource Capacities</strong>.</p>
+<p><strong>Task Bar:</strong> Tempus-Logo (links) → Homepage · Glocke → Benachrichtigungen · Hamburger → Navigation · Username (rechts) → Subscriptions, Logout.</p>
+<div class="fig-inline">
+<div class="fig-item"><img src="screenshots/inline/login_p7_2.png" alt="Homepage"><div class="fig-caption">Homepage mit Kacheln (Project Management, Resource Management, etc.)</div></div>
+<div class="fig-item"><img src="screenshots/inline/login_p7_1.png" alt="Login"><div class="fig-caption">Login-Seite mit Healthineers ID Login Button</div></div>
+<div class="fig-item"><img src="screenshots/inline/homepage_p8_4.png" alt="Filter"><div class="fig-caption">Projektliste mit Suchfeld und Filter (Project, Resource, Attribute, Report)</div></div>
+</div>
+</div>
+
+<div class="practice">
+<h3>🛠 Praxis: Stern & Co – Navigation erkunden</h3>
+<ol>
+<li>Klicke auf das <strong>Tempus-Logo</strong> – wohin führt es?</li>
+<li>Öffne das <strong>Hamburger-Menü</strong> und zähle die Bereiche.</li>
+<li>Wo findest du Benachrichtigungen? <em>(Glocken-Icon oben rechts)</em></li>
+</ol>
+</div>
+
+<div class="quiz">
+<h3>📝 Quiz Kapitel 1</h3>
+<p class="quiz-question">1. Welcher Browser wird empfohlen?</p>
+<p>a) Firefox &nbsp; b) Safari &nbsp; c) Google Chrome &nbsp; d) Edge</p>
+<p class="quiz-question">2. Was passiert beim Klick auf das Tempus-Logo?</p>
+<p>a) Logout &nbsp; b) Zurück zur Homepage &nbsp; c) Einstellungen</p>
+</div>
+
+<hr>
+
+<h2 id="kapitel2">Kapitel 2: Benachrichtigungen</h2>
+<p class="duration">⏱ ca. 10 Minuten</p>
+
+<div class="theory">
+<h3>📚 Theorie: Empfohlene Subscriptions</h3>
+<p>Für Resource Manager unter dem Tab <strong>Resource Request</strong>:</p>
+<ol>
+<li><strong>Resource request management</strong> → <strong>Submitted</strong> aktivieren – Benachrichtigung bei neuer Resource Request für deine Ressourcen.</li>
+<li>Falls du auch Ressourcen anforderst: <strong>Resource request (submitter)</strong> für Outcomes aktivieren.</li>
+</ol>
+<div class="fig-inline">
+<div class="fig-item"><img src="screenshots/inline/subscriptions_p10_2.png" alt="Subscriptions"><div class="fig-caption">Resource request management → Submitted aktivieren</div></div>
+<div class="fig-item"><img src="screenshots/inline/subscriptions_p10_1.png" alt="Resource Request Tab"><div class="fig-caption">Tab «Resource Request» im Dialog</div></div>
+</div>
+</div>
+
+<div class="practice">
+<h3>🛠 Praxis: Stern & Co – Taylor Swift wurde angefragt!</h3>
+<ol>
+<li>Klicke auf deinen <strong>Benutzernamen</strong> oben rechts.</li>
+<li>Wähle <strong>Subscriptions</strong>.</li>
+<li>Tab <strong>Resource Request</strong> → <strong>Resource request management</strong> → <strong>Submitted</strong> aktivieren.</li>
+</ol>
+</div>
+
+<div class="quiz">
+<h3>📝 Quiz Kapitel 2</h3>
+<p class="quiz-question">1. Wann wirst du bei «Submitted» benachrichtigt?</p>
+<p>a) Wenn du eine Anfrage absendest &nbsp; b) Wenn eine neue Resource Request für deine Ressourcen eingereicht wird</p>
+</div>
+
+<hr>
+
+<h2 id="kapitel3">Kapitel 3: Resource Management Grid</h2>
+<p class="duration">⏱ ca. 12 Minuten</p>
+
+<div class="theory">
+<h3>📚 Theorie: Grid & Attribute</h3>
+<ul>
+<li><strong>Suche:</strong> Suchfeld mit «contains»-Logik · <strong>Quick Filter:</strong> z.B. «My resources»</li>
+<li><strong>Stift-Icon:</strong> Hover über Zelle → Bearbeiten</li>
+<li><strong>Advanced Tooltips:</strong> Hover über Ressourcennamen → Bereiche anzeigen</li>
+<li><strong>Wichtig:</strong> Capacity Start/End Date nicht als Filter ändern – Datenverlust!</li>
+</ul>
+<div class="fig-inline">
+<div class="fig-item"><img src="screenshots/inline/resource_grid_p15_5.png" alt="Attributes"><div class="fig-caption">Ressource → SHS IT Attributes (Location, Org Unit, Seniority)</div></div>
+<div class="fig-item"><img src="screenshots/inline/resource_grid_p16_1.png" alt="Workflow"><div class="fig-caption">Attributes: Resource Managers, Is Resource Manager</div></div>
+<div class="fig-item"><img src="screenshots/inline/resource_grid_p12_3.png" alt="Kontextmenü"><div class="fig-caption">Kontextmenü bei Klick auf Ressource (Attributes & Identity, Capacity, Sheets)</div></div>
+</div>
+</div>
+
+<div class="practice">
+<h3>🛠 Praxis: Stern & Co – Brad Pitt finden & Heidi Klum aktualisieren</h3>
+<ol>
+<li>Resource Management → Suche «Brad» → «My resources» anwenden.</li>
+<li>Hover über Brad Pitt – Advanced Tooltip prüfen.</li>
+<li>Heidi Klum → Rollen-Zelle → Stift-Icon → «Lead UX Designerin» → Save.</li>
+</ol>
+</div>
+
+<div class="quiz">
+<h3>📝 Quiz Kapitel 3</h3>
+<p class="quiz-question">1. Was bedeutet das Stift-Icon?</p>
+<p>a) Löschen &nbsp; b) Bearbeiten/Anzeigen &nbsp; c) Kopieren</p>
+<p class="quiz-question">2. Solltest du Capacity Start/End Date ändern?</p>
+<p>a) Ja &nbsp; b) Nein – kann zu Datenverlust führen</p>
+</div>
+
+<hr>
+
+<h2 id="kapitel4">Kapitel 4: Net Availability Grid</h2>
+<p class="duration">⏱ ca. 12 Minuten</p>
+
+<div class="theory">
+<h3>📚 Theorie: Net Availability</h3>
+<p><strong>Zugang:</strong> Oben rechts im Resource Management Grid → <strong>Net Availability</strong>.</p>
+<p><strong>Heatmap:</strong> Grün = unterbucht · Rot = überbucht. <strong>Impact Assessment:</strong> Klick auf Zelle → Projekte, Zeit, Auslastung %.</p>
+<div class="fig-inline">
+<div class="fig-item"><img src="screenshots/inline/net_availability_p18_2.png" alt="Net Availability"><div class="fig-caption">Net Availability Button & Options (Heatmap, Show only)</div></div>
+<div class="fig-item"><img src="screenshots/inline/net_availability_p18_4.png" alt="Impact Assessment"><div class="fig-caption">Impact Assessment beim Klick auf Zelle (Projekte, Stunden, %)</div></div>
+<div class="fig-item"><img src="screenshots/inline/net_availability_p19_1.png" alt="Heatmap"><div class="fig-caption">Impact Assessment Detailansicht</div></div>
+</div>
+</div>
+
+<div class="practice">
+<h3>🛠 Praxis: Stern & Co – Elon Musk überbucht?</h3>
+<ol>
+<li>Resource Management → <strong>Net Availability</strong>.</li>
+<li>Zeitraum Q1 2026 → Elon Musk suchen (Rot = überbucht).</li>
+<li>Klick auf Zelle → Impact Assessment prüfen.</li>
+</ol>
+</div>
+
+<div class="quiz">
+<h3>📝 Quiz Kapitel 4</h3>
+<p class="quiz-question">1. Was bedeutet Rot im Net Availability Grid?</p>
+<p>a) Unterauslastung &nbsp; b) Überauslastung &nbsp; c) Keine Daten</p>
+</div>
+
+<hr>
+
+<h2 id="kapitel5">Kapitel 5: Resource Requests bearbeiten</h2>
+<p class="duration">⏱ ca. 15 Minuten</p>
+
+<div class="theory">
+<h3>📚 Theorie: Resource Request Screen</h3>
+<p>Tile <strong>Resource Requests</strong> (rotes Badge = Pending). Nur <strong>Pending</strong> bearbeitbar. <strong>Replace:</strong> Ersatz wählen → Redistribute → Apply. <strong>Approve:</strong> Nur benannte Ressource. <strong>Reject:</strong> Button rot.</p>
+<div class="fig-inline">
+<div class="fig-item"><img src="screenshots/inline/resource_requests_p21_3.png" alt="Pending-Liste"><div class="fig-caption">Resource Requests – Allokations-Grid (Ressourcen, Monatsspalten)</div></div>
+<div class="fig-item"><img src="screenshots/inline/resource_requests_p21_2.png" alt="Optional Fields"><div class="fig-caption">Anfrage-Details: Optional Fields (Module, Role)</div></div>
+<div class="fig-item"><img src="screenshots/inline/resource_requests_p23_5.png" alt="Delegate"><div class="fig-caption">Resource Request: Approve/Reject/Delegate, Delegate-Dropdown</div></div>
+</div>
+</div>
+
+<div class="practice">
+<h3>🛠 Praxis: Stern & Co – Roger durch Dwayne ersetzen</h3>
+<ol>
+<li>Resource Requests → Pending filtern.</li>
+<li>Anfrage öffnen → Dwayne Johnson als Ersatz wählen → Redistribute → Apply Changes.</li>
+</ol>
+</div>
+
+<div class="quiz">
+<h3>📝 Quiz Kapitel 5</h3>
+<p class="quiz-question">1. Welche Anfragen kannst du bearbeiten?</p>
+<p>a) Alle &nbsp; b) Nur Pending &nbsp; c) Nur Approved</p>
+<p class="quiz-question">2. Solltest du eine generische Ressource genehmigen?</p>
+<p>a) Ja &nbsp; b) Nein – nur benannte Ressourcen</p>
+</div>
+
+<hr>
+
+<h2 id="kapitel6">Kapitel 6: Resource Requests erstellen</h2>
+<p class="duration">⏱ ca. 12 Minuten</p>
+
+<div class="theory">
+<h3>📚 Theorie: Creating Resource Requests</h3>
+<ol>
+<li>Project Management → Projekt öffnen</li>
+<li><strong>Checkout</strong> neben Projektnamen</li>
+<li>Blaue Zelle «Type a new resource» → Ressource eingeben</li>
+<li>Allokation eintragen → Save and Check In</li>
+</ol>
+<div class="fig-inline">
+<div class="fig-item"><img src="screenshots/inline/creating_requests_p24_5.png" alt="Type a new resource"><div class="fig-caption">Blaue Zelle «Type a new resource» – Ressource eingeben</div></div>
+<div class="fig-item"><img src="screenshots/inline/creating_requests_p25_3.png" alt="Allocation"><div class="fig-caption">Monatsspalten für Allokation</div></div>
+<div class="fig-item"><img src="screenshots/inline/creating_requests_p24_7.png" alt="Bulk assignment"><div class="fig-caption">Bulk assignment – Ressourcen & Tasks auswählen</div></div>
+</div>
+</div>
+
+<div class="practice">
+<h3>🛠 Praxis: Stern & Co – Meryl Streep für Blockbuster anfordern</h3>
+<ol>
+<li>Project Management → «Blockbuster App 2026» → Checkout.</li>
+<li>Meryl Streep in «Type a new resource» → Allokation (z.B. 160h/Monat) → Save and Check In.</li>
+</ol>
+</div>
+
+<div class="quiz">
+<h3>📝 Quiz Kapitel 6</h3>
+<p class="quiz-question">1. Was musst du tun, bevor du Änderungen am Projekt vornimmst?</p>
+<p>a) Logout &nbsp; b) Checkout &nbsp; c) Filter setzen</p>
+</div>
+
+<hr>
+
+<h2 id="kapitel7">Kapitel 7: Non-Project Activities</h2>
+<p class="duration">⏱ ca. 12 Minuten</p>
+
+<div class="theory">
+<h3>📚 Theorie: Non-Project Activities</h3>
+<p>Absence, Admin, Run, Change – wichtig für echte Netto-Kapazität. <strong>Finden:</strong> Project Management → Org Unit suchen → Non-Project Activities. <strong>Bearbeiten:</strong> Checkout → Zelle bearbeiten.</p>
+<div class="fig-inline">
+<div class="fig-item"><img src="screenshots/inline/nonproject_p26_3.jpg" alt="Non-Project"><div class="fig-caption">Non-Project Activities – Checkout, Allocations, Tasks (Generic, Absence)</div></div>
+<div class="fig-item"><img src="screenshots/inline/nonproject_p26_4.png" alt="Group by Task"><div class="fig-caption">Group by Task – Absence, Admin, Run, Change</div></div>
+<div class="fig-item"><img src="screenshots/inline/nonproject_p27_7.png" alt="Bulk assignment"><div class="fig-caption">Bulk assignment – Ressourcen zu Absence/Admin zuweisen</div></div>
+</div>
+</div>
+
+<div class="practice">
+<h3>🛠 Praxis: Stern & Co – Angela Merkel Urlaub</h3>
+<ol>
+<li>Project Management → Org Unit → Non-Project Activities → Checkout.</li>
+<li>Nach Task gruppieren → Angela Merkel bei Absence → 16h für März (2 Tage) → Save and Check In.</li>
+</ol>
+</div>
+
+<div class="quiz">
+<h3>📝 Quiz Kapitel 7</h3>
+<p class="quiz-question">1. Warum sind Non-Project Activities wichtig?</p>
+<p>a) Sie sind optional &nbsp; b) Sie zeigen die echte Netto-Kapazität &nbsp; c) Nur für Urlaub</p>
+</div>
+
+<hr>
+
+<h2 id="kapitel8">Kapitel 8: BPA Flatgrid</h2>
+<p class="duration">⏱ ca. 15 Minuten</p>
+
+<div class="theory">
+<h3>📚 Theorie: BPA Flatgrid</h3>
+<p><strong>Resource-Modus:</strong> Für RM empfohlen. <strong>Public Views:</strong> «For SAP RMs», «Non-Project Activities». <strong>Lila Uhr-Icon:</strong> Ausstehende Resource Request. <strong>Ellipse</strong> neben Ressource → Approve, Reject.</p>
+<div class="fig-inline">
+<div class="fig-item"><img src="screenshots/inline/bpa_flatgrid_p32_3.png" alt="View-Auswahl"><div class="fig-caption">View-Auswahl: Resources & Projects, Public View</div></div>
+<div class="fig-item"><img src="screenshots/inline/bpa_flatgrid_p35_1.png" alt="Options"><div class="fig-caption">BPA Flatgrid Options (Heatmap, Filter by Resource Request)</div></div>
+<div class="fig-item"><img src="screenshots/inline/bpa_flatgrid_p33_3.png" alt="Filter"><div class="fig-caption">Filter: Non-Project Activities</div></div>
+</div>
+</div>
+
+<div class="practice">
+<h3>🛠 Praxis: Stern & Co – Team-Auslastung</h3>
+<ol>
+<li>BPA Flatgrid → View «For SAP RMs» klonen → Resource-Modus → Stern & Co Ressourcen wählen.</li>
+<li>Filter: Resource Request Status = Pending → lila Uhr-Icons finden.</li>
+</ol>
+</div>
+
+<div class="quiz">
+<h3>📝 Quiz Kapitel 8</h3>
+<p class="quiz-question">1. Was bedeutet das lila Uhr-Icon?</p>
+<p>a) Feiertag &nbsp; b) Ausstehende Resource Request &nbsp; c) Überstunden</p>
+<p class="quiz-question">2. Welcher Modus ist für Resource Manager empfohlen?</p>
+<p>a) Project &nbsp; b) Default &nbsp; c) Resource</p>
+</div>
+
+<hr>
+
+<h2 id="kapitel9">Kapitel 9: Reports</h2>
+<p class="duration">⏱ ca. 10 Minuten</p>
+
+<div class="theory">
+<h3>📚 Theorie: Viewing Reports</h3>
+<p>Report Management Tile → Report suchen → Export (Excel, CSV, PDF). <strong>Files-Tab:</strong> 24h herunterladbar.</p>
+<div class="fig-inline">
+<div class="fig-item"><img src="screenshots/inline/reports_p37_2.png" alt="Report Management"><div class="fig-caption">Report Management – Report list, Report folder, Files</div></div>
+<div class="fig-item"><img src="screenshots/inline/reports_p37_3.png" alt="Report-Liste"><div class="fig-caption">Report-Liste mit Name, Description, Owner</div></div>
+<div class="fig-item"><img src="screenshots/inline/reports_p37_4.png" alt="Report"><div class="fig-caption">Geöffneter Report mit Beschreibung</div></div>
+</div>
+</div>
+
+<div class="practice">
+<h3>🛠 Praxis: Stern & Co – Report exportieren</h3>
+<ol>
+<li>Report Management → Report öffnen → Als Excel/PDF exportieren.</li>
+<li>Files-Tab prüfen: Wie lange verfügbar? (24h)</li>
+</ol>
+</div>
+
+<div class="quiz">
+<h3>📝 Quiz Kapitel 9</h3>
+<p class="quiz-question">1. Wie lange sind exportierte Reports im Files-Tab verfügbar?</p>
+<p>a) 1 Stunde &nbsp; b) 24 Stunden &nbsp; c) 7 Tage</p>
+</div>
+
+<hr>
+
+<h2 id="workflow">Workflow-Einrichtung</h2>
+<p class="duration">⏱ ca. 15 Minuten</p>
+
+<div class="theory">
+<h3>📚 Theorie: Resource Request Workflow</h3>
+<p>Der Workflow ist in Tempus eingebaut: PM erstellt Request → Status <strong>Pending</strong> → RM erhält Benachrichtigung → RM <strong>Approve</strong> / <strong>Replace</strong> / <strong>Reject</strong> → Status wechselt zu Approved/Rejected.</p>
+<p><strong>Voraussetzung:</strong> Ressourcen müssen einen <strong>Resource Manager</strong> zugewiesen haben. Der RM muss <strong>Is Resource Manager</strong> = true haben.</p>
+</div>
+
+<div class="theory">
+<h3>📚 Theorie: Rollen & Attribute</h3>
+<table>
+<tr><th>Attribut</th><th>Wo</th><th>Bedeutung</th></tr>
+<tr><td>Resource Managers</td><td>Resource → Attributes & Identity</td><td>Wer managed diese Ressource?</td></tr>
+<tr><td>Is Resource Manager</td><td>Resource → Attributes & Identity</td><td>Ist diese Person ein RM?</td></tr>
+<tr><td>Require Resource Manager Approval</td><td>Resource → Attributes & Identity</td><td>Muss RM Assignments genehmigen?</td></tr>
+<tr><td>Project Manager</td><td>Projekt → Attributes</td><td>Wer ist PM für dieses Projekt?</td></tr>
+</table>
+</div>
+
+<div class="ui-guide">
+<strong>Wo findest du die Attribute?</strong> <strong>Resource:</strong> Resource Management → Ressource öffnen → Tab «Attributes & Identity» → SHS IT Attributes (oder vergleichbar). <strong>Projekt:</strong> Project Management → Projekt öffnen → Attributes.
+</div>
+
+<div class="practice">
+<h3>🛠 Praxis: Manuel als RM & PM einrichten</h3>
+<ol>
+<li><strong>Manuel anlegen</strong> (falls nicht vorhanden): Resource Management → Plus → Name «Manuel» → Create.</li>
+<li><strong>Manuel als RM:</strong> Manuel öffnen → Attributes & Identity → Is Resource Manager = Ja.</li>
+<li><strong>Stern & Co Ressourcen:</strong> Jede Ressource (Brad Pitt, Meryl Streep, …) → Resource Managers = Manuel, Require Resource Manager Approval = Ja.</li>
+<li><strong>Stern & Co Projekte:</strong> Jedes Projekt → Project Manager = Manuel (falls Attribut vorhanden).</li>
+<li><strong>Subscriptions:</strong> Als Manuel einloggen → Username → Subscriptions → Resource Request → Submitted aktivieren.</li>
+</ol>
+</div>
+
+<div class="practice">
+<h3>🛠 Praxis: API-Script (optional)</h3>
+<pre style="background:#1a202c;color:#e2e8f0;padding:1rem;border-radius:8px;font-size:0.85rem;overflow-x:auto;">cd "Onboarding Valkeen/scripts"
+export TEMPUS_BASE_URL="https://trial5.tempus-resource.com/slot4"
+export TEMPUS_API_KEY="&lt;dein-key&gt;"
+python setup_tempus_workflows_manuel.py --explore   # Custom Fields prüfen
+python setup_tempus_workflows_manuel.py --setup    # Manuel verbinden</pre>
+<p>Details: <a href="TEMPUS_WORKFLOW_SETUP_PLAN.md">TEMPUS_WORKFLOW_SETUP_PLAN.md</a></p>
+</div>
+
+<hr>
+<p><em>Ende der Übungen. Viel Erfolg beim Tempus Resource Manager Training!</em></p>
+<p>© Valkeen GmbH · Tempus Resource · www.valkeen.com</p>
+
+</body>
+</html>
