@@ -2639,12 +2639,21 @@
 
   <script>
     const PROGRESS_KEY = 'tempus-training-progress';
+    const PROGRESS_VERSION_KEY = 'tempus-training-progress-v';
     const TRAINING_TOTALS = { rm: 9, rmAdv: 5, pm: 8, pmAdv: 5, admin: 8, adminAdv: 5 };
     const TRAINING_CONFIG_API = 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1/training-admin/config';
 
+    // v2: reset old progress (was tracked on open, not on explicit completion)
+    if (localStorage.getItem(PROGRESS_VERSION_KEY) !== '2') {
+      localStorage.removeItem(PROGRESS_KEY);
+      localStorage.setItem(PROGRESS_VERSION_KEY, '2');
+    }
+
     async function applyTrainingConfig() {
       try {
-        const res = await fetch(TRAINING_CONFIG_API);
+        const controller = new AbortController();
+        setTimeout(() => controller.abort(), 5000);
+        const res = await fetch(TRAINING_CONFIG_API, { signal: controller.signal });
         if (!res.ok) return;
         const cfg = await res.json();
         if (!cfg || Object.keys(cfg).length === 0) return;
@@ -2702,7 +2711,9 @@
         }
         window.TRAINING_CONFIG = cfg;
         if (cfg.pages) applyDynamicPages(cfg.pages);
-      } catch (e) { console.warn('Training config:', e); }
+      } catch (e) {
+        console.warn('Training config:', e);
+      }
     }
     function renderBlocks(blocks) {
       if (!blocks || !blocks.length) return '';
@@ -2777,9 +2788,37 @@
         try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); } catch (_) {}
       }
     }
+    function markCompleted(training, chapter) {
+      saveProgress(training, chapter);
+      const total = TRAINING_TOTALS[training] || 1;
+      if (chapter < total) {
+        switchTraining(training, chapter + 1);
+      } else {
+        switchTraining('dashboard');
+      }
+    }
+    function injectCompleteButton(panelId, training, chapter, total) {
+      const panel = document.getElementById(panelId);
+      if (!panel) return;
+      panel.querySelectorAll('.chapter').forEach(ch => {
+        const num = parseInt(ch.dataset.chapter);
+        if (!num) return;
+        if (ch.querySelector('.complete-chapter-btn')) return;
+        const btn = document.createElement('button');
+        btn.className = 'complete-chapter-btn';
+        btn.style.cssText = 'display:block;margin:2rem auto 1rem;padding:0.8rem 2rem;background:var(--accent,#00e5a0);color:#000;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.2s;';
+        btn.textContent = num < total ? '✓ Kapitel abschließen & weiter' : '✓ Letztes Kapitel abschließen';
+        btn.onmouseenter = () => { btn.style.transform = 'scale(1.05)'; btn.style.boxShadow = '0 4px 15px rgba(0,229,160,0.4)'; };
+        btn.onmouseleave = () => { btn.style.transform = ''; btn.style.boxShadow = ''; };
+        btn.onclick = () => markCompleted(training, num);
+        ch.appendChild(btn);
+      });
+    }
     function goToTraining(id) {
       const p = getProgress();
-      const chapter = Math.max(1, p[id] || 1);
+      const completed = p[id] || 0;
+      const total = TRAINING_TOTALS[id] || 1;
+      const chapter = Math.min(completed + 1, total);
       switchTraining(id, chapter);
     }
     function updateDashboardProgress() {
@@ -2890,15 +2929,19 @@
         nav.appendChild(btn);
       }
     }
+    function updateProgressBar(training) {
+      const completed = getProgress()[training] || 0;
+      const total = TRAINING_TOTALS[training] || 1;
+      document.getElementById('progressFill').style.width = (completed / total * 100) + '%';
+    }
     function showChapterRmAdv(num) {
-      saveProgress('rmAdv', num);
       document.querySelectorAll('#rmAdvPanel .chapter').forEach(c => {
         c.classList.toggle('active', parseInt(c.dataset.chapter) === num);
       });
       document.querySelectorAll('#rmAdvPanel .chapter-nav button').forEach((b, i) => {
         b.classList.toggle('active', i + 1 === num);
       });
-      document.getElementById('progressFill').style.width = (num / 5 * 100) + '%';
+      updateProgressBar('rmAdv');
     }
     function checkQuizRmAdv(chapter, correctAnswers) {
       const names = chapter === 1 ? ['rmAdv1q1','rmAdv1q2'] : chapter === 2 ? ['rmAdv2q1','rmAdv2q2'] : chapter === 3 ? ['rmAdv3q1'] : chapter === 4 ? ['rmAdv4q1'] : ['rmAdv5q1'];
@@ -2918,14 +2961,13 @@
       }
     }
     function showChapterPmAdv(num) {
-      saveProgress('pmAdv', num);
       document.querySelectorAll('#pmAdvPanel .chapter').forEach(c => {
         c.classList.toggle('active', parseInt(c.dataset.chapter) === num);
       });
       document.querySelectorAll('#pmAdvPanel .chapter-nav button').forEach((b, i) => {
         b.classList.toggle('active', i + 1 === num);
       });
-      document.getElementById('progressFill').style.width = (num / 5 * 100) + '%';
+      updateProgressBar('pmAdv');
     }
     function checkQuizPmAdv(chapter, correctAnswers) {
       const names = [`pmAdv${chapter}q1`];
@@ -2945,14 +2987,13 @@
       }
     }
     function showChapterAdminAdv(num) {
-      saveProgress('adminAdv', num);
       document.querySelectorAll('#adminAdvPanel .chapter').forEach(c => {
         c.classList.toggle('active', parseInt(c.dataset.chapter) === num);
       });
       document.querySelectorAll('#adminAdvPanel .chapter-nav button').forEach((b, i) => {
         b.classList.toggle('active', i + 1 === num);
       });
-      document.getElementById('progressFill').style.width = (num / 5 * 100) + '%';
+      updateProgressBar('adminAdv');
     }
     function checkQuizAdminAdv(chapter, correctAnswers) {
       const names = chapter === 1 ? ['adminAdv1q1','adminAdv1q2'] : [`adminAdv${chapter}q1`];
@@ -2994,14 +3035,13 @@
     }
 
     function showChapterAdmin(num) {
-      saveProgress('admin', num);
       document.querySelectorAll('#adminPanel .chapter').forEach(c => {
         c.classList.toggle('active', parseInt(c.dataset.chapter) === num);
       });
       document.querySelectorAll('#adminPanel .chapter-nav button').forEach((b, i) => {
         b.classList.toggle('active', i + 1 === num);
       });
-      document.getElementById('progressFill').style.width = (num / 8 * 100) + '%';
+      updateProgressBar('admin');
     }
 
     function checkQuizAdmin(chapter, correctAnswers) {
@@ -3040,25 +3080,23 @@
     }
 
     function showChapter(num) {
-      saveProgress('rm', num);
       document.querySelectorAll('#rmPanel .chapter').forEach(c => {
         c.classList.toggle('active', parseInt(c.dataset.chapter) === num);
       });
       document.querySelectorAll('#rmPanel .chapter-nav button').forEach((b, i) => {
         b.classList.toggle('active', i + 1 === num);
       });
-      document.getElementById('progressFill').style.width = (num / 9 * 100) + '%';
+      updateProgressBar('rm');
     }
 
     function showChapterPM(num) {
-      saveProgress('pm', num);
       document.querySelectorAll('#pmPanel .chapter').forEach(c => {
         c.classList.toggle('active', parseInt(c.dataset.chapter) === num);
       });
       document.querySelectorAll('#pmPanel .chapter-nav button').forEach((b, i) => {
         b.classList.toggle('active', i + 1 === num);
       });
-      document.getElementById('progressFill').style.width = (num / 8 * 100) + '%';
+      updateProgressBar('pm');
     }
 
     function checkQuizPM(chapter, correctAnswers) {
@@ -3153,14 +3191,25 @@
       if (btn) btn.disabled = true;
     }
 
+    injectCompleteButton('rmPanel', 'rm', 1, 9);
+    injectCompleteButton('rmAdvPanel', 'rmAdv', 1, 5);
+    injectCompleteButton('pmPanel', 'pm', 1, 8);
+    injectCompleteButton('pmAdvPanel', 'pmAdv', 1, 5);
+    injectCompleteButton('adminPanel', 'admin', 1, 8);
+    injectCompleteButton('adminAdvPanel', 'adminAdv', 1, 5);
+
+    function nextChapterFor(id) {
+      const completed = getProgress()[id] || 0;
+      const total = TRAINING_TOTALS[id] || 1;
+      return Math.min(completed + 1, total);
+    }
     const hash = window.location.hash;
-    const p = getProgress();
-    if (hash === '#admin') switchTraining('admin', p.admin || 1);
-    else if (hash === '#rmAdv') switchTraining('rmAdv', p.rmAdv || 1);
-    else if (hash === '#pmAdv') switchTraining('pmAdv', p.pmAdv || 1);
-    else if (hash === '#adminAdv') switchTraining('adminAdv', p.adminAdv || 1);
-    else if (hash === '#rm') switchTraining('rm', p.rm || 1);
-    else if (hash === '#pm') switchTraining('pm', p.pm || 1);
+    if (hash === '#admin') switchTraining('admin', nextChapterFor('admin'));
+    else if (hash === '#rmAdv') switchTraining('rmAdv', nextChapterFor('rmAdv'));
+    else if (hash === '#pmAdv') switchTraining('pmAdv', nextChapterFor('pmAdv'));
+    else if (hash === '#adminAdv') switchTraining('adminAdv', nextChapterFor('adminAdv'));
+    else if (hash === '#rm') switchTraining('rm', nextChapterFor('rm'));
+    else if (hash === '#pm') switchTraining('pm', nextChapterFor('pm'));
     else switchTraining('dashboard');
   </script>
 </body>

@@ -9,17 +9,22 @@ const STORAGE_KEY = 'training-admin-config-local';
 
 export async function getTrainingConfig() {
   try {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), 5000);
     const res = await fetch(`${API_BASE}/training-admin/config`, {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal
     });
     if (res.ok) return res.json();
-    throw new Error('API nicht verfügbar');
-  } catch (e) {
+  } catch (_) {
+    // silently fall through to localStorage
+  }
+  try {
     const local = localStorage.getItem(STORAGE_KEY);
     if (local) return JSON.parse(local);
-    return {};
-  }
+  } catch (_) {}
+  return {};
 }
 
 export async function saveTrainingConfig(config) {
