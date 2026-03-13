@@ -19,13 +19,11 @@ class AWSAPISettingsService {
     _getApiEndpoint() {
         // Verwende zentrale API-Konfiguration
         if (window.getApiUrl) {
-            // getApiUrl gibt bereits den vollständigen Pfad zurück
             const apiSettingsUrl = window.getApiUrl('API_SETTINGS');
-            // Extrahiere den Basis-Pfad (ohne /api-settings am Ende)
-            return apiSettingsUrl.replace(/\/api-settings$/, '');
+            if (apiSettingsUrl && typeof apiSettingsUrl === 'string') {
+                return apiSettingsUrl.replace(/\/api-settings$/, '');
+            }
         }
-        
-        // Kein Fallback – AWS API_BASE muss gesetzt sein
         return (window.AWS_APP_CONFIG && window.AWS_APP_CONFIG.API_BASE) ? window.AWS_APP_CONFIG.API_BASE : null;
     }
 
@@ -211,26 +209,13 @@ class AWSAPISettingsService {
             // Legacy: /api-settings?action=key&provider=openai
             // Prüfe ob AWS API Gateway verwendet wird
             const apiSettingsUrl = window.getApiUrl ? window.getApiUrl('API_SETTINGS') : null;
-            const isAWS = !!apiSettingsUrl;
-            
-            // WICHTIG: Verwende IMMER das Legacy-Format (?action=key) für AWS API Gateway
-            // Die Lambda-Funktion unterstützt jetzt beide Formate
-            let url;
-            if (isAWS) {
-                // AWS API Gateway: Legacy Format funktioniert jetzt auch
-                url = `${apiSettingsUrl}?action=key&provider=${provider}${useGlobal ? '&global=true' : ''}`;
-            } else {
-                // Legacy Format
-                url = `${this.apiEndpoint}/api-settings?action=key&provider=${provider}`;
+            const base = apiSettingsUrl || (this.apiEndpoint ? this.apiEndpoint + '/api-settings' : null);
+            if (!base) {
+                throw new Error('API-URL nicht konfiguriert (getApiUrl oder AWS_APP_CONFIG.API_BASE)');
             }
+            const url = `${base}?action=key&provider=${provider}${useGlobal ? '&global=true' : ''}`;
             
-            console.log(`🔍 Lade vollständigen API Key von: ${url}`, { 
-                provider, 
-                useGlobal, 
-                isAWS, 
-                apiSettingsUrl,
-                apiEndpoint: this.apiEndpoint 
-            });
+            console.log(`🔍 Lade vollständigen API Key von: ${url}`, { provider, useGlobal });
             
             let response = await fetch(url, {
                 method: 'GET',

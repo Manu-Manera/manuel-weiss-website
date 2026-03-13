@@ -1121,7 +1121,18 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             return;
         }
 
-        var openaiApiKey = await window.awsAPISettings.getFullApiKey('openai', true);
+        if (!window.awsAPISettings || typeof window.awsAPISettings.getFullApiKey !== 'function') {
+            showError('API-Konfiguration fehlt. Bitte Seite neu laden.');
+            return;
+        }
+
+        var openaiApiKey;
+        try {
+            openaiApiKey = await window.awsAPISettings.getFullApiKey('openai', true);
+        } catch (e) {
+            showError('API-Key konnte nicht geladen werden: ' + (e.message || 'Netzwerkfehler'));
+            return;
+        }
         if (!openaiApiKey || openaiApiKey.length < 10) {
             showError('OpenAI API-Key nicht konfiguriert. Bitte im Admin unter API Keys hinterlegen.');
             return;
@@ -1899,6 +1910,10 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
     (function checkKeyStatus() {
         var el = document.getElementById('bpmnKeyStatus');
         if (!el) return;
+        if (!window.awsAPISettings || typeof window.awsAPISettings.getFullApiKey !== 'function') {
+            el.innerHTML = '<span style="color:#dc2626;"><i class="fas fa-exclamation-triangle"></i> API-Konfiguration fehlt – Seite neu laden</span>';
+            return;
+        }
         el.innerHTML = '<span style="color:#64748b;">OpenAI-Key wird geladen…</span>';
         window.awsAPISettings.getFullApiKey('openai', true).then(function(key) {
             if (key && typeof key === 'string' && key.length > 10) {
