@@ -1080,13 +1080,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             showError('Bitte mindestens 20 Zeichen Prozessbeschreibung eingeben.');
             return;
         }
-        var openaiApiKey = '';
-        if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
-            try {
-                var key = await window.awsAPISettings.getFullApiKey('openai');
-                if (key && typeof key === 'string' && key.length > 10) openaiApiKey = key;
-            } catch (e) { console.warn('OpenAI-Key nicht geladen:', e); }
-        }
+        var openaiApiKey = await window.awsAPISettings.getFullApiKey('openai', true);
         if (!openaiApiKey || openaiApiKey.length < 10) {
             showError('OpenAI API-Key nicht konfiguriert. Bitte im Admin unter API Keys hinterlegen.');
             return;
@@ -1127,14 +1121,11 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             return;
         }
 
-        var openaiApiKey = '';
-        if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
-            try {
-                var key = await window.awsAPISettings.getFullApiKey('openai');
-                if (key && typeof key === 'string' && key.length > 10) openaiApiKey = key;
-            } catch (e) { console.warn('OpenAI-Key nicht geladen, Fallback:', e); }
+        var openaiApiKey = await window.awsAPISettings.getFullApiKey('openai', true);
+        if (!openaiApiKey || openaiApiKey.length < 10) {
+            showError('OpenAI API-Key nicht konfiguriert. Bitte im Admin unter API Keys hinterlegen.');
+            return;
         }
-
         var url = apiUrl(true) || apiUrl();
         if (!url) {
             showError('API-URL ist nicht konfiguriert.');
@@ -1422,9 +1413,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         (async function() {
             try {
                 var openaiApiKey = '';
-                if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
-                    openaiApiKey = await window.awsAPISettings.getFullApiKey('openai') || '';
-                }
+                openaiApiKey = await window.awsAPISettings.getFullApiKey('openai', true) || '';
                 if (!openaiApiKey || openaiApiKey.length < 10) return;
                 var url = apiUrl(true) || apiUrl();
                 if (!url) return;
@@ -1523,10 +1512,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             var desc = (processTextEl && processTextEl.value) ? processTextEl.value.trim() : '';
             (async function() {
                 try {
-                    var openaiApiKey = '';
-                    if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
-                        openaiApiKey = await window.awsAPISettings.getFullApiKey('openai') || '';
-                    }
+                    var openaiApiKey = await window.awsAPISettings.getFullApiKey('openai', true);
                     if (!openaiApiKey || openaiApiKey.length < 10) {
                         throw new Error('OpenAI API-Key nicht konfiguriert. Bitte im Admin unter API Keys hinterlegen.');
                     }
@@ -1622,10 +1608,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generiere…';
         try {
-            var openaiApiKey = '';
-            if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
-                openaiApiKey = await window.awsAPISettings.getFullApiKey('openai') || '';
-            }
+            var openaiApiKey = await window.awsAPISettings.getFullApiKey('openai', true);
             if (!openaiApiKey || openaiApiKey.length < 10) throw new Error('OpenAI API-Key nicht konfiguriert.');
             var url = apiUrl(true) || apiUrl();
             if (!url) throw new Error('API-URL nicht konfiguriert.');
@@ -1780,7 +1763,7 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             raciAutoFillBtn.disabled = true;
             (async function() {
                 try {
-                    var openaiApiKey = await (window.awsAPISettings && window.awsAPISettings.getFullApiKey ? window.awsAPISettings.getFullApiKey('openai') : Promise.resolve('')) || '';
+                    var openaiApiKey = await window.awsAPISettings.getFullApiKey('openai', true);
                     if (!openaiApiKey || openaiApiKey.length < 10) throw new Error('OpenAI API-Key nicht konfiguriert.');
                     var url = apiUrl(true) || apiUrl();
                     if (!url) throw new Error('API-URL nicht konfiguriert.');
@@ -1814,11 +1797,11 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
             tobeRaciAutoFillBtn.disabled = true;
             (async function() {
                 try {
-                    var openaiApiKey = await (window.awsAPISettings && window.awsAPISettings.getFullApiKey ? window.awsAPISettings.getFullApiKey('openai') : Promise.resolve('')) || '';
+                    var openaiApiKey = await window.awsAPISettings.getFullApiKey('openai', true);
                     if (!openaiApiKey || openaiApiKey.length < 10) throw new Error('OpenAI API-Key nicht konfiguriert.');
                     var url = apiUrl(true) || apiUrl();
                     if (!url) throw new Error('API-URL nicht konfiguriert.');
-                            var tobeDesc = (document.getElementById('bpmnTobeDescription') || {}).value || '';
+                    var tobeDesc = (document.getElementById('bpmnTobeDescription') || {}).value || '';
                             var res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'analyzeRaci', bpmnXml: bpmnXml, description: tobeDesc, openaiApiKey: openaiApiKey }) });
                     var data = {};
                     try { data = JSON.parse(await res.text()); } catch(e) {}
@@ -1916,19 +1899,15 @@ Bei Ablehnung: Mitarbeiter wird informiert."></textarea>
     (function checkKeyStatus() {
         var el = document.getElementById('bpmnKeyStatus');
         if (!el) return;
-        if (!window.awsAPISettings || typeof window.awsAPISettings.getFullApiKey !== 'function') {
-            el.innerHTML = '<span style="color:#64748b;">OpenAI-Key wird geladen…</span>';
-            setTimeout(checkKeyStatus, 500);
-            return;
-        }
-        window.awsAPISettings.getFullApiKey('openai').then(function(key) {
+        el.innerHTML = '<span style="color:#64748b;">OpenAI-Key wird geladen…</span>';
+        window.awsAPISettings.getFullApiKey('openai', true).then(function(key) {
             if (key && typeof key === 'string' && key.length > 10) {
                 el.innerHTML = '<span style="color:#059669;"><i class="fas fa-check-circle"></i> API-Key geladen</span>';
             } else {
-                el.innerHTML = '<span style="color:#64748b;"><i class="fas fa-info-circle"></i> Kein API-Key – <a href="admin.html#api-keys" style="color:#667eea;">hier eintragen</a></span>';
+                el.innerHTML = '<span style="color:#64748b;"><i class="fas fa-info-circle"></i> Kein API-Key – <a href="admin.html#api-keys" style="color:#667eea;">im Admin eintragen</a></span>';
             }
         }).catch(function() {
-            el.innerHTML = '<span style="color:#64748b;"><i class="fas fa-info-circle"></i> Kein API-Key</span>';
+            el.innerHTML = '<span style="color:#64748b;"><i class="fas fa-info-circle"></i> Kein API-Key – <a href="admin.html#api-keys" style="color:#667eea;">im Admin eintragen</a></span>';
         });
     })();
 })();
