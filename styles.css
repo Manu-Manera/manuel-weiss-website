@@ -807,7 +807,7 @@ a:hover {
     position: absolute;
     inset: 0;
     overflow: hidden;
-    z-index: 50; /* Video-Wrapper VOR Content, hinter Navigation */
+    z-index: 1; /* Video als Hintergrund – Content muss darüber (Chrome-Fix) */
 }
 
 .hero-video {
@@ -831,7 +831,7 @@ a:hover {
 
 .hero-container {
     position: relative;
-    z-index: 5; /* Content HINTER Video (z-index 50), aber über Hintergrund */
+    z-index: 10; /* Content ÜBER Video – Chrome-Fix: Video-Elemente ignorieren sonst z-index */
     max-width: var(--container-max-width);
     margin: 0 auto;
     padding: 0 var(--spacing-xl);
@@ -843,19 +843,22 @@ a:hover {
     box-sizing: border-box;
     width: 100%;
     min-height: 100vh; /* Mindesthöhe für vollständige Sichtbarkeit */
+    /* Chrome-Fix: Eigene Compositing-Ebene, damit Content über Video rendert */
+    transform: translateZ(0);
+    backface-visibility: hidden;
     /* Stacking Context isolieren für Mobile */
     isolation: isolate;
 }
 
-/* Hero Content HINTER dem Video */
+/* Hero Content ÜBER dem Video (Hintergrund) */
 .hero-content {
     position: relative;
-    z-index: 5; /* Content hinter Video */
+    z-index: 10;
 }
 
 .hero-visual {
     position: relative;
-    z-index: 5; /* Bild hinter Video */
+    z-index: 10;
 }
 
 .hero-title {
@@ -3940,10 +3943,10 @@ a:hover {
     }
     
     .hero-video-wrapper {
-        /* Video-Wrapper für Mobile VOR Content */
+        /* Video als Hintergrund, Content darüber (Chrome-Fix) */
         position: absolute;
         inset: 0;
-        z-index: 50 !important; /* Video VOR Content */
+        z-index: 1 !important;
         pointer-events: none;
         transform: translateZ(0);
     }
@@ -3971,9 +3974,9 @@ a:hover {
         min-height: auto;
         max-height: 70vh; /* Begrenze Container-Höhe */
         position: relative;
-        z-index: 5 !important; /* Content HINTER Video */
+        z-index: 10 !important; /* Content ÜBER Video (Chrome-Fix) */
         isolation: auto !important; /* WICHTIG: Deaktiviere isolation für Mobile */
-        /* KEIN transform: translateZ(0) - verursacht verschwommenen Text */
+        /* KEIN transform: translateZ(0) auf Mobile – verursacht verschwommenen Text */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -3982,7 +3985,7 @@ a:hover {
     .hero-content {
         order: 2;
         position: relative;
-        z-index: 5 !important; /* Content HINTER Video */
+        z-index: 10 !important; /* Content ÜBER Video */
         /* Bessere Lesbarkeit auf Mobile */
         text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
         /* Nur Text anzeigen, keine Buttons */
