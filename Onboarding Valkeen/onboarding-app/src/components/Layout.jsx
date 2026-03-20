@@ -48,8 +48,8 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
-      {/* Mobile Header - mehr Höhe und Padding */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 glass border-b border-white/5 px-5 py-4 flex items-center justify-between safe-area-top min-h-[72px] sm:min-h-[80px]">
+      {/* Mobile Header - kompakter */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 glass border-b border-white/5 px-4 py-3 flex items-center justify-between safe-area-top h-[72px] sm:h-[80px]">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
             <Sparkles className="w-5 h-5 text-white" />
@@ -148,8 +148,8 @@ export default function Layout() {
       </aside>
 
       {/* Main Content - großzügiger Abstand oben für mobile Header (Überschrift nicht überdecken) */}
-      <main className="flex-1 min-h-screen pt-[120px] sm:pt-[130px] lg:pt-0 overflow-x-hidden">
-        <div className="px-5 pt-6 pb-12 sm:px-8 sm:pt-8 sm:pb-16 lg:px-10 lg:pt-10 lg:pb-16 xl:p-12 w-full">
+      <main className="flex-1 min-h-screen pt-[88px] sm:pt-[96px] lg:pt-0 overflow-x-hidden">
+        <div className="px-5 pt-4 pb-12 sm:px-8 sm:pt-6 sm:pb-16 lg:px-10 lg:pt-10 lg:pb-16 xl:p-12 w-full">
           <div className="max-w-5xl mx-auto">
             <Outlet />
           </div>
