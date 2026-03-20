@@ -209,6 +209,28 @@ export async function getStudyCards(deckId, userId = 'default-user', limit = 20)
 }
 
 /**
+ * Alle Karten aus allen Decks laden (für globales Lernen)
+ */
+export async function getAllCards(userId = 'default-user') {
+  try {
+    // Erst alle Decks laden
+    const decks = await getDecks(userId);
+    
+    // Dann alle Karten aus allen Decks laden
+    const allCardsPromises = decks.map(deck => getDeckCards(deck.deckId, userId));
+    const allCardsArrays = await Promise.all(allCardsPromises);
+    
+    // Alle Karten zusammenführen
+    const allCards = allCardsArrays.flat();
+    console.log('✅ Alle Karten geladen:', allCards.length);
+    return allCards;
+  } catch (error) {
+    console.error('❌ Fehler beim Laden aller Karten:', error);
+    return [];
+  }
+}
+
+/**
  * Karte als richtig/falsch bewerten (Leitner-System)
  */
 export async function reviewCard(cardId, correct, userId = 'default-user') {

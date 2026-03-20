@@ -17,7 +17,7 @@ import {
   Play,
   Settings
 } from 'lucide-react';
-import { getStudyCards, reviewCard } from '../../services/awsService';
+import { getStudyCards, reviewCard, getAllCards } from '../../services/awsService';
 
 const LEITNER_INFO = {
   1: { label: 'Neu', color: 'rgb(239, 68, 68)', interval: 'Sofort' },
@@ -359,7 +359,7 @@ function ModeSelection({ allCards, cardStates, onStartProgressive, onStartManual
   );
 }
 
-export default function StudyMode({ deck, onEnd }) {
+export default function StudyMode({ deck, onEnd, filter = null, dueDays = 0 }) {
   const [allCards, setAllCards] = useState([]);
   const [cardStates, setCardStates] = useState({});
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -383,7 +383,7 @@ export default function StudyMode({ deck, onEnd }) {
 
   useEffect(() => {
     loadCards();
-  }, [deck.deckId]);
+  }, [deck.deckId, filter, dueDays]);
 
   async function loadCards() {
     setLoading(true);
@@ -398,8 +398,42 @@ export default function StudyMode({ deck, onEnd }) {
       completedBatches: []
     });
     try {
-      const result = await getStudyCards(deck.deckId, undefined, 100);
-      const cards = result.cards || [];
+      let cards = [];
+      
+      // Wenn deckId 'all' ist, lade alle Karten aus allen Decks
+      if (deck.deckId === 'all') {
+        cards = await getAllCards();
+      } else {
+        const result = await getStudyCards(deck.deckId, undefined, 100);
+        cards = result.cards || [];
+      }
+      
+      // Filter anwenden basierend auf dem filter-Prop
+      if (filter) {
+        const now = new Date();
+        const futureDate = new Date(now.getTime() + dueDays * 24 * 60 * 60 * 1000);
+        
+        cards = cards.filter(card => {
+          const box = card.box || 1;
+          const nextReview = new Date(card.nextReview);
+          
+          switch (filter) {
+            case 'due':
+              // Fällige Karten (bis zum gewählten Zeitraum)
+              return nextReview <= futureDate;
+            case 'weak':
+              // Schwache Karten (Box 1-2)
+              return box <= 2;
+            case 'box1':
+              // Nur Box 1 (falsche Karten)
+              return box === 1;
+            case 'all':
+            default:
+              return true;
+          }
+        });
+      }
+      
       setAllCards(cards);
       
       const states = {};
