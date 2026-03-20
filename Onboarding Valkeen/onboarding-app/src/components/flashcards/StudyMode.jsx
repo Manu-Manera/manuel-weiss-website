@@ -29,6 +29,176 @@ const LEITNER_INFO = {
 
 const LEARNED_BOX_THRESHOLD = 3;
 
+// Progressive Learning Algorithm State
+// Phase-System für 10er-Päckchen mit Konsolidierung:
+// - Innerhalb eines 10er-Päckchens: 2 neue → 2 davor → alle bisherigen → 2 neue → ...
+// - Nach jedem 10er: Konsolidierung aller bisherigen 10er-Päckchen
+const BATCH_SIZE = 10; // Größe eines Päckchens
+const NEW_CARDS_PER_STEP = 2; // Wie viele neue Karten pro Schritt
+
+// Berechnet welche Karten in der aktuellen Phase aktiv sein sollen
+function getProgressivePhaseCards(allCards, progressState, cardStates) {
+  const { 
+    currentBatchIndex,    // Welches 10er-Päckchen (0, 1, 2, ...)
+    withinBatchStep,      // Schritt innerhalb des Päckchens
+    phase,                // 'new' | 'review_previous' | 'review_all' | 'consolidate_batches'
+    completedBatches      // Array von abgeschlossenen Batch-Indizes
+  } = progressState;
+  
+  const batchStart = currentBatchIndex * BATCH_SIZE;
+  const batchEnd = Math.min(batchStart + BATCH_SIZE, allCards.length);
+  const currentBatchCards = allCards.slice(batchStart, batchEnd);
+  
+  // Wie viele Karten im aktuellen Päckchen bereits freigeschaltet sind
+  const unlockedInBatch = Math.min(withinBatchStep * NEW_CARDS_PER_STEP, currentBatchCards.length);
+  
+  if (phase === 'consolidate_batches') {
+    // Alle Karten aus allen abgeschlossenen Päckchen + aktuelles
+    const allBatchIndices = [...completedBatches, currentBatchIndex];
+    let consolidationCards = [];
+    allBatchIndices.forEach(batchIdx => {
+      const start = batchIdx * BATCH_SIZE;
+      const end = Math.min(start + BATCH_SIZE, allCards.length);
+      consolidationCards = consolidationCards.concat(allCards.slice(start, end));
+    });
+    return consolidationCards.filter(c => !cardStates[c.cardId]?.learned);
+  }
+  
+  if (phase === 'new') {
+    // Nur die neuesten 2 Karten
+    const startIdx = (withinBatchStep - 1) * NEW_CARDS_PER_STEP;
+    const endIdx = Math.min(startIdx + NEW_CARDS_PER_STEP, currentBatchCards.length);
+    return currentBatchCards.slice(startIdx, endIdx).filter(c => !cardStates[c.cardId]?.learned);
+  }
+  
+  if (phase === 'review_previous') {
+    // Die 2 Karten von davor (vor den aktuellen neuen)
+    const startIdx = Math.max(0, (withinBatchStep - 2) * NEW_CARDS_PER_STEP);
+    const endIdx = startIdx + NEW_CARDS_PER_STEP;
+    return currentBatchCards.slice(startIdx, endIdx).filter(c => !cardStates[c.cardId]?.learned);
+  }
+  
+  if (phase === 'review_all') {
+    // Alle bisherigen Karten im aktuellen Päckchen
+    return currentBatchCards.slice(0, unlockedInBatch).filter(c => !cardStates[c.cardId]?.learned);
+  }
+  
+  return [];
+}
+
+// Berechnet den nächsten Zustand basierend auf dem aktuellen Fortschritt
+function getNextProgressState(currentState, allCards, cardStates) {
+  const { currentBatchIndex, withinBatchStep, phase, completedBatches } = currentState;
+  
+  const batchStart = currentBatchIndex * BATCH_SIZE;
+  const batchEnd = Math.min(batchStart + BATCH_SIZE, allCards.length);
+  const currentBatchCards = allCards.slice(batchStart, batchEnd);
+  const maxStepsInBatch = Math.ceil(currentBatchCards.length / NEW_CARDS_PER_STEP);
+  
+  // Prüfen ob alle Karten im aktuellen Kontext gelernt sind
+  const activeCards = getProgressivePhaseCards(allCards, currentState, cardStates);
+  const allLearned = activeCards.length === 0 || activeCards.every(c => cardStates[c.cardId]?.learned);
+  
+  if (!allLearned) {
+    return currentState; // Noch nicht fertig mit aktueller Phase
+  }
+  
+  // Phase-Übergänge
+  if (phase === 'new') {
+    if (withinBatchStep >= 2) {
+      // Nach den ersten 2 neuen Karten: Review der vorherigen
+      return { ...currentState, phase: 'review_previous' };
+    } else {
+      // Erste 2 Karten: direkt zu review_all
+      return { ...currentState, phase: 'review_all' };
+    }
+  }
+  
+  if (phase === 'review_previous') {
+    // Nach Review der vorherigen: Alle bisherigen reviewen
+    return { ...currentState, phase: 'review_all' };
+  }
+  
+  if (phase === 'review_all') {
+    if (withinBatchStep < maxStepsInBatch) {
+      // Noch mehr Karten im Päckchen: nächste 2 neue
+      return { 
+        ...currentState, 
+        withinBatchStep: withinBatchStep + 1, 
+        phase: 'new' 
+      };
+    } else {
+      // Päckchen fertig!
+      const newCompletedBatches = [...completedBatches, currentBatchIndex];
+      const nextBatchStart = (currentBatchIndex + 1) * BATCH_SIZE;
+      
+      if (nextBatchStart >= allCards.length) {
+        // Alle Karten durch!
+        return { ...currentState, phase: 'completed', completedBatches: newCompletedBatches };
+      }
+      
+      // Prüfen ob Konsolidierung nötig (nach jedem 10er-Päckchen)
+      if (newCompletedBatches.length > 0 && newCompletedBatches.length % 1 === 0) {
+        return {
+          currentBatchIndex: currentBatchIndex + 1,
+          withinBatchStep: 0,
+          phase: 'consolidate_batches',
+          completedBatches: newCompletedBatches
+        };
+      }
+      
+      // Nächstes Päckchen starten
+      return {
+        currentBatchIndex: currentBatchIndex + 1,
+        withinBatchStep: 1,
+        phase: 'new',
+        completedBatches: newCompletedBatches
+      };
+    }
+  }
+  
+  if (phase === 'consolidate_batches') {
+    // Nach Konsolidierung: Nächstes Päckchen starten
+    return {
+      ...currentState,
+      withinBatchStep: 1,
+      phase: 'new'
+    };
+  }
+  
+  return currentState;
+}
+
+// Beschreibung der aktuellen Phase für UI
+function getPhaseDescription(progressState, allCards) {
+  const { currentBatchIndex, withinBatchStep, phase, completedBatches } = progressState;
+  const batchStart = currentBatchIndex * BATCH_SIZE;
+  const batchEnd = Math.min(batchStart + BATCH_SIZE, allCards.length);
+  const batchNumber = currentBatchIndex + 1;
+  const totalBatches = Math.ceil(allCards.length / BATCH_SIZE);
+  
+  const cardRangeStart = (withinBatchStep - 1) * NEW_CARDS_PER_STEP + 1 + batchStart;
+  const cardRangeEnd = Math.min(withinBatchStep * NEW_CARDS_PER_STEP + batchStart, allCards.length);
+  
+  if (phase === 'new') {
+    return `Neue Karten ${cardRangeStart}-${cardRangeEnd} lernen`;
+  }
+  if (phase === 'review_previous') {
+    const prevStart = cardRangeStart - NEW_CARDS_PER_STEP;
+    const prevEnd = cardRangeStart - 1;
+    return `Wiederholung: Karten ${prevStart}-${prevEnd}`;
+  }
+  if (phase === 'review_all') {
+    const totalUnlocked = withinBatchStep * NEW_CARDS_PER_STEP;
+    return `Alle ${Math.min(totalUnlocked, batchEnd - batchStart)} Karten zusammen`;
+  }
+  if (phase === 'consolidate_batches') {
+    const totalCards = (completedBatches.length + 1) * BATCH_SIZE;
+    return `Konsolidierung: Alle ${Math.min(totalCards, allCards.length)} Karten`;
+  }
+  return '';
+}
+
 // Modus-Auswahl Komponente
 function ModeSelection({ allCards, cardStates, onStartProgressive, onStartManual, onBack }) {
   const [selectedCards, setSelectedCards] = useState(new Set());
@@ -79,7 +249,7 @@ function ModeSelection({ allCards, cardStates, onStartProgressive, onStartManual
             <h3 className="font-semibold text-lg">Progressiv</h3>
           </div>
           <p className="text-white/60 text-sm">
-            Starte mit 2 Karten. Neue werden freigeschaltet, sobald die aktuellen gelernt sind.
+            Lerne in 10er-Päckchen: 2 neue → 2 davor wiederholen → alle zusammen. Nach jedem 10er große Wiederholung.
           </p>
         </button>
 
@@ -192,7 +362,6 @@ function ModeSelection({ allCards, cardStates, onStartProgressive, onStartManual
 export default function StudyMode({ deck, onEnd }) {
   const [allCards, setAllCards] = useState([]);
   const [cardStates, setCardStates] = useState({});
-  const [unlockedCount, setUnlockedCount] = useState(2);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -203,6 +372,14 @@ export default function StudyMode({ deck, onEnd }) {
   // Modus: 'select' | 'progressive' | 'manual'
   const [mode, setMode] = useState('select');
   const [manualSelection, setManualSelection] = useState([]);
+  
+  // Progressive Learning State
+  const [progressState, setProgressState] = useState({
+    currentBatchIndex: 0,
+    withinBatchStep: 1,
+    phase: 'new', // 'new' | 'review_previous' | 'review_all' | 'consolidate_batches' | 'completed'
+    completedBatches: []
+  });
 
   useEffect(() => {
     loadCards();
@@ -213,8 +390,13 @@ export default function StudyMode({ deck, onEnd }) {
     setCurrentIndex(0);
     setSessionStats({ correct: 0, incorrect: 0, unsure: 0 });
     setCompleted(false);
-    setUnlockedCount(2);
     setMode('select');
+    setProgressState({
+      currentBatchIndex: 0,
+      withinBatchStep: 1,
+      phase: 'new',
+      completedBatches: []
+    });
     try {
       const result = await getStudyCards(deck.deckId, undefined, 100);
       const cards = result.cards || [];
@@ -237,7 +419,12 @@ export default function StudyMode({ deck, onEnd }) {
 
   function startProgressiveMode() {
     setMode('progressive');
-    setUnlockedCount(2);
+    setProgressState({
+      currentBatchIndex: 0,
+      withinBatchStep: 1,
+      phase: 'new',
+      completedBatches: []
+    });
     setCurrentIndex(0);
     setFlipped(false);
   }
@@ -254,8 +441,7 @@ export default function StudyMode({ deck, onEnd }) {
     if (mode === 'manual') {
       return allCards.filter(c => manualSelection.includes(c.cardId) && !cardStates[c.cardId]?.learned);
     } else if (mode === 'progressive') {
-      const unlocked = allCards.slice(0, unlockedCount);
-      return unlocked.filter(c => !cardStates[c.cardId]?.learned);
+      return getProgressivePhaseCards(allCards, progressState, cardStates);
     }
     return [];
   };
@@ -263,11 +449,43 @@ export default function StudyMode({ deck, onEnd }) {
   const activeCards = getActiveCards();
   const currentCard = activeCards[currentIndex];
 
-  const learnedInCurrentBatch = mode === 'progressive' 
-    ? allCards.slice(0, unlockedCount).filter(c => cardStates[c.cardId]?.learned).length
-    : manualSelection.filter(id => cardStates[id]?.learned).length;
+  // Berechne gelernte Karten für Fortschrittsanzeige
+  const getLearnedAndTotalInBatch = () => {
+    if (mode === 'manual') {
+      return {
+        learned: manualSelection.filter(id => cardStates[id]?.learned).length,
+        total: manualSelection.length
+      };
+    } else if (mode === 'progressive') {
+      const { currentBatchIndex, withinBatchStep, phase, completedBatches } = progressState;
+      const batchStart = currentBatchIndex * BATCH_SIZE;
+      const batchEnd = Math.min(batchStart + BATCH_SIZE, allCards.length);
+      
+      if (phase === 'consolidate_batches') {
+        const allBatchIndices = [...completedBatches, currentBatchIndex];
+        let total = 0;
+        let learned = 0;
+        allBatchIndices.forEach(batchIdx => {
+          const start = batchIdx * BATCH_SIZE;
+          const end = Math.min(start + BATCH_SIZE, allCards.length);
+          const batchCards = allCards.slice(start, end);
+          total += batchCards.length;
+          learned += batchCards.filter(c => cardStates[c.cardId]?.learned).length;
+        });
+        return { learned, total };
+      }
+      
+      const unlockedInBatch = Math.min(withinBatchStep * NEW_CARDS_PER_STEP, batchEnd - batchStart);
+      const unlockedCards = allCards.slice(batchStart, batchStart + unlockedInBatch);
+      return {
+        learned: unlockedCards.filter(c => cardStates[c.cardId]?.learned).length,
+        total: unlockedInBatch
+      };
+    }
+    return { learned: 0, total: 0 };
+  };
 
-  const totalInBatch = mode === 'progressive' ? unlockedCount : manualSelection.length;
+  const { learned: learnedInCurrentBatch, total: totalInBatch } = getLearnedAndTotalInBatch();
 
   // Antwort-Handler mit 3 Optionen
   async function handleAnswer(result) {
@@ -322,18 +540,25 @@ export default function StudyMode({ deck, onEnd }) {
         };
 
         if (mode === 'progressive') {
-          const currentUnlocked = allCards.slice(0, unlockedCount);
-          const allCurrentLearned = currentUnlocked.every(c => updatedStates[c.cardId]?.learned);
+          // Prüfen ob aktuelle Phase abgeschlossen ist
+          const currentActiveCards = getProgressivePhaseCards(allCards, progressState, updatedStates);
+          const allCurrentLearned = currentActiveCards.length === 0 || 
+            currentActiveCards.every(c => updatedStates[c.cardId]?.learned);
           
-          if (allCurrentLearned && unlockedCount < allCards.length) {
-            setUnlockedCount(Math.min(unlockedCount + 2, allCards.length));
-            setCurrentIndex(0);
-            setFlipped(false);
-          } else {
-            const remaining = currentUnlocked.filter(c => !updatedStates[c.cardId]?.learned);
-            if (remaining.length === 0 && unlockedCount >= allCards.length) {
+          if (allCurrentLearned) {
+            // Nächste Phase berechnen
+            const nextState = getNextProgressState(progressState, allCards, updatedStates);
+            
+            if (nextState.phase === 'completed') {
               setCompleted(true);
-            } else if (currentIndex < remaining.length - 1) {
+            } else {
+              setProgressState(nextState);
+              setCurrentIndex(0);
+              setFlipped(false);
+            }
+          } else {
+            // Noch Karten in aktueller Phase übrig
+            if (currentIndex < currentActiveCards.length - 1) {
               setCurrentIndex(currentIndex + 1);
               setFlipped(false);
             } else {
@@ -399,36 +624,77 @@ export default function StudyMode({ deck, onEnd }) {
     );
   }
 
-  // Freischaltungs-Screen (nur progressiver Modus)
-  if (mode === 'progressive' && activeCards.length === 0 && unlockedCount < allCards.length) {
+  // Freischaltungs-Screen (nur progressiver Modus) - Zwischen-Phasen
+  if (mode === 'progressive' && activeCards.length === 0 && progressState.phase !== 'completed') {
+    const nextState = getNextProgressState(progressState, allCards, cardStates);
+    const phaseDescription = getPhaseDescription(nextState, allCards);
+    const { currentBatchIndex, withinBatchStep, phase, completedBatches } = progressState;
+    
+    // Berechne Gesamtfortschritt
+    const totalUnlocked = currentBatchIndex * BATCH_SIZE + withinBatchStep * NEW_CARDS_PER_STEP;
+    const progressPercent = Math.min((totalUnlocked / allCards.length) * 100, 100);
+    
+    // Bestimme welche Nachricht angezeigt wird
+    let title = '🎉 Super gemacht!';
+    let subtitle = '';
+    let buttonText = '';
+    let buttonIcon = <ChevronRight className="w-5 h-5" />;
+    
+    if (nextState.phase === 'new') {
+      subtitle = `Phase abgeschlossen! Bereit für die nächsten ${NEW_CARDS_PER_STEP} Karten.`;
+      buttonText = `Nächste ${NEW_CARDS_PER_STEP} Karten`;
+      buttonIcon = <Unlock className="w-5 h-5" />;
+    } else if (nextState.phase === 'review_previous') {
+      subtitle = 'Neue Karten gelernt! Jetzt kurz die vorherigen wiederholen.';
+      buttonText = 'Vorherige wiederholen';
+    } else if (nextState.phase === 'review_all') {
+      subtitle = 'Zeit, alle bisherigen Karten zusammen zu üben!';
+      buttonText = 'Alle zusammen üben';
+    } else if (nextState.phase === 'consolidate_batches') {
+      title = '🏆 10er-Päckchen geschafft!';
+      subtitle = `Jetzt alle ${Math.min((completedBatches.length + 1) * BATCH_SIZE, allCards.length)} Karten durcheinander wiederholen.`;
+      buttonText = 'Große Wiederholung starten';
+      buttonIcon = <Sparkles className="w-5 h-5" />;
+    }
+    
     return (
       <div className="text-center py-16 max-w-lg mx-auto">
         <div className="relative inline-block mb-6">
           <Unlock className="w-20 h-20 text-green-400" />
           <Sparkles className="w-8 h-8 text-yellow-400 absolute -top-2 -right-2 animate-pulse" />
         </div>
-        <h2 className="text-2xl font-bold mb-2">🎉 Super gemacht!</h2>
-        <p className="text-white/60 mb-4">Du hast alle {unlockedCount} freigeschalteten Karten gelernt!</p>
+        <h2 className="text-2xl font-bold mb-2">{title}</h2>
+        <p className="text-white/60 mb-4">{subtitle}</p>
         
         <div className="glass-card p-6 mb-6">
           <p className="text-white/50 text-sm mb-2">Fortschritt</p>
-          <p className="text-3xl font-bold gradient-text mb-2">{unlockedCount} / {allCards.length}</p>
+          <p className="text-3xl font-bold gradient-text mb-2">
+            {Math.min(totalUnlocked, allCards.length)} / {allCards.length}
+          </p>
           <div className="h-3 bg-white/10 rounded-full overflow-hidden">
             <div className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all"
-              style={{ width: `${(unlockedCount / allCards.length) * 100}%` }} />
+              style={{ width: `${progressPercent}%` }} />
           </div>
+          <p className="text-white/40 text-xs mt-2">
+            Päckchen {currentBatchIndex + 1} von {Math.ceil(allCards.length / BATCH_SIZE)}
+          </p>
+        </div>
+        
+        <div className="glass p-4 rounded-xl mb-6 text-left">
+          <p className="text-white/50 text-xs mb-1">Nächste Phase:</p>
+          <p className="text-white/80 font-medium">{phaseDescription}</p>
         </div>
 
         <button 
           onClick={() => {
-            setUnlockedCount(Math.min(unlockedCount + 2, allCards.length));
+            setProgressState(nextState);
             setCurrentIndex(0);
             setFlipped(false);
           }}
           className="glass-button flex items-center gap-2 mx-auto"
         >
-          <Unlock className="w-5 h-5" />
-          Nächste 2 Karten freischalten
+          {buttonIcon}
+          {buttonText}
         </button>
       </div>
     );
@@ -518,21 +784,30 @@ export default function StudyMode({ deck, onEnd }) {
       </div>
 
       {/* Status-Anzeige */}
-      <div className="flex items-center justify-center gap-4 mb-4 p-3 rounded-xl bg-indigo-500/10">
-        <div className="flex items-center gap-2">
-          <Check className="w-4 h-4 text-green-400" />
-          <span className="text-sm text-green-300">{learnedInCurrentBatch} gelernt</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Target className="w-4 h-4 text-indigo-400" />
-          <span className="text-sm text-indigo-300">{activeCards.length} offen</span>
-        </div>
-        {mode === 'progressive' && unlockedCount < allCards.length && (
-          <div className="flex items-center gap-2">
-            <Lock className="w-4 h-4 text-white/40" />
-            <span className="text-sm text-white/40">{allCards.length - unlockedCount} gesperrt</span>
+      <div className="flex flex-col gap-2 mb-4 p-3 rounded-xl bg-indigo-500/10">
+        {mode === 'progressive' && (
+          <div className="text-center text-sm text-indigo-300 font-medium">
+            {getPhaseDescription(progressState, allCards)}
           </div>
         )}
+        <div className="flex items-center justify-center gap-4">
+          <div className="flex items-center gap-2">
+            <Check className="w-4 h-4 text-green-400" />
+            <span className="text-sm text-green-300">{learnedInCurrentBatch} gelernt</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Target className="w-4 h-4 text-indigo-400" />
+            <span className="text-sm text-indigo-300">{activeCards.length} offen</span>
+          </div>
+          {mode === 'progressive' && (
+            <div className="flex items-center gap-2">
+              <Lock className="w-4 h-4 text-white/40" />
+              <span className="text-sm text-white/40">
+                {Math.max(0, allCards.length - (progressState.currentBatchIndex * BATCH_SIZE + progressState.withinBatchStep * NEW_CARDS_PER_STEP))} gesperrt
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Progress Bar */}
@@ -654,15 +929,40 @@ export default function StudyMode({ deck, onEnd }) {
         <div className="flex items-center gap-2 mb-3">
           <Target className="w-4 h-4 text-indigo-400" />
           <span className="text-white/70 font-medium text-sm">Kartenübersicht</span>
+          {mode === 'progressive' && (
+            <span className="text-white/40 text-xs ml-auto">
+              Päckchen {progressState.currentBatchIndex + 1}/{Math.ceil(allCards.length / BATCH_SIZE)}
+            </span>
+          )}
         </div>
         
         <div className="flex flex-wrap gap-1.5">
-          {(mode === 'progressive' ? allCards.slice(0, Math.min(30, allCards.length)) : allCards.filter(c => manualSelection.includes(c.cardId))).map((card, idx) => {
+          {(mode === 'progressive' ? allCards.slice(0, Math.min(40, allCards.length)) : allCards.filter(c => manualSelection.includes(c.cardId))).map((card, idx) => {
             const state = cardStates[card.cardId];
             const box = state?.box || card.box || 1;
-            const isUnlocked = mode === 'manual' || idx < unlockedCount;
             const isLearned = state?.learned;
             const isCurrent = activeCards[currentIndex]?.cardId === card.cardId;
+            
+            // Berechne ob Karte freigeschaltet ist
+            const { currentBatchIndex, withinBatchStep, phase, completedBatches } = progressState;
+            let isUnlocked = mode === 'manual';
+            let isInCurrentPhase = false;
+            
+            if (mode === 'progressive') {
+              const cardBatchIndex = Math.floor(idx / BATCH_SIZE);
+              const positionInBatch = idx % BATCH_SIZE;
+              const unlockedInCurrentBatch = withinBatchStep * NEW_CARDS_PER_STEP;
+              
+              // Karte ist freigeschaltet wenn:
+              // - In einem abgeschlossenen Päckchen
+              // - Im aktuellen Päckchen und Position < freigeschaltete Anzahl
+              isUnlocked = completedBatches.includes(cardBatchIndex) ||
+                (cardBatchIndex === currentBatchIndex && positionInBatch < unlockedInCurrentBatch);
+              
+              // Prüfen ob Karte in aktueller Phase aktiv ist
+              const activeCardIds = activeCards.map(c => c.cardId);
+              isInCurrentPhase = activeCardIds.includes(card.cardId);
+            }
             
             let bgColor = 'bg-red-500/30';
             if (box === 2) bgColor = 'bg-orange-500/30';
@@ -671,20 +971,28 @@ export default function StudyMode({ deck, onEnd }) {
             
             if (!isUnlocked) bgColor = 'bg-white/5';
             
+            // Markiere Karten in aktueller Phase
+            let ringClass = '';
+            if (isCurrent) {
+              ringClass = 'ring-2 ring-white scale-110';
+            } else if (isInCurrentPhase && !isLearned) {
+              ringClass = 'ring-1 ring-indigo-400/50';
+            }
+            
             return (
               <div 
                 key={card.cardId}
-                className={`w-7 h-7 rounded flex items-center justify-center text-xs font-medium transition-all ${bgColor} ${
-                  isCurrent ? 'ring-2 ring-white scale-110' : ''
-                } ${!isUnlocked ? 'text-white/20' : isLearned ? 'text-green-400' : 'text-white/80'}`}
-                title={`Karte ${idx + 1}: Box ${box}`}
+                className={`w-7 h-7 rounded flex items-center justify-center text-xs font-medium transition-all ${bgColor} ${ringClass} ${
+                  !isUnlocked ? 'text-white/20' : isLearned ? 'text-green-400' : 'text-white/80'
+                }`}
+                title={`Karte ${idx + 1}: Box ${box}${isInCurrentPhase ? ' (aktuelle Phase)' : ''}`}
               >
                 {idx + 1}
               </div>
             );
           })}
-          {mode === 'progressive' && allCards.length > 30 && (
-            <span className="text-white/30 text-xs self-center ml-1">+{allCards.length - 30}</span>
+          {mode === 'progressive' && allCards.length > 40 && (
+            <span className="text-white/30 text-xs self-center ml-1">+{allCards.length - 40}</span>
           )}
         </div>
       </div>
