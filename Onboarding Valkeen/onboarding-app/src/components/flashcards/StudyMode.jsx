@@ -833,7 +833,7 @@ export default function StudyMode({ deck, onEnd }) {
         onClick={() => !flipped && setFlipped(true)}
         className={`relative cursor-pointer transition-all duration-300 ${animating ? 'scale-95 opacity-50' : ''}`}
       >
-        <div className={`glass-card p-6 sm:p-8 min-h-[250px] sm:min-h-[300px] flex flex-col items-center justify-center text-center transition-all duration-300 ${
+        <div className={`glass-card p-6 sm:p-8 min-h-[250px] sm:min-h-[300px] flex flex-col items-center justify-center text-center transition-all duration-300 relative ${
           flipped ? 'bg-green-500/10 border-green-500/20' : ''
         }`}>
           {!flipped ? (
@@ -846,6 +846,17 @@ export default function StudyMode({ deck, onEnd }) {
             <>
               <p className="text-green-400 text-xs sm:text-sm mb-3 uppercase tracking-wider">Antwort</p>
               <p className="text-lg sm:text-xl font-medium leading-relaxed">{currentCard?.back}</p>
+              {/* Umdrehen-Button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFlipped(false);
+                }}
+                className="absolute top-3 right-3 p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 hover:text-white/70 transition-all"
+                title="Frage nochmal sehen"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
             </>
           )}
         </div>
