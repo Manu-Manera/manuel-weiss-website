@@ -14,7 +14,8 @@ import {
   Shield,
   Layers,
   Menu,
-  X
+  X,
+  Monitor
 } from 'lucide-react';
 import { useProgress } from '../hooks/useLocalStorage';
 import { weeks } from '../data/onboardingData';
@@ -32,6 +33,7 @@ const navItems = [
   { path: '/report', icon: Mail, label: 'Report', description: 'Exportieren' },
   { path: '/training', icon: GraduationCap, label: 'Training', description: 'Tempus RM/PM/Admin' },
   { path: '/training-admin', icon: Settings, label: 'Training Admin', description: 'Inhalte bearbeiten' },
+  { path: '/tempus-demo', icon: Monitor, label: 'Tempus Demo', description: 'Live Demo-Umgebung' },
 ];
 
 export default function Layout() {

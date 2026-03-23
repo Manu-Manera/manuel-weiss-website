@@ -286,7 +286,7 @@ export default function TrainingAdmin() {
                       blocks: [...(prev.pages?.[selectedTabForPage]?.blocks || []), createBlock('text')]
                     }
                   }
-                })} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-sm">
+                }))} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-sm">
                   <Plus className="w-4 h-4" /> Text
                 </button>
                 <button onClick={() => setConfig(prev => ({
@@ -297,7 +297,7 @@ export default function TrainingAdmin() {
                       blocks: [...(prev.pages?.[selectedTabForPage]?.blocks || []), createBlock('image')]
                     }
                   }
-                })} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-sm">
+                }))} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-sm">
                   <Plus className="w-4 h-4" /> Bild
                 </button>
                 <button onClick={() => setConfig(prev => ({
@@ -308,7 +308,7 @@ export default function TrainingAdmin() {
                       blocks: [...(prev.pages?.[selectedTabForPage]?.blocks || []), createBlock('quiz')]
                     }
                   }
-                })} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-sm">
+                }))} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-sm">
                   <Plus className="w-4 h-4" /> Quiz
                 </button>
               </div>
@@ -403,7 +403,7 @@ export default function TrainingAdmin() {
                                 const qs = [...(blocks[bi].questions || []), createQuizQuestion()];
                                 blocks[bi] = { ...blocks[bi], questions: qs };
                                 return { ...prev, pages: { ...prev.pages, [selectedTabForPage]: { blocks } } };
-                              }}
+                              })}
                               className="flex items-center gap-1 px-2 py-1 rounded-lg bg-green-500/20 text-green-400 text-sm"
                             >
                               <Plus className="w-3 h-3" /> Frage unten hinzufügen
@@ -446,7 +446,7 @@ export default function TrainingAdmin() {
                                     const qs = (blocks[bi].questions || []).filter((_, j) => j !== qi);
                                     blocks[bi] = { ...blocks[bi], questions: qs };
                                     return { ...prev, pages: { ...prev.pages, [selectedTabForPage]: { blocks } } };
-                                  }}
+                                  })}
                                   className="ml-auto p-1 rounded text-red-400 hover:bg-red-500/20"
                                 >
                                   <Trash2 className="w-4 h-4" />
