@@ -436,6 +436,32 @@ input.media-file-input { display: none; }
   letter-spacing: 0.04em;
 }
 
+/* Fortschrittsbalken */
+.media-progress-wrap {
+  display: none; flex-direction: column; gap: 4px;
+}
+.media-progress-wrap.visible { display: flex; }
+
+.media-progress-bar-track {
+  width: 100%; height: 6px; background: rgba(255,255,255,0.12);
+  border-radius: 100px; overflow: hidden;
+}
+.media-progress-bar-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, #2a9fd6, #4dd8c4);
+  border-radius: 100px;
+  transition: width 0.1s linear;
+}
+.media-progress-bar-fill.done {
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+  transition: width 0.3s ease;
+}
+.media-progress-label {
+  font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.7);
+  display: flex; justify-content: space-between;
+}
+.media-progress-pct { color: #4dd8c4; font-variant-numeric: tabular-nums; }
+
 /* Caption unter dem Bild/Video */
 .media-caption {
   font-size: 12px; color: rgba(255,255,255,0.5); padding: 6px 14px 10px;
@@ -2155,9 +2181,14 @@ function markMediaSlotUsed(slot) {
 
 async function uploadMediaFile(file, mediaBody) {
   const isVideo = file.type.startsWith('video/');
-  const slot = getNextMediaSlot(isVideo);
-  const statusEl = mediaBody.querySelector('.media-upload-status');
-  const slotEl   = mediaBody.querySelector('.media-slot-label');
+  const slot    = getNextMediaSlot(isVideo);
+  const statusEl  = mediaBody.querySelector('.media-upload-status');
+  const slotEl    = mediaBody.querySelector('.media-slot-label');
+  const progressWrap = mediaBody.querySelector('.media-progress-wrap');
+  const progressFill = mediaBody.querySelector('.media-progress-bar-fill');
+  const progressPct  = mediaBody.querySelector('.media-progress-pct');
+  const progressText = mediaBody.querySelector('.media-progress-text');
+  const uploadBtn    = mediaBody.querySelector('.media-upload-btn');
 
   if (!slot) {
     statusEl.textContent = '❌ Keine freien Slots — bitte refresh-demo-state-url.sh ausführen';
@@ -2165,22 +2196,54 @@ async function uploadMediaFile(file, mediaBody) {
   }
 
   const slotData = MEDIA_SLOTS[slot];
-  statusEl.textContent = '⏳ Wird zu AWS S3 hochgeladen…';
+
+  // UI: Fortschrittsbalken einblenden, Upload-Button sperren
+  statusEl.textContent = '';
+  if (progressWrap) progressWrap.classList.add('visible');
+  if (progressFill) { progressFill.style.width = '0%'; progressFill.classList.remove('done'); }
+  if (progressPct)  progressPct.textContent = '0%';
+  if (progressText) progressText.textContent = `${file.name} wird hochgeladen…`;
+  if (uploadBtn)    uploadBtn.style.pointerEvents = 'none';
 
   try {
-    // Content-Type muss exakt dem in der Presigned-URL signierten Typ entsprechen
-    const res = await fetch(slotData.put, {
-      method: 'PUT',
-      headers: { 'Content-Type': slotData.ct },
-      body: file
+    // XHR statt fetch — nur XHR liefert upload.onprogress Events
+    await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+
+      xhr.upload.addEventListener('progress', (e) => {
+        if (!e.lengthComputable) return;
+        const pct = Math.round((e.loaded / e.total) * 100);
+        if (progressFill) progressFill.style.width = pct + '%';
+        if (progressPct)  progressPct.textContent  = pct + '%';
+        // Grösse anzeigen
+        const loadedMB = (e.loaded / 1024 / 1024).toFixed(1);
+        const totalMB  = (e.total  / 1024 / 1024).toFixed(1);
+        if (progressText) progressText.textContent = `${loadedMB} MB / ${totalMB} MB`;
+      });
+
+      xhr.addEventListener('load', () => {
+        if (xhr.status >= 200 && xhr.status < 300) resolve(xhr);
+        else reject(new Error(`HTTP ${xhr.status}`));
+      });
+      xhr.addEventListener('error',   () => reject(new Error('Netzwerkfehler')));
+      xhr.addEventListener('timeout',  () => reject(new Error('Timeout')));
+
+      xhr.open('PUT', slotData.put);
+      xhr.setRequestHeader('Content-Type', slotData.ct);
+      xhr.send(file);
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    // Upload erfolgreich
+    if (progressFill) progressFill.classList.add('done');
+    if (progressFill) progressFill.style.width = '100%';
+    if (progressPct)  progressPct.textContent  = '100%';
+    if (progressText) progressText.textContent = '✓ Hochgeladen';
 
     markMediaSlotUsed(slot);
     const cdnUrl = MEDIA_CDN + slotData.file;
     slotEl.textContent = `AWS S3 → ${slotData.file}`;
 
-    // Placeholder ausblenden, altes Preview ersetzen
+    // Placeholder ausblenden, Preview einblenden
     const wrap = mediaBody.querySelector('.media-preview-wrap');
     if (wrap) {
       wrap.innerHTML = '';
@@ -2199,16 +2262,21 @@ async function uploadMediaFile(file, mediaBody) {
       wrap.setAttribute('data-media-type', isVideo ? 'video' : 'image');
     }
 
-    // Auto-Save: Seitenstand sofort nach Upload in S3 sichern,
-    // damit nach einem Refresh das Media noch vorhanden ist.
+    // Auto-Save: Seitenstand sofort sichern damit Media nach Refresh erhalten bleibt
     setUnsaved(true);
     statusEl.textContent = '⏳ Speichere Seitenstand in AWS…';
     await saveAll();
-    statusEl.textContent = '✅ Hochgeladen und gespeichert — bleibt nach Refresh erhalten!';
-    setTimeout(() => { statusEl.textContent = ''; }, 5000);
+    statusEl.textContent = '✅ Gespeichert — bleibt nach Refresh erhalten!';
+    setTimeout(() => {
+      statusEl.textContent = '';
+      if (progressWrap) progressWrap.classList.remove('visible');
+    }, 4000);
 
   } catch (err) {
+    if (progressWrap) progressWrap.classList.remove('visible');
     statusEl.textContent = `❌ Upload fehlgeschlagen: ${err.message} (URL abgelaufen?)`;
+  } finally {
+    if (uploadBtn) uploadBtn.style.pointerEvents = '';
   }
 }
 
@@ -2296,8 +2364,17 @@ function insertNewBox(bt) {
       <div class="media-controls">
         <input type="file" class="media-file-input" id="${uid}" accept="image/*,video/mp4,video/quicktime,video/webm">
         <label for="${uid}" class="media-upload-btn">📎 ${lang === 'de' ? 'Bild / Video hochladen' : 'Upload image / video'}</label>
+        <div class="media-progress-wrap">
+          <div class="media-progress-label">
+            <span class="media-progress-text">Wird hochgeladen…</span>
+            <span class="media-progress-pct">0%</span>
+          </div>
+          <div class="media-progress-bar-track">
+            <div class="media-progress-bar-fill"></div>
+          </div>
+        </div>
         <div class="media-upload-status"></div>
-        <span class="media-slot-label">AWS S3 · 10 Bild-Slots · 5 Video-Slots verfügbar</span>
+        <span class="media-slot-label">AWS S3 · 10 Bild-Slots · 5 Video-Slots</span>
       </div>`;
   } else {
     innerBody = `<span class="t-${lang}">${ph}</span>`;
@@ -2395,6 +2472,15 @@ function initMediaBoxes() {
       <label for="${uid}" class="media-upload-btn">
         📎 ${lang === 'de' ? 'Bild / Video hochladen oder ersetzen' : 'Upload or replace image / video'}
       </label>
+      <div class="media-progress-wrap">
+        <div class="media-progress-label">
+          <span class="media-progress-text">Wird hochgeladen…</span>
+          <span class="media-progress-pct">0%</span>
+        </div>
+        <div class="media-progress-bar-track">
+          <div class="media-progress-bar-fill"></div>
+        </div>
+      </div>
       <div class="media-upload-status"></div>
       <span class="media-slot-label">AWS S3 · 10 Bild-Slots · 5 Video-Slots</span>
     `;
