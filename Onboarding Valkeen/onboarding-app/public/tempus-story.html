@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tempus · Die Geschichte von Reto &amp; Peter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0a0f1e;
+  --navy-mid:#111827;
+  --teal:#0891b2;
+  --teal-glow:#06b6d4;
+  --cyan:#22d3ee;
+  --gold:#f59e0b;
+  --rose:#f43f5e;
+  --green:#10b981;
+  --white:#f8fafc;
+  --gray:#94a3b8;
+  --glass:rgba(255,255,255,0.04);
+  --glass-border:rgba(255,255,255,0.1);
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--navy);font-family:'DM Sans',sans-serif;color:var(--white)}
+
+/* ── DECK ───────────────────────────── */
+#deck{position:relative;width:100%;height:100%}
+.slide{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1);
+  transform:translateY(40px) scale(.98);
+  will-change:opacity,transform;
+}
+.slide.active{opacity:1;pointer-events:all;transform:none}
+.slide.exit{opacity:0;transform:translateY(-40px) scale(.98)}
+
+/* ── PROGRESS ───────────────────────── */
+#progress{
+  position:fixed;bottom:32px;left:50%;transform:translateX(-50%);
+  display:flex;gap:8px;z-index:100;
+}
+.dot{
+  width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.2);
+  cursor:pointer;transition:all .3s;
+}
+.dot.active{background:var(--cyan);width:24px;border-radius:3px}
+
+/* ── NAV ARROWS ─────────────────────── */
+#nav-prev,#nav-next{
+  position:fixed;top:50%;z-index:100;
+  width:48px;height:48px;border-radius:50%;border:1px solid var(--glass-border);
+  background:var(--glass);backdrop-filter:blur(12px);
+  color:var(--gray);font-size:20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;transform:translateY(-50%);
+}
+#nav-prev{left:24px}#nav-next{right:24px}
+#nav-prev:hover,#nav-next:hover{background:rgba(255,255,255,.08);color:var(--white);border-color:var(--teal)}
+
+/* ── SLIDE COUNTER ──────────────────── */
+#slide-counter{
+  position:fixed;top:24px;right:28px;z-index:100;
+  font-family:'Syne',sans-serif;font-size:13px;color:var(--gray);letter-spacing:.08em;
+}
+#slide-counter span{color:var(--cyan)}
+
+/* ── HOME LINK ──────────────────────── */
+#home-link{
+  position:fixed;top:24px;left:28px;z-index:100;
+  font-size:13px;color:var(--gray);text-decoration:none;display:flex;align-items:center;gap:8px;
+  transition:color .2s;
+}
+#home-link:hover{color:var(--white)}
+
+/* ═══════════════════════════════════════
+   SLIDE 1 — OPENING
+═══════════════════════════════════════ */
+.s-opening{background:radial-gradient(ellipse 120% 80% at 50% 100%,#0a2540 0%,var(--navy) 60%)}
+.opening-inner{text-align:center;max-width:760px;padding:40px}
+.opening-eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  background:rgba(8,145,178,.15);border:1px solid rgba(8,145,178,.3);
+  border-radius:100px;padding:6px 20px;
+  font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);
+  margin-bottom:32px;
+  animation:fadeUp .8s .2s both;
+}
+.opening-eyebrow::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--cyan);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.opening-title{
+  font-family:'Syne',sans-serif;font-size:clamp(42px,7vw,80px);font-weight:800;
+  line-height:1;letter-spacing:-.03em;
+  animation:fadeUp .8s .4s both;
+}
+.opening-title em{font-style:normal;color:var(--cyan)}
+.opening-subtitle{
+  margin-top:24px;font-size:18px;font-weight:300;color:var(--gray);line-height:1.7;
+  animation:fadeUp .8s .6s both;max-width:520px;margin-left:auto;margin-right:auto;
+}
+.opening-start{
+  margin-top:48px;animation:fadeUp .8s .9s both;
+  display:inline-flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,var(--teal),var(--teal-glow));
+  border:none;border-radius:100px;padding:14px 32px;color:white;
+  font-size:16px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;
+  transition:transform .2s,box-shadow .2s;
+  box-shadow:0 0 40px rgba(8,145,178,.3);
+}
+.opening-start:hover{transform:scale(1.04);box-shadow:0 0 60px rgba(8,145,178,.5)}
+.opening-start svg{width:18px;height:18px}
+/* floating orbs */
+.orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none}
+.orb-1{width:400px;height:400px;background:rgba(8,145,178,.08);top:-100px;left:-100px;animation:drift1 12s ease-in-out infinite}
+.orb-2{width:500px;height:500px;background:rgba(34,211,238,.05);bottom:-150px;right:-100px;animation:drift2 15s ease-in-out infinite}
+.orb-3{width:300px;height:300px;background:rgba(245,158,11,.04);top:50%;left:50%;transform:translate(-50%,-50%);animation:drift3 10s ease-in-out infinite}
+@keyframes drift1{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,30px)}}
+@keyframes drift2{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,-40px)}}
+@keyframes drift3{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-60%)}}
+
+/* ═══════════════════════════════════════
+   SLIDE 2 — CHARACTERS
+═══════════════════════════════════════ */
+.s-chars{background:var(--navy-mid)}
+.chars-inner{display:flex;gap:32px;align-items:stretch;max-width:900px;padding:40px}
+.char-card{
+  flex:1;background:var(--glass);border:1px solid var(--glass-border);
+  border-radius:20px;padding:32px;position:relative;overflow:hidden;
+  animation:slideIn .6s both;
+}
+.char-card:nth-child(2){animation-delay:.2s}
+.char-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.02) 0%,transparent 60%);
+}
+.char-avatar{
+  width:72px;height:72px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:28px;font-weight:800;
+  margin-bottom:20px;
+}
+.char-reto .char-avatar{background:linear-gradient(135deg,var(--teal),var(--teal-glow));color:white}
+.char-peter .char-avatar{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:white}
+.char-name{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;margin-bottom:6px}
+.char-role{font-size:13px;color:var(--cyan);font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px}
+.char-desc{font-size:15px;color:var(--gray);line-height:1.7}
+.char-trait{
+  display:inline-block;margin-top:16px;padding:5px 14px;
+  border-radius:100px;font-size:12px;font-weight:500;letter-spacing:.04em;
+}
+.char-reto .char-trait{background:rgba(8,145,178,.15);color:var(--cyan);border:1px solid rgba(8,145,178,.3)}
+.char-peter .char-trait{background:rgba(124,58,237,.15);color:#a78bfa;border:1px solid rgba(124,58,237,.3)}
+.chars-hook{
+  text-align:center;max-width:900px;padding:0 40px 0;margin-top:24px;
+  font-size:17px;color:var(--gray);line-height:1.7;animation:fadeUp .6s .4s both;
+}
+.chars-hook em{color:var(--white);font-style:normal}
+.chars-wrap{display:flex;flex-direction:column;align-items:center;gap:0;max-width:900px;padding:40px}
+
+/* ═══════════════════════════════════════
+   DEMO SLIDES — Layout
+═══════════════════════════════════════ */
+.s-demo{padding:0}
+.demo-inner{
+  display:grid;grid-template-columns:1fr 1.4fr;
+  width:100%;height:100%;max-width:1440px;padding:60px 48px;gap:48px;
+  align-items:center;
+}
+.demo-story{animation:slideInLeft .6s .1s both}
+.demo-scene-num{
+  font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:16px;
+}
+.demo-title{
+  font-family:'Syne',sans-serif;font-size:clamp(24px,3.5vw,42px);font-weight:800;
+  line-height:1.1;letter-spacing:-.02em;margin-bottom:16px;
+}
+.demo-title em{font-style:normal;background:linear-gradient(135deg,var(--cyan),var(--teal-glow));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.demo-body{font-size:16px;color:var(--gray);line-height:1.8;margin-bottom:24px}
+.demo-body strong{color:var(--white);font-weight:500}
+.demo-quote{
+  border-left:3px solid var(--teal);padding-left:16px;
+  font-size:15px;font-style:italic;color:var(--gray);line-height:1.7;
+  margin-bottom:24px;
+}
+.demo-quote .speaker{display:block;font-style:normal;font-size:12px;color:var(--teal);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-top:8px}
+.demo-impact{
+  display:inline-flex;align-items:center;gap:10px;
+  background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);
+  border-radius:10px;padding:12px 18px;font-size:14px;color:#6ee7b7;
+  animation:fadeUp .5s .4s both;
+}
+.demo-impact svg{width:16px;height:16px;flex-shrink:0;fill:currentColor}
+
+/* Browser mockup */
+.demo-screen{
+  position:relative;animation:slideInRight .6s .15s both;
+}
+.browser-frame{
+  border-radius:16px;overflow:hidden;
+  box-shadow:0 40px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);
+  background:#1e293b;
+}
+.browser-bar{
+  height:38px;background:#2d3748;display:flex;align-items:center;padding:0 14px;gap:8px;
+}
+.browser-dot{width:12px;height:12px;border-radius:50%}
+.browser-dot:nth-child(1){background:#ff5f56}
+.browser-dot:nth-child(2){background:#febc2e}
+.browser-dot:nth-child(3){background:#27c840}
+.browser-url{
+  flex:1;height:22px;background:rgba(0,0,0,.3);border-radius:5px;margin:0 10px;
+  display:flex;align-items:center;padding:0 10px;
+  font-size:12px;color:var(--gray);font-family:monospace;overflow:hidden;white-space:nowrap;
+}
+.browser-screenshot{
+  display:block;width:100%;height:auto;
+  transform-origin:top center;
+}
+
+/* Annotation overlays on screenshots */
+.annotation{
+  position:absolute;display:flex;align-items:center;gap:8px;
+  background:rgba(10,15,30,.9);border:1px solid var(--teal);
+  border-radius:8px;padding:8px 14px;font-size:13px;font-weight:500;
+  backdrop-filter:blur(8px);white-space:nowrap;
+  animation:annotationIn .4s both;pointer-events:none;
+}
+@keyframes annotationIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.annotation::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0}
+.annotation-line{
+  position:absolute;border:1px dashed rgba(8,145,178,.4);
+  border-radius:4px;pointer-events:none;animation:lineIn .4s .2s both;
+}
+@keyframes lineIn{from{opacity:0}to{opacity:1}}
+.annotation-gold{border-color:var(--gold)}
+.annotation-gold::before{background:var(--gold)}
+.annotation-rose{border-color:var(--rose)}
+.annotation-rose::before{background:var(--rose)}
+.annotation-green{border-color:var(--green)}
+.annotation-green::before{background:var(--green)}
+
+/* Cursor animation */
+.demo-cursor{
+  position:absolute;width:24px;height:24px;pointer-events:none;z-index:10;
+  filter:drop-shadow(0 0 6px rgba(255,255,255,.4));
+  animation:cursorMove 3s ease-in-out infinite;
+}
+@keyframes cursorMove{
+  0%,100%{transform:translate(0,0) scale(1)}
+  40%{transform:translate(8px,4px) scale(.9)}
+  60%{transform:translate(8px,4px) scale(1.1)}
+  80%{transform:translate(0,0) scale(1)}
+}
+
+/* ═══════════════════════════════════════
+   SLIDE — CLOSING
+═══════════════════════════════════════ */
+.s-closing{background:radial-gradient(ellipse 100% 60% at 50% 110%,#0a2540 0%,var(--navy) 60%)}
+.closing-inner{text-align:center;max-width:760px;padding:40px}
+.closing-quote{
+  font-family:'Syne',sans-serif;font-size:clamp(22px,4vw,40px);font-weight:700;
+  line-height:1.3;margin-bottom:32px;animation:fadeUp .8s .2s both;
+}
+.closing-quote em{font-style:italic;color:var(--cyan)}
+.closing-sub{font-size:16px;color:var(--gray);margin-bottom:48px;animation:fadeUp .8s .4s both;line-height:1.7}
+.closing-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+  animation:fadeUp .8s .6s both;
+}
+.closing-chip{
+  background:var(--glass);border:1px solid var(--glass-border);
+  border-radius:12px;padding:16px;font-size:13px;color:var(--gray);line-height:1.5;
+}
+.closing-chip strong{display:block;color:var(--white);font-weight:500;margin-bottom:4px}
+.closing-cta{
+  margin-top:40px;animation:fadeUp .8s .8s both;
+  display:inline-flex;align-items:center;gap:12px;
+  background:var(--glass);border:1px solid var(--glass-border);
+  border-radius:12px;padding:16px 24px;color:var(--gray);font-size:14px;cursor:pointer;
+  text-decoration:none;transition:all .2s;
+}
+.closing-cta:hover{background:rgba(8,145,178,.1);border-color:var(--teal);color:var(--white)}
+
+/* ═══════════════════════════════════════
+   UTILITIES & ANIMATIONS
+═══════════════════════════════════════ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideInRight{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+
+/* reset animations when slide becomes active */
+.slide.active .demo-story{animation:slideInLeft .5s .05s both}
+.slide.active .demo-screen{animation:slideInRight .5s .1s both}
+.slide.active .opening-eyebrow{animation:fadeUp .7s .1s both}
+.slide.active .opening-title{animation:fadeUp .7s .25s both}
+.slide.active .opening-subtitle{animation:fadeUp .7s .4s both}
+.slide.active .opening-start{animation:fadeUp .7s .6s both}
+.slide.active .char-card{animation:slideIn .5s both}
+.slide.active .char-card:nth-child(2){animation-delay:.15s}
+.slide.active .chars-hook{animation:fadeUp .5s .3s both}
+.slide.active .closing-quote{animation:fadeUp .7s .1s both}
+.slide.active .closing-sub{animation:fadeUp .7s .25s both}
+.slide.active .closing-grid{animation:fadeUp .7s .4s both}
+.slide.active .closing-cta{animation:fadeUp .7s .6s both}
+.slide.active .annotation{animation-delay:.6s}
+.slide.active .annotation:nth-child(2){animation-delay:.8s}
+.slide.active .annotation:nth-child(3){animation-delay:1s}
+
+/* background subtle grid */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+.slide{z-index:1}
+#progress,#nav-prev,#nav-next,#slide-counter,#home-link{z-index:200}
+
+/* ── Peter / Reto quote chips ────────── */
+.chip-peter,.chip-reto{
+  display:inline-flex;align-items:flex-start;gap:10px;
+  border-radius:12px;padding:12px 16px;font-size:14px;line-height:1.6;
+  max-width:340px;margin-bottom:16px;
+}
+.chip-peter{background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.25);color:#c4b5fd}
+.chip-reto{background:rgba(8,145,178,.12);border:1px solid rgba(8,145,178,.25);color:#7dd3fc}
+.chip-avatar{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;
+}
+.chip-peter .chip-avatar{background:rgba(124,58,237,.5);color:white}
+.chip-reto .chip-avatar{background:rgba(8,145,178,.5);color:white}
+
+/* ── Tags ────────────────────────────── */
+.demo-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.tag{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;padding:4px 12px;border-radius:100px}
+.tag-teal{background:rgba(8,145,178,.15);color:var(--cyan);border:1px solid rgba(8,145,178,.3)}
+.tag-gold{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.3)}
+.tag-rose{background:rgba(244,63,94,.15);color:#fda4af;border:1px solid rgba(244,63,94,.3)}
+.tag-green{background:rgba(16,185,129,.15);color:#6ee7b7;border:1px solid rgba(16,185,129,.3)}
+.tag-purple{background:rgba(124,58,237,.15);color:#c4b5fd;border:1px solid rgba(124,58,237,.3)}
+
+/* ── Responsive ──────────────────────── */
+@media(max-width:900px){
+  .demo-inner{grid-template-columns:1fr;padding:40px 24px;gap:24px}
+  .chars-inner{flex-direction:column;gap:16px}
+  .closing-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+  .demo-inner{padding:60px 20px 80px}
+  .closing-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<a href="/onboarding/" id="home-link">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+  Onboarding
+</a>
+
+<div id="slide-counter"><span id="cur">1</span> / <span id="tot">10</span></div>
+
+<button id="nav-prev" aria-label="Zurück">&#8592;</button>
+<button id="nav-next" aria-label="Weiter">&#8594;</button>
+
+<div id="progress"></div>
+
+<div id="deck">
+
+<!-- ════════════════════════════════════
+  SLIDE 1 — OPENING
+════════════════════════════════════ -->
+<div class="slide s-opening active" data-slide="0">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="opening-inner">
+    <div class="opening-eyebrow">
+      <span>Tempus Resource · Story-Demo</span>
+    </div>
+    <h1 class="opening-title">
+      Heute begleiten<br>wir <em>Reto</em> live.
+    </h1>
+    <p class="opening-subtitle">
+      Keine Folien. Keine Theorie. Nur ein Projektmanager, ein kritischer Kollege — und das Tool, das alles zusammenhält.
+    </p>
+    <button class="opening-start" onclick="goTo(1)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/></svg>
+      Geschichte starten
+    </button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+  SLIDE 2 — CHARACTERS
+════════════════════════════════════ -->
+<div class="slide s-chars" data-slide="1">
+  <div class="chars-wrap">
+    <div class="chars-inner">
+      <div class="char-card char-reto">
+        <div class="char-avatar">R</div>
+        <div class="char-name">Reto Renner</div>
+        <div class="char-role">Project Manager · Tempus-Profi</div>
+        <p class="char-desc">Reto leitet 6 parallele Projekte — und verliert keins davon aus dem Blick. Heute zeigt er, wie.</p>
+        <span class="char-trait">Ruhig. Datengetrieben. Immer einen Klick voraus.</span>
+      </div>
+      <div class="char-card char-peter">
+        <div class="char-avatar">P</div>
+        <div class="char-name">Peter Rieser</div>
+        <div class="char-role">Bereichsleiter · Skeptiker</div>
+        <p class="char-desc">Peter fragt die unbequemen Fragen — genau die, die auch deine Kunden stellen werden. Heute wird er überzeugt.</p>
+        <span class="char-trait">Kritisch. Neugierig. Am Ende: begeistert.</span>
+      </div>
+    </div>
+    <p class="chars-hook">
+      <em>„Ich möchte, dass Sie Teil der Geschichte werden und Fragen stellen — genau so, wie Peter sie stellen würde."</em>
+    </p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+  SLIDE 3 — DASHBOARD
+════════════════════════════════════ -->
+<div class="slide s-demo" data-slide="2">
+  <div class="demo-inner">
+    <div class="demo-story">
+      <div class="demo-scene-num">Szene 01 · Einstieg</div>
+      <h2 class="demo-title">Alles auf<br>einem <em>Screen</em>.</h2>
+      <div class="demo-tags">
+        <span class="tag tag-teal">Dashboard</span>
+        <span class="tag tag-gold">Kacheln</span>
+      </div>
+      <p class="demo-body">
+        Peter betritt Retos Bildschirm. Er erwartet eine Folien­schlacht. Stattdessen sieht er ein Dashboard — <strong>acht Kacheln</strong>, jede ein anderes Werkzeug, alle auf denselben Daten.
+      </p>
+      <div class="chip-reto">
+        <div class="chip-avatar">R</div>
+        <span>„Das hier ist Tempus. Alles, was du siehst, ist in Echtzeit. Keine Exports, keine Doppelführung."</span>
+      </div>
+      <div class="chip-peter">
+        <div class="chip-avatar">P</div>
+        <span>„Und das hier ist wirklich alles auf einem System?"</span>
+      </div>
+    </div>
+    <div class="demo-screen">
+      <div class="browser-frame">
+        <div class="browser-bar">
+          <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
+          <div class="browser-url">trial5.tempus-resource.com/slot4</div>
+        </div>
+        <img class="browser-screenshot" src="tempus-shots/01-dashboard.png" alt="Tempus Dashboard">
+      </div>
+      <div class="annotation" style="bottom:22%;right:-6%;animation-delay:.7s">Project Management → 220 Projekte</div>
+      <div class="annotation annotation-gold" style="top:26%;right:-4%;animation-delay:.9s">Bulk Flatgrid → das beliebteste Feature</div>
+      <div class="annotation annotation-green" style="bottom:36%;left:-4%;animation-delay:1.1s">Resource Management → 434 Ressourcen</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+  SLIDE 4 — PROJEKT ANLEGEN
+════════════════════════════════════ -->
+<div class="slide s-demo" data-slide="3">
+  <div class="demo-inner">
+    <div class="demo-story">
+      <div class="demo-scene-num">Szene 02 · Projekt anlegen</div>
+      <h2 class="demo-title">30 Sekunden<br>bis zum <em>Rahmen</em>.</h2>
+      <div class="demo-tags">
+        <span class="tag tag-teal">Project Management</span>
+        <span class="tag tag-gold">Create Project</span>
+      </div>
+      <p class="demo-body">
+        Reto öffnet Project Management. 220 Projekte — Stardust ist dabei. Er klickt auf <strong>Create Project</strong>. In unter einer Minute existiert der steuerbare Rahmen.
+      </p>
+      <div class="demo-quote">
+        „Stardust ist das Projekt. Lassen wir ihn machen."
+        <span class="speaker">— Reto, während er tippt</span>
+      </div>
+      <div class="demo-impact">
+        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        30 Sekunden. Kein Setup. Kein Overhead.
+      </div>
+    </div>
+    <div class="demo-screen">
+      <div class="browser-frame">
+        <div class="browser-bar">
+          <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
+          <div class="browser-url">trial5.tempus-resource.com/slot4/projects/grid</div>
+        </div>
+        <img class="browser-screenshot" src="tempus-shots/02-project-list.png" alt="Project Management">
+      </div>
+      <div class="annotation" style="top:16%;left:4%;animation-delay:.7s">219 bestehende Projekte</div>
+      <div class="annotation annotation-gold" style="top:16%;right:-2%;animation-delay:.9s">Create Project → 1 Klick</div>
+      <div class="annotation annotation-green" style="bottom:28%;left:4%;animation-delay:1.1s">Stardust → Phase 3 · Feb 2025–Nov 2026</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+  SLIDE 5 — RESSOURCEN & TASKS
+════════════════════════════════════ -->
+<div class="slide s-demo" data-slide="4">
+  <div class="demo-inner">
+    <div class="demo-story">
+      <div class="demo-scene-num">Szene 03 · Ressourcen &amp; Tasks</div>
+      <h2 class="demo-title">Task-Ebene =<br><em>Verantwortung</em>.</h2>
+      <div class="demo-tags">
+        <span class="tag tag-teal">Stardust</span>
+        <span class="tag tag-purple">13 Tasks</span>
+        <span class="tag tag-gold">Planned</span>
+      </div>
+      <p class="demo-body">
+        Stardust hat 13 Tasks — von Scoping bis Dokumentation. Reto weist jeder Phase Ressourcen zu. Nicht nur „wer macht mit", sondern <strong>wer trägt Verantwortung für was</strong>.
+      </p>
+      <div class="chip-peter">
+        <div class="chip-avatar">P</div>
+        <span>„Kann ich auch sehen, wer gerade auf welcher Phase arbeitet?"</span>
+      </div>
+      <div class="chip-reto">
+        <div class="chip-avatar">R</div>
+        <span>„Ja. Und wie viel — auf Task-Ebene, nicht nur auf Projektebene."</span>
+      </div>
+    </div>
+    <div class="demo-screen">
+      <div class="browser-frame">
+        <div class="browser-bar">
+          <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
+          <div class="browser-url">trial5.tempus-resource.com/slot4/project/4/Allocations</div>
+        </div>
+        <img class="browser-screenshot" src="tempus-shots/03-stardust.png" alt="Stardust Allocations">
+      </div>
+      <div class="annotation" style="top:14%;right:0%;animation-delay:.7s">Checkout → Bearbeitung sperren</div>
+      <div class="annotation annotation-gold" style="bottom:32%;left:-2%;animation-delay:.9s">37'095h geplant total</div>
+      <div class="annotation annotation-green" style="bottom:18%;right:0%;animation-delay:1.1s">Konzeption &amp; Analyse → 1'270h</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+  SLIDE 6 — PLANNED / ACTUAL
+════════════════════════════════════ -->
+<div class="slide s-demo" data-slide="5">
+  <div class="demo-inner">
+    <div class="demo-story">
+      <div class="demo-scene-num">Szene 04–05 · Plan &amp; Ist</div>
+      <h2 class="demo-title">Der Plan lebt mit.<br><em>Jederzeit.</em></h2>
+      <div class="demo-tags">
+        <span class="tag tag-teal">Planned</span>
+        <span class="tag tag-rose">Actual</span>
+        <span class="tag tag-gold">Checkout</span>
+      </div>
+      <p class="demo-body">
+        Reto klickt auf <strong>Checkout</strong> — der Plan ist jetzt exklusiv bearbeitbar. Er ändert Stunden auf Task-Ebene. Danach switcht er auf <strong>Actual</strong>: echte Ist-Zahlen aus dem Timesheet, automatisch synchronisiert.
+      </p>
+      <div class="demo-quote">
+        „Planwerte sind Absicht. Ist-Werte sind Wahrheit. Beide in einem Klick — und niemand gibt etwas doppelt ein."
+        <span class="speaker">— Reto</span>
+      </div>
+      <div class="demo-impact">
+        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Frühwarnung auf Task-Ebene — Wochen vor dem Problem.
+      </div>
+    </div>
+    <div class="demo-screen">
+      <div class="browser-frame">
+        <div class="browser-bar">
+          <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
+          <div class="browser-url">trial5.tempus-resource.com/slot4/project/4/Allocations</div>
+        </div>
+        <img class="browser-screenshot" src="tempus-shots/04-planned-dropdown.png" alt="Planned vs Actual">
+      </div>
+      <div class="annotation" style="top:25%;right:-4%;animation-delay:.7s">Planned → jetzt wechseln zu Actual</div>
+      <div class="annotation annotation-rose" style="top:35%;right:-4%;animation-delay:.9s">Actual → Ist aus dem Timesheet</div>
+      <div class="annotation annotation-gold" style="bottom:28%;right:-4%;animation-delay:1.1s">Planned + Actual → Vergleichsansicht</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+  SLIDE 7 — PROJECT ALLOCATION GRID
+════════════════════════════════════ -->
+<div class="slide s-demo" data-slide="6">
+  <div class="demo-inner">
+    <div class="demo-story">
+      <div class="demo-scene-num">Szene 06 · Project Allocation Grid</div>
+      <h2 class="demo-title">Simon Wespi<br>ist <em>überbucht</em>.</h2>
+      <div class="demo-tags">
+        <span class="tag tag-teal">Resource Mode</span>
+        <span class="tag tag-rose">Überlastung</span>
+        <span class="tag tag-gold">5 Projekte</span>
+      </div>
+      <p class="demo-body">
+        Reto wechselt in den <strong>Resource Mode</strong> des Project Allocation Grids und wählt Simon Wespi. Auf einmal ist alles sichtbar: 5 Projekte, April/Mai überbucht, Juni entlastet.
+      </p>
+      <div class="chip-peter">
+        <div class="chip-avatar">P</div>
+        <span>„Das ist eigentlich was ich immer wollte — sehen ob jemand schon überlastet ist, bevor ich ihm noch was drauflege."</span>
+      </div>
+      <div class="chip-reto">
+        <div class="chip-avatar">R</div>
+        <span>„Genau. Faktenbasiert statt nach Gefühl — bevor du auch nur ein Gespräch geführt hast."</span>
+      </div>
+    </div>
+    <div class="demo-screen">
+      <div class="browser-frame">
+        <div class="browser-bar">
+          <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
+          <div class="browser-url">trial5.tempus-resource.com/slot4/resources/grid</div>
+        </div>
+        <img class="browser-screenshot" src="tempus-shots/06-resource-mgmt.png" alt="Resource Mode">
+      </div>
+      <div class="annotation annotation-rose" style="top:30%;right:-4%;animation-delay:.7s">Simon Wespi → 5 Projekte geplant</div>
+      <div class="annotation annotation-gold" style="bottom:34%;left:-2%;animation-delay:.9s">Dept: IT · Apr–Mai überbucht</div>
+      <div class="annotation" style="bottom:22%;right:-4%;animation-delay:1.1s">Mobile Lock → Zeile exklusiv bearbeitbar</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+  SLIDE 8 — BULK FLATGRID
+════════════════════════════════════ -->
+<div class="slide s-demo" data-slide="7">
+  <div class="demo-inner">
+    <div class="demo-story">
+      <div class="demo-scene-num">Szene 07 · Bulk Project Allocation Flatgrid</div>
+      <h2 class="demo-title">Das <em>beliebteste</em><br>Feature.</h2>
+      <div class="demo-tags">
+        <span class="tag tag-teal">Flatgrid</span>
+        <span class="tag tag-gold">Heatmap</span>
+        <span class="tag tag-green">Notes</span>
+        <span class="tag tag-purple">Quicklink</span>
+      </div>
+      <p class="demo-body">
+        Das Bulk Project Allocation Flatgrid kombiniert alle Projekte und Ressourcen in einer editierbaren Tabelle. Mit <strong>Heatmap</strong> sieht man sofort wo es brennt. <strong>Notes</strong> für Kontext. <strong>Quicklink</strong> direkt ins Projekt.
+      </p>
+      <div class="demo-quote">
+        „Das haben die meisten täglich offen. Nicht weil sie müssen — sondern weil es so gut funktioniert."
+        <span class="speaker">— Reto</span>
+      </div>
+      <div class="demo-impact">
+        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Kein Export. Alles direkt editierbar — live und im Kontext.
+      </div>
+    </div>
+    <div class="demo-screen">
+      <div class="browser-frame">
+        <div class="browser-bar">
+          <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
+          <div class="browser-url">trial5.tempus-resource.com/slot4/bulkProjectAllocationFlatgrid</div>
+        </div>
+        <img class="browser-screenshot" src="tempus-shots/05-flatgrid.png" alt="Bulk Flatgrid">
+      </div>
+      <div class="annotation" style="top:22%;right:-4%;animation-delay:.7s">Add assignment → direkt im Grid</div>
+      <div class="annotation annotation-gold" style="bottom:36%;right:-4%;animation-delay:.9s">Options → Heatmap aktivieren</div>
+      <div class="annotation annotation-green" style="bottom:22%;left:-2%;animation-delay:1.1s">Resource 27 &amp; Project 1 → gefiltert</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+  SLIDE 9 — REPORTS
+════════════════════════════════════ -->
+<div class="slide s-demo" data-slide="8">
+  <div class="demo-inner">
+    <div class="demo-story">
+      <div class="demo-scene-num">Szene 09/10 · Reports</div>
+      <h2 class="demo-title">Frühwarnung<br>statt <em>Nachkarte</em>.</h2>
+      <div class="demo-tags">
+        <span class="tag tag-teal">RAR2 Chart</span>
+        <span class="tag tag-rose">Plan vs. Actual</span>
+        <span class="tag tag-gold">Pivot Grid</span>
+      </div>
+      <p class="demo-body">
+        Reto öffnet Report Management. Sieben Berichtstypen, einer konfiguriert in 30 Sekunden. Der <strong>RAR2 Chart</strong> zeigt Marc mit 12h/Tag — rot. Stardust + Apollo gleichzeitig. Sichtbar, erklärbar, steuerbar.
+      </p>
+      <div class="chip-peter">
+        <div class="chip-avatar">P</div>
+        <span>„Kann ich diesen Chart direkt aus Tempus exportieren — für eine Präsentation?"</span>
+      </div>
+      <div class="demo-impact">
+        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Berichte sind nicht das Ende. Sie sind der Anfang der richtigen Gespräche.
+      </div>
+    </div>
+    <div class="demo-screen">
+      <div class="browser-frame">
+        <div class="browser-bar">
+          <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
+          <div class="browser-url">trial5.tempus-resource.com/slot4/reports</div>
+        </div>
+        <img class="browser-screenshot" src="tempus-shots/08-reports.png" alt="Report Management">
+      </div>
+      <div class="annotation" style="top:24%;left:4%;animation-delay:.7s">Pivot Grid &amp; Chart → flexibelste Reports</div>
+      <div class="annotation annotation-rose" style="top:24%;right:-2%;animation-delay:.9s">RAR2 Chart → Ressourcenkonflikt sichtbar</div>
+      <div class="annotation annotation-gold" style="bottom:30%;left:4%;animation-delay:1.1s">Portfolio Planner → strategische Sicht</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+  SLIDE 10 — CLOSING
+════════════════════════════════════ -->
+<div class="slide s-closing" data-slide="9">
+  <div class="orb orb-1" style="animation-direction:reverse"></div>
+  <div class="orb orb-2" style="animation-direction:reverse"></div>
+  <div class="closing-inner">
+    <div class="closing-quote">
+      <em>„Ok. Wann kann ich anfangen?"</em>
+    </div>
+    <p class="closing-sub">
+      Peter lehnt sich zurück. Lange Pause.<br>
+      Reto lacht. <em style="color:var(--cyan)">"Das habe ich mir gedacht."</em>
+    </p>
+    <div class="closing-grid">
+      <div class="closing-chip"><strong>🏗️ 30 Sekunden</strong>Projekt anlegen — direkt nach dem Sales-Handover</div>
+      <div class="closing-chip"><strong>✅ Task-Ebene</strong>Verantwortung, nicht nur Beteiligung</div>
+      <div class="closing-chip"><strong>🔄 Plan lebt mit</strong>Checkout, anpassen, einchecken</div>
+      <div class="closing-chip"><strong>📊 Plan vs. Actual</strong>Auf Task-Ebene — frühzeitig erkennen</div>
+      <div class="closing-chip"><strong>⚡ Bulk Flatgrid</strong>Das beliebteste Feature — weil es sich anpasst</div>
+      <div class="closing-chip"><strong>📈 RAR2</strong>Marc mit 12h/Tag → sichtbar &amp; steuerbar</div>
+    </div>
+    <a href="/onboarding/tempus-demo-pm.html" target="_blank" class="closing-cta">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Vollständiges Demo-Script öffnen
+    </a>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const dots = document.getElementById('progress');
+const curEl = document.getElementById('cur');
+const totEl = document.getElementById('tot');
+let current = 0;
+const total = slides.length;
+
+totEl.textContent = total;
+
+// Build dots
+for(let i=0;i<total;i++){
+  const d = document.createElement('div');
+  d.className = 'dot' + (i===0?' active':'');
+  d.addEventListener('click',()=>goTo(i));
+  dots.appendChild(d);
+}
+
+function updateDots(n){
+  document.querySelectorAll('.dot').forEach((d,i)=>{
+    d.classList.toggle('active',i===n);
+  });
+}
+
+function goTo(n){
+  if(n<0||n>=total||n===current)return;
+  const prev = slides[current];
+  const next = slides[n];
+  const dir = n>current?1:-1;
+
+  prev.classList.add('exit');
+  prev.classList.remove('active');
+  setTimeout(()=>{ prev.classList.remove('exit'); },700);
+
+  next.style.transform = `translateY(${dir*40}px) scale(.98)`;
+  next.offsetHeight; // force reflow
+  next.classList.add('active');
+  current = n;
+  curEl.textContent = current+1;
+  updateDots(current);
+
+  // hide/show prev button
+  document.getElementById('nav-prev').style.opacity = current===0?'0.2':'1';
+  document.getElementById('nav-next').style.opacity = current===total-1?'0.2':'1';
+}
+
+window.goTo = goTo;
+
+document.getElementById('nav-next').addEventListener('click',()=>goTo(current+1));
+document.getElementById('nav-prev').addEventListener('click',()=>goTo(current-1));
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ')goTo(current+1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')goTo(current-1);
+});
+
+// touch/swipe
+let tsX=0,tsY=0;
+document.addEventListener('touchstart',e=>{tsX=e.touches[0].clientX;tsY=e.touches[0].clientY});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tsX;
+  const dy=e.changedTouches[0].clientY-tsY;
+  if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>50){
+    if(dx<0)goTo(current+1); else goTo(current-1);
+  }
+});
+
+// init
+document.getElementById('nav-prev').style.opacity='0.2';
+</script>
+</body>
+</html>

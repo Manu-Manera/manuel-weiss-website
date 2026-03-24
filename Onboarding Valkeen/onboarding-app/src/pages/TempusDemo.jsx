@@ -10,9 +10,11 @@ import {
   BookOpen,
   ChevronRight,
   Play,
+  Sparkles,
 } from 'lucide-react';
 
 // Demo-Guides laufen auf AWS (public/*.html → /onboarding/*.html)
+const STORY_URL = '/onboarding/tempus-story.html';
 const PM_DEMO_URL = '/onboarding/tempus-demo-pm.html';
 const RM_DEMO_URL = '/onboarding/tempus-demo-rm.html';
 const RM_LIVE_URL = 'https://trial5.tempus-resource.com/slot4';
@@ -40,7 +42,7 @@ const demoEnvironments = [
     url: PM_DEMO_URL,
     icon: Calendar,
     color: 'from-purple-500 to-pink-500',
-    badge: '13 Szenen · DE/EN',
+      badge: '11 Szenen · DE/EN',
     features: [
       'Story-getriebenes Demo-Script',
       'Projekt anlegen · Ressourcen zuweisen',
@@ -102,6 +104,48 @@ export default function TempusDemo() {
         <p className="text-white/60">
           Interaktive Demo-Umgebung · trial5.tempus-resource.com/slot4
         </p>
+      </div>
+
+      {/* ── STORY PRÄSENTATION BANNER ── */}
+      <div
+        className="relative overflow-hidden rounded-2xl p-6 border border-cyan-400/30 cursor-pointer group"
+        style={{ background: 'linear-gradient(135deg, rgba(8,145,178,.12) 0%, rgba(34,211,238,.06) 50%, rgba(10,15,30,.8) 100%)' }}
+        onClick={() => openInNewTab(STORY_URL)}
+      >
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          style={{ background: 'linear-gradient(135deg, rgba(8,145,178,.18), rgba(34,211,238,.1))' }} />
+        <div className="relative flex items-center justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center"
+              style={{ background: 'linear-gradient(135deg, #0891b2, #22d3ee)' }}>
+              <Sparkles className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-bold text-lg text-white">Interaktive Story-Präsentation</span>
+                <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
+                  style={{ background: 'rgba(34,211,238,.15)', color: '#22d3ee', border: '1px solid rgba(34,211,238,.3)' }}>
+                  NEU
+                </span>
+              </div>
+              <p className="text-white/60 text-sm">
+                Reto &amp; Peter · 10 Slides · echte Screenshots · cinematische Übergänge · klick-gesteuert
+              </p>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {['Fullscreen', 'Story-driven', 'Keyboard-Navigation', 'Swipe-Support'].map(t => (
+                  <span key={t} className="text-xs px-2 py-0.5 rounded bg-white/8 text-white/50 border border-white/10">{t}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+          <button
+            className="flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white transition-all group-hover:scale-105"
+            style={{ background: 'linear-gradient(135deg, #0891b2, #22d3ee)', boxShadow: '0 0 24px rgba(8,145,178,.4)' }}
+          >
+            <Play className="w-4 h-4" />
+            Präsentation starten
+          </button>
+        </div>
       </div>
 
       {/* ── SETUP STRIP ── */}
@@ -192,9 +236,15 @@ export default function TempusDemo() {
         <div className="space-y-3">
           {[
             {
+              href: STORY_URL,
+              label: 'Story-Präsentation starten',
+              sub: 'Interaktiv · Fullscreen · echte Screenshots',
+              color: 'cyan',
+            },
+            {
               href: PM_DEMO_URL,
               label: 'PM Demo-Script direkt öffnen',
-              sub: 'Reto & Peter · 13 Szenen · DE/EN',
+              sub: 'Reto & Peter · 11 Szenen · DE/EN',
               color: 'purple',
             },
             {
