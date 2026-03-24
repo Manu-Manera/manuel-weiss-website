@@ -169,10 +169,152 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 
 @media print {
   body { background: white; }
-  .lang-switcher { display: none; }
+  .lang-switcher, #edit-toolbar { display: none; }
   .hero, .scene-num-badge, .box-story .box-header, .box-say .box-header, .box-click .box-header, .box-peter .box-header, .box-context .box-header, .box-impact .box-header, .qr-header, .closing { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .scene { box-shadow: none; break-inside: avoid; }
 }
+
+/* ════════════════════════════════════════
+   EDIT MODE
+════════════════════════════════════════ */
+#edit-toolbar {
+  position: fixed;
+  top: 56px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.97);
+  border: 1px solid var(--gray-300);
+  border-radius: 30px;
+  padding: 4px 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  backdrop-filter: blur(8px);
+  font-family: 'Inter', sans-serif;
+}
+#edit-toggle-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border: none; background: transparent;
+  border-radius: 20px; font-size: 13px; font-weight: 600;
+  font-family: inherit; cursor: pointer; color: var(--gray-500);
+  transition: all 0.18s;
+}
+#edit-toggle-btn:hover { background: var(--gray-200); color: var(--gray-900); }
+.edit-mode-active #edit-toggle-btn { background: #fee2e2; color: #dc2626; }
+.edit-actions-btn {
+  padding: 5px 12px; border: none; border-radius: 16px;
+  font-size: 12px; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: all 0.18s; white-space: nowrap;
+}
+.edit-save-btn  { background: #dcfce7; color: #166534; }
+.edit-save-btn:hover  { background: #bbf7d0; }
+.edit-reset-btn { background: var(--gray-100); color: var(--gray-500); }
+.edit-reset-btn:hover { background: var(--gray-200); color: var(--gray-700); }
+#edit-status {
+  font-size: 11px; font-weight: 600; color: #16a34a;
+  padding: 0 6px; display: none;
+}
+#edit-unsaved {
+  font-size: 11px; font-weight: 600; color: #d97706;
+  padding: 0 4px; display: none;
+}
+
+/* Drag handle */
+.edit-mode-active .scene-num-badge {
+  cursor: grab;
+  user-select: none;
+}
+.edit-mode-active .scene-num-badge:active { cursor: grabbing; }
+.edit-mode-active .scene-num-badge::before {
+  content: '⠿';
+  display: block;
+  font-size: 14px;
+  opacity: 0.45;
+  margin-bottom: 4px;
+  line-height: 1;
+}
+.edit-mode-active .scene-num-badge:hover::before { opacity: 1; }
+
+/* Scene drag states */
+.scene.scene-dragging {
+  opacity: 0.35;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+}
+.scene.scene-drag-over-top {
+  border-top: 3px solid var(--teal);
+  margin-top: -1px;
+}
+.scene.scene-drag-over-bottom {
+  border-bottom: 3px solid var(--teal);
+  margin-bottom: -1px;
+}
+
+/* Editable text */
+.edit-mode-active [contenteditable] {
+  border-radius: 3px;
+  outline: none;
+  cursor: text;
+  transition: background 0.15s, box-shadow 0.15s;
+  min-width: 4px;
+}
+.edit-mode-active [contenteditable]:hover {
+  background: rgba(13,127,160,0.07) !important;
+  box-shadow: 0 0 0 1px rgba(13,127,160,0.2);
+}
+.edit-mode-active [contenteditable]:focus {
+  background: rgba(13,127,160,0.11) !important;
+  box-shadow: 0 0 0 2px rgba(13,127,160,0.3);
+}
+/* Language badge for editable spans */
+.edit-mode-active [contenteditable][data-lang]::before {
+  content: attr(data-lang);
+  display: inline-block;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
+  background: rgba(13,127,160,0.15); color: var(--teal);
+  border-radius: 3px; padding: 1px 4px; margin-right: 4px;
+  vertical-align: middle; pointer-events: none;
+  font-style: normal;
+}
+
+/* Step delete button */
+.step-delete-btn {
+  border: none; background: transparent;
+  color: #dc2626; font-size: 16px; line-height: 1;
+  cursor: pointer; padding: 2px 6px; border-radius: 4px;
+  margin-left: 6px; flex-shrink: 0;
+  opacity: 0; transition: opacity 0.15s, background 0.15s;
+}
+.click-steps li:hover .step-delete-btn,
+.click-steps li:focus-within .step-delete-btn { opacity: 1; }
+.step-delete-btn:hover { background: #fee2e2; }
+
+/* Add step button */
+.step-add-btn {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  margin-top: 8px; padding: 8px 14px;
+  border: 2px dashed #b6dfc8; border-radius: 6px;
+  background: transparent; color: var(--green);
+  font-size: 13px; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: all 0.18s;
+}
+.step-add-btn:hover { background: var(--green-light); border-color: var(--green); }
+
+/* Editable scene title area */
+.edit-mode-active .scene-title-area { background: #f0f8ff; }
+.edit-mode-active .scene-title-area [contenteditable] {
+  display: block;
+  padding: 2px 4px;
+}
+/* Edit mode hint strip */
+#edit-hint {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;
+  background: rgba(13,127,160,0.93); color: white;
+  font-size: 12px; font-weight: 500; font-family: 'Inter', sans-serif;
+  text-align: center; padding: 8px 16px; letter-spacing: 0.02em;
+  display: none;
+}
+.edit-mode-active #edit-hint { display: block; }
 @media (max-width: 600px) {
   .hero-title { font-size: 30px; }
   .agenda-grid { grid-template-columns: 1fr; }
@@ -1226,12 +1368,402 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
   <span style="font-size:12px;display:block;margin-top:4px;">trial5.tempus-resource.com/slot4 · <span class="t-de">Projekte müssen auf „Allocations" stehen</span><span class="t-en">Projects must be set to "Allocations"</span></span>
 </div>
 
+<div id="edit-hint">
+  ✏️ Bearbeitungsmodus aktiv — Texte direkt anklicken und bearbeiten · Szenen am Nummern-Badge ziehen zum Umsortieren · 💾 Speichern nicht vergessen
+</div>
+
 <script>
+/* ═══════════════════════════════════════════════════
+   LANGUAGE SWITCHER
+═══════════════════════════════════════════════════ */
 function setLang(lang) {
   document.documentElement.classList.remove('lang-de','lang-en');
   document.documentElement.classList.add('lang-' + lang);
   document.getElementById('btn-de').classList.toggle('active', lang==='de');
   document.getElementById('btn-en').classList.toggle('active', lang==='en');
+  // Re-init editable spans when language changes in edit mode
+  if (editMode) {
+    clearContentEditable();
+    initInlineEdit();
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   EDIT MODE ENGINE
+═══════════════════════════════════════════════════ */
+const STORAGE_KEY = 'tempus-demo-pm-v1';
+let editMode = false;
+let dragSrc = null;
+let hasUnsavedChanges = false;
+
+/* ── Bootstrap ─────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  loadSaved();
+  createEditToolbar();
+
+  // Warn before leaving with unsaved changes
+  window.addEventListener('beforeunload', (e) => {
+    if (editMode && hasUnsavedChanges) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+});
+
+/* ── Toolbar ────────────────────────────────────── */
+function createEditToolbar() {
+  const bar = document.createElement('div');
+  bar.id = 'edit-toolbar';
+  bar.innerHTML = `
+    <button id="edit-toggle-btn" onclick="toggleEditMode()">
+      <span id="edit-icon">✏️</span>
+      <span id="edit-label">Bearbeiten</span>
+    </button>
+    <div id="edit-extra" style="display:none;align-items:center;gap:6px;">
+      <button class="edit-actions-btn edit-save-btn" onclick="saveAll()">💾 Speichern</button>
+      <button class="edit-actions-btn edit-reset-btn" onclick="resetAll()">↩ Reset</button>
+    </div>
+    <span id="edit-unsaved">● ungespeichert</span>
+    <span id="edit-status">✓ Gespeichert</span>
+  `;
+  document.body.appendChild(bar);
+}
+
+/* ── Toggle ─────────────────────────────────────── */
+function toggleEditMode() {
+  editMode = !editMode;
+  document.body.classList.toggle('edit-mode-active', editMode);
+
+  const extra  = document.getElementById('edit-extra');
+  const label  = document.getElementById('edit-label');
+  const icon   = document.getElementById('edit-icon');
+
+  if (editMode) {
+    label.textContent = 'Fertig';
+    icon.textContent  = '✕';
+    extra.style.display = 'flex';
+    initDrag();
+    initInlineEdit();
+    initClickStepEditing();
+    hasUnsavedChanges = false;
+    setUnsaved(false);
+  } else {
+    // Check unsaved before exiting
+    if (hasUnsavedChanges &&
+        !confirm('Nicht gespeicherte Änderungen verwerfen und Bearbeitungsmodus beenden?')) {
+      editMode = true;
+      return;
+    }
+    label.textContent = 'Bearbeiten';
+    icon.textContent  = '✏️';
+    extra.style.display = 'none';
+    clearContentEditable();
+    removeDragListeners();
+    removeStepButtons();
+    hasUnsavedChanges = false;
+    setUnsaved(false);
+  }
+}
+
+function setUnsaved(state) {
+  hasUnsavedChanges = state;
+  const el = document.getElementById('edit-unsaved');
+  if (el) el.style.display = state ? 'inline' : 'none';
+}
+
+/* ═══════════════════════════════════════════════════
+   INLINE TEXT EDITING
+═══════════════════════════════════════════════════ */
+function initInlineEdit() {
+  const lang = document.documentElement.classList.contains('lang-de') ? 'de' : 'en';
+
+  // 1. Language-specific text spans inside scenes
+  document.querySelectorAll(`.scene .t-${lang}`).forEach(el => {
+    el.contentEditable = 'true';
+    el.spellcheck = false;
+    el.setAttribute('data-lang', lang.toUpperCase());
+    el.addEventListener('input', markUnsaved);
+    el.addEventListener('keydown', preventEnterIfNotWanted);
+  });
+
+  // 2. click-path spans (monospace path labels) — language-independent
+  document.querySelectorAll('.scene .click-path').forEach(el => {
+    el.contentEditable = 'true';
+    el.spellcheck = false;
+    el.addEventListener('input', markUnsaved);
+  });
+
+  // 3. Scene header fields (title, act, subtitle) — contain t-de/t-en spans handled above
+  // But also the transition div (contains t-de/t-en spans handled above)
+}
+
+function clearContentEditable() {
+  document.querySelectorAll('[contenteditable]').forEach(el => {
+    el.removeAttribute('contenteditable');
+    el.removeAttribute('spellcheck');
+    el.removeAttribute('data-lang');
+    el.removeEventListener('input', markUnsaved);
+    el.removeEventListener('keydown', preventEnterIfNotWanted);
+  });
+}
+
+function markUnsaved() {
+  setUnsaved(true);
+}
+
+function preventEnterIfNotWanted(e) {
+  // Allow Enter in multi-line box bodies, block in title-like fields
+  const isTitle = this.closest('.scene-title, .scene-act, .scene-subtitle, .box-icon');
+  if (isTitle && e.key === 'Enter') e.preventDefault();
+}
+
+/* ═══════════════════════════════════════════════════
+   DRAG & DROP SCENE REORDERING
+═══════════════════════════════════════════════════ */
+function initDrag() {
+  document.querySelectorAll('.scene').forEach(scene => {
+    scene.setAttribute('draggable', 'true');
+    scene.addEventListener('dragstart',  onDragStart);
+    scene.addEventListener('dragover',   onDragOver);
+    scene.addEventListener('dragleave',  onDragLeave);
+    scene.addEventListener('drop',       onDrop);
+    scene.addEventListener('dragend',    onDragEnd);
+  });
+}
+
+function removeDragListeners() {
+  document.querySelectorAll('.scene').forEach(scene => {
+    scene.removeAttribute('draggable');
+    scene.removeEventListener('dragstart',  onDragStart);
+    scene.removeEventListener('dragover',   onDragOver);
+    scene.removeEventListener('dragleave',  onDragLeave);
+    scene.removeEventListener('drop',       onDrop);
+    scene.removeEventListener('dragend',    onDragEnd);
+  });
+}
+
+function onDragStart(e) {
+  // Only start drag when initiating from the num-badge (drag handle area)
+  if (!e.target.closest('.scene-num-badge')) {
+    e.preventDefault();
+    return;
+  }
+  dragSrc = this;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+  setTimeout(() => this.classList.add('scene-dragging'), 0);
+}
+
+function onDragOver(e) {
+  if (!dragSrc || dragSrc === this) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  // Show top/bottom indicator based on mouse position
+  const rect = this.getBoundingClientRect();
+  const mid  = rect.top + rect.height / 2;
+  this.classList.remove('scene-drag-over-top', 'scene-drag-over-bottom');
+  this.classList.add(e.clientY < mid ? 'scene-drag-over-top' : 'scene-drag-over-bottom');
+}
+
+function onDragLeave() {
+  this.classList.remove('scene-drag-over-top', 'scene-drag-over-bottom');
+}
+
+function onDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  this.classList.remove('scene-drag-over-top', 'scene-drag-over-bottom');
+  if (!dragSrc || dragSrc === this) return;
+
+  const parent = this.parentNode;
+  const rect   = this.getBoundingClientRect();
+  if (e.clientY < rect.top + rect.height / 2) {
+    parent.insertBefore(dragSrc, this);
+  } else {
+    parent.insertBefore(dragSrc, this.nextSibling);
+  }
+  renumberScenes();
+  setUnsaved(true);
+}
+
+function onDragEnd() {
+  this.classList.remove('scene-dragging');
+  document.querySelectorAll('.scene').forEach(s => {
+    s.classList.remove('scene-drag-over-top', 'scene-drag-over-bottom');
+  });
+  dragSrc = null;
+}
+
+function renumberScenes() {
+  document.querySelectorAll('.scene').forEach((scene, i) => {
+    const el = scene.querySelector('.scene-num-big');
+    if (el) el.textContent = String(i + 1).padStart(2, '0');
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   CLICK STEP CRUD
+═══════════════════════════════════════════════════ */
+function initClickStepEditing() {
+  document.querySelectorAll('.click-steps').forEach(ul => {
+    ul.querySelectorAll('li').forEach(li => attachDeleteBtn(li, ul));
+    attachAddBtn(ul);
+  });
+}
+
+function removeStepButtons() {
+  document.querySelectorAll('.step-delete-btn, .step-add-btn').forEach(el => el.remove());
+}
+
+function attachDeleteBtn(li, ul) {
+  if (li.querySelector('.step-delete-btn')) return;
+  const btn = document.createElement('button');
+  btn.className    = 'step-delete-btn';
+  btn.type         = 'button';
+  btn.textContent  = '×';
+  btn.title        = 'Schritt löschen';
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (confirm('Diesen Schritt löschen?')) {
+      li.remove();
+      renumberSteps(ul);
+      setUnsaved(true);
+    }
+  });
+  li.appendChild(btn);
+}
+
+function attachAddBtn(ul) {
+  // Remove existing to avoid duplicates
+  const existing = ul.parentNode.querySelector('.step-add-btn');
+  if (existing) existing.remove();
+
+  const btn = document.createElement('button');
+  btn.type      = 'button';
+  btn.className = 'step-add-btn';
+  btn.textContent = '＋ Schritt hinzufügen';
+  btn.addEventListener('click', () => addClickStep(ul));
+  ul.after(btn);
+}
+
+function addClickStep(ul) {
+  const lang = document.documentElement.classList.contains('lang-de') ? 'de' : 'en';
+  const num  = ul.querySelectorAll('li').length + 1;
+  const placeholder = lang === 'de'
+    ? 'Neuer Schritt — hier klicken und Text eingeben'
+    : 'New step — click here to edit';
+
+  const li = document.createElement('li');
+  li.innerHTML = `
+    <div class="click-step-num">${num}</div>
+    <div>
+      <span class="t-${lang}" contenteditable="true" spellcheck="false"
+            data-lang="${lang.toUpperCase()}"
+            style="display:inline;min-width:40px">${placeholder}</span>
+    </div>
+  `;
+  li.querySelector('[contenteditable]').addEventListener('input', markUnsaved);
+  attachDeleteBtn(li, ul);
+  ul.appendChild(li);
+  setUnsaved(true);
+
+  // Focus and select all text
+  const editable = li.querySelector('[contenteditable]');
+  setTimeout(() => {
+    editable.focus();
+    const range = document.createRange();
+    range.selectNodeContents(editable);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+  }, 50);
+}
+
+function renumberSteps(ul) {
+  ul.querySelectorAll('li').forEach((li, i) => {
+    const n = li.querySelector('.click-step-num');
+    if (n) n.textContent = i + 1;
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   SAVE / LOAD (localStorage)
+═══════════════════════════════════════════════════ */
+function saveAll() {
+  const scenes = [];
+  document.querySelectorAll('.scene').forEach(scene => {
+    const clone = scene.cloneNode(true);
+    // Strip edit-only artefacts
+    clone.querySelectorAll('.step-delete-btn, .step-add-btn').forEach(el => el.remove());
+    clone.querySelectorAll('[contenteditable]').forEach(el => {
+      el.removeAttribute('contenteditable');
+      el.removeAttribute('spellcheck');
+      el.removeAttribute('data-lang');
+    });
+    scenes.push(clone.outerHTML);
+  });
+
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ scenes, ts: Date.now() }));
+    setUnsaved(false);
+    // Flash "saved" indicator
+    const status = document.getElementById('edit-status');
+    status.style.display = 'inline';
+    setTimeout(() => { status.style.display = 'none'; }, 2500);
+  } catch (e) {
+    alert('Speichern fehlgeschlagen (localStorage voll?). Bitte Seite exportieren.');
+  }
+}
+
+function loadSaved() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (!Array.isArray(data.scenes) || !data.scenes.length) return;
+
+    const page    = document.querySelector('.page');
+    const closing = page.querySelector('.closing');
+    if (!closing) return;
+
+    // Remove all current scenes
+    page.querySelectorAll('.scene').forEach(s => s.remove());
+
+    // Re-insert saved scenes before closing section
+    const frag = document.createDocumentFragment();
+    data.scenes.forEach(html => {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      if (tmp.firstElementChild) frag.appendChild(tmp.firstElementChild);
+    });
+    page.insertBefore(frag, closing);
+
+    // Show a subtle "restored" banner (auto-hides)
+    showRestoredBanner(data.ts);
+  } catch (e) {
+    console.warn('Could not restore saved demo data:', e);
+  }
+}
+
+function showRestoredBanner(ts) {
+  const banner = document.createElement('div');
+  const when   = ts ? new Date(ts).toLocaleString('de-CH') : '';
+  banner.style.cssText = [
+    'position:fixed', 'bottom:12px', 'left:50%', 'transform:translateX(-50%)',
+    'z-index:9999', 'background:rgba(22,163,74,0.9)', 'color:white',
+    'font-size:12px', 'font-weight:600', 'font-family:Inter,sans-serif',
+    'padding:8px 20px', 'border-radius:100px', 'box-shadow:0 4px 16px rgba(0,0,0,0.2)',
+    'pointer-events:none'
+  ].join(';');
+  banner.textContent = `✓ Gespeicherte Version geladen (${when})`;
+  document.body.appendChild(banner);
+  setTimeout(() => banner.remove(), 3500);
+}
+
+function resetAll() {
+  if (confirm('Alle eigenen Änderungen löschen und die Original-Version wiederherstellen?')) {
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  }
 }
 </script>
 </body>
