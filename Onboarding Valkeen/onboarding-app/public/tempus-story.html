@@ -97,15 +97,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--navy);font-fam
 .speech-block{
   display:flex;gap:14px;align-items:flex-start;margin-bottom:16px;opacity:0;
   transform:translateY(12px);transition:opacity .4s,transform .4s;
+  max-width:92%;
 }
 .speech-block.visible{opacity:1;transform:none}
+.speech-block.reto{flex-direction:row-reverse;margin-left:auto;text-align:right}
+.speech-block.peter{margin-right:auto}
 .speech-avatar{
-  width:44px;height:44px;border-radius:50%;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--font-head);font-size:16px;font-weight:800;position:relative;
+  width:48px;height:48px;border-radius:50%;flex-shrink:0;
+  position:relative;overflow:visible;
+  box-shadow:0 2px 12px rgba(0,0,0,.3);
 }
-.speech-avatar.reto{background:linear-gradient(135deg,var(--teal),var(--teal-glow));color:white}
-.speech-avatar.peter{background:linear-gradient(135deg,var(--purple),var(--purple-light));color:white}
+.speech-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+.speech-avatar.reto{border:2px solid var(--teal)}
+.speech-avatar.peter{border:2px solid var(--purple-light)}
 
 /* Equalizer bars */
 .eq{
@@ -134,6 +138,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--navy);font-fam
   border-radius:4px 16px 16px 16px;padding:12px 16px;
   font-size:15px;line-height:1.8;color:rgba(255,255,255,.88);
   max-width:440px;min-height:28px;
+}
+.speech-block.reto .speech-bubble{
+  border-radius:16px 4px 16px 16px;text-align:left;
 }
 .speech-block.peter .speech-bubble{
   background:rgba(124,58,237,.08);border-color:rgba(124,58,237,.2);
@@ -235,13 +242,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--navy);font-fam
   background:linear-gradient(135deg,rgba(255,255,255,.02) 0%,transparent 60%);
 }
 .char-avatar-big{
-  width:64px;height:64px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--font-head);font-size:24px;font-weight:800;
-  margin-bottom:18px;
+  width:80px;height:80px;border-radius:50%;
+  overflow:hidden;margin-bottom:18px;
+  box-shadow:0 4px 20px rgba(0,0,0,.3);
 }
-.char-reto .char-avatar-big{background:linear-gradient(135deg,var(--teal),var(--teal-glow));color:white}
-.char-peter .char-avatar-big{background:linear-gradient(135deg,var(--purple),var(--purple-light));color:white}
+.char-avatar-big img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.char-reto .char-avatar-big{border:3px solid var(--teal)}
+.char-peter .char-avatar-big{border:3px solid var(--purple-light)}
 .char-name{font-family:var(--font-head);font-size:20px;font-weight:700;margin-bottom:4px}
 .char-role{font-size:12px;color:var(--cyan);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
 .char-peter .char-role{color:var(--purple-light)}
@@ -293,6 +300,49 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--navy);font-fam
 .tag-rose{background:rgba(244,63,94,.12);color:#fda4af;border:1px solid rgba(244,63,94,.25)}
 .tag-green{background:rgba(16,185,129,.12);color:#6ee7b7;border:1px solid rgba(16,185,129,.25)}
 .tag-purple{background:rgba(124,58,237,.12);color:#c4b5fd;border:1px solid rgba(124,58,237,.25)}
+.tag-blue{background:rgba(59,130,246,.12);color:#93c5fd;border:1px solid rgba(59,130,246,.25)}
+
+/* Video-style animated slideshow */
+.video-slideshow{position:relative;width:100%;aspect-ratio:16/10;overflow:hidden;border-radius:0 0 14px 14px}
+.video-slideshow img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;animation:vidFrame 12s infinite}
+.video-slideshow img:nth-child(1){animation-delay:0s}
+.video-slideshow img:nth-child(2){animation-delay:3s}
+.video-slideshow img:nth-child(3){animation-delay:6s}
+.video-slideshow img:nth-child(4){animation-delay:9s}
+@keyframes vidFrame{
+  0%{opacity:0;transform:scale(1.02)}
+  5%{opacity:1;transform:scale(1)}
+  25%{opacity:1;transform:scale(1)}
+  30%{opacity:0;transform:scale(.98)}
+  100%{opacity:0}
+}
+.video-slideshow .vid-cursor{
+  position:absolute;width:20px;height:20px;z-index:5;pointer-events:none;
+  filter:drop-shadow(0 0 4px rgba(0,0,0,.5));
+  animation:vidCursorMove 12s infinite;
+}
+@keyframes vidCursorMove{
+  0%,5%{top:35%;left:42%;opacity:1}
+  20%{top:35%;left:42%;opacity:1}
+  25%{top:25%;left:22%;opacity:1}
+  30%,35%{top:25%;left:22%;opacity:1}
+  50%{top:14%;left:22%;opacity:1}
+  55%,60%{top:14%;left:22%;opacity:1}
+  75%{top:14%;left:22%;opacity:1}
+  80%{top:18%;left:38%;opacity:1}
+  95%{top:18%;left:38%;opacity:1}
+  100%{top:35%;left:42%;opacity:0}
+}
+.video-label{
+  position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:10;
+  background:rgba(10,15,30,.9);border:1px solid var(--teal);
+  border-radius:100px;padding:5px 16px;font-size:11px;font-weight:600;
+  font-family:var(--font-head);color:var(--cyan);letter-spacing:.06em;
+  display:flex;align-items:center;gap:8px;
+  animation:vidLabelPulse 3s ease-in-out infinite;
+}
+.video-label::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--rose);animation:pulse 1.5s infinite}
+@keyframes vidLabelPulse{0%,100%{opacity:.8}50%{opacity:1}}
 
 /* Browser mockup */
 .demo-screen{position:relative}
@@ -474,7 +524,7 @@ body::before{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/></svg>
       Geschichte starten
     </button>
-    <p class="opening-duration">ca. 45–60 Minuten · 18 Szenen · interaktiv</p>
+    <p class="opening-duration">ca. 45–60 Minuten · 19 Szenen · interaktiv</p>
   </div>
 </div>
 
@@ -510,14 +560,14 @@ body::before{
   <div class="chars-wrap">
     <div class="chars-inner">
       <div class="char-card char-reto">
-        <div class="char-avatar-big">R</div>
+        <div class="char-avatar-big"><img src="tempus-shots/reto-avatar.png" alt="Reto Renner"></div>
         <div class="char-name">Reto Renner</div>
         <div class="char-role">Project Manager · Tempus-Profi</div>
         <p class="char-desc">Reto leitet 6 parallele Projekte — und verliert keins davon aus dem Blick. Heute zeigt er, wie.</p>
         <span class="char-trait">Ruhig. Datengetrieben. Immer einen Klick voraus.</span>
       </div>
       <div class="char-card char-peter">
-        <div class="char-avatar-big">P</div>
+        <div class="char-avatar-big"><img src="tempus-shots/peter-avatar.png" alt="Peter Rieser"></div>
         <div class="char-name">Peter Rieser</div>
         <div class="char-role">Bereichsleiter · Skeptiker</div>
         <p class="char-desc">Peter fragt die unbequemen Fragen — genau die, die auch Ihre Kunden stellen werden. Heute wird er überzeugt.</p>
@@ -543,14 +593,14 @@ body::before{
         <span class="tag tag-gold">8 Kacheln</span>
       </div>
       <p class="demo-body">
-        Peter betritt Retos Bildschirm. Er erwartet eine Folienschlacht. Stattdessen sieht er ein Dashboard — <strong>acht Kacheln</strong>, jede ein anderes Werkzeug, alle auf denselben Daten.
+        Peter ist im Teams-Call mit Reto und schaut ihm über die Schulter. Er erwartet eine Folienschlacht. Stattdessen teilt Reto seinen Bildschirm — und Peter sieht ein Dashboard: <strong>acht Kacheln</strong>, jede ein anderes Werkzeug, alle auf denselben Daten.
       </p>
       <div class="speech-block reto" data-speaker="reto" data-text="Das hier ist Tempus. Alles, was du siehst, ist in Echtzeit. Keine Exports, keine Doppelführung.">
-        <div class="speech-avatar reto">R<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar reto"><img src="tempus-shots/reto-avatar.png" alt="Reto"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
       <div class="speech-block peter" data-speaker="peter" data-text="Und das hier ist wirklich alles auf einem System?">
-        <div class="speech-avatar peter">P<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar peter"><img src="tempus-shots/peter-avatar.png" alt="Peter"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
     </div>
@@ -582,10 +632,10 @@ body::before{
         <span class="tag tag-gold">Create Project</span>
       </div>
       <p class="demo-body">
-        Reto öffnet Project Management. 220 Projekte — Stardust ist dabei. Er klickt auf <strong>Create Project</strong>. In unter einer Minute existiert der steuerbare Rahmen.
+        Reto klickt auf dem Dashboard auf das kleine <strong>+</strong> neben „Projects". Projektname: Stardust. Start- und Enddatum. Fertig. <strong>30 Sekunden</strong> — und der steuerbare Rahmen existiert.
       </p>
-      <div class="speech-block reto" data-speaker="reto" data-text="Stardust ist das Projekt. Ich brauch nur einen Namen, Start- und Enddatum. Der Rest kommt.">
-        <div class="speech-avatar reto">R<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+      <div class="speech-block reto" data-speaker="reto" data-text="Schau mal — ich brauch nur einen Namen, Start und Enddatum. Das war's. Kein Setup-Formular mit 40 Feldern.">
+        <div class="speech-avatar reto"><img src="tempus-shots/reto-avatar.png" alt="Reto"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
       <div class="demo-impact">
@@ -597,12 +647,17 @@ body::before{
       <div class="browser-frame">
         <div class="browser-bar">
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
-          <div class="browser-url">trial5.tempus-resource.com/slot4/projects/grid</div>
+          <div class="browser-url">trial5.tempus-resource.com/slot4/project/create</div>
         </div>
-        <img class="browser-screenshot" src="tempus-shots/02-project-list.png" alt="Project Management" loading="lazy">
+        <div class="video-slideshow">
+          <img src="tempus-shots/vid-01-dashboard.png" alt="Dashboard" loading="lazy">
+          <img src="tempus-shots/vid-03-create-dropdown.png" alt="Create Project Dropdown" loading="lazy">
+          <img src="tempus-shots/vid-04-create-empty.png" alt="Leeres Formular" loading="lazy">
+          <img src="tempus-shots/vid-05-stardust-filled.png" alt="Stardust ausgefüllt" loading="lazy">
+          <svg class="vid-cursor" viewBox="0 0 24 24" fill="white" stroke="#333" stroke-width="1"><path d="M5 3l14 9-6 1-4 7z"/></svg>
+          <div class="video-label">LIVE DEMO · Projekt anlegen</div>
+        </div>
       </div>
-      <div class="annotation" style="top:13%;left:2%">0/219 Projekte angezeigt</div>
-      <div class="annotation annotation-gold" style="top:13%;left:20%">Create Project → 1 Klick</div>
     </div>
   </div>
 </div>
@@ -621,14 +676,14 @@ body::before{
         <span class="tag tag-gold">Planned</span>
       </div>
       <p class="demo-body">
-        Stardust hat 13 Tasks — von Scoping bis Dokumentation. Reto weist jeder Phase Ressourcen zu. Nicht nur „wer macht mit", sondern <strong>wer trägt Verantwortung für was</strong>.
+        Reto scrollt durch Stardust: 13 Tasks, von Scoping bis Dokumentation. Peter sieht, wie Reto jeder Phase konkrete Personen zuweist. Nicht nur „wer macht mit", sondern <strong>wer trägt Verantwortung für was</strong>.
       </p>
       <div class="speech-block peter" data-speaker="peter" data-text="Kann ich auch sehen, wer gerade auf welcher Phase arbeitet?">
-        <div class="speech-avatar peter">P<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar peter"><img src="tempus-shots/peter-avatar.png" alt="Peter"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
       <div class="speech-block reto" data-speaker="reto" data-text="Ja. Und wie viel — auf Task-Ebene, nicht nur auf Projektebene.">
-        <div class="speech-avatar reto">R<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar reto"><img src="tempus-shots/reto-avatar.png" alt="Reto"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
     </div>
@@ -660,10 +715,10 @@ body::before{
         <span class="tag tag-gold">Checkout</span>
       </div>
       <p class="demo-body">
-        Reto klickt auf <strong>Checkout</strong> — der Plan ist jetzt exklusiv bearbeitbar. Er ändert Stunden auf Task-Ebene. Dann wechselt er zu <strong>Actual</strong>: echte Ist-Zahlen aus dem Timesheet.
+        „Schau her", sagt Reto und klickt auf <strong>Checkout</strong>. Der Plan ist jetzt exklusiv für ihn bearbeitbar. Er ändert Stunden auf Task-Ebene, dann wechselt er im Dropdown zu <strong>Actual</strong> — echte Ist-Zahlen aus dem Timesheet, live.
       </p>
-      <div class="speech-block reto" data-speaker="reto" data-text="Planwerte sind Absicht. Ist-Werte sind Wahrheit. Beide in einem Klick — niemand gibt etwas doppelt ein.">
-        <div class="speech-avatar reto">R<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+      <div class="speech-block reto" data-speaker="reto" data-text="Planwerte sind Absicht. Ist-Werte sind Wahrheit. Beides in einem Dropdown — ohne dass jemand etwas doppelt eingibt.">
+        <div class="speech-avatar reto"><img src="tempus-shots/reto-avatar.png" alt="Reto"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
       <div class="demo-impact">
@@ -698,14 +753,14 @@ body::before{
         <span class="tag tag-green">Synchronisation</span>
       </div>
       <p class="demo-body">
-        Die häufigste Frage: <strong>„Muss ich Stunden doppelt eingeben?"</strong> Nein. Tempus synchronisiert automatisch aus dem Timesheet Management. Erfasste Stunden fliessen direkt in die Actual-Werte.
+        Peter unterbricht: „Woher kommen die Ist-Zahlen?" Reto öffnet das <strong>Timesheet Management</strong>. Mitarbeiter buchen dort ihre Stunden — und die fliessen automatisch in die Actual-Werte. <strong>Keine Doppelerfassung.</strong>
       </p>
       <div class="speech-block peter" data-speaker="peter" data-text="Das heisst, die Mitarbeiter buchen ihre Stunden einmal — und ich sehe sie automatisch im Projekt?">
-        <div class="speech-avatar peter">P<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar peter"><img src="tempus-shots/peter-avatar.png" alt="Peter"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
       <div class="speech-block reto" data-speaker="reto" data-text="Genau. Eine Eingabe, überall verfügbar. Kein Copy-Paste, keine Versöhnung am Monatsende.">
-        <div class="speech-avatar reto">R<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar reto"><img src="tempus-shots/reto-avatar.png" alt="Reto"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
       <div class="demo-impact">
@@ -741,14 +796,14 @@ body::before{
         <span class="tag tag-gold">Assignment Lock</span>
       </div>
       <p class="demo-body">
-        Reto öffnet das <strong>Project Allocation Grid</strong> vom Dashboard. Default Mode: alle Projekte, alle Ressourcen, alle Zeiträume — ein Screen. Er setzt Start/End und bearbeitet ein Assignment. <strong>Nur dieses Assignment wird gesperrt</strong> — nicht das ganze Projekt. Andere PMs arbeiten parallel weiter.
+        Reto wechselt zurück zum Dashboard und öffnet das <strong>Project Allocation Grid</strong>. Default Mode: alle Projekte, alle Ressourcen, alle Zeiträume — ein Screen. Er bearbeitet ein Assignment. Peter merkt: <strong>Nur dieses eine Assignment wird gesperrt</strong> — andere PMs arbeiten parallel weiter.
       </p>
       <div class="speech-block peter" data-speaker="peter" data-text="Du hast Stardust — aber du sagtest, du hast noch fünf andere. Wie machst du das, ohne den Überblick zu verlieren?">
-        <div class="speech-avatar peter">P<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar peter"><img src="tempus-shots/peter-avatar.png" alt="Peter"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
       <div class="speech-block reto" data-speaker="reto" data-text="Dieses Grid hat drei Modi. Ich zeig dir alle drei in einer Minute.">
-        <div class="speech-avatar reto">R<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar reto"><img src="tempus-shots/reto-avatar.png" alt="Reto"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
       <div class="demo-impact">
@@ -784,14 +839,14 @@ body::before{
         <span class="tag tag-gold">Eine Person → alle Projekte</span>
       </div>
       <p class="demo-body">
-        Reto wechselt in den <strong>Resource Mode</strong> und wählt Simon Wespi. Sofort sieht Peter alle Projekte, auf denen Simon eingeplant ist — und dass April/Mai überbucht sind. <strong>Eine Person, alle Projekte, ein Blick.</strong>
+        „Jetzt wird's spannend", sagt Reto. Er wechselt in den <strong>Resource Mode</strong>, tippt „Simon Wespi" ein — und Peter sieht sofort: Simon ist auf fünf Projekten gleichzeitig. April und Mai sind rot. <strong>Überbucht.</strong>
       </p>
       <div class="speech-block peter" data-speaker="peter" data-text="Das ist eigentlich was ich immer wollte — sehen ob jemand schon überlastet ist, bevor ich ihm noch was drauflege.">
-        <div class="speech-avatar peter">P<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar peter"><img src="tempus-shots/peter-avatar.png" alt="Peter"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
       <div class="speech-block reto" data-speaker="reto" data-text="Genau. Faktenbasiert statt nach Gefühl — bevor du auch nur ein Gespräch geführt hast.">
-        <div class="speech-avatar reto">R<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar reto"><img src="tempus-shots/reto-avatar.png" alt="Reto"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
       <div class="demo-impact">
@@ -827,14 +882,14 @@ body::before{
         <span class="tag tag-rose">Cross-Projekt-Konflikte</span>
       </div>
       <p class="demo-body">
-        Im <strong>Project Mode</strong> sieht Reto alle Ressourcen eines Projekts auf einen Blick. Dann wechselt er zur <strong>Net Availability</strong>: Team-Auslastung pro Monat, prozentual. Überbuchungen werden sofort sichtbar — bevor jemand ausbrennt.
+        Letzter Modus: Reto wechselt zum <strong>Project Mode</strong> — ein Projekt, alle Ressourcen auf einen Blick. Dann klickt er auf <strong>Net Availability</strong>: Team-Auslastung pro Monat, prozentual. Wer überlastet ist, sieht man sofort.
       </p>
       <div class="speech-block peter" data-speaker="peter" data-text="Das passiert bei uns jede Woche. Aber wir merken es erst, wenn jemand ausbrennt.">
-        <div class="speech-avatar peter">P<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar peter"><img src="tempus-shots/peter-avatar.png" alt="Peter"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
       <div class="speech-block reto" data-speaker="reto" data-text="Drei Perspektiven, ein Grid — wer das Gesamtbild sieht, steuert besser. Bevor Gespräche nötig werden.">
-        <div class="speech-avatar reto">R<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar reto"><img src="tempus-shots/reto-avatar.png" alt="Reto"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
       <div class="demo-impact">
@@ -870,10 +925,10 @@ body::before{
         <span class="tag tag-green">Notes</span>
       </div>
       <p class="demo-body">
-        Alle Projekte und Ressourcen in einer editierbaren Tabelle. <strong>Heatmap</strong> zeigt wo es brennt. <strong>Notes</strong> geben Kontext. <strong>Quicklink</strong> direkt ins Projekt. Die meisten haben es täglich offen.
+        Reto öffnet den nächsten Screen: eine editierbare Tabelle mit allen Projekten und Ressourcen. <strong>Heatmap</strong> zeigt, wo es brennt. <strong>Notes</strong> geben Kontext. Peter sieht sofort, warum die meisten diesen Screen täglich offen haben.
       </p>
       <div class="speech-block reto" data-speaker="reto" data-text="Das haben die meisten täglich offen. Nicht weil sie müssen — sondern weil es so gut funktioniert.">
-        <div class="speech-avatar reto">R<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar reto"><img src="tempus-shots/reto-avatar.png" alt="Reto"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
       <div class="demo-impact">
@@ -909,14 +964,14 @@ body::before{
         <span class="tag tag-purple">What-if</span>
       </div>
       <p class="demo-body">
-        Reto zeigt seine <strong>gespeicherten Views</strong>: „Mein Team KW13", „Projekte Q2", „Überlastung IT". Jeder PM kann sich seine Sicht einrichten. Einmal konfiguriert — jeden Montag ein Klick.
+        „Und wenn ich das nicht jedes Mal neu filtern will?" Reto zeigt seine <strong>gespeicherten Views</strong>: „Mein Team KW13", „Projekte Q2", „Überlastung IT". Einmal konfiguriert — jeden Montag ein Klick.
       </p>
       <div class="speech-block peter" data-speaker="peter" data-text="Kann ich auch Szenarien durchspielen? Was passiert, wenn Projekt X sich um 4 Wochen verschiebt?">
-        <div class="speech-avatar peter">P<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar peter"><img src="tempus-shots/peter-avatar.png" alt="Peter"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
       <div class="speech-block reto" data-speaker="reto" data-text="Dafür gibt es Tempus What-if. Parallel planen, vergleichen, erst dann übernehmen.">
-        <div class="speech-avatar reto">R<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar reto"><img src="tempus-shots/reto-avatar.png" alt="Reto"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
     </div>
@@ -948,14 +1003,14 @@ body::before{
         <span class="tag tag-green">Stakeholder</span>
       </div>
       <p class="demo-body">
-        Nicht jeder Stakeholder liest Zahlen-Grids. Tempus bietet eine <strong>Roadmap-Ansicht</strong> mit Gantt-Balken — perfekt für Steering Committees und Management-Updates. Projekte als Timeline, Meilensteine visuell.
+        „Mein CTO liest keine Zahlen-Grids", wirft Peter ein. Reto schmunzelt und öffnet die <strong>Roadmap-Ansicht</strong>: Gantt-Balken, Meilensteine, Projekte als Timeline — genau das, was ein Steering Committee sehen will.
       </p>
       <div class="speech-block peter" data-speaker="peter" data-text="Das ist genau was unser CTO immer verlangt — eine visuelle Übersicht über alle Projekte.">
-        <div class="speech-avatar peter">P<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar peter"><img src="tempus-shots/peter-avatar.png" alt="Peter"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
       <div class="speech-block reto" data-speaker="reto" data-text="Und er bekommt sie live — nicht als veraltete PowerPoint vom letzten Monat.">
-        <div class="speech-avatar reto">R<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar reto"><img src="tempus-shots/reto-avatar.png" alt="Reto"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
     </div>
@@ -985,10 +1040,10 @@ body::before{
         <span class="tag tag-rose">Plan vs. Actual</span>
       </div>
       <p class="demo-body">
-        Reto öffnet Report Management. Sieben Berichtstypen, konfigurierbar in 30 Sekunden. Der <strong>Plan vs. Actual Report</strong> zeigt sofort wo ein Projekt vom Kurs abweicht — auf Task- und Ressourcenebene.
+        Reto navigiert zum Report Management: sieben Berichtstypen, jeder in 30 Sekunden konfigurierbar. Er klickt auf den <strong>Plan vs. Actual Report</strong> — und Peter sieht sofort, wo Stardust vom Kurs abweicht.
       </p>
       <div class="speech-block reto" data-speaker="reto" data-text="Berichte sind nicht das Ende. Sie sind der Anfang der richtigen Gespräche.">
-        <div class="speech-avatar reto">R<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar reto"><img src="tempus-shots/reto-avatar.png" alt="Reto"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
     </div>
@@ -1020,14 +1075,14 @@ body::before{
         <span class="tag tag-gold">Visuell</span>
       </div>
       <p class="demo-body">
-        Der <strong>RAR2 Chart</strong> zeigt Marc mit 12h/Tag — rot. Stardust + Apollo gleichzeitig. Ein Report, der nicht nur die Zahlen zeigt, sondern die <strong>Geschichte dahinter</strong>.
+        Reto öffnet den <strong>RAR2 Chart</strong> und zeigt auf eine rote Spalte: Marc, 12h/Tag, Stardust und Apollo gleichzeitig. Ein Report, der nicht nur Zahlen liefert, sondern die <strong>Geschichte dahinter</strong> erzählt.
       </p>
       <div class="speech-block peter" data-speaker="peter" data-text="Kann ich diesen Chart direkt exportieren — für eine Präsentation?">
-        <div class="speech-avatar peter">P<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar peter"><img src="tempus-shots/peter-avatar.png" alt="Peter"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
       <div class="speech-block reto" data-speaker="reto" data-text="Klar. Aber meistens braucht man das nicht — die Stakeholder schauen direkt rein.">
-        <div class="speech-avatar reto">R<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar reto"><img src="tempus-shots/reto-avatar.png" alt="Reto"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
     </div>
@@ -1059,14 +1114,14 @@ body::before{
         <span class="tag tag-green">Kanban</span>
       </div>
       <p class="demo-body">
-        Das Management will keine Detail-Grids. Es will wissen: <strong>Welche Projekte laufen? Wie steht das Budget? Wo gibt es Risiken?</strong> Strategic Portfolio liefert genau das — mit Kanban, Gantt und Budget-Widgets.
+        Zum Abschluss zeigt Reto das Strategic Portfolio: <strong>Welche Projekte laufen? Wie steht das Budget? Wo gibt es Risiken?</strong> Kanban, Gantt, Budget-Widgets — alles, was ein CFO sehen will, auf einem Screen.
       </p>
       <div class="speech-block peter" data-speaker="peter" data-text="Das würde unserem CFO gefallen. Er fragt jede Woche nach einem Budget-Update.">
-        <div class="speech-avatar peter">P<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar peter"><img src="tempus-shots/peter-avatar.png" alt="Peter"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
       <div class="speech-block reto" data-speaker="reto" data-text="Er könnte es selbst nachschauen. Jederzeit. Live. Ohne dich zu fragen.">
-        <div class="speech-avatar reto">R<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-avatar reto"><img src="tempus-shots/reto-avatar.png" alt="Reto"><div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
     </div>
