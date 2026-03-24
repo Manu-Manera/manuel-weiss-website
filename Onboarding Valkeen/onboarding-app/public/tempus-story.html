@@ -444,7 +444,7 @@ body::before{
   Onboarding
 </a>
 
-<div id="slide-counter"><span id="cur">1</span> / <span id="tot">18</span></div>
+<div id="slide-counter"><span id="cur">1</span> / <span id="tot">19</span></div>
 <div id="timer">00:00</div>
 
 <button id="nav-prev" aria-label="Zurück">&#8592;</button>
@@ -728,20 +728,63 @@ body::before{
 </div>
 
 <!-- ═══════════════════════════════
-  SLIDE 9 — PROJECT ALLOCATION GRID
+  SLIDE 9 — PROJECT ALLOCATION GRID: DEFAULT MODE
 ═══════════════════════════════ -->
 <div class="slide s-demo" data-slide="8">
   <div class="demo-inner">
     <div class="demo-story">
-      <div class="demo-scene-num">Szene 06 · Project Allocation Grid</div>
-      <h2 class="demo-title">Simon Wespi<br>ist <em>überbucht</em>.</h2>
+      <div class="demo-scene-num">Szene 06a · Default Mode</div>
+      <h2 class="demo-title">Drei Perspektiven —<br>ein <em>Grid</em>.</h2>
       <div class="demo-tags">
-        <span class="tag tag-teal">Resource Mode</span>
-        <span class="tag tag-rose">Überlastung</span>
-        <span class="tag tag-gold">5 Projekte</span>
+        <span class="tag tag-blue">Project Allocation Grid</span>
+        <span class="tag tag-teal">Default Mode</span>
+        <span class="tag tag-gold">Assignment Lock</span>
       </div>
       <p class="demo-body">
-        Reto öffnet <strong>Resource Management</strong> und sucht Simon Wespi. Ein Klick auf seinen Namen öffnet die Allokationsübersicht — 5 Projekte, April/Mai überbucht, Juni entlastet.
+        Reto öffnet das <strong>Project Allocation Grid</strong> vom Dashboard. Default Mode: alle Projekte, alle Ressourcen, alle Zeiträume — ein Screen. Er setzt Start/End und bearbeitet ein Assignment. <strong>Nur dieses Assignment wird gesperrt</strong> — nicht das ganze Projekt. Andere PMs arbeiten parallel weiter.
+      </p>
+      <div class="speech-block peter" data-speaker="peter" data-text="Du hast Stardust — aber du sagtest, du hast noch fünf andere. Wie machst du das, ohne den Überblick zu verlieren?">
+        <div class="speech-avatar peter">P<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-bubble"></div>
+      </div>
+      <div class="speech-block reto" data-speaker="reto" data-text="Dieses Grid hat drei Modi. Ich zeig dir alle drei in einer Minute.">
+        <div class="speech-avatar reto">R<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
+        <div class="speech-bubble"></div>
+      </div>
+      <div class="demo-impact">
+        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Nicht das Projekt wird gesperrt — nur das spezifische Assignment.
+      </div>
+    </div>
+    <div class="demo-screen">
+      <div class="browser-frame">
+        <div class="browser-bar">
+          <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
+          <div class="browser-url">trial5.tempus-resource.com/slot4/projectAllocationGrid</div>
+        </div>
+        <img class="browser-screenshot" src="tempus-shots/03-stardust.png" alt="Default Mode — Alle Projekte und Ressourcen" loading="lazy">
+      </div>
+      <div class="annotation" style="top:8%;left:4%">Default Mode · Alle Projekte &amp; Ressourcen</div>
+      <div class="annotation annotation-gold" style="top:22%;right:4%">Nur das bearbeitete Assignment wird gesperrt</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+  SLIDE 10 — PROJECT ALLOCATION GRID: RESOURCE MODE
+═══════════════════════════════ -->
+<div class="slide s-demo" data-slide="9">
+  <div class="demo-inner">
+    <div class="demo-story">
+      <div class="demo-scene-num">Szene 06b · Resource Mode</div>
+      <h2 class="demo-title">Simon Wespi<br>ist <em>überbucht</em>.</h2>
+      <div class="demo-tags">
+        <span class="tag tag-green">Resource Mode</span>
+        <span class="tag tag-rose">Überlastung</span>
+        <span class="tag tag-gold">Eine Person → alle Projekte</span>
+      </div>
+      <p class="demo-body">
+        Reto wechselt in den <strong>Resource Mode</strong> und wählt Simon Wespi. Sofort sieht Peter alle Projekte, auf denen Simon eingeplant ist — und dass April/Mai überbucht sind. <strong>Eine Person, alle Projekte, ein Blick.</strong>
       </p>
       <div class="speech-block peter" data-speaker="peter" data-text="Das ist eigentlich was ich immer wollte — sehen ob jemand schon überlastet ist, bevor ich ihm noch was drauflege.">
         <div class="speech-avatar peter">P<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
@@ -751,6 +794,10 @@ body::before{
         <div class="speech-avatar reto">R<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
+      <div class="demo-impact">
+        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Wer das Gesamtbild sieht, steuert besser.
+      </div>
     </div>
     <div class="demo-screen">
       <div class="browser-frame">
@@ -758,7 +805,7 @@ body::before{
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
           <div class="browser-url">trial5.tempus-resource.com/slot4/resources/grid</div>
         </div>
-        <img class="browser-screenshot" src="tempus-shots/06-resource-mgmt.png" alt="Resource Mode" loading="lazy">
+        <img class="browser-screenshot" src="tempus-shots/06-resource-mgmt.png" alt="Resource Mode — Simon Wespi" loading="lazy">
       </div>
       <div class="annotation" style="top:14%;left:30%">Suche: „simon" → 1 Treffer</div>
       <div class="annotation annotation-gold" style="top:30%;left:8%">Simon Wespi · IT Department</div>
@@ -767,26 +814,26 @@ body::before{
 </div>
 
 <!-- ═══════════════════════════════
-  SLIDE 10 — CROSS-PROJEKT-KONFLIKTE (NEU)
+  SLIDE 10b — PROJECT ALLOCATION GRID: PROJECT MODE / NET AVAILABILITY
 ═══════════════════════════════ -->
-<div class="slide s-demo" data-slide="9">
+<div class="slide s-demo" data-slide="10">
   <div class="demo-inner">
     <div class="demo-story">
-      <div class="demo-scene-num">Szene 07 · Cross-Projekt-Konflikte</div>
-      <h2 class="demo-title">Marc =<br><em>12h/Tag</em>.</h2>
+      <div class="demo-scene-num">Szene 06c · Project Mode &amp; Net Availability</div>
+      <h2 class="demo-title">Konflikte erkennen,<br><em>bevor</em> sie kosten.</h2>
       <div class="demo-tags">
-        <span class="tag tag-rose">Konflikt</span>
-        <span class="tag tag-teal">Stardust + Apollo</span>
-        <span class="tag tag-gold">Sichtbar</span>
+        <span class="tag tag-purple">Project Mode</span>
+        <span class="tag tag-teal">Net Availability</span>
+        <span class="tag tag-rose">Cross-Projekt-Konflikte</span>
       </div>
       <p class="demo-body">
-        Der konkreteste Pain Point: <strong>Eine Person auf zu vielen Projekten</strong>. Im Net Availability Tab sieht Reto die Team-Auslastung auf einen Blick. Überbuchungen werden hier sofort sichtbar — prozentual, pro Monat.
+        Im <strong>Project Mode</strong> sieht Reto alle Ressourcen eines Projekts auf einen Blick. Dann wechselt er zur <strong>Net Availability</strong>: Team-Auslastung pro Monat, prozentual. Überbuchungen werden sofort sichtbar — bevor jemand ausbrennt.
       </p>
       <div class="speech-block peter" data-speaker="peter" data-text="Das passiert bei uns jede Woche. Aber wir merken es erst, wenn jemand ausbrennt.">
         <div class="speech-avatar peter">P<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
-      <div class="speech-block reto" data-speaker="reto" data-text="Mit Tempus siehst du das, bevor es passiert. Und du kannst direkt im Grid umplanen.">
+      <div class="speech-block reto" data-speaker="reto" data-text="Drei Perspektiven, ein Grid — wer das Gesamtbild sieht, steuert besser. Bevor Gespräche nötig werden.">
         <div class="speech-avatar reto">R<div class="eq paused"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div></div>
         <div class="speech-bubble"></div>
       </div>
@@ -799,23 +846,23 @@ body::before{
       <div class="browser-frame">
         <div class="browser-bar">
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
-          <div class="browser-url">trial5.tempus-resource.com/slot4/resources/grid</div>
+          <div class="browser-url">trial5.tempus-resource.com/slot4/resources/netAvailability</div>
         </div>
-        <img class="browser-screenshot" src="tempus-shots/07-net-availability.png" alt="Cross-Project Conflicts" loading="lazy">
+        <img class="browser-screenshot" src="tempus-shots/07-net-availability.png" alt="Project Mode &amp; Net Availability" loading="lazy">
       </div>
       <div class="annotation" style="top:8%;right:2%">Net Availability Tab aktiv</div>
-      <div class="annotation annotation-gold" style="top:24%;left:10%">Team-Toggle · % Allocations</div>
+      <div class="annotation annotation-gold" style="top:24%;left:10%">Team-Auslastung · % pro Monat</div>
     </div>
   </div>
 </div>
 
 <!-- ═══════════════════════════════
-  SLIDE 11 — BULK FLATGRID
+  SLIDE 12 — BULK FLATGRID
 ═══════════════════════════════ -->
-<div class="slide s-demo" data-slide="10">
+<div class="slide s-demo" data-slide="11">
   <div class="demo-inner">
     <div class="demo-story">
-      <div class="demo-scene-num">Szene 08 · Bulk Project Allocation Flatgrid</div>
+      <div class="demo-scene-num">Szene 07 · Bulk Project Allocation Flatgrid</div>
       <h2 class="demo-title">Das <em>beliebteste</em><br>Feature.</h2>
       <div class="demo-tags">
         <span class="tag tag-teal">Flatgrid</span>
@@ -849,12 +896,12 @@ body::before{
 </div>
 
 <!-- ═══════════════════════════════
-  SLIDE 12 — VIEWS & SZENARIEN
+  SLIDE 13 — VIEWS & SZENARIEN
 ═══════════════════════════════ -->
-<div class="slide s-demo" data-slide="11">
+<div class="slide s-demo" data-slide="12">
   <div class="demo-inner">
     <div class="demo-story">
-      <div class="demo-scene-num">Szene 09 · Views &amp; Szenarien</div>
+      <div class="demo-scene-num">Szene 08 · Views &amp; Szenarien</div>
       <h2 class="demo-title">Einmal einrichten,<br>jeden Montag <em>nutzen</em>.</h2>
       <div class="demo-tags">
         <span class="tag tag-teal">Saved Views</span>
@@ -888,12 +935,12 @@ body::before{
 </div>
 
 <!-- ═══════════════════════════════
-  SLIDE 13 — GANTT & ROADMAP (NEU)
+  SLIDE 14 — GANTT & ROADMAP
 ═══════════════════════════════ -->
-<div class="slide s-demo" data-slide="12">
+<div class="slide s-demo" data-slide="13">
   <div class="demo-inner">
     <div class="demo-story">
-      <div class="demo-scene-num">Szene 10 · Gantt &amp; Roadmap</div>
+      <div class="demo-scene-num">Szene 09 · Gantt &amp; Roadmap</div>
       <h2 class="demo-title">Die <em>Timeline</em><br>für Stakeholder.</h2>
       <div class="demo-tags">
         <span class="tag tag-teal">Roadmap</span>
@@ -926,12 +973,12 @@ body::before{
 </div>
 
 <!-- ═══════════════════════════════
-  SLIDE 14 — REPORTS: PLAN vs ACTUAL
+  SLIDE 15 — REPORTS: PLAN vs ACTUAL
 ═══════════════════════════════ -->
-<div class="slide s-demo" data-slide="13">
+<div class="slide s-demo" data-slide="14">
   <div class="demo-inner">
     <div class="demo-story">
-      <div class="demo-scene-num">Szene 11 · Reports: Plan vs. Actual</div>
+      <div class="demo-scene-num">Szene 10 · Reports: Plan vs. Actual</div>
       <h2 class="demo-title">Frühwarnung<br>statt <em>Nachkarte</em>.</h2>
       <div class="demo-tags">
         <span class="tag tag-teal">Report Management</span>
@@ -960,12 +1007,12 @@ body::before{
 </div>
 
 <!-- ═══════════════════════════════
-  SLIDE 15 — REPORTS: RAR2
+  SLIDE 16 — REPORTS: RAR2
 ═══════════════════════════════ -->
-<div class="slide s-demo" data-slide="14">
+<div class="slide s-demo" data-slide="15">
   <div class="demo-inner">
     <div class="demo-story">
-      <div class="demo-scene-num">Szene 12 · RAR2 Chart</div>
+      <div class="demo-scene-num">Szene 11 · RAR2 Chart</div>
       <h2 class="demo-title">Ressourcen­konflikt<br>als <em>Chart</em>.</h2>
       <div class="demo-tags">
         <span class="tag tag-teal">RAR2</span>
@@ -999,12 +1046,12 @@ body::before{
 </div>
 
 <!-- ═══════════════════════════════
-  SLIDE 16 — PORTFOLIO / STAKEHOLDER (NEU)
+  SLIDE 17 — PORTFOLIO / STAKEHOLDER
 ═══════════════════════════════ -->
-<div class="slide s-demo" data-slide="15">
+<div class="slide s-demo" data-slide="16">
   <div class="demo-inner">
     <div class="demo-story">
-      <div class="demo-scene-num">Szene 13 · Portfolio &amp; Stakeholder</div>
+      <div class="demo-scene-num">Szene 12 · Portfolio &amp; Stakeholder</div>
       <h2 class="demo-title">Das Management<br>will <em>Dashboards</em>.</h2>
       <div class="demo-tags">
         <span class="tag tag-teal">Strategic Portfolio</span>
@@ -1038,9 +1085,9 @@ body::before{
 </div>
 
 <!-- ═══════════════════════════════
-  SLIDE 17 — PETERS BEKEHRUNG
+  SLIDE 18 — PETERS BEKEHRUNG
 ═══════════════════════════════ -->
-<div class="slide s-closing" data-slide="16">
+<div class="slide s-closing" data-slide="17">
   <div class="orb orb-1" style="animation-direction:reverse"></div>
   <div class="orb orb-2" style="animation-direction:reverse"></div>
   <div class="closing-inner">
@@ -1063,9 +1110,9 @@ body::before{
 </div>
 
 <!-- ═══════════════════════════════
-  SLIDE 18 — CTA / Q&A
+  SLIDE 19 — CTA / Q&A
 ═══════════════════════════════ -->
-<div class="slide s-cta" data-slide="17">
+<div class="slide s-cta" data-slide="18">
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
   <div class="cta-inner">
