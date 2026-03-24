@@ -1602,10 +1602,17 @@ function preventEnterIfNotWanted(e) {
 
 /* ═══════════════════════════════════════════════════
    DRAG & DROP SCENE REORDERING
+   Fix: draggable wird per mousedown auf dem Badge aktiviert,
+   nicht per e.target.closest()-Check (der in dragstart
+   immer das draggable Element selbst als target liefert).
 ═══════════════════════════════════════════════════ */
 function initDrag() {
   document.querySelectorAll('.scene').forEach(scene => {
-    scene.setAttribute('draggable', 'true');
+    scene.draggable = false; // Start: nicht draggable
+    const badge = scene.querySelector('.scene-num-badge');
+    if (badge) {
+      badge.addEventListener('mousedown', () => { scene.draggable = true; });
+    }
     scene.addEventListener('dragstart',  onDragStart);
     scene.addEventListener('dragover',   onDragOver);
     scene.addEventListener('dragleave',  onDragLeave);
@@ -1616,21 +1623,18 @@ function initDrag() {
 
 function removeDragListeners() {
   document.querySelectorAll('.scene').forEach(scene => {
-    scene.removeAttribute('draggable');
+    scene.draggable = false;
     scene.removeEventListener('dragstart',  onDragStart);
     scene.removeEventListener('dragover',   onDragOver);
     scene.removeEventListener('dragleave',  onDragLeave);
     scene.removeEventListener('drop',       onDrop);
     scene.removeEventListener('dragend',    onDragEnd);
+    const badge = scene.querySelector('.scene-num-badge');
+    if (badge) badge.onmousedown = null;
   });
 }
 
 function onDragStart(e) {
-  // Only start drag when initiating from the num-badge (drag handle area)
-  if (!e.target.closest('.scene-num-badge')) {
-    e.preventDefault();
-    return;
-  }
   dragSrc = this;
   e.dataTransfer.effectAllowed = 'move';
   e.dataTransfer.setData('text/plain', '');
@@ -1641,7 +1645,6 @@ function onDragOver(e) {
   if (!dragSrc || dragSrc === this) return;
   e.preventDefault();
   e.dataTransfer.dropEffect = 'move';
-  // Show top/bottom indicator based on mouse position
   const rect = this.getBoundingClientRect();
   const mid  = rect.top + rect.height / 2;
   this.classList.remove('scene-drag-over-top', 'scene-drag-over-bottom');
@@ -1670,6 +1673,7 @@ function onDrop(e) {
 }
 
 function onDragEnd() {
+  this.draggable = false; // Reset nach Drag
   this.classList.remove('scene-dragging');
   document.querySelectorAll('.scene').forEach(s => {
     s.classList.remove('scene-drag-over-top', 'scene-drag-over-bottom');
@@ -1963,7 +1967,14 @@ function attachBoxDnd(box) {
     });
     header.appendChild(btn);
   }
-  box.setAttribute('draggable', 'true');
+
+  // Fix: draggable nur per mousedown auf Handle aktivieren
+  box.draggable = false;
+  const handle = header ? header.querySelector('.box-drag-handle') : null;
+  if (handle) {
+    handle.addEventListener('mousedown', () => { box.draggable = true; });
+  }
+
   box.addEventListener('dragstart',  onBoxDragStart);
   box.addEventListener('dragover',   onBoxDragOver);
   box.addEventListener('dragleave',  onBoxDragLeave);
@@ -1973,7 +1984,7 @@ function attachBoxDnd(box) {
 
 function removeBoxDragListeners() {
   document.querySelectorAll('.scene .scene-body .box').forEach(box => {
-    box.removeAttribute('draggable');
+    box.draggable = false;
     box.removeEventListener('dragstart',  onBoxDragStart);
     box.removeEventListener('dragover',   onBoxDragOver);
     box.removeEventListener('dragleave',  onBoxDragLeave);
@@ -1984,7 +1995,7 @@ function removeBoxDragListeners() {
 }
 
 function onBoxDragStart(e) {
-  if (!e.target.closest('.box-drag-handle')) { e.preventDefault(); return; }
+  // Kein e.target-Check nötig — draggable wird nur per mousedown auf Handle aktiviert
   dragSrcBox = this;
   e.dataTransfer.effectAllowed = 'move';
   e.dataTransfer.setData('text/plain', '');
@@ -2019,6 +2030,7 @@ function onBoxDrop(e) {
 }
 
 function onBoxDragEnd() {
+  this.draggable = false; // Reset nach Drag
   this.classList.remove('box-dragging');
   document.querySelectorAll('.box').forEach(b => b.classList.remove('box-drop-top', 'box-drop-bottom'));
   dragSrcBox = null;
