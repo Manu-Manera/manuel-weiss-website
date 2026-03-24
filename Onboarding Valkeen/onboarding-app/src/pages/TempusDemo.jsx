@@ -1,8 +1,5 @@
-import { useState } from 'react';
 import {
-  Play,
   ExternalLink,
-  Monitor,
   Users,
   Settings,
   Calendar,
@@ -10,23 +7,21 @@ import {
   Clock,
   CheckCircle,
   Info,
-  Maximize2,
-  Minimize2,
   BookOpen,
-  X,
-  ChevronRight
+  ChevronRight,
+  Play,
 } from 'lucide-react';
 
-// PM Demo läuft lokal auf AWS (public/tempus-demo-pm.html → /onboarding/tempus-demo-pm.html)
+// PM Demo läuft auf AWS (public/tempus-demo-pm.html → /onboarding/tempus-demo-pm.html)
 const PM_DEMO_URL = '/onboarding/tempus-demo-pm.html';
+const RM_URL = 'https://trial5.tempus-resource.com/slot4';
 
 const demoEnvironments = [
   {
     id: 'rm',
     name: 'Resource Manager',
     description: 'Ressourcenplanung und -verwaltung',
-    url: 'https://trial5.tempus-resource.com/slot4',
-    embedUrl: null,
+    url: RM_URL,
     icon: Users,
     color: 'from-blue-500 to-cyan-500',
     badge: null,
@@ -42,7 +37,6 @@ const demoEnvironments = [
     name: 'Project Manager',
     description: 'Vollständiges Demo-Script: Reto zeigt Peter, warum Tempus alles ändert',
     url: PM_DEMO_URL,
-    embedUrl: PM_DEMO_URL,
     icon: Calendar,
     color: 'from-purple-500 to-pink-500',
     badge: '13 Szenen · DE/EN',
@@ -57,8 +51,7 @@ const demoEnvironments = [
     id: 'admin',
     name: 'Admin Console',
     description: 'Systemkonfiguration und Einstellungen',
-    url: 'https://trial5.tempus-resource.com/slot4',
-    embedUrl: null,
+    url: RM_URL,
     icon: Settings,
     color: 'from-orange-500 to-red-500',
     badge: null,
@@ -73,8 +66,7 @@ const demoEnvironments = [
     id: 'reports',
     name: 'Reports & Analytics',
     description: 'Auswertungen und Dashboards',
-    url: 'https://trial5.tempus-resource.com/slot4',
-    embedUrl: null,
+    url: RM_URL,
     icon: BarChart3,
     color: 'from-green-500 to-emerald-500',
     badge: null,
@@ -87,13 +79,6 @@ const demoEnvironments = [
   },
 ];
 
-const demoInstance = {
-  url: 'trial5.tempus-resource.com/slot4',
-  user: 'Reto Renner',
-  projects: 'Stardust (4), Apollo (22), Amber (40)',
-  focus: 'Feb–Jun 2026',
-};
-
 const quickTips = [
   { icon: Clock, text: 'Demo-Instanz: trial5.tempus-resource.com/slot4' },
   { icon: Users, text: 'Benutzer: Reto Renner · Filter: HR Campus = Ja' },
@@ -101,9 +86,6 @@ const quickTips = [
 ];
 
 export default function TempusDemo() {
-  const [openDemo, setOpenDemo] = useState(null); // { id, name, url, color, icon }
-  const [isFullscreen, setIsFullscreen] = useState(false);
-
   const openInNewTab = (url) => {
     window.open(url, '_blank', 'noopener,noreferrer');
   };
@@ -137,10 +119,10 @@ export default function TempusDemo() {
         </div>
         <div className="mt-3 flex flex-wrap gap-3">
           <div className="text-xs text-white/50 bg-white/5 px-3 py-1.5 rounded-lg font-mono">
-            Projekte: {demoInstance.projects}
+            Projekte: Stardust (4), Apollo (22), Amber (40)
           </div>
           <div className="text-xs text-white/50 bg-white/5 px-3 py-1.5 rounded-lg">
-            Fokus: {demoInstance.focus}
+            Fokus: Feb–Jun 2026
           </div>
           <div className="text-xs text-white/50 bg-white/5 px-3 py-1.5 rounded-lg">
             Konflikt: Marc — 8h (Stardust) + 4h (Apollo) = 12h/Tag im März
@@ -185,99 +167,20 @@ export default function TempusDemo() {
                 ))}
               </div>
 
-              {/* Buttons */}
-              {isPM ? (
-                // PM: zwei dedizierte Buttons
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => { setOpenDemo(demo); setIsFullscreen(false); }}
-                    className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium
-                      hover:shadow-lg hover:shadow-purple-500/20 transition-all flex items-center justify-center gap-2"
-                  >
-                    <Play className="w-4 h-4" />
-                    Demo öffnen
-                  </button>
-                  <button
-                    onClick={() => openInNewTab(demo.url)}
-                    className="p-3 rounded-xl bg-white/10 hover:bg-white/15 transition-colors"
-                    title="In neuem Tab öffnen"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => openInNewTab(demo.url)}
-                  className={`w-full py-3 px-4 rounded-xl bg-gradient-to-r ${demo.color} text-white font-medium
-                    hover:shadow-lg transition-all flex items-center justify-center gap-2 opacity-80`}
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  In Tempus öffnen
-                </button>
-              )}
+              {/* Button — all cards open in new tab */}
+              <button
+                onClick={() => openInNewTab(demo.url)}
+                className={`w-full py-3 px-4 rounded-xl bg-gradient-to-r ${demo.color} text-white font-medium
+                  hover:shadow-lg transition-all flex items-center justify-center gap-2
+                  ${isPM ? 'hover:shadow-purple-500/20' : 'opacity-80'}`}
+              >
+                {isPM ? <Play className="w-4 h-4" /> : <ExternalLink className="w-4 h-4" />}
+                Demo öffnen
+              </button>
             </div>
           );
         })}
       </div>
-
-      {/* ── EMBEDDED VIEWER (PM DEMO) ── */}
-      {openDemo && (
-        <div
-          className={`
-            rounded-2xl border border-white/10 overflow-hidden shadow-2xl
-            ${isFullscreen
-              ? 'fixed inset-3 z-[200] flex flex-col'
-              : 'flex flex-col'
-            }
-          `}
-          style={{ background: '#0f1729' }}
-        >
-          {/* Toolbar */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-white/5 flex-shrink-0">
-            <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${openDemo.color} flex items-center justify-center`}>
-                <openDemo.icon className="w-4 h-4 text-white" />
-              </div>
-              <div>
-                <p className="font-semibold text-sm">{openDemo.name} — Demo Script</p>
-                <p className="text-xs text-white/40 font-mono">{openDemo.url}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setIsFullscreen(!isFullscreen)}
-                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
-                title={isFullscreen ? 'Verkleinern' : 'Vollbild'}
-              >
-                {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-              </button>
-              <button
-                onClick={() => openInNewTab(openDemo.url)}
-                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
-                title="In neuem Tab öffnen"
-              >
-                <ExternalLink className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => { setOpenDemo(null); setIsFullscreen(false); }}
-                className="p-2 rounded-lg bg-white/5 hover:bg-red-500/20 text-white/60 hover:text-red-400 transition-colors"
-                title="Schließen"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* iFrame */}
-          <div className={`bg-white ${isFullscreen ? 'flex-1' : 'h-[75vh]'}`}>
-            <iframe
-              src={openDemo.embedUrl}
-              className="w-full h-full border-0"
-              title={openDemo.name}
-            />
-          </div>
-        </div>
-      )}
 
       {/* ── QUICK LINKS ── */}
       <div className="glass rounded-2xl p-6 border border-white/10">
@@ -294,7 +197,7 @@ export default function TempusDemo() {
               color: 'purple',
             },
             {
-              href: 'https://trial5.tempus-resource.com/slot4',
+              href: RM_URL,
               label: 'Tempus Live-Instanz',
               sub: 'trial5.tempus-resource.com/slot4',
               color: 'blue',
@@ -307,7 +210,7 @@ export default function TempusDemo() {
               rel="noopener noreferrer"
               className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group"
             >
-              <div className={`w-9 h-9 rounded-lg bg-${link.color}-500/20 flex items-center justify-center flex-shrink-0`}>
+              <div className={`w-9 h-9 rounded-lg bg-${link.color}-500/20 flex items-center justify-content-center flex-shrink-0 flex items-center justify-center`}>
                 <ChevronRight className={`w-5 h-5 text-${link.color}-400`} />
               </div>
               <div className="flex-1 min-w-0">
