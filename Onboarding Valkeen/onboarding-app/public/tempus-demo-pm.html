@@ -1631,6 +1631,17 @@ function setUnsaved(state) {
   if (el) el.style.display = state ? 'inline' : 'none';
 }
 
+/* Auto-Save mit Debounce (1,5 s) — für Lösch- und Reorder-Aktionen.
+   Mehrfache Aufrufe innerhalb des Fensters lösen nur einen Save aus. */
+let _autoSaveTimer = null;
+function autoSave(delayMs = 1500) {
+  setUnsaved(true);
+  clearTimeout(_autoSaveTimer);
+  _autoSaveTimer = setTimeout(() => {
+    saveAll().catch(() => {});
+  }, delayMs);
+}
+
 /* ═══════════════════════════════════════════════════
    INLINE TEXT EDITING
 ═══════════════════════════════════════════════════ */
@@ -1746,7 +1757,7 @@ function onDrop(e) {
     parent.insertBefore(dragSrc, this.nextSibling);
   }
   renumberScenes();
-  setUnsaved(true);
+  autoSave();
 }
 
 function onDragEnd() {
@@ -1791,7 +1802,7 @@ function attachDeleteBtn(li, ul) {
     if (confirm('Diesen Schritt löschen?')) {
       li.remove();
       renumberSteps(ul);
-      setUnsaved(true);
+      autoSave(800);
     }
   });
   li.appendChild(btn);
@@ -2055,7 +2066,7 @@ function attachBoxDnd(box) {
       e.stopPropagation();
       if (confirm('Diesen Bereich löschen?')) {
         box.remove();
-        setUnsaved(true);
+        autoSave(800);
       }
     });
     header.appendChild(btn);
@@ -2119,7 +2130,7 @@ function onBoxDrop(e) {
   if (dragSrcBox.parentNode !== this.parentNode) return;
   const mid = this.getBoundingClientRect().top + this.getBoundingClientRect().height / 2;
   this.parentNode.insertBefore(dragSrcBox, e.clientY < mid ? this : this.nextSibling);
-  setUnsaved(true);
+  autoSave();
 }
 
 function onBoxDragEnd() {
@@ -2408,7 +2419,7 @@ function insertNewBox(bt) {
   // Wire up delete
   box.querySelector('.box-delete-btn').addEventListener('click', e => {
     e.stopPropagation();
-    if (confirm('Diesen Bereich löschen?')) { box.remove(); setUnsaved(true); }
+    if (confirm('Diesen Bereich löschen?')) { box.remove(); autoSave(800); }
   });
 
   // Wire up DnD — mousedown-auf-Handle-Ansatz (Fix für e.target.closest-Bug)
