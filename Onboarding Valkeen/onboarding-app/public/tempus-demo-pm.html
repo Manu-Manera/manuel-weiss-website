@@ -402,7 +402,7 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 
 .media-preview-wrap { position: relative; background: #0a1a2a; min-height: 60px; }
 .media-preview { display: block; width: 100%; max-height: 480px; object-fit: contain; }
-video.media-preview { width: 100%; max-height: 480px; background: #000; }
+video.media-preview { width: 100%; max-height: 480px; background: #000; display: block; }
 
 .media-placeholder {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -1984,6 +1984,10 @@ function applyState(data) {
     data.scenes.forEach(html => {
       const tmp = document.createElement('div');
       tmp.innerHTML = html;
+      // Videos: preload=metadata damit nicht das ganze Video beim Laden heruntergeladen wird
+      tmp.querySelectorAll('video.media-preview').forEach(v => {
+        v.preload = 'metadata';
+      });
       if (tmp.firstElementChild) frag.appendChild(tmp.firstElementChild);
     });
     page.insertBefore(frag, closing);
@@ -2146,7 +2150,10 @@ const BOX_TYPES = [
    Slots erneuern: python3 -c "..." oder refresh-demo-state-url.sh
    CDN-Basis: https://manuel-weiss.ch/media/tempus-demo-pm/
 ═══════════════════════════════════════════════════ */
-const MEDIA_CDN = 'https://manuel-weiss.ch/media/tempus-demo-pm/';
+const MEDIA_CDN     = 'https://manuel-weiss.ch/media/tempus-demo-pm/';
+// Videos direkt über S3 REST Endpoint: unterstützt Range-Requests nativ
+// (CloudFront cached Objekte vollständig vor Range-Antwort → bei grossen Videos zu langsam)
+const MEDIA_S3_VIDEO = 'https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/media/tempus-demo-pm/';
 const MEDIA_SLOT_STORAGE_KEY = 'tempus-demo-pm-media-slots';
 
 // Neu generiert mit ContentType in Signatur (content-type%3Bhost) — Upload sendet exakt diesen Typ
@@ -2240,8 +2247,12 @@ async function uploadMediaFile(file, mediaBody) {
     if (progressText) progressText.textContent = '✓ Hochgeladen';
 
     markMediaSlotUsed(slot);
-    const cdnUrl = MEDIA_CDN + slotData.file;
-    slotEl.textContent = `AWS S3 → ${slotData.file}`;
+    // Videos: S3 REST Endpoint (Range-Requests, kein CloudFront-Cache-Problem)
+    // Bilder: CloudFront CDN (kein Range-Bedarf, schneller Cache)
+    const mediaUrl = isVideo
+      ? MEDIA_S3_VIDEO + slotData.file
+      : MEDIA_CDN      + slotData.file;
+    slotEl.textContent = isVideo ? `S3 Direct → ${slotData.file}` : `CDN → ${slotData.file}`;
 
     // Placeholder ausblenden, Preview einblenden
     const wrap = mediaBody.querySelector('.media-preview-wrap');
@@ -2249,16 +2260,18 @@ async function uploadMediaFile(file, mediaBody) {
       wrap.innerHTML = '';
       if (isVideo) {
         const v = document.createElement('video');
-        v.src = cdnUrl + '?v=' + Date.now();
-        v.controls = true; v.className = 'media-preview';
+        v.src = mediaUrl + '?v=' + Date.now();
+        v.controls = true;
+        v.preload = 'metadata';       // nur Metadata vorladen, nicht ganzes Video
+        v.className = 'media-preview';
         wrap.appendChild(v);
       } else {
         const img = document.createElement('img');
-        img.src = cdnUrl + '?v=' + Date.now();
+        img.src = mediaUrl + '?v=' + Date.now();
         img.alt = file.name; img.className = 'media-preview';
         wrap.appendChild(img);
       }
-      wrap.setAttribute('data-cdn-url', cdnUrl);
+      wrap.setAttribute('data-cdn-url', mediaUrl);
       wrap.setAttribute('data-media-type', isVideo ? 'video' : 'image');
     }
 
