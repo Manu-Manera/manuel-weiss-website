@@ -12,16 +12,17 @@ import {
   Play,
 } from 'lucide-react';
 
-// PM Demo läuft auf AWS (public/tempus-demo-pm.html → /onboarding/tempus-demo-pm.html)
+// Demo-Guides laufen auf AWS (public/*.html → /onboarding/*.html)
 const PM_DEMO_URL = '/onboarding/tempus-demo-pm.html';
-const RM_URL = 'https://trial5.tempus-resource.com/slot4';
+const RM_DEMO_URL = '/onboarding/tempus-demo-rm.html';
+const RM_LIVE_URL = 'https://trial5.tempus-resource.com/slot4';
 
 const demoEnvironments = [
   {
     id: 'rm',
     name: 'Resource Manager',
     description: 'Ressourcenplanung und -verwaltung',
-    url: RM_URL,
+    url: RM_DEMO_URL,
     icon: Users,
     color: 'from-blue-500 to-cyan-500',
     badge: null,
@@ -51,7 +52,7 @@ const demoEnvironments = [
     id: 'admin',
     name: 'Admin Console',
     description: 'Systemkonfiguration und Einstellungen',
-    url: RM_URL,
+    url: RM_LIVE_URL,
     icon: Settings,
     color: 'from-orange-500 to-red-500',
     badge: null,
@@ -66,7 +67,7 @@ const demoEnvironments = [
     id: 'reports',
     name: 'Reports & Analytics',
     description: 'Auswertungen und Dashboards',
-    url: RM_URL,
+    url: RM_LIVE_URL,
     icon: BarChart3,
     color: 'from-green-500 to-emerald-500',
     badge: null,
@@ -197,7 +198,7 @@ export default function TempusDemo() {
               color: 'purple',
             },
             {
-              href: RM_URL,
+              href: RM_LIVE_URL,
               label: 'Tempus Live-Instanz',
               sub: 'trial5.tempus-resource.com/slot4',
               color: 'blue',

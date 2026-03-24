@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="de" class="lang-de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tempus Demo – Resource Manager: Sandra löst das Problem</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+
+:root {
+  --navy:        #0f2342;
+  --navy-mid:    #1a3a6b;
+  --teal:        #0d7fa0;
+  --teal-light:  #e0f4f9;
+  --gold:        #c8860a;
+  --gold-light:  #fff8e6;
+  --green:       #1a7a3c;
+  --green-light: #e8f7ee;
+  --purple:      #5b3fa0;
+  --purple-light:#f0ebfc;
+  --red:         #c0392b;
+  --red-light:   #fdf0ee;
+  --rm:          #065f46;   /* Resource Manager accent: deep emerald */
+  --rm-light:    #d1fae5;
+  --reto:        #0369a1;
+  --reto-light:  #e0f2fe;
+  --peter:       #7c3f00;
+  --peter-light: #fef3e2;
+  --gray-100:    #f7f8fa;
+  --gray-200:    #eef0f4;
+  --gray-300:    #d8dce6;
+  --gray-500:    #6b7280;
+  --gray-700:    #374151;
+  --gray-900:    #111827;
+  --radius:      8px;
+  --shadow:      0 2px 8px rgba(0,0,0,0.09);
+  --shadow-lg:   0 8px 24px rgba(0,0,0,0.13);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', -apple-system, sans-serif; font-size: 15px; line-height: 1.65; color: var(--gray-900); background: #f0f3f8; }
+
+/* ── LANG SWITCHER ───────────────────────── */
+.lang-switcher { position: fixed; top: 16px; right: 20px; z-index: 1000; display: flex; gap: 6px; background: rgba(255,255,255,0.95); border: 1px solid var(--gray-300); border-radius: 30px; padding: 5px 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); backdrop-filter: blur(8px); }
+.lang-btn { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border: none; background: transparent; border-radius: 20px; font-size: 13px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.18s ease; color: var(--gray-500); }
+.lang-btn:hover { background: var(--gray-200); color: var(--gray-900); }
+.lang-btn.active { background: var(--rm); color: white; }
+.lang-flag { font-size: 18px; line-height: 1; }
+.lang-de .t-en { display: none; }
+.lang-en .t-de { display: none; }
+
+/* ── HERO ────────────────────────────────── */
+.hero { background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #0d7fa0 100%); color: white; padding: 56px 0 48px; position: relative; overflow: hidden; }
+.hero::before { content: ''; position: absolute; top: -80px; right: -80px; width: 400px; height: 400px; border-radius: 50%; background: rgba(255,255,255,0.03); }
+.hero-inner { max-width: 880px; margin: 0 auto; padding: 0 28px; position: relative; z-index: 1; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.9); font-size: 11px; font-weight: 600; letter-spacing: 1.8px; text-transform: uppercase; padding: 5px 14px; border-radius: 20px; margin-bottom: 22px; }
+.hero-title { font-family: 'Playfair Display', Georgia, serif; font-size: 44px; font-weight: 700; line-height: 1.12; margin-bottom: 8px; }
+.hero-title span { color: #6ee7b7; }
+.hero-subtitle { font-size: 17px; opacity: 0.82; margin-bottom: 32px; max-width: 640px; line-height: 1.6; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 12px; }
+.hero-meta-item { display: flex; align-items: center; gap: 8px; font-size: 13px; background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 6px; color: rgba(255,255,255,0.85); }
+.continuity-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(110,231,183,0.2); border: 1px solid rgba(110,231,183,0.4); color: #6ee7b7; font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 20px; margin-bottom: 14px; }
+
+/* ── LAYOUT ──────────────────────────────── */
+.page { max-width: 880px; margin: 0 auto; padding: 0 28px; }
+
+/* ── GUIDE LEGEND ────────────────────────── */
+.guide-legend { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); padding: 18px 22px; margin: 24px 0 8px; box-shadow: var(--shadow); }
+.guide-legend-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gray-500); margin-bottom: 14px; }
+.legend-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; font-size: 13px; }
+.legend-item { display: flex; gap: 10px; align-items: flex-start; }
+.legend-dot { min-width: 28px; height: 28px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.legend-label { font-weight: 700; margin-bottom: 2px; }
+.legend-desc { color: var(--gray-500); line-height: 1.5; }
+.legend-flow { margin-top: 14px; padding: 10px 14px; background: var(--gray-100); border-radius: 5px; font-size: 12px; color: var(--gray-500); border-left: 3px solid var(--rm); }
+
+/* ── PRE-DEMO ────────────────────────────── */
+.pre-demo-strip { background: #fff3cd; border: 1px solid #f59e0b; border-radius: var(--radius); padding: 14px 20px; margin: 8px 0; display: flex; gap: 12px; align-items: flex-start; font-size: 14px; }
+.pre-demo-strip strong { color: #7c5000; display: block; margin-bottom: 4px; }
+
+/* ── STORY HOOK ──────────────────────────── */
+.story-hook { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); overflow: hidden; margin-bottom: 8px; box-shadow: var(--shadow); }
+.story-hook-header { background: var(--navy); color: white; padding: 14px 24px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+.story-hook-body { padding: 24px 28px; font-size: 15px; line-height: 1.8; color: var(--gray-700); font-style: italic; border-left: 4px solid var(--rm); }
+.story-hook-body strong { font-style: normal; color: var(--gray-900); }
+
+/* ── CAST ────────────────────────────────── */
+.cast-section { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); padding: 22px 28px; margin-bottom: 8px; box-shadow: var(--shadow); }
+.cast-section h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--gray-500); margin-bottom: 16px; }
+.cast-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.cast-card { border: 1px solid var(--gray-200); border-radius: 6px; padding: 14px 16px; background: var(--gray-100); }
+.cast-card.hero-char { background: linear-gradient(135deg, var(--rm-light), #ecfdf5); border-color: #6ee7b7; }
+.cast-card.pm-cameo { background: linear-gradient(135deg, var(--reto-light), #f0f9ff); border-color: #93c5fd; }
+.cast-card.skeptic { background: linear-gradient(135deg, var(--peter-light), #fff8f0); border-color: #e8c07a; }
+.cast-card.resource { background: linear-gradient(135deg, #f5f3ff, #ede9fe); border-color: #c4b5fd; }
+.cast-emoji { font-size: 22px; margin-bottom: 8px; }
+.cast-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.cast-role { font-size: 12px; color: var(--gray-500); line-height: 1.4; }
+.cast-quote { font-size: 12px; font-style: italic; color: var(--rm); margin-top: 6px; border-top: 1px solid var(--gray-200); padding-top: 6px; }
+
+/* ── AGENDA ──────────────────────────────── */
+.agenda-card { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); padding: 22px 28px; margin-bottom: 20px; box-shadow: var(--shadow); }
+.agenda-card h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gray-500); margin-bottom: 16px; }
+.agenda-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 28px; }
+.agenda-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--gray-700); padding: 5px 0; border-bottom: 1px solid var(--gray-200); }
+.agenda-item a { color: inherit; text-decoration: none; }
+.agenda-item a:hover { color: var(--rm); text-decoration: underline; }
+.agenda-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: var(--rm); color: white; border-radius: 4px; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.agenda-meta { margin-left: auto; display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+.agenda-time { font-size: 11px; color: var(--gray-500); white-space: nowrap; }
+.agenda-must { font-size: 10px; font-weight: 700; background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; padding: 1px 5px; border-radius: 3px; white-space: nowrap; }
+.agenda-opt { font-size: 10px; color: var(--gray-500); border: 1px solid var(--gray-300); padding: 1px 5px; border-radius: 3px; white-space: nowrap; }
+
+/* ── SCENE ───────────────────────────────── */
+.scene { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); margin-bottom: 20px; box-shadow: var(--shadow); overflow: hidden; }
+.scene-header { display: flex; align-items: stretch; border-bottom: 1px solid var(--gray-200); }
+.scene-num-badge { background: var(--rm); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px 20px; min-width: 88px; text-align: center; flex-shrink: 0; }
+.scene-num-big { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 3px; }
+.scene-num-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.7; }
+.scene-title-area { flex: 1; padding: 14px 20px; background: var(--gray-100); display: flex; flex-direction: column; justify-content: center; }
+.scene-act { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--rm); margin-bottom: 3px; }
+.scene-title { font-size: 18px; font-weight: 700; }
+.scene-subtitle { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+.scene-tags { display: flex; flex-wrap: wrap; gap: 5px; padding: 9px 20px; border-bottom: 1px solid var(--gray-200); background: white; }
+.tag { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 4px; border: 1px solid; }
+.tag-blue   { background: #e8f0fe; color: #1a4fa0; border-color: #c5d8f5; }
+.tag-green  { background: var(--green-light); color: var(--green); border-color: #b6dfc8; }
+.tag-orange { background: var(--gold-light); color: var(--gold); border-color: #f0d08a; }
+.tag-purple { background: var(--purple-light); color: var(--purple); border-color: #c9bde8; }
+.tag-teal   { background: var(--teal-light); color: var(--teal); border-color: #a0d4e6; }
+.tag-rm     { background: var(--rm-light); color: var(--rm); border-color: #6ee7b7; }
+.tag-red    { background: var(--red-light); color: var(--red); border-color: #f0c0bb; }
+.scene-body { padding: 20px 24px; }
+
+/* ── BOXES ───────────────────────────────── */
+.box { border-radius: var(--radius); margin: 12px 0; overflow: hidden; }
+.box-header { display: flex; align-items: center; gap: 10px; padding: 9px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+.box-body { padding: 14px 18px; font-size: 14px; line-height: 1.7; }
+.box-icon { font-size: 15px; }
+.box-story .box-header { background: var(--navy); color: white; }
+.box-story .box-body   { background: #f4f7fb; color: var(--gray-700); font-style: italic; border: 1px solid #d0d8e8; border-top: none; }
+.box-say .box-header   { background: var(--rm); color: white; }
+.box-say .box-body     { background: var(--rm-light); color: var(--gray-700); border: 1px solid #6ee7b7; border-top: none; }
+.box-click .box-header { background: var(--teal); color: white; }
+.box-click .box-body   { background: var(--teal-light); color: var(--gray-900); border: 1px solid #a0d4e6; border-top: none; }
+.box-reto .box-header  { background: var(--reto); color: white; }
+.box-reto .box-body    { background: var(--reto-light); color: var(--gray-700); border: 1px solid #93c5fd; border-top: none; }
+.box-context .box-header { background: var(--gold); color: white; }
+.box-context .box-body   { background: var(--gold-light); color: var(--gray-700); border: 1px solid #ecc87a; border-top: none; }
+.box-impact .box-header  { background: var(--purple); color: white; }
+.box-impact .box-body    { background: var(--purple-light); color: var(--gray-900); border: 1px solid #c9bde8; border-top: none; font-weight: 600; font-style: italic; font-size: 15px; }
+.box-warn .box-header    { background: var(--red); color: white; }
+.box-warn .box-body      { background: var(--red-light); color: var(--gray-700); border: 1px solid #f0c0bb; border-top: none; }
+.box-conflict .box-header { background: #991b1b; color: white; }
+.box-conflict .box-body   { background: #fef2f2; color: #7f1d1d; border: 1px solid #fca5a5; border-top: none; }
+
+/* Steps */
+.click-steps { list-style: none; }
+.click-steps li { display: flex; align-items: flex-start; gap: 12px; padding: 7px 0; border-bottom: 1px solid #b0dcea; font-size: 14px; }
+.click-steps li:last-child { border-bottom: none; }
+.click-step-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: var(--teal); color: white; border-radius: 50%; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+.click-path { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: rgba(0,0,0,0.07); padding: 2px 7px; border-radius: 3px; color: #0a4020; white-space: nowrap; }
+.quote-line { border-left: 3px solid var(--rm); padding: 8px 16px; margin: 10px 0; color: var(--gray-700); font-style: italic; font-size: 14px; background: white; border-radius: 0 4px 4px 0; }
+.quote-reto  { border-left-color: var(--reto); background: var(--reto-light); }
+.quote-peter { border-left-color: #f59e0b; background: var(--peter-light); }
+.quote-sandra { border-left-color: var(--rm); background: var(--rm-light); }
+.transition { display: flex; align-items: center; gap: 12px; margin: 16px 0 0; padding: 11px 16px; background: var(--gray-100); border-radius: 6px; border: 1px dashed var(--gray-300); font-size: 13px; color: var(--gray-500); }
+.whatsapp-bubble { background: #dcf8c6; border: 1px solid #b3e6a0; border-radius: 8px 8px 8px 0; padding: 10px 14px; font-size: 13px; font-style: italic; color: #1a3a1a; margin: 8px 0; display: inline-block; max-width: 80%; }
+.whatsapp-bubble.incoming { border-radius: 8px 8px 8px 0; }
+.whatsapp-bubble.outgoing { border-radius: 8px 8px 0 8px; background: #e9f5ff; border-color: #b3d4e6; color: #0a2a4a; margin-left: auto; display: block; }
+.chat-window { background: #ece5dd; border-radius: 8px; padding: 16px; margin: 12px 0; }
+.chat-name { font-size: 11px; font-weight: 700; color: var(--gray-500); margin-bottom: 4px; }
+
+/* Utilization indicator */
+.util-bar { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 13px; }
+.util-fill { height: 12px; border-radius: 3px; min-width: 4px; }
+.util-red    { background: #ef4444; }
+.util-yellow { background: #f59e0b; }
+.util-green  { background: #22c55e; }
+.util-label  { font-size: 12px; color: var(--gray-500); }
+
+/* ── QUICK REF ───────────────────────────── */
+.qr-section { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); margin-bottom: 20px; box-shadow: var(--shadow); overflow: hidden; }
+.qr-header { background: var(--rm); color: white; padding: 14px 24px; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.qr-body { padding: 20px 24px; }
+table.ref { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.ref th { text-align: left; padding: 8px 12px; background: var(--gray-100); border: 1px solid var(--gray-300); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-500); }
+table.ref td { padding: 8px 12px; border: 1px solid var(--gray-300); vertical-align: top; }
+table.ref tr:nth-child(even) td { background: var(--gray-100); }
+code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: var(--gray-200); padding: 2px 6px; border-radius: 3px; color: #1a3a6b; }
+
+/* ── CLOSING ─────────────────────────────── */
+.closing { background: linear-gradient(135deg, #064e3b 0%, #065f46 100%); color: white; border-radius: var(--radius); padding: 36px; margin-bottom: 20px; box-shadow: var(--shadow-lg); }
+.closing h2 { font-family: 'Playfair Display', serif; font-size: 26px; margin-bottom: 20px; }
+.closing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.closing-item { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 14px 16px; font-size: 13px; display: flex; gap: 10px; }
+.closing-final { border-top: 1px solid rgba(255,255,255,0.15); padding-top: 20px; font-size: 18px; font-style: italic; font-weight: 300; line-height: 1.6; }
+.closing-final strong { font-weight: 700; font-style: normal; }
+.doc-footer { text-align: center; padding: 28px 0 40px; color: var(--gray-500); font-size: 13px; line-height: 1.8; }
+
+@media print {
+  body { background: white; }
+  .lang-switcher { display: none; }
+  .scene { box-shadow: none; break-inside: avoid; }
+  .hero, .closing { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+@media (max-width: 600px) {
+  .hero-title { font-size: 30px; }
+  .agenda-grid, .cast-grid { grid-template-columns: 1fr; }
+  .closing-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="lang-switcher">
+  <button class="lang-btn active" id="btn-de" onclick="setLang('de')">
+    <span class="lang-flag">🇩🇪</span><span>DE</span>
+  </button>
+  <button class="lang-btn" id="btn-en" onclick="setLang('en')">
+    <span class="lang-flag">🇬🇧</span><span>EN</span>
+  </button>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+      <div class="continuity-badge">🔗 <span class="t-de">Fortsetzung der Stardust-Story · Nach Retos PM-Demo</span><span class="t-en">Continuation of the Stardust story · After Reto's PM demo</span></div>
+      <a href="Tempus_Demo_Projektmanager.html" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">← <span class="t-de">PM Demo öffnen</span><span class="t-en">Open PM demo</span></a>
+    </div>
+    <div class="hero-eyebrow">🗂️ <span class="t-de">Resource Manager Demo</span><span class="t-en">Resource Manager Demo</span></div>
+    <h1 class="hero-title">
+      <span class="t-de">Sandra löst das Problem,<br>das <span>Reto</span> verursacht hat</span>
+      <span class="t-en">Sandra solves the problem<br>that <span>Reto</span> created</span>
+    </h1>
+    <p class="hero-subtitle">
+      <span class="t-de">Während Reto begeistert sein neues Projekt aufbaut, sieht Sandra Meier im Resource Management bereits die Konsequenz: Marc ist überbucht. Sie hat drei Minuten, um das zu lösen — und zeigt dabei die ganze Stärke des Resource Managements.</span>
+      <span class="t-en">While Reto enthusiastically builds his new project, Sandra Meier in Resource Management already sees the consequence: Marc is overbooked. She has three minutes to solve it — and in doing so reveals the full power of resource management.</span>
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">⏱️ <span class="t-de">ca. 40–50 Min.</span><span class="t-en">approx. 40–50 min.</span></div>
+      <div class="hero-meta-item">👥 <span class="t-de">Intern &amp; Kunden</span><span class="t-en">Internal &amp; Customers</span></div>
+      <div class="hero-meta-item">🔗 trial5.tempus-resource.com/slot4</div>
+      <div class="hero-meta-item">🗂️ <span class="t-de">Resource Manager Rolle</span><span class="t-en">Resource Manager role</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- GUIDE LEGEND -->
+<div class="guide-legend" style="margin-top:24px;">
+  <div class="guide-legend-title">🗺️ <span class="t-de">So liest du diesen Guide — Aufbau jeder Szene</span><span class="t-en">How to read this guide — structure of each scene</span></div>
+  <div class="legend-grid">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--navy);">📖</div>
+      <div><div class="legend-label"><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say aloud</span></div><div class="legend-desc"><span class="t-de">Narrative Überleitung <strong>vor</strong> dem Klicken</span><span class="t-en">Narrative bridge <strong>before</strong> clicking</span></div></div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--rm);">🎙️</div>
+      <div><div class="legend-label"><span class="t-de">Während du klickst</span><span class="t-en">While clicking</span></div><div class="legend-desc"><span class="t-de">Feature-Erklärung <strong>während</strong> der Demo</span><span class="t-en">Feature explanation <strong>during</strong> the demo</span></div></div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--teal);">🖱️</div>
+      <div><div class="legend-label"><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div><div class="legend-desc"><span class="t-de">Schritt-für-Schritt im Tool</span><span class="t-en">Step-by-step in the tool</span></div></div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--reto);">📱</div>
+      <div><div class="legend-label"><span class="t-de">Reto / Peter tauchen auf</span><span class="t-en">Reto / Peter appear</span></div><div class="legend-desc"><span class="t-de">Verbindung zur PM-Demo-Story</span><span class="t-en">Connection to the PM demo story</span></div></div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--gold);">💡</div>
+      <div><div class="legend-label"><span class="t-de">Hintergrund-Info</span><span class="t-en">Background info</span></div><div class="legend-desc"><span class="t-de">Für Rückfragen — nicht zwingend sagen</span><span class="t-en">For follow-up questions — not required</span></div></div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--purple);">⚡</div>
+      <div><div class="legend-label"><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div><div class="legend-desc"><span class="t-de"><strong>Am Ende</strong> der Szene — bleibt hängen</span><span class="t-en"><strong>At the end</strong> of the scene — sticks</span></div></div>
+    </div>
+  </div>
+  <div class="legend-flow">
+    💬 <strong><span class="t-de">Ablauf:</span><span class="t-en">Flow:</span></strong>
+    <span class="t-de"> Einstieg sagen → klicken → Erklärpunkte sprechen → Reto/Peter-Moment → Wirkungssatz → nächste Szene</span>
+    <span class="t-en"> Say intro → click → speak talking points → Reto/Peter moment → impact statement → next scene</span>
+  </div>
+</div>
+
+<!-- PRE-DEMO -->
+<div class="pre-demo-strip">
+  <div style="font-size:22px;">⚙️</div>
+  <div>
+    <strong><span class="t-de">Vor dem Start — Technische Vorbereitung</span><span class="t-en">Before you start — Technical preparation</span></strong>
+    <span class="t-de">Als <strong>Resource Manager</strong> einloggen (nicht als PM). Instanz: <code>trial5.tempus-resource.com/slot4</code> · Stardust + Apollo Demo-Daten müssen im System sein (Script: <code>setup_demo_reports_data.py</code>) · Zeitraum: <strong>Jan–Jun 2026</strong></span>
+    <span class="t-en">Log in as <strong>Resource Manager</strong> (not PM). Instance: <code>trial5.tempus-resource.com/slot4</code> · Stardust + Apollo demo data must be in the system (Script: <code>setup_demo_reports_data.py</code>) · Period: <strong>Jan–Jun 2026</strong></span>
+  </div>
+</div>
+
+<!-- SETUP STORY -->
+<div class="story-hook">
+  <div class="story-hook-header">📖 <span class="t-de">Die Ausgangssituation — Sandras Perspektive</span><span class="t-en">The setup — Sandra's perspective</span></div>
+  <div class="story-hook-body">
+    <span class="t-de">
+      <strong>Sandra Meier</strong> ist Resource Manager bei Helionis Switzerland AG. Sie verwaltet 32 Ressourcen, 18 aktive Projekte — und bekommt täglich Anfragen von PMs, die Ressourcen brauchen.<br><br>
+      Heute Morgen, 9:14 Uhr. Ihr Handy vibriert.
+    </span>
+    <span class="t-en">
+      <strong>Sandra Meier</strong> is Resource Manager at Helionis Switzerland AG. She manages 32 resources, 18 active projects — and receives daily requests from PMs who need resources.<br><br>
+      This morning, 9:14 AM. Her phone vibrates.
+    </span>
+    <div class="chat-window" style="margin-top:16px;">
+      <div class="chat-name">💬 WhatsApp · <span class="t-de">Reto Renner</span><span class="t-en">Reto Renner</span></div>
+      <div class="whatsapp-bubble incoming">
+        <span class="t-de">„Hey Sandra! Ich habe gerade Project Stardust aufgesetzt und Marc + Katherine eingeplant. Kannst du kurz die Kapazität checken? 🙏"</span>
+        <span class="t-en">"Hey Sandra! Just set up Project Stardust and scheduled Marc + Katherine. Can you quickly check the capacity? 🙏"</span>
+      </div>
+      <div style="margin-top:8px;font-size:11px;color:var(--gray-500);font-style:italic;">
+        <span class="t-de">Sandra denkt: <em>„Früher wäre das ein Anruf, eine E-Mail und ein Meeting gewesen. Heute öffne ich Tempus."</em></span>
+        <span class="t-en">Sandra thinks: <em>"In the past that would have meant a call, an email and a meeting. Today I open Tempus."</em></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CAST -->
+<div class="cast-section">
+  <h3><span class="t-de">Charaktere dieser Demo</span><span class="t-en">Characters in this demo</span></h3>
+  <div class="cast-grid">
+    <div class="cast-card hero-char">
+      <div class="cast-emoji">🗂️</div>
+      <div class="cast-name">Sandra Meier</div>
+      <div class="cast-role"><span class="t-de">Resource Manager · Helionis AG · 7 Jahre im Job</span><span class="t-en">Resource Manager · Helionis AG · 7 years in role</span></div>
+      <div class="cast-quote"><span class="t-de">„Ich sehe das, was PMs nicht sehen können."</span><span class="t-en">"I see what PMs can't see."</span></div>
+    </div>
+    <div class="cast-card pm-cameo">
+      <div class="cast-emoji">🚀</div>
+      <div class="cast-name">Reto Renner</div>
+      <div class="cast-role"><span class="t-de">Senior PM · taucht als WhatsApp-Kontakt auf · aus der PM-Demo bekannt</span><span class="t-en">Senior PM · appears as WhatsApp contact · known from PM demo</span></div>
+      <div class="cast-quote"><span class="t-de">„Ich plane. Sandra sorgt dafür, dass der Plan auch stimmt."</span><span class="t-en">"I plan. Sandra makes sure the plan actually works."</span></div>
+    </div>
+    <div class="cast-card skeptic">
+      <div class="cast-emoji">🤔</div>
+      <div class="cast-name">Peter</div>
+      <div class="cast-role"><span class="t-de">Retos Kollege · jetzt neugierig auf die RM-Seite · aus der PM-Demo bekannt</span><span class="t-en">Reto's colleague · now curious about the RM side · known from PM demo</span></div>
+      <div class="cast-quote"><span class="t-de">„Also ihr macht eigentlich die gleiche Arbeit wie wir — nur von der anderen Seite?"</span><span class="t-en">"So you're doing the same work as us — just from the other side?"</span></div>
+    </div>
+    <div class="cast-card resource">
+      <div class="cast-emoji">👨‍💻</div>
+      <div class="cast-name">Marc / Katherine / Jason</div>
+      <div class="cast-role"><span class="t-de">Die Ressourcen · Marc ist überbucht · Jason Kelly ist die Lösung</span><span class="t-en">The resources · Marc is overbooked · Jason Kelly is the solution</span></div>
+      <div class="cast-quote"><span class="t-de">Marc: 8h Stardust + 4h Apollo = 12h/Tag 🔴</span><span class="t-en">Marc: 8h Stardust + 4h Apollo = 12h/day 🔴</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- AGENDA -->
+<div class="agenda-card">
+  <h3>
+    <span class="t-de">Agenda — ⭐ Must-Show · 40–50 Min. Vollversion · 22 Min. Kurzversion (nur ⭐)</span>
+    <span class="t-en">Agenda — ⭐ Must-Show · 40–50 min. full · 22 min. short version (⭐ only)</span>
+  </h3>
+  <div class="agenda-grid">
+    <div class="agenda-item"><span class="agenda-num">1</span><a href="#rm-scene-01"><span class="t-de">Intro — Sandras Ausgangslage</span><span class="t-en">Intro — Sandra's starting point</span></a><span class="agenda-meta"><span class="agenda-time">3 min</span><span class="agenda-must">⭐</span></span></div>
+    <div class="agenda-item"><span class="agenda-num">2</span><a href="#rm-scene-02"><span class="t-de">Resource Management Kachel öffnen</span><span class="t-en">Open Resource Management tile</span></a><span class="agenda-meta"><span class="agenda-time">4 min</span><span class="agenda-must">⭐</span></span></div>
+    <div class="agenda-item"><span class="agenda-num">3</span><a href="#rm-scene-03"><span class="t-de">Utilization — Marcs Überlastung sehen</span><span class="t-en">Utilization — see Marc's overload</span></a><span class="agenda-meta"><span class="agenda-time">4 min</span><span class="agenda-must">⭐</span></span></div>
+    <div class="agenda-item"><span class="agenda-num">4</span><a href="#rm-scene-04"><span class="t-de">Resource Grid — Detailansicht Marc</span><span class="t-en">Resource Grid — Marc detail view</span></a><span class="agenda-meta"><span class="agenda-time">4 min</span><span class="agenda-opt">Optional</span></span></div>
+    <div class="agenda-item"><span class="agenda-num">5</span><a href="#rm-scene-05"><span class="t-de">Kapazitätsplanung — Verfügbarkeit prüfen</span><span class="t-en">Capacity planning — check availability</span></a><span class="agenda-meta"><span class="agenda-time">3 min</span><span class="agenda-must">⭐</span></span></div>
+    <div class="agenda-item"><span class="agenda-num">6</span><a href="#rm-scene-05"><span class="t-de">Skill-Suche — Jason Kelly finden</span><span class="t-en">Skill search — find Jason Kelly</span></a><span class="agenda-meta"><span class="agenda-time">3 min</span><span class="agenda-must">⭐</span></span></div>
+    <div class="agenda-item"><span class="agenda-num">7</span><a href="#rm-scene-07"><span class="t-de">What-If Szenario erstellen</span><span class="t-en">Create What-If scenario</span></a><span class="agenda-meta"><span class="agenda-time">5 min</span><span class="agenda-must">⭐</span></span></div>
+    <div class="agenda-item"><span class="agenda-num">8</span><a href="#rm-scene-08"><span class="t-de">Bulk Allocation — Resource Mode</span><span class="t-en">Bulk Allocation — Resource Mode</span></a><span class="agenda-meta"><span class="agenda-time">4 min</span><span class="agenda-must">⭐</span></span></div>
+    <div class="agenda-item"><span class="agenda-num">9</span><a href="#rm-scene-08"><span class="t-de">Anpassung + Entscheidung bestätigen</span><span class="t-en">Adjust + confirm decision</span></a><span class="agenda-meta"><span class="agenda-time">3 min</span><span class="agenda-must">⭐</span></span></div>
+    <div class="agenda-item"><span class="agenda-num">10</span><a href="#rm-scene-10"><span class="t-de">Availability Report</span><span class="t-en">Availability Report</span></a><span class="agenda-meta"><span class="agenda-time">4 min</span><span class="agenda-opt">Optional</span></span></div>
+    <div class="agenda-item"><span class="agenda-num">11</span><a href="#rm-scene-10"><span class="t-de">RAR2 — Portfolio-Perspektive</span><span class="t-en">RAR2 — portfolio perspective</span></a><span class="agenda-meta"><span class="agenda-time">4 min</span><span class="agenda-must">⭐</span></span></div>
+    <div class="agenda-item"><span class="agenda-num">12</span><a href="#rm-scene-12"><span class="t-de">Antwort an Reto — Schleife schliessen</span><span class="t-en">Reply to Reto — close the loop</span></a><span class="agenda-meta"><span class="agenda-time">3 min</span><span class="agenda-must">⭐</span></span></div>
+    <div class="agenda-item"><span class="agenda-num">13</span><a href="#rm-scene-13"><span class="t-de">Feedback &amp; Abschluss</span><span class="t-en">Feedback &amp; close</span></a><span class="agenda-meta"><span class="agenda-time">3 min</span><span class="agenda-must">⭐</span></span></div>
+  </div>
+</div>
+
+<!-- ══ SZENE 1 ══ -->
+<div class="scene" id="rm-scene-01">
+  <div class="scene-header">
+    <div class="scene-num-badge"><div class="scene-num-big">01</div><div class="scene-num-label">Intro</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Akt 1 — Sandras Alltag</span><span class="t-en">Act 1 — Sandra's daily reality</span></div>
+      <div class="scene-title"><span class="t-de">32 Ressourcen. 18 Projekte. Eine Nachricht.</span><span class="t-en">32 resources. 18 projects. One message.</span></div>
+      <div class="scene-subtitle"><span class="t-de">Das Publikum in Sandras Rolle einladen</span><span class="t-en">Invite the audience into Sandra's role</span></div>
+    </div>
+  </div>
+  <div class="scene-tags">
+    <span class="tag tag-rm">Storytelling</span>
+    <span class="tag tag-blue">Rollenperspektive</span>
+  </div>
+  <div class="scene-body">
+    <div class="box box-story">
+      <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say aloud</span></div>
+      <div class="box-body">
+        <span class="t-de">„Wir haben gerade gesehen, wie Reto ein Projekt anlegt — aus der Sicht des Projektmanagers. Jetzt wechseln wir die Perspektive. Denn während Reto plant, gibt es jemanden, der dafür sorgt, dass dieser Plan auch funktioniert: <strong>Sandra, die Resource Managerin.</strong><br><br>Sandra sieht nicht ein Projekt. Sie sieht <em>alle</em> Projekte gleichzeitig. Und heute Morgen hat sie eine Nachricht von Reto bekommen."</span>
+        <span class="t-en">"We've just seen how Reto creates a project — from the project manager's perspective. Now we switch views. Because while Reto plans, there's someone who makes sure that plan actually works: <strong>Sandra, the Resource Manager.</strong><br><br>Sandra doesn't see one project. She sees <em>all</em> projects at the same time. And this morning she got a message from Reto."</span>
+      </div>
+    </div>
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Während du klickst — Erklärpunkte</span><span class="t-en">While clicking — talking points</span></div>
+      <div class="box-body">
+        <div class="quote-line quote-sandra">
+          <span class="t-de">„Als Resource Manager sehe ich täglich: PMs planen mit Ressourcen, ohne zu wissen, was diese Ressource gerade noch alles macht. Genau das ändert Tempus."</span>
+          <span class="t-en">"As a resource manager I see it every day: PMs plan with resources without knowing what else that resource is currently doing. That's exactly what Tempus changes."</span>
+        </div>
+        <ul style="list-style:disc;padding-left:18px;margin-top:10px;font-size:14px;line-height:2;">
+          <li><span class="t-de">Resource Manager = <strong>cross-project Perspektive</strong> — nicht ein Projekt, sondern alle</span><span class="t-en">Resource manager = <strong>cross-project perspective</strong> — not one project, but all</span></li>
+          <li><span class="t-de">Sandra kennt Kapazität, Skills, Verfügbarkeit jeder Ressource</span><span class="t-en">Sandra knows the capacity, skills, availability of every resource</span></li>
+          <li><span class="t-de">Das Publikum einladen: <em>„Stellt euch vor, ihr seid Sandra. Retos Nachricht wartet."</em></span><span class="t-en">Invite the audience: <em>"Imagine you're Sandra. Reto's message is waiting."</em></span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-impact">
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
+      <div class="box-body">
+        <span class="t-de">„Ein PM sieht sein Projekt. Ein Resource Manager sieht das ganze Unternehmen. Tempus macht beide Sichten möglich — ohne Datenverlust dazwischen."</span>
+        <span class="t-en">"A PM sees their project. A resource manager sees the whole organisation. Tempus makes both views possible — without data loss in between."</span>
+      </div>
+    </div>
+    <div class="transition">→ <span class="t-de">„Sandra öffnet Tempus. Sie weiss, wo sie zuerst schauen muss."</span><span class="t-en">"Sandra opens Tempus. She knows exactly where to look first."</span></div>
+  </div>
+</div>
+
+<!-- ══ SZENE 2 ══ -->
+<div class="scene" id="rm-scene-02">
+  <div class="scene-header">
+    <div class="scene-num-badge"><div class="scene-num-big">02</div><div class="scene-num-label">RM Tile</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Akt 1 — Überblick</span><span class="t-en">Act 1 — Overview</span></div>
+      <div class="scene-title"><span class="t-de">Resource Management Kachel</span><span class="t-en">Resource Management tile</span></div>
+      <div class="scene-subtitle"><span class="t-de">Die Steuerzentrale des Resource Managers</span><span class="t-en">The resource manager's control centre</span></div>
+    </div>
+  </div>
+  <div class="scene-tags">
+    <span class="tag tag-rm">Resource Management</span>
+    <span class="tag tag-blue">Navigation</span>
+  </div>
+  <div class="scene-body">
+    <div class="box box-story">
+      <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say aloud</span></div>
+      <div class="box-body">
+        <span class="t-de">„Sandra öffnet Tempus. Nicht die Projektverwaltung, nicht das Reporting — sie geht direkt in die Kachel, die <em>ihr</em> gehört: Resource Management. Hier sieht sie auf einen Blick, was im ganzen Unternehmen gerade passiert."</span>
+        <span class="t-en">"Sandra opens Tempus. Not project management, not reporting — she goes straight to the tile that belongs to <em>her</em>: Resource Management. Here she sees at a glance what's happening across the entire organisation."</span>
+      </div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de">Kachel</span><span class="t-en">Tile</span> <span class="click-path">Resource Management</span> <span class="t-de">öffnen</span><span class="t-en">open</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Spalten prüfen: <strong>Name, Role, Capacity, Utilization, Availability</strong></span><span class="t-en">Check columns: <strong>Name, Role, Capacity, Utilization, Availability</strong></span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">Zeitraum setzen: <strong>Jan 2026 – Jun 2026</strong></span><span class="t-en">Set period: <strong>Jan 2026 – Jun 2026</strong></span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de">Utilization-Spalte sortieren — Überlastete oben</span><span class="t-en">Sort by Utilization column — overloaded resources at top</span></div></li>
+          <li><div class="click-step-num">5</div><div><span class="t-de"><strong>Marc</strong> suchen — Utilization in Rot sehen</span><span class="t-en">Search for <strong>Marc</strong> — see Utilization in red</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Während du klickst — Erklärpunkte</span><span class="t-en">While clicking — talking points</span></div>
+      <div class="box-body">
+        <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
+          <li><span class="t-de"><strong>Utilization-Spalte</strong>: grün = normal, gelb = leicht überbucht, rot = Problemfall</span><span class="t-en"><strong>Utilization column</strong>: green = normal, yellow = slightly overbooked, red = problem case</span></li>
+          <li><span class="t-de">Kein Öffnen von einzelnen Projekten nötig — Übersicht ist sofort da</span><span class="t-en">No need to open individual projects — overview is immediately available</span></li>
+          <li><span class="t-de">Zeitraum-Filter bestimmt, welche Projekte/Allocations berücksichtigt werden</span><span class="t-en">Time period filter determines which projects/allocations are considered</span></li>
+        </ul>
+        <div class="quote-line quote-sandra" style="margin-top:10px;">
+          <span class="t-de">„Ich sortiere zuerst nach Utilization. Was rot ist, braucht sofort Aufmerksamkeit."</span>
+          <span class="t-en">"I sort by utilization first. Whatever is red needs immediate attention."</span>
+        </div>
+      </div>
+    </div>
+    <div class="box box-impact">
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
+      <div class="box-body">
+        <span class="t-de">„Was früher drei E-Mails und ein Meeting brauchte, sieht Sandra jetzt in einer Spalte."</span>
+        <span class="t-en">"What used to take three emails and a meeting, Sandra now sees in a single column."</span>
+      </div>
+    </div>
+    <div class="transition">→ <span class="t-de">„Marc. Rot. Sandra klickt rein."</span><span class="t-en">"Marc. Red. Sandra clicks in."</span></div>
+  </div>
+</div>
+
+<!-- ══ SZENE 3 ══ -->
+<div class="scene" id="rm-scene-03">
+  <div class="scene-header">
+    <div class="scene-num-badge" style="background:linear-gradient(135deg,#991b1b,#b91c1c)"><div class="scene-num-big">03</div><div class="scene-num-label">Konflikt</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Akt 2 — Das Problem</span><span class="t-en">Act 2 — The problem</span></div>
+      <div class="scene-title"><span class="t-de">Marc ist überbucht — 12h/Tag im März</span><span class="t-en">Marc is overbooked — 12h/day in March</span></div>
+      <div class="scene-subtitle"><span class="t-de">Stardust 8h + Apollo 4h · Genau das zeigt Tempus</span><span class="t-en">Stardust 8h + Apollo 4h · Tempus shows this exactly</span></div>
+    </div>
+  </div>
+  <div class="scene-tags">
+    <span class="tag tag-red">Ressourcenkonflikt</span>
+    <span class="tag tag-rm">Utilization</span>
+    <span class="tag tag-blue">Stardust + Apollo</span>
+  </div>
+  <div class="scene-body">
+    <div class="box box-story">
+      <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say aloud</span></div>
+      <div class="box-body">
+        <span class="t-de">„Marc ist rot. Sandra sieht auf einen Blick: Marc ist im März mit 12 Stunden täglich eingeplant. Das ist das Ergebnis von zwei Projekten, die unabhängig voneinander geplant wurden — <em>ohne</em> Gesamtsicht. Genau das ist das Problem, das Tempus löst."</span>
+        <span class="t-en">"Marc is red. Sandra sees at a glance: Marc is scheduled for 12 hours a day in March. This is the result of two projects planned independently — <em>without</em> an overall view. That's exactly the problem Tempus solves."</span>
+      </div>
+    </div>
+    <div class="box box-conflict">
+      <div class="box-header"><span class="box-icon">⚠️</span><span class="t-de">Der Konflikt — Live-Daten im System</span><span class="t-en">The conflict — live data in the system</span></div>
+      <div class="box-body">
+        <p style="font-size:13px;margin-bottom:12px;"><span class="t-de">Diese Daten wurden via Supergrid API eingespielt und sind direkt sichtbar:</span><span class="t-en">This data was loaded via Supergrid API and is directly visible:</span></p>
+        <div class="util-bar"><div class="util-fill util-red" style="width:160px;"></div><span style="font-size:13px;font-weight:700;color:#991b1b;">Marc · März 2026 · 150% (12h/8h)</span></div>
+        <div style="margin-top:10px;font-size:13px;">
+          <div style="display:flex;gap:20px;margin-bottom:6px;">
+            <div><strong>Stardust</strong> · Konzeption &amp; Analyse</div><div style="color:#ef4444;font-weight:600;">8 h/Tag geplant</div>
+          </div>
+          <div style="display:flex;gap:20px;">
+            <div><strong>Apollo</strong> · Strategie &amp; Planung</div><div style="color:#ef4444;font-weight:600;">4 h/Tag geplant</div>
+          </div>
+          <div style="margin-top:8px;padding:8px 12px;background:#fef2f2;border:1px solid #fca5a5;border-radius:5px;font-weight:700;color:#991b1b;">
+            = 12 h/Tag · Normal-Kapazität = 8 h → +50% überbucht
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de">Marc anklicken → Detailansicht öffnet sich</span><span class="t-en">Click Marc → detail view opens</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Zeitraum Feb–Apr 2026 setzen</span><span class="t-en">Set period Feb–Apr 2026</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">Projekt-Aufschlüsselung zeigen: <strong>Stardust</strong> + <strong>Apollo</strong> beide sichtbar</span><span class="t-en">Show project breakdown: <strong>Stardust</strong> + <strong>Apollo</strong> both visible</span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de">Roten Bereich im März zeigen — <strong>50% Überbuchung</strong></span><span class="t-en">Show red area in March — <strong>50% overbooking</strong></span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-reto">
+      <div class="box-header"><span class="box-icon">📱</span><span class="t-de">Reto / Peter tauchen auf</span><span class="t-en">Reto / Peter appear</span></div>
+      <div class="box-body">
+        <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:5px;padding:7px 12px;font-size:12px;margin-bottom:10px;">
+          <strong style="color:#92400e;"><span class="t-de">ℹ️ Nur bei kombinierter PM+RM Demo:</span><span class="t-en">ℹ️ Only for combined PM+RM demo:</span></strong>
+          <span style="color:#78350f;"> <span class="t-de">Diesen Block überspringen wenn diese Demo standalone (ohne vorherige PM-Demo) gezeigt wird. Alternativ: kurz erklären wer Peter ist.</span><span class="t-en">Skip this block if this demo is shown standalone (without preceding PM demo). Alternatively: briefly explain who Peter is.</span></span>
+        </div>
+        <p style="font-size:13px;margin-bottom:10px;"><span class="t-de">Peter (der aus der PM-Demo) schaut Sandra über die Schulter. Er sagt:</span><span class="t-en">Peter (from the PM demo) is looking over Sandra's shoulder. He says:</span></p>
+        <div class="quote-line quote-peter">
+          <span class="t-de">„Warte mal — ich habe Reto geholfen, Marc einzuplanen. Das sah doch gut aus? Wir hatten keinen Hinweis, dass er überbucht ist."</span>
+          <span class="t-en">"Wait a minute — I helped Reto schedule Marc. That looked fine? We had no indication he was overbooked."</span>
+        </div>
+        <p style="font-size:13px;color:var(--gray-700);margin-top:8px;">
+          <span class="t-de">→ Sandra: <em>„Genau. Aus der Projektsicht war Marc verfügbar. Aber er war es eben nicht. Ihr habt Apollo nicht gesehen. Das ist kein Fehler von euch — das ist ein Informationsproblem. Tempus löst es."</em></span>
+          <span class="t-en">→ Sandra: <em>"Exactly. From the project view Marc was available. But he wasn't. You didn't see Apollo. That's not your fault — it's an information problem. Tempus solves it."</em></span>
+        </p>
+      </div>
+    </div>
+    <div class="box box-impact">
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
+      <div class="box-body">
+        <span class="t-de">„Überbuchung entsteht nicht aus Fahrlässigkeit. Sie entsteht aus fehlender Transparenz. Tempus macht Transparenz zum Standard."</span>
+        <span class="t-en">"Overbooking doesn't come from negligence. It comes from missing transparency. Tempus makes transparency the default."</span>
+      </div>
+    </div>
+    <div class="transition">→ <span class="t-de">„Sandra weiss: Marc muss entlastet werden. Aber wen kann sie einsetzen?"</span><span class="t-en">"Sandra knows: Marc needs to be relieved. But who can she bring in?"</span></div>
+  </div>
+</div>
+
+<!-- ══ SZENE 4 ══ -->
+<div class="scene" id="rm-scene-04">
+  <div class="scene-header">
+    <div class="scene-num-badge"><div class="scene-num-big">04</div><div class="scene-num-label">Grid</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Akt 2 — Analyse</span><span class="t-en">Act 2 — Analysis</span></div>
+      <div class="scene-title"><span class="t-de">Resource Grid — Marcs vollständiger Kalender</span><span class="t-en">Resource Grid — Marc's full calendar</span></div>
+      <div class="scene-subtitle"><span class="t-de">Alle Projekte einer Ressource auf einen Blick</span><span class="t-en">All projects of one resource at a glance</span></div>
+    </div>
+  </div>
+  <div class="scene-tags">
+    <span class="tag tag-rm">Resource Grid</span>
+    <span class="tag tag-blue">Detailansicht</span>
+    <span class="tag tag-teal">Planned vs. Actual</span>
+  </div>
+  <div class="scene-body">
+    <div class="box box-story">
+      <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say aloud</span></div>
+      <div class="box-body">
+        <span class="t-de">„Sandra öffnet Marcs Ressourcen-Detailansicht. Nicht um ihn zu kontrollieren — sondern um zu verstehen, <em>wann genau</em> er überlastet ist und ob es vielleicht nur in einem bestimmten Zeitraum ein Problem gibt."</span>
+        <span class="t-en">"Sandra opens Marc's resource detail view. Not to check on him — but to understand <em>exactly when</em> he is overloaded and whether it might only be a problem in a specific timeframe."</span>
+      </div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de"><span class="click-path">Resource Management → Marc → Detailansicht</span></span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Alle zugewiesenen Projekte in der Zeitleiste zeigen</span><span class="t-en">Show all assigned projects in the timeline</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de"><strong>Planned vs. Actual</strong> umschalten — wie viel hat er wirklich gearbeitet?</span><span class="t-en">Switch <strong>Planned vs. Actual</strong> — how much did he actually work?</span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de">Zeigen: Konzeptionsphase Stardust — Actual 9.5h/d vs. Planned 8h/d</span><span class="t-en">Show: Stardust conception phase — Actual 9.5h/d vs. Planned 8h/d</span></div></li>
+          <li><div class="click-step-num">5</div><div><span class="t-de">Zeigen: Ab April — Marc auch in Stardust Phase 2 als Tech Lead (3h)</span><span class="t-en">Show: From April — Marc also in Stardust Phase 2 as Tech Lead (3h)</span></div></li>
+        </ul>
+        <p style="margin-top:10px;font-size:13px;color:var(--gray-500);">💡 <span class="t-de">Actual-Daten für Marc via API eingespielt: Feb–Mär 2026, 9–10h/Tag</span><span class="t-en">Actual data for Marc loaded via API: Feb–Mar 2026, 9–10h/day</span></p>
+      </div>
+    </div>
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Während du klickst — Erklärpunkte</span><span class="t-en">While clicking — talking points</span></div>
+      <div class="box-body">
+        <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
+          <li><span class="t-de">Resource Grid zeigt alle Projekte einer Person — vollständige Sicht in einem Screen</span><span class="t-en">Resource Grid shows all projects for one person — complete view in one screen</span></li>
+          <li><span class="t-de">Planned vs. Actual direkt vergleichbar — Abweichungen sofort erkennbar</span><span class="t-en">Planned vs. Actual directly comparable — deviations immediately visible</span></li>
+          <li><span class="t-de">Sandra sieht: Das Problem ist im März kritisch, April wird es besser</span><span class="t-en">Sandra sees: The problem is critical in March, April will be better</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-impact">
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
+      <div class="box-body">
+        <span class="t-de">„Sandra muss nicht fragen. Sie muss nicht warten. Die Antwort ist im System — sie muss nur hinschauen."</span>
+        <span class="t-en">"Sandra doesn't need to ask. She doesn't need to wait. The answer is in the system — she just has to look."</span>
+      </div>
+    </div>
+    <div class="transition">→ <span class="t-de">„Der März ist das Problem. Sandra sucht eine Alternative."</span><span class="t-en">"March is the problem. Sandra looks for an alternative."</span></div>
+  </div>
+</div>
+
+<!-- ══ SZENE 5+6 ══ -->
+<div class="scene" id="rm-scene-05">
+  <div class="scene-header">
+    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--rm),#059669)"><div class="scene-num-big">5<span style="font-size:16px;">/6</span></div><div class="scene-num-label">Lösung</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Akt 3 — Die Lösung</span><span class="t-en">Act 3 — The solution</span></div>
+      <div class="scene-title"><span class="t-de">Kapazitätsprüfung + Skill-Suche</span><span class="t-en">Capacity check + Skill search</span></div>
+      <div class="scene-subtitle"><span class="t-de">Verfügbarkeit prüfen — dann die richtige Person finden</span><span class="t-en">Check availability — then find the right person</span></div>
+    </div>
+  </div>
+  <div class="scene-tags">
+    <span class="tag tag-rm">Availability</span>
+    <span class="tag tag-green">Skill Search</span>
+    <span class="tag tag-teal">Jason Kelly</span>
+  </div>
+  <div class="scene-body">
+    <div class="box box-story">
+      <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say aloud</span></div>
+      <div class="box-body">
+        <span class="t-de">„Sandra weiss jetzt, wann das Problem akut ist: März 2026. Jetzt muss sie herausfinden, ob es jemanden gibt, der Marc in dieser Phase entlasten kann — jemand mit den richtigen Skills und freier Kapazität. Früher: Telefonkette. Heute: Skill-Suche in Tempus."</span>
+        <span class="t-en">"Sandra now knows when the problem is acute: March 2026. Now she needs to find out whether there's someone who can relieve Marc during this phase — someone with the right skills and available capacity. Previously: phone chain. Today: skill search in Tempus."</span>
+      </div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad — Szene 5: Kapazität</span><span class="t-en">Click path — Scene 5: Capacity</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de">Resource Management → Filter: <strong>Zeitraum März 2026</strong></span><span class="t-en">Resource Management → Filter: <strong>Period March 2026</strong></span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Spalte <strong>Availability</strong> anzeigen — freie Stunden pro Ressource sichtbar</span><span class="t-en">Show <strong>Availability</strong> column — free hours per resource visible</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">Ressourcen mit grüner Utilization und freien Stunden identifizieren</span><span class="t-en">Identify resources with green utilization and free hours</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-click" style="margin-top:4px;">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad — Szene 6: Skills</span><span class="t-en">Click path — Scene 6: Skills</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de">Resource Management → <span class="click-path">Skill Filter</span> öffnen</span><span class="t-en">Resource Management → open <span class="click-path">Skill Filter</span></span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Skill-Kategorie wählen: <strong>Programming Languages</strong> → Skill: <strong>Java</strong> oder <strong>JavaScript</strong></span><span class="t-en">Select skill category: <strong>Programming Languages</strong> → Skill: <strong>Java</strong> or <strong>JavaScript</strong></span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">Ergebnis: <strong>Jason Kelly</strong> erscheint — Java (Expert), JavaScript (Proficient), März noch verfügbar ✓</span><span class="t-en">Result: <strong>Jason Kelly</strong> appears — Java (Expert), JavaScript (Proficient), available in March ✓</span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de">Jason's Profil ansehen: Projekte, aktuelle Auslastung, Skills</span><span class="t-en">View Jason's profile: projects, current load, skills</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Während du klickst — Erklärpunkte</span><span class="t-en">While clicking — talking points</span></div>
+      <div class="box-body">
+        <div class="quote-line quote-sandra">
+          <span class="t-de">„Ich suche nicht nach einem Namen. Ich suche nach einem Profil — Skills + Verfügbarkeit + Kapazität. Das ist der Unterschied."</span>
+          <span class="t-en">"I'm not looking for a name. I'm looking for a profile — skills + availability + capacity. That's the difference."</span>
+        </div>
+        <ul style="list-style:disc;padding-left:18px;margin-top:10px;font-size:14px;line-height:2;">
+          <li><span class="t-de">Skills werden in Tempus direkt an Ressourcen gepflegt → Grundlage für die Suche</span><span class="t-en">Skills are maintained directly on resources in Tempus → basis for search</span></li>
+          <li><span class="t-de">Availability = Kapazität minus bereits geplante Stunden</span><span class="t-en">Availability = capacity minus already planned hours</span></li>
+          <li><span class="t-de">Jason Kelly ist bereits in Stardust Phase 2 (ab April) — im März noch weitgehend frei</span><span class="t-en">Jason Kelly is already in Stardust Phase 2 (from April) — largely free in March</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-reto">
+      <div class="box-header"><span class="box-icon">📱</span><span class="t-de">Peter fragt</span><span class="t-en">Peter asks</span></div>
+      <div class="box-body">
+        <div class="quote-line quote-peter">
+          <span class="t-de">„Was ist wenn Jason die Skills hat, aber gerade im Urlaub ist oder krank wird?"</span>
+          <span class="t-en">"What if Jason has the skills but is currently on holiday or gets sick?"</span>
+        </div>
+        <p style="font-size:13px;color:var(--gray-700);margin-top:8px;">
+          <span class="t-de">→ Sandra: <em>„Gute Frage. Abwesenheiten werden in Tempus als AdminTimes erfasst — die Kapazität sinkt dann automatisch. Das sehe ich sofort in der Availability-Spalte. Kein manuelles Nachfragen nötig."</em></span>
+          <span class="t-en">→ Sandra: <em>"Good question. Absences are recorded in Tempus as AdminTimes — capacity automatically decreases. I see this immediately in the availability column. No manual checking needed."</em></span>
+        </p>
+      </div>
+    </div>
+    <div class="box box-impact">
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
+      <div class="box-body">
+        <span class="t-de">„Die richtige Person zu finden war früher Bauchgefühl und Erfahrung. Heute ist es eine Suche."</span>
+        <span class="t-en">"Finding the right person used to rely on gut feeling and experience. Today it's a search."</span>
+      </div>
+    </div>
+    <div class="transition">→ <span class="t-de">„Sandra hat Jason gefunden. Aber bevor sie ihn einplant, prüft sie eine Frage: Was-wäre-wenn?"</span><span class="t-en">"Sandra has found Jason. But before scheduling him, she checks one question: what if?"</span></div>
+  </div>
+</div>
+
+<!-- ══ SZENE 7 ══ -->
+<div class="scene" id="rm-scene-07">
+  <div class="scene-header">
+    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--purple),#7c3aed)"><div class="scene-num-big">07</div><div class="scene-num-label">What-If</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Akt 3 — Was-wäre-wenn</span><span class="t-en">Act 3 — What if</span></div>
+      <div class="scene-title"><span class="t-de">What-If Szenario — Konsequenzen prüfen vor dem Commit</span><span class="t-en">What-If scenario — check consequences before committing</span></div>
+      <div class="scene-subtitle"><span class="t-de">Szenario erstellen · Auswirkung sehen · Entscheidung treffen</span><span class="t-en">Create scenario · see impact · make decision</span></div>
+    </div>
+  </div>
+  <div class="scene-tags">
+    <span class="tag tag-purple">What-If</span>
+    <span class="tag tag-rm">Szenario-Planung</span>
+    <span class="tag tag-orange">Entscheidungsgrundlage</span>
+  </div>
+  <div class="scene-body">
+    <div class="box box-story">
+      <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say aloud</span></div>
+      <div class="box-body">
+        <span class="t-de">„Sandra überlegt: Jason für März in Stardust einzuplanen entlastet Marc — aber was bedeutet das für Jason's andere Projekte? Bevor sie eine Entscheidung trifft, die das System verändert, erstellt sie ein What-If Szenario. Sie plant in einem geschützten Rahmen — und schaut sich erst dann die Konsequenzen an."</span>
+        <span class="t-en">"Sandra thinks: scheduling Jason into Stardust for March relieves Marc — but what does that mean for Jason's other projects? Before making a decision that changes the system, she creates a What-If scenario. She plans in a protected space — and only then looks at the consequences."</span>
+      </div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="click-path">What-If</span> <span class="t-de">Kachel öffnen</span><span class="t-en">tile open</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">„Neues Szenario" erstellen: <strong>„Jason Stardust März"</strong></span><span class="t-en">Create "New Scenario": <strong>"Jason Stardust March"</strong></span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">Im Szenario: Jason Kelly zu Stardust · Konzeption &amp; Analyse · März 2026 · 4h/Tag hinzufügen</span><span class="t-en">In scenario: add Jason Kelly to Stardust · Conception &amp; Analysis · March 2026 · 4h/day</span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de">Gleichzeitig: Marc's Stunden in März von 8h auf 4h reduzieren</span><span class="t-en">Simultaneously: reduce Marc's March hours from 8h to 4h</span></div></li>
+          <li><div class="click-step-num">5</div><div><span class="t-de">Ergebnis prüfen: Marc-Utilization März → von 150% auf 100% — <strong>kein Rot mehr</strong></span><span class="t-en">Check result: Marc utilization March → from 150% to 100% — <strong>no more red</strong></span></div></li>
+          <li><div class="click-step-num">6</div><div><span class="t-de">Jason's Utilization März: von ~60% auf ~100% — <strong>grün</strong></span><span class="t-en">Jason's March utilization: from ~60% to ~100% — <strong>green</strong></span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Während du klickst — Erklärpunkte</span><span class="t-en">While clicking — talking points</span></div>
+      <div class="box-body">
+        <div class="quote-line quote-sandra">
+          <span class="t-de">„Das Szenario verändert nichts im echten System. Es ist mein Sandkasten. Erst wenn ich sicher bin, dass es funktioniert — dann bestätige ich."</span>
+          <span class="t-en">"The scenario changes nothing in the real system. It's my sandbox. Only when I'm sure it works — then I confirm."</span>
+        </div>
+        <ul style="list-style:disc;padding-left:18px;margin-top:10px;font-size:14px;line-height:2;">
+          <li><span class="t-de">What-If ist <strong>nicht gespeichert</strong> bis man es aktiviert — null Risiko beim Ausprobieren</span><span class="t-en">What-If is <strong>not saved</strong> until you activate it — zero risk when trying things out</span></li>
+          <li><span class="t-de">Mehrere Szenarien vergleichbar — z.B. Jason vs. andere Alternative</span><span class="t-en">Multiple scenarios comparable — e.g. Jason vs. another alternative</span></li>
+          <li><span class="t-de">Was-wäre-wenn-Denken ist das Kerngeschäft des Resource Managers</span><span class="t-en">What-if thinking is the core business of the resource manager</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-reto">
+      <div class="box-header"><span class="box-icon">📱</span><span class="t-de">Peter fragt</span><span class="t-en">Peter asks</span></div>
+      <div class="box-body">
+        <div class="quote-line quote-peter">
+          <span class="t-de">„Kann ich als PM auch What-If Szenarien erstellen — oder nur der Resource Manager?"</span>
+          <span class="t-en">"Can I as a PM also create What-If scenarios — or only the resource manager?"</span>
+        </div>
+        <p style="font-size:13px;color:var(--gray-700);margin-top:8px;">
+          <span class="t-de">→ <em>„Das hängt von den Berechtigungen ab. Typischerweise kann der RM globale Szenarien erstellen — der PM sieht nur seine Projekte. Das schützt vor unkontrollierten Änderungen."</em></span>
+          <span class="t-en">→ <em>"That depends on permissions. Typically the RM can create global scenarios — the PM only sees their projects. That protects against uncontrolled changes."</em></span>
+        </p>
+      </div>
+    </div>
+    <div class="box box-impact">
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
+      <div class="box-body">
+        <span class="t-de">„What-If macht aus dem Bauchgefühl eine Entscheidungsgrundlage."</span>
+        <span class="t-en">"What-If turns gut feeling into a basis for decision-making."</span>
+      </div>
+    </div>
+    <div class="transition">→ <span class="t-de">„Das Szenario funktioniert. Sandra bestätigt — und setzt die Änderung direkt um."</span><span class="t-en">"The scenario works. Sandra confirms — and implements the change directly."</span></div>
+  </div>
+</div>
+
+<!-- ══ SZENE 8+9 ══ -->
+<div class="scene" id="rm-scene-08">
+  <div class="scene-header">
+    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--navy-mid),var(--teal))"><div class="scene-num-big">8<span style="font-size:16px;">/9</span></div><div class="scene-num-label">Bulk RM</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Akt 3 — Umsetzung</span><span class="t-en">Act 3 — Implementation</span></div>
+      <div class="scene-title"><span class="t-de">Bulk Allocation im Resource Mode</span><span class="t-en">Bulk Allocation in Resource Mode</span></div>
+      <div class="scene-subtitle"><span class="t-de">Alle Projekte einer Ressource · Zeile sperren · Stunden anpassen · Speichern</span><span class="t-en">All projects of one resource · lock row · adjust hours · save</span></div>
+    </div>
+  </div>
+  <div class="scene-tags">
+    <span class="tag tag-blue">Bulk Allocation</span>
+    <span class="tag tag-rm">Resource Mode</span>
+    <span class="tag tag-teal">Mobilschloss</span>
+  </div>
+  <div class="scene-body">
+    <div class="box box-story">
+      <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say aloud</span></div>
+      <div class="box-body">
+        <span class="t-de">„Sandra hat die Lösung. Jetzt setzt sie sie um. Sie öffnet die Bulk Project Allocation — aber diesmal nicht im Default Mode, den Reto gezeigt hat. Sie nutzt den <strong>Resource Mode</strong>: eine Ressource, alle Projekte dieser Ressource auf einer Zeile. Perfekt für genau diese Situation."</span>
+        <span class="t-en">"Sandra has the solution. Now she implements it. She opens Bulk Project Allocation — but this time not in the Default Mode that Reto showed. She uses <strong>Resource Mode</strong>: one resource, all projects of that resource in one row. Perfect for exactly this situation."</span>
+      </div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad — Szene 8: Resource Mode</span><span class="t-en">Click path — Scene 8: Resource Mode</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="click-path">Bulk Project Allocation</span> <span class="t-de">öffnen</span><span class="t-en">open</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Modus wechseln: <span class="click-path">Default → Resource Mode</span></span><span class="t-en">Switch mode: <span class="click-path">Default → Resource Mode</span></span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">Ressource wählen: <strong>Marc</strong></span><span class="t-en">Select resource: <strong>Marc</strong></span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de">Zeitraum: <strong>Feb–Apr 2026</strong> — alle Projekte von Marc sichtbar</span><span class="t-en">Period: <strong>Feb–Apr 2026</strong> — all of Marc's projects visible</span></div></li>
+          <li><div class="click-step-num">5</div><div><span class="t-de"><strong>Mobilschloss-Icon</strong> zeigen — Zeile beim Bearbeiten automatisch gesperrt</span><span class="t-en">Show <strong>mobile lock icon</strong> — row automatically locked while editing</span></div></li>
+          <li><div class="click-step-num">6</div><div><span class="t-de">Stundenwert für Stardust/März anpassen: 8h → 4h</span><span class="t-en">Adjust hours for Stardust/March: 8h → 4h</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-click" style="margin-top:4px;">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad — Szene 9: Jason einplanen</span><span class="t-en">Click path — Scene 9: Schedule Jason</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de">Ressource wechseln auf <strong>Jason Kelly</strong></span><span class="t-en">Switch resource to <strong>Jason Kelly</strong></span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Stardust in Jasons Zeilen suchen (bereits in Phase 2 eingeplant)</span><span class="t-en">Find Stardust in Jason's rows (already planned for Phase 2)</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">März-Stunden für Stardust Konzeption: 0 → 4h eintragen</span><span class="t-en">Enter March hours for Stardust Conception: 0 → 4h</span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de"><span class="click-path">Speichern</span> — beide Änderungen werden gemeinsam committed</span><span class="t-en"><span class="click-path">Save</span> — both changes are committed together</span></div></li>
+          <li><div class="click-step-num">5</div><div><span class="t-de">Zurück zu Resource Management → Marc's Utilization März: jetzt <strong>grün</strong> ✓</span><span class="t-en">Back to Resource Management → Marc's March utilization: now <strong>green</strong> ✓</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Während du klickst — Erklärpunkte</span><span class="t-en">While clicking — talking points</span></div>
+      <div class="box-body">
+        <div class="quote-line quote-sandra">
+          <span class="t-de">„Das Mobilschloss bedeutet: Während ich diese Zeile bearbeite, sieht jeder andere Nutzer im System, dass sie gesperrt ist. Keine versehentlichen Doppeländerungen."</span>
+          <span class="t-en">"The mobile lock means: while I'm editing this row, every other user in the system sees that it's locked. No accidental double changes."</span>
+        </div>
+        <ul style="list-style:disc;padding-left:18px;margin-top:10px;font-size:14px;line-height:2;">
+          <li><span class="t-de">Resource Mode = perfekt für RM: eine Person, alle Projekte, ein Blick</span><span class="t-en">Resource Mode = perfect for RM: one person, all projects, one view</span></li>
+          <li><span class="t-de">Änderungen werden erst bei <strong>Speichern</strong> für alle sichtbar</span><span class="t-en">Changes only become visible to everyone when you <strong>save</strong></span></li>
+          <li><span class="t-de">Verbindung zur Stardust-Story: Jason war schon ab April geplant — diese Lücke zu füllen war logisch</span><span class="t-en">Connection to the Stardust story: Jason was already planned from April — filling this gap was logical</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-impact">
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
+      <div class="box-body">
+        <span class="t-de">„Sandra hat in 8 Minuten ein Problem gelöst, für das früher ein Meeting, drei E-Mails und ein Telefonkette gebraucht hätten."</span>
+        <span class="t-en">"Sandra solved in 8 minutes a problem that previously would have required a meeting, three emails and a phone chain."</span>
+      </div>
+    </div>
+    <div class="transition">→ <span class="t-de">„Marc ist entlastet. Aber Sandra schaut noch weiter — was kommt als nächstes?"</span><span class="t-en">"Marc is relieved. But Sandra looks further ahead — what's coming next?"</span></div>
+  </div>
+</div>
+
+<!-- ══ SZENE 10+11 ══ -->
+<div class="scene" id="rm-scene-10">
+  <div class="scene-header">
+    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--navy),var(--navy-mid))"><div class="scene-num-big">10<span style="font-size:14px;">/11</span></div><div class="scene-num-label">Reports</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Akt 4 — Vorausschau</span><span class="t-en">Act 4 — Looking ahead</span></div>
+      <div class="scene-title"><span class="t-de">Availability Report + RAR2</span><span class="t-en">Availability Report + RAR2</span></div>
+      <div class="scene-subtitle"><span class="t-de">Nächste Engpässe erkennen · Katherine im Q2 · Portfolio-Sicht</span><span class="t-en">Identify next bottlenecks · Katherine in Q2 · portfolio view</span></div>
+    </div>
+  </div>
+  <div class="scene-tags">
+    <span class="tag tag-blue">Availability Report</span>
+    <span class="tag tag-purple">RAR2</span>
+    <span class="tag tag-orange">Katherine · Q2 Konflikt</span>
+  </div>
+  <div class="scene-body">
+    <div class="box box-story">
+      <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say aloud</span></div>
+      <div class="box-body">
+        <span class="t-de">„Sandra hat Marcs Problem gelöst. Aber gute Resource Manager reagieren nicht nur — sie <em>antizipieren</em>. Sie öffnet den Availability Report und schaut, wer in den nächsten Monaten zum Problem werden könnte. Und sie sieht es: Katherine Thompson. Ab Mai 2026 in Stardust <em>und</em> Amber eingeplant."</span>
+        <span class="t-en">"Sandra has solved Marc's problem. But good resource managers don't just react — they <em>anticipate</em>. She opens the Availability Report and looks at who might become a problem in the coming months. And she sees it: Katherine Thompson. Scheduled in Stardust <em>and</em> Amber from May 2026."</span>
+      </div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad — Availability Report</span><span class="t-en">Click path — Availability Report</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="click-path">Report Management</span> <span class="t-de">öffnen</span><span class="t-en">open</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Report-Typ: <strong>Availability / Verfügbarkeit</strong> wählen</span><span class="t-en">Report type: choose <strong>Availability</strong></span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">Zeitraum: <strong>Apr–Jul 2026</strong> · Alle aktiven Projekte</span><span class="t-en">Period: <strong>Apr–Jul 2026</strong> · All active projects</span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de"><strong>Katherine Thompson</strong> suchen → Mai-Jun: Stardust + Amber überlagern sich</span><span class="t-en">Search <strong>Katherine Thompson</strong> → May-Jun: Stardust + Amber overlap</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-click" style="margin-top:4px;">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad — RAR2 Charts</span><span class="t-en">Click path — RAR2 Charts</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de">RAR2 Report öffnen: <strong>alle Ressourcen, Q1–Q2 2026</strong></span><span class="t-en">Open RAR2 Report: <strong>all resources, Q1–Q2 2026</strong></span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Balkendiagramm: Marc (jetzt entlastet, grün) zeigen</span><span class="t-en">Bar chart: show Marc (now relieved, green)</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">Katherine: ab Mai beginnende Überlagerung sichtbar machen</span><span class="t-en">Katherine: make the emerging overlap visible from May</span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de">„Früher hätten wir das erst im Juni bemerkt. Heute: heute."</span><span class="t-en">"We would have noticed that in June. Today: today."</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Während du klickst — Erklärpunkte</span><span class="t-en">While clicking — talking points</span></div>
+      <div class="box-body">
+        <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
+          <li><span class="t-de"><strong>Availability Report</strong>: monatliche freie Kapazität pro Person → für neue Projektanfragen</span><span class="t-en"><strong>Availability Report</strong>: monthly free capacity per person → for new project requests</span></li>
+          <li><span class="t-de"><strong>RAR2</strong>: visueller Barchart, Plan vs. Actual, ideal für Management-Präsentationen</span><span class="t-en"><strong>RAR2</strong>: visual barchart, plan vs. actual, ideal for management presentations</span></li>
+          <li><span class="t-de">Das gleiche RAR2 das Reto als PM nutzt — aber Sandra sieht <em>alle</em> Ressourcen, nicht nur eine</span><span class="t-en">The same RAR2 that Reto uses as PM — but Sandra sees <em>all</em> resources, not just one</span></div></li>
+        </ul>
+        <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;padding:10px 12px;margin-top:10px;font-size:13px;">
+          <strong style="color:#991b1b;">⚡ Nächster Engpass — Katherine (via API-Daten sichtbar):</strong>
+          <div style="margin-top:6px;color:#7f1d1d;">Stardust · Konzeption: 6h/d (Mai–Jun) + Amber · Umsetzung: 7h/d (ab Mai) = 13h/Tag 🔴</div>
+        </div>
+      </div>
+    </div>
+    <div class="box box-impact">
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
+      <div class="box-body">
+        <span class="t-de">„Ein guter Resource Manager löst nicht nur das Problem von heute. Er verhindert das Problem von morgen."</span>
+        <span class="t-en">"A good resource manager doesn't just solve today's problem. They prevent tomorrow's problem."</span>
+      </div>
+    </div>
+    <div class="transition">→ <span class="t-de">„Sandra schreibt Reto zurück. Und erklärt Peter, warum die PM-Sicht und die RM-Sicht zwei Seiten derselben Medaille sind."</span><span class="t-en">"Sandra writes back to Reto. And explains to Peter why the PM view and RM view are two sides of the same coin."</span></div>
+  </div>
+</div>
+
+<!-- ══ SZENE 12 ══ -->
+<div class="scene" id="rm-scene-12">
+  <div class="scene-header">
+    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--reto),#0284c7)"><div class="scene-num-big">12</div><div class="scene-num-label">Schleife</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Akt 4 — Schleife schliessen</span><span class="t-en">Act 4 — Close the loop</span></div>
+      <div class="scene-title"><span class="t-de">Antwort an Reto — 9 Minuten nach seiner Nachricht</span><span class="t-en">Reply to Reto — 9 minutes after his message</span></div>
+      <div class="scene-subtitle"><span class="t-de">PM + RM = ein System · keine Informationslücke</span><span class="t-en">PM + RM = one system · no information gap</span></div>
+    </div>
+  </div>
+  <div class="scene-tags">
+    <span class="tag tag-rm">Story-Abschluss</span>
+    <span class="tag tag-blue">PM + RM Verbindung</span>
+  </div>
+  <div class="scene-body">
+    <div class="box box-story">
+      <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say aloud</span></div>
+      <div class="box-body">
+        <span class="t-de">9:23 Uhr. Neun Minuten nach Retos Nachricht. Sandra schreibt zurück.</span>
+        <span class="t-en">9:23 AM. Nine minutes after Reto's message. Sandra writes back.</span>
+        <div class="chat-window" style="margin-top:16px;">
+          <div class="chat-name">💬 WhatsApp · <span class="t-de">Reto Renner</span><span class="t-en">Reto Renner</span></div>
+          <div class="whatsapp-bubble outgoing">
+            <span class="t-de">„Marc war überbucht — Stardust + Apollo = 12h/Tag. Ich habe Jason für den März eingesprungen. Marc ist jetzt auf 100%. Aber: Katherine wird im Mai ein Problem. Schreib mir kurz, bevor du sie für Amber final einplanst. 🙂"</span>
+            <span class="t-en">"Marc was overbooked — Stardust + Apollo = 12h/day. I brought in Jason for March. Marc is now at 100%. But: Katherine will be a problem in May. Drop me a message before you finalise her for Amber. 🙂"</span>
+          </div>
+          <div class="whatsapp-bubble incoming" style="margin-top:8px;">
+            <span class="t-de">„Wow. Das war schnell. Danke!! 🙏"</span>
+            <span class="t-en">"Wow. That was fast. Thanks!! 🙏"</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="box box-reto">
+      <div class="box-header"><span class="box-icon">📱</span><span class="t-de">Peters Reaktion</span><span class="t-en">Peter's reaction</span></div>
+      <div class="box-body">
+        <div class="quote-line quote-peter">
+          <span class="t-de">„Also ihr macht eigentlich die gleiche Arbeit wie wir — nur von der anderen Seite. Und weil ihr dasselbe System nutzt, entsteht keine Lücke dazwischen."</span>
+          <span class="t-en">"So you're basically doing the same work as us — just from the other side. And because you use the same system, there's no gap in between."</span>
+        </div>
+        <p style="font-size:13px;color:var(--gray-700);margin-top:8px;">
+          <span class="t-de">→ Sandra lächelt: <em>„Exakt. Reto plant. Ich stelle sicher, dass der Plan auch mit der Realität übereinstimmt. Wir arbeiten im gleichen System — und sehen uns trotzdem nie in die Quere."</em></span>
+          <span class="t-en">→ Sandra smiles: <em>"Exactly. Reto plans. I make sure the plan also aligns with reality. We work in the same system — and yet never get in each other's way."</em></span>
+        </p>
+      </div>
+    </div>
+    <div class="box box-impact">
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
+      <div class="box-body">
+        <span class="t-de">„Tempus ist nicht ein Tool für PMs. Und nicht ein Tool für Resource Manager. Es ist das gemeinsame System, in dem beide zur gleichen Wahrheit kommen."</span>
+        <span class="t-en">"Tempus is not a tool for PMs. And not a tool for resource managers. It's the shared system in which both arrive at the same truth."</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SZENE 13 ══ -->
+<div class="scene" id="rm-scene-13">
+  <div class="scene-header">
+    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--rm),#059669)"><div class="scene-num-big">13</div><div class="scene-num-label">Abschluss</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Akt 5 — Reflexion &amp; nächste Schritte</span><span class="t-en">Act 5 — Reflection &amp; next steps</span></div>
+      <div class="scene-title"><span class="t-de">Feedback — Was bleibt hängen?</span><span class="t-en">Feedback — What sticks?</span></div>
+      <div class="scene-subtitle"><span class="t-de">Demo-Abschluss · Diskussion öffnen · Nächste Schritte vereinbaren</span><span class="t-en">Demo close · open discussion · agree on next steps</span></div>
+    </div>
+  </div>
+  <div class="scene-tags">
+    <span class="tag tag-rm">Abschluss</span>
+    <span class="tag tag-blue">Q&amp;A</span>
+    <span class="tag tag-orange">Nächste Schritte</span>
+  </div>
+  <div class="scene-body">
+    <div class="box box-story">
+      <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say aloud</span></div>
+      <div class="box-body">
+        <span class="t-de">„Sandra hat in 9 Minuten gelöst, was früher einen halben Tag in Anspruch genommen hätte — E-Mails, Telefonkette, Excel-Vergleiche. Sie hat Marc's Krise entschärft, die nächste Krise (Katherine) bereits auf dem Radar und Reto eine sachliche, vollständige Antwort gegeben. Das ist Resource Management mit Tempus. <br><br>Jetzt sind Sie dran. Was hat Sie am meisten überrascht?"</span>
+        <span class="t-en">"Sandra solved in 9 minutes what used to take half a day — emails, phone chains, Excel comparisons. She defused Marc's crisis, already has the next crisis (Katherine) on her radar and gave Reto a factual, complete answer. That's resource management with Tempus. <br><br>Now it's your turn. What surprised you most?"</span>
+      </div>
+    </div>
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Reflexions-Fragen für das Publikum</span><span class="t-en">Reflection questions for the audience</span></div>
+      <div class="box-body">
+        <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2.1;">
+          <li><span class="t-de"><em>„Welcher Moment hat Ihren Alltag am stärksten widergespiegelt?"</em> → <span style="color:var(--gray-500);">Utilization-Spalte, Skill-Suche, What-If?</span></span><span class="t-en"><em>"Which moment reflected your daily work most strongly?"</em> → <span style="color:var(--gray-500);">Utilization column, skill search, What-If?</span></span></li>
+          <li><span class="t-de"><em>„Was wäre bei Ihnen der erste Use-Case, den Sie lösen würden?"</em></span><span class="t-en"><em>"What would be the first use case you'd want to solve?"</em></span></li>
+          <li><span class="t-de"><em>„Welche Ihrer Ressourcen wären gerade 'rot', wenn Sie jetzt nachschauen?"</em></span><span class="t-en"><em>"Which of your resources would be 'red' right now if you checked?"</em></span></li>
+        </ul>
+        <div class="quote-line quote-sandra" style="margin-top:14px;">
+          <span class="t-de">Sandra: <em>„Das Beste an Tempus ist nicht, dass es mir Arbeit abnimmt. Es ist, dass ich endlich die Entscheidungen treffe, die ich immer schon treffen wollte — nur jetzt mit den richtigen Daten."</em></span>
+          <span class="t-en">Sandra: <em>"The best thing about Tempus isn't that it takes work off my plate. It's that I finally make the decisions I always wanted to make — just now with the right data."</em></span>
+        </div>
+      </div>
+    </div>
+    <div class="box box-context">
+      <div class="box-header"><span class="box-icon">💡</span><span class="t-de">Nächste Schritte vorschlagen</span><span class="t-en">Suggest next steps</span></div>
+      <div class="box-body">
+        <ul style="list-style:none;padding:0;font-size:14px;line-height:2;">
+          <li>🔑 <span class="t-de"><strong>Trial-Instanz:</strong> Zugang zu trial5.tempus-resource.com — selbst ausprobieren, eigene Ressourcen anlegen</span><span class="t-en"><strong>Trial instance:</strong> Access to trial5.tempus-resource.com — try it yourself, create your own resources</span></li>
+          <li>📋 <span class="t-de"><strong>Workshop:</strong> 2-Stunden-Session mit echten Daten aus Ihrem Unternehmen</span><span class="t-en"><strong>Workshop:</strong> 2-hour session with real data from your organisation</span></li>
+          <li>🔗 <span class="t-de"><strong>Integration-Check:</strong> Kurzes technisches Gespräch zu Ihrem HR/ERP-System</span><span class="t-en"><strong>Integration check:</strong> Brief technical conversation about your HR/ERP system</span></li>
+          <li>👥 <span class="t-de"><strong>Pilot:</strong> 1–2 Teams, 4–6 Wochen, mit PM- und RM-Rolle parallel</span><span class="t-en"><strong>Pilot:</strong> 1–2 teams, 4–6 weeks, with PM and RM role in parallel</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-impact">
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Der letzte Wirkungssatz</span><span class="t-en">The final impact statement</span></div>
+      <div class="box-body">
+        <span class="t-de">„Resource Management ist nicht das Problem — es ist die Lösung. Tempus macht aus dem Resource Manager den strategischen Partner des Projektmanagers."</span>
+        <span class="t-en">"Resource management isn't the problem — it's the solution. Tempus turns the resource manager into the strategic partner of the project manager."</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Q&A VORBEREITUNG RM ══ -->
+<div class="qr-section" style="margin-bottom:16px;">
+  <div class="qr-header" style="background:var(--purple);">🙋 <span class="t-de">Häufige Kundenfragen (RM) — Muster-Antworten</span><span class="t-en">Common customer questions (RM) — model answers</span></div>
+  <div class="qr-body">
+    <p style="font-size:13px;color:var(--gray-500);margin-bottom:14px;font-style:italic;">
+      <span class="t-de">RM-spezifische Fragen — kurze, selbstsichere Antwort. Beim Zögern: „Das schaue ich kurz nach und melde mich."</span>
+      <span class="t-en">RM-specific questions — short, confident answers. When unsure: "I'll check and get back to you."</span>
+    </p>
+    <details style="border:1px solid var(--gray-300);border-radius:6px;margin-bottom:8px;overflow:hidden;">
+      <summary style="padding:12px 16px;font-size:14px;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;background:var(--gray-100);">
+        <span class="t-de">„Kann der PM sehen, was der RM ändert?"</span><span class="t-en">"Can the PM see what the RM changes?"</span>
+        <span style="font-size:11px;color:var(--gray-500);font-weight:400;margin-left:12px;">▾</span>
+      </summary>
+      <div style="padding:12px 16px;font-size:14px;color:var(--gray-700);line-height:1.7;border-top:1px solid var(--gray-200);">
+        <span class="t-de"><strong>Antwort:</strong> Ja. PM und RM arbeiten auf denselben Daten — keine Schattendaten, kein Informationsgefälle. Wenn Sandra Marc's Stunden anpasst, sieht Reto das sofort in seinem Projekt. Das ist der Kern des gemeinsamen Systems.</span>
+        <span class="t-en"><strong>Answer:</strong> Yes. PM and RM work on the same data — no shadow data, no information asymmetry. When Sandra adjusts Marc's hours, Reto sees it immediately in his project. That's the core of the shared system.</span>
+      </div>
+    </details>
+    <details style="border:1px solid var(--gray-300);border-radius:6px;margin-bottom:8px;overflow:hidden;">
+      <summary style="padding:12px 16px;font-size:14px;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;background:var(--gray-100);">
+        <span class="t-de">„Was wenn eine Ressource krank wird oder Urlaub hat?"</span><span class="t-en">"What happens when a resource gets sick or goes on holiday?"</span>
+        <span style="font-size:11px;color:var(--gray-500);font-weight:400;margin-left:12px;">▾</span>
+      </summary>
+      <div style="padding:12px 16px;font-size:14px;color:var(--gray-700);line-height:1.7;border-top:1px solid var(--gray-200);">
+        <span class="t-de"><strong>Antwort:</strong> Abwesenheiten werden in Tempus als <strong>AdminTimes</strong> erfasst — Urlaub, Krankheit, Feiertage. Die verfügbare Kapazität sinkt automatisch. Im Utilization-Report sieht der RM sofort: Wer hat nächste Woche effektiv wie viele Stunden? Kein manuelles Nachrechnen, kein Telefonieren.</span>
+        <span class="t-en"><strong>Answer:</strong> Absences are recorded in Tempus as <strong>AdminTimes</strong> — holiday, sickness, public holidays. Available capacity decreases automatically. In the Utilization report the RM immediately sees: who has how many hours effectively available next week? No manual calculations, no phone calls.</span>
+      </div>
+    </details>
+    <details style="border:1px solid var(--gray-300);border-radius:6px;margin-bottom:8px;overflow:hidden;">
+      <summary style="padding:12px 16px;font-size:14px;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;background:var(--gray-100);">
+        <span class="t-de">„Kann ich eigene Skills/Kompetenzen definieren?"</span><span class="t-en">"Can I define my own skills/competencies?"</span>
+        <span style="font-size:11px;color:var(--gray-500);font-weight:400;margin-left:12px;">▾</span>
+      </summary>
+      <div style="padding:12px 16px;font-size:14px;color:var(--gray-700);line-height:1.7;border-top:1px solid var(--gray-200);">
+        <span class="t-de"><strong>Antwort:</strong> Ja — vollständig konfigurierbar über das Admin-Interface. Skill-Kategorien (z.B. Programmiersprachen, Zertifikate, Sprachen, Soft Skills), Skill-Levels (Bool, Range 1–5, Kategorien Low/Medium/High etc.) — alles anpassbar. Die vorhandenen Skills sind ein Standardset als Ausgangspunkt.</span>
+        <span class="t-en"><strong>Answer:</strong> Yes — fully configurable via the admin interface. Skill categories (e.g. programming languages, certifications, languages, soft skills), skill levels (Bool, Range 1–5, categories Low/Medium/High etc.) — all customisable. The existing skills are a standard set as a starting point.</span>
+      </div>
+    </details>
+    <details style="border:1px solid var(--gray-300);border-radius:6px;margin-bottom:8px;overflow:hidden;">
+      <summary style="padding:12px 16px;font-size:14px;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;background:var(--gray-100);">
+        <span class="t-de">„Was ist der Unterschied zwischen What-If und echten Änderungen?"</span><span class="t-en">"What's the difference between What-If and real changes?"</span>
+        <span style="font-size:11px;color:var(--gray-500);font-weight:400;margin-left:12px;">▾</span>
+      </summary>
+      <div style="padding:12px 16px;font-size:14px;color:var(--gray-700);line-height:1.7;border-top:1px solid var(--gray-200);">
+        <span class="t-de"><strong>Antwort:</strong> What-If ist vollständig isoliert — es verändert keine echten Daten. Es ist ein Sandkasten: planen, vergleichen, verwerfen. Erst wenn das Szenario <em>aktiviert</em> wird, werden die Änderungen in die reale Planung übernommen. Mehrere Szenarien können parallel existieren und verglichen werden.</span>
+        <span class="t-en"><strong>Answer:</strong> What-If is completely isolated — it doesn't change any real data. It's a sandbox: plan, compare, discard. Only when the scenario is <em>activated</em> are the changes transferred to the real planning. Multiple scenarios can exist in parallel and be compared.</span>
+      </div>
+    </details>
+    <details style="border:1px solid var(--gray-300);border-radius:6px;overflow:hidden;">
+      <summary style="padding:12px 16px;font-size:14px;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;background:var(--gray-100);">
+        <span class="t-de">„Wie weit in die Zukunft kann ich planen?"</span><span class="t-en">"How far into the future can I plan?"</span>
+        <span style="font-size:11px;color:var(--gray-500);font-weight:400;margin-left:12px;">▾</span>
+      </summary>
+      <div style="padding:12px 16px;font-size:14px;color:var(--gray-700);line-height:1.7;border-top:1px solid var(--gray-200);">
+        <span class="t-de"><strong>Antwort:</strong> Es gibt kein Zeitlimit in Tempus. Projekte und Allocations können auf Jahre im Voraus geplant werden. Die Kapazitätsplanung (Availability Report) kann ebenfalls über beliebige Zeiträume laufen — typischerweise 12–18 Monate für strategische Ressourcenplanung, kurzfristiger für operative Steuerung.</span>
+        <span class="t-en"><strong>Answer:</strong> There is no time limit in Tempus. Projects and allocations can be planned years in advance. Capacity planning (Availability Report) can also run across any timeframe — typically 12–18 months for strategic resource planning, shorter-term for operational management.</span>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- CLOSING -->
+<div class="closing">
+  <h2><span class="t-de">Sandras Fazit — und die Verbindung zur PM-Demo</span><span class="t-en">Sandra's verdict — and the connection to the PM demo</span></h2>
+  <div class="story-hook" style="margin-bottom:20px;border-radius:6px;overflow:hidden;">
+    <div class="story-hook-header" style="background:rgba(0,0,0,0.35);font-size:13px;color:white;">📖 <span class="t-de">Der letzte Moment</span><span class="t-en">The final moment</span></div>
+    <div class="story-hook-body" style="background:rgba(0,0,0,0.25);color:#e2e8f0;border-left-color:#6ee7b7;">
+      <span class="t-de">Peter schaut auf die Uhr. 9:24 Uhr. <em>„Du hast in 10 Minuten ein Problem gelöst, für das wir früher einen ganzen Tag gebraucht hätten."</em><br>Sandra: <em>„Das ist kein Trick. Das ist einfach das richtige System."</em></span>
+      <span class="t-en">Peter glances at the clock. 9:24 AM. <em>"You solved in 10 minutes a problem that would have taken us a whole day before."</em><br>Sandra: <em>"That's no trick. That's simply the right system."</em></span>
+    </div>
+  </div>
+  <div class="closing-grid">
+    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">🔴</div><div><span class="t-de">Überbuchung sofort sichtbar — Utilization-Spalte, kein manuelles Suchen</span><span class="t-en">Overbooking immediately visible — Utilization column, no manual searching</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">🔍</div><div><span class="t-de">Skills + Verfügbarkeit kombiniert — die richtige Person in Sekunden finden</span><span class="t-en">Skills + availability combined — find the right person in seconds</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">🧪</div><div><span class="t-de">What-If ohne Risiko — Konsequenzen sehen bevor man sich committet</span><span class="t-en">What-If without risk — see consequences before committing</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">🔄</div><div><span class="t-de">Resource Mode im Bulk Grid — alle Projekte einer Person, ein Screen</span><span class="t-en">Resource Mode in Bulk Grid — all projects of one person, one screen</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">📡</div><div><span class="t-de">PM und RM im gleichen System — keine Informationslücke, keine Doppelarbeit</span><span class="t-en">PM and RM in the same system — no information gap, no duplication</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">🔮</div><div><span class="t-de">Nächsten Engpass antizipiert — Katherine im Mai schon heute auf dem Radar</span><span class="t-en">Next bottleneck anticipated — Katherine in May already on the radar today</span></div></div>
+  </div>
+  <div class="closing-final">
+    <span class="t-de">„Der Resource Manager sieht das Unternehmen.<br><strong>Tempus gibt diesem Blick die Daten, die er verdient."</strong></span>
+    <span class="t-en">"The resource manager sees the whole organisation.<br><strong>Tempus gives that view the data it deserves."</strong></span>
+  </div>
+</div>
+
+<!-- SPICKZETTEL -->
+<div class="qr-section">
+  <div class="qr-header">⚡ <span class="t-de">Moderatoren-Spickzettel</span><span class="t-en">Presenter cheat sheet</span></div>
+  <div class="qr-body">
+    <table class="ref">
+      <thead><tr>
+        <th>#</th>
+        <th><span class="t-de">Szene</span><span class="t-en">Scene</span></th>
+        <th><span class="t-de">Kernbotschaft</span><span class="t-en">Key message</span></th>
+        <th><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></th>
+      </tr></thead>
+      <tbody>
+        <tr><td>01</td><td><span class="t-de">Intro</span><span class="t-en">Intro</span></td><td><span class="t-de">Publikum als Sandra einladen</span><span class="t-en">Invite audience to be Sandra</span></td><td>–</td></tr>
+        <tr><td>02</td><td><span class="t-de">RM Kachel</span><span class="t-en">RM tile</span></td><td><span class="t-de">Utilization sortieren — Rot oben</span><span class="t-en">Sort by utilization — red at top</span></td><td><code>Resource Management → Utilization sort</code></td></tr>
+        <tr><td>03</td><td><span class="t-de">Marc: Konflikt</span><span class="t-en">Marc: conflict</span></td><td><span class="t-de">12h/Tag = Stardust + Apollo — Peters Aha-Moment</span><span class="t-en">12h/day = Stardust + Apollo — Peter's aha moment</span></td><td><code>Marc → Detail → Feb–Apr 2026</code></td></tr>
+        <tr><td>04</td><td><span class="t-de">Resource Grid</span><span class="t-en">Resource Grid</span></td><td><span class="t-de">Planned vs. Actual Marc — Konzeptionsphase +19%</span><span class="t-en">Planned vs. Actual Marc — conception phase +19%</span></td><td><code>Detailansicht → Planned/Actual toggle</code></td></tr>
+        <tr><td>5/6</td><td><span class="t-de">Skill-Suche</span><span class="t-en">Skill search</span></td><td><span class="t-de">Jason Kelly: Skills ✓ + März verfügbar ✓</span><span class="t-en">Jason Kelly: skills ✓ + March available ✓</span></td><td><code>Skill Filter → Developer → März prüfen</code></td></tr>
+        <tr><td>07</td><td>What-If</td><td><span class="t-de">Szenario ohne Risiko — Marc von 150% → 100%</span><span class="t-en">Scenario without risk — Marc 150% → 100%</span></td><td><code>What-If → Neu → Jason +4h / Marc −4h</code></td></tr>
+        <tr><td>8/9</td><td><span class="t-de">Bulk RM Mode</span><span class="t-en">Bulk RM mode</span></td><td><span class="t-de">Mobilschloss + Resource Mode + Speichern</span><span class="t-en">Mobile lock + Resource Mode + Save</span></td><td><code>Bulk Allocation → Resource Mode → Marc/Jason</code></td></tr>
+        <tr><td>10/11</td><td>Reports</td><td><span class="t-de">Katherine Mai-Konflikt antizipiert — proaktiv, nicht reaktiv</span><span class="t-en">Katherine May conflict anticipated — proactive not reactive</span></td><td><code>Report Mgmt → Availability + RAR2</code></td></tr>
+        <tr><td>12</td><td><span class="t-de">Schleife</span><span class="t-en">Loop closed</span></td><td><span class="t-de">Antwort an Reto in 9 Min — PM + RM = ein System</span><span class="t-en">Reply to Reto in 9 min — PM + RM = one system</span></td><td>–</td></tr>
+        <tr><td>13</td><td>Q&amp;A</td><td><span class="t-de">Peters Verbindung zwischen PM- und RM-Demo nutzen</span><span class="t-en">Use Peter's connection between PM and RM demo</span></td><td>–</td></tr>
+      </tbody>
+    </table>
+    <div class="box box-warn" style="margin-top:20px;">
+      <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Fallback</span><span class="t-en">Fallback</span></div>
+      <div class="box-body">
+        <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:1.9;">
+          <li><strong><span class="t-de">Marc nicht rot?</span><span class="t-en">Marc not red?</span></strong> → <span class="t-de">Zeitraum auf Mär 2026 einengen, beide Projekte (Stardust + Apollo) selektieren, ggf. <code>setup_demo_reports_data.py</code> erneut ausführen</span><span class="t-en">Narrow period to Mar 2026, select both projects (Stardust + Apollo), if needed re-run <code>setup_demo_reports_data.py</code></span></li>
+          <li><strong><span class="t-de">What-If leer?</span><span class="t-en">What-If empty?</span></strong> → <span class="t-de">Tempus-Instanz und Berechtigung prüfen — What-If braucht RM-Rolle</span><span class="t-en">Check Tempus instance and permission — What-If requires RM role</span></li>
+          <li><strong><span class="t-de">Skill-Suche zeigt nichts?</span><span class="t-en">Skill search shows nothing?</span></strong> → <span class="t-de">Skills müssen in Ressourcenprofilen gepflegt sein; alternativ nach Name filtern und Skills manuell zeigen</span><span class="t-en">Skills must be maintained in resource profiles; alternatively filter by name and show skills manually</span></li>
+          <li><strong><span class="t-de">Availability Report fehlt?</span><span class="t-en">Availability Report missing?</span></strong> → <span class="t-de">Resource Management → Ressourcenliste → Availability-Spalte einblenden</span><span class="t-en">Resource Management → resource list → show Availability column</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /page -->
+
+<div class="doc-footer">
+  <strong>Tempus Resource · <span class="t-de">Demo-Script „Sandra löst das Problem" · Resource Manager Perspektive</span><span class="t-en">Demo Script "Sandra solves the problem" · Resource Manager perspective</span></strong><br>
+  <span class="t-de">Fortsetzung der Stardust-Story · Reto &amp; Peter bekannt aus der PM-Demo · Gleiche Instanz, andere Sicht.</span>
+  <span class="t-en">Continuation of the Stardust story · Reto &amp; Peter known from PM demo · Same instance, different view.</span><br>
+  <span style="font-size:12px;display:block;margin-top:4px;">trial5.tempus-resource.com/slot4 · <span class="t-de">Projektverwaltung auf „Allocations" · setup_demo_reports_data.py ausführen vor Demo</span><span class="t-en">Project management set to "Allocations" · run setup_demo_reports_data.py before demo</span></span>
+</div>
+
+<script>
+function setLang(lang) {
+  document.documentElement.classList.remove('lang-de','lang-en');
+  document.documentElement.classList.add('lang-' + lang);
+  document.getElementById('btn-de').classList.toggle('active', lang==='de');
+  document.getElementById('btn-en').classList.toggle('active', lang==='en');
+}
+</script>
+</body>
+</html>
