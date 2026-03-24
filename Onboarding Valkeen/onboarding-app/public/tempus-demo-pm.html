@@ -208,7 +208,7 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
     <div class="hero-meta">
       <div class="hero-meta-item">⏱️ <span class="t-de">ca. 45–60 Min.</span><span class="t-en">approx. 45–60 min.</span></div>
       <div class="hero-meta-item">👥 <span class="t-de">Intern &amp; Kunden</span><span class="t-en">Internal &amp; Customers</span></div>
-      <div class="hero-meta-item">📋 <span class="t-de">13 Demo-Schritte</span><span class="t-en">13 demo steps</span></div>
+      <div class="hero-meta-item">📋 <span class="t-de">11 Demo-Schritte</span><span class="t-en">11 demo steps</span></div>
       <div class="hero-meta-item">🔗 trial5.tempus-resource.com/slot4</div>
     </div>
   </div>
@@ -329,14 +329,12 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
     <div class="agenda-item"><span class="agenda-num">3</span><span class="t-de">Ressourcen zuweisen</span><span class="t-en">Allocating resources</span></div>
     <div class="agenda-item"><span class="agenda-num">4</span><span class="t-de">Planned Allocation bearbeiten</span><span class="t-en">Planned allocation editing</span></div>
     <div class="agenda-item"><span class="agenda-num">5</span><span class="t-de">Actual Allocation bearbeiten</span><span class="t-en">Actual allocation editing</span></div>
-    <div class="agenda-item"><span class="agenda-num">6</span><span class="t-de">Bulk Allocation – Default Mode</span><span class="t-en">Bulk Allocation – Default Mode</span></div>
-    <div class="agenda-item"><span class="agenda-num">7</span><span class="t-de">Resource Mode</span><span class="t-en">Resource Mode</span></div>
-    <div class="agenda-item"><span class="agenda-num">8</span><span class="t-de">Project Mode</span><span class="t-en">Project Mode</span></div>
-    <div class="agenda-item"><span class="agenda-num">9</span><span class="t-de">Bulk Flatgrid + Grid Options</span><span class="t-en">Bulk Flatgrid + Grid Options</span></div>
-    <div class="agenda-item"><span class="agenda-num">10</span><span class="t-de">Views &amp; Szenarien speichern</span><span class="t-en">Views &amp; saving scenarios</span></div>
-    <div class="agenda-item"><span class="agenda-num">11</span><span class="t-de">Plan vs. Actual Report</span><span class="t-en">Planned vs. Actual Report</span></div>
-    <div class="agenda-item"><span class="agenda-num">12</span><span class="t-de">RAR2 Charts</span><span class="t-en">RAR2 Charts</span></div>
-    <div class="agenda-item"><span class="agenda-num">13</span><span class="t-de">Feedback &amp; Q&amp;A</span><span class="t-en">Feedback &amp; Q&amp;A</span></div>
+    <div class="agenda-item"><span class="agenda-num">6</span><span class="t-de">Project Allocation Grid — Default · Resource · Project</span><span class="t-en">Project Allocation Grid — Default · Resource · Project</span></div>
+    <div class="agenda-item"><span class="agenda-num">7</span><span class="t-de">Bulk Project Allocation Flatgrid</span><span class="t-en">Bulk Project Allocation Flatgrid</span></div>
+    <div class="agenda-item"><span class="agenda-num">8</span><span class="t-de">Views &amp; Szenarien speichern</span><span class="t-en">Views &amp; saving scenarios</span></div>
+    <div class="agenda-item"><span class="agenda-num">9</span><span class="t-de">Plan vs. Actual Report</span><span class="t-en">Planned vs. Actual Report</span></div>
+    <div class="agenda-item"><span class="agenda-num">10</span><span class="t-de">RAR2 Charts</span><span class="t-en">RAR2 Charts</span></div>
+    <div class="agenda-item"><span class="agenda-num">11</span><span class="t-de">Feedback &amp; Q&amp;A</span><span class="t-en">Feedback &amp; Q&amp;A</span></div>
   </div>
 </div>
 
@@ -536,7 +534,7 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
           <span class="t-en">"Can I also enter actual hours directly at task level? With us, people always just report total hours."</span>
         </div>
         <p style="font-size:13px;color:var(--gray-700);margin-top:8px;">
-          <span class="t-de">→ Antwort: „Ja — genau das zeige ich dir in Szene 5. Ist-Daten auf Task-Ebene, nicht nur auf Projektebene."</span>
+          <span class="t-de">→ Antwort: „Ja — genau das zeige ich dir gleich in Szene 5. Ist-Daten auf Task-Ebene, nicht nur auf Projektebene."</span>
           <span class="t-en">→ Answer: "Yes — that's exactly what I'll show you in step 5. Actuals at task level, not just project level."</span>
         </p>
       </div>
@@ -704,125 +702,76 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 </div>
 
 <!-- ══════════════════════════════════════════════
-     SZENE 6 – BULK DEFAULT MODE
+     SZENE 6 – PROJECT ALLOCATION GRID (Default · Resource · Project)
 ══════════════════════════════════════════════ -->
 <div class="scene">
   <div class="scene-header">
     <div class="scene-num-badge" style="background:linear-gradient(135deg,#0d5c7a,var(--teal))">
       <div class="scene-num-big">06</div>
-      <div class="scene-num-label">Bulk</div>
+      <div class="scene-num-label">Grid</div>
     </div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Bulk Allocation – Default Mode</span><span class="t-en">Bulk Allocation – Default Mode</span></div>
-      <div class="scene-title"><span class="t-de">Mehrere Projekte, ein Screen — kein Chaos</span><span class="t-en">Multiple projects, one screen — no chaos</span></div>
-      <div class="scene-subtitle"><span class="t-de">Zeitrahmen definieren · Sortierung · Assignment sperren · Speichern</span><span class="t-en">Define timeframe · sorting · lock assignment · save</span></div>
+      <div class="scene-act"><span class="t-de">Project Allocation Grid</span><span class="t-en">Project Allocation Grid</span></div>
+      <div class="scene-title"><span class="t-de">Drei Perspektiven — ein Grid</span><span class="t-en">Three perspectives — one grid</span></div>
+      <div class="scene-subtitle"><span class="t-de">Default · Resource · Project Mode · Zeitrahmen steuert Sicht</span><span class="t-en">Default · Resource · Project Mode · Timeframe controls visibility</span></div>
     </div>
   </div>
   <div class="scene-tags">
     <span class="tag tag-blue">Project Allocation Grid</span>
     <span class="tag tag-teal">Default Mode</span>
-    <span class="tag tag-green"><span class="t-de">Assignment Lock</span><span class="t-en">Assignment lock</span></span>
+    <span class="tag tag-green">Resource Mode</span>
+    <span class="tag tag-orange"><span class="t-de">Assignment Lock</span><span class="t-en">Assignment lock</span></span>
   </div>
   <div class="scene-body">
     <div class="box box-story">
       <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say this aloud</span></div>
       <div class="box-body">
-        <span class="t-de"><em>„Reto,"</em> sagt Peter, <em>„du hast Stardust — aber du sagtest, du hast noch fünf andere. Wie machst du das, ohne den Überblick zu verlieren?"</em> Reto öffnet das <strong>Project Allocation Grid</strong>. Peter sieht auf einmal alle Projekte, alle Ressourcen, alle Zeiträume — in einem einzigen Screen.</span>
-        <span class="t-en"><em>"Reto,"</em> says Peter, <em>"you have Stardust — but you said you have five others. How do you manage without losing track?"</em> Reto opens the <strong>Project Allocation Grid</strong>. Peter suddenly sees all projects, all resources, all time periods — in a single screen.</span>
+        <span class="t-de"><em>„Reto,"</em> sagt Peter, <em>„du hast Stardust — aber du sagtest, du hast noch fünf andere. Wie machst du das, ohne den Überblick zu verlieren?"</em> Reto öffnet das <strong>Project Allocation Grid</strong>. Auf einmal sieht Peter alle Projekte, alle Ressourcen, alle Zeiträume — in einem einzigen Screen. <em>„Das Grid hat drei Modi. Ich zeige dir alle drei in einer Minute."</em></span>
+        <span class="t-en"><em>"Reto,"</em> says Peter, <em>"you have Stardust — but you said you have five others. How do you manage without losing track?"</em> Reto opens the <strong>Project Allocation Grid</strong>. Peter suddenly sees all projects, all resources, all time periods — in a single screen. <em>"This grid has three modes. Let me show you all three in a minute."</em></span>
       </div>
     </div>
     <div class="box box-say">
       <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Während du klickst — Erklärpunkte</span><span class="t-en">While clicking — talking points</span></div>
       <div class="box-body">
         <p style="margin-bottom:10px;">
-          <span class="t-de">„Das Bulk Allocation Grid ist nicht nur ein anderer Screen — es ist ein anderes Paradigma. Statt Projekt für Projekt zu öffnen, sieht und bearbeitet man alles in einer Sicht."</span>
-          <span class="t-en">"The Bulk Allocation Grid isn't just a different screen — it's a different paradigm. Instead of opening project by project, you see and edit everything in one view."</span>
+          <span class="t-de">„Das Grid bietet drei Perspektiven auf denselben Datensatz:"</span>
+          <span class="t-en">"The grid offers three perspectives on the same data:"</span>
         </p>
-        <p style="margin-top:8px;">
-          <span class="t-de"><strong>Wichtig:</strong> Das Grid zeigt nur Projekte, die innerhalb des definierten Zeitrahmens eine Allokation haben oder deren Start-/Enddatum in diesen Zeitraum fällt. Der Zeitrahmen steuert, was sichtbar ist.</span>
-          <span class="t-en"><strong>Important:</strong> The grid only shows projects that have allocations within the defined timeframe or whose start/end date falls within it. The timeframe controls what's visible.</span>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+          <div style="background:var(--teal-light);border:1px solid #a0d4e6;border-radius:5px;padding:8px;font-size:13px;">
+            <strong><span class="t-de">Default</span><span class="t-en">Default</span></strong><br>
+            <span class="t-de">Alle Projekte + alle Ressourcen</span><span class="t-en">All projects + all resources</span>
+          </div>
+          <div style="background:var(--green-light);border:1px solid #b6dfc8;border-radius:5px;padding:8px;font-size:13px;">
+            <strong><span class="t-de">Resource</span><span class="t-en">Resource</span></strong><br>
+            <span class="t-de">Eine Person → alle Projekte</span><span class="t-en">One person → all projects</span>
+          </div>
+          <div style="background:var(--purple-light);border:1px solid #c9bde8;border-radius:5px;padding:8px;font-size:13px;">
+            <strong><span class="t-de">Project</span><span class="t-en">Project</span></strong><br>
+            <span class="t-de">Ein Projekt → alle Ressourcen</span><span class="t-en">One project → all resources</span>
+          </div>
+        </div>
+        <p style="margin-bottom:8px;">
+          <span class="t-de"><strong>Zeitrahmen steuert Sichtbarkeit:</strong> Nur Projekte und Kapazitäten, die in das gewählte Zeitfenster fallen, werden angezeigt. Das ist kein Filter — es ist das Grundprinzip des Grids.</span>
+          <span class="t-en"><strong>Timeframe controls visibility:</strong> Only projects and capacities within the selected window are shown. This isn't a filter — it's the core principle of the grid.</span>
         </p>
+        <div style="padding:10px 14px;background:var(--teal-light);border-left:3px solid var(--teal);border-radius:4px;font-size:13px;color:var(--navy);">
+          💡 <strong><span class="t-de">Schlüssel-Insight:</span><span class="t-en">Key insight:</span></strong>
+          <span class="t-de"> Nicht das Projekt wird gesperrt — nur das spezifische Assignment. Andere PMs können parallel andere Assignments desselben Projekts bearbeiten. Im Resource Mode zeigt das Mobilschloss-Icon, dass eine Zeile gerade exklusiv bearbeitet wird.</span>
+          <span class="t-en"> Not the project is locked — only the specific assignment. Other PMs can simultaneously edit other assignments of the same project. In Resource Mode, the mobile lock icon shows a row is being edited exclusively.</span>
+        </div>
       </div>
     </div>
     <div class="box box-click">
-      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Was klicken</span><span class="t-en">What to click</span></div>
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Was klicken — alle drei Modi</span><span class="t-en">What to click — all three modes</span></div>
       <div class="box-body">
         <ul class="click-steps">
           <li><div class="click-step-num">1</div><div><span class="t-de">Kachel</span><span class="t-en">Tile</span> <span class="click-path">Project Allocation Grid</span> <span class="t-de">öffnen</span><span class="t-en">open</span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de"><strong>Start- und Enddatum setzen</strong> — erklären: nur Kapazität und Projekte in diesem Zeitfenster werden angezeigt</span><span class="t-en"><strong>Set start and end date</strong> — explain: only capacity and projects in this timeframe are displayed</span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de"><strong>Modi erklären:</strong> Default / Resource / Project (kurzer Überblick)</span><span class="t-en"><strong>Explain modes:</strong> Default / Resource / Project (brief overview)</span></div></li>
-          <li><div class="click-step-num">4</div><div><span class="t-de">1 Projekt und 1 Ressource auswählen, auf „Planned" umschalten</span><span class="t-en">Select 1 project and 1 resource, switch to "Planned"</span></div></li>
-          <li><div class="click-step-num">5</div><div><span class="t-de">Zeigen: <strong>Sortierung durch Klick auf Spaltenname</strong></span><span class="t-en">Show: <strong>sorting by clicking on column name</strong></span></div></li>
-          <li><div class="click-step-num">6</div><div><span class="t-de">Assignment bearbeiten → Hinweis: <strong>genau dieses Assignment ist gesperrt</strong> (nicht das ganze Projekt)</span><span class="t-en">Edit assignment → note: <strong>exactly this assignment is locked</strong> (not the whole project)</span></div></li>
-          <li><div class="click-step-num">7</div><div><span class="t-de">Speichern — erklären: Zahlen sind jetzt für alle sichtbar</span><span class="t-en">Save — explain: numbers are now visible to everyone</span></div></li>
-        </ul>
-        <div style="margin-top:10px;padding:10px 14px;background:var(--teal-light);border-left:3px solid var(--teal);border-radius:4px;font-size:13px;color:var(--navy);">
-          💡 <strong><span class="t-de">Schlüssel-Insight:</span><span class="t-en">Key insight:</span></strong>
-          <span class="t-de"> Nicht das Projekt wird gesperrt — nur das spezifische Assignment. Andere können parallel andere Assignments desselben Projekts bearbeiten.</span>
-          <span class="t-en"> Not the project is locked — only the specific assignment. Others can simultaneously edit other assignments of the same project.</span>
-        </div>
-      </div>
-    </div>
-    <div class="box box-peter">
-      <div class="box-header"><span class="box-icon">🙋</span><span class="t-de">Peter fragt</span><span class="t-en">Peter asks</span></div>
-      <div class="box-body">
-        <div class="quote-line quote-peter">
-          <span class="t-de">„Kann man hier auch mehrere Leute gleichzeitig bearbeiten — oder immer nur einen nach dem anderen?"</span>
-          <span class="t-en">"Can you edit multiple people at the same time here — or always one at a time?"</span>
-        </div>
-        <p style="font-size:13px;color:var(--gray-700);margin-top:8px;">
-          <span class="t-de">→ Überleitung: „Dafür gibt es das Bulk Flatgrid — das zeige ich dir in Szene 9."</span>
-          <span class="t-en">→ Bridge: "That's what the Bulk Flatgrid is for — I'll show you in scene 9."</span>
-        </p>
-      </div>
-    </div>
-    <div class="transition">→ <span class="t-de">„Jetzt zoomen wir rein auf eine einzelne Person — und sehen, was sie wirklich trägt."</span><span class="t-en">"Now let's zoom into one person — and see what they're really carrying."</span></div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════
-     SZENE 7 – RESOURCE MODE
-══════════════════════════════════════════════ -->
-<div class="scene">
-  <div class="scene-header">
-    <div class="scene-num-badge">
-      <div class="scene-num-big">07</div>
-      <div class="scene-num-label">Resource</div>
-    </div>
-    <div class="scene-title-area">
-      <div class="scene-act">Resource Mode</div>
-      <div class="scene-title"><span class="t-de">Eine Person — alle Projekte. Die Gesamtlast sichtbar machen.</span><span class="t-en">One person — all projects. Making the total load visible.</span></div>
-      <div class="scene-subtitle"><span class="t-de">Mobilschloss · Zeitraum steuert Sichtbarkeit · editierbar</span><span class="t-en">Mobile lock icon · timeframe controls visibility · editable</span></div>
-    </div>
-  </div>
-  <div class="scene-tags">
-    <span class="tag tag-blue">Resource Mode</span>
-    <span class="tag tag-orange"><span class="t-de">Überlastung</span><span class="t-en">Overallocation</span></span>
-    <span class="tag tag-teal"><span class="t-de">Lock während Bearbeitung</span><span class="t-en">Lock while editing</span></span>
-  </div>
-  <div class="scene-body">
-    <div class="box box-say">
-      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Während du klickst — Erklärpunkte</span><span class="t-en">While clicking — talking points</span></div>
-      <div class="box-body">
-        <p>
-          <span class="t-de">„Im Resource Mode sieht Reto eine Person — und alle Projekte, auf denen sie im gewählten Zeitraum Assignments hat. Er kann dort direkt bearbeiten."</span>
-          <span class="t-en">"In Resource Mode, Reto sees one person — and all projects they have assignments on within the selected timeframe. He can edit directly there."</span>
-        </p>
-        <p style="margin-top:8px;">
-          <span class="t-de"><strong>Wichtig:</strong> Während die Zeile bearbeitet wird, sieht man ein Mobilschloss-Symbol — die Zeile ist für andere gesperrt. Und: Es werden nur Projekte angezeigt, die im gewählten Zeitfenster aktiv sind. Andere Projekte dieser Ressource existieren — sie sind nur aktuell nicht im Zeitraum.</span>
-          <span class="t-en"><strong>Important:</strong> While a row is being edited, a mobile lock icon appears — the row is locked for others. Also: only projects active within the selected timeframe are shown. Other projects for this resource exist — they're just not in the current period.</span>
-        </p>
-      </div>
-    </div>
-    <div class="box box-click">
-      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Was klicken</span><span class="t-en">What to click</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de">Im Allocation Grid auf</span><span class="t-en">In Allocation Grid switch to</span> <span class="click-path">Resource Mode</span> <span class="t-de">wechseln</span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de">Eine Ressource wählen (z. B. Simon Wespi) → alle Projekte im Zeitraum sichtbar</span><span class="t-en">Select a resource (e.g. Simon Wespi) → all projects in timeframe visible</span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de">Zeile bearbeiten → <strong>Mobilschloss-Icon zeigen und erklären</strong></span><span class="t-en">Edit a row → <strong>show and explain the mobile lock icon</strong></span></div></li>
-          <li><div class="click-step-num">4</div><div><span class="t-de">Kommentar: „Diese Ressource hat möglicherweise noch Projekte außerhalb dieses Zeitraums"</span><span class="t-en">Comment: "This resource may have additional projects outside this timeframe"</span></div></li>
-          <li><div class="click-step-num">5</div><div><span class="t-de">Abbruch / Weiter zu Project Mode</span><span class="t-en">Cancel / move to Project Mode</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de"><strong>Start/End setzen</strong> — erklären: nur Kapazität und Projekte in diesem Zeitfenster sichtbar</span><span class="t-en"><strong>Set start/end</strong> — explain: only capacity and projects in this timeframe are visible</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de"><strong>[Default Mode]</strong> 1 Assignment bearbeiten → zeigen: <strong>nur dieses Assignment gesperrt</strong>, nicht das ganze Projekt → Speichern</span><span class="t-en"><strong>[Default Mode]</strong> edit 1 assignment → show: <strong>only this assignment locked</strong>, not the whole project → save</span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de"><strong>[Resource Mode]</strong> wechseln → <strong>Simon Wespi</strong> wählen → alle Projekte im Zeitraum sichtbar, April-Auslastung zeigt Überbuchung</span><span class="t-en"><strong>[Resource Mode]</strong> switch → select <strong>Simon Wespi</strong> → all projects in timeframe visible, April utilisation shows overallocation</span></div></li>
+          <li><div class="click-step-num">5</div><div><span class="t-de">Zeile bearbeiten → <strong>Mobilschloss-Icon zeigen und erklären</strong> → Abbrechen</span><span class="t-en">Edit a row → <strong>show and explain the mobile lock icon</strong> → cancel</span></div></li>
+          <li><div class="click-step-num">6</div><div><span class="t-de"><strong>[Project Mode]</strong> wechseln → „Stardust" öffnen → alle Ressourcen mit Tasks auf einen Blick</span><span class="t-en"><strong>[Project Mode]</strong> switch → open "Stardust" → all resources with tasks at a glance</span></div></li>
         </ul>
       </div>
     </div>
@@ -833,69 +782,30 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
           <span class="t-de">„Das ist eigentlich das, was ich immer wollte — sehen, ob jemand schon überlastet ist, bevor ich ihm noch ein Projekt drauflege."</span>
           <span class="t-en">"That's actually what I always wanted — seeing if someone is already overloaded before I put another project on them."</span>
         </div>
+        <p style="font-size:13px;color:var(--gray-700);margin-top:8px;">
+          <span class="t-de">→ Antwort: „Genau — und das, bevor du auch nur ein Gespräch geführt hast. Faktenbasiert statt nach Gefühl."</span>
+          <span class="t-en">→ Answer: "Exactly — and before you've even had a conversation. Fact-based rather than gut feeling."</span>
+        </p>
       </div>
     </div>
     <div class="box box-impact">
       <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
       <div class="box-body">
-        <span class="t-de">„Faktenbasiert statt emotional — bevor das Gespräch mit dem Resource Manager."</span>
-        <span class="t-en">"Fact-based rather than emotional — before the conversation with the resource manager."</span>
+        <span class="t-de">„Drei Perspektiven, ein Grid — wer das Gesamtbild sieht, steuert besser. Bevor Gespräche nötig werden."</span>
+        <span class="t-en">"Three perspectives, one grid — whoever sees the full picture manages better. Before conversations become necessary."</span>
       </div>
     </div>
-    <div class="transition">→ <span class="t-de">„Und wenn wir nicht auf eine Person, sondern auf ein ganzes Projekt schauen wollen?"</span><span class="t-en">"And what if we want to look at a full project instead of one person?"</span></div>
+    <div class="transition">→ <span class="t-de">„Jetzt kommt der Screen, den alle täglich offen haben — das Bulk Project Allocation Flatgrid."</span><span class="t-en">"Now comes the screen everyone has open every day — the Bulk Project Allocation Flatgrid."</span></div>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════════
-     SZENE 8 – PROJECT MODE
-══════════════════════════════════════════════ -->
-<div class="scene">
-  <div class="scene-header">
-    <div class="scene-num-badge">
-      <div class="scene-num-big">08</div>
-      <div class="scene-num-label">Project</div>
-    </div>
-    <div class="scene-title-area">
-      <div class="scene-act">Project Mode</div>
-      <div class="scene-title"><span class="t-de">Ein Projekt — alle Ressourcen. Vollständige Steuerung.</span><span class="t-en">One project — all resources. Complete control.</span></div>
-      <div class="scene-subtitle"><span class="t-de">Übergang zu Bulk Flatgrid vorbereiten</span><span class="t-en">Preparing the transition to Bulk Flatgrid</span></div>
-    </div>
-  </div>
-  <div class="scene-tags">
-    <span class="tag tag-blue">Project Mode</span>
-    <span class="tag tag-teal"><span class="t-de">Projektgesamtsicht</span><span class="t-en">Full project view</span></span>
-  </div>
-  <div class="scene-body">
-    <div class="box box-say">
-      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Während du klickst — Erklärpunkte</span><span class="t-en">While clicking — talking points</span></div>
-      <div class="box-body">
-        <p>
-          <span class="t-de">„Im Project Mode sieht Reto ein Projekt mit allen Ressourcen darauf — ideal, wenn er das Projekt als Ganzes steuern will, statt Ressource für Ressource durchzugehen."</span>
-          <span class="t-en">"In Project Mode, Reto sees one project with all its resources — ideal when he wants to steer the project as a whole rather than going resource by resource."</span>
-        </p>
-      </div>
-    </div>
-    <div class="box box-click">
-      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Was klicken</span><span class="t-en">What to click</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de">Im Allocation Grid auf</span><span class="t-en">In Allocation Grid switch to</span> <span class="click-path">Project Mode</span> <span class="t-de">wechseln</span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de">„Stardust" auswählen → alle Ressourcen mit Tasks sichtbar</span><span class="t-en">Select "Stardust" → all resources with tasks visible</span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de">Kurz zeigen, direkt weiterleiten zu Szene 9</span><span class="t-en">Show briefly, transition directly to scene 9</span></div></li>
-        </ul>
-      </div>
-    </div>
-    <div class="transition">→ <span class="t-de">„Jetzt kommt der Screen, den alle am häufigsten verwenden — das Bulk Project Allocation Flatgrid."</span><span class="t-en">"Now comes the screen everyone uses most — the Bulk Project Allocation Flatgrid."</span></div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════
-     SZENE 9 – BULK FLATGRID + GRID OPTIONS
+     SZENE 7 – BULK PROJECT ALLOCATION FLATGRID
 ══════════════════════════════════════════════ -->
 <div class="scene">
   <div class="scene-header">
     <div class="scene-num-badge" style="background:linear-gradient(135deg,#0a4f62,var(--teal))">
-      <div class="scene-num-big">09</div>
+      <div class="scene-num-big">07</div>
       <div class="scene-num-label">Flatgrid</div>
     </div>
     <div class="scene-title-area">
@@ -970,12 +880,12 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 </div>
 
 <!-- ══════════════════════════════════════════════
-     SZENE 10 – VIEWS
+     SZENE 8 – VIEWS
 ══════════════════════════════════════════════ -->
 <div class="scene">
   <div class="scene-header">
     <div class="scene-num-badge">
-      <div class="scene-num-big">10</div>
+      <div class="scene-num-big">08</div>
       <div class="scene-num-label">Views</div>
     </div>
     <div class="scene-title-area">
@@ -1045,12 +955,12 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 </div>
 
 <!-- ══════════════════════════════════════════════
-     SZENE 11+12 – REPORTS
+     SZENE 9+10 – REPORTS
 ══════════════════════════════════════════════ -->
 <div class="scene">
   <div class="scene-header">
     <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--navy-mid),var(--teal))">
-      <div class="scene-num-big">11<span style="font-size:16px;">/12</span></div>
+      <div class="scene-num-big">09<span style="font-size:16px;">/10</span></div>
       <div class="scene-num-label">Reports</div>
     </div>
     <div class="scene-title-area">
@@ -1152,7 +1062,7 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
           </tbody>
         </table>
         <div style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1px solid #6ee7b7;border-radius:6px;padding:10px 12px;font-size:13px;">
-          <strong>🎯 <span class="t-de">Demo-Reihenfolge für Szene 11/12:</span><span class="t-en">Demo order for scenes 11/12:</span></strong>
+          <strong>🎯 <span class="t-de">Demo-Reihenfolge für Szene 09/10:</span><span class="t-en">Demo order for scenes 09/10:</span></strong>
           <ol style="margin:6px 0 0 16px;line-height:1.9;color:var(--gray-700);">
             <li><span class="t-de"><strong>Planned vs. Actual:</strong> Stardust öffnen → Marc zeigen → +18% im Balken → „Das war erkennbar. Haben wir reagiert?"</span><span class="t-en"><strong>Planned vs. Actual:</strong> Open Stardust → show Marc → +18% in bar → "That was visible. Did we react?"</span></li>
             <li><span class="t-de"><strong>RAR2:</strong> Filter Q1 2026, Projekte Stardust + Apollo → Marc rot → „Deshalb war er bei Stardust überlastet."</span><span class="t-en"><strong>RAR2:</strong> Filter Q1 2026, projects Stardust + Apollo → Marc in red → "That's why he was overloaded on Stardust."</span></li>
@@ -1281,14 +1191,12 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
         <tr><td>03</td><td><span class="t-de">Ressourcen</span><span class="t-en">Resources</span></td><td><span class="t-de">„Task-Level = Verantwortung"</span><span class="t-en">"Task level = accountability"</span></td><td><code>Group by Tasks → Tasks anlegen</code></td></tr>
         <tr><td>04</td><td>Planned</td><td><span class="t-de">„Checkout + Planned/Actual/Remaining"</span><span class="t-en">"Checkout + Planned/Actual/Remaining"</span></td><td><code>Check out → Monat/Woche/Tag</code></td></tr>
         <tr><td>05</td><td>Actual</td><td><span class="t-de">„Planwerte = Absicht. Ist = Wahrheit."</span><span class="t-en">"Plan = intent. Actual = truth."</span></td><td><code>Actual View → Task-Ebene</code></td></tr>
-        <tr><td>06</td><td>Bulk Default</td><td><span class="t-de">„Nur das Assignment sperren, nicht das Projekt"</span><span class="t-en">"Lock only the assignment, not the project"</span></td><td><code>Grid → Default Mode → Zeitraum setzen</code></td></tr>
-        <tr><td>07</td><td>Resource Mode</td><td><span class="t-de">„Mobilschloss + Zeitraum steuert Sichtbarkeit"</span><span class="t-en">"Mobile lock + timeframe controls visibility"</span></td><td><code>Grid → Resource Mode</code></td></tr>
-        <tr><td>08</td><td>Project Mode</td><td><span class="t-de">„Ein Projekt, alle Ressourcen"</span><span class="t-en">"One project, all resources"</span></td><td><code>Grid → Project Mode</code></td></tr>
-        <tr><td>09</td><td>Flatgrid</td><td><span class="t-de">„Beliebtestes Feature — Notes, Heatmap, Quicklink"</span><span class="t-en">"Most popular feature — Notes, Heatmap, Quicklink"</span></td><td><code>Bulk Flatgrid Tile → Grid Options</code></td></tr>
-        <tr><td>10</td><td>Views</td><td><span class="t-de">„Lock + Favorit + Arrangieren"</span><span class="t-en">"Lock + Favourite + Arrange"</span></td><td><code>New View → Q1 2027 → Amber, Apollo</code></td></tr>
-        <tr><td>11</td><td>Planned vs. Actual</td><td><span class="t-de">Marc: +18% Mehraufwand → Frühwarnung</span><span class="t-en">Marc: +18% overrun → early warning</span></td><td><code>Report Mgmt → Plan vs. Actual → Stardust, Feb–Mär</code></td></tr>
-        <tr><td>12</td><td>RAR2 Charts</td><td><span class="t-de">Marc 12h/d = Stardust + Apollo → Ressourcenkonflikt rot</span><span class="t-en">Marc 12h/d = Stardust + Apollo → resource conflict in red</span></td><td><code>RAR2 → Q1 2026, Projekte Stardust + Apollo</code></td></tr>
-        <tr><td>13</td><td>Q&amp;A</td><td><span class="t-de">Peters Bekehrung als natürlichen Abschluss nutzen</span><span class="t-en">Use Peter's conversion as natural close</span></td><td>–</td></tr>
+        <tr><td>06</td><td><span class="t-de">Project Allocation Grid</span><span class="t-en">Project Allocation Grid</span></td><td><span class="t-de">„Default → Assignment-Lock · Resource → Simon Wespi · Project → Stardust"</span><span class="t-en">"Default → Assignment lock · Resource → Simon Wespi · Project → Stardust"</span></td><td><code>Grid Tile → Default → Resource → Project</code></td></tr>
+        <tr><td>07</td><td>Flatgrid</td><td><span class="t-de">„Beliebtestes Feature — Notes, Heatmap, Quicklink"</span><span class="t-en">"Most popular feature — Notes, Heatmap, Quicklink"</span></td><td><code>Bulk Flatgrid Tile → Grid Options</code></td></tr>
+        <tr><td>08</td><td>Views</td><td><span class="t-de">„Lock + Favorit + Arrangieren"</span><span class="t-en">"Lock + Favourite + Arrange"</span></td><td><code>New View → Q1 2027 → Amber, Apollo</code></td></tr>
+        <tr><td>09</td><td>Planned vs. Actual</td><td><span class="t-de">Marc: +18% Mehraufwand → Frühwarnung</span><span class="t-en">Marc: +18% overrun → early warning</span></td><td><code>Report Mgmt → Plan vs. Actual → Stardust, Feb–Mär</code></td></tr>
+        <tr><td>10</td><td>RAR2 Charts</td><td><span class="t-de">Marc 12h/d = Stardust + Apollo → Ressourcenkonflikt rot</span><span class="t-en">Marc 12h/d = Stardust + Apollo → resource conflict in red</span></td><td><code>RAR2 → Q1 2026, Projekte Stardust + Apollo</code></td></tr>
+        <tr><td>11</td><td>Q&amp;A</td><td><span class="t-de">Peters Bekehrung als natürlichen Abschluss nutzen</span><span class="t-en">Use Peter's conversion as natural close</span></td><td>–</td></tr>
       </tbody>
     </table>
 
