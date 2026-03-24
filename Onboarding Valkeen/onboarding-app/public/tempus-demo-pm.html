@@ -2195,14 +2195,17 @@ async function uploadMediaFile(file, mediaBody) {
         img.alt = file.name; img.className = 'media-preview';
         wrap.appendChild(img);
       }
-      // CDN-URL im data-Attribut speichern (damit serializeScenes den clean-URL bekommt)
       wrap.setAttribute('data-cdn-url', cdnUrl);
       wrap.setAttribute('data-media-type', isVideo ? 'video' : 'image');
     }
 
-    statusEl.textContent = '✅ Hochgeladen und in AWS gespeichert!';
+    // Auto-Save: Seitenstand sofort nach Upload in S3 sichern,
+    // damit nach einem Refresh das Media noch vorhanden ist.
     setUnsaved(true);
-    setTimeout(() => { statusEl.textContent = ''; }, 4000);
+    statusEl.textContent = '⏳ Speichere Seitenstand in AWS…';
+    await saveAll();
+    statusEl.textContent = '✅ Hochgeladen und gespeichert — bleibt nach Refresh erhalten!';
+    setTimeout(() => { statusEl.textContent = ''; }, 5000);
 
   } catch (err) {
     statusEl.textContent = `❌ Upload fehlgeschlagen: ${err.message} (URL abgelaufen?)`;
