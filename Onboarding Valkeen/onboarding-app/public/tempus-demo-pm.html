@@ -315,6 +315,84 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
   display: none;
 }
 .edit-mode-active #edit-hint { display: block; }
+
+/* ════════════════════════════════════════
+   BOX REORDERING & ADDING
+════════════════════════════════════════ */
+
+/* Drag handle in box header */
+.box-drag-handle {
+  display: inline-flex; align-items: center;
+  cursor: grab; font-size: 13px; color: rgba(255,255,255,0.45);
+  margin-right: 7px; user-select: none; padding: 0 2px;
+  transition: color 0.15s; flex-shrink: 0;
+}
+.box-drag-handle:hover { color: rgba(255,255,255,0.9); }
+.box-drag-handle:active { cursor: grabbing; }
+
+/* Delete button in box header */
+.box-delete-btn {
+  margin-left: auto; flex-shrink: 0;
+  border: none; background: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.6); border-radius: 4px;
+  padding: 2px 8px; font-size: 15px; line-height: 1;
+  cursor: pointer; transition: all 0.15s;
+}
+.box-delete-btn:hover { background: rgba(220,38,38,0.55); color: white; }
+
+/* Box drag states */
+.box.box-dragging { opacity: 0.3; transform: scale(0.99); box-shadow: 0 8px 32px rgba(0,0,0,0.25); }
+.box.box-drop-top    { border-top: 3px solid rgba(255,255,255,0.65); margin-top: -1px; }
+.box.box-drop-bottom { border-bottom: 3px solid rgba(255,255,255,0.65); margin-bottom: -1px; }
+
+/* Add box button */
+.box-add-btn {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  margin-top: 12px; padding: 10px 16px;
+  border: 2px dashed var(--gray-300); border-radius: 8px;
+  background: transparent; color: var(--gray-500);
+  font-size: 13px; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: all 0.18s;
+}
+.box-add-btn:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-light); }
+
+/* Box Picker Modal */
+#box-picker-overlay {
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+  animation: bpFadeIn 0.15s ease;
+}
+@keyframes bpFadeIn { from { opacity:0 } to { opacity:1 } }
+#box-picker {
+  background: white; border-radius: 14px; padding: 26px 24px;
+  max-width: 580px; width: 100%;
+  box-shadow: 0 32px 96px rgba(0,0,0,0.35);
+  max-height: 90vh; overflow-y: auto;
+  animation: bpSlide 0.18s ease;
+}
+@keyframes bpSlide { from { transform: translateY(16px); opacity:0 } to { transform: none; opacity:1 } }
+#box-picker h3 { font-size: 15px; font-weight: 700; color: var(--gray-900); margin-bottom: 16px; }
+.bp-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  gap: 9px; margin-bottom: 14px;
+}
+.bp-card {
+  border: 2px solid var(--gray-200); border-radius: 9px;
+  overflow: hidden; cursor: pointer; transition: all 0.16s;
+}
+.bp-card:hover { border-color: var(--teal); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.13); }
+.bp-card-header {
+  padding: 9px 12px; font-size: 12px; font-weight: 700; color: white;
+  display: flex; align-items: center; gap: 6px;
+}
+.bp-card-body { padding: 7px 12px; font-size: 11px; color: var(--gray-500); background: var(--gray-100); line-height: 1.4; }
+.bp-cancel {
+  width: 100%; padding: 9px; border: 1px solid var(--gray-300); border-radius: 7px;
+  background: white; color: var(--gray-500); font-size: 13px; font-weight: 600;
+  font-family: inherit; cursor: pointer; transition: background 0.15s; margin-top: 2px;
+}
+.bp-cancel:hover { background: var(--gray-100); }
 @media (max-width: 600px) {
   .hero-title { font-size: 30px; }
   .agenda-grid { grid-template-columns: 1fr; }
@@ -1369,7 +1447,7 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 </div>
 
 <div id="edit-hint">
-  ✏️ Bearbeitungsmodus aktiv — Texte direkt anklicken und bearbeiten · Szenen am Nummern-Badge ziehen zum Umsortieren · 💾 Speichern nicht vergessen
+  ✏️ Texte direkt anklicken · ⠿ Bereiche/Szenen an «⠿» ziehen zum Umordnen · ＋ Neuen Bereich unten in jeder Szene · × Bereich löschen · 💾 Speichern nicht vergessen
 </div>
 
 <script>
@@ -1445,6 +1523,8 @@ function toggleEditMode() {
     initDrag();
     initInlineEdit();
     initClickStepEditing();
+    initBoxDrag();
+    initBoxAdding();
     hasUnsavedChanges = false;
     setUnsaved(false);
   } else {
@@ -1460,6 +1540,9 @@ function toggleEditMode() {
     clearContentEditable();
     removeDragListeners();
     removeStepButtons();
+    removeBoxDragListeners();
+    removeBoxAddButtons();
+    closeBoxPicker();
     hasUnsavedChanges = false;
     setUnsaved(false);
   }
@@ -1835,7 +1918,6 @@ function showRestoredBanner(ts) {
 
 function resetAll() {
   if (confirm('Alle eigenen Änderungen löschen und die Original-Version wiederherstellen?\n\nDies überschreibt auch die gespeicherte AWS-Version!')) {
-    // Leere State-Datei in S3 pushen
     fetch(PRESIGNED_PUT_URL, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -1844,6 +1926,253 @@ function resetAll() {
     localStorage.removeItem(STORAGE_KEY);
     location.reload();
   }
+}
+
+/* ═══════════════════════════════════════════════════
+   BOX DRAG & DROP (Bereiche innerhalb einer Szene)
+═══════════════════════════════════════════════════ */
+let dragSrcBox = null;
+
+function initBoxDrag() {
+  document.querySelectorAll('.scene .scene-body .box').forEach(box => attachBoxDnd(box));
+}
+
+function attachBoxDnd(box) {
+  // Drag-Handle
+  const header = box.querySelector('.box-header');
+  if (header && !header.querySelector('.box-drag-handle')) {
+    const h = document.createElement('span');
+    h.className = 'box-drag-handle';
+    h.innerHTML = '⠿';
+    h.title = 'Ziehen zum Verschieben';
+    header.insertBefore(h, header.firstChild);
+  }
+  // Delete button
+  if (header && !header.querySelector('.box-delete-btn')) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'box-delete-btn';
+    btn.innerHTML = '×';
+    btn.title = 'Bereich löschen';
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (confirm('Diesen Bereich löschen?')) {
+        box.remove();
+        setUnsaved(true);
+      }
+    });
+    header.appendChild(btn);
+  }
+  box.setAttribute('draggable', 'true');
+  box.addEventListener('dragstart',  onBoxDragStart);
+  box.addEventListener('dragover',   onBoxDragOver);
+  box.addEventListener('dragleave',  onBoxDragLeave);
+  box.addEventListener('drop',       onBoxDrop);
+  box.addEventListener('dragend',    onBoxDragEnd);
+}
+
+function removeBoxDragListeners() {
+  document.querySelectorAll('.scene .scene-body .box').forEach(box => {
+    box.removeAttribute('draggable');
+    box.removeEventListener('dragstart',  onBoxDragStart);
+    box.removeEventListener('dragover',   onBoxDragOver);
+    box.removeEventListener('dragleave',  onBoxDragLeave);
+    box.removeEventListener('drop',       onBoxDrop);
+    box.removeEventListener('dragend',    onBoxDragEnd);
+  });
+  document.querySelectorAll('.box-drag-handle, .box-delete-btn').forEach(el => el.remove());
+}
+
+function onBoxDragStart(e) {
+  if (!e.target.closest('.box-drag-handle')) { e.preventDefault(); return; }
+  dragSrcBox = this;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+  e.stopPropagation(); // Nicht Szenen-Drag auslösen
+  setTimeout(() => this.classList.add('box-dragging'), 0);
+}
+
+function onBoxDragOver(e) {
+  if (!dragSrcBox || dragSrcBox === this) return;
+  if (dragSrcBox.parentNode !== this.parentNode) return;
+  e.preventDefault(); e.stopPropagation();
+  e.dataTransfer.dropEffect = 'move';
+  const mid = this.getBoundingClientRect().top + this.getBoundingClientRect().height / 2;
+  this.classList.remove('box-drop-top', 'box-drop-bottom');
+  this.classList.add(e.clientY < mid ? 'box-drop-top' : 'box-drop-bottom');
+}
+
+function onBoxDragLeave(e) {
+  if (!e.relatedTarget || !this.contains(e.relatedTarget)) {
+    this.classList.remove('box-drop-top', 'box-drop-bottom');
+  }
+}
+
+function onBoxDrop(e) {
+  e.preventDefault(); e.stopPropagation();
+  this.classList.remove('box-drop-top', 'box-drop-bottom');
+  if (!dragSrcBox || dragSrcBox === this) return;
+  if (dragSrcBox.parentNode !== this.parentNode) return;
+  const mid = this.getBoundingClientRect().top + this.getBoundingClientRect().height / 2;
+  this.parentNode.insertBefore(dragSrcBox, e.clientY < mid ? this : this.nextSibling);
+  setUnsaved(true);
+}
+
+function onBoxDragEnd() {
+  this.classList.remove('box-dragging');
+  document.querySelectorAll('.box').forEach(b => b.classList.remove('box-drop-top', 'box-drop-bottom'));
+  dragSrcBox = null;
+}
+
+/* ═══════════════════════════════════════════════════
+   BOX ADDING — "+" Button und Typ-Auswahl
+═══════════════════════════════════════════════════ */
+
+const BOX_TYPES = [
+  { type: 'story',   icon: '📖', label: 'Story-Einstieg',     desc: 'Narrativer Einstieg vor dem ersten Klick',    bg: '#0f2342' },
+  { type: 'say',     icon: '🎙️', label: 'Erklärpunkte',       desc: 'Was du während der Demo sagst',               bg: '#0d7fa0' },
+  { type: 'click',   icon: '🖱️', label: 'Klickpfad',          desc: 'Nummerierte Schritt-für-Schritt-Liste',        bg: '#1a7a3c' },
+  { type: 'peter',   icon: '🙋', label: 'Peter fragt',         desc: 'Typische Kundenfrage + Antwort',              bg: '#7c3f00' },
+  { type: 'context', icon: '💡', label: 'Hintergrund-Info',    desc: 'Zusatzwissen für den Moderator',              bg: '#c8860a' },
+  { type: 'impact',  icon: '⚡', label: 'Wirkungssatz',        desc: 'Abschlusssatz der Szene',                     bg: '#5b3fa0' },
+  { type: 'warn',    icon: '🔧', label: 'Fallback / Warnung',  desc: 'Was tun wenn etwas nicht klappt',             bg: '#c0392b' },
+  { type: 'tip',     icon: '✅', label: 'Tipp',                desc: 'Hilfreicher Hinweis',                         bg: '#2d6a4f' },
+];
+
+let boxPickerTarget = null;
+
+function initBoxAdding() {
+  document.querySelectorAll('.scene .scene-body').forEach(body => {
+    if (!body.querySelector('.box-add-btn')) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'box-add-btn';
+      btn.textContent = '＋ Bereich hinzufügen';
+      btn.addEventListener('click', (e) => { e.stopPropagation(); openBoxPicker(body); });
+      body.appendChild(btn);
+    }
+  });
+}
+
+function removeBoxAddButtons() {
+  document.querySelectorAll('.box-add-btn').forEach(el => el.remove());
+}
+
+function openBoxPicker(sceneBody) {
+  boxPickerTarget = sceneBody;
+  const overlay = document.createElement('div');
+  overlay.id = 'box-picker-overlay';
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeBoxPicker(); });
+
+  const picker = document.createElement('div');
+  picker.id = 'box-picker';
+  picker.innerHTML = `
+    <h3>Welchen Bereich möchtest du hinzufügen?</h3>
+    <div class="bp-grid" id="bp-grid"></div>
+    <button class="bp-cancel" onclick="closeBoxPicker()">Abbrechen</button>
+  `;
+
+  const grid = picker.querySelector('#bp-grid');
+  BOX_TYPES.forEach(bt => {
+    const card = document.createElement('div');
+    card.className = 'bp-card';
+    card.innerHTML = `
+      <div class="bp-card-header" style="background:${bt.bg}">
+        <span>${bt.icon}</span>${bt.label}
+      </div>
+      <div class="bp-card-body">${bt.desc}</div>
+    `;
+    card.addEventListener('click', () => { insertNewBox(bt); closeBoxPicker(); });
+    grid.appendChild(card);
+  });
+
+  overlay.appendChild(picker);
+  document.body.appendChild(overlay);
+}
+
+function closeBoxPicker() {
+  const el = document.getElementById('box-picker-overlay');
+  if (el) el.remove();
+  boxPickerTarget = null;
+}
+
+function insertNewBox(bt) {
+  if (!boxPickerTarget) return;
+  const lang = document.documentElement.classList.contains('lang-de') ? 'de' : 'en';
+  const ph = lang === 'de' ? 'Hier klicken und Text eingeben…' : 'Click here to edit…';
+
+  // Build inner body depending on type
+  let innerBody;
+  if (bt.type === 'click') {
+    innerBody = `<ul class="click-steps">
+      <li>
+        <div class="click-step-num">1</div>
+        <div><span class="t-${lang}">${ph}</span></div>
+      </li>
+    </ul>`;
+  } else {
+    innerBody = `<span class="t-${lang}">${ph}</span>`;
+  }
+
+  const box = document.createElement('div');
+  box.className = `box box-${bt.type}`;
+  box.innerHTML = `
+    <div class="box-header">
+      <span class="box-drag-handle" title="Ziehen">⠿</span>
+      <span class="box-icon">${bt.icon}</span>
+      <span class="t-${lang}" contenteditable="true" spellcheck="false" data-lang="${lang.toUpperCase()}">${bt.label}</span>
+      <button class="box-delete-btn" type="button" title="Bereich löschen">×</button>
+    </div>
+    <div class="box-body">${innerBody}</div>
+  `;
+
+  // Wire up delete
+  box.querySelector('.box-delete-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    if (confirm('Diesen Bereich löschen?')) { box.remove(); setUnsaved(true); }
+  });
+
+  // Wire up DnD
+  box.setAttribute('draggable', 'true');
+  box.addEventListener('dragstart',  onBoxDragStart);
+  box.addEventListener('dragover',   onBoxDragOver);
+  box.addEventListener('dragleave',  onBoxDragLeave);
+  box.addEventListener('drop',       onBoxDrop);
+  box.addEventListener('dragend',    onBoxDragEnd);
+
+  // Make text editable
+  box.querySelectorAll('.t-de, .t-en').forEach(el => {
+    el.contentEditable = 'true';
+    el.spellcheck = false;
+    el.setAttribute('data-lang', lang.toUpperCase());
+    el.addEventListener('input', markUnsaved);
+    el.addEventListener('keydown', preventEnterIfNotWanted);
+  });
+
+  // Click-steps: wire up add/delete step buttons
+  if (bt.type === 'click') {
+    const ul = box.querySelector('.click-steps');
+    ul.querySelectorAll('li').forEach(li => attachDeleteBtn(li, ul));
+    attachAddBtn(ul);
+  }
+
+  // Insert before the "+" button
+  const addBtn = boxPickerTarget.querySelector('.box-add-btn');
+  boxPickerTarget.insertBefore(box, addBtn);
+
+  setUnsaved(true);
+
+  // Focus body
+  setTimeout(() => {
+    const first = box.querySelector('.box-body [contenteditable]');
+    if (first) {
+      first.focus();
+      const r = document.createRange();
+      r.selectNodeContents(first);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(r);
+    }
+  }, 60);
 }
 </script>
 </body>
