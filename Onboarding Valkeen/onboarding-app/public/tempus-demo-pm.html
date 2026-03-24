@@ -1686,13 +1686,26 @@ function renumberSteps(ul) {
 }
 
 /* ═══════════════════════════════════════════════════
-   SAVE / LOAD (localStorage)
+   AWS S3 PERSISTENZ
+   State wird als JSON in S3 gespeichert und von dort geladen.
+   Lesen:    https://manuel-weiss.ch/data/tempus-demo-pm-state.json
+   Schreiben: S3 Presigned PUT-URL (7 Tage gültig, dann refresh-demo-state-url.sh ausführen)
 ═══════════════════════════════════════════════════ */
-function saveAll() {
+
+// Presigned PUT-URL — via refresh-demo-state-url.sh erneuern wenn abgelaufen
+const PRESIGNED_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-demo-pm-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3HUIFMQ6G%2F20260324%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260324T125359Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=2aae553f73be1ba546a1357ba4754f0dd503cf9a8c597c39c4cd394d08a3f7a8';
+
+// Öffentliche Lese-URL (via CloudFront, kein Cache-Problem durch Timestamp)
+const STATE_READ_URL = 'https://manuel-weiss.ch/data/tempus-demo-pm-state.json';
+
+// Passwort zum Speichern (schützt vor versehentlichem Überschreiben)
+const EDIT_PASSWORD = 'tempus-demo-edit-2024';
+
+/* ─── Szenen serialisieren (bereinigt) ────────────── */
+function serializeScenes() {
   const scenes = [];
   document.querySelectorAll('.scene').forEach(scene => {
     const clone = scene.cloneNode(true);
-    // Strip edit-only artefacts
     clone.querySelectorAll('.step-delete-btn, .step-add-btn').forEach(el => el.remove());
     clone.querySelectorAll('[contenteditable]').forEach(el => {
       el.removeAttribute('contenteditable');
@@ -1701,34 +1714,96 @@ function saveAll() {
     });
     scenes.push(clone.outerHTML);
   });
+  return scenes;
+}
+
+/* ─── Speichern: S3 + localStorage als Fallback ───── */
+async function saveAll() {
+  const btn = document.querySelector('.edit-save-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Speichert…'; }
+
+  const scenes = serializeScenes();
+  const payload = JSON.stringify({ scenes, ts: Date.now() });
+
+  let savedToCloud = false;
 
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ scenes, ts: Date.now() }));
-    setUnsaved(false);
-    // Flash "saved" indicator
-    const status = document.getElementById('edit-status');
-    status.style.display = 'inline';
-    setTimeout(() => { status.style.display = 'none'; }, 2500);
-  } catch (e) {
-    alert('Speichern fehlgeschlagen (localStorage voll?). Bitte Seite exportieren.');
+    const res = await fetch(PRESIGNED_PUT_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: payload
+    });
+
+    if (res.ok) {
+      savedToCloud = true;
+      // Auch in localStorage als Backup
+      localStorage.setItem(STORAGE_KEY, payload);
+      setUnsaved(false);
+      flashStatus('☁️ In AWS gespeichert');
+    } else {
+      throw new Error(`HTTP ${res.status}`);
+    }
+  } catch (err) {
+    console.warn('S3 save failed:', err);
+    // Fallback: nur localStorage
+    try {
+      localStorage.setItem(STORAGE_KEY, payload);
+      setUnsaved(false);
+      flashStatus('💾 Lokal gespeichert (S3 nicht erreichbar — URL abgelaufen?)');
+    } catch (e2) {
+      alert('Speichern fehlgeschlagen. Bitte refresh-demo-state-url.sh ausführen.');
+    }
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '💾 Speichern'; }
   }
 }
 
-function loadSaved() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-    const data = JSON.parse(raw);
-    if (!Array.isArray(data.scenes) || !data.scenes.length) return;
+function flashStatus(msg) {
+  const status = document.getElementById('edit-status');
+  if (!status) return;
+  status.textContent = msg;
+  status.style.display = 'inline';
+  setTimeout(() => { status.style.display = 'none'; status.textContent = '✓ Gespeichert'; }, 3500);
+}
 
+/* ─── Laden: S3 → localStorage → nichts ──────────── */
+async function loadSaved() {
+  let data = null;
+
+  // 1. Versuche von S3 (CloudFront) zu laden
+  try {
+    const res = await fetch(STATE_READ_URL + '?v=' + Date.now(), {
+      cache: 'no-store'
+    });
+    if (res.ok) {
+      data = await res.json();
+    }
+  } catch (err) {
+    console.log('S3 load skipped (network/CORS):', err.message);
+  }
+
+  // 2. Fallback: localStorage
+  if (!data) {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) data = JSON.parse(raw);
+    } catch (e) { /* ignore */ }
+  }
+
+  if (!data || !Array.isArray(data.scenes) || !data.scenes.length) return;
+
+  // State anwenden
+  applyState(data);
+}
+
+function applyState(data) {
+  try {
     const page    = document.querySelector('.page');
     const closing = page.querySelector('.closing');
     if (!closing) return;
 
-    // Remove all current scenes
     page.querySelectorAll('.scene').forEach(s => s.remove());
 
-    // Re-insert saved scenes before closing section
     const frag = document.createDocumentFragment();
     data.scenes.forEach(html => {
       const tmp = document.createElement('div');
@@ -1737,10 +1812,9 @@ function loadSaved() {
     });
     page.insertBefore(frag, closing);
 
-    // Show a subtle "restored" banner (auto-hides)
     showRestoredBanner(data.ts);
   } catch (e) {
-    console.warn('Could not restore saved demo data:', e);
+    console.warn('Could not apply state:', e);
   }
 }
 
@@ -1754,13 +1828,19 @@ function showRestoredBanner(ts) {
     'padding:8px 20px', 'border-radius:100px', 'box-shadow:0 4px 16px rgba(0,0,0,0.2)',
     'pointer-events:none'
   ].join(';');
-  banner.textContent = `✓ Gespeicherte Version geladen (${when})`;
+  banner.textContent = `☁️ AWS-Version geladen (${when})`;
   document.body.appendChild(banner);
   setTimeout(() => banner.remove(), 3500);
 }
 
 function resetAll() {
-  if (confirm('Alle eigenen Änderungen löschen und die Original-Version wiederherstellen?')) {
+  if (confirm('Alle eigenen Änderungen löschen und die Original-Version wiederherstellen?\n\nDies überschreibt auch die gespeicherte AWS-Version!')) {
+    // Leere State-Datei in S3 pushen
+    fetch(PRESIGNED_PUT_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ scenes: [], ts: Date.now(), reset: true })
+    }).catch(() => {});
     localStorage.removeItem(STORAGE_KEY);
     location.reload();
   }

@@ -773,6 +773,34 @@ export class WebsiteApiStack extends cdk.Stack {
     trainingAdminScreenshotsResource.addMethod('GET', new apigateway.LambdaIntegration(trainingAdminLambda));
 
     // ========================================
+    // DEMO SCRIPT (tempus-demo-pm.html Bearbeitungsstand in S3)
+    // ========================================
+
+    const demoScriptLambda = new lambda.Function(this, 'DemoScriptFunction', {
+      functionName: 'website-demo-script-api',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('../lambda/demo-script-api'),
+      role: lambdaRole,
+      timeout: cdk.Duration.seconds(15),
+      memorySize: 128,
+      environment: {
+        S3_BUCKET: 'manuel-weiss-website',
+        EDIT_PASSWORD: 'tempus-demo-edit-2024'
+      }
+    });
+
+    demoScriptLambda.addToRolePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['s3:GetObject', 's3:PutObject'],
+      resources: ['arn:aws:s3:::manuel-weiss-website/data/tempus-demo-pm-state.json']
+    }));
+
+    const demoScriptResource = this.api.root.addResource('demo-script');
+    demoScriptResource.addMethod('GET',  new apigateway.LambdaIntegration(demoScriptLambda));
+    demoScriptResource.addMethod('POST', new apigateway.LambdaIntegration(demoScriptLambda));
+
+    // ========================================
     // FLASHCARDS (KI-Lernkarten mit Leitner-System)
     // ========================================
 

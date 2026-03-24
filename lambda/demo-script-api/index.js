@@ -1,0 +1,112 @@
+/**
+ * Lambda: Demo Script State API
+ *
+ * Speichert und lädt den Bearbeitungsstand des tempus-demo-pm.html
+ * als JSON in S3 (manuel-weiss-website/data/tempus-demo-pm-state.json).
+ *
+ * Endpoints:
+ *   GET  /demo-script  → State laden (öffentlich)
+ *   POST /demo-script  → State speichern (passwortgeschützt via X-Demo-Password Header)
+ */
+
+const { S3Client, GetObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3');
+
+const s3 = new S3Client({ region: process.env.AWS_REGION || 'eu-central-1' });
+
+const BUCKET     = process.env.S3_BUCKET    || 'manuel-weiss-website';
+const STATE_KEY  = 'data/tempus-demo-pm-state.json';
+const EDIT_PW    = process.env.EDIT_PASSWORD || 'tempus-demo-edit-2024';
+
+const ALLOWED_ORIGINS = [
+  'https://manuel-weiss.ch',
+  'https://www.manuel-weiss.ch',
+  'http://localhost:3000',
+  'http://localhost:5500',
+  'http://127.0.0.1:5500'
+];
+
+function corsHeaders(origin) {
+  const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': allowed,
+    'Access-Control-Allow-Headers': 'Content-Type,X-Demo-Password',
+    'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
+  };
+}
+
+function response(statusCode, body, origin) {
+  return { statusCode, headers: corsHeaders(origin), body: JSON.stringify(body) };
+}
+
+async function loadState() {
+  try {
+    const res = await s3.send(new GetObjectCommand({ Bucket: BUCKET, Key: STATE_KEY }));
+    const text = await res.Body.transformToString();
+    return JSON.parse(text);
+  } catch (err) {
+    if (err.name === 'NoSuchKey') return null;
+    throw err;
+  }
+}
+
+async function saveState(data) {
+  await s3.send(new PutObjectCommand({
+    Bucket: BUCKET,
+    Key: STATE_KEY,
+    Body: JSON.stringify(data),
+    ContentType: 'application/json',
+    CacheControl: 'no-cache, no-store, must-revalidate'
+  }));
+}
+
+exports.handler = async (event) => {
+  const origin = event.headers?.origin || event.headers?.Origin || '';
+  const method = event.httpMethod;
+
+  // CORS Preflight
+  if (method === 'OPTIONS') {
+    return { statusCode: 200, headers: corsHeaders(origin), body: '' };
+  }
+
+  try {
+    if (method === 'GET') {
+      const state = await loadState();
+      if (!state) return response(204, { message: 'No saved state' }, origin);
+      return response(200, state, origin);
+    }
+
+    if (method === 'POST') {
+      // Password check
+      const pw = event.headers?.['x-demo-password'] || event.headers?.['X-Demo-Password'] || '';
+      if (pw !== EDIT_PW) {
+        return response(403, { error: 'Ungültiges Passwort' }, origin);
+      }
+
+      let body;
+      try {
+        body = JSON.parse(event.body || '{}');
+      } catch {
+        return response(400, { error: 'Ungültiges JSON' }, origin);
+      }
+
+      if (!Array.isArray(body.scenes)) {
+        return response(400, { error: 'scenes array fehlt' }, origin);
+      }
+
+      const state = {
+        scenes: body.scenes,
+        savedBy: 'editor',
+        ts: Date.now()
+      };
+      await saveState(state);
+      return response(200, { ok: true, ts: state.ts }, origin);
+    }
+
+    return response(405, { error: 'Method not allowed' }, origin);
+
+  } catch (err) {
+    console.error('demo-script-api error:', err);
+    return response(500, { error: 'Interner Fehler' }, origin);
+  }
+};
