@@ -1871,7 +1871,9 @@ function renumberSteps(ul) {
 const PRESIGNED_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-demo-pm-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3HUIFMQ6G%2F20260324%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260324T125359Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=2aae553f73be1ba546a1357ba4754f0dd503cf9a8c597c39c4cd394d08a3f7a8';
 
 // Öffentliche Lese-URL (via CloudFront, kein Cache-Problem durch Timestamp)
-const STATE_READ_URL = 'https://manuel-weiss.ch/data/tempus-demo-pm-state.json';
+// Direkt von S3 lesen statt CloudFront — CloudFront cached den alten State bis zu 24h
+// (ForwardedValues.QueryString=false → ?v=timestamp Cache-Buster wirkungslos)
+const STATE_READ_URL = 'https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-demo-pm-state.json';
 
 // Passwort zum Speichern (schützt vor versehentlichem Überschreiben)
 const EDIT_PASSWORD = 'tempus-demo-edit-2024';
