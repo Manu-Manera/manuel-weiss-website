@@ -1,0 +1,10 @@
+{
+  "steps": [
+    { "action": "wait", "text": "Sign in", "timeout": 10000, "description": "Wait for SAML login page" },
+    { "action": "type", "text": "Reto", "selector": "input[name='Username'], input[name='username'], input[name='loginfmt'], #username, #i0116", "description": "Enter username" },
+    { "action": "click", "text": "Next", "delay": 1000, "description": "Click next if present" },
+    { "action": "type", "text": "Password123!!", "selector": "input[type='password'], input[name='Password'], input[name='passwd'], #password, #i0118", "description": "Enter password" },
+    { "action": "click", "text": "Sign in", "delay": 2000, "description": "Submit login" },
+    { "action": "wait", "text": "Welcome", "timeout": 15000, "description": "Wait for dashboard" }
+  ]
+}

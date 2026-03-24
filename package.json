@@ -196,6 +196,7 @@
     "node-fetch": "^2.7.0",
     "openai": "6.6.0",
     "puppeteer": "24.30.0",
-    "snoowrap": "1.23.0"
+    "snoowrap": "1.23.0",
+    "webreel": "0.1.4"
   }
 }

@@ -1,0 +1,120 @@
+{
+  "$schema": "https://webreel.dev/schema/v1.json",
+  "outDir": "./Onboarding Valkeen/onboarding-app/public/tempus-clips",
+  "baseUrl": "https://trial5.tempus-resource.com/slot4",
+  "viewport": { "width": 1280, "height": 800 },
+  "defaultDelay": 600,
+  "clickDwell": 200,
+  "include": ["./shared/tempus-login.json"],
+  "theme": {
+    "cursor": { "size": 28 },
+    "hud": {
+      "background": "rgba(10,15,30,0.85)",
+      "color": "#22d3ee",
+      "fontSize": 24,
+      "fontFamily": "Plus Jakarta Sans, sans-serif",
+      "borderRadius": 10,
+      "position": "bottom"
+    }
+  },
+  "videos": {
+    "clip-01-dashboard": {
+      "url": "/",
+      "output": "clip-01-dashboard.webm",
+      "fps": 30,
+      "quality": 85,
+      "waitFor": { "text": "Welcome" },
+      "steps": [
+        { "action": "pause", "ms": 800 },
+        { "action": "moveTo", "text": "Project" },
+        { "action": "pause", "ms": 600 },
+        { "action": "click", "text": "Project", "within": ".dashboard-tile, [class*='tile'], a", "delay": 1200 }
+      ]
+    },
+    "clip-02-create-project": {
+      "url": "/#/ProjectManagement",
+      "output": "clip-02-create-project.webm",
+      "fps": 30,
+      "quality": 85,
+      "steps": [
+        { "action": "wait", "selector": "[class*='grid'], table, .ag-root", "timeout": 8000 },
+        { "action": "pause", "ms": 800 },
+        { "action": "click", "selector": "[class*='create'], button[title*='Create'], [aria-label*='Create']", "delay": 1500 },
+        { "action": "pause", "ms": 1000 }
+      ]
+    },
+    "clip-03-stardust-tasks": {
+      "url": "/#/project/4/Allocations",
+      "output": "clip-03-stardust-tasks.webm",
+      "fps": 30,
+      "quality": 85,
+      "steps": [
+        { "action": "wait", "selector": "[class*='grid'], table, .ag-root", "timeout": 8000 },
+        { "action": "pause", "ms": 800 },
+        { "action": "scroll", "y": 200 },
+        { "action": "pause", "ms": 1000 }
+      ]
+    },
+    "clip-04-planned-actual": {
+      "url": "/#/project/4/Allocations",
+      "output": "clip-04-planned-actual.webm",
+      "fps": 30,
+      "quality": 85,
+      "steps": [
+        { "action": "wait", "selector": "[class*='grid'], table, .ag-root", "timeout": 8000 },
+        { "action": "pause", "ms": 600 },
+        { "action": "click", "text": "Planned", "delay": 800 },
+        { "action": "pause", "ms": 500 },
+        { "action": "click", "text": "Actual", "delay": 1200 }
+      ]
+    },
+    "clip-05-grid-modes": {
+      "url": "/#/project/4/Allocations",
+      "output": "clip-05-grid-modes.webm",
+      "fps": 30,
+      "quality": 85,
+      "steps": [
+        { "action": "wait", "selector": "[class*='grid'], table, .ag-root", "timeout": 8000 },
+        { "action": "pause", "ms": 600 },
+        { "action": "click", "text": "Resource", "delay": 1000 },
+        { "action": "pause", "ms": 800 }
+      ]
+    },
+    "clip-06-flatgrid": {
+      "url": "/#/bulkProjectAllocationFlatgrid",
+      "output": "clip-06-flatgrid.webm",
+      "fps": 30,
+      "quality": 85,
+      "steps": [
+        { "action": "wait", "selector": "[class*='grid'], table, .ag-root", "timeout": 8000 },
+        { "action": "pause", "ms": 800 },
+        { "action": "click", "text": "Options", "delay": 800 },
+        { "action": "pause", "ms": 1200 }
+      ]
+    },
+    "clip-07-reports": {
+      "url": "/#/ReportManagement",
+      "output": "clip-07-reports.webm",
+      "fps": 30,
+      "quality": 85,
+      "steps": [
+        { "action": "wait", "selector": "[class*='grid'], table, .ag-root, [class*='report']", "timeout": 8000 },
+        { "action": "pause", "ms": 800 },
+        { "action": "scroll", "y": 200 },
+        { "action": "pause", "ms": 1000 }
+      ]
+    },
+    "clip-08-gantt": {
+      "url": "/#/RoadmapManagement",
+      "output": "clip-08-gantt.webm",
+      "fps": 30,
+      "quality": 85,
+      "steps": [
+        { "action": "wait", "selector": "[class*='gantt'], [class*='roadmap'], [class*='grid'], svg", "timeout": 8000 },
+        { "action": "pause", "ms": 1000 },
+        { "action": "scroll", "y": 150 },
+        { "action": "pause", "ms": 800 }
+      ]
+    }
+  }
+}
