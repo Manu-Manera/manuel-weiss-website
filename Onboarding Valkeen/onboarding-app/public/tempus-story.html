@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tempus · Die Geschichte von Reto &amp; Peter</title>
+<!--
+  Screenrecord / Screenshots (Best Practice):
+  - Einheitliche Fenstergröße (hier 940×815 px) für alle Shots — sonst stimmen %-Marker nicht.
+  - Kein object-fit:cover in der Präsentation: volle UI sichtbar; bei Aufnahme: Zoom 100 %, ggf. scrollen statt beschneiden.
+  - Klick-Tutorials: pro Schritt ein Ziel, kurzer Text (vgl. Userguiding / Tourial: lineare Touren, hoher Kontrast).
+  - Marker: top/left in % immer relativ zu .browser-viewport (= Bildfläche unter der Fake-URL-Leiste).
+-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -302,36 +309,46 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--navy);font-fam
 .tag-purple{background:rgba(124,58,237,.12);color:#c4b5fd;border:1px solid rgba(124,58,237,.25)}
 .tag-blue{background:rgba(59,130,246,.12);color:#93c5fd;border:1px solid rgba(59,130,246,.25)}
 
-/* Video-style animated slideshow */
-.video-slideshow{position:relative;width:100%;aspect-ratio:16/10;overflow:hidden;border-radius:0 0 14px 14px}
-.video-slideshow img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;animation:vidFrame 12s infinite}
+/* Video-style slideshow — gleiches Seitenverhältnis wie Screenshots (940×815), kein cover-Crop */
+.video-slideshow{
+  position:absolute;inset:0;overflow:hidden;
+  border-radius:0;background:#e8eef3;
+}
+.video-slideshow img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:contain;object-position:top center;
+  opacity:0;animation:vidFrame 12s infinite;
+}
 .video-slideshow img:nth-child(1){animation-delay:0s}
 .video-slideshow img:nth-child(2){animation-delay:3s}
 .video-slideshow img:nth-child(3){animation-delay:6s}
 .video-slideshow img:nth-child(4){animation-delay:9s}
 @keyframes vidFrame{
-  0%{opacity:0;transform:scale(1.02)}
-  5%{opacity:1;transform:scale(1)}
-  25%{opacity:1;transform:scale(1)}
-  30%{opacity:0;transform:scale(.98)}
+  0%{opacity:0;transform:scale(1.01)}
+  4%{opacity:1;transform:scale(1)}
+  24%{opacity:1;transform:scale(1)}
+  28%{opacity:0;transform:scale(1)}
   100%{opacity:0}
 }
 .video-slideshow .vid-cursor{
-  position:absolute;width:20px;height:20px;z-index:5;pointer-events:none;
-  filter:drop-shadow(0 0 4px rgba(0,0,0,.5));
+  position:absolute;width:22px;height:22px;z-index:6;pointer-events:none;
+  margin-left:-3px;margin-top:-2px;
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,.55));
   animation:vidCursorMove 12s infinite;
 }
+/* Cursor-Pfad kalibriert auf 940×815-UI: + bei Project, Create Project, Regular Project, Formular, Startdatum */
 @keyframes vidCursorMove{
-  0%,5%{top:35%;left:42%;opacity:1}
-  20%{top:35%;left:42%;opacity:1}
-  25%{top:25%;left:22%;opacity:1}
-  30%,35%{top:25%;left:22%;opacity:1}
-  50%{top:14%;left:22%;opacity:1}
-  55%,60%{top:14%;left:22%;opacity:1}
-  75%{top:14%;left:22%;opacity:1}
-  80%{top:18%;left:38%;opacity:1}
-  95%{top:18%;left:38%;opacity:1}
-  100%{top:35%;left:42%;opacity:0}
+  0%,6%{top:34%;left:69%;opacity:1}
+  22%{top:34%;left:69%;opacity:1}
+  26%{top:20%;left:21%;opacity:1}
+  44%{top:20%;left:21%;opacity:1}
+  48%{top:33%;left:16%;opacity:1}
+  64%{top:33%;left:16%;opacity:1}
+  68%{top:26%;left:44%;opacity:1}
+  80%{top:26%;left:44%;opacity:1}
+  84%{top:31%;left:24%;opacity:1}
+  96%{top:31%;left:24%;opacity:1}
+  100%{top:34%;left:69%;opacity:0}
 }
 .video-label{
   position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:10;
@@ -363,16 +380,33 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--navy);font-fam
   display:flex;align-items:center;padding:0 10px;
   font-size:11px;color:var(--gray);font-family:monospace;overflow:hidden;white-space:nowrap;
 }
-.browser-screenshot{display:block;width:100%;height:auto}
+
+/* Shot-Bereich: gleiches Seitenverhältnis wie alle Captures (940×815) — % für Marker = Pixel im Screenshot */
+.browser-viewport{
+  position:relative;
+  width:min(100%, calc(min(74vh, 700px) * 940 / 815));
+  max-width:100%;
+  aspect-ratio:940/815;
+  max-height:min(74vh,700px);
+  margin:0 auto;
+  background:#e8eef3;
+  border-radius:0 0 11px 11px;
+}
+.browser-viewport .browser-screenshot{
+  position:absolute;left:0;top:0;width:100%;height:100%;
+  object-fit:contain;object-position:top center;
+  display:block;
+}
 
 /* Annotations */
 .annotation{
-  position:absolute;display:flex;align-items:center;gap:8px;
+  position:absolute;z-index:4;display:flex;align-items:center;gap:8px;
   background:rgba(10,15,30,.88);border:1px solid var(--teal);
   border-radius:8px;padding:7px 13px;font-size:12px;font-weight:600;
   font-family:var(--font-head);
   backdrop-filter:blur(8px);white-space:nowrap;
   animation:annotationIn .35s both;pointer-events:none;
+  max-width:min(92%, 280px);
 }
 @keyframes annotationIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
 .annotation::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--teal);flex-shrink:0}
@@ -479,6 +513,7 @@ body::before{
   .closing-grid{grid-template-columns:1fr 1fr}
   .pain-grid{grid-template-columns:1fr}
   .cta-links{flex-direction:column;align-items:center}
+  .browser-viewport{width:100%;max-height:min(52vh,520px)}
 }
 @media(max-width:600px){
   .demo-inner{padding:48px 16px 72px}
@@ -610,11 +645,13 @@ body::before{
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
           <div class="browser-url">trial5.tempus-resource.com/slot4</div>
         </div>
+        <div class="browser-viewport">
         <img class="browser-screenshot" src="tempus-shots/01-dashboard.png" alt="Tempus Dashboard" loading="lazy">
+      <div class="annotation" style="top:36%;left:50%">Project Management · „+“ neues Projekt</div>
+      <div class="annotation annotation-gold" style="top:26%;right:3%">Bulk Project · Flatgrid</div>
+      <div class="annotation annotation-green" style="top:44%;left:6%">Resource Management · 434</div>
+        </div>
       </div>
-      <div class="annotation" style="top:28%;left:32%">Project Management → 220 Projekte</div>
-      <div class="annotation annotation-gold" style="top:18%;right:2%">Bulk Flatgrid</div>
-      <div class="annotation annotation-green" style="top:52%;left:2%">Resource Mgmt → 434 Ressourcen</div>
     </div>
   </div>
 </div>
@@ -649,6 +686,7 @@ body::before{
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
           <div class="browser-url">trial5.tempus-resource.com/slot4/project/create</div>
         </div>
+        <div class="browser-viewport">
         <div class="video-slideshow">
           <img src="tempus-shots/vid-01-dashboard.png" alt="Dashboard" loading="lazy">
           <img src="tempus-shots/vid-03-create-dropdown.png" alt="Create Project Dropdown" loading="lazy">
@@ -656,6 +694,7 @@ body::before{
           <img src="tempus-shots/vid-05-stardust-filled.png" alt="Stardust ausgefüllt" loading="lazy">
           <svg class="vid-cursor" viewBox="0 0 24 24" fill="white" stroke="#333" stroke-width="1"><path d="M5 3l14 9-6 1-4 7z"/></svg>
           <div class="video-label">LIVE DEMO · Projekt anlegen</div>
+        </div>
         </div>
       </div>
     </div>
@@ -693,10 +732,12 @@ body::before{
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
           <div class="browser-url">trial5.tempus-resource.com/slot4/project/4/Allocations</div>
         </div>
+        <div class="browser-viewport">
         <img class="browser-screenshot" src="tempus-shots/03-stardust.png" alt="Stardust Allocations" loading="lazy">
+      <div class="annotation" style="top:11%;left:72%">Checkout (Toolbar rechts)</div>
+      <div class="annotation annotation-gold" style="bottom:7%;left:28%">Total-Zeile · geplante Stunden</div>
+        </div>
       </div>
-      <div class="annotation" style="top:8%;left:22%">Checkout → exklusiv bearbeiten</div>
-      <div class="annotation annotation-gold" style="bottom:4%;left:30%">Total: 37'095h geplant</div>
     </div>
   </div>
 </div>
@@ -732,10 +773,12 @@ body::before{
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
           <div class="browser-url">trial5.tempus-resource.com/slot4/project/4/Allocations</div>
         </div>
+        <div class="browser-viewport">
         <img class="browser-screenshot" src="tempus-shots/04-planned-dropdown.png" alt="Planned vs Actual" loading="lazy">
+      <div class="annotation" style="top:17%;left:58%">Dropdown · Ansicht (Planned)</div>
+      <div class="annotation annotation-rose" style="top:30%;left:52%">Actual · Planned+Actual · +Remaining</div>
+        </div>
       </div>
-      <div class="annotation" style="top:14%;left:50%">Dropdown: Planned ausgewählt</div>
-      <div class="annotation annotation-rose" style="top:26%;left:50%">Actual, Planned+Actual, +Remaining</div>
     </div>
   </div>
 </div>
@@ -774,10 +817,12 @@ body::before{
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
           <div class="browser-url">trial5.tempus-resource.com/slot4/TimesheetManagement</div>
         </div>
+        <div class="browser-viewport">
         <img class="browser-screenshot" src="tempus-shots/09-timesheet.png" alt="Timesheet Management" loading="lazy">
-      </div>
       <div class="annotation" style="top:10%;left:40%">Timesheet Manager Approval</div>
       <div class="annotation annotation-green" style="top:10%;right:2%">Archived-Tab für Historie</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -817,10 +862,12 @@ body::before{
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
           <div class="browser-url">trial5.tempus-resource.com/slot4/projectAllocationGrid</div>
         </div>
+        <div class="browser-viewport">
         <img class="browser-screenshot" src="tempus-shots/03-stardust.png" alt="Default Mode — Alle Projekte und Ressourcen" loading="lazy">
-      </div>
       <div class="annotation" style="top:8%;left:4%">Default Mode · Alle Projekte &amp; Ressourcen</div>
       <div class="annotation annotation-gold" style="top:22%;right:4%">Nur das bearbeitete Assignment wird gesperrt</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -860,10 +907,12 @@ body::before{
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
           <div class="browser-url">trial5.tempus-resource.com/slot4/resources/grid</div>
         </div>
+        <div class="browser-viewport">
         <img class="browser-screenshot" src="tempus-shots/06-resource-mgmt.png" alt="Resource Mode — Simon Wespi" loading="lazy">
-      </div>
       <div class="annotation" style="top:14%;left:30%">Suche: „simon" → 1 Treffer</div>
       <div class="annotation annotation-gold" style="top:30%;left:8%">Simon Wespi · IT Department</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -903,10 +952,12 @@ body::before{
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
           <div class="browser-url">trial5.tempus-resource.com/slot4/resources/netAvailability</div>
         </div>
+        <div class="browser-viewport">
         <img class="browser-screenshot" src="tempus-shots/07-net-availability.png" alt="Project Mode &amp; Net Availability" loading="lazy">
-      </div>
       <div class="annotation" style="top:8%;right:2%">Net Availability Tab aktiv</div>
       <div class="annotation annotation-gold" style="top:24%;left:10%">Team-Auslastung · % pro Monat</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -942,10 +993,12 @@ body::before{
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
           <div class="browser-url">trial5.tempus-resource.com/slot4/bulkProjectAllocationFlatgrid</div>
         </div>
+        <div class="browser-viewport">
         <img class="browser-screenshot" src="tempus-shots/05-flatgrid.png" alt="Bulk Flatgrid" loading="lazy">
-      </div>
       <div class="annotation" style="top:22%;left:4%">Add assignment · Options</div>
       <div class="annotation annotation-gold" style="top:10%;right:2%">RM VIEW</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -981,10 +1034,12 @@ body::before{
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
           <div class="browser-url">trial5.tempus-resource.com/slot4/bulkProjectAllocationFlatgrid</div>
         </div>
+        <div class="browser-viewport">
         <img class="browser-screenshot" src="tempus-shots/05-flatgrid.png" alt="Saved Views" loading="lazy">
-      </div>
       <div class="annotation" style="top:11%;left:10%">Filter: Resource 27 · Project 1</div>
       <div class="annotation annotation-gold" style="top:11%;right:2%">RM VIEW → gespeicherte Ansicht</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1020,9 +1075,11 @@ body::before{
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
           <div class="browser-url">trial5.tempus-resource.com/slot4/RoadmapManagement</div>
         </div>
+        <div class="browser-viewport">
         <img class="browser-screenshot" src="tempus-shots/10-roadmap.png" alt="Roadmap Management" loading="lazy">
-      </div>
       <div class="annotation" style="top:16%;left:2%">Create roadmap → neues Roadmap anlegen</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1053,10 +1110,12 @@ body::before{
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
           <div class="browser-url">trial5.tempus-resource.com/slot4/reports</div>
         </div>
+        <div class="browser-viewport">
         <img class="browser-screenshot" src="tempus-shots/08-reports.png" alt="Report Management" loading="lazy">
-      </div>
       <div class="annotation" style="top:18%;left:2%">Pivot Grid · Pivot Chart</div>
       <div class="annotation annotation-rose" style="top:18%;left:50%">RAR · RAR2 · Portfolio · Dashboards</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1092,10 +1151,12 @@ body::before{
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
           <div class="browser-url">trial5.tempus-resource.com/slot4/reports/rar2</div>
         </div>
+        <div class="browser-viewport">
         <img class="browser-screenshot" src="tempus-shots/08-reports.png" alt="RAR2 Chart" loading="lazy">
-      </div>
       <div class="annotation annotation-rose" style="top:18%;left:40%">RAR2 Chart → Ressourcenkonflikt</div>
       <div class="annotation annotation-gold" style="top:18%;right:5%">Portfolio Planner · Dashboards</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1131,10 +1192,12 @@ body::before{
           <div class="browser-dot"></div><div class="browser-dot"></div><div class="browser-dot"></div>
           <div class="browser-url">trial5.tempus-resource.com/slot4/StrategicPortfolio</div>
         </div>
+        <div class="browser-viewport">
         <img class="browser-screenshot" src="tempus-shots/11-portfolio.png" alt="Strategic Portfolio" loading="lazy">
-      </div>
       <div class="annotation" style="top:30%;right:2%">Budget: Total, Capex, Opex, Allocated</div>
       <div class="annotation annotation-gold" style="top:8%;left:30%">Tabs: Strategic Portfolio · Kanban · Grid · Gantt</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
