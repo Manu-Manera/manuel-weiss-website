@@ -302,6 +302,20 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 
 /* Editable scene title area */
 .edit-mode-active .scene-title-area { background: #f0f8ff; }
+.edit-mode-active .pm-editable-intro {
+  background: rgba(13, 127, 160, 0.06);
+  border-radius: var(--radius);
+  padding: 4px 0;
+  margin: 0 -6px;
+  padding-left: 6px;
+  padding-right: 6px;
+  box-shadow: inset 0 0 0 1px rgba(13, 127, 160, 0.2);
+}
+.edit-mode-active .hero-inner {
+  outline: 2px dashed rgba(255, 255, 255, 0.45);
+  outline-offset: 6px;
+  border-radius: 8px;
+}
 .edit-mode-active .scene-title-area [contenteditable] {
   display: block;
   padding: 2px 4px;
@@ -504,12 +518,14 @@ input.media-file-input { display: none; }
       <div class="hero-meta-item">⏱️ <span class="t-de">ca. 45–60 Min.</span><span class="t-en">approx. 45–60 min.</span></div>
       <div class="hero-meta-item">👥 <span class="t-de">Intern &amp; Kunden</span><span class="t-en">Internal &amp; Customers</span></div>
       <div class="hero-meta-item">📋 <span class="t-de">11 Demo-Schritte</span><span class="t-en">11 demo steps</span></div>
-      <div class="hero-meta-item">🔗 trial5.tempus-resource.com/slot4</div>
+      <div class="hero-meta-item"><span class="t-de">🔗 trial5.tempus-resource.com/slot4</span><span class="t-en">🔗 trial5.tempus-resource.com/slot4</span></div>
     </div>
   </div>
 </div>
 
 <div class="page">
+
+<div id="pm-editable-intro" class="pm-editable-intro">
 
 <!-- ═══ WIE LESE ICH DIESEN GUIDE? ════════════════ -->
 <div style="background:white;border:1px solid var(--gray-300);border-radius:var(--radius);padding:18px 22px;margin:24px 0 8px;box-shadow:var(--shadow);">
@@ -631,6 +647,8 @@ input.media-file-input { display: none; }
     <div class="agenda-item"><span class="agenda-num">10</span><span class="t-de">RAR2 Charts</span><span class="t-en">RAR2 Charts</span></div>
     <div class="agenda-item"><span class="agenda-num">11</span><span class="t-de">Feedback &amp; Q&amp;A</span><span class="t-en">Feedback &amp; Q&amp;A</span></div>
   </div>
+</div>
+
 </div>
 
 <!-- ══════════════════════════════════════════════
@@ -1648,8 +1666,8 @@ function autoSave(delayMs = 1500) {
 function initInlineEdit() {
   const lang = document.documentElement.classList.contains('lang-de') ? 'de' : 'en';
 
-  // 1. Language-specific text spans inside scenes
-  document.querySelectorAll(`.scene .t-${lang}`).forEach(el => {
+  // 1. Language-specific text: Hero, Intro-Bereich (Guide, Cast, Agenda …), Szenen
+  document.querySelectorAll(`.hero .t-${lang}, #pm-editable-intro .t-${lang}, .scene .t-${lang}`).forEach(el => {
     el.contentEditable = 'true';
     el.spellcheck = false;
     el.setAttribute('data-lang', lang.toUpperCase());
@@ -1658,14 +1676,13 @@ function initInlineEdit() {
   });
 
   // 2. click-path spans (monospace path labels) — language-independent
-  document.querySelectorAll('.scene .click-path').forEach(el => {
+  document.querySelectorAll('.scene .click-path, #pm-editable-intro .click-path').forEach(el => {
     el.contentEditable = 'true';
     el.spellcheck = false;
     el.addEventListener('input', markUnsaved);
   });
 
-  // 3. Scene header fields (title, act, subtitle) — contain t-de/t-en spans handled above
-  // But also the transition div (contains t-de/t-en spans handled above)
+  // 3. Scene header / Hero: t-de/t-en oben behandelt
 }
 
 function clearContentEditable() {
@@ -1684,7 +1701,9 @@ function markUnsaved() {
 
 function preventEnterIfNotWanted(e) {
   // Allow Enter in multi-line box bodies, block in title-like fields
-  const isTitle = this.closest('.scene-title, .scene-act, .scene-subtitle, .box-icon');
+  const isTitle = this.closest(
+    '.scene-title, .scene-act, .scene-subtitle, .box-icon, .hero-title, .hero-eyebrow, .hero-meta-item'
+  );
   if (isTitle && e.key === 'Enter') e.preventDefault();
 }
 
@@ -1906,13 +1925,27 @@ function serializeScenes() {
   return scenes;
 }
 
+/* ─── Hero & Intro (oberhalb der Szenen) ─────────── */
+function serializeHeroOrIntro(el) {
+  if (!el) return null;
+  const clone = el.cloneNode(true);
+  clone.querySelectorAll('[contenteditable]').forEach(node => {
+    node.removeAttribute('contenteditable');
+    node.removeAttribute('spellcheck');
+    node.removeAttribute('data-lang');
+  });
+  return clone.outerHTML;
+}
+
 /* ─── Speichern: S3 + localStorage als Fallback ───── */
 async function saveAll() {
   const btn = document.querySelector('.edit-save-btn');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Speichert…'; }
 
   const scenes = serializeScenes();
-  const payload = JSON.stringify({ scenes, ts: Date.now() });
+  const heroHtml = serializeHeroOrIntro(document.querySelector('.hero'));
+  const introHtml = serializeHeroOrIntro(document.querySelector('#pm-editable-intro'));
+  const payload = JSON.stringify({ scenes, heroHtml, introHtml, ts: Date.now() });
 
   let savedToCloud = false;
 
@@ -1990,6 +2023,26 @@ function applyState(data) {
     const page    = document.querySelector('.page');
     const closing = page.querySelector('.closing');
     if (!closing) return;
+
+    if (data.heroHtml) {
+      const t = document.createElement('template');
+      t.innerHTML = data.heroHtml.trim();
+      const node = t.content.firstElementChild;
+      const cur = document.querySelector('.hero');
+      if (node && cur && node.classList && node.classList.contains('hero')) {
+        cur.replaceWith(node);
+      }
+    }
+
+    if (data.introHtml) {
+      const t = document.createElement('template');
+      t.innerHTML = data.introHtml.trim();
+      const node = t.content.firstElementChild;
+      const cur = document.querySelector('#pm-editable-intro');
+      if (node && cur && node.id === 'pm-editable-intro') {
+        cur.replaceWith(node);
+      }
+    }
 
     page.querySelectorAll('.scene').forEach(s => s.remove());
 
