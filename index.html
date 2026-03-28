@@ -1898,7 +1898,7 @@
                 return a[Math.floor(Math.random() * a.length)];
             },
 
-            // Schwierigkeitsberechnung; auf Mobile ab Level 2: weniger Blüten gleichzeitig, wildere/schnellere Bahnen
+            // Schwierigkeitsberechnung; Mobile: viele kleine Blüten bis ca. 20k, weniger erst danach
             getDifficulty() {
                 const score = this.score;
                 
@@ -1919,7 +1919,6 @@
                 const hasWind = level >= 3;
                 const name = ['Anfänger', 'Leicht', 'Mittel', 'Schwer', 'Experte', 'Meister'][level];
 
-                // Mobile Level 0–1: wie bisher (gleiche Varianten & Tempo wie Desktop in dieser Phase)
                 if (mobile && level >= 2) {
                     minAnimationVariant = 6;
                     maxAnimationVariant = 12;
@@ -1929,7 +1928,20 @@
                     speedMultiplier += 0.05;
                 }
 
-                const targetMobilePetalCount = mobile ? [10, 10, 15, 16, 17, 18][level] : null;
+                let targetMobilePetalCount = null;
+                if (mobile) {
+                    if (score < 3000) {
+                        targetMobilePetalCount = 10;
+                    } else if (score < 20000) {
+                        targetMobilePetalCount = 22;
+                    } else if (score < 32000) {
+                        targetMobilePetalCount = 18;
+                    } else if (score < 45000) {
+                        targetMobilePetalCount = 15;
+                    } else {
+                        targetMobilePetalCount = 12;
+                    }
+                }
 
                 return {
                     level,
@@ -2110,8 +2122,15 @@
                 let medC = difficulty.mediumChance;
                 let largeC = Math.max(0, 1 - smallC - medC);
                 if (difficulty.isMobile && difficulty.level >= 2) {
-                    const push = 0.14 + (difficulty.level - 2) * 0.048;
-                    smallC = Math.min(smallC + push, 0.88);
+                    const s = this.score;
+                    let extraSmallBias = 0;
+                    if (s < 20000) {
+                        extraSmallBias = 0.2;
+                    } else if (s < 38000) {
+                        extraSmallBias = 0.1;
+                    }
+                    const push = 0.14 + (difficulty.level - 2) * 0.048 + extraSmallBias;
+                    smallC = Math.min(smallC + push, 0.9);
                     largeC = Math.max(largeC - push * 1.22, 0.02);
                     medC = 1 - smallC - largeC;
                     if (medC < 0.07) {
