@@ -1,0 +1,41 @@
+<div class="section-header">
+    <h2>🌸 Blüten-Spiel Highscores</h2>
+    <p>Öffentliche Website zeigt nur Name, Punkte und Datum. E-Mail-Adressen erscheinen hier nur nach Freischaltung.</p>
+</div>
+
+<div style="background: #fffbeb; border: 1px solid #fcd34d; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; color: #78350f; font-size: 0.9rem;">
+    <strong>Einmalig einrichten:</strong> In der AWS Console bei der Lambda <code>website-snowflake-highscores</code> die Umgebungsvariable
+    <code>HIGHSCORE_ADMIN_SECRET</code> auf ein langes Geheimnis setzen (mind. 8 Zeichen). Dasselbe Geheimnis unten eintragen – es wird nur in diesem Browser gespeichert (<code>sessionStorage</code>).
+</div>
+
+<div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 1.5rem;">
+    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #334155;">Admin-Geheimnis (X-Admin-Highscore-Secret)</label>
+    <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;">
+        <input type="password" id="petalHighscoreAdminSecret" placeholder="Geheimnis eingeben" autocomplete="off" style="flex: 1; min-width: 220px; padding: 0.65rem 0.85rem; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <button type="button" id="petalHighscoreSaveSecret" class="btn btn-primary" style="padding: 0.65rem 1.25rem; border-radius: 8px; border: none; background: #6366f1; color: white; cursor: pointer;">
+            Merken (Session)
+        </button>
+        <button type="button" id="petalHighscoreLoadBtn" class="btn btn-outline" style="padding: 0.65rem 1.25rem; border-radius: 8px; border: 1px solid #cbd5e1; background: white; cursor: pointer;">
+            Liste laden
+        </button>
+    </div>
+    <p id="petalHighscoreStatus" style="margin: 0.75rem 0 0 0; font-size: 0.875rem; color: #64748b;"></p>
+</div>
+
+<div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); overflow-x: auto;">
+    <h3 style="margin-top: 0; color: #1e293b;">Alle Einträge (mit E-Mail, falls angegeben)</h3>
+    <table class="petal-highscore-admin-table" style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+        <thead>
+            <tr style="text-align: left; border-bottom: 2px solid #e2e8f0;">
+                <th style="padding: 0.75rem 0.5rem;">#</th>
+                <th style="padding: 0.75rem 0.5rem;">Name</th>
+                <th style="padding: 0.75rem 0.5rem;">Punkte</th>
+                <th style="padding: 0.75rem 0.5rem;">Datum</th>
+                <th style="padding: 0.75rem 0.5rem;">E-Mail</th>
+            </tr>
+        </thead>
+        <tbody id="petalHighscoreAdminBody">
+            <tr><td colspan="5" style="padding: 1rem; color: #94a3b8;">Noch nicht geladen.</td></tr>
+        </tbody>
+    </table>
+</div>

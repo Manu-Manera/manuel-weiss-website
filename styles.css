@@ -5619,6 +5619,13 @@ img {
     color: rgba(255, 255, 255, 0.5);
 }
 
+.highscore-modal-content .highscore-email-hint {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.75);
+    margin: -0.25rem 0 0.5rem 0;
+    line-height: 1.35;
+}
+
 .highscore-modal-content input:focus {
     border-color: rgba(255, 255, 255, 0.6);
 }

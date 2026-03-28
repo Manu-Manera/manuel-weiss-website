@@ -332,6 +332,23 @@ class AdminNavigation {
                     }
                 }
                 
+                if (sectionId === 'petal-highscores') {
+                    if (window.PetalHighscoresSection) {
+                        if (!window.petalHighscoresSection) {
+                            window.petalHighscoresSection = new window.PetalHighscoresSection();
+                        }
+                        if (typeof window.petalHighscoresSection.init === 'function') {
+                            try {
+                                window.petalHighscoresSection.init();
+                            } catch (err) {
+                                console.error('❌ Error initializing PetalHighscoresSection:', err);
+                            }
+                        }
+                    } else {
+                        console.warn('⚠️ window.PetalHighscoresSection not found');
+                    }
+                }
+
                 // Hero-Video Section spezifische Initialisierung
                 if (sectionId === 'hero-video') {
                     if (window.HeroVideoSection) {

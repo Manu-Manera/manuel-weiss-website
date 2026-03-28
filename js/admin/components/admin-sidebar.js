@@ -79,6 +79,12 @@ class AdminSidebar extends HTMLElement {
                                 <span>Hero-Video</span>
                             </a>
                         </li>
+                        <li class="nav-item" data-section="petal-highscores" data-tooltip="Blüten-Highscores">
+                            <a href="#petal-highscores">
+                                <i class="fas fa-seedling"></i>
+                                <span>Blüten-Highscores</span>
+                            </a>
+                        </li>
                         <li class="nav-item" data-section="nutrition" data-tooltip="Ernährungsplan">
                             <a href="#nutrition">
                                 <i class="fas fa-apple-alt"></i>

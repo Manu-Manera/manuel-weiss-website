@@ -1871,6 +1871,8 @@
             <h3>🏆 Highscore speichern</h3>
             <p>Du hast <span id="finalScore">0</span> Punkte gesammelt!</p>
             <input type="text" id="playerName" placeholder="Dein Name" maxlength="20">
+            <input type="email" id="playerEmail" placeholder="E-Mail (optional)" maxlength="120" autocomplete="email">
+            <p class="highscore-email-hint">E-Mail nur für die Gewinner-Auswertung; sie erscheint nicht in der öffentlichen Bestenliste.</p>
             <div class="highscore-modal-buttons">
                 <button id="submitHighscore" class="submit-btn">Speichern</button>
                 <button id="cancelHighscore" class="cancel-btn">Abbrechen</button>
@@ -2385,6 +2387,7 @@
                 const submitBtn = document.getElementById('submitHighscore');
                 const cancelBtn = document.getElementById('cancelHighscore');
                 const playerNameInput = document.getElementById('playerName');
+                const playerEmailInput = document.getElementById('playerEmail');
                 
                 saveBtn.onclick = () => {
                     document.getElementById('finalScore').textContent = this.score;
@@ -2394,15 +2397,17 @@
                 
                 submitBtn.onclick = async () => {
                     const name = playerNameInput.value.trim() || 'Anonym';
+                    const emailOpt = playerEmailInput ? playerEmailInput.value.trim() : '';
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'Speichere...';
                     
                     try {
-                        const success = await this.saveHighscore(name, this.score);
+                        const success = await this.saveHighscore(name, this.score, emailOpt);
                         if (success) {
                             alert('🎉 Highscore gespeichert!');
                             modal.style.display = 'none';
                             playerNameInput.value = '';
+                            if (playerEmailInput) playerEmailInput.value = '';
                             this.score = 0;
                             this.gameStarted = false;
                             document.getElementById('snowflakeScore').textContent = '0';
@@ -2427,17 +2432,26 @@
                 playerNameInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') submitBtn.click();
                 });
+                if (playerEmailInput) {
+                    playerEmailInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') submitBtn.click();
+                    });
+                }
             },
             
-            async saveHighscore(name, score) {
+            async saveHighscore(name, score, emailOptional = '') {
                 try {
                     const apiUrl = window.getApiUrl ? window.getApiUrl('SNOWFLAKE_HIGHSCORES') : (window.AWS_APP_CONFIG?.API_BASE || 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1') + '/snowflake-highscores';
+                    const payload = { name, score };
+                    if (emailOptional && String(emailOptional).trim()) {
+                        payload.email = String(emailOptional).trim().slice(0, 120);
+                    }
                     const response = await fetch(apiUrl, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ name, score }),
+                        body: JSON.stringify(payload),
                     });
 
                     const data = await response.json();

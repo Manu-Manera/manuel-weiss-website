@@ -109,6 +109,7 @@ class AdminApplication {
             { id: 'system-health', template: 'admin/sections/system-health.html', script: 'js/admin/sections/system-health.js' },
             { id: 'analytics', template: 'admin/sections/analytics.html', script: 'js/admin/sections/analytics.js' },
             { id: 'hero-about', template: 'admin/sections/hero-about.html', script: 'js/admin/sections/hero-about.js' },
+            { id: 'petal-highscores', template: 'admin/sections/petal-highscores.html', script: 'js/admin/sections/petal-highscores.js' },
             { id: 'settings', template: 'admin/sections/settings.html', script: 'js/admin/sections/settings.js' },
             
             // Persönlichkeitsentwicklung Methoden

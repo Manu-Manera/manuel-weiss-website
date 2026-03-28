@@ -158,7 +158,7 @@ export class WebsiteApiStack extends cdk.Stack {
       }
     });
 
-    // Snowflake Highscores Lambda
+    // Snowflake Highscores Lambda (optional: HIGHSCORE_ADMIN_SECRET in AWS Console, mind. 8 Zeichen)
     const highscoresLambda = new lambda.Function(this, 'HighscoresFunction', {
       functionName: 'website-snowflake-highscores',
       runtime: lambda.Runtime.NODEJS_18_X,
