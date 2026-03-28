@@ -5367,6 +5367,16 @@ img {
     100% { transform: scaleX(0.78) scaleY(1.05); }
 }
 
+/* Bonus-Biene: quer über den Viewport, Loop in der Mitte, Dauer & Grösse per JS */
+@keyframes beeCrossLoop {
+    0% { transform: translate3d(-18vw, 42vh, 0) rotate(0deg); }
+    16% { transform: translate3d(18vw, 40vh, 0) rotate(-8deg); }
+    36% { transform: translate3d(44vw, 11vh, 0) rotate(185deg); }
+    52% { transform: translate3d(56vw, 50vh, 0) rotate(320deg); }
+    72% { transform: translate3d(80vw, 38vh, 0) rotate(360deg); }
+    100% { transform: translate3d(124vw, 41vh, 0) rotate(360deg); }
+}
+
 /* Klickbare Schneeflocken - Duplikat entfernt, wird oben bei .snowflake definiert */
 
 .snowflake.clickable:hover {
@@ -5396,6 +5406,20 @@ img {
 
 .snowflake.clickable.petal-butterfly:hover {
     filter: drop-shadow(0 0 10px rgba(192, 132, 252, 0.85)) drop-shadow(0 0 6px rgba(252, 211, 77, 0.65)) !important;
+}
+
+.snowflake.petal-bee {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    z-index: 101 !important;
+    opacity: 0.98 !important;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.28)) drop-shadow(0 0 10px rgba(255, 210, 80, 0.45)) !important;
+    line-height: 1;
+}
+
+.snowflake.clickable.petal-bee:hover {
+    filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.32)) drop-shadow(0 0 14px rgba(255, 220, 100, 0.65)) !important;
 }
 
 .snowflake.caught {

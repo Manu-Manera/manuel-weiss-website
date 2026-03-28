@@ -1911,6 +1911,8 @@
             _insightInterval: null,
             _insightUseA: true,
             _insightFirstShown: false,
+            _beeScheduleStarted: false,
+            _beeTimer: null,
 
             isMobileView() {
                 return typeof window !== 'undefined' && window.innerWidth < 768;
@@ -2209,6 +2211,78 @@
                 this.createSnowflakes();
                 this.setupHighscoreModal();
                 this.startWindEffect();
+                this.startBeeFlyoverSchedule();
+            },
+
+            /** Bonus-Biene: Größe & Tempo skalieren mit aktueller Punktzahl (0 = gross/langsam). */
+            getBeeTuning() {
+                const s = Math.max(0, this.score);
+                const t = Math.min(Math.pow(s / 68000, 0.88), 1);
+                const durationSec = 17.5 - t * 10.2;
+                let fontRem = 2.15 - t * 1.38;
+                if (this.isMobileView()) {
+                    fontRem *= 0.92;
+                }
+                fontRem = Math.max(0.58, Math.min(2.2, fontRem));
+                return {
+                    durationSec: Math.max(5.4, Math.min(17.5, durationSec)),
+                    fontRem
+                };
+            },
+
+            trySpawnBonusBee() {
+                const container = document.getElementById('snowflakes');
+                if (!container) return;
+                if (container.querySelector('.snowflake.petal-bee')) return;
+
+                const { durationSec, fontRem } = this.getBeeTuning();
+                const bee = document.createElement('div');
+                bee.className = 'snowflake clickable petal-bee';
+                bee.dataset.points = '100';
+                bee.textContent = '🐝';
+                bee.style.fontSize = `${fontRem}rem`;
+                bee.style.setProperty('animation', `beeCrossLoop ${durationSec}s linear forwards`, 'important');
+
+                const readPoints = () => Number(bee.dataset.points) || 100;
+
+                bee.addEventListener('click', (e) => this.catchSnowflake(e, bee, readPoints()));
+                let touchStartTime = 0;
+                bee.addEventListener('touchstart', (e) => {
+                    touchStartTime = Date.now();
+                    e.preventDefault();
+                }, { passive: false });
+                bee.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    if (Date.now() - touchStartTime < 300) {
+                        this.catchSnowflake(e, bee, readPoints());
+                    }
+                }, { passive: false });
+
+                bee.addEventListener('animationend', () => {
+                    if (bee.parentNode && !bee.classList.contains('shatter')) {
+                        bee.remove();
+                    }
+                });
+
+                container.appendChild(bee);
+            },
+
+            startBeeFlyoverSchedule() {
+                if (this._beeScheduleStarted) return;
+                this._beeScheduleStarted = true;
+
+                const scheduleNext = () => {
+                    const gap = 38000 + Math.random() * 52000;
+                    this._beeTimer = setTimeout(() => {
+                        this.trySpawnBonusBee();
+                        scheduleNext();
+                    }, gap);
+                };
+
+                this._beeTimer = setTimeout(() => {
+                    this.trySpawnBonusBee();
+                    scheduleNext();
+                }, 18000 + Math.random() * 22000);
             },
             
             createSnowflakes() {
@@ -2390,7 +2464,7 @@
                 const sizeClass = snowflake.classList.contains('small') ? 'small' : 
                                   snowflake.classList.contains('medium') ? 'medium' : 'large';
                 
-                if (!isFragment && sizeClass !== 'small' && !snowflake.classList.contains('petal-butterfly')) {
+                if (!isFragment && sizeClass !== 'small' && !snowflake.classList.contains('petal-butterfly') && !snowflake.classList.contains('petal-bee')) {
                     this.createFragments(centerX, centerY, sizeClass);
                 }
                 
