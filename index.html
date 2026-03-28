@@ -1848,6 +1848,14 @@
 
     <!-- Blüten-Container (Frühling) -->
     <div class="snowflakes-container" id="snowflakes"></div>
+
+    <!-- HR-Insights im Hero-Titel-Bereich (erscheint beim Spielen; Animation von links) -->
+    <div id="petalHeroInsight" class="petal-hero-insight" aria-live="polite" hidden>
+        <div class="petal-hero-insight-viewport">
+            <span class="petal-hero-insight-line" id="petalHeroInsightA"></span>
+            <span class="petal-hero-insight-line" id="petalHeroInsightB"></span>
+        </div>
+    </div>
     
     <!-- Blüten-Spiel UI -->
     <div class="snowflake-game-ui" id="snowflakeGameUI" style="display: none;">
@@ -1859,7 +1867,6 @@
             <span class="level-label">Level:</span>
             <span class="level-value" id="difficultyLevel">Anfänger</span>
         </div>
-        <p class="petal-game-insight" id="petalGameInsight" aria-live="polite"></p>
     </div>
     
     <button class="save-highscore-btn" id="saveHighscoreBtn" style="display: none;">
@@ -1902,6 +1909,8 @@
                 'Digitalisierung ohne Menschenbild bleibt leer: Welche „Blüten“ braucht eure Kultur wirklich?'
             ],
             _insightInterval: null,
+            _insightUseA: true,
+            _insightFirstShown: false,
 
             isMobileView() {
                 return typeof window !== 'undefined' && window.innerWidth < 768;
@@ -1989,18 +1998,78 @@
                 }
             },
 
+            animateHeroInsightLine(text, isFirst) {
+                const wrap = document.getElementById('petalHeroInsight');
+                const a = document.getElementById('petalHeroInsightA');
+                const b = document.getElementById('petalHeroInsightB');
+                if (!wrap || !a || !b) return;
+
+                const outgoing = this._insightUseA ? a : b;
+                const incoming = this._insightUseA ? b : a;
+
+                incoming.textContent = text;
+
+                if (isFirst) {
+                    outgoing.textContent = '';
+                    outgoing.className = 'petal-hero-insight-line phi-hidden';
+                    incoming.className = 'petal-hero-insight-line phi-from-left';
+                    void incoming.offsetWidth;
+                    incoming.classList.remove('phi-from-left');
+                    incoming.classList.add('phi-center');
+                    this._insightUseA = !this._insightUseA;
+                    return;
+                }
+
+                outgoing.classList.remove('phi-center', 'phi-from-left');
+                outgoing.classList.add('phi-exit-right');
+                incoming.className = 'petal-hero-insight-line phi-from-left';
+                void incoming.offsetWidth;
+                incoming.classList.remove('phi-from-left');
+                incoming.classList.add('phi-center');
+
+                const cleanup = () => {
+                    outgoing.removeEventListener('transitionend', onEnd);
+                    outgoing.textContent = '';
+                    outgoing.className = 'petal-hero-insight-line phi-hidden';
+                };
+                const onEnd = (e) => {
+                    if (e.propertyName !== 'transform') return;
+                    cleanup();
+                };
+                outgoing.addEventListener('transitionend', onEnd);
+                setTimeout(cleanup, 700);
+
+                this._insightUseA = !this._insightUseA;
+            },
+
             startGameInsights() {
                 if (this._insightInterval) return;
-                const el = document.getElementById('petalGameInsight');
-                if (!el) return;
+                const wrap = document.getElementById('petalHeroInsight');
+                if (!wrap) return;
+
+                wrap.removeAttribute('hidden');
+                wrap.style.display = 'block';
+                wrap.setAttribute('aria-hidden', 'false');
+
+                document.getElementById('home')?.classList.add('petal-game-active');
+
+                const a = document.getElementById('petalHeroInsightA');
+                const b = document.getElementById('petalHeroInsightB');
+                if (a) { a.textContent = ''; a.className = 'petal-hero-insight-line phi-hidden'; }
+                if (b) { b.textContent = ''; b.className = 'petal-hero-insight-line phi-hidden'; }
+                this._insightUseA = true;
+                this._insightFirstShown = false;
+
                 let idx = 0;
-                const tick = () => {
-                    const lines = this.HR_GAME_INSIGHTS;
-                    el.textContent = lines[idx % lines.length];
+                const lines = this.HR_GAME_INSIGHTS;
+                const step = () => {
+                    const text = lines[idx % lines.length];
                     idx += 1;
+                    this.animateHeroInsightLine(text, !this._insightFirstShown);
+                    this._insightFirstShown = true;
                 };
-                tick();
-                this._insightInterval = setInterval(tick, 13000);
+                step();
+                this._insightInterval = setInterval(step, 8000);
             },
 
             stopGameInsights() {
@@ -2008,8 +2077,18 @@
                     clearInterval(this._insightInterval);
                     this._insightInterval = null;
                 }
-                const el = document.getElementById('petalGameInsight');
-                if (el) el.textContent = '';
+                const wrap = document.getElementById('petalHeroInsight');
+                if (wrap) {
+                    wrap.style.display = 'none';
+                    wrap.setAttribute('hidden', '');
+                    wrap.setAttribute('aria-hidden', 'true');
+                }
+                document.getElementById('home')?.classList.remove('petal-game-active');
+                const a = document.getElementById('petalHeroInsightA');
+                const b = document.getElementById('petalHeroInsightB');
+                if (a) { a.textContent = ''; a.className = 'petal-hero-insight-line phi-hidden'; }
+                if (b) { b.textContent = ''; b.className = 'petal-hero-insight-line phi-hidden'; }
+                this._insightFirstShown = false;
             },
             
             // Wind-Effekt für höhere Level

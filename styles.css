@@ -869,6 +869,7 @@ a:hover {
     color: white;
     text-shadow: 0 4px 20px rgba(0,0,0,0.3);
     animation: heroTitleFade 1s ease-out;
+    transition: opacity 0.45s ease, transform 0.45s ease;
 }
 
 
@@ -5378,38 +5379,98 @@ img {
     animation: none !important;
 }
 
+/* HR-Insights über dem Hero (Blüten-Spiel): gleiche Bildregion wie „HR neu denken?“ */
+.petal-hero-insight {
+    position: fixed;
+    z-index: 105;
+    pointer-events: none;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: min(92vw, 640px);
+    top: clamp(96px, 26vh, 220px);
+    text-align: center;
+    font-family: var(--font-family-primary);
+}
+
+.petal-hero-insight-viewport {
+    position: relative;
+    overflow: hidden;
+    min-height: 3.4em;
+    width: 100%;
+}
+
+.petal-hero-insight-line {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0 0.5rem;
+    box-sizing: border-box;
+    font-size: clamp(1rem, 3.8vw, 1.45rem);
+    font-weight: 700;
+    line-height: 1.28;
+    color: #ffffff;
+    text-shadow:
+        0 0 20px rgba(0, 0, 0, 0.55),
+        0 2px 12px rgba(0, 0, 0, 0.45),
+        0 0 2px rgba(30, 58, 138, 0.9);
+}
+
+.petal-hero-insight-line.phi-hidden {
+    transform: translate3d(-110%, 0, 0);
+    opacity: 0;
+    visibility: hidden;
+    transition: none;
+}
+
+.petal-hero-insight-line.phi-from-left {
+    transform: translate3d(-110%, 0, 0);
+    opacity: 0;
+    visibility: visible;
+    transition: none;
+}
+
+.petal-hero-insight-line.phi-center {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+    visibility: visible;
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease;
+}
+
+.petal-hero-insight-line.phi-exit-right {
+    transform: translate3d(110%, 0, 0);
+    opacity: 0;
+    visibility: visible;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+}
+
+.hero.hero-with-video.petal-game-active .hero-title {
+    opacity: 0.14;
+    transform: scale(0.97);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    pointer-events: none;
+}
+
 /* Score Display */
 .snowflake-game-ui {
     position: fixed;
     top: 80px;
     left: 20px;
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     gap: 8px;
     padding: 12px 20px;
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-radius: 24px;
+    border-radius: 50px;
     border: 1px solid rgba(255, 255, 255, 0.3);
     z-index: 1000;
     font-family: var(--font-family-primary);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    max-width: min(420px, calc(100vw - 32px));
-}
-
-.petal-game-insight {
-    flex: 1 1 100%;
-    margin: 4px 0 0 0;
-    padding: 0;
-    font-size: 0.72rem;
-    line-height: 1.38;
-    color: rgba(255, 255, 255, 0.9);
-    font-weight: 400;
-    text-align: left;
-    max-height: 3.1em;
-    overflow: hidden;
 }
 
 .score-label {
@@ -5804,12 +5865,19 @@ img {
         top: 70px;
         left: 10px;
         padding: 8px 15px;
-        max-width: calc(100vw - 20px);
     }
 
-    .petal-game-insight {
-        font-size: 0.66rem;
-        max-height: 3.4em;
+    .petal-hero-insight {
+        top: clamp(88px, 22vh, 180px);
+        width: min(94vw, 100%);
+    }
+
+    .petal-hero-insight-line {
+        font-size: clamp(0.92rem, 4.2vw, 1.2rem);
+    }
+
+    .petal-hero-insight-viewport {
+        min-height: 3.8em;
     }
     
     .score-label {
