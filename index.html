@@ -115,19 +115,6 @@
         <div class="hero-layer-front">
             <div class="hero-layer-inner">
                 <div class="hero-container">
-                    <div class="snowflake-game-ui" id="snowflakeGameUI" style="display: none;">
-                        <div class="score-display">
-                            <span class="score-label">🌸 Punkte:</span>
-                            <span class="score-value" id="snowflakeScore">0</span>
-                        </div>
-                        <div class="level-display" id="levelDisplay">
-                            <span class="level-label">Level:</span>
-                            <span class="level-value" id="difficultyLevel">Anfänger</span>
-                        </div>
-                    </div>
-                    <button type="button" class="save-highscore-btn" id="saveHighscoreBtn" style="display: none;">
-                        🏆 Highscore speichern
-                    </button>
                     <div class="hero-content">
                         <h1 class="hero-title" id="hero-title">
                             <span class="gradient-text" data-de="HR neu denken?" data-en="Rethink HR?">HR neu denken?</span>
@@ -1873,6 +1860,21 @@
 
     <!-- Blüten-Container (Frühling) -->
     <div class="snowflakes-container" id="snowflakes"></div>
+
+    <!-- Spiel-UI direkt unter body: position:fixed wirkt zum Viewport (Hero hat transform auf Vorfahren) -->
+    <div class="snowflake-game-ui" id="snowflakeGameUI" style="display: none;">
+        <div class="score-display">
+            <span class="score-label">🌸 Punkte:</span>
+            <span class="score-value" id="snowflakeScore">0</span>
+        </div>
+        <div class="level-display" id="levelDisplay">
+            <span class="level-label">Level:</span>
+            <span class="level-value" id="difficultyLevel">Anfänger</span>
+        </div>
+    </div>
+    <button type="button" class="save-highscore-btn" id="saveHighscoreBtn" style="display: none;">
+        🏆 Highscore speichern
+    </button>
 
     <!-- Highscore Modal -->
     <div class="highscore-modal" id="highscoreModal" style="display: none;">

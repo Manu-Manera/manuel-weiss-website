@@ -5597,11 +5597,11 @@ img {
     text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55), 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
-/* Score: im Hero-Bereich (Video), scrollt mit — z-index unter fallenden Blüten (100), nicht wie Navbar oben drüber */
-#home.hero-with-video .hero-container > .snowflake-game-ui {
-    position: absolute;
-    top: 0;
-    left: 0;
+/* Score: viewport-fixed (nicht im Hero — sonst fixed relativ zu transform-Vorfahren); unter Navbar, über Inhalt/Blüten */
+#snowflakeGameUI.snowflake-game-ui {
+    position: fixed !important;
+    top: max(calc(var(--header-height) + 10px), calc(env(safe-area-inset-top, 0px) + var(--header-height)));
+    left: max(var(--spacing-lg), env(safe-area-inset-left, 0px));
     display: flex;
     align-items: center;
     gap: 8px;
@@ -5611,14 +5611,14 @@ img {
     -webkit-backdrop-filter: blur(20px);
     border-radius: 50px;
     border: 1px solid rgba(255, 255, 255, 0.3);
-    z-index: 12;
+    z-index: 450;
     font-family: var(--font-family-primary);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     pointer-events: none;
 }
 
-#home.hero-with-video .hero-container > .snowflake-game-ui .score-display,
-#home.hero-with-video .hero-container > .snowflake-game-ui .level-display {
+#snowflakeGameUI.snowflake-game-ui .score-display,
+#snowflakeGameUI.snowflake-game-ui .level-display {
     pointer-events: auto;
 }
 
@@ -5711,9 +5711,8 @@ img {
     }
 }
 
-/* Highscore-Button: fixiert unten rechts sobald sichtbar (ganze Seite, unter Navbar) */
-#saveHighscoreBtn.save-highscore-btn,
-#home.hero-with-video .hero-container > .save-highscore-btn {
+/* Highscore-Button: fixiert unten rechts (direkt unter body, gleicher Grund wie Score-UI) */
+#saveHighscoreBtn.save-highscore-btn {
     position: fixed !important;
     bottom: max(var(--spacing-xl), env(safe-area-inset-bottom, 0px));
     right: max(var(--spacing-xl), env(safe-area-inset-right, 0px));
@@ -5736,8 +5735,7 @@ img {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
-#saveHighscoreBtn.save-highscore-btn:hover,
-#home.hero-with-video .hero-container > .save-highscore-btn:hover {
+#saveHighscoreBtn.save-highscore-btn:hover {
     background: rgba(255, 255, 255, 0.3);
     transform: translateY(-3px);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
@@ -6013,9 +6011,9 @@ img {
 
 /* Mobile Anpassungen für Spiel-UI */
 @media (max-width: 768px) {
-    #home.hero-with-video .hero-container > .snowflake-game-ui {
-        top: 0;
-        left: 0;
+    #snowflakeGameUI.snowflake-game-ui {
+        top: max(calc(var(--header-height) + 6px), calc(env(safe-area-inset-top, 0px) + var(--header-height)));
+        left: max(var(--spacing-md), env(safe-area-inset-left, 0px));
         padding: 8px 12px;
     }
 
@@ -6048,8 +6046,7 @@ img {
         font-size: 1.2rem;
     }
     
-    #saveHighscoreBtn.save-highscore-btn,
-    #home.hero-with-video .hero-container > .save-highscore-btn {
+    #saveHighscoreBtn.save-highscore-btn {
         bottom: max(var(--spacing-md), env(safe-area-inset-bottom, 0px));
         right: max(var(--spacing-md), env(safe-area-inset-right, 0px));
         padding: 12px 18px;
