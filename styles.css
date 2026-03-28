@@ -4818,7 +4818,7 @@ img {
 }
 
 /* =============================================== */
-/* SCHNEEFLOCKEN - EINFACHER, SAUBERER ANSATZ     */
+/* BLÜTEN-SPIEL (Frühling) – technisch .snowflake  */
 /* =============================================== */
 
 .snowflakes-container {
@@ -4835,7 +4835,7 @@ img {
 .snowflake {
     position: absolute;
     top: -50px;
-    color: white;
+    color: #fff8fb;
     font-size: 1.5rem;
     user-select: none;
     pointer-events: none;
@@ -4846,8 +4846,13 @@ img {
     /* WICHTIG: Keine animation hier setzen - wird von JavaScript gesetzt */
 }
 
+/* Fallback nur wenn kein textContent (Spiel setzt Emojis per JS) */
 .snowflake::before {
-    content: "❄";
+    content: "🌸";
+}
+
+.snowflake.clickable::before {
+    content: none !important;
 }
 
 .snowflake.small {
@@ -4863,7 +4868,7 @@ img {
 .snowflake.large {
     font-size: 3.5rem !important; /* VIEL größer - super leicht zu treffen! */
     opacity: 1 !important;
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.9) !important;
+    text-shadow: 0 0 14px rgba(255, 182, 193, 0.85), 0 0 22px rgba(255, 240, 245, 0.5) !important;
 }
 
 .snowflake.clickable {
@@ -5294,7 +5299,7 @@ img {
 /* Klickbare Schneeflocken - Duplikat entfernt, wird oben bei .snowflake definiert */
 
 .snowflake.clickable:hover {
-    filter: drop-shadow(0 0 10px white) !important;
+    filter: drop-shadow(0 0 12px rgba(255, 182, 193, 0.95)) !important;
 }
 
 .snowflake.caught {

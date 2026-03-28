@@ -220,21 +220,21 @@
         </div>
     </section>
 
-    <!-- Schneeflocken & Highscore Section - Gleicher Stil wie Hero -->
+    <!-- Blüten-Spiel & Highscore Section - Gleicher Stil wie Hero -->
     <section class="snowflake-section">
         <div class="container">
             <div class="snowflake-content">
                 <!-- Highscore Card -->
                 <div class="highscore-feature-card">
                     <div class="highscore-header">
-                        <div class="highscore-icon-large">❄️🏆</div>
-                        <h2 data-de="Schneeflocken Highscores" data-en="Snowflake Highscores">Schneeflocken Highscores</h2>
+                        <div class="highscore-icon-large">🌸🏆</div>
+                        <h2 data-de="Blüten Highscores" data-en="Petal Highscores">Blüten Highscores</h2>
                     </div>
                     <div class="highscore-body">
-                        <p class="highscore-description" data-de="Fange die Schneeflocken und werde zur Legende! Der High Score zum letzten Tag im Monat gewinnt eine HR-Standortbestimmung (4 Std. Online Analyse) mit anschliessender Empfehlung für eine Digitalisierungsroadmap." data-en="Catch the snowflakes and become a legend! The high score at the end of the month wins an HR location assessment (4 hours online analysis) with a recommendation for a digitalization roadmap.">
+                        <p class="highscore-description" data-de="Fange die Blütenblätter und werde zur Legende! Der High Score zum letzten Tag im Monat gewinnt eine HR-Standortbestimmung (4 Std. Online Analyse) mit anschliessender Empfehlung für eine Digitalisierungsroadmap." data-en="Catch the petals and become a legend! The high score at the end of the month wins an HR location assessment (4 hours online analysis) with a recommendation for a digitalization roadmap.">
                         </p>
                         <div id="highscoresList" class="highscores-list">
-                            <p class="no-highscores">Noch keine Highscores. Fange Schneeflocken!</p>
+                            <p class="no-highscores">Noch keine Highscores. Fange Blüten!</p>
                         </div>
                     </div>
                 </div>
@@ -1846,13 +1846,13 @@
         });
     </script>
 
-    <!-- Schneeflocken Container -->
+    <!-- Blüten-Container (Frühling) -->
     <div class="snowflakes-container" id="snowflakes"></div>
     
-    <!-- Schneeflocken-Spiel UI -->
+    <!-- Blüten-Spiel UI -->
     <div class="snowflake-game-ui" id="snowflakeGameUI" style="display: none;">
         <div class="score-display">
-            <span class="score-label">❄️ Punkte:</span>
+            <span class="score-label">🌸 Punkte:</span>
             <span class="score-value" id="snowflakeScore">0</span>
         </div>
         <div class="level-display" id="levelDisplay">
@@ -1878,37 +1878,77 @@
         </div>
     </div>
     
-    <!-- Schneeflocken & Scroll-Pfeile JavaScript -->
+    <!-- Blüten-Spiel & Scroll-Pfeile JavaScript -->
     <script>
-        // Schneeflocken-Spiel mit dynamischer Schwierigkeit
+        // Blüten-Spiel (Frühling) mit dynamischer Schwierigkeit
         const SnowflakeGame = {
             score: 0,
             gameStarted: false,
             windActive: false,
             windDirection: 0,
-            
-            // Schwierigkeitsberechnung - SCHWER!
+            PETAL_EMOJIS: ['🌸', '🌺', '🌼', '💮'],
+
+            isMobileView() {
+                return typeof window !== 'undefined' && window.innerWidth < 768;
+            },
+
+            randomPetal() {
+                const a = this.PETAL_EMOJIS;
+                return a[Math.floor(Math.random() * a.length)];
+            },
+
+            // Schwierigkeitsberechnung; auf Mobile ab Level 2: weniger Blüten gleichzeitig, wildere/schnellere Bahnen
             getDifficulty() {
                 const score = this.score;
                 
-                // Level-Stufen - VIEL HÖHERE SCHWELLEN!
                 let level = 0;
-                if (score >= 50000) level = 5;      // Meister
-                else if (score >= 15000) level = 4; // Experte
-                else if (score >= 8000) level = 3;  // Schwer
-                else if (score >= 3000) level = 2;  // Mittel
-                else if (score >= 1000) level = 1;  // Leicht
-                
+                if (score >= 50000) level = 5;
+                else if (score >= 15000) level = 4;
+                else if (score >= 8000) level = 3;
+                else if (score >= 3000) level = 2;
+                else if (score >= 1000) level = 1;
+
+                const mobile = this.isMobileView();
+
+                let speedMultiplier = 1.2 + (level * 0.18);
+                const smallChance = Math.min(0.30 + (level * 0.12), 0.75);
+                const mediumChance = Math.max(0.35 - (level * 0.05), 0.15);
+                let minAnimationVariant = level <= 2 ? 1 : 6;
+                let maxAnimationVariant = level <= 2 ? 5 : 10;
+                const hasWind = level >= 3;
+                const name = ['Anfänger', 'Leicht', 'Mittel', 'Schwer', 'Experte', 'Meister'][level];
+
+                // Mobile Level 0–1: wie bisher (gleiche Varianten & Tempo wie Desktop in dieser Phase)
+                if (mobile && level >= 2) {
+                    minAnimationVariant = 5;
+                    maxAnimationVariant = 10;
+                    speedMultiplier += 0.1 + (level - 2) * 0.07;
+                }
+                if (mobile && level >= 4) {
+                    speedMultiplier += 0.08;
+                }
+
+                const targetMobilePetalCount = mobile ? [10, 10, 8, 7, 6, 6][level] : null;
+
                 return {
-                    level: level,
-                    speedMultiplier: 1.2 + (level * 0.18), // Schneller! Startet bei 1.2
-                    smallChance: Math.min(0.30 + (level * 0.12), 0.75), // 30% -> 75% kleine (mehr kleine!)
-                    mediumChance: Math.max(0.35 - (level * 0.05), 0.15),
-                    minAnimationVariant: level <= 2 ? 1 : 6,
-                    maxAnimationVariant: level <= 2 ? 5 : 10,
-                    hasWind: level >= 3, // Wind schon ab Schwer!
-                    name: ['Anfänger', 'Leicht', 'Mittel', 'Schwer', 'Experte', 'Meister'][level]
+                    level,
+                    speedMultiplier,
+                    smallChance,
+                    mediumChance,
+                    minAnimationVariant,
+                    maxAnimationVariant,
+                    hasWind,
+                    name,
+                    targetMobilePetalCount,
+                    isMobile: mobile
                 };
+            },
+
+            shouldSpawnReplacementPetal(container) {
+                const d = this.getDifficulty();
+                if (!d.isMobile || d.level < 2 || d.targetMobilePetalCount == null) return true;
+                const n = container.querySelectorAll('.snowflake.clickable:not(.wind-flake)').length;
+                return n < d.targetMobilePetalCount;
             },
             
             // Wind-Effekt für höhere Level
@@ -1939,8 +1979,11 @@
                 const windClass = this.windDirection > 0 ? 'wind-right' : 'wind-left';
                 container.classList.add(windClass);
                 
-                // Bei Wind: Extra Schneeflocken spawnen (Böe bringt mehr Schnee!)
-                const extraFlakes = 3 + Math.floor(Math.random() * 4); // 3-6 extra Flocken (weniger!)
+                const diff = this.getDifficulty();
+                // Mobile + hohes Level: weniger Extra-Blüten (insgesamt ruhigeres Bild, Fokus auf wildere Hauptblüten)
+                const extraFlakes = diff.isMobile && diff.level >= 3
+                    ? 2 + Math.floor(Math.random() * 2)
+                    : 3 + Math.floor(Math.random() * 4);
                 for (let i = 0; i < extraFlakes; i++) {
                     setTimeout(() => {
                         this.createWindSnowflake(container, this.windDirection);
@@ -1955,11 +1998,11 @@
                 }, windDuration);
             },
             
-            // Spezielle Schneeflocke die mit dem Wind kommt
+            // Blüte die mit dem Wind kommt
             createWindSnowflake(container, direction) {
                 const snowflake = document.createElement('div');
                 snowflake.className = 'snowflake clickable wind-flake';
-                snowflake.textContent = '❄';
+                snowflake.textContent = this.randomPetal();
                 
                 // Kleinere Flocken im Wind (mehr Punkte)
                 const sizes = [
@@ -2008,7 +2051,7 @@
             },
             
             init() {
-                console.log('❄️ SnowflakeGame.init() aufgerufen');
+                console.log('🌸 SnowflakeGame.init() aufgerufen');
                 const container = document.getElementById('snowflakes');
                 if (!container) {
                     console.error('❌ Container #snowflakes nicht gefunden!');
@@ -2027,14 +2070,14 @@
                     return;
                 }
                 
-                // Mobile: Weniger Schneeflocken für bessere Performance
+                // Mobile: 10 Blüten wie bisher; Desktop 25
                 const snowflakeCount = window.innerWidth < 768 ? 10 : 25;
-                console.log(`❄️ Erstelle ${snowflakeCount} Schneeflocken...`);
+                console.log(`🌸 Erstelle ${snowflakeCount} Blüten...`);
                 
                 for (let i = 0; i < snowflakeCount; i++) {
                     this.createSingleSnowflake(container);
                 }
-                console.log(`✅ ${snowflakeCount} Schneeflocken erstellt`);
+                console.log(`✅ ${snowflakeCount} Blüten erstellt`);
             },
             
             createSingleSnowflake(container) {
@@ -2057,7 +2100,8 @@
                 
                 snowflake.classList.add(size.class);
                 snowflake.dataset.points = size.points;
-                
+                snowflake.textContent = this.randomPetal();
+
                 // Zufällige horizontale Position
                 snowflake.style.left = Math.random() * 100 + '%';
                 
@@ -2138,7 +2182,7 @@
                 const centerX = rect.left + rect.width / 2;
                 const centerY = rect.top + rect.height / 2;
                 
-                // Schneeflocke zerbrechen (außer bei Fragmenten oder kleinen Flocken)
+                // Blüte zerbrechen (außer bei Fragmenten oder kleinen)
                 const sizeClass = snowflake.classList.contains('small') ? 'small' : 
                                   snowflake.classList.contains('medium') ? 'medium' : 'large';
                 
@@ -2151,9 +2195,11 @@
                 snowflake.classList.add('shatter');
                 setTimeout(() => {
                     snowflake.remove();
-                    // Nur neue Schneeflocke erstellen wenn keine Fragment
                     if (!isFragment) {
-                        this.createSingleSnowflake(document.getElementById('snowflakes'));
+                        const c = document.getElementById('snowflakes');
+                        if (this.shouldSpawnReplacementPetal(c)) {
+                            this.createSingleSnowflake(c);
+                        }
                     }
                 }, 300);
             },
@@ -2171,7 +2217,7 @@
                 for (let i = 0; i < fragmentCount; i++) {
                     const fragment = document.createElement('div');
                     fragment.className = 'snowflake clickable fragment';
-                    fragment.textContent = '❄';
+                    fragment.textContent = this.randomPetal();
                     fragment.dataset.points = fragmentPoints;
                     
                     // Zufällige Explosionsrichtung (alle Richtungen möglich)
@@ -2374,7 +2420,7 @@
                 }
                 
                 if (highscores.length === 0) {
-                    container.innerHTML = '<p class="no-highscores">Noch keine Highscores. Fange Schneeflocken!</p>';
+                    container.innerHTML = '<p class="no-highscores">Noch keine Highscores. Fange Blüten!</p>';
                     return;
                 }
                 
@@ -2382,7 +2428,7 @@
                     <div class="highscore-entry ${i < 3 ? 'top-' + (i + 1) : ''}">
                         <span class="rank">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1) + '.'}</span>
                         <span class="name">${hs.name}</span>
-                        <span class="score">${hs.score} ❄️</span>
+                        <span class="score">${hs.score} 🌸</span>
                     </div>
                 `).join('');
             }
