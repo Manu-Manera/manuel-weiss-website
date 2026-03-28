@@ -5290,6 +5290,19 @@ img {
     .snowflake.large {
         font-size: 2.5rem; /* Größer auf Mobile - leicht zu treffen! */
     }
+
+    /* Ab „Mittel“ (Level 2+): kleinere Ziele, trotzdem mehr gleichzeitig */
+    .snowflakes-container.spring-mobile-intense .snowflake.small {
+        font-size: 0.65rem !important;
+    }
+
+    .snowflakes-container.spring-mobile-intense .snowflake.medium {
+        font-size: 1.15rem !important;
+    }
+
+    .snowflakes-container.spring-mobile-intense .snowflake.large {
+        font-size: 1.85rem !important;
+    }
 }
 
 /* ==========================================
