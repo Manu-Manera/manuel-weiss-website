@@ -5518,10 +5518,15 @@ img {
     100% { transform: translate3d(126vw, 40vh, 0) rotate(0deg); }
 }
 
-/* Nur inneres Emoji: leichte scaleY/scaleX — äusserer .bee-glyph hält nur die Spiegelung */
-@keyframes beeWingFlap {
-    0% { transform: scale(1, 1); }
-    100% { transform: scale(0.9, 1.07); }
+/* SVG-Biene: nur Flügel-Gruppen rotieren (Ansatzpunkt am Thorax, viewBox 0 0 100 100) */
+@keyframes beeSvgFlapRear {
+    from { transform: rotate(-18deg); }
+    to { transform: rotate(12deg); }
+}
+
+@keyframes beeSvgFlapFront {
+    from { transform: rotate(12deg); }
+    to { transform: rotate(-14deg); }
 }
 
 /* Klickbare Schneeflocken - Duplikat entfernt, wird oben bei .snowflake definiert */
@@ -5567,15 +5572,30 @@ img {
 
 .snowflake.petal-bee .bee-glyph {
     display: inline-block;
-    transform: scaleX(-1);
-    transform-origin: 50% 50%;
+    line-height: 0;
+    vertical-align: middle;
 }
 
-.snowflake.petal-bee .bee-wing-flap {
-    display: inline-block;
-    transform-origin: 46% 52%;
-    animation: beeWingFlap 0.22s ease-in-out infinite alternate;
+.snowflake.petal-bee .bee-svg {
+    width: 1em;
+    height: 1em;
+    display: block;
+    overflow: visible;
+}
+
+.snowflake.petal-bee .bee-wing {
+    transform-box: view-box;
+    transform-origin: 46px 50px;
     will-change: transform;
+}
+
+.snowflake.petal-bee .bee-wing--rear {
+    animation: beeSvgFlapRear 0.17s ease-in-out infinite alternate;
+}
+
+.snowflake.petal-bee .bee-wing--front {
+    animation: beeSvgFlapFront 0.17s ease-in-out infinite alternate;
+    animation-delay: 0.06s;
 }
 
 .snowflake.clickable.petal-bee:hover {
@@ -5595,15 +5615,10 @@ img {
     animation: none !important;
 }
 
-.snowflake.caught .bee-wing-flap,
-.snowflake.shatter .bee-wing-flap {
+.snowflake.caught .bee-wing,
+.snowflake.shatter .bee-wing {
     animation: none !important;
-    transform: none;
-}
-
-.snowflake.caught .bee-glyph,
-.snowflake.shatter .bee-glyph {
-    transform: scaleX(-1);
+    transform: none !important;
 }
 
 /* Spiel aktiv: Titel bleibt gut lesbar (weiss), Klicks gehen zu den Blüten */
