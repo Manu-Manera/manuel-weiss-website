@@ -4846,13 +4846,13 @@ img {
     /* WICHTIG: Keine animation hier setzen - wird von JavaScript gesetzt */
 }
 
-/* Fallback nur wenn kein textContent (Spiel setzt Emojis per JS) */
-.snowflake::before {
-    content: "🌸";
-}
-
-.snowflake.clickable::before {
+/* Kein ::before/::after: sonst doppeltes Symbol (Pseudo + textContent), besonders nach mehrfachem Init */
+.snowflakes-container .snowflake::before,
+.snowflakes-container .snowflake::after,
+.snowflake.clickable::before,
+.snowflake.clickable::after {
     content: none !important;
+    display: none !important;
 }
 
 .snowflake.small {

@@ -1886,7 +1886,8 @@
             gameStarted: false,
             windActive: false,
             windDirection: 0,
-            PETAL_EMOJIS: ['🌸', '🌺', '🌼', '💮'],
+            /* Nur klassische Blüten – kein 💮 (wirkt auf iOS wie Siegel/Stempel, nicht wie Blütenblatt) */
+            PETAL_EMOJIS: ['🌸', '🌺', '🌼', '🌷'],
 
             isMobileView() {
                 return typeof window !== 'undefined' && window.innerWidth < 768;
@@ -2057,6 +2058,10 @@
                     console.error('❌ Container #snowflakes nicht gefunden!');
                     return;
                 }
+                if (this._layerInitialized) {
+                    return;
+                }
+                this._layerInitialized = true;
                 console.log('✅ Container gefunden:', container);
                 this.createSnowflakes();
                 this.setupHighscoreModal();
@@ -2440,6 +2445,7 @@
             console.log('🚀 initSnowflakeGame() aufgerufen, readyState:', document.readyState);
             try {
                 SnowflakeGame.init();
+                /* Highscores bei jedem Aufruf aktualisieren; Spiel-Layer nur einmal (sonst doppelte Blüten) */
                 SnowflakeGame.updateHighscoreDisplay();
             } catch (error) {
                 console.error('❌ Fehler beim Initialisieren von SnowflakeGame:', error);
