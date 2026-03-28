@@ -2177,7 +2177,10 @@
                 bee.textContent = '';
                 const beeGlyph = document.createElement('span');
                 beeGlyph.className = 'bee-glyph';
-                beeGlyph.textContent = '🐝';
+                const beeWing = document.createElement('span');
+                beeWing.className = 'bee-wing-flap';
+                beeWing.textContent = '🐝';
+                beeGlyph.appendChild(beeWing);
                 bee.appendChild(beeGlyph);
                 bee.style.fontSize = `${fontRem}rem`;
                 const beeTrack = Math.random() < 0.5 ? 'beeCrossLoop' : 'beeCrossLoopB';
