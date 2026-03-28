@@ -802,12 +802,77 @@ a:hover {
     padding-top: calc(var(--header-height) + var(--spacing-xl));
 }
 
+/* Video über Portrait/Kacheln (z=5); darunter liegende Ebene z=2; Text/UI z=10 — Navbar bleibt global höher */
+.hero.hero-with-video {
+    display: grid;
+    grid-template-areas: "hero-stack";
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+}
+
+.hero.hero-with-video > .hero-video-wrapper {
+    grid-area: hero-stack;
+    z-index: 5;
+}
+
+.hero.hero-with-video > .hero-layer-back {
+    grid-area: hero-stack;
+    align-self: stretch;
+    position: relative;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.hero.hero-with-video > .hero-layer-front {
+    grid-area: hero-stack;
+    align-self: stretch;
+    position: relative;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.hero.hero-with-video > .hero-layer-front .hero-container {
+    pointer-events: auto;
+}
+
+.hero.hero-with-video .hero-layer-inner {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0 var(--spacing-xl);
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-3xl);
+    align-items: start;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.hero.hero-with-video .hero-layer-front .hero-container {
+    display: block;
+    max-width: none;
+    margin: 0;
+    width: 100%;
+    min-height: 0;
+    padding: 0;
+    position: relative;
+    z-index: 10;
+    isolation: isolate;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+.hero-grid-spacer {
+    min-height: 1px;
+    pointer-events: none;
+}
+
 .hero-video-wrapper {
     display: block; /* Explizit sichtbar */
     position: absolute;
     inset: 0;
     overflow: hidden;
-    z-index: 1; /* Video als Hintergrund – Content muss darüber (Chrome-Fix) */
+    z-index: 1; /* Ohne .hero-with-video-Stack: klassisches Layering */
 }
 
 .hero-video {
@@ -3777,6 +3842,33 @@ a:hover {
         position: relative;
         overflow: visible;
     }
+
+    .hero.hero-with-video > .hero-layer-back {
+        display: none !important;
+    }
+
+    .hero.hero-with-video .hero-layer-inner {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        gap: var(--spacing-md);
+        padding: var(--spacing-md) var(--spacing-lg);
+    }
+
+    .hero.hero-with-video .hero-grid-spacer {
+        display: none !important;
+    }
+
+    .hero.hero-with-video .hero-layer-front .hero-container {
+        min-height: 100vh;
+        max-height: 100vh;
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        overflow: hidden;
+        isolation: auto !important;
+    }
     
     .hero-container {
         min-height: 100vh;
@@ -4279,6 +4371,10 @@ a:hover {
 @media (min-width: 769px) and (max-width: 1024px) {
     .hero-container {
         grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-2xl);
+    }
+
+    .hero.hero-with-video .hero-layer-inner {
         gap: var(--spacing-2xl);
     }
     
@@ -5486,74 +5582,6 @@ img {
     animation: none !important;
 }
 
-/* HR-Insights über dem Hero (Blüten-Spiel): gleiche Bildregion wie „HR neu denken?“ */
-.petal-hero-insight {
-    position: fixed;
-    z-index: 105;
-    pointer-events: none;
-    left: 0;
-    right: 0;
-    margin: 0 auto;
-    width: min(92vw, 640px);
-    top: clamp(96px, 26vh, 220px);
-    text-align: center;
-    font-family: var(--font-family-primary);
-}
-
-.petal-hero-insight-viewport {
-    position: relative;
-    overflow: hidden;
-    min-height: 3.4em;
-    width: 100%;
-}
-
-.petal-hero-insight-line {
-    display: block;
-    position: absolute;
-    left: 0;
-    right: 0;
-    width: 100%;
-    margin: 0;
-    padding: 0 0.5rem;
-    box-sizing: border-box;
-    font-size: clamp(1rem, 3.8vw, 1.45rem);
-    font-weight: 700;
-    line-height: 1.28;
-    color: #ffffff;
-    text-shadow:
-        0 0 20px rgba(0, 0, 0, 0.55),
-        0 2px 12px rgba(0, 0, 0, 0.45),
-        0 0 2px rgba(30, 58, 138, 0.9);
-}
-
-.petal-hero-insight-line.phi-hidden {
-    transform: translate3d(-110%, 0, 0);
-    opacity: 0;
-    visibility: hidden;
-    transition: none;
-}
-
-.petal-hero-insight-line.phi-from-left {
-    transform: translate3d(-110%, 0, 0);
-    opacity: 0;
-    visibility: visible;
-    transition: none;
-}
-
-.petal-hero-insight-line.phi-center {
-    transform: translate3d(0, 0, 0);
-    opacity: 1;
-    visibility: visible;
-    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease;
-}
-
-.petal-hero-insight-line.phi-exit-right {
-    transform: translate3d(110%, 0, 0);
-    opacity: 0;
-    visibility: visible;
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
-}
-
 .hero.hero-with-video.petal-game-active .hero-title {
     opacity: 0.14;
     transform: scale(0.97);
@@ -5575,7 +5603,7 @@ img {
     -webkit-backdrop-filter: blur(20px);
     border-radius: 50px;
     border: 1px solid rgba(255, 255, 255, 0.3);
-    z-index: 9;
+    z-index: 12;
     font-family: var(--font-family-primary);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     pointer-events: none;
@@ -5693,7 +5721,7 @@ img {
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    z-index: 9;
+    z-index: 12;
     transition: all 0.3s ease;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
@@ -5980,19 +6008,6 @@ img {
         padding: 8px 12px;
     }
 
-    .petal-hero-insight {
-        top: clamp(88px, 22vh, 180px);
-        width: min(94vw, 100%);
-    }
-
-    .petal-hero-insight-line {
-        font-size: clamp(0.92rem, 4.2vw, 1.2rem);
-    }
-
-    .petal-hero-insight-viewport {
-        min-height: 3.8em;
-    }
-    
     .score-label {
         font-size: 0.8rem;
     }

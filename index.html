@@ -82,54 +82,66 @@
             </video>
             <div class="hero-video-overlay"></div>
         </div>
-        <div class="hero-container">
-            <div class="snowflake-game-ui" id="snowflakeGameUI" style="display: none;">
-                <div class="score-display">
-                    <span class="score-label">🌸 Punkte:</span>
-                    <span class="score-value" id="snowflakeScore">0</span>
-                </div>
-                <div class="level-display" id="levelDisplay">
-                    <span class="level-label">Level:</span>
-                    <span class="level-value" id="difficultyLevel">Anfänger</span>
+        <!-- Ebene unter dem Video: Portrait + Stat-Karten (Desktop) -->
+        <div class="hero-layer-back">
+            <div class="hero-layer-inner">
+                <div class="hero-grid-spacer" aria-hidden="true"></div>
+                <div class="hero-visual hero-about-visual">
+                    <div class="about-image hero-about-image">
+                        <img src="manuel-weiss-portrait.jpg"
+                             alt="Manuel Weiss"
+                             class="profile-image dynamic-profile-image"
+                             id="profile-photo"
+                             onerror="handleProfileImageError(this);">
+                    </div>
+                    <div class="about-stats hero-about-stats">
+                        <div class="stat-card">
+                            <div class="stat-number" id="stat1-number">6+</div>
+                            <div class="stat-label" id="stat1-label" data-de="JAHRE IT PROJEKT ERFAHRUNG" data-en="YEARS IT PROJECT EXPERIENCE">JAHRE IT PROJEKT ERFAHRUNG</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="stat2-number">60+</div>
+                            <div class="stat-label" id="stat2-label" data-de="ERFOLGREICH IMPLEMENTIERTE PROJEKTE" data-en="SUCCESSFULLY IMPLEMENTED PROJECTS">ERFOLGREICH IMPLEMENTIERTE PROJEKTE</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="stat3-number">100%</div>
+                            <div class="stat-label" id="stat3-label" data-de="LERNKURVENEFFEKT ;)" data-en="LEARNING CURVE EFFECT ;)">LERNKURVENEFFEKT ;)</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <button type="button" class="save-highscore-btn" id="saveHighscoreBtn" style="display: none;">
-                🏆 Highscore speichern
-            </button>
-            <div class="hero-content">
-                <h1 class="hero-title" id="hero-title">
-                    <span class="gradient-text" data-de="HR neu denken?" data-en="Rethink HR?">HR neu denken?</span>
-                </h1>
-                <p class="hero-subtitle desktop-only" id="hero-subtitle" data-de="Digitale Transformation voranzutreiben mit dem Wunsch im Herzen anderen die Arbeit zu erleichtern und echten, qualitativ hochwertigen Mehrwert für den Arbeitsalltag zu stiften. Mit Köpfchen, Herzblut und höchster Motivation." data-en="Driving digital transformation with the desire at heart to make work easier for others and to create real, high-quality added value for everyday work. With brains, heart, and highest motivation.">
-                    Digitale Transformation voranzutreiben mit dem Wunsch im Herzen anderen die Arbeit zu erleichtern und echten, qualitativ hochwertigen Mehrwert für den Arbeitsalltag zu stiften. Mit Köpfchen, Herzblut und höchster Motivation.
-                </p>
-                <div class="hero-actions">
-                    <a href="#services" class="btn btn-primary"><span data-de="Services entdecken" data-en="Discover Services">Services entdecken</span></a>
-                    <a href="#contact" class="btn btn-outline"><span data-de="Kontakt aufnehmen" data-en="Get in Touch">Kontakt aufnehmen</span></a>
-                </div>
-            </div>
-            <div class="hero-visual hero-about-visual">
-                <div class="about-image hero-about-image">
-                    <img src="manuel-weiss-portrait.jpg"
-                         alt="Manuel Weiss"
-                         class="profile-image dynamic-profile-image"
-                         id="profile-photo"
-                         onerror="handleProfileImageError(this);">
-                </div>
-                <div class="about-stats hero-about-stats">
-                    <div class="stat-card">
-                        <div class="stat-number" id="stat1-number">6+</div>
-                        <div class="stat-label" id="stat1-label" data-de="JAHRE IT PROJEKT ERFAHRUNG" data-en="YEARS IT PROJECT EXPERIENCE">JAHRE IT PROJEKT ERFAHRUNG</div>
+        </div>
+        <!-- Ebene über dem Video: Text, Spiel-UI (Menü bleibt global darüber) -->
+        <div class="hero-layer-front">
+            <div class="hero-layer-inner">
+                <div class="hero-container">
+                    <div class="snowflake-game-ui" id="snowflakeGameUI" style="display: none;">
+                        <div class="score-display">
+                            <span class="score-label">🌸 Punkte:</span>
+                            <span class="score-value" id="snowflakeScore">0</span>
+                        </div>
+                        <div class="level-display" id="levelDisplay">
+                            <span class="level-label">Level:</span>
+                            <span class="level-value" id="difficultyLevel">Anfänger</span>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="stat2-number">60+</div>
-                        <div class="stat-label" id="stat2-label" data-de="ERFOLGREICH IMPLEMENTIERTE PROJEKTE" data-en="SUCCESSFULLY IMPLEMENTED PROJECTS">ERFOLGREICH IMPLEMENTIERTE PROJEKTE</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="stat3-number">100%</div>
-                        <div class="stat-label" id="stat3-label" data-de="LERNKURVENEFFEKT ;)" data-en="LEARNING CURVE EFFECT ;)">LERNKURVENEFFEKT ;)</div>
+                    <button type="button" class="save-highscore-btn" id="saveHighscoreBtn" style="display: none;">
+                        🏆 Highscore speichern
+                    </button>
+                    <div class="hero-content">
+                        <h1 class="hero-title" id="hero-title">
+                            <span class="gradient-text" data-de="HR neu denken?" data-en="Rethink HR?">HR neu denken?</span>
+                        </h1>
+                        <p class="hero-subtitle desktop-only" id="hero-subtitle" data-de="Digitale Transformation voranzutreiben mit dem Wunsch im Herzen anderen die Arbeit zu erleichtern und echten, qualitativ hochwertigen Mehrwert für den Arbeitsalltag zu stiften. Mit Köpfchen, Herzblut und höchster Motivation." data-en="Driving digital transformation with the desire at heart to make work easier for others and to create real, high-quality added value for everyday work. With brains, heart, and highest motivation.">
+                            Digitale Transformation voranzutreiben mit dem Wunsch im Herzen anderen die Arbeit zu erleichtern und echten, qualitativ hochwertigen Mehrwert für den Arbeitsalltag zu stiften. Mit Köpfchen, Herzblut und höchster Motivation.
+                        </p>
+                        <div class="hero-actions">
+                            <a href="#services" class="btn btn-primary"><span data-de="Services entdecken" data-en="Discover Services">Services entdecken</span></a>
+                            <a href="#contact" class="btn btn-outline"><span data-de="Kontakt aufnehmen" data-en="Get in Touch">Kontakt aufnehmen</span></a>
+                        </div>
                     </div>
                 </div>
+                <div class="hero-grid-spacer" aria-hidden="true"></div>
             </div>
         </div>
     </section>
@@ -1862,15 +1874,6 @@
     <!-- Blüten-Container (Frühling) -->
     <div class="snowflakes-container" id="snowflakes"></div>
 
-    <!-- HR-Insights im Hero-Titel-Bereich (erscheint beim Spielen; Animation von links) -->
-    <div id="petalHeroInsight" class="petal-hero-insight" aria-live="polite" hidden>
-        <div class="petal-hero-insight-viewport">
-            <span class="petal-hero-insight-line" id="petalHeroInsightA"></span>
-            <span class="petal-hero-insight-line" id="petalHeroInsightB"></span>
-        </div>
-    </div>
-    
-    <!-- Blüten-Spiel UI -->
     <!-- Highscore Modal -->
     <div class="highscore-modal" id="highscoreModal" style="display: none;">
         <div class="highscore-modal-content">
@@ -1899,18 +1902,6 @@
             /* Nur klassische Blüten – kein 💮 (wirkt auf iOS wie Siegel/Stempel, nicht wie Blütenblatt) */
             PETAL_EMOJIS: ['🌸', '🌺', '🌼', '🌷'],
 
-            HR_GAME_INSIGHTS: [
-                'HR neu denken? Jede Blüte ist Aufmerksamkeit: wen kannst du heute spürbar stärken?',
-                'Welche Blüten bekommen deine Mitarbeitenden – Wertschätzung, Klarheit oder nur der nächste Task?',
-                'Ressourcenplanung: Du kannst nicht alle Blüten gleichzeitig fangen. Was ist strategisch zuerst dran?',
-                'Strategie braucht Priorität. Grosse Blüten = schnelle Sichtbarkeit, kleine = oft tiefe Wirkung.',
-                'Der Schmetterling? Seltene Chance – so wie Fokus auf das Wesentliche statt Dauerfeuer.',
-                'Wie verteilst du Energie im Team, wenn Forderungen wachsen und Zeit begrenzt bleibt?',
-                'Digitalisierung ohne Menschenbild bleibt leer: Welche „Blüten“ braucht eure Kultur wirklich?'
-            ],
-            _insightInterval: null,
-            _insightUseA: true,
-            _insightFirstShown: false,
             _beeScheduleStarted: false,
             _beeTimer: null,
 
@@ -2000,99 +1991,6 @@
                 }
             },
 
-            animateHeroInsightLine(text, isFirst) {
-                const wrap = document.getElementById('petalHeroInsight');
-                const a = document.getElementById('petalHeroInsightA');
-                const b = document.getElementById('petalHeroInsightB');
-                if (!wrap || !a || !b) return;
-
-                const outgoing = this._insightUseA ? a : b;
-                const incoming = this._insightUseA ? b : a;
-
-                incoming.textContent = text;
-
-                if (isFirst) {
-                    outgoing.textContent = '';
-                    outgoing.className = 'petal-hero-insight-line phi-hidden';
-                    incoming.className = 'petal-hero-insight-line phi-from-left';
-                    void incoming.offsetWidth;
-                    incoming.classList.remove('phi-from-left');
-                    incoming.classList.add('phi-center');
-                    this._insightUseA = !this._insightUseA;
-                    return;
-                }
-
-                outgoing.classList.remove('phi-center', 'phi-from-left');
-                outgoing.classList.add('phi-exit-right');
-                incoming.className = 'petal-hero-insight-line phi-from-left';
-                void incoming.offsetWidth;
-                incoming.classList.remove('phi-from-left');
-                incoming.classList.add('phi-center');
-
-                const cleanup = () => {
-                    outgoing.removeEventListener('transitionend', onEnd);
-                    outgoing.textContent = '';
-                    outgoing.className = 'petal-hero-insight-line phi-hidden';
-                };
-                const onEnd = (e) => {
-                    if (e.propertyName !== 'transform') return;
-                    cleanup();
-                };
-                outgoing.addEventListener('transitionend', onEnd);
-                setTimeout(cleanup, 700);
-
-                this._insightUseA = !this._insightUseA;
-            },
-
-            startGameInsights() {
-                if (this._insightInterval) return;
-                const wrap = document.getElementById('petalHeroInsight');
-                if (!wrap) return;
-
-                wrap.removeAttribute('hidden');
-                wrap.style.display = 'block';
-                wrap.setAttribute('aria-hidden', 'false');
-
-                document.getElementById('home')?.classList.add('petal-game-active');
-
-                const a = document.getElementById('petalHeroInsightA');
-                const b = document.getElementById('petalHeroInsightB');
-                if (a) { a.textContent = ''; a.className = 'petal-hero-insight-line phi-hidden'; }
-                if (b) { b.textContent = ''; b.className = 'petal-hero-insight-line phi-hidden'; }
-                this._insightUseA = true;
-                this._insightFirstShown = false;
-
-                let idx = 0;
-                const lines = this.HR_GAME_INSIGHTS;
-                const step = () => {
-                    const text = lines[idx % lines.length];
-                    idx += 1;
-                    this.animateHeroInsightLine(text, !this._insightFirstShown);
-                    this._insightFirstShown = true;
-                };
-                step();
-                this._insightInterval = setInterval(step, 8000);
-            },
-
-            stopGameInsights() {
-                if (this._insightInterval) {
-                    clearInterval(this._insightInterval);
-                    this._insightInterval = null;
-                }
-                const wrap = document.getElementById('petalHeroInsight');
-                if (wrap) {
-                    wrap.style.display = 'none';
-                    wrap.setAttribute('hidden', '');
-                    wrap.setAttribute('aria-hidden', 'true');
-                }
-                document.getElementById('home')?.classList.remove('petal-game-active');
-                const a = document.getElementById('petalHeroInsightA');
-                const b = document.getElementById('petalHeroInsightB');
-                if (a) { a.textContent = ''; a.className = 'petal-hero-insight-line phi-hidden'; }
-                if (b) { b.textContent = ''; b.className = 'petal-hero-insight-line phi-hidden'; }
-                this._insightFirstShown = false;
-            },
-            
             // Wind-Effekt für höhere Level
             startWindEffect() {
                 if (this.windInterval) return;
@@ -2469,7 +2367,7 @@
                     this.gameStarted = true;
                     document.getElementById('snowflakeGameUI').style.display = 'flex';
                     document.getElementById('saveHighscoreBtn').style.display = 'flex';
-                    this.startGameInsights();
+                    document.getElementById('home')?.classList.add('petal-game-active');
                 }
                 
                 // Altes Level speichern für Level-Up-Effekt
@@ -2660,7 +2558,7 @@
                             document.getElementById('snowflakeGameUI').style.display = 'none';
                             document.getElementById('saveHighscoreBtn').style.display = 'none';
                             this.syncMobileIntensityClass();
-                            this.stopGameInsights();
+                            document.getElementById('home')?.classList.remove('petal-game-active');
                             this.resetPetalGameToTeaser();
                         }
                     } catch (error) {
