@@ -3860,14 +3860,15 @@ a:hover {
 
     .hero.hero-with-video .hero-layer-front .hero-container {
         min-height: 100vh;
-        max-height: 100vh;
+        max-height: none;
         display: flex !important;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         padding: 0;
-        overflow: hidden;
+        overflow: visible;
         isolation: auto !important;
+        transform: none !important; /* sonst schneidet overflow/fixed-Kontext den Button ab */
     }
     
     .hero-container {
@@ -6037,9 +6038,12 @@ img {
         font-size: 1.2rem;
     }
     
+    /* Fixed: bleibt unten rechts sichtbar (nicht im geclippten Hero-Container) */
     #home.hero-with-video .hero-container > .save-highscore-btn {
-        bottom: var(--spacing-md);
-        right: var(--spacing-md);
+        position: fixed !important;
+        bottom: max(var(--spacing-md), env(safe-area-inset-bottom, 0px));
+        right: max(var(--spacing-md), env(safe-area-inset-right, 0px));
+        z-index: 200;
         padding: 12px 18px;
         font-size: 0.9rem;
     }
