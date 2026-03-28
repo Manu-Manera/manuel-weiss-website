@@ -1921,17 +1921,15 @@
 
                 // Mobile Level 0–1: wie bisher (gleiche Varianten & Tempo wie Desktop in dieser Phase)
                 if (mobile && level >= 2) {
-                    minAnimationVariant = 5;
-                    maxAnimationVariant = 10;
-                    /* Etwas weniger reiner Speed-Boost: Schwierigkeit kommt aus mehr kleinen Blüten + Zufalls-Timing */
+                    minAnimationVariant = 6;
+                    maxAnimationVariant = 12;
                     speedMultiplier += 0.05 + (level - 2) * 0.045;
                 }
                 if (mobile && level >= 4) {
                     speedMultiplier += 0.05;
                 }
 
-                /* Mobile ab Mittel: wieder mehr Blüten als zuvor (8–6), dafür kleiner & unberechenbarer per JS */
-                const targetMobilePetalCount = mobile ? [10, 10, 11, 12, 12, 13][level] : null;
+                const targetMobilePetalCount = mobile ? [10, 10, 15, 16, 17, 18][level] : null;
 
                 return {
                     level,
@@ -1995,7 +1993,7 @@
                 
                 const diff = this.getDifficulty();
                 const extraFlakes = diff.isMobile && diff.level >= 3
-                    ? 3 + Math.floor(Math.random() * 3)
+                    ? 4 + Math.floor(Math.random() * 3)
                     : 3 + Math.floor(Math.random() * 4);
                 for (let i = 0; i < extraFlakes; i++) {
                     setTimeout(() => {
@@ -2034,12 +2032,12 @@
                 
                 const difficulty = this.getDifficulty();
                 const animationVariant = difficulty.isMobile && difficulty.level >= 2
-                    ? 6 + Math.floor(Math.random() * 5)
+                    ? 6 + Math.floor(Math.random() * 7)
                     : 3 + Math.floor(Math.random() * 3);
                 const animationName = `snowflakeFall${animationVariant}`;
                 const duration = 8 + Math.random() * 4;
                 const windEase = difficulty.isMobile && difficulty.level >= 2
-                    ? (['ease-in-out', 'cubic-bezier(0.45,0,0.55,1)', 'cubic-bezier(0.33,1,0.68,1)', 'cubic-bezier(0.2,0.9,0.3,1)'][Math.floor(Math.random() * 4)])
+                    ? (['ease-in-out', 'cubic-bezier(0.45,0,0.55,1)', 'cubic-bezier(0.33,1,0.68,1)', 'cubic-bezier(0.2,0.9,0.3,1)', 'cubic-bezier(0.68,-0.55,0.27,1.55)'][Math.floor(Math.random() * 5)])
                     : 'ease-in-out';
                 snowflake.style.setProperty('animation', `${animationName} ${duration}s ${windEase} forwards`, 'important');
                 
@@ -2112,10 +2110,14 @@
                 let medC = difficulty.mediumChance;
                 let largeC = Math.max(0, 1 - smallC - medC);
                 if (difficulty.isMobile && difficulty.level >= 2) {
-                    const push = 0.09 + (difficulty.level - 2) * 0.035;
-                    smallC = Math.min(smallC + push, 0.86);
-                    largeC = Math.max(largeC - push * 1.15, 0.03);
-                    medC = Math.max(1 - smallC - largeC, 0.1);
+                    const push = 0.14 + (difficulty.level - 2) * 0.048;
+                    smallC = Math.min(smallC + push, 0.88);
+                    largeC = Math.max(largeC - push * 1.22, 0.02);
+                    medC = 1 - smallC - largeC;
+                    if (medC < 0.07) {
+                        smallC = Math.max(0.55, 1 - largeC - 0.07);
+                        medC = 1 - smallC - largeC;
+                    }
                 }
                 const rand = Math.random();
                 let size;
@@ -2150,8 +2152,8 @@
                 
                 let adjustedDuration = Math.max(baseDuration / difficulty.speedMultiplier, 6);
                 if (difficulty.isMobile && difficulty.level >= 2) {
-                    adjustedDuration *= 0.78 + Math.random() * 0.42;
-                    adjustedDuration = Math.max(adjustedDuration, 5.5);
+                    adjustedDuration *= 0.68 + Math.random() * 0.52;
+                    adjustedDuration = Math.max(adjustedDuration, 5.2);
                 }
 
                 const animationDelay = Math.random() * adjustedDuration;
@@ -2161,7 +2163,7 @@
                 const animationName = `snowflakeFall${animationVariant}`;
 
                 const timingFn = difficulty.isMobile && difficulty.level >= 2
-                    ? (['ease-in-out', 'cubic-bezier(0.45,0,0.55,1)', 'cubic-bezier(0.65,0,0.35,1)', 'cubic-bezier(0.25,0.46,0.45,0.94)', 'cubic-bezier(0.33,1,0.68,1)'][Math.floor(Math.random() * 5)])
+                    ? (['ease-in-out', 'cubic-bezier(0.45,0,0.55,1)', 'cubic-bezier(0.65,0,0.35,1)', 'cubic-bezier(0.25,0.46,0.45,0.94)', 'cubic-bezier(0.33,1,0.68,1)', 'cubic-bezier(0.68,-0.55,0.27,1.55)', 'cubic-bezier(0.55,0.09,0.68,0.53)'][Math.floor(Math.random() * 6)])
                     : 'ease-in-out';
 
                 snowflake.style.setProperty('animation', `${animationName} ${adjustedDuration}s ${timingFn} ${animationDelay}s infinite`, 'important');

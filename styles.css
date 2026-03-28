@@ -5107,6 +5107,43 @@ img {
     100% { transform: translate(0, 2000px) rotate(700deg); }
 }
 
+/* Variante 11–12: Mobile Frühling – stärkeres Pendeln (nur per JS für schwere Phasen gewählt) */
+@keyframes snowflakeFall11 {
+    0% { transform: translate(0, -50px) rotate(0deg); }
+    7% { transform: translate(48px, 100px) rotate(28deg); }
+    14% { transform: translate(-44px, 260px) rotate(-32deg); }
+    21% { transform: translate(52px, 420px) rotate(36deg); }
+    28% { transform: translate(-46px, 580px) rotate(-38deg); }
+    35% { transform: translate(40px, 740px) rotate(30deg); }
+    42% { transform: translate(-54px, 900px) rotate(-42deg); }
+    49% { transform: translate(46px, 1060px) rotate(34deg); }
+    56% { transform: translate(-38px, 1220px) rotate(-28deg); }
+    63% { transform: translate(50px, 1380px) rotate(40deg); }
+    70% { transform: translate(-42px, 1520px) rotate(-30deg); }
+    77% { transform: translate(36px, 1660px) rotate(26deg); }
+    84% { transform: translate(-28px, 1780px) rotate(-22deg); }
+    91% { transform: translate(18px, 1900px) rotate(14deg); }
+    100% { transform: translate(0, 2000px) rotate(0deg); }
+}
+
+@keyframes snowflakeFall12 {
+    0% { transform: translate(0, -50px) rotate(0deg); }
+    5% { transform: translate(-56px, 70px) rotate(-45deg); }
+    11% { transform: translate(50px, 210px) rotate(42deg); }
+    17% { transform: translate(-34px, 380px) rotate(-28deg); }
+    24% { transform: translate(58px, 540px) rotate(48deg); }
+    31% { transform: translate(-52px, 720px) rotate(-44deg); }
+    38% { transform: translate(28px, 880px) rotate(24deg); }
+    46% { transform: translate(-60px, 1040px) rotate(-50deg); }
+    54% { transform: translate(46px, 1220px) rotate(40deg); }
+    62% { transform: translate(-40px, 1400px) rotate(-34deg); }
+    70% { transform: translate(54px, 1560px) rotate(46deg); }
+    78% { transform: translate(-26px, 1700px) rotate(-22deg); }
+    86% { transform: translate(32px, 1840px) rotate(28deg); }
+    94% { transform: translate(-14px, 1940px) rotate(-12deg); }
+    100% { transform: translate(0, 2000px) rotate(0deg); }
+}
+
 /* ===== WIND-EFFEKT ===== */
 /* Existierende Flocken werden bei Wind diagonal geweht */
 .snowflakes-container.wind-right .snowflake:not(.wind-flake) {
@@ -5293,15 +5330,15 @@ img {
 
     /* Ab „Mittel“ (Level 2+): kleinere Ziele, trotzdem mehr gleichzeitig */
     .snowflakes-container.spring-mobile-intense .snowflake.small {
-        font-size: 0.65rem !important;
+        font-size: 0.5rem !important;
     }
 
     .snowflakes-container.spring-mobile-intense .snowflake.medium {
-        font-size: 1.15rem !important;
+        font-size: 0.92rem !important;
     }
 
     .snowflakes-container.spring-mobile-intense .snowflake.large {
-        font-size: 1.85rem !important;
+        font-size: 1.42rem !important;
     }
 }
 
