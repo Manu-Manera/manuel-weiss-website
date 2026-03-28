@@ -231,7 +231,7 @@
                         <h2 data-de="Blüten Highscores" data-en="Petal Highscores">Blüten Highscores</h2>
                     </div>
                     <div class="highscore-body">
-                        <p class="highscore-description" data-de="Fange die Blütenblätter und werde zur Legende! Der High Score zum letzten Tag im Monat gewinnt eine HR-Standortbestimmung (4 Std. Online Analyse) mit anschliessender Empfehlung für eine Digitalisierungsroadmap." data-en="Catch the petals and become a legend! The high score at the end of the month wins an HR location assessment (4 hours online analysis) with a recommendation for a digitalization roadmap.">
+                        <p class="highscore-description" data-de="Fange die Blütenblätter und werde zur Legende! Kleines Frühlingsspiel mit grosser HR-Metapher: Welche „Blüten“ bekommen deine Mitarbeitenden gerade – Anerkennung, klare Ziele oder nur Druck? Wie verteilst du Aufmerksamkeit und Energie, wenn Ressourcen begrenzt sind wie im Alltag? Der High Score zum letzten Tag im Monat gewinnt eine HR-Standortbestimmung (4 Std. Online Analyse) mit anschliessender Empfehlung für eine Digitalisierungsroadmap." data-en="Catch the petals and become a legend! A small spring game with an HR metaphor: what “flowers” are your people getting right now—recognition, clarity, or just pressure? How do you allocate attention when resources are limited, like in real work? The high score at month-end wins an HR location assessment (4 hours online) plus a digitalization roadmap recommendation.">
                         </p>
                         <div id="highscoresList" class="highscores-list">
                             <p class="no-highscores">Noch keine Highscores. Fange Blüten!</p>
@@ -1859,6 +1859,7 @@
             <span class="level-label">Level:</span>
             <span class="level-value" id="difficultyLevel">Anfänger</span>
         </div>
+        <p class="petal-game-insight" id="petalGameInsight" aria-live="polite"></p>
     </div>
     
     <button class="save-highscore-btn" id="saveHighscoreBtn" style="display: none;">
@@ -1891,6 +1892,17 @@
             /* Nur klassische Blüten – kein 💮 (wirkt auf iOS wie Siegel/Stempel, nicht wie Blütenblatt) */
             PETAL_EMOJIS: ['🌸', '🌺', '🌼', '🌷'],
 
+            HR_GAME_INSIGHTS: [
+                'HR neu denken? Jede Blüte ist Aufmerksamkeit: wen kannst du heute spürbar stärken?',
+                'Welche Blüten bekommen deine Mitarbeitenden – Wertschätzung, Klarheit oder nur der nächste Task?',
+                'Ressourcenplanung: Du kannst nicht alle Blüten gleichzeitig fangen. Was ist strategisch zuerst dran?',
+                'Strategie braucht Priorität. Grosse Blüten = schnelle Sichtbarkeit, kleine = oft tiefe Wirkung.',
+                'Der Schmetterling? Seltene Chance – so wie Fokus auf das Wesentliche statt Dauerfeuer.',
+                'Wie verteilst du Energie im Team, wenn Forderungen wachsen und Zeit begrenzt bleibt?',
+                'Digitalisierung ohne Menschenbild bleibt leer: Welche „Blüten“ braucht eure Kultur wirklich?'
+            ],
+            _insightInterval: null,
+
             isMobileView() {
                 return typeof window !== 'undefined' && window.innerWidth < 768;
             },
@@ -1900,20 +1912,20 @@
                 return a[Math.floor(Math.random() * a.length)];
             },
 
-            // Schwierigkeitsberechnung; Mobile: viele kleine Blüten bis ca. 20k, weniger erst danach
+            // Schwierigkeitsberechnung: länger im „Spassbereich“ wie früher bei ca. 1500–2500 Punkten (sanfter Anstieg)
             getDifficulty() {
                 const score = this.score;
                 
                 let level = 0;
-                if (score >= 50000) level = 5;
-                else if (score >= 15000) level = 4;
-                else if (score >= 8000) level = 3;
-                else if (score >= 3000) level = 2;
-                else if (score >= 1000) level = 1;
+                if (score >= 95000) level = 5;
+                else if (score >= 32000) level = 4;
+                else if (score >= 16500) level = 3;
+                else if (score >= 6200) level = 2;
+                else if (score >= 1300) level = 1;
 
                 const mobile = this.isMobileView();
 
-                let speedMultiplier = 1.2 + (level * 0.18);
+                let speedMultiplier = 1.12 + (level * 0.14);
                 const smallChance = Math.min(0.30 + (level * 0.12), 0.75);
                 const mediumChance = Math.max(0.35 - (level * 0.05), 0.15);
                 let minAnimationVariant = level <= 2 ? 1 : 6;
@@ -1932,13 +1944,13 @@
 
                 let targetMobilePetalCount = null;
                 if (mobile) {
-                    if (score < 3000) {
+                    if (score < 6200) {
                         targetMobilePetalCount = 14;
-                    } else if (score < 20000) {
+                    } else if (score < 22000) {
                         targetMobilePetalCount = 30;
-                    } else if (score < 32000) {
+                    } else if (score < 36000) {
                         targetMobilePetalCount = 24;
-                    } else if (score < 45000) {
+                    } else if (score < 52000) {
                         targetMobilePetalCount = 19;
                     } else {
                         targetMobilePetalCount = 15;
@@ -1975,6 +1987,29 @@
                 } else {
                     el.classList.remove('spring-mobile-intense');
                 }
+            },
+
+            startGameInsights() {
+                if (this._insightInterval) return;
+                const el = document.getElementById('petalGameInsight');
+                if (!el) return;
+                let idx = 0;
+                const tick = () => {
+                    const lines = this.HR_GAME_INSIGHTS;
+                    el.textContent = lines[idx % lines.length];
+                    idx += 1;
+                };
+                tick();
+                this._insightInterval = setInterval(tick, 13000);
+            },
+
+            stopGameInsights() {
+                if (this._insightInterval) {
+                    clearInterval(this._insightInterval);
+                    this._insightInterval = null;
+                }
+                const el = document.getElementById('petalGameInsight');
+                if (el) el.textContent = '';
             },
             
             // Wind-Effekt für höhere Level
@@ -2117,8 +2152,16 @@
                 const snowflake = document.createElement('div');
                 snowflake.className = 'snowflake clickable';
                 
-                // Hole aktuelle Schwierigkeit
                 const difficulty = this.getDifficulty();
+                const isButterfly = Math.random() < 0.082;
+
+                let size;
+                if (isButterfly) {
+                    snowflake.classList.add('small', 'petal-butterfly');
+                    size = { class: 'small', points: 95 };
+                    snowflake.dataset.points = '95';
+                    snowflake.textContent = '🦋';
+                } else {
                 
                 let smallC = difficulty.smallChance;
                 let medC = difficulty.mediumChance;
@@ -2126,9 +2169,9 @@
                 if (difficulty.isMobile && difficulty.level >= 2) {
                     const s = this.score;
                     let extraSmallBias = 0;
-                    if (s < 20000) {
+                    if (s < 24000) {
                         extraSmallBias = 0.1;
-                    } else if (s < 38000) {
+                    } else if (s < 45000) {
                         extraSmallBias = 0.05;
                     }
                     const push = 0.12 + (difficulty.level - 2) * 0.04 + extraSmallBias;
@@ -2152,7 +2195,6 @@
                     }
                 }
                 const rand = Math.random();
-                let size;
                 if (rand < smallC) {
                     size = { class: 'small', points: 50 };
                 } else if (rand < smallC + medC) {
@@ -2162,8 +2204,9 @@
                 }
                 
                 snowflake.classList.add(size.class);
-                snowflake.dataset.points = size.points;
+                snowflake.dataset.points = String(size.points);
                 snowflake.textContent = this.randomPetal();
+                }
 
                 // Zufällige horizontale Position
                 snowflake.style.left = Math.random() * 100 + '%';
@@ -2172,38 +2215,48 @@
                 const startOffset = -50 - Math.random() * 150; // -50 bis -200px oberhalb
                 snowflake.style.top = startOffset + 'px';
                 
-                // Geschwindigkeit basierend auf Größe - AM ANFANG SEHR LANGSAM!
                 let baseDuration;
-                if (size.class === 'large') {
-                    baseDuration = Math.random() * 10 + 30; // Große: 30-40 Sekunden (super langsam!)
+                if (isButterfly) {
+                    baseDuration = Math.random() * 4 + 5.2;
+                } else if (size.class === 'large') {
+                    baseDuration = Math.random() * 10 + 30;
                 } else if (size.class === 'medium') {
-                    baseDuration = Math.random() * 8 + 22;  // Mittlere: 22-30 Sekunden
+                    baseDuration = Math.random() * 8 + 22;
                 } else {
-                    baseDuration = Math.random() * 6 + 16;  // Kleine: 16-22 Sekunden
+                    baseDuration = Math.random() * 6 + 16;
                 }
                 
-                let adjustedDuration = Math.max(baseDuration / difficulty.speedMultiplier, 6);
-                if (difficulty.isMobile && difficulty.level >= 2) {
+                let adjustedDuration = Math.max(baseDuration / difficulty.speedMultiplier, isButterfly ? 4.2 : 6);
+                if (isButterfly) {
+                    adjustedDuration *= 0.52 + Math.random() * 0.12;
+                    adjustedDuration = Math.max(adjustedDuration, 3.8);
+                }
+                if (difficulty.isMobile && difficulty.level >= 2 && !isButterfly) {
                     adjustedDuration *= 0.68 + Math.random() * 0.52;
                     adjustedDuration = Math.max(adjustedDuration, 5.2);
                 }
 
                 const animationDelay = Math.random() * adjustedDuration;
 
-                const animationRange = difficulty.maxAnimationVariant - difficulty.minAnimationVariant + 1;
-                const animationVariant = difficulty.minAnimationVariant + Math.floor(Math.random() * animationRange);
+                let animationVariant;
+                if (isButterfly) {
+                    animationVariant = 7 + Math.floor(Math.random() * 6);
+                } else {
+                    const animationRange = difficulty.maxAnimationVariant - difficulty.minAnimationVariant + 1;
+                    animationVariant = difficulty.minAnimationVariant + Math.floor(Math.random() * animationRange);
+                }
                 const animationName = `snowflakeFall${animationVariant}`;
 
-                const timingFn = difficulty.isMobile && difficulty.level >= 2
+                const timingFn = (difficulty.isMobile && difficulty.level >= 2) || isButterfly
                     ? (['ease-in-out', 'cubic-bezier(0.45,0,0.55,1)', 'cubic-bezier(0.65,0,0.35,1)', 'cubic-bezier(0.25,0.46,0.45,0.94)', 'cubic-bezier(0.33,1,0.68,1)', 'cubic-bezier(0.68,-0.55,0.27,1.55)', 'cubic-bezier(0.55,0.09,0.68,0.53)'][Math.floor(Math.random() * 6)])
                     : 'ease-in-out';
 
                 snowflake.style.setProperty('animation', `${animationName} ${adjustedDuration}s ${timingFn} ${animationDelay}s infinite`, 'important');
                 
-                // Click Event (Desktop)
-                snowflake.addEventListener('click', (e) => this.catchSnowflake(e, snowflake, size.points));
+                const readPoints = () => Number(snowflake.dataset.points) || 10;
+
+                snowflake.addEventListener('click', (e) => this.catchSnowflake(e, snowflake, readPoints()));
                 
-                // Touch Events (Mobile)
                 let touchStartTime = 0;
                 snowflake.addEventListener('touchstart', (e) => {
                     touchStartTime = Date.now();
@@ -2213,7 +2266,7 @@
                 snowflake.addEventListener('touchend', (e) => {
                     e.preventDefault();
                     if (Date.now() - touchStartTime < 300) {
-                        this.catchSnowflake(e, snowflake, size.points);
+                        this.catchSnowflake(e, snowflake, readPoints());
                     }
                 }, { passive: false });
                 
@@ -2228,6 +2281,7 @@
                     this.gameStarted = true;
                     document.getElementById('snowflakeGameUI').style.display = 'flex';
                     document.getElementById('saveHighscoreBtn').style.display = 'flex';
+                    this.startGameInsights();
                 }
                 
                 // Altes Level speichern für Level-Up-Effekt
@@ -2254,8 +2308,7 @@
                 const sizeClass = snowflake.classList.contains('small') ? 'small' : 
                                   snowflake.classList.contains('medium') ? 'medium' : 'large';
                 
-                if (!isFragment && sizeClass !== 'small') {
-                    // Fragmente erstellen
+                if (!isFragment && sizeClass !== 'small' && !snowflake.classList.contains('petal-butterfly')) {
                     this.createFragments(centerX, centerY, sizeClass);
                 }
                 
@@ -2415,6 +2468,7 @@
                             document.getElementById('snowflakeGameUI').style.display = 'none';
                             document.getElementById('saveHighscoreBtn').style.display = 'none';
                             this.syncMobileIntensityClass();
+                            this.stopGameInsights();
                         }
                     } catch (error) {
                         // Fehler wurde bereits in saveHighscore angezeigt
