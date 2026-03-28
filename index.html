@@ -2239,7 +2239,11 @@
                     snowflake.classList.add('small', 'petal-butterfly');
                     size = { class: 'small', points: 95 };
                     snowflake.dataset.points = '95';
-                    snowflake.textContent = '🦋';
+                    snowflake.textContent = '';
+                    const flap = document.createElement('span');
+                    flap.className = 'butterfly-wing-flap';
+                    flap.textContent = '🦋';
+                    snowflake.appendChild(flap);
                 } else {
                 
                 let smallC = difficulty.smallChance;
@@ -2296,7 +2300,7 @@
                 
                 let baseDuration;
                 if (isButterfly) {
-                    baseDuration = Math.random() * 4 + 5.2;
+                    baseDuration = Math.random() * 14 + 38;
                 } else if (size.class === 'large') {
                     baseDuration = Math.random() * 10 + 30;
                 } else if (size.class === 'medium') {
@@ -2305,30 +2309,29 @@
                     baseDuration = Math.random() * 6 + 16;
                 }
                 
-                let adjustedDuration = Math.max(baseDuration / difficulty.speedMultiplier, isButterfly ? 4.2 : 6);
-                if (isButterfly) {
-                    adjustedDuration *= 0.52 + Math.random() * 0.12;
-                    adjustedDuration = Math.max(adjustedDuration, 3.8);
-                }
-                if (difficulty.isMobile && difficulty.level >= 2 && !isButterfly) {
-                    adjustedDuration *= 0.68 + Math.random() * 0.52;
-                    adjustedDuration = Math.max(adjustedDuration, 5.2);
-                }
+                let adjustedDuration;
+                let animationName;
+                let timingFn;
 
-                const animationDelay = Math.random() * adjustedDuration;
-
-                let animationVariant;
                 if (isButterfly) {
-                    animationVariant = 7 + Math.floor(Math.random() * 6);
+                    adjustedDuration = Math.max(baseDuration / (difficulty.speedMultiplier * 0.88), 28);
+                    animationName = 'butterflyGentleDrift';
+                    timingFn = 'ease-in-out';
                 } else {
+                    adjustedDuration = Math.max(baseDuration / difficulty.speedMultiplier, 6);
+                    if (difficulty.isMobile && difficulty.level >= 2) {
+                        adjustedDuration *= 0.68 + Math.random() * 0.52;
+                        adjustedDuration = Math.max(adjustedDuration, 5.2);
+                    }
                     const animationRange = difficulty.maxAnimationVariant - difficulty.minAnimationVariant + 1;
-                    animationVariant = difficulty.minAnimationVariant + Math.floor(Math.random() * animationRange);
+                    const animationVariant = difficulty.minAnimationVariant + Math.floor(Math.random() * animationRange);
+                    animationName = `snowflakeFall${animationVariant}`;
+                    timingFn = difficulty.isMobile && difficulty.level >= 2
+                        ? (['ease-in-out', 'cubic-bezier(0.45,0,0.55,1)', 'cubic-bezier(0.65,0,0.35,1)', 'cubic-bezier(0.25,0.46,0.45,0.94)', 'cubic-bezier(0.33,1,0.68,1)', 'cubic-bezier(0.68,-0.55,0.27,1.55)', 'cubic-bezier(0.55,0.09,0.68,0.53)'][Math.floor(Math.random() * 6)])
+                        : 'ease-in-out';
                 }
-                const animationName = `snowflakeFall${animationVariant}`;
 
-                const timingFn = (difficulty.isMobile && difficulty.level >= 2) || isButterfly
-                    ? (['ease-in-out', 'cubic-bezier(0.45,0,0.55,1)', 'cubic-bezier(0.65,0,0.35,1)', 'cubic-bezier(0.25,0.46,0.45,0.94)', 'cubic-bezier(0.33,1,0.68,1)', 'cubic-bezier(0.68,-0.55,0.27,1.55)', 'cubic-bezier(0.55,0.09,0.68,0.53)'][Math.floor(Math.random() * 6)])
-                    : 'ease-in-out';
+                const animationDelay = Math.random() * (isButterfly ? Math.min(adjustedDuration, 8) : adjustedDuration);
 
                 snowflake.style.setProperty('animation', `${animationName} ${adjustedDuration}s ${timingFn} ${animationDelay}s infinite`, 'important');
                 
