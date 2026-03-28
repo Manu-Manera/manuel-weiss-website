@@ -5561,11 +5561,11 @@ img {
     pointer-events: none;
 }
 
-/* Score Display */
-.snowflake-game-ui {
-    position: fixed;
-    top: 80px;
-    left: 20px;
+/* Score: im Hero-Bereich (Video), scrollt mit — z-index unter fallenden Blüten (100), nicht wie Navbar oben drüber */
+#home.hero-with-video .hero-container > .snowflake-game-ui {
+    position: absolute;
+    top: 0;
+    left: 0;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -5575,9 +5575,15 @@ img {
     -webkit-backdrop-filter: blur(20px);
     border-radius: 50px;
     border: 1px solid rgba(255, 255, 255, 0.3);
-    z-index: 1000;
+    z-index: 9;
     font-family: var(--font-family-primary);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+}
+
+#home.hero-with-video .hero-container > .snowflake-game-ui .score-display,
+#home.hero-with-video .hero-container > .snowflake-game-ui .level-display {
+    pointer-events: auto;
 }
 
 .score-label {
@@ -5669,11 +5675,11 @@ img {
     }
 }
 
-/* Save Highscore Button */
-.save-highscore-btn {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
+/* Highscore-Button: nur im Hero, unten rechts im Video-Bereich */
+#home.hero-with-video .hero-container > .save-highscore-btn {
+    position: absolute;
+    bottom: var(--spacing-xl);
+    right: var(--spacing-xl);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -5687,12 +5693,12 @@ img {
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    z-index: 1000;
+    z-index: 9;
     transition: all 0.3s ease;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
-.save-highscore-btn:hover {
+#home.hero-with-video .hero-container > .save-highscore-btn:hover {
     background: rgba(255, 255, 255, 0.3);
     transform: translateY(-3px);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
@@ -5968,10 +5974,10 @@ img {
 
 /* Mobile Anpassungen für Spiel-UI */
 @media (max-width: 768px) {
-    .snowflake-game-ui {
-        top: 70px;
-        left: 10px;
-        padding: 8px 15px;
+    #home.hero-with-video .hero-container > .snowflake-game-ui {
+        top: 0;
+        left: 0;
+        padding: 8px 12px;
     }
 
     .petal-hero-insight {
@@ -6016,10 +6022,10 @@ img {
         font-size: 1.2rem;
     }
     
-    .save-highscore-btn {
-        bottom: 20px;
-        right: 20px;
-        padding: 12px 20px;
+    #home.hero-with-video .hero-container > .save-highscore-btn {
+        bottom: var(--spacing-md);
+        right: var(--spacing-md);
+        padding: 12px 18px;
         font-size: 0.9rem;
     }
     

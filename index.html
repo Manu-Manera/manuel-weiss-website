@@ -83,6 +83,19 @@
             <div class="hero-video-overlay"></div>
         </div>
         <div class="hero-container">
+            <div class="snowflake-game-ui" id="snowflakeGameUI" style="display: none;">
+                <div class="score-display">
+                    <span class="score-label">🌸 Punkte:</span>
+                    <span class="score-value" id="snowflakeScore">0</span>
+                </div>
+                <div class="level-display" id="levelDisplay">
+                    <span class="level-label">Level:</span>
+                    <span class="level-value" id="difficultyLevel">Anfänger</span>
+                </div>
+            </div>
+            <button type="button" class="save-highscore-btn" id="saveHighscoreBtn" style="display: none;">
+                🏆 Highscore speichern
+            </button>
             <div class="hero-content">
                 <h1 class="hero-title" id="hero-title">
                     <span class="gradient-text" data-de="HR neu denken?" data-en="Rethink HR?">HR neu denken?</span>
@@ -1858,21 +1871,6 @@
     </div>
     
     <!-- Blüten-Spiel UI -->
-    <div class="snowflake-game-ui" id="snowflakeGameUI" style="display: none;">
-        <div class="score-display">
-            <span class="score-label">🌸 Punkte:</span>
-            <span class="score-value" id="snowflakeScore">0</span>
-        </div>
-        <div class="level-display" id="levelDisplay">
-            <span class="level-label">Level:</span>
-            <span class="level-value" id="difficultyLevel">Anfänger</span>
-        </div>
-    </div>
-    
-    <button class="save-highscore-btn" id="saveHighscoreBtn" style="display: none;">
-        🏆 Highscore speichern
-    </button>
-    
     <!-- Highscore Modal -->
     <div class="highscore-modal" id="highscoreModal" style="display: none;">
         <div class="highscore-modal-content">
@@ -1894,6 +1892,8 @@
         const SnowflakeGame = {
             score: 0,
             gameStarted: false,
+            /** Erst nach erstem Blüten-Klick: volles Feld, Wind, Bienen */
+            _petalFieldExpanded: false,
             windActive: false,
             windDirection: 0,
             /* Nur klassische Blüten – kein 💮 (wirkt auf iOS wie Siegel/Stempel, nicht wie Blütenblatt) */
@@ -2208,10 +2208,47 @@
                 }
                 this._layerInitialized = true;
                 console.log('✅ Container gefunden:', container);
-                this.createSnowflakes();
+                this.createTeaserSnowflakes();
                 this.setupHighscoreModal();
-                this.startWindEffect();
-                this.startBeeFlyoverSchedule();
+            },
+
+            createTeaserSnowflakes() {
+                const container = document.getElementById('snowflakes');
+                if (!container) return;
+                const n = 1 + Math.floor(Math.random() * 3);
+                for (let i = 0; i < n; i++) {
+                    this.createSingleSnowflake(container);
+                }
+            },
+
+            expandPetalField(container) {
+                if (!container) return;
+                const target = window.innerWidth < 768 ? 14 : 25;
+                const current = container.querySelectorAll('.snowflake.clickable:not(.wind-flake)').length;
+                const need = Math.max(0, target - current);
+                for (let i = 0; i < need; i++) {
+                    this.createSingleSnowflake(container);
+                }
+            },
+
+            resetPetalGameToTeaser() {
+                this._petalFieldExpanded = false;
+                const c = document.getElementById('snowflakes');
+                if (c) {
+                    c.querySelectorAll('.snowflake').forEach((el) => el.remove());
+                    c.classList.remove('wind-left', 'wind-right');
+                }
+                this.windActive = false;
+                if (this.windInterval) {
+                    clearInterval(this.windInterval);
+                    this.windInterval = null;
+                }
+                if (this._beeTimer) {
+                    clearTimeout(this._beeTimer);
+                    this._beeTimer = null;
+                }
+                this._beeScheduleStarted = false;
+                this.createTeaserSnowflakes();
             },
 
             /** Bonus-Biene: Größe & Tempo skalieren mit aktueller Punktzahl (0 = gross/langsam). */
@@ -2288,22 +2325,6 @@
                     this.trySpawnBonusBee();
                     scheduleNext();
                 }, 18000 + Math.random() * 22000);
-            },
-            
-            createSnowflakes() {
-                const container = document.getElementById('snowflakes');
-                if (!container) {
-                    console.error('❌ Container in createSnowflakes nicht gefunden!');
-                    return;
-                }
-                
-                const snowflakeCount = window.innerWidth < 768 ? 14 : 25;
-                console.log(`🌸 Erstelle ${snowflakeCount} Blüten...`);
-                
-                for (let i = 0; i < snowflakeCount; i++) {
-                    this.createSingleSnowflake(container);
-                }
-                console.log(`✅ ${snowflakeCount} Blüten erstellt`);
             },
             
             createSingleSnowflake(container) {
@@ -2437,6 +2458,11 @@
             
             catchSnowflake(e, snowflake, points, isFragment = false) {
                 e.stopPropagation();
+
+                const expandNow = !isFragment && !this._petalFieldExpanded;
+                if (expandNow) {
+                    this._petalFieldExpanded = true;
+                }
                 
                 // Start game if not started
                 if (!this.gameStarted) {
@@ -2480,7 +2506,11 @@
                     snowflake.remove();
                     if (!isFragment) {
                         const c = document.getElementById('snowflakes');
-                        if (this.shouldSpawnReplacementPetal(c)) {
+                        if (expandNow) {
+                            this.expandPetalField(c);
+                            this.startWindEffect();
+                            this.startBeeFlyoverSchedule();
+                        } else if (this.shouldSpawnReplacementPetal(c)) {
                             this.createSingleSnowflake(c);
                         }
                     }
@@ -2631,6 +2661,7 @@
                             document.getElementById('saveHighscoreBtn').style.display = 'none';
                             this.syncMobileIntensityClass();
                             this.stopGameInsights();
+                            this.resetPetalGameToTeaser();
                         }
                     } catch (error) {
                         // Fehler wurde bereits in saveHighscore angezeigt
