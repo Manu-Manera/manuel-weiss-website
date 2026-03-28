@@ -2239,9 +2239,14 @@
                 const bee = document.createElement('div');
                 bee.className = 'snowflake clickable petal-bee';
                 bee.dataset.points = '100';
-                bee.textContent = '🐝';
+                bee.textContent = '';
+                const beeGlyph = document.createElement('span');
+                beeGlyph.className = 'bee-glyph';
+                beeGlyph.textContent = '🐝';
+                bee.appendChild(beeGlyph);
                 bee.style.fontSize = `${fontRem}rem`;
-                bee.style.setProperty('animation', `beeCrossLoop ${durationSec}s linear forwards`, 'important');
+                const beeTrack = Math.random() < 0.5 ? 'beeCrossLoop' : 'beeCrossLoopB';
+                bee.style.setProperty('animation', `${beeTrack} ${durationSec}s linear forwards`, 'important');
 
                 const readPoints = () => Number(bee.dataset.points) || 100;
 
@@ -2389,7 +2394,8 @@
 
                 if (isButterfly) {
                     adjustedDuration = Math.max(baseDuration / (difficulty.speedMultiplier * 0.88), 28);
-                    animationName = 'butterflyGentleDrift';
+                    const bloomTracks = ['butterflyBloom1', 'butterflyBloom2', 'butterflyBloom3', 'butterflyBloom4'];
+                    animationName = bloomTracks[Math.floor(Math.random() * bloomTracks.length)];
                     timingFn = 'ease-in-out';
                 } else {
                     adjustedDuration = Math.max(baseDuration / difficulty.speedMultiplier, 6);
