@@ -76,13 +76,7 @@
 
     <!-- Hero Section mit Video-Hintergrund -->
     <section id="home" class="hero hero-with-video">
-        <div class="hero-video-wrapper">
-            <!-- Video wird dynamisch von API geladen (kein source Element nötig) -->
-            <video class="hero-video" autoplay muted loop playsinline id="heroVideo">
-            </video>
-            <div class="hero-video-overlay"></div>
-        </div>
-        <!-- Ebene unter dem Video: Portrait + Stat-Karten (Desktop) -->
+        <!-- Zuerst Hintergrund-Ebene (Safari: Mal-Reihenfolge + z-index; Kacheln unter Video) -->
         <div class="hero-layer-back">
             <div class="hero-layer-inner">
                 <div class="hero-grid-spacer" aria-hidden="true"></div>
@@ -111,7 +105,13 @@
                 </div>
             </div>
         </div>
-        <!-- Ebene über dem Video: Text, Spiel-UI (Menü bleibt global darüber) -->
+        <div class="hero-video-wrapper">
+            <!-- Video wird dynamisch von API geladen (kein source Element nötig) -->
+            <video class="hero-video" autoplay muted loop playsinline id="heroVideo">
+            </video>
+            <div class="hero-video-overlay"></div>
+        </div>
+        <!-- Ebene über dem Video: Text (Menü bleibt global darüber) -->
         <div class="hero-layer-front">
             <div class="hero-layer-inner">
                 <div class="hero-container">
