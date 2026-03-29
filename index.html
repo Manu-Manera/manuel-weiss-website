@@ -105,13 +105,7 @@
                 </div>
             </div>
         </div>
-        <div class="hero-video-wrapper">
-            <!-- Video wird dynamisch von API geladen (kein source Element nötig) -->
-            <video class="hero-video" autoplay muted loop playsinline id="heroVideo">
-            </video>
-            <div class="hero-video-overlay"></div>
-        </div>
-        <!-- Ebene über dem Video: Text (Menü bleibt global darüber) -->
+        <!-- Text/CTA unter dem Video (Desktop); vor Video im DOM für Safari-Compositor -->
         <div class="hero-layer-front">
             <div class="hero-layer-inner">
                 <div class="hero-container">
@@ -130,6 +124,12 @@
                 </div>
                 <div class="hero-grid-spacer" aria-hidden="true"></div>
             </div>
+        </div>
+        <div class="hero-video-wrapper">
+            <!-- Video wird dynamisch von API geladen (kein source Element nötig) -->
+            <video class="hero-video" autoplay muted loop playsinline id="heroVideo">
+            </video>
+            <div class="hero-video-overlay"></div>
         </div>
     </section>
 

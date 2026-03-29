@@ -802,9 +802,8 @@ a:hover {
     padding-top: calc(var(--header-height) + var(--spacing-xl));
 }
 
-/* Video über Portrait/Kacheln; Text/UI z=10 — Navbar bleibt global höher.
-   Safari: DOM-Reihenfolge layer-back → video → front; Video-Wrapper mit translate3d + isolation,
-   damit <video> nicht unter backdrop-filter-Kacheln „durchscheint“. */
+/* Video über Kacheln + Text (Desktop z: back 1, front 2, video 6). Navbar bleibt global höher.
+   Safari: DOM layer-back → layer-front → video; Video pointer-events:none damit CTA klickbar bleibt. */
 .hero.hero-with-video {
     display: grid;
     grid-template-areas: "hero-stack";
@@ -818,6 +817,11 @@ a:hover {
     isolation: isolate;
     transform: translate3d(0, 0, 0);
     -webkit-transform: translate3d(0, 0, 0);
+    pointer-events: none;
+}
+
+.hero.hero-with-video .hero-video {
+    pointer-events: none;
 }
 
 .hero.hero-with-video > .hero-layer-back {
@@ -833,12 +837,16 @@ a:hover {
     grid-area: hero-stack;
     align-self: stretch;
     position: relative;
-    z-index: 10;
+    z-index: 2; /* unter Video; Mobile: unten überschrieben */
     pointer-events: none;
 }
 
 .hero.hero-with-video > .hero-layer-front .hero-container {
     pointer-events: auto;
+}
+
+.hero.hero-with-video .hero-layer-front .hero-content {
+    z-index: auto;
 }
 
 .hero.hero-with-video .hero-layer-inner {
@@ -862,10 +870,10 @@ a:hover {
     min-height: 0;
     padding: 0;
     position: relative;
-    z-index: 10;
+    z-index: auto;
     isolation: isolate;
-    transform: translateZ(0);
-    backface-visibility: hidden;
+    transform: none;
+    backface-visibility: visible;
 }
 
 .hero-grid-spacer {
@@ -3861,6 +3869,11 @@ a:hover {
         display: none !important;
     }
 
+    /* Mobile: Text und Buttons wieder über dem Video (Lesbarkeit) */
+    .hero.hero-with-video > .hero-layer-front {
+        z-index: 10 !important;
+    }
+
     .hero.hero-with-video .hero-layer-inner {
         grid-template-columns: 1fr;
         min-height: auto;
@@ -4057,6 +4070,13 @@ a:hover {
         z-index: 1 !important;
         pointer-events: none;
         transform: translateZ(0);
+    }
+
+    .hero.hero-with-video > .hero-video-wrapper {
+        z-index: 1 !important;
+        isolation: auto !important;
+        transform: translateZ(0) !important;
+        -webkit-transform: translateZ(0) !important;
     }
     
     .hero-video {
