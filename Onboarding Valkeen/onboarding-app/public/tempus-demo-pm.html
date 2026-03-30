@@ -136,6 +136,16 @@ body { font-family: 'Inter', -apple-system, sans-serif; font-size: 15px; line-he
 /* Tip */
 .box-tip .box-header { background: #2d6a4f; color: white; }
 .box-tip .box-body { background: #d8f3dc; color: #1b4332; border: 1px solid #b7e4c7; border-top: none; }
+/* Presenter navigation: warnings + key moment */
+.box-watchout .box-header { background: #b45309; color: white; }
+.box-watchout .box-body { background: #fffbeb; color: var(--gray-800); border: 1px solid #fcd34d; border-top: none; font-size: 13px; line-height: 1.55; }
+.scene-key-moment {
+  display: block; margin: 0 0 12px; padding: 8px 14px; border-radius: 6px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  background: linear-gradient(135deg, #ea580c, #c2410c); color: white; text-align: center;
+}
+.say-bullets { margin: 0; padding-left: 18px; }
+.say-bullets li { margin: 6px 0; }
 
 /* Steps */
 .click-steps { list-style: none; }
@@ -170,7 +180,7 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 @media print {
   body { background: white; }
   .lang-switcher, #edit-toolbar { display: none; }
-  .hero, .scene-num-badge, .box-story .box-header, .box-say .box-header, .box-click .box-header, .box-peter .box-header, .box-context .box-header, .box-impact .box-header, .qr-header, .closing { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .hero, .scene-num-badge, .box-story .box-header, .box-say .box-header, .box-click .box-header, .box-peter .box-header, .box-context .box-header, .box-impact .box-header, .box-watchout .box-header, .qr-header, .closing { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .scene { box-shadow: none; break-inside: avoid; }
 }
 
@@ -781,7 +791,7 @@ input.media-file-input { display: none; }
         </p>
       </div>
     </div>
-    <div class="transition">→ <span class="t-de">„Das Projekt steht. Jetzt kommt die erste Frage eines jeden Projektleiters: Wer arbeitet daran?"</span><span class="t-en">"The project is up. Now comes every PM's first question: who's working on it?"</span></div>
+    <div class="transition">→ <span class="t-de">„Das Projekt steht. Jetzt kommt die erste Frage eines jeden Projektleiters: Wer arbeitet daran?"</span><span class="t-en">The project is there. Next question: who's actually working on it?</span></div>
   </div>
 </div>
 
@@ -806,36 +816,33 @@ input.media-file-input { display: none; }
     <span class="tag tag-teal">Group by Tasks</span>
   </div>
   <div class="scene-body">
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Was klicken (zuerst — Navigation)</span><span class="t-en">What to click first (navigation)</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de">Im Projekt: Ressourcen hinzufügen (z. B. Eric, Angela, Cameron)</span><span class="t-en">In the project: add Eric, Angela, Cameron</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Erste Stunden grob einplanen (monatlich)</span><span class="t-en">Rough-in monthly hours</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">Ansicht auf <strong>„Group by Tasks"</strong> umschalten — erklären, was sich ändert</span><span class="t-en">Switch to <strong>Group by Tasks</strong> — say what changed</span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de">Neue Tasks anlegen: „Requirements", „Testing Preparation", „Technical Readiness"</span><span class="t-en">Create tasks: Requirements, Testing Preparation, Technical Readiness</span></div></li>
+          <li><div class="click-step-num">5</div><div><span class="t-de">Eric → Requirements · Angela → Testing Preparation · Cameron → Technical Readiness</span><span class="t-en">Eric → Requirements · Angela → Testing Prep · Cameron → Technical Readiness</span></div></li>
+          <li><div class="click-step-num">6</div><div><span class="t-de">Stunden je Task und Monat eintragen</span><span class="t-en">Enter 20h in November for Eric on Requirements (concrete example)</span></div></li>
+        </ul>
+        <p class="optional-inline"><span class="t-de">(optional) Nur wenn Zeit: Tag-Ansicht oder Zusatzfelder zeigen.</span><span class="t-en">(optional) Day view or extra fields — only if time or asked.</span></p>
+      </div>
+    </div>
     <div class="box box-story">
       <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say this aloud</span></div>
       <div class="box-body">
         <span class="t-de"><em>„Gut,"</em> sagt Peter, <em>„aber das kann Excel auch. Was kommt jetzt?"</em> Reto lächelt. <em>„Jetzt wird's interessant."</em> Er öffnet die Allocation-Ansicht und beginnt, das Projektteam aufzubauen — nicht als Namensliste, sondern direkt auf Aufgabenebene. Peter beobachtet, wie aus einem leeren Projekt innerhalb von Minuten ein strukturierter Arbeitsplan wird.</span>
-        <span class="t-en"><em>"OK,"</em> says Peter, <em>"but Excel can do that too. What's next?"</em> Reto smiles. <em>"Now it gets interesting."</em> He opens the allocation view and starts building the project team — not as a name list, but directly at task level. Peter watches an empty project become a structured work plan within minutes.</span>
+        <span class="t-en"><strong>Peter:</strong> "OK, but I can do that in Excel."<br><strong>Reto:</strong> "True. But now it gets interesting."<br><span style="display:block;margin-top:10px;font-size:13px;color:var(--gray-600);">→ Pause. Then follow the click path above.</span></span>
       </div>
     </div>
     <div class="box box-say">
-      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Während du klickst — Erklärpunkte</span><span class="t-en">While clicking — talking points</span></div>
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Während du klickst — Erklärpunkte</span><span class="t-en">While clicking — talking points (keep short)</span></div>
       <div class="box-body">
-        <p style="margin-bottom:10px;">
-          <span class="t-de">„Reto zeigt Peter jetzt etwas, das in Excel nie möglich war: die <strong>Task-First-View</strong>. Statt Menschen einem Projekt zuzuordnen, ordnet er Menschen konkreten Aufgaben zu."</span>
-          <span class="t-en">"Reto now shows Peter something that was never possible in Excel: the <strong>task-first view</strong>. Instead of assigning people to a project, he assigns people to specific tasks."</span>
-        </p>
-        <div class="quote-line">
-          <span class="t-de">„Auf Projektlevel sieht man: wer ist dabei. Auf Task-Level sieht man: wer trägt was."</span>
-          <span class="t-en">"At project level you see who's involved. At task level you see who owns what."</span>
-        </div>
-      </div>
-    </div>
-    <div class="box box-click">
-      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Was klicken</span><span class="t-en">What to click</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de">Im Projekt: Ressourcen hinzufügen (z. B. Eric, Angela, Cameron)</span><span class="t-en">In the project: add resources (e.g. Eric, Angela, Cameron)</span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de">Erste Stunden grob einplanen (monatlich)</span><span class="t-en">Enter initial rough hours (monthly)</span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de">Ansicht auf <strong>„Group by Tasks"</strong> umschalten — erklären, was sich ändert</span><span class="t-en">Switch view to <strong>"Group by Tasks"</strong> — explain what changes</span></div></li>
-          <li><div class="click-step-num">4</div><div><span class="t-de">Neue Tasks anlegen: „Requirements", „Testing Preparation", „Technical Readiness"</span><span class="t-en">Create new tasks: "Requirements", "Testing Preparation", "Technical Readiness"</span></div></li>
-          <li><div class="click-step-num">5</div><div><span class="t-de">Eric → Requirements · Angela → Testing Preparation · Cameron → Technical Readiness</span><span class="t-en">Eric → Requirements · Angela → Testing Preparation · Cameron → Technical Readiness</span></div></li>
-          <li><div class="click-step-num">6</div><div><span class="t-de">Stunden je Task und Monat eintragen</span><span class="t-en">Enter hours per task and month</span></div></li>
+        <ul class="say-bullets">
+          <li><span class="t-de">Statt nur „Projekt": Menschen <strong>konkreten Tasks</strong> zuordnen.</span><span class="t-en">Instead of assigning people to a project, he assigns them to tasks.</span></li>
+          <li><span class="t-de"><strong>Projektlevel:</strong> wer ist dabei. <strong>Tasklevel:</strong> wer trägt was.</span><span class="t-en">At project level you see who's involved. At task level you see who owns what.</span></li>
         </ul>
       </div>
     </div>
@@ -856,7 +863,7 @@ input.media-file-input { display: none; }
       <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
       <div class="box-body">
         <span class="t-de">„Früh zu planen ist wichtiger als perfekt zu planen. Und auf Task-Level entsteht Verantwortung — nicht nur Beteiligung."</span>
-        <span class="t-en">"Planning early matters more than planning perfectly. And at task level, accountability is created — not just participation."</span>
+        <span class="t-en">At task level, responsibility becomes visible.</span>
       </div>
     </div>
     <div class="transition">→ <span class="t-de">„Stardust steht. Jetzt läuft das Projekt — und die Realität beginnt, den Plan zu verändern."</span><span class="t-en">"Stardust is live. Now the project runs — and reality starts changing the plan."</span></div>
@@ -874,7 +881,7 @@ input.media-file-input { display: none; }
     </div>
     <div class="scene-title-area">
       <div class="scene-act"><span class="t-de">Planned Allocation bearbeiten</span><span class="t-en">Planned allocation editing</span></div>
-      <div class="scene-title"><span class="t-de">Der Plan verändert sich — und das ist normal</span><span class="t-en">The plan changes — and that's normal</span></div>
+      <div class="scene-title"><span class="t-de">Der Plan verändert sich — und das ist normal</span><span class="t-en">Adjust plan (reality changed)</span></div>
       <div class="scene-subtitle"><span class="t-de">Checkout · Stunden anpassen · Monat / Woche / Tag · Planned vs. Actual</span><span class="t-en">Checkout · adjust hours · month / week / day · Planned vs. Actual</span></div>
     </div>
   </div>
@@ -884,40 +891,40 @@ input.media-file-input { display: none; }
     <span class="tag tag-orange"><span class="t-de">Plankorrektur</span><span class="t-en">Plan correction</span></span>
   </div>
   <div class="scene-body">
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Was klicken (zuerst)</span><span class="t-en">What to click first</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de">Zurück zur Kachel</span><span class="t-en">Back to tile</span> <span class="click-path">Project Management</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Projekt „Stardust" öffnen →</span><span class="t-en">Open Stardust →</span> <span class="click-path">Check out</span> <span class="t-de">(Schloss erklären)</span><span class="t-en">(explain lock)</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">November-Stunden für Eric reduzieren (konkret)</span><span class="t-en">Reduce Eric's November hours (specific cell)</span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de">Monat → Woche → Tag (kurz)</span><span class="t-en">Month → Week → Day (brief)</span> <span class="optional-inline"><span class="t-de">(optional)</span><span class="t-en">(optional)</span></span></div></li>
+          <li><div class="click-step-num">5</div><div><span class="click-path">Planned / Actual / Remaining</span> <span class="t-de">umschalten und benennen</span><span class="t-en">— name each mode</span></div></li>
+          <li><div class="click-step-num">6</div><div><span class="t-de">Speichern →</span><span class="t-en">Save →</span> <span class="click-path">Check in</span> <span class="t-de">(Pflicht)</span><span class="t-en">(required)</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-watchout">
+      <div class="box-header"><span class="box-icon">⚠️</span><span class="t-de">Wichtig</span><span class="t-en">Watch out</span></div>
+      <div class="box-body">
+        <span class="t-de"><strong>Check-in nicht vergessen</strong> — sonst bleibt das Projekt gesperrt. Andere sehen den Checkout-Status (transparent, wer bearbeitet).</span>
+        <span class="t-en"><strong>Don't skip Check-in</strong> — otherwise the project stays locked. Others see checkout status — transparent who is editing.</span>
+      </div>
+    </div>
     <div class="box box-story">
       <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say this aloud</span></div>
       <div class="box-body">
         <span class="t-de">Reto bleibt in Project Management und öffnet <strong>Project Stardust</strong> aus dem Grid. <em>„Stardust läuft jetzt. Zeige dir, wie du den Plan anpasst, wenn die Realität anders aussieht."</em> Er klickt auf Checkout. Peter sieht das Schloss-Symbol. <em>„Was bedeutet das?"</em> — <em>„Das heißt: Ich bearbeite es gerade exklusiv. Niemand sonst kann gleichzeitig Änderungen machen — genau wie bei einem gemeinsamen Dokument."</em></span>
-        <span class="t-en">Reto stays in Project Management and opens <strong>Project Stardust</strong> from the grid. <em>"Stardust is live now. Let me show you how to adjust the plan when reality looks different."</em> He clicks Checkout. Peter sees the lock icon. <em>"What does that mean?"</em> — <em>"It means I'm editing it exclusively right now. Nobody else can make changes simultaneously — just like a shared document."</em></span>
+        <span class="t-en">Reto opens <strong>Project Stardust</strong> from the grid. Checkout → adjust plan. Peter asks about the lock — you explain exclusive edit, like a shared doc.</span>
       </div>
     </div>
     <div class="box box-say">
       <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Während du klickst — Erklärpunkte</span><span class="t-en">While clicking — talking points</span></div>
       <div class="box-body">
-        <div class="quote-line">
-          <span class="t-de">„Das ist der eigentliche Alltag eines Projektmanagers. Nicht die Erstellung — sondern die laufende Korrektur der Realität. Kein Projekt überlebt den ersten Plan unverändert."</span>
-          <span class="t-en">"This is the real daily life of a project manager. Not the creation — but the ongoing correction of reality. No project survives its first plan unchanged."</span>
-        </div>
-        <p style="margin-top:10px;">
-          <span class="t-de">„Reto zeigt auch die verschiedenen Zeitgranularitäten: Monat, Woche, Tag. Je nach Steuerungsbedarf wählt man die richtige Ebene."</span>
-          <span class="t-en">"Reto also shows the different time granularities: month, week, day. Depending on the management need, you choose the right level."</span>
-        </p>
-        <p style="margin-top:8px;">
-          <span class="t-de">„Und dann erklärt er den wichtigsten Unterschied: <strong>Planned, Actual und Remaining</strong>. Planned: was geplant ist. Actual: was geleistet wurde. Remaining: was noch übrig ist."</span>
-          <span class="t-en">"And then he explains the most important distinction: <strong>Planned, Actual and Remaining</strong>. Planned: what's planned. Actual: what was delivered. Remaining: what's left."</span>
-        </p>
-      </div>
-    </div>
-    <div class="box box-click">
-      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Was klicken</span><span class="t-en">What to click</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de">Zurück zur Kachel</span><span class="t-en">Back to tile</span> <span class="click-path">Project Management</span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de">Projekt „Stardust" öffnen →</span><span class="t-en">Open project "Stardust" →</span> <span class="click-path">Check out</span> <span class="t-de">klicken (Schloss-Symbol erklären)</span><span class="t-en">click (explain lock icon)</span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de">Stunden einer Ressource anpassen (z. B. November reduzieren)</span><span class="t-en">Adjust hours for a resource (e.g. reduce November)</span></div></li>
-          <li><div class="click-step-num">4</div><div><span class="t-de">Ansicht wechseln: Monat → Woche → Tag (kurz zeigen und erklären)</span><span class="t-en">Switch view: Month → Week → Day (show briefly and explain)</span></div></li>
-          <li><div class="click-step-num">5</div><div><span class="t-de">Ansicht</span><span class="t-en">Switch to</span> <span class="click-path">Planned / Actual / Remaining</span> <span class="t-de">zeigen — erklären, wann was verwendet wird</span><span class="t-en">— explain when each is used</span></div></li>
-          <li><div class="click-step-num">6</div><div><span class="t-de">Speichern und einchecken</span><span class="t-en">Save and check in</span></div></li>
+        <ul class="say-bullets">
+          <li><span class="t-de">Das ist Alltag. <strong>Pläne ändern sich.</strong></span><span class="t-en">This is daily reality. <strong>Plans change.</strong></span></li>
+          <li><span class="t-de">Entscheidend: <strong>wie schnell</strong> du anpassen kannst.</span><span class="t-en">What matters is <strong>how fast</strong> you can adjust.</span></li>
+          <li><span class="t-de"><strong>Planned</strong> = Absicht · <strong>Actual</strong> = Realität · <strong>Remaining</strong> = Rest</span><span class="t-en"><strong>Planned</strong> is intent. <strong>Actual</strong> is reality. <strong>Remaining</strong> is what's left.</span></li>
         </ul>
       </div>
     </div>
@@ -928,13 +935,17 @@ input.media-file-input { display: none; }
           <span class="t-de">„Was passiert, wenn ich vergesse, auszuchecken? Sieht dann jemand, dass ich das Projekt blockiere?"</span>
           <span class="t-en">"What happens if I forget to check back in? Will someone see that I'm blocking the project?"</span>
         </div>
+        <p style="font-size:13px;color:var(--gray-700);margin-top:8px;">
+          <span class="t-de">→ Antwort: „Ja. Andere sehen den Checkout — klar, wer gerade bearbeitet."</span>
+          <span class="t-en">→ <strong>Yes.</strong> Others see that it's checked out — transparent who is editing.</span>
+        </p>
       </div>
     </div>
     <div class="box box-impact">
       <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
       <div class="box-body">
         <span class="t-de">„Projektplanung ist kein statisches Dokument. Sie ist ein lebendes Modell — das mit der Realität mitgeht."</span>
-        <span class="t-en">"A project plan isn't a static document. It's a living model — one that moves with reality."</span>
+        <span class="t-en">A plan that doesn't change is already wrong.</span>
       </div>
     </div>
     <div class="transition">→ <span class="t-de">„Gut — aber der Plan ist nur die halbe Wahrheit. Was wurde wirklich geleistet?"</span><span class="t-en">"Good — but the plan is only half the truth. What was actually delivered?"</span></div>
@@ -952,7 +963,7 @@ input.media-file-input { display: none; }
     </div>
     <div class="scene-title-area">
       <div class="scene-act"><span class="t-de">Actual Allocation</span><span class="t-en">Actual Allocation</span></div>
-      <div class="scene-title"><span class="t-de">Was geplant war — und was wirklich passiert ist</span><span class="t-en">What was planned — and what actually happened</span></div>
+      <div class="scene-title"><span class="t-de">Was geplant war — und was wirklich passiert ist</span><span class="t-en">Truth vs. plan (while you can still react)</span></div>
       <div class="scene-subtitle"><span class="t-de">Actual-Ansicht · Task-Ebene · Plan vs. Ist-Vergleich live</span><span class="t-en">Actual view · task level · live plan vs. actual comparison</span></div>
     </div>
   </div>
@@ -962,35 +973,32 @@ input.media-file-input { display: none; }
     <span class="tag tag-orange"><span class="t-de">Früherkennung</span><span class="t-en">Early detection</span></span>
   </div>
   <div class="scene-body">
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Was klicken (zuerst)</span><span class="t-en">What to click first</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de">In Single Project Allocation zur Ansicht</span><span class="t-en">Single Project Allocation →</span> <span class="click-path">Actual</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Ist-Stunden auf Task-Ebene zeigen (Eric ≈ Plan, Angela > Plan)</span><span class="t-en">Task-level actuals: Eric ≈ plan, Angela &gt; plan</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">Einen Ist-Wert live eingeben als Demo</span><span class="t-en">Type one actual live (demo)</span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de">Timesheet-Feed vs. manuell (kurz)</span><span class="t-en">Timesheet feed vs. manual — keep short</span></div></li>
+          <li><div class="click-step-num">5</div><div><span class="t-de">Plan und Actual nebeneinander kommentieren</span><span class="t-en">Plan vs. actual side by side — comment</span></div></li>
+        </ul>
+      </div>
+    </div>
     <div class="box box-story">
       <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say this aloud</span></div>
       <div class="box-body">
         <span class="t-de">Peter erinnert sich an seine Frage aus Szene 3. <em>„Du hast versprochen: Ist-Zeiten auf Task-Ebene."</em> Reto nickt. Er wechselt in die Actual-Ansicht. Peter sieht sofort: Bei Eric liegen Plan und Ist nah beieinander. Bei Angela — deutliche Abweichung. <em>„Wann hat sie das reported?"</em> — <em>„Das kommt aus dem Timesheet. Automatisch. Sie tippt nichts doppelt ein."</em></span>
-        <span class="t-en">Peter remembers his question from scene 3. <em>"You promised: actual hours at task level."</em> Reto nods. He switches to the Actual view. Peter immediately sees: Eric's plan and actual are close. Angela — a clear deviation. <em>"When did she report that?"</em> — <em>"That comes from the timesheet. Automatically. She doesn't enter anything twice."</em></span>
+        <span class="t-en">Callback to task-level actuals. Switch to <strong>Actual</strong>. Eric vs. Angela — timesheet, no double entry.</span>
       </div>
     </div>
     <div class="box box-say">
       <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Während du klickst — Erklärpunkte</span><span class="t-en">While clicking — talking points</span></div>
       <div class="box-body">
-        <p style="margin-bottom:10px;">
-          <span class="t-de">„Hier beginnt echtes Projektcontrolling. Nicht am Quartalsende. Nicht wenn das Projekt schon aus dem Ruder gelaufen ist. Sondern <em>jetzt</em>, während es noch korrigierbar ist."</span>
-          <span class="t-en">"This is where real project controlling begins. Not at quarter-end. Not when the project has already gone off the rails. But <em>now</em>, while it's still correctable."</span>
-        </p>
-        <div class="quote-line">
-          <span class="t-de">„Planwerte zeigen Absicht. Ist-Werte zeigen Wahrheit."</span>
-          <span class="t-en">"Plan values show intent. Actual values show truth."</span>
-        </div>
-      </div>
-    </div>
-    <div class="box box-click">
-      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Was klicken</span><span class="t-en">What to click</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de">In Single Project Allocation zur Ansicht</span><span class="t-en">In Single Project Allocation, switch to</span> <span class="click-path">Actual</span> <span class="t-de">wechseln</span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de">Ist-Stunden auf Task-Ebene zeigen (Eric ≈ Plan, Angela > Plan)</span><span class="t-en">Show actual hours at task level (Eric ≈ plan, Angela > plan)</span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de">Einen Ist-Wert live eingeben als Demo</span><span class="t-en">Enter one actual value live as a demo</span></div></li>
-          <li><div class="click-step-num">4</div><div><span class="t-de">Erklären: Ist-Daten kommen aus Timesheets (automatisch) oder manuell</span><span class="t-en">Explain: actual data comes from timesheets (automatically) or manually</span></div></li>
-          <li><div class="click-step-num">5</div><div><span class="t-de">Plan und Actual nebeneinander halten und kommentieren</span><span class="t-en">Show plan and actual side by side and comment</span></div></li>
+        <ul class="say-bullets">
+          <li><span class="t-de">Hier beginnt Steuerung — <strong>nicht am Ende.</strong> Solange du noch reagieren kannst.</span><span class="t-en">This is where <strong>control</strong> actually starts.</span></li>
+          <li><span class="t-de">Nicht erst wenn das Projekt entgleist.</span><span class="t-en">Not at the end. <strong>While you can still react.</strong></span></li>
+          <li><span class="t-de">Plan = Absicht · Ist = Wahrheit</span><span class="t-en"><strong>Planned</strong> shows intent. <strong>Actual</strong> shows truth.</span></li>
         </ul>
       </div>
     </div>
@@ -1007,7 +1015,7 @@ input.media-file-input { display: none; }
       <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
       <div class="box-body">
         <span class="t-de">„Nicht erst am Projektende, sondern frühzeitig erkennen, wo ein Projekt kippt — das ist der Unterschied zwischen Reaktion und Steuerung."</span>
-        <span class="t-en">"Not at project end, but early — recognising where a project is drifting is the difference between reaction and control."</span>
+        <span class="t-en">Seeing deviations early is the difference between reacting and controlling.</span>
       </div>
     </div>
     <div class="transition">→ <span class="t-de">„Stardust läuft. Aber Reto hat noch fünf andere Projekte. Jetzt zeigt er Peter, wie man das ohne Chaos überblickt."</span><span class="t-en">"Stardust is running. But Reto has five other projects. Now he shows Peter how to stay on top of all of them without chaos."</span></div>
@@ -1025,7 +1033,7 @@ input.media-file-input { display: none; }
     </div>
     <div class="scene-title-area">
       <div class="scene-act"><span class="t-de">Project Allocation Grid</span><span class="t-en">Project Allocation Grid</span></div>
-      <div class="scene-title"><span class="t-de">Drei Perspektiven — ein Grid</span><span class="t-en">Three perspectives — one grid</span></div>
+      <div class="scene-title"><span class="t-de">Drei Perspektiven — ein Grid</span><span class="t-en">Same data — three perspectives</span></div>
       <div class="scene-subtitle"><span class="t-de">Default · Resource · Project Mode · Zeitrahmen steuert Sicht</span><span class="t-en">Default · Resource · Project Mode · Timeframe controls visibility</span></div>
     </div>
   </div>
@@ -1036,55 +1044,42 @@ input.media-file-input { display: none; }
     <span class="tag tag-orange"><span class="t-de">Assignment Lock</span><span class="t-en">Assignment lock</span></span>
   </div>
   <div class="scene-body">
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Was klicken (zuerst) — alle drei Modi</span><span class="t-en">What to click first — all three modes</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de">Kachel</span><span class="t-en">Open tile</span> <span class="click-path">Project Allocation Grid</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de"><strong>Start/End</strong> setzen (Zeitfenster = was du siehst)</span><span class="t-en"><strong>Set start/end</strong> (timeframe = what you see)</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de"><strong>Default:</strong> 1 Assignment bearbeiten → nur <strong>dieses</strong> Assignment gesperrt → Speichern</span><span class="t-en"><strong>Default:</strong> edit one assignment → <strong>only that</strong> row locked → save</span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de"><strong>Resource:</strong> Simon Wespi → April-Überbuchung zeigen</span><span class="t-en"><strong>Resource:</strong> Simon Wespi → show April overallocation</span></div></li>
+          <li><div class="click-step-num">5</div><div><span class="t-de">Mobilschloss zeigen → <span class="optional-inline">Abbrechen ok</span></span><span class="t-en">Show mobile lock → <span class="optional-inline">cancel is fine</span></span></div></li>
+          <li><div class="click-step-num">6</div><div><span class="t-de"><strong>Project:</strong> Stardust → alle Ressourcen + Tasks</span><span class="t-en"><strong>Project:</strong> Stardust → all people + tasks</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-watchout">
+      <div class="box-header"><span class="box-icon">💡</span><span class="t-de">Kurz merken</span><span class="t-en">Nav hint</span></div>
+      <div class="box-body">
+        <span class="t-de">Gesperrt wird das <strong>Assignment</strong>, nicht das ganze Projekt. Andere PMs können parallel andere Zeilen bearbeiten.</span>
+        <span class="t-en">Only the <strong>assignment</strong> locks — not the whole project. Other PMs edit other rows in parallel.</span>
+      </div>
+    </div>
     <div class="box box-story">
       <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say this aloud</span></div>
       <div class="box-body">
         <span class="t-de"><em>„Reto,"</em> sagt Peter, <em>„du hast Stardust — aber du sagtest, du hast noch fünf andere. Wie machst du das, ohne den Überblick zu verlieren?"</em> Reto öffnet das <strong>Project Allocation Grid</strong>. Auf einmal sieht Peter alle Projekte, alle Ressourcen, alle Zeiträume — in einem einzigen Screen. <em>„Das Grid hat drei Modi. Ich zeige dir alle drei in einer Minute."</em></span>
-        <span class="t-en"><em>"Reto,"</em> says Peter, <em>"you have Stardust — but you said you have five others. How do you manage without losing track?"</em> Reto opens the <strong>Project Allocation Grid</strong>. Peter suddenly sees all projects, all resources, all time periods — in a single screen. <em>"This grid has three modes. Let me show you all three in a minute."</em></span>
+        <span class="t-en">Peter: five projects — how do you not drown? Reto opens <strong>Project Allocation Grid</strong>. Three modes — fast walkthrough.</span>
       </div>
     </div>
     <div class="box box-say">
       <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Während du klickst — Erklärpunkte</span><span class="t-en">While clicking — talking points</span></div>
       <div class="box-body">
-        <p style="margin-bottom:10px;">
-          <span class="t-de">„Das Grid bietet drei Perspektiven auf denselben Datensatz:"</span>
-          <span class="t-en">"The grid offers three perspectives on the same data:"</span>
-        </p>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
-          <div style="background:var(--teal-light);border:1px solid #a0d4e6;border-radius:5px;padding:8px;font-size:13px;">
-            <strong><span class="t-de">Default</span><span class="t-en">Default</span></strong><br>
-            <span class="t-de">Alle Projekte + alle Ressourcen</span><span class="t-en">All projects + all resources</span>
-          </div>
-          <div style="background:var(--green-light);border:1px solid #b6dfc8;border-radius:5px;padding:8px;font-size:13px;">
-            <strong><span class="t-de">Resource</span><span class="t-en">Resource</span></strong><br>
-            <span class="t-de">Eine Person → alle Projekte</span><span class="t-en">One person → all projects</span>
-          </div>
-          <div style="background:var(--purple-light);border:1px solid #c9bde8;border-radius:5px;padding:8px;font-size:13px;">
-            <strong><span class="t-de">Project</span><span class="t-en">Project</span></strong><br>
-            <span class="t-de">Ein Projekt → alle Ressourcen</span><span class="t-en">One project → all resources</span>
-          </div>
-        </div>
-        <p style="margin-bottom:8px;">
-          <span class="t-de"><strong>Zeitrahmen steuert Sichtbarkeit:</strong> Nur Projekte und Kapazitäten, die in das gewählte Zeitfenster fallen, werden angezeigt. Das ist kein Filter — es ist das Grundprinzip des Grids.</span>
-          <span class="t-en"><strong>Timeframe controls visibility:</strong> Only projects and capacities within the selected window are shown. This isn't a filter — it's the core principle of the grid.</span>
-        </p>
-        <div style="padding:10px 14px;background:var(--teal-light);border-left:3px solid var(--teal);border-radius:4px;font-size:13px;color:var(--navy);">
-          💡 <strong><span class="t-de">Schlüssel-Insight:</span><span class="t-en">Key insight:</span></strong>
-          <span class="t-de"> Nicht das Projekt wird gesperrt — nur das spezifische Assignment. Andere PMs können parallel andere Assignments desselben Projekts bearbeiten. Im Resource Mode zeigt das Mobilschloss-Icon, dass eine Zeile gerade exklusiv bearbeitet wird.</span>
-          <span class="t-en"> Not the project is locked — only the specific assignment. Other PMs can simultaneously edit other assignments of the same project. In Resource Mode, the mobile lock icon shows a row is being edited exclusively.</span>
-        </div>
-      </div>
-    </div>
-    <div class="box box-click">
-      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Was klicken — alle drei Modi</span><span class="t-en">What to click — all three modes</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de">Kachel</span><span class="t-en">Tile</span> <span class="click-path">Project Allocation Grid</span> <span class="t-de">öffnen</span><span class="t-en">open</span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de"><strong>Start/End setzen</strong> — erklären: nur Kapazität und Projekte in diesem Zeitfenster sichtbar</span><span class="t-en"><strong>Set start/end</strong> — explain: only capacity and projects in this timeframe are visible</span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de"><strong>[Default Mode]</strong> 1 Assignment bearbeiten → zeigen: <strong>nur dieses Assignment gesperrt</strong>, nicht das ganze Projekt → Speichern</span><span class="t-en"><strong>[Default Mode]</strong> edit 1 assignment → show: <strong>only this assignment locked</strong>, not the whole project → save</span></div></li>
-          <li><div class="click-step-num">4</div><div><span class="t-de"><strong>[Resource Mode]</strong> wechseln → <strong>Simon Wespi</strong> wählen → alle Projekte im Zeitraum sichtbar, April-Auslastung zeigt Überbuchung</span><span class="t-en"><strong>[Resource Mode]</strong> switch → select <strong>Simon Wespi</strong> → all projects in timeframe visible, April utilisation shows overallocation</span></div></li>
-          <li><div class="click-step-num">5</div><div><span class="t-de">Zeile bearbeiten → <strong>Mobilschloss-Icon zeigen und erklären</strong> → Abbrechen</span><span class="t-en">Edit a row → <strong>show and explain the mobile lock icon</strong> → cancel</span></div></li>
-          <li><div class="click-step-num">6</div><div><span class="t-de"><strong>[Project Mode]</strong> wechseln → „Stardust" öffnen → alle Ressourcen mit Tasks auf einen Blick</span><span class="t-en"><strong>[Project Mode]</strong> switch → open "Stardust" → all resources with tasks at a glance</span></div></li>
+        <ul class="say-bullets">
+          <li><span class="t-de">Gleiche Daten — <strong>drei Perspektiven.</strong></span><span class="t-en"><strong>Same data. Three perspectives.</strong></span></li>
+          <li><span class="t-de"><strong>Default:</strong> alles auf einmal.</span><span class="t-en"><strong>Default:</strong> everything.</span></li>
+          <li><span class="t-de"><strong>Resource:</strong> eine Person über alle Projekte.</span><span class="t-en"><strong>Resource:</strong> one person across projects.</span></li>
+          <li><span class="t-de"><strong>Project:</strong> ein Projekt über alle Personen.</span><span class="t-en"><strong>Project:</strong> one project across people.</span></li>
+          <li><span class="t-de">Du wechselst <strong>kein Tool</strong> — nur die Sicht.</span><span class="t-en">You don't switch tools. <strong>Just perspective.</strong></span></li>
         </ul>
       </div>
     </div>
@@ -1105,7 +1100,7 @@ input.media-file-input { display: none; }
       <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
       <div class="box-body">
         <span class="t-de">„Drei Perspektiven, ein Grid — wer das Gesamtbild sieht, steuert besser. Bevor Gespräche nötig werden."</span>
-        <span class="t-en">"Three perspectives, one grid — whoever sees the full picture manages better. Before conversations become necessary."</span>
+        <span class="t-en">Who sees the full picture makes better decisions.</span>
       </div>
     </div>
     <div class="transition">→ <span class="t-de">„Jetzt kommt der Screen, den alle täglich offen haben — das Bulk Project Allocation Flatgrid."</span><span class="t-en">"Now comes the screen everyone has open every day — the Bulk Project Allocation Flatgrid."</span></div>
@@ -1122,7 +1117,7 @@ input.media-file-input { display: none; }
       <div class="scene-num-label">Flatgrid</div>
     </div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Das beliebteste Feature</span><span class="t-en">The most popular feature</span></div>
+      <div class="scene-act"><span class="t-de">Das beliebteste Feature</span><span class="t-en">Where most people actually work</span></div>
       <div class="scene-title">Bulk Project Allocation Flatgrid</div>
       <div class="scene-subtitle"><span class="t-de">Heatmap · Notes · Planned/Actual · Quicklink · Grid Options</span><span class="t-en">Heatmap · Notes · Planned/Actual · Quicklink · Grid Options</span></div>
     </div>
@@ -1134,41 +1129,40 @@ input.media-file-input { display: none; }
     <span class="tag tag-orange">Notes</span>
   </div>
   <div class="scene-body">
+    <span class="scene-key-moment"><span class="t-de">Schlüsselmoment — nicht hetzen</span><span class="t-en">Key moment — don't rush</span></span>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Was klicken (zuerst)</span><span class="t-en">What to click first</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de">Startseite →</span><span class="t-en">Home →</span> <span class="click-path">Bulk Project Allocation Flatgrid</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de"><strong>Grid Options:</strong> Heatmap an · Tasks optional · Row totals optional</span><span class="t-en"><strong>Grid Options:</strong> Heatmap on · tasks optional · row totals optional</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de"><strong>Notes:</strong> Assignment → Notes-Feld → Text → <em>Save</em></span><span class="t-en"><strong>Notes:</strong> assignment → Notes → type → <em>Save</em></span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de"><strong>Planned / Actual</strong> umschalten</span><span class="t-en"><strong>Planned / Actual</strong> toggle</span></div></li>
+          <li><div class="click-step-num">5</div><div><span class="t-de"><strong>Quicklink</strong> zu Assignment-Details</span><span class="t-en"><strong>Quicklink</strong> → assignment detail</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-watchout">
+      <div class="box-header"><span class="box-icon">⚠️</span><span class="t-de">Wichtig</span><span class="t-en">Watch out</span></div>
+      <div class="box-body">
+        <span class="t-de"><strong>Nicht</strong> alle Grid-Optionen erklären — Fokus verlieren. Heatmap + eine Story reichen oft.</span>
+        <span class="t-en"><strong>Don't</strong> walk through every grid option — you'll lose the room. Heatmap + one thread is often enough.</span>
+      </div>
+    </div>
     <div class="box box-story">
       <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say this aloud</span></div>
       <div class="box-body">
         <span class="t-de">Reto navigiert zur Startseite. <em>„Das hier,"</em> sagt er und klickt auf die Kachel <strong>Bulk Project Allocation Flatgrid</strong>, <em>„ist der Screen, den die meisten meiner Kollegen täglich offen haben. Und ich verstehe warum."</em> Peter sieht ein flaches, übersichtliches Grid — alle Projekte, alle Ressourcen, alle Stunden. Editierbar. Farbcodiert. Sofort verständlich.</span>
-        <span class="t-en">Reto navigates to the home screen. <em>"This,"</em> he says, clicking the <strong>Bulk Project Allocation Flatgrid</strong> tile, <em>"is the screen most of my colleagues have open every day. And I understand why."</em> Peter sees a flat, clear grid — all projects, all resources, all hours. Editable. Colour-coded. Immediately understandable.</span>
+        <span class="t-en">Home → <strong>Bulk Flatgrid</strong>. Flat sheet: projects, people, hours — editable, visible. This is where people <em>live</em> in Tempus.</span>
       </div>
     </div>
     <div class="box box-say">
       <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Während du klickst — Erklärpunkte</span><span class="t-en">While clicking — talking points</span></div>
       <div class="box-body">
-        <div class="quote-line">
-          <span class="t-de">„Das Bulk Flatgrid ist das beliebteste Feature in Tempus — wegen seiner Benutzerfreundlichkeit und den vielen Einstellungsmöglichkeiten."</span>
-          <span class="t-en">"The Bulk Flatgrid is the most popular feature in Tempus — because of its user-friendliness and the many configuration options."</span>
-        </div>
-        <p style="margin-top:10px;">
-          <span class="t-de">„Reto zeigt Peter vier Dinge in diesem Screen: Notes auf Assignment-Ebene, Plan/Actual-Umschalten, den Quicklink zu Details — und die Grid Options."</span>
-          <span class="t-en">"Reto shows Peter four things in this screen: notes at assignment level, plan/actual switching, the quicklink to details — and the Grid Options."</span>
-        </p>
-      </div>
-    </div>
-    <div class="box box-click">
-      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Was klicken — Schritt für Schritt</span><span class="t-en">What to click — step by step</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de">Kachel</span><span class="t-en">Tile</span> <span class="click-path">Bulk Project Allocation Flatgrid</span> <span class="t-de">auf Startseite öffnen</span><span class="t-en">open from home screen</span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de"><strong>Grid Options öffnen:</strong></span><span class="t-en"><strong>Open Grid Options:</strong></span>
-            <ul style="margin-top:6px;padding-left:16px;list-style:disc;font-size:13px;">
-              <li><span class="t-de"><strong>Heatmap</strong> aktivieren — farbliche Auslastungsanzeige erklären</span><span class="t-en"><strong>Enable Heatmap</strong> — explain colour-coded utilisation display</span></li>
-              <li><span class="t-de"><strong>Tasks ein-/ausblenden</strong> — zeigen, wie sich die Sicht ändert</span><span class="t-en"><strong>Show/hide Tasks</strong> — show how the view changes</span></li>
-              <li><span class="t-de"><strong>Total in Row</strong> — Zeilensummen ein-/ausblenden</span><span class="t-en"><strong>Total in Row</strong> — show/hide row totals</span></li>
-            </ul>
-          </div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de"><strong>Notes:</strong> Assignment anklicken → Attribut „Notes" hinzufügen → eine Notiz eingeben → <em>Save klicken!</em></span><span class="t-en"><strong>Notes:</strong> click an assignment → add "Notes" attribute → enter a note → <em>click Save!</em></span></div></li>
-          <li><div class="click-step-num">4</div><div><span class="t-de"><strong>Planned / Actual</strong> umschalten — Vergleich direkt im Grid zeigen</span><span class="t-en"><strong>Switch Planned / Actual</strong> — show comparison directly in the grid</span></div></li>
-          <li><div class="click-step-num">5</div><div><span class="t-de"><strong>Quicklink</strong> zeigen: Direktlink zu den Detailangaben eines Assignments</span><span class="t-en"><strong>Show Quicklink:</strong> direct link to assignment details</span></div></li>
+        <ul class="say-bullets">
+          <li><span class="t-de">Alles an <strong>einem Ort.</strong></span><span class="t-en"><strong>Everything in one place.</strong></span></li>
+          <li><span class="t-de">Editierbar, flexibel, <strong>sofort sichtbar.</strong></span><span class="t-en">Editable, flexible, <strong>immediately visible.</strong></span></li>
+          <li><span class="t-de">Du <strong>navigierst nicht</strong> — du arbeitest.</span><span class="t-en">You don't navigate. <strong>You work.</strong></span></li>
         </ul>
       </div>
     </div>
@@ -1185,7 +1179,7 @@ input.media-file-input { display: none; }
       <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
       <div class="box-body">
         <span class="t-de">„Das Flatgrid ist beliebt, weil es sich der Arbeit anpasst — nicht umgekehrt."</span>
-        <span class="t-en">"The Flatgrid is popular because it adapts to the work — not the other way around."</span>
+        <span class="t-en">The tool adapts to your work. Not the other way around.</span>
       </div>
     </div>
     <div class="transition">→ <span class="t-de">„Und damit Reto nicht jede Woche dieselben Filter neu setzen muss — Views."</span><span class="t-en">"And so Reto doesn't have to reset the same filters every week — Views."</span></div>
@@ -1213,24 +1207,8 @@ input.media-file-input { display: none; }
     <span class="tag tag-orange"><span class="t-de">Lock &amp; Favorit</span><span class="t-en">Lock &amp; Favourite</span></span>
   </div>
   <div class="scene-body">
-    <div class="box box-story">
-      <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say this aloud</span></div>
-      <div class="box-body">
-        <span class="t-de">Peter lehnt sich zurück. <em>„Ok, das ist schon sehr gut. Aber ich sehe ein Problem: Ich werde morgen genau die gleichen Filter wieder setzen müssen."</em> Reto schüttelt den Kopf. <em>„Nein. Sieh her."</em></span>
-        <span class="t-en">Peter leans back. <em>"OK, that's already very good. But I see one problem: tomorrow I'll have to set the same filters all over again."</em> Reto shakes his head. <em>"No. Watch this."</em></span>
-      </div>
-    </div>
-    <div class="box box-say">
-      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Während du klickst — Erklärpunkte</span><span class="t-en">While clicking — talking points</span></div>
-      <div class="box-body">
-        <p>
-          <span class="t-de">„Views speichern nicht nur einen Zeitraum — sie speichern eine komplette Arbeitskonfiguration: Zeitraum, Projekte, Ressourcen, Einstellungen. Reto erstellt eine View für Q1 2027 mit seinen Schlüsselprojekten."</span>
-          <span class="t-en">"Views don't just save a time period — they save a complete work configuration: timeframe, projects, resources, settings. Reto creates a view for Q1 2027 with his key projects."</span>
-        </p>
-      </div>
-    </div>
     <div class="box box-click">
-      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Was klicken</span><span class="t-en">What to click</span></div>
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Was klicken (zuerst)</span><span class="t-en">What to click first</span></div>
       <div class="box-body">
         <ul class="click-steps">
           <li><div class="click-step-num">1</div><div><span class="t-de">Im Flatgrid: <strong>Neue View erstellen</strong></span><span class="t-en">In Flatgrid: <strong>Create new view</strong></span></div></li>
@@ -1241,6 +1219,23 @@ input.media-file-input { display: none; }
           <li><div class="click-step-num">6</div><div><span class="t-de"><strong>Als Favorit markieren</strong> — erscheint ganz oben in der View-Liste</span><span class="t-en"><strong>Mark as favourite</strong> — appears at the top of the view list</span></div></li>
           <li><div class="click-step-num">7</div><div><span class="t-de"><strong>Views arrangieren</strong> — Reihenfolge nach eigenem Bedarf anpassen</span><span class="t-en"><strong>Arrange views</strong> — reorder according to personal needs</span></div></li>
         </ul>
+      </div>
+    </div>
+    <div class="box box-story">
+      <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say this aloud</span></div>
+      <div class="box-body">
+        <span class="t-de">Peter lehnt sich zurück. <em>„Ok, das ist schon sehr gut. Aber ich sehe ein Problem: Ich werde morgen genau die gleichen Filter wieder setzen müssen."</em> Reto schüttelt den Kopf. <em>„Nein. Sieh her."</em></span>
+        <span class="t-en">Peter: same filters again tomorrow? Reto: watch — <strong>Views</strong>.</span>
+      </div>
+    </div>
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Während du klickst — Erklärpunkte</span><span class="t-en">While clicking — talking points</span></div>
+      <div class="box-body">
+        <ul class="say-bullets">
+          <li><span class="t-de">Eine View speichert dein <strong>Setup</strong> — nicht nur den Zeitraum.</span><span class="t-en">A view saves your <strong>setup</strong>.</span></li>
+          <li><span class="t-de">Nicht nur Zeit — <strong>Kontext</strong> (Projekte, Spalten, was du brauchst).</span><span class="t-en">Not just time — <strong>context</strong>.</span></li>
+        </ul>
+        <p class="optional-inline"><span class="t-de">(optional) Q1 2027 · Amber/Apollo wie in den Klicks — nur wenn du es zeigen willst.</span><span class="t-en">(optional) Q1 2027 / Amber+Apollo as in steps — only if you demo it.</span></p>
       </div>
     </div>
     <div class="box box-peter">
@@ -1260,7 +1255,7 @@ input.media-file-input { display: none; }
       <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
       <div class="box-body">
         <span class="t-de">„Wiederholbare Sichtbarkeit ist keine Komfortfunktion. Es ist Steuerungsdisziplin."</span>
-        <span class="t-en">"Repeatable visibility isn't a comfort feature. It's management discipline."</span>
+        <span class="t-en">Consistency is what makes planning reliable.</span>
       </div>
     </div>
     <div class="transition">→ <span class="t-de">„Jetzt haben wir alles gepflegt. Jetzt will Reto dem Management erklären, was los ist."</span><span class="t-en">"Everything is up to date. Now Reto needs to explain to management what's going on."</span></div>
@@ -1288,35 +1283,34 @@ input.media-file-input { display: none; }
     <span class="tag tag-orange">Plan vs. Actual</span>
   </div>
   <div class="scene-body">
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Was klicken (zuerst)</span><span class="t-en">What to click first</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de">Kachel</span><span class="t-en">Open</span> <span class="click-path">Report Management</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de"><strong>Plan vs. Actual:</strong> Filter PMO Area = Consulting, Q2 2026, Gruppierung nach Ressource</span><span class="t-en"><strong>Plan vs. Actual:</strong> PMO Area = Consulting, Q2 2026, by resource</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de"><strong>RAR2 Charts:</strong> gleicher Filter → visueller Barchart Plan vs. Actual</span><span class="t-en"><strong>RAR2 Charts:</strong> same filter → Plan vs. Actual bars</span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de"><strong>Allocation vs. Capacity:</strong> Kapazität über Portfolio — Engpass Richtung Jahresende</span><span class="t-en"><strong>Allocation vs. Capacity:</strong> portfolio load → year-end squeeze</span></div></li>
+        </ul>
+        <p style="margin-top:10px;font-size:13px;color:var(--gray-500);">💡 <span class="t-de">HR Campus Demo: RAR oder RAR2 → PMO Area = Consulting, Q2/Q3 2026</span><span class="t-en">HR Campus demo: RAR or RAR2 → PMO Area = Consulting, Q2/Q3 2026</span></p>
+      </div>
+    </div>
     <div class="box box-story">
       <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say this aloud</span></div>
       <div class="box-body">
         <span class="t-de">16:00 Uhr. Reto hat zwei Termine. Sein PMO-Chef will Details — wer hat wie viele Stunden wofür verbraucht? Sein Bereichsleiter will einen Blick: Ist das Projekt stabil? Zwei Fragen. Zwei Antworten. Reto öffnet Reports. Er sagt zu Peter: <em>„Ein Projektmanager ist nicht nur Planer. Er ist Übersetzer."</em></span>
-        <span class="t-en">4 PM. Reto has two meetings. His PMO head wants details — who spent how many hours on what? His division director wants a snapshot: is the project stable? Two questions. Two answers. Reto opens Reports. He says to Peter: <em>"A project manager isn't just a planner. They're a translator."</em></span>
+        <span class="t-en">Two audiences: PMO wants detail. Management wants clarity. Same data — different answers. Keep this line: <em>"A project manager isn't just a planner. They're a translator."</em></span>
       </div>
     </div>
     <div class="box box-say">
       <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Während du klickst — Erklärpunkte</span><span class="t-en">While clicking — talking points</span></div>
       <div class="box-body">
-        <p style="margin-bottom:8px;"><strong><span class="t-de">Für das PMO:</span><span class="t-en">For the PMO:</span></strong> <span class="t-de">Pivot Report — detailliert, strukturiert, nach Ressource/Zeitraum aufschlüsselbar</span><span class="t-en">Pivot Report — detailed, structured, breakable by resource/period</span></p>
-        <p style="margin-bottom:8px;"><strong><span class="t-de">Für das Management:</span><span class="t-en">For management:</span></strong> <span class="t-de">Plan vs. Actual Barchart — eine visuelle Antwort: stabil oder driftend?</span><span class="t-en">Plan vs. Actual Barchart — one visual answer: stable or drifting?</span></p>
-        <p><strong><span class="t-de">Für die strategische Planung:</span><span class="t-en">For strategic planning:</span></strong> <span class="t-de">Allocation vs. Capacity — haben wir genug Kapazität für das geplante Volumen?</span><span class="t-en">Allocation vs. Capacity — do we have enough capacity for the planned volume?</span></p>
-        <div class="quote-line" style="margin-top:12px;">
-          <span class="t-de">„Management braucht keine Screenshots aus dem Tool. Management braucht Klarheit."</span>
-          <span class="t-en">"Management doesn't need screenshots from the tool. Management needs clarity."</span>
-        </div>
-      </div>
-    </div>
-    <div class="box box-click">
-      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Was klicken</span><span class="t-en">What to click</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de">Kachel</span><span class="t-en">Tile</span> <span class="click-path">Report Management</span> <span class="t-de">öffnen</span><span class="t-en">open</span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de"><strong>Plan vs. Actual:</strong> Filter PMO Area = Consulting, Q2 2026, Gruppierung nach Ressource</span><span class="t-en"><strong>Plan vs. Actual:</strong> Filter PMO Area = Consulting, Q2 2026, grouped by resource</span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de"><strong>RAR2 Charts:</strong> gleicher Filter → visueller Barchart Plan vs. Actual</span><span class="t-en"><strong>RAR2 Charts:</strong> same filter → visual Barchart Plan vs. Actual</span></div></li>
-          <li><div class="click-step-num">4</div><div><span class="t-de"><strong>Allocation vs. Capacity:</strong> Kapazitätsauslastung über alle Projekte — gegen Jahresende Engpass zeigen</span><span class="t-en"><strong>Allocation vs. Capacity:</strong> capacity utilisation across all projects — show bottleneck towards year-end</span></div></li>
+        <ul class="say-bullets">
+          <li><span class="t-de"><strong>PMO</strong> will Details (Pivot / Drilldown).</span><span class="t-en"><strong>PMO</strong> wants detail.</span></li>
+          <li><span class="t-de"><strong>Management</strong> will Klarheit (ein Chart, eine Botschaft).</span><span class="t-en"><strong>Management</strong> wants clarity.</span></li>
+          <li><span class="t-de">Gleiche Daten — <strong>andere Antworten.</strong></span><span class="t-en"><strong>Same data. Different answers.</strong></span></li>
         </ul>
-        <p style="margin-top:10px;font-size:13px;color:var(--gray-500);">💡 <span class="t-de">HR Campus Demo: RAR oder RAR2 → PMO Area = Consulting, Q2/Q3 2026</span><span class="t-en">HR Campus demo: RAR or RAR2 → PMO Area = Consulting, Q2/Q3 2026</span></p>
+        <p style="margin-top:10px;font-size:13px;color:var(--gray-600);"><span class="t-de">Strategie / Kapazität: <strong>Allocation vs. Capacity</strong> — kurz, wenn Zeit.</span><span class="t-en">Strategic / capacity: <strong>Allocation vs. Capacity</strong> — short, if time.</span></p>
       </div>
     </div>
 
@@ -1451,7 +1445,7 @@ input.media-file-input { display: none; }
       <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
       <div class="box-body">
         <span class="t-de">„Berichte sind nicht das Ende der Steuerung. Sie sind das Werkzeug, mit dem Projektmanager Entscheidungen anschieben."</span>
-        <span class="t-en">"Reports aren't the end of management. They're the tool with which project managers drive decisions."</span>
+        <span class="t-en">Reports don't end discussions. They enable decisions.</span>
       </div>
     </div>
   </div>
