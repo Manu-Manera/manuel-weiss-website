@@ -1,0 +1,140 @@
+================================================================================
+TEMPUS PM DEMO — HEADINGS & CLICK PATHS (ENGLISH ONLY)
+================================================================================
+Spickzettel aus tempus-demo-pm.html — nur Überschriften und Klickpfade.
+Instance (reference): trial5.tempus-resource.com/slot4
+
+--------------------------------------------------------------------------------
+SCENE 01 — INTRO
+--------------------------------------------------------------------------------
+Act:     Introduction
+Title:   A new way to experience Tempus
+Sub:     Storytelling instead of product slides — Peter takes part in the story
+
+Clicks:  (none — narrative / setup only)
+
+--------------------------------------------------------------------------------
+SCENE 02 — CREATING A PROJECT
+--------------------------------------------------------------------------------
+Act:     Creating a project
+Title:   "I'll just set it up right now — watch."
+Sub:     Project Management · Create Project · Name, dates, fields
+
+Clicks — What to click
+  1. Open tile: Project Management
+  2. + Create — click
+  3. Enter name: Project Stardust
+  4. Start date: 01.07.2026 · End date: 31.12.2026
+  5. Explain additional fields (Priority, PMO Owner) — show everything is configurable
+  6. Create — click — project is now in the system
+
+--------------------------------------------------------------------------------
+SCENE 03 — RESOURCES & TASKS
+--------------------------------------------------------------------------------
+Act:     Resources & Tasks
+Title:   Who works on what — and when?
+Sub:     Add resources · create tasks · explain task-first view
+
+Clicks — What to click first (navigation)
+  1. In the project: add Eric, Angela, Cameron
+  2. Rough-in monthly hours
+  3. Switch to Group by Tasks — say what changed
+  4. Create tasks: Requirements, Testing Preparation, Technical Readiness
+  5. Eric → Requirements · Angela → Testing Prep · Cameron → Technical Readiness
+  6. Enter 20h in November for Eric on Requirements (concrete example)
+  (optional) Day view or extra fields — only if time or asked
+
+--------------------------------------------------------------------------------
+SCENE 04 — PLANNED ALLOCATION EDITING
+--------------------------------------------------------------------------------
+Act:     Planned allocation editing
+Title:   Adjust plan (reality changed)
+Sub:     Checkout · adjust hours · month / week / day · Planned vs. Actual
+
+Clicks — What to click first
+  1. Back to tile: Project Management
+  2. Open Stardust → Check out (explain lock)
+  3. Reduce Eric's November hours (specific cell)
+  4. Month → Week → Day (brief) (optional)
+  5. Planned / Actual / Remaining — name each mode
+  6. Save → Check in (required)
+
+--------------------------------------------------------------------------------
+SCENE 05 — ACTUAL ALLOCATION
+--------------------------------------------------------------------------------
+Act:     Actual Allocation
+Title:   Truth vs. plan (while you can still react)
+Sub:     Actual view · task level · live plan vs. actual comparison
+
+Clicks — What to click first
+  1. Single Project Allocation → Actual
+  2. Task-level actuals: Eric ≈ plan, Angela > plan
+  3. Type one actual live (demo)
+  4. Timesheet feed vs. manual — keep short
+  5. Plan vs. actual side by side — comment
+
+--------------------------------------------------------------------------------
+SCENE 06 — PROJECT ALLOCATION GRID
+--------------------------------------------------------------------------------
+Act:     Project Allocation Grid
+Title:   Same data — three perspectives
+Sub:     Default · Resource · Project Mode · Timeframe controls visibility
+
+Clicks — What to click first — all three modes
+  1. Open tile: Project Allocation Grid
+  2. Set start/end (timeframe = what you see)
+  3. Default: edit one assignment → only that row locked → save
+  4. Resource: Simon Wespi → show April overallocation
+  5. Show mobile lock → cancel is fine
+  6. Project: Stardust → all people + tasks
+
+--------------------------------------------------------------------------------
+SCENE 07 — BULK PROJECT ALLOCATION FLATGRID
+--------------------------------------------------------------------------------
+Act:     Where most people actually work
+Title:   Bulk Project Allocation Flatgrid
+Sub:     Heatmap · Notes · Planned/Actual · Quicklink · Grid Options
+
+Banner:  KEY MOMENT — DON'T RUSH
+
+Clicks — What to click first
+  1. Home → Bulk Project Allocation Flatgrid
+  2. Grid Options: Heatmap on · tasks optional · row totals optional
+  3. Notes: assignment → Notes → type → Save
+  4. Planned / Actual toggle
+  5. Quicklink → assignment detail
+
+--------------------------------------------------------------------------------
+SCENE 08 — VIEWS
+--------------------------------------------------------------------------------
+Act:     Views & Scenarios
+Title:   Set it up once — use it every Monday
+Sub:     New view · lock · favourite · arrange views
+
+Clicks — What to click first
+  1. In Flatgrid: Create new view
+  2. Timeframe: 01.01.2027 – 31.03.2027 (Q1 2027 — three months)
+  3. Select projects: e.g. Amber, Apollo (or HR Campus projects)
+  4. Rename the view — a name that immediately tells you what it shows
+  5. Lock the view — explain: prevents unintentional changes to the view configuration
+  6. Mark as favourite — appears at the top of the view list
+  7. Arrange views — reorder according to personal needs
+
+--------------------------------------------------------------------------------
+SCENE 09 / 10 — REPORTS
+--------------------------------------------------------------------------------
+Act:     Plan vs. Actual · RAR2 Charts
+Title:   Data becomes decisions
+Sub:     PMO view vs. management view · Pivot · Barchart · Capacity
+
+Clicks — What to click first
+  1. Open: Report Management
+  2. Plan vs. Actual: PMO Area = Consulting, Q2 2026, by resource
+  3. RAR2 Charts: same filter → Plan vs. Actual bars
+  4. Allocation vs. Capacity: portfolio load → year-end squeeze
+
+Note:    HR Campus demo: RAR or RAR2 → PMO Area = Consulting, Q2/Q3 2026
+
+================================================================================
+End of sheet
+================================================================================
