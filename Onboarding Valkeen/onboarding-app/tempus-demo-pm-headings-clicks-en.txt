@@ -1,7 +1,8 @@
 ================================================================================
-TEMPUS PM DEMO — HEADINGS & CLICK PATHS (ENGLISH ONLY)
+TEMPUS PM DEMO — HEADINGS, PAIN POINTS & CLICK PATHS (ENGLISH)
 ================================================================================
-Spickzettel aus tempus-demo-pm.html — nur Überschriften und Klickpfade.
+Cheat sheet from tempus-demo-pm.html. Each scene: headline + pain point the
+story/clicks address, then click path.
 Instance (reference): trial5.tempus-resource.com/slot4
 
 --------------------------------------------------------------------------------
@@ -11,6 +12,10 @@ Act:     Introduction
 Title:   A new way to experience Tempus
 Sub:     Storytelling instead of product slides — Peter takes part in the story
 
+Pain:   Audience (like Peter) is tired of tool sprawl, slides, and promises —
+        they don't believe another "demo deck" will fix lost overview.
+        You reframe: follow a real flow, ask questions like Peter, see the work.
+
 Clicks:  (none — narrative / setup only)
 
 --------------------------------------------------------------------------------
@@ -19,6 +24,10 @@ SCENE 02 — CREATING A PROJECT
 Act:     Creating a project
 Title:   "I'll just set it up right now — watch."
 Sub:     Project Management · Create Project · Name, dates, fields
+
+Pain:   New work waits on forms, IT tickets, or heavy admin — the project
+        doesn't exist in the system when the PM needs to move.
+        Fix:   Sales handover → live project in seconds, same place PMs work daily.
 
 Clicks — What to click
   1. Open tile: Project Management
@@ -34,6 +43,11 @@ SCENE 03 — RESOURCES & TASKS
 Act:     Resources & Tasks
 Title:   Who works on what — and when?
 Sub:     Add resources · create tasks · explain task-first view
+
+Pain:   "I can do that in Excel" — names on a project, but no durable link
+        between people, tasks, and time; ownership stays fuzzy.
+        Fix:   Assign people to tasks with hours; project vs task level answers
+        "who's on it" vs "who owns what."
 
 Clicks — What to click first (navigation)
   1. In the project: add Eric, Angela, Cameron
@@ -51,6 +65,11 @@ Act:     Planned allocation editing
 Title:   Adjust plan (reality changed)
 Sub:     Checkout · adjust hours · month / week / day · Planned vs. Actual
 
+Pain:   Plans change daily; spreadsheets and shared files collide or go stale;
+        nobody knows who's editing or what "plan vs remainder" means.
+        Fix:   Checkout/check-in for clarity; fast edits; Planned / Actual /
+        Remaining as a simple language for the team.
+
 Clicks — What to click first
   1. Back to tile: Project Management
   2. Open Stardust → Check out (explain lock)
@@ -66,6 +85,11 @@ Act:     Actual Allocation
 Title:   Truth vs. plan (while you can still react)
 Sub:     Actual view · task level · live plan vs. actual comparison
 
+Pain:   Actuals only as totals or too late — you notice drift after the fact;
+        double entry between timesheets and plans.
+        Fix:   Task-level actuals next to plan; feed from timesheets; intervene
+        while there is still room to steer.
+
 Clicks — What to click first
   1. Single Project Allocation → Actual
   2. Task-level actuals: Eric ≈ plan, Angela > plan
@@ -79,6 +103,11 @@ SCENE 06 — PROJECT ALLOCATION GRID
 Act:     Project Allocation Grid
 Title:   Same data — three perspectives
 Sub:     Default · Resource · Project Mode · Timeframe controls visibility
+
+Pain:   One project is manageable; five+ projects + people = mental overload —
+        you can't see overload across projects or slice by person vs by project.
+        Fix:   Same dataset, three lenses (default / resource / project) within
+        a chosen timeframe; assignment-level lock without blocking the whole project.
 
 Clicks — What to click first — all three modes
   1. Open tile: Project Allocation Grid
@@ -97,6 +126,11 @@ Sub:     Heatmap · Notes · Planned/Actual · Quicklink · Grid Options
 
 Banner:  KEY MOMENT — DON'T RUSH
 
+Pain:   Daily work means jumping screens and re-explaining context — "where
+        was that cell again?" Heatmap and notes live next to the numbers.
+        Fix:   One flat grid for many projects; visual load; notes; flip
+        Planned/Actual; drill via quicklink without losing the sheet.
+
 Clicks — What to click first
   1. Home → Bulk Project Allocation Flatgrid
   2. Grid Options: Heatmap on · tasks optional · row totals optional
@@ -110,6 +144,11 @@ SCENE 08 — VIEWS
 Act:     Views & Scenarios
 Title:   Set it up once — use it every Monday
 Sub:     New view · lock · favourite · arrange views
+
+Pain:   Every Monday you rebuild the same filters and columns — wasted time
+        and inconsistent reviews across the team.
+        Fix:   Save the full working context as a view; lock against accidents;
+        favourites and order for fast recall.
 
 Clicks — What to click first
   1. In Flatgrid: Create new view
@@ -126,6 +165,12 @@ SCENE 09 / 10 — REPORTS
 Act:     Plan vs. Actual · RAR2 Charts
 Title:   Data becomes decisions
 Sub:     PMO view vs. management view · Pivot · Barchart · Capacity
+
+Pain:   PMO needs detail; leadership needs a clear story — same numbers, but
+        exporting screenshots or one-size reports fails both sides; capacity
+        crunches hide until too late.
+        Fix:   Right report type per audience; RAR2 / Plan vs Actual / capacity
+        on the same underlying data — PM as translator, not slide factory.
 
 Clicks — What to click first
   1. Open: Report Management
