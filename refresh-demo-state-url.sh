@@ -5,6 +5,10 @@
 # tempus-demo-pm.html State-Saving und aktualisiert die HTML-Datei.
 #
 # Ausführen: ./refresh-demo-state-url.sh
+#
+# Hinweis: sed darf hier NICHT genutzt werden — Presigned-URLs enthalten
+# "&" (Query-String). In sed-Ersetzungen bedeutet "&" das komplette Match
+# und zerstört die Zeile (JS-Syntaxfehler → z.B. Sprachumschalter tot).
 # ──────────────────────────────────────────────────────────
 
 set -e
@@ -16,6 +20,7 @@ KEY="data/tempus-demo-pm-state.json"
 
 echo "🔑 Generiere neue Presigned PUT-URL (7 Tage)..."
 
+export NEW_URL
 NEW_URL=$(python3 -c "
 import boto3
 from botocore.config import Config
@@ -33,10 +38,29 @@ if [ -z "$NEW_URL" ]; then
   exit 1
 fi
 
-echo "📝 Aktualisiere HTML-Datei..."
+echo "📝 Aktualisiere HTML-Datei (Python, nicht sed)..."
 
-# Ersetze die PRESIGNED_PUT_URL in der HTML-Datei
-sed -i '' "s|const PRESIGNED_PUT_URL = '[^']*'|const PRESIGNED_PUT_URL = '${NEW_URL}'|g" "${HTML_FILE}"
+export HTML_FILE
+python3 << 'PY'
+import os
+from pathlib import Path
+
+url = os.environ["NEW_URL"]
+safe = url.replace("\\", "\\\\").replace("'", "\\'")
+path = Path(os.environ["HTML_FILE"])
+lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
+out = []
+replaced = False
+for line in lines:
+    if line.startswith("const PRESIGNED_PUT_URL = ") and not replaced:
+        out.append(f"const PRESIGNED_PUT_URL = '{safe}';\n")
+        replaced = True
+    else:
+        out.append(line)
+if not replaced:
+    raise SystemExit("Keine Zeile const PRESIGNED_PUT_URL = … gefunden")
+path.write_text("".join(out), encoding="utf-8")
+PY
 
 echo "🚀 Deploye..."
 ./deploy-aws-website.sh --quick
