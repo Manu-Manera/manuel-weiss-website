@@ -84,6 +84,52 @@ const SINGING_EXERCISES = {
       ]
     },
     {
+      id: 'l1_box_breathing',
+      level: 1,
+      category: 'warmup',
+      title: 'Box-Atmung (4-4-4-4)',
+      description: 'Gleichmässige Phasen: einatmen, halten, ausatmen, halten – beruhigt das Nervensystem und stabilisiert den Stütz.',
+      duration_s: 48,
+      xp_reward: 12,
+      type: 'breathing',
+      phases: [
+        { action: 'inhale', duration_s: 4, label: 'Einatmen' },
+        { action: 'hold', duration_s: 4, label: 'Halten' },
+        { action: 'exhale', duration_s: 4, label: 'Ausatmen' },
+        { action: 'hold', duration_s: 4, label: 'Halten' }
+      ],
+      repeats: 3
+    },
+    {
+      id: 'l1_micro_siren',
+      level: 1,
+      category: 'sovt',
+      title: 'Mini-Sirene',
+      description: 'Sehr kleiner, langsamer Auf- und Ab-Glide auf einem weichen „uuu“ oder Summen – mobilisiert die Stimmlippen ohne Druck.',
+      duration_s: 32,
+      xp_reward: 15,
+      type: 'glide',
+      glide_start_midi: 48,
+      glide_end_midi: 52,
+      glide_duration_s: 3,
+      repeats: 4,
+      tolerance_cents: 180
+    },
+    {
+      id: 'l1_pitch_match_2',
+      level: 1,
+      category: 'pitch_matching',
+      title: 'Zwei Töne treffen',
+      description: 'Nur zwei Referenztöne – gut für den Einstieg ins Pitch-Matching.',
+      duration_s: 22,
+      xp_reward: 12,
+      type: 'pitch_match',
+      notes: [
+        { midi: 49, duration_beats: 5, tolerance_cents: 110 },
+        { midi: 52, duration_beats: 5, tolerance_cents: 110 }
+      ]
+    },
+    {
       id: 'l1_cooldown',
       level: 1,
       category: 'cooldown',
@@ -174,6 +220,65 @@ const SINGING_EXERCISES = {
         { midi: 52, duration_beats: 3, tolerance_cents: 80 },
         { midi: 53, duration_beats: 3, tolerance_cents: 80 },
         { midi: 55, duration_beats: 3, tolerance_cents: 80 }
+      ]
+    },
+    {
+      id: 'l2_tongue_trill',
+      level: 2,
+      category: 'sovt',
+      title: 'Zungen-Triller',
+      description: 'Weicher Zungen-Triller (ähnlich spanischem „rr“) auf einem bequemen Ton – alternative SOVT-Anregung neben Lip Trill.',
+      duration_s: 28,
+      xp_reward: 16,
+      type: 'sovt_exercise',
+      notes: [
+        { midi: 49, duration_beats: 8, tolerance_cents: 160 },
+        { midi: 51, duration_beats: 8, tolerance_cents: 160 }
+      ]
+    },
+    {
+      id: 'l2_glide_down',
+      level: 2,
+      category: 'sovt',
+      title: 'Abwärts-Glide',
+      description: 'Gleite von einem höheren zum tieferen Ton – oft angenehmer für die Kehle als nur aufwärts.',
+      duration_s: 32,
+      xp_reward: 18,
+      type: 'glide',
+      glide_start_midi: 58,
+      glide_end_midi: 48,
+      glide_duration_s: 5,
+      repeats: 3,
+      tolerance_cents: 200
+    },
+    {
+      id: 'l2_open_vowel_ah',
+      level: 2,
+      category: 'resonance',
+      title: 'Offenes „Ah“',
+      description: 'Halte ein offenes „Ah“ mit weichem Gaumen – trainiert Mundstellung und Grundresonanz.',
+      duration_s: 28,
+      xp_reward: 18,
+      type: 'sustained_tone',
+      notes: [
+        { midi: 50, duration_beats: 14, tolerance_cents: 110 }
+      ]
+    },
+    {
+      id: 'l2_pentatonic_up',
+      level: 2,
+      category: 'scales',
+      title: 'Dur-Pentatonik (aufwärts)',
+      description: 'Die fünf Töne der Dur-Pentatonik – melodisch und ohne Leitton, gut für sicheres Intonieren.',
+      duration_s: 28,
+      xp_reward: 22,
+      type: 'scale',
+      notes: [
+        { midi: 48, duration_beats: 2, tolerance_cents: 85 },
+        { midi: 50, duration_beats: 2, tolerance_cents: 85 },
+        { midi: 52, duration_beats: 2, tolerance_cents: 85 },
+        { midi: 55, duration_beats: 2, tolerance_cents: 85 },
+        { midi: 57, duration_beats: 2, tolerance_cents: 85 }
       ]
     }
   ],
@@ -272,6 +377,63 @@ const SINGING_EXERCISES = {
         { midi: 50, duration_beats: 3, tolerance_cents: 80 },
         { midi: 57, duration_beats: 3, tolerance_cents: 80 },
         { midi: 48, duration_beats: 3, tolerance_cents: 80 }
+      ]
+    },
+    {
+      id: 'l3_minor_natural_up',
+      level: 3,
+      category: 'scales',
+      title: 'Moll-Tonleiter (natürlich, aufwärts)',
+      description: 'A-Moll natürlich aufwärts (La Ti Do Re Mi Fa Sol La) – anderes Tonmaterial als Dur, trainiert Gehör für Moll-Klänge.',
+      duration_s: 36,
+      xp_reward: 28,
+      type: 'scale',
+      notes: [
+        { midi: 45, duration_beats: 2, tolerance_cents: 65 },
+        { midi: 47, duration_beats: 2, tolerance_cents: 65 },
+        { midi: 48, duration_beats: 2, tolerance_cents: 65 },
+        { midi: 50, duration_beats: 2, tolerance_cents: 65 },
+        { midi: 52, duration_beats: 2, tolerance_cents: 65 },
+        { midi: 53, duration_beats: 2, tolerance_cents: 65 },
+        { midi: 55, duration_beats: 2, tolerance_cents: 65 },
+        { midi: 57, duration_beats: 2, tolerance_cents: 65 }
+      ]
+    },
+    {
+      id: 'l3_arpeggio_major',
+      level: 3,
+      category: 'intervals',
+      title: 'Dur-Arpeggio',
+      description: 'Gebrochener Akkord (Tonleiter-Töne des Dreiklangs) – typische Gesangs- und Hörfeld-Übung.',
+      duration_s: 32,
+      xp_reward: 28,
+      type: 'scale',
+      notes: [
+        { midi: 48, duration_beats: 2, tolerance_cents: 65 },
+        { midi: 52, duration_beats: 2, tolerance_cents: 65 },
+        { midi: 55, duration_beats: 2, tolerance_cents: 65 },
+        { midi: 60, duration_beats: 3, tolerance_cents: 65 },
+        { midi: 55, duration_beats: 2, tolerance_cents: 65 },
+        { midi: 52, duration_beats: 2, tolerance_cents: 65 },
+        { midi: 48, duration_beats: 3, tolerance_cents: 65 }
+      ]
+    },
+    {
+      id: 'l3_octave_leaps',
+      level: 3,
+      category: 'intervals',
+      title: 'Oktav-Sprünge',
+      description: 'Springe die Oktave (gleicher Notenname) – wichtig für Register-Koordination und stabile Kopplage.',
+      duration_s: 32,
+      xp_reward: 32,
+      type: 'interval',
+      notes: [
+        { midi: 48, duration_beats: 3, tolerance_cents: 90 },
+        { midi: 60, duration_beats: 3, tolerance_cents: 90 },
+        { midi: 50, duration_beats: 3, tolerance_cents: 90 },
+        { midi: 62, duration_beats: 3, tolerance_cents: 90 },
+        { midi: 52, duration_beats: 3, tolerance_cents: 90 },
+        { midi: 64, duration_beats: 3, tolerance_cents: 90 }
       ]
     }
   ],
@@ -374,6 +536,52 @@ const SINGING_EXERCISES = {
       glide_duration_s: 6,
       repeats: 2,
       tolerance_cents: 150
+    },
+    {
+      id: 'l4_portamento',
+      level: 4,
+      category: 'register',
+      title: 'Portamento (Terz)',
+      description: 'Verbinde zwei Töne langsam ohne Zwischenhalt – trainiert weiche Übergänge wie im Pop/Belcanto.',
+      duration_s: 28,
+      xp_reward: 28,
+      type: 'glide',
+      glide_start_midi: 50,
+      glide_end_midi: 53,
+      glide_duration_s: 4,
+      repeats: 5,
+      tolerance_cents: 140
+    },
+    {
+      id: 'l4_chromatic_steps',
+      level: 4,
+      category: 'agility',
+      title: 'Chromatische Halbtonschritte',
+      description: 'Vier aufeinanderfolgende Halbtonschritte – feine Stimmführung und Intonation.',
+      duration_s: 28,
+      xp_reward: 30,
+      type: 'pitch_match',
+      notes: [
+        { midi: 50, duration_beats: 2, tolerance_cents: 55 },
+        { midi: 51, duration_beats: 2, tolerance_cents: 55 },
+        { midi: 52, duration_beats: 2, tolerance_cents: 55 },
+        { midi: 53, duration_beats: 2, tolerance_cents: 55 }
+      ]
+    },
+    {
+      id: 'l4_sirens_two_way',
+      level: 4,
+      category: 'register',
+      title: 'Doppel-Sirene',
+      description: 'Zwei Durchgänge mit gleichem Aufwärts-Glide – zweite Runde bewusst weicher; gleichmässiger Luftstrom.',
+      duration_s: 34,
+      xp_reward: 28,
+      type: 'glide',
+      glide_start_midi: 46,
+      glide_end_midi: 58,
+      glide_duration_s: 5,
+      repeats: 2,
+      tolerance_cents: 160
     }
   ],
 
@@ -466,6 +674,59 @@ const SINGING_EXERCISES = {
         { midi: 53, duration_beats: 3, tolerance_cents: 60 },
         { midi: 48, duration_beats: 3, tolerance_cents: 60 }
       ]
+    },
+    {
+      id: 'l5_descending_phrase',
+      level: 5,
+      category: 'melody',
+      title: 'Absteigende Phrase',
+      description: 'Eine klar abwärts führende Linie – oft emotional „erlösend“, trainiert kontrolliertes Absenken der Tonlage.',
+      duration_s: 32,
+      xp_reward: 32,
+      type: 'melody',
+      notes: [
+        { midi: 60, duration_beats: 2, tolerance_cents: 58 },
+        { midi: 57, duration_beats: 2, tolerance_cents: 58 },
+        { midi: 55, duration_beats: 2, tolerance_cents: 58 },
+        { midi: 52, duration_beats: 3, tolerance_cents: 58 },
+        { midi: 50, duration_beats: 2, tolerance_cents: 58 },
+        { midi: 48, duration_beats: 4, tolerance_cents: 58 }
+      ]
+    },
+    {
+      id: 'l5_syncopated_motif',
+      level: 5,
+      category: 'rhythm',
+      title: 'Synkopierter Motivfaden',
+      description: 'Kurze-lange Rhythmusmuster wie im Pop – achte auf präzise Einsätze (der Referenzton hilft).',
+      duration_s: 34,
+      xp_reward: 32,
+      type: 'melody',
+      notes: [
+        { midi: 52, duration_beats: 1, tolerance_cents: 65 },
+        { midi: 52, duration_beats: 1, tolerance_cents: 65 },
+        { midi: 55, duration_beats: 3, tolerance_cents: 65 },
+        { midi: 53, duration_beats: 1, tolerance_cents: 65 },
+        { midi: 52, duration_beats: 3, tolerance_cents: 65 },
+        { midi: 48, duration_beats: 4, tolerance_cents: 65 }
+      ]
+    },
+    {
+      id: 'l5_humming_melody',
+      level: 5,
+      category: 'sovt',
+      title: 'Summ-Melodie',
+      description: 'Die Melodie nur auf „mmm“ oder „ng“ summen – reduziert Stimmfalten-Belastung, Fokus auf Höhe und Phrasierung.',
+      duration_s: 30,
+      xp_reward: 30,
+      type: 'melody',
+      notes: [
+        { midi: 50, duration_beats: 2, tolerance_cents: 70 },
+        { midi: 52, duration_beats: 2, tolerance_cents: 70 },
+        { midi: 55, duration_beats: 2, tolerance_cents: 70 },
+        { midi: 53, duration_beats: 2, tolerance_cents: 70 },
+        { midi: 50, duration_beats: 4, tolerance_cents: 70 }
+      ]
     }
   ],
 
@@ -551,6 +812,64 @@ const SINGING_EXERCISES = {
         { midi: 53, duration_beats: 4, tolerance_cents: 120 }
       ],
       freeform: true
+    },
+    {
+      id: 'l6_chorus_power',
+      level: 6,
+      category: 'performance',
+      title: 'Power-Refrain (länger)',
+      description: 'Ein längerer hymnischer Verlauf – Atem planen, hohe Töne mit Unterstützung, nicht mit Druck.',
+      duration_s: 48,
+      xp_reward: 48,
+      type: 'melody',
+      notes: [
+        { midi: 48, duration_beats: 2, tolerance_cents: 48 },
+        { midi: 52, duration_beats: 2, tolerance_cents: 48 },
+        { midi: 55, duration_beats: 2, tolerance_cents: 48 },
+        { midi: 57, duration_beats: 2, tolerance_cents: 48 },
+        { midi: 60, duration_beats: 3, tolerance_cents: 48 },
+        { midi: 59, duration_beats: 1, tolerance_cents: 48 },
+        { midi: 57, duration_beats: 2, tolerance_cents: 48 },
+        { midi: 55, duration_beats: 2, tolerance_cents: 48 },
+        { midi: 52, duration_beats: 2, tolerance_cents: 48 },
+        { midi: 48, duration_beats: 4, tolerance_cents: 48 },
+        { midi: 50, duration_beats: 2, tolerance_cents: 48 },
+        { midi: 55, duration_beats: 4, tolerance_cents: 48 }
+      ]
+    },
+    {
+      id: 'l6_pop_riff',
+      level: 6,
+      category: 'performance',
+      title: 'Pop-Riff (kurz)',
+      description: 'Ein wiedererkennbares kurzes Motiv mit Sprüngen – typisch für Hooks; präzise Intonation.',
+      duration_s: 36,
+      xp_reward: 45,
+      type: 'melody',
+      notes: [
+        { midi: 52, duration_beats: 1, tolerance_cents: 52 },
+        { midi: 55, duration_beats: 1, tolerance_cents: 52 },
+        { midi: 57, duration_beats: 1, tolerance_cents: 52 },
+        { midi: 55, duration_beats: 1, tolerance_cents: 52 },
+        { midi: 52, duration_beats: 2, tolerance_cents: 52 },
+        { midi: 48, duration_beats: 2, tolerance_cents: 52 },
+        { midi: 50, duration_beats: 2, tolerance_cents: 52 },
+        { midi: 52, duration_beats: 4, tolerance_cents: 52 }
+      ]
+    },
+    {
+      id: 'l6_cooldown_hum',
+      level: 6,
+      category: 'cooldown',
+      title: 'Ausklang: Summ-Oktave',
+      description: 'Sanft eine Oktave summen und ausklingen lassen – für Level 6 als bewusster Ausklang nach intensiven Phrasen.',
+      duration_s: 24,
+      xp_reward: 15,
+      type: 'pitch_match',
+      notes: [
+        { midi: 48, duration_beats: 6, tolerance_cents: 130 },
+        { midi: 60, duration_beats: 6, tolerance_cents: 130 }
+      ]
     }
   ]
 };
