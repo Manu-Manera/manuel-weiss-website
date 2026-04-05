@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gesangstraining | Manuel Weiss</title>
+
+    <meta name="description" content="ADHS-optimiertes Gesangstraining mit Echtzeit-Pitch-Feedback und wissenschaftlichem Trainingsplan.">
+    <meta name="robots" content="noindex, nofollow">
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/singing-trainer.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="singing-trainer">
+    <div class="st-header">
+        <div class="st-container">
+            <a href="aktivitaeten-uebersicht.html" class="st-back-link">
+                <i class="fas fa-arrow-left"></i>
+                Zurück zur Übersicht
+            </a>
+            <h1><i class="fas fa-microphone-lines"></i> Gesangstraining</h1>
+            <p>Echtzeit-Pitch-Feedback &middot; Wissenschaftliche Übungen &middot; ADHS-optimiert</p>
+        </div>
+    </div>
+
+    <div id="st-main" class="st-container">
+        <div style="text-align:center; padding:4rem 0; color:var(--st-text-muted);">
+            <i class="fas fa-spinner fa-spin" style="font-size:2rem; margin-bottom:1rem; display:block;"></i>
+            Lade Trainingsplan...
+        </div>
+    </div>
+
+    <script src="js/singing-exercises.js"></script>
+    <script src="js/pitch-detector.js"></script>
+    <script src="js/singing-trainer.js"></script>
+</body>
+</html>

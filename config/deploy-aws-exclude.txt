@@ -42,6 +42,15 @@ build/*
 *.zip
 *.log
 
+# Audio / Musik / Skripte (Song-Projekt)
+*.wav
+*.mid
+*.sf2
+*.m4a
+*.py
+voice_samples/*
+sf2_temp/*
+
 # IDE / OS / Temp
 .vscode/*
 .idea/*

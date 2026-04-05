@@ -868,6 +868,43 @@ export class WebsiteApiStack extends cdk.Stack {
     flashcardsStatsResource.addMethod('GET', new apigateway.LambdaIntegration(flashcardsLambda));
 
     // ========================================
+    // SINGING TRAINER (Gesangstraining App)
+    // ========================================
+
+    const singingProgressTable = new dynamodb.Table(this, 'SingingProgressTable', {
+      tableName: 'mawps-singing-progress',
+      partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    const singingTrainerLambda = new lambda.Function(this, 'SingingTrainerFunction', {
+      functionName: 'website-singing-trainer-api',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('../lambda/singing-trainer-api'),
+      role: lambdaRole,
+      timeout: cdk.Duration.seconds(10),
+      memorySize: 128,
+      environment: {
+        PROGRESS_TABLE: singingProgressTable.tableName
+      }
+    });
+
+    singingProgressTable.grantReadWriteData(singingTrainerLambda);
+
+    const singingTrainerResource = this.api.root.addResource('singing-trainer');
+    const singingProgressResource = singingTrainerResource.addResource('progress');
+    singingProgressResource.addMethod('GET', new apigateway.LambdaIntegration(singingTrainerLambda));
+    singingProgressResource.addMethod('POST', new apigateway.LambdaIntegration(singingTrainerLambda));
+
+    const singingExercisesResource = singingTrainerResource.addResource('exercises');
+    singingExercisesResource.addMethod('GET', new apigateway.LambdaIntegration(singingTrainerLambda));
+
+    const singingCalibrateResource = singingTrainerResource.addResource('calibrate');
+    singingCalibrateResource.addMethod('POST', new apigateway.LambdaIntegration(singingTrainerLambda));
+
+    // ========================================
     // OUTPUTS
     // ========================================
     this.apiUrl = new cdk.CfnOutput(this, 'WebsiteApiUrl', {
