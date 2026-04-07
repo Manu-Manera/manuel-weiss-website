@@ -82,13 +82,158 @@ body { font-family: 'Inter', -apple-system, sans-serif; font-size: 15px; line-he
 
 /* ── AGENDA ──────────────────────────────── */
 .agenda-card { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); padding: 22px 28px; margin-bottom: 20px; box-shadow: var(--shadow); }
-.agenda-card h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gray-500); margin-bottom: 16px; }
+.agenda-card h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gray-500); margin-bottom: 16px; margin-top: 0; }
 .agenda-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 28px; }
 .agenda-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--gray-700); padding: 5px 0; border-bottom: 1px solid var(--gray-200); }
 .agenda-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: var(--navy); color: white; border-radius: 4px; font-size: 11px; font-weight: 700; flex-shrink: 0; }
 .agenda-item-wrap { flex: 1; min-width: 0; }
 .agenda-item-sub { font-size: 11px; color: var(--gray-500); line-height: 1.45; margin-top: 5px; display: block; }
 .agenda-footnote { grid-column: 1 / -1; font-size: 12px; color: var(--gray-500); padding: 12px 0 4px; border-top: 1px solid var(--gray-200); margin-top: 4px; line-height: 1.5; }
+
+/* ── AGENDA SHARE SLIDE (Screen-Share / Vollbild-Freundlich) ─ */
+.agenda-share-slide {
+  margin: 0 0 24px;
+  scroll-margin-top: 24px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 16px 48px rgba(15, 35, 66, 0.12), 0 0 0 1px rgba(15, 35, 66, 0.06);
+  background: linear-gradient(145deg, #ffffff 0%, #f4f8fc 48%, #eef4fb 100%);
+}
+.agenda-share-inner {
+  padding: 32px 34px 28px;
+  max-width: 100%;
+}
+@media (min-width: 720px) {
+  .agenda-share-inner { padding: 40px 44px 36px; }
+}
+.agenda-share-brand {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.agenda-share-dot { color: var(--gray-300); font-weight: 400; }
+.agenda-share-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1.15;
+  margin-bottom: 8px;
+}
+@media (min-width: 600px) {
+  .agenda-share-title { font-size: 38px; }
+}
+.agenda-share-lead {
+  font-size: 15px;
+  color: var(--gray-600);
+  max-width: 520px;
+  line-height: 1.5;
+  margin-bottom: 28px;
+}
+.agenda-share-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.agenda-share-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(13, 127, 160, 0.12);
+  border-radius: 12px;
+  transition: background 0.15s ease;
+}
+.agenda-share-row:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(13, 127, 160, 0.22);
+}
+.agenda-share-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  line-height: 1;
+  background: linear-gradient(145deg, var(--teal-light), #fff);
+  box-shadow: 0 2px 8px rgba(13, 127, 160, 0.12);
+}
+.agenda-share-body { flex: 1; min-width: 0; }
+.agenda-share-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.agenda-share-num {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  border-radius: 8px;
+  background: var(--navy);
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
+}
+.agenda-share-heading {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gray-900);
+  line-height: 1.35;
+  padding-top: 2px;
+}
+.agenda-share-sub {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--gray-500);
+  line-height: 1.45;
+  padding-left: 0;
+}
+.agenda-share-foot {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(15, 35, 66, 0.08);
+  font-size: 12px;
+  color: var(--gray-500);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+.agenda-share-hint {
+  font-size: 11px;
+  color: var(--gray-500);
+  background: rgba(13, 127, 160, 0.08);
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(13, 127, 160, 0.15);
+}
+.agenda-card-detail-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gray-400);
+  margin-bottom: 10px;
+}
 
 /* ── SCENE CARD ──────────────────────────── */
 .scene { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); margin-bottom: 20px; box-shadow: var(--shadow); overflow: hidden; }
@@ -500,6 +645,9 @@ input.media-file-input { display: none; }
   .agenda-grid { grid-template-columns: 1fr; }
   .cast-grid { grid-template-columns: 1fr 1fr; }
   .closing-grid { grid-template-columns: 1fr; }
+  .agenda-share-title { font-size: 28px; }
+  .agenda-share-inner { padding: 26px 20px 22px; }
+  .agenda-share-row { padding: 12px 12px; }
 }
 </style>
 </head>
@@ -647,8 +795,101 @@ input.media-file-input { display: none; }
   </div>
 </div>
 
-<!-- ═══ AGENDA ═════════════════════════════════ -->
+<!-- ═══ AGENDA SHARE SLIDE (für Bildschirm teilen) ═════════════════════════════════ -->
+<div id="agenda-share-slide" class="agenda-share-slide">
+  <div class="agenda-share-inner">
+    <div class="agenda-share-brand">
+      <span class="t-de">Tempus Resource</span><span class="t-en">Tempus Resource</span>
+      <span class="agenda-share-dot">·</span>
+      <span class="t-de">Project Manager Training</span><span class="t-en">Project Manager Training</span>
+    </div>
+    <h2 class="agenda-share-title"><span class="t-de">Agenda</span><span class="t-en">Agenda</span></h2>
+    <p class="agenda-share-lead">
+      <span class="t-de">Fünf Blöcke — von der Orientierung im Tool bis zu Fragen &amp; Antworten. Ideal zum Teilen zu Beginn der Session.</span>
+      <span class="t-en">Five blocks — from finding your way in the app to Q&amp;A. Ideal to share at the start of the session.</span>
+    </p>
+    <ol class="agenda-share-list">
+      <li class="agenda-share-row">
+        <span class="agenda-share-icon" aria-hidden="true">🧭</span>
+        <div class="agenda-share-body">
+          <div class="agenda-share-line">
+            <span class="agenda-share-num">1</span>
+            <div>
+              <div class="agenda-share-heading"><span class="t-de">Navigating Tempus</span><span class="t-en">Navigating Tempus</span></div>
+              <span class="agenda-share-sub t-de">Orientierung, Kacheln, technische Basis (Allocations-Modus)</span>
+              <span class="agenda-share-sub t-en">Orientation, tiles, technical setup (Allocations mode)</span>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="agenda-share-row">
+        <span class="agenda-share-icon" aria-hidden="true">🗂️</span>
+        <div class="agenda-share-body">
+          <div class="agenda-share-line">
+            <span class="agenda-share-num">2</span>
+            <div>
+              <div class="agenda-share-heading"><span class="t-de">Project Management Grid</span><span class="t-en">Project Management Grid</span></div>
+              <span class="agenda-share-sub t-de">Öffentliche &amp; eigene Views · Projektattribute</span>
+              <span class="agenda-share-sub t-en">Public &amp; custom views · project attributes</span>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="agenda-share-row">
+        <span class="agenda-share-icon" aria-hidden="true">📌</span>
+        <div class="agenda-share-body">
+          <div class="agenda-share-line">
+            <span class="agenda-share-num">3</span>
+            <div>
+              <div class="agenda-share-heading"><span class="t-de">Single Project Allocation</span><span class="t-en">Single Project Allocation</span></div>
+              <span class="agenda-share-sub t-de">Grid-Überblick · Ressourcenanfragen · Status verfolgen</span>
+              <span class="agenda-share-sub t-en">Grid overview · resource requests · follow status</span>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="agenda-share-row">
+        <span class="agenda-share-icon" aria-hidden="true">📊</span>
+        <div class="agenda-share-body">
+          <div class="agenda-share-line">
+            <span class="agenda-share-num">4</span>
+            <div>
+              <div class="agenda-share-heading"><span class="t-de">Bulk Project Allocation Flatgrid</span><span class="t-en">Bulk Project Allocation Flatgrid</span></div>
+              <span class="agenda-share-sub t-de">Überblick · Aktionen (u. a. RR, neue Zuweisungen)</span>
+              <span class="agenda-share-sub t-en">Overview · actions (incl. RR, new assignments)</span>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="agenda-share-row">
+        <span class="agenda-share-icon" aria-hidden="true">💬</span>
+        <div class="agenda-share-body">
+          <div class="agenda-share-line">
+            <span class="agenda-share-num">5</span>
+            <div>
+              <div class="agenda-share-heading"><span class="t-de">Fragen &amp; Antworten</span><span class="t-en">Q&amp;A</span></div>
+              <span class="agenda-share-sub t-de">Abschluss · optional Vertiefung zu Reports</span>
+              <span class="agenda-share-sub t-en">Closing · optional report deep-dive</span>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ol>
+    <p class="agenda-share-foot">
+      <span>⏱️ <span class="t-de">ca. 45–60 Min.</span><span class="t-en">approx. 45–60 min</span></span>
+      <span aria-hidden="true">·</span>
+      <span>🔗 <code style="font-size:11px;background:rgba(0,0,0,0.05);padding:2px 8px;border-radius:4px;">trial5.tempus-resource.com/slot4</code></span>
+    </p>
+    <p class="agenda-share-hint">
+      <span class="t-de">💡 Tipp: Seite scrollen, bis nur diese Box sichtbar ist — oder Browser-Vollbild (F11) für eine ruhige Fläche.</span>
+      <span class="t-en">💡 Tip: Scroll until only this card is visible — or use full-screen (F11) for a clean view.</span>
+    </p>
+  </div>
+</div>
+
+<!-- ═══ AGENDA (Detail) ═════════════════════════════════ -->
 <div class="agenda-card">
+  <div class="agenda-card-detail-label"><span class="t-de">Detaillierte Agenda (im Guide)</span><span class="t-en">Detailed agenda (in guide)</span></div>
   <h3><span class="t-de">Agenda — Project Manager Training</span><span class="t-en">Agenda</span></h3>
   <div class="agenda-grid">
     <div class="agenda-item"><span class="agenda-num">1</span><div class="agenda-item-wrap"><span class="t-de">Navigating Tempus</span><span class="t-en">Introduction &amp; Story Setup</span><span class="agenda-item-sub t-de">Orientierung in der App, Kacheln, technische Voraussetzungen (Allocations)</span><span class="agenda-item-sub t-en">Story intro, tiles, Allocations mode</span></div></div>
