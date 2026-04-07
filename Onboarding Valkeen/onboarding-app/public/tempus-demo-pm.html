@@ -87,6 +87,96 @@ body { font-family: 'Inter', -apple-system, sans-serif; font-size: 15px; line-he
 .agenda-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--gray-700); padding: 5px 0; border-bottom: 1px solid var(--gray-200); }
 .agenda-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: var(--navy); color: white; border-radius: 4px; font-size: 11px; font-weight: 700; flex-shrink: 0; }
 
+/* Vollflächige PM-Training-Agenda (eigene „Seite“, nicht im gespeicherten Intro) */
+.agenda-fullpage-wrap {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  min-height: 100vh;
+  padding: 40px max(24px, calc((100vw - 920px) / 2)) 48px;
+  box-sizing: border-box;
+  background: linear-gradient(168deg, #eef2f7 0%, #ffffff 38%, #e5f3f8 100%);
+  border-top: 3px solid var(--navy);
+  border-bottom: 3px solid var(--navy);
+  margin-top: 8px;
+  margin-bottom: 28px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+}
+.agenda-fullpage-inner { max-width: 920px; margin: 0 auto; }
+.agenda-fullpage-kicker {
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--teal); margin-bottom: 10px; text-align: center;
+}
+.agenda-fullpage-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(26px, 4vw, 36px);
+  font-weight: 700;
+  color: var(--navy);
+  text-align: center;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+.agenda-fullpage-sub {
+  text-align: center;
+  font-size: 14px;
+  color: var(--gray-600);
+  margin-bottom: 32px;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+.agenda-fullpage-blocks { display: flex; flex-direction: column; gap: 0; }
+.agenda-fullpage-block {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 16px 20px;
+  align-items: start;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--gray-300);
+}
+.agenda-fullpage-block:last-child { border-bottom: none; }
+.agenda-fullpage-num {
+  width: 48px; height: 48px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--navy), var(--teal));
+  color: white;
+  font-size: 20px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.agenda-fullpage-block h4 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin: 0 0 10px;
+  line-height: 1.3;
+}
+.agenda-fullpage-block ul {
+  margin: 0;
+  padding-left: 1.15em;
+  font-size: 14px;
+  color: var(--gray-700);
+  line-height: 1.65;
+}
+.agenda-fullpage-block li { margin: 4px 0; }
+.agenda-fullpage-footnote {
+  margin-top: 28px;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.75);
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--gray-600);
+  line-height: 1.55;
+}
+
 /* ── SCENE CARD ──────────────────────────── */
 .scene { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); margin-bottom: 20px; box-shadow: var(--shadow); overflow: hidden; }
 .scene-header { display: flex; align-items: stretch; border-bottom: 1px solid var(--gray-200); }
@@ -592,7 +682,7 @@ input.media-file-input { display: none; }
     <span class="t-en">💬 <strong>Flow per scene:</strong> Say the story intro → click in the tool (follow click path) → speak the feature explanation → pick up Peter's question → impact statement → transition to next scene</span>
   </div>
   <div style="margin-top:12px;padding:12px 14px;background:#fffbeb;border-radius:5px;font-size:12px;color:var(--gray-700);border:1px solid #fcd34d;line-height:1.55;">
-    <span class="t-de"><strong>Moderation (PM Training):</strong> Führen Sie strikt nach der Agenda-Box unten — erst Orientierung, dann Grid/Projekt, dann Single Allocation mit Ressourcenanfragen, dann Bulk Flatgrid. Die orangefarbenen Fragen funktionieren als <strong>Teilnehmerfragen</strong> (analog zu „Peter“). <strong>Wie im Mentor-Feedback:</strong> Agenda zu Beginn zeigen (diese Seite oder separates Dokument im gleichen Fenster) und nach ca. 20 Min. wieder einblenden; Gedanken zu Ende führen, dann Fragen — oder Fragen sammeln (Chat/Ende), je nach Kundenvereinbarung; feste Begriffe einüben (<em>Grid</em>, <em>Single Project Allocation Grid</em>, Ellipsen-Menü, globale Ansichten …).</span>
+    <span class="t-de"><strong>Moderation (PM Training):</strong> Führen Sie strikt nach der <strong>Vollflächigen Agenda</strong> weiter unten auf dieser Seite — erst Orientierung, dann Grid/Projekt, dann Single Allocation mit Ressourcenanfragen, dann Bulk Flatgrid. Die orangefarbenen Fragen funktionieren als <strong>Teilnehmerfragen</strong> (analog zu „Peter“). <strong>Wie im Mentor-Feedback:</strong> Agenda zu Beginn zeigen (diese Seite oder separates Dokument im gleichen Fenster) und nach ca. 20 Min. wieder einblenden; Gedanken zu Ende führen, dann Fragen — oder Fragen sammeln (Chat/Ende), je nach Kundenvereinbarung; feste Begriffe einüben (<em>Grid</em>, <em>Single Project Allocation Grid</em>, Ellipsen-Menü, globale Ansichten …).</span>
     <span class="t-en"><strong>Moderation (PM training):</strong> Follow the agenda card below — orientation first, then grid/project, then single allocation with resource requests, then bulk flatgrid. Orange boxes work as <strong>audience questions</strong> (like “Peter”). <strong>As in mentor feedback:</strong> show the agenda at the start (this page or a separate doc in the same window) and bring it back after ~20 minutes; finish your thought, then take questions — or collect questions (chat/end) per customer agreement; rehearse fixed terms (<em>grid</em>, <em>single project allocation grid</em>, ellipsis menu, global views …).</span>
   </div>
 </div>
@@ -645,52 +735,73 @@ input.media-file-input { display: none; }
   </div>
 </div>
 
-<!-- ═══ AGENDA ═════════════════════════════════ -->
-<div class="agenda-card">
-  <h3><span class="t-de">Agenda</span><span class="t-en">Agenda</span></h3>
-  <p style="margin:0 0 14px;font-size:13px;color:var(--gray-600);line-height:1.5;">
-    <span class="t-de">Fünf Blöcke — von der Orientierung im Tool bis zu Fragen &amp; Antworten. Ideal zum Teilen zu Beginn der Session.</span>
-    <span class="t-en">Five blocks — from finding your way in the app to Q&amp;A. Ideal to share at the start of the session.</span>
-  </p>
-  <div class="agenda-grid">
-    <div class="agenda-item"><span class="agenda-num">1</span><span class="t-de">🧭 Navigating Tempus<br><span style="font-size:12px;font-weight:400;color:var(--gray-600);">Orientierung, Kacheln, technische Basis (Allocations-Modus)</span></span><span class="t-en">🧭 Navigating Tempus<br><span style="font-size:12px;font-weight:400;color:var(--gray-600);">Orientation, tiles, technical setup (Allocations mode)</span></span></div>
-    <div class="agenda-item"><span class="agenda-num">2</span><span class="t-de">🗂️ Project Management Grid<br><span style="font-size:12px;font-weight:400;color:var(--gray-600);">Öffentliche &amp; eigene Views · Projektattribute</span></span><span class="t-en">🗂️ Project Management Grid<br><span style="font-size:12px;font-weight:400;color:var(--gray-600);">Public &amp; custom views · project attributes</span></span></div>
-    <div class="agenda-item"><span class="agenda-num">3</span><span class="t-de">📌 Single Project Allocation<br><span style="font-size:12px;font-weight:400;color:var(--gray-600);">Grid-Überblick · Ressourcenanfragen · Status verfolgen</span></span><span class="t-en">📌 Single Project Allocation<br><span style="font-size:12px;font-weight:400;color:var(--gray-600);">Grid overview · resource requests · follow status</span></span></div>
-    <div class="agenda-item"><span class="agenda-num">4</span><span class="t-de">📊 Bulk Project Allocation Flatgrid<br><span style="font-size:12px;font-weight:400;color:var(--gray-600);">Überblick · Aktionen (u. a. RR, neue Zuweisungen)</span></span><span class="t-en">📊 Bulk Project Allocation Flatgrid<br><span style="font-size:12px;font-weight:400;color:var(--gray-600);">Overview · actions (incl. RR, new assignments)</span></span></div>
-    <div class="agenda-item"><span class="agenda-num">5</span><span class="t-de">💬 Fragen &amp; Antworten<br><span style="font-size:12px;font-weight:400;color:var(--gray-600);">Abschluss · optional Vertiefung zu Reports</span></span><span class="t-en">💬 Q&amp;A<br><span style="font-size:12px;font-weight:400;color:var(--gray-600);">Closing · optional report deep-dive</span></span></div>
-  </div>
-  <p style="margin:14px 0 0;font-size:12px;color:var(--gray-500);line-height:1.5;padding:10px 12px;background:var(--gray-100);border-radius:6px;">
-    <span class="t-de"><strong>Vertiefung in diesem Guide (nicht Teil der 5 Hauptpunkte der Agenda-Folie):</strong> Szenen 06 (<em>Project Allocation Grid</em> — drei Modi), 09/10 (<em>Plan vs. Actual · RAR2</em>) — für Management-Reports und Portfolio-Sicht.</span>
-    <span class="t-en"><strong>Optional deep-dive in this guide (not the 5 main agenda bullets):</strong> Scenes 06 (Project Allocation Grid — three modes), 09–10 (reports) — extend the core training flow when time allows.</span>
-  </p>
-  <p style="margin:10px 0 0;font-size:12px;color:var(--gray-500);font-style:italic;">
-    <span class="t-de">⏱️ ca. 45–60 Min. · 🔗 <code>trial5.tempus-resource.com/slot4</code></span>
-    <span class="t-en">⏱️ approx. 45–60 min · 🔗 <code>trial5.tempus-resource.com/slot4</code></span>
-  </p>
 </div>
 
-<!-- ═══ AGENDA-DETAIL (Guide) ═══════════════════ -->
-<div class="box box-context" style="margin-bottom:16px;">
-  <div class="box-header"><span class="box-icon">📋</span><span class="t-de">Detaillierte Agenda (im Guide)</span><span class="t-en">Detailed agenda (in guide)</span></div>
-  <div class="box-body" style="font-size:13px;line-height:1.6;color:var(--gray-700);">
-    <table style="width:100%;border-collapse:collapse;font-size:13px;">
-      <thead>
-        <tr style="border-bottom:1px solid var(--gray-300);text-align:left;">
-          <th style="padding:6px 8px;width:36px;"></th>
-          <th style="padding:6px 8px;"><span class="t-de">Agenda — Project Manager Training</span><span class="t-en">Agenda — Project Manager Training</span></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td style="padding:8px;vertical-align:top;font-weight:700;">1</td><td style="padding:8px;"><span class="t-de"><strong>Navigating Tempus</strong> — Szene 01 · Story &amp; Erwartung · Orientierung (Kacheln, Logo, Suche, Menü)</span><span class="t-en"><strong>Navigating Tempus</strong> — scene 01 · story &amp; expectations · orientation (tiles, logo, search, menu)</span></td></tr>
-        <tr style="background:#f8fafc;"><td style="padding:8px;vertical-align:top;font-weight:700;">2</td><td style="padding:8px;"><span class="t-de"><strong>Project Management Grid</strong> — Projekt anlegen &amp; Views · View-Management (öffentliche &amp; benutzerdefinierte Views) · Projektattribute (Szene 02 + 08)</span><span class="t-en"><strong>Project Management Grid</strong> — create project &amp; views · view management · project attributes (scenes 02 &amp; 08)</span></td></tr>
-        <tr><td style="padding:8px;vertical-align:top;font-weight:700;">3</td><td style="padding:8px;"><span class="t-de"><strong>Single Project Allocation</strong> — Grid-Überblick · Ressourcenanfragen erstellen · Status Ressourcenanfragen (Szenen 03–05)</span><span class="t-en"><strong>Single Project Allocation</strong> — grid overview · create resource requests · request status (scenes 03–05)</span></td></tr>
-        <tr style="background:#f8fafc;"><td style="padding:8px;vertical-align:top;font-weight:700;">4</td><td style="padding:8px;"><span class="t-de"><strong>Bulk Project Allocation Flatgrid</strong> — Grid-Überblick · Aktionen: Status RR, RR anlegen, neue Zuweisungen (Szene 07; optional Szene 06 Portfolio-Grid)</span><span class="t-en"><strong>Bulk Flatgrid</strong> — overview · actions: RR status, create RR, new assignments (scene 07; optional scene 06)</span></td></tr>
-        <tr><td style="padding:8px;vertical-align:top;font-weight:700;">5</td><td style="padding:8px;"><span class="t-de"><strong>Q&amp;A</strong> — Abschluss, Fragen, optional Reports aus Szene 09/10 nachziehen</span><span class="t-en"><strong>Q&amp;A</strong> — closing; optional reports from scenes 09/10</span></td></tr>
-      </tbody>
-    </table>
+<!-- ═══ PM TRAINING AGENDA — Vollflächig (nicht im gespeicherten Intro) ═══ -->
+<div class="agenda-fullpage-wrap" id="pm-training-agenda">
+  <div class="agenda-fullpage-inner">
+    <p class="agenda-fullpage-kicker"><span class="t-de">Project-Manager-Schulung (PM Training)</span><span class="t-en">Project Manager Training</span></p>
+    <h2 class="agenda-fullpage-title"><span class="t-de">Agenda — Schulungsablauf</span><span class="t-en">Agenda — training flow</span></h2>
+    <p class="agenda-fullpage-sub">
+      <span class="t-de">Entspricht der offiziellen PM-Training-Folie: fünf Blöcke in dieser Reihenfolge. Zum Teilen in Vollbild oder mit ausreichend Scroll — eine „eigene Seite“ im Dokument.</span>
+      <span class="t-en">Matches the official PM training slide: five blocks in this order. Share fullscreen or scroll — a dedicated “page” in the guide.</span>
+    </p>
+    <div class="agenda-fullpage-blocks">
+      <div class="agenda-fullpage-block">
+        <div class="agenda-fullpage-num">1</div>
+        <div>
+          <h4><span class="t-de">Navigation in Tempus</span><span class="t-en">Navigating Tempus</span></h4>
+          <ul>
+            <li><span class="t-de">Orientierung im System: Kacheln, Navigation, technische Basis (z. B. Allocations-Modus).</span><span class="t-en">Orientation: tiles, navigation, technical setup (e.g. Allocations mode).</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="agenda-fullpage-block">
+        <div class="agenda-fullpage-num">2</div>
+        <div>
+          <h4><span class="t-de">Projektmanagement-Grid</span><span class="t-en">Project Management Grid</span></h4>
+          <ul>
+            <li><span class="t-de"><strong>View-Management</strong> — öffentliche Views &amp; benutzerdefinierte Views (Custom Views).</span><span class="t-en"><strong>View management</strong> — public views &amp; custom views.</span></li>
+            <li><span class="t-de"><strong>Projektattribute</strong> ansehen (und je nach Setup bearbeiten).</span><span class="t-en"><strong>Project attributes</strong> — view (and edit if in scope).</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="agenda-fullpage-block">
+        <div class="agenda-fullpage-num">3</div>
+        <div>
+          <h4><span class="t-de">Einzelprojekt-Allokation (Single Project Allocation)</span><span class="t-en">Single Project Allocation</span></h4>
+          <ul>
+            <li><span class="t-de"><strong>Grid-Überblick</strong></span><span class="t-en"><strong>Grid overview</strong></span></li>
+            <li><span class="t-de"><strong>Ressourcenanfragen erstellen</strong> (Resource Requests)</span><span class="t-en"><strong>Creating resource requests</strong></span></li>
+            <li><span class="t-de"><strong>Status von Ressourcenanfragen</strong> einsehen / nachverfolgen</span><span class="t-en"><strong>Viewing resource request status</strong></span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="agenda-fullpage-block">
+        <div class="agenda-fullpage-num">4</div>
+        <div>
+          <h4><span class="t-de">Massen-Allokation — Flatgrid (Bulk Project Allocation)</span><span class="t-en">Bulk Project Allocation Flatgrid</span></h4>
+          <ul>
+            <li><span class="t-de"><strong>Grid-Überblick</strong></span><span class="t-en"><strong>Grid overview</strong></span></li>
+            <li><span class="t-de"><strong>Aktionen:</strong> (i) Status von Ressourcenanfragen · (ii) Ressourcenanfragen anlegen · (iii) neue Zuweisungen hinzufügen</span><span class="t-en"><strong>Actions:</strong> (i) resource request status · (ii) create resource requests · (iii) add new assignments</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="agenda-fullpage-block">
+        <div class="agenda-fullpage-num">5</div>
+        <div>
+          <h4><span class="t-de">Fragen &amp; Antworten</span><span class="t-en">Q&amp;A</span></h4>
+          <ul>
+            <li><span class="t-de">Abschluss der Session; optional Vertiefung zu Reports (Szenen 09/10 in diesem Guide).</span><span class="t-en">Closing; optional report deep-dive (scenes 09/10).</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="agenda-fullpage-footnote">
+      <span class="t-de"><strong>Vertiefung im Guide (nicht auf der Agenda-Folie):</strong> Szenen 06 (<em>Project Allocation Grid</em> — drei Modi), 09/10 (<em>Plan vs. Actual · RAR2</em>). ⏱️ ca. 45–60 Min. · 🔗 <code>trial5.tempus-resource.com/slot4</code></span>
+      <span class="t-en"><strong>Deep dive in this guide (not on the slide):</strong> Scene 06 (three grid modes), 09–10 (reports). ⏱️ approx. 45–60 min · 🔗 <code>trial5.tempus-resource.com/slot4</code></span>
+    </div>
   </div>
-</div>
-
 </div>
 
 <!-- ══════════════════════════════════════════════
@@ -814,13 +925,21 @@ input.media-file-input { display: none; }
     <div class="box box-click">
       <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Was klicken</span><span class="t-en">What to click</span></div>
       <div class="box-body">
+        <p style="font-size:12px;color:var(--gray-600);margin:0 0 12px;line-height:1.5;">
+          <span class="t-de"><strong>Hinweis (DE):</strong> In der deutschen Ansicht sind alle Moderationszeilen durchgehend auf Deutsch. Produktbezeichnungen in Tempus (Kachel- und Feldnamen) bleiben wie im System.</span>
+          <span class="t-en"><strong>Note:</strong> Tempus UI labels stay as in the product; presenter lines are fully translated in each language.</span>
+        </p>
         <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de">Kachel</span><span class="t-en">Tile</span> <span class="click-path">Project Management</span> <span class="t-de">öffnen</span><span class="t-en">open</span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="click-path">+ Create</span> <span class="t-de">klicken</span><span class="t-en">click</span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de">Name eingeben:</span><span class="t-en">Enter name:</span> <em>„Project Stardust"</em></div></li>
-          <li><div class="click-step-num">4</div><div><span class="t-de">Startdatum: 01.07.2026 · Enddatum: 31.12.2026</span><span class="t-en">Start date: 01.07.2026 · End date: 31.12.2026</span></div></li>
-          <li><div class="click-step-num">5</div><div><span class="t-de">Weitere Felder erklären (Priority, PMO Owner) — zeigen, dass alles konfigurierbar ist</span><span class="t-en">Explain additional fields (Priority, PMO Owner) — show everything is configurable</span></div></li>
-          <li><div class="click-step-num">6</div><div><span class="click-path">Create</span> <span class="t-de">klicken — Projekt ist jetzt im System</span><span class="t-en">click — project is now in the system</span></div></li>
+          <li><div class="click-step-num">1</div><div><span class="t-de">Kachel <span class="click-path">Project Management</span> öffnen.</span><span class="t-en">Open the <span class="click-path">Project Management</span> tile.</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de"><span class="click-path">+ Create</span> wählen · <strong>Namen eingeben</strong>, z. B. <em>Project DermaCare</em> oder <em>Project Stardust</em> (Ihr Demoprojekt).</span><span class="t-en"><span class="click-path">+ Create</span> · enter project name, e.g. <em>Project DermaCare</em> or <em>Project Stardust</em>.</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">Startdatum: <strong>01.07.2026</strong> · Enddatum: <strong>31.12.2026</strong> (anpassen nach Demo).</span><span class="t-en">Start: <strong>01.07.2026</strong> · end: <strong>31.12.2026</strong> (adjust for your demo).</span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de">Weitere Felder erklären (<strong>Priority</strong>, <strong>PMO Owner</strong> usw.) — zeigen, dass alles <strong>konfigurierbar</strong> ist.</span><span class="t-en">Explain Priority, PMO Owner, etc. — show configurability.</span></div></li>
+          <li><div class="click-step-num">5</div><div><span class="t-de"><span class="click-path">Create</span> / Speichern klicken — <strong>Projekt ist im System</strong>.</span><span class="t-en"><span class="click-path">Create</span> / save — <strong>project exists</strong>.</span></div></li>
+          <li><div class="click-step-num">6</div><div><span class="t-de"><strong>Erklären:</strong> Zuerst planen wir mit <strong>Rollen</strong>; der <strong>Ressourcenmanager</strong> ordnet später die konkreten Namenspersonen zu.</span><span class="t-en"><strong>Say:</strong> We plan with <strong>roles</strong> first; the <strong>resource manager</strong> assigns named people later.</span></div></li>
+          <li><div class="click-step-num">7</div><div><span class="t-de">In der <strong>Single Project Allocation</strong> Ressourcen planen: z. B. insgesamt <strong>80 Stunden pro Monat</strong> · <strong>Reto Renner</strong> und <strong>Jason Kelly</strong> je <strong>40 Stunden/Monat</strong> — <span class="click-path">Create</span> / Speichern (wie in Ihrer Instanz vorgesehen).</span><span class="t-en">In <strong>single project allocation</strong>: e.g. <strong>80 h/month</strong> total · <strong>Reto Renner</strong> and <strong>Jason Kelly</strong> <strong>40 h/month</strong> each — save/create per your instance.</span></div></li>
+          <li><div class="click-step-num">8</div><div><span class="t-de"><strong>Erklären:</strong> Die <strong>Ressourcen sind jetzt angefragt</strong> (Ressourcenanfragen / Resource Requests).</span><span class="t-en"><strong>Say:</strong> <strong>Resources are now requested</strong> (resource requests).</span></div></li>
+          <li><div class="click-step-num">9</div><div><span class="t-de"><strong>Heatmap</strong> aktivieren — <strong>Ressource ersetzen:</strong> z. B. durch <strong>Jean Carter</strong> · <strong>Umverteilen</strong> / <strong>Ersetzen</strong> (Menü je nach Release).</span><span class="t-en">Enable <strong>heatmap</strong> — <strong>replace resource</strong> with e.g. <strong>Jean Carter</strong> · <strong>redistribute</strong> / <strong>replace</strong>.</span></div></li>
+          <li><div class="click-step-num">10</div><div><span class="t-de"><strong>Projektattribute</strong> anzeigen — <strong>Reto Renner</strong> als <strong>Projektleiter (Project Manager)</strong> setzen bzw. bestätigen.</span><span class="t-en">Show <strong>project attributes</strong> — set/confirm <strong>Reto Renner</strong> as <strong>project manager</strong>.</span></div></li>
         </ul>
       </div>
     </div>
@@ -837,7 +956,7 @@ input.media-file-input { display: none; }
         </p>
       </div>
     </div>
-    <div class="transition">→ <span class="t-de">„Das Projekt steht. Jetzt kommt die erste Frage eines jeden Projektleiters: Wer arbeitet daran?"</span><span class="t-en">The project is there. Next question: who's actually working on it?</span></div>
+    <div class="transition">→ <span class="t-de">„Das Projekt steht. Jetzt kommt die erste Frage eines jeden Projektleiters: Wer arbeitet daran?"</span><span class="t-en">„The project is set. Now comes the first question every project manager asks: Who is working on it?"</span></div>
   </div>
 </div>
 
@@ -852,8 +971,8 @@ input.media-file-input { display: none; }
     </div>
     <div class="scene-title-area">
       <div class="scene-act"><span class="t-de">Block 3 · Single Project Allocation</span><span class="t-en">Block 3 · Single Project Allocation</span></div>
-      <div class="scene-title"><span class="t-de">Grid-Überblick — Team, Tasks, erste Stunden</span><span class="t-en">Grid overview — team, tasks, first hours</span></div>
-      <div class="scene-subtitle"><span class="t-de">Ressourcen &amp; Tasks · <strong>Ressourcenanfragen (Resource Requests)</strong> anlegen &amp; Status zeigen, wo im Tool vorgesehen</span><span class="t-en">Resources &amp; tasks · create <strong>resource requests</strong> &amp; show status where the product exposes them</span></div>
+      <div class="scene-title"><span class="t-de">Wer arbeitet woran — und ab wann?</span><span class="t-en">Who works on what — and from when?</span></div>
+      <div class="scene-subtitle"><span class="t-de">Fortsetzung des Klickpfads aus Szene 02 (Single Project Allocation) · optional Vertiefung mit <strong>Tasks</strong> / <strong>Group by Tasks</strong> — siehe Kacheln unten</span><span class="t-en">Continuation of scene 02 click path (single project allocation) · optional deep dive with <strong>tasks</strong> / <strong>group by tasks</strong> — see tiles below</span></div>
     </div>
   </div>
   <div class="scene-tags">
@@ -1652,6 +1771,8 @@ function setLang(lang) {
    EDIT MODE ENGINE
 ═══════════════════════════════════════════════════ */
 const STORAGE_KEY = 'tempus-demo-pm-v1';
+/** Gespeicherte Zustände ohne diese Version ignorieren (verhindert, dass alte AWS-Kopien die neuen Szenen überschreiben). */
+const PM_STATE_SCHEMA_VERSION = 3;
 let editMode = false;
 let dragSrc = null;
 let hasUnsavedChanges = false;
@@ -1756,7 +1877,7 @@ function initInlineEdit() {
   const lang = document.documentElement.classList.contains('lang-de') ? 'de' : 'en';
 
   // 1. Language-specific text: Hero, Intro-Bereich (Guide, Cast, Agenda …), Szenen
-  document.querySelectorAll(`.hero .t-${lang}, #pm-editable-intro .t-${lang}, .scene .t-${lang}`).forEach(el => {
+  document.querySelectorAll(`.hero .t-${lang}, #pm-editable-intro .t-${lang}, #pm-training-agenda .t-${lang}, .scene .t-${lang}`).forEach(el => {
     el.contentEditable = 'true';
     el.spellcheck = false;
     el.setAttribute('data-lang', lang.toUpperCase());
@@ -2034,7 +2155,7 @@ async function saveAll() {
   const scenes = serializeScenes();
   const heroHtml = serializeHeroOrIntro(document.querySelector('.hero'));
   const introHtml = serializeHeroOrIntro(document.querySelector('#pm-editable-intro'));
-  const payload = JSON.stringify({ scenes, heroHtml, introHtml, ts: Date.now() });
+  const payload = JSON.stringify({ scenes, heroHtml, introHtml, ts: Date.now(), schemaVersion: PM_STATE_SCHEMA_VERSION });
 
   let savedToCloud = false;
 
@@ -2101,7 +2222,12 @@ async function loadSaved() {
     } catch (e) { /* ignore */ }
   }
 
-  if (!data || !Array.isArray(data.scenes) || !data.scenes.length) return;
+  if (!data || !Array.isArray(data.scenes)) return;
+  if ((data.schemaVersion || 0) < PM_STATE_SCHEMA_VERSION) {
+    console.info('tempus-demo-pm: Gespeicherter Stand zu alt (schema < ' + PM_STATE_SCHEMA_VERSION + ') — eingebaute HTML-Szenen werden verwendet.');
+    return;
+  }
+  if (!data.scenes.length) return;
 
   // State anwenden
   applyState(data);
@@ -2173,7 +2299,7 @@ function resetAll() {
     fetch(PRESIGNED_PUT_URL, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ scenes: [], ts: Date.now(), reset: true })
+      body: JSON.stringify({ scenes: [], ts: Date.now(), reset: true, schemaVersion: PM_STATE_SCHEMA_VERSION })
     }).catch(() => {});
     localStorage.removeItem(STORAGE_KEY);
     location.reload();
