@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tempus Demo – A Day in the Life: Reto &amp; Peter</title>
+<title>Tempus Demo — PM Training &amp; Story (Reto &amp; Peter)</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
 
@@ -86,6 +86,9 @@ body { font-family: 'Inter', -apple-system, sans-serif; font-size: 15px; line-he
 .agenda-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 28px; }
 .agenda-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--gray-700); padding: 5px 0; border-bottom: 1px solid var(--gray-200); }
 .agenda-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: var(--navy); color: white; border-radius: 4px; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.agenda-item-wrap { flex: 1; min-width: 0; }
+.agenda-item-sub { font-size: 11px; color: var(--gray-500); line-height: 1.45; margin-top: 5px; display: block; }
+.agenda-footnote { grid-column: 1 / -1; font-size: 12px; color: var(--gray-500); padding: 12px 0 4px; border-top: 1px solid var(--gray-200); margin-top: 4px; line-height: 1.5; }
 
 /* ── SCENE CARD ──────────────────────────── */
 .scene { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); margin-bottom: 20px; box-shadow: var(--shadow); overflow: hidden; }
@@ -515,19 +518,19 @@ input.media-file-input { display: none; }
 <!-- ═══ HERO ══════════════════════════════════ -->
 <div class="hero">
   <div class="hero-inner">
-    <div class="hero-eyebrow">🎬 <span class="t-de">Demo-Script mit Story</span><span class="t-en">Story-driven Demo Script</span></div>
+    <div class="hero-eyebrow">🎬 <span class="t-de">PM Training · Demo nach Schulungsagenda</span><span class="t-en">Story-driven Demo Script</span></div>
     <h1 class="hero-title">
-      <span class="t-de">Reto zeigt Peter,<br>warum <span>Tempus</span> alles ändert</span>
+      <span class="t-de"><span>Tempus</span> für Projektmanager —<br>von der Navigation bis zum Bulk Flatgrid</span>
       <span class="t-en">Reto shows Peter<br>why <span>Tempus</span> changes everything</span>
     </h1>
     <p class="hero-subtitle">
-      <span class="t-de">Ein echter Alltag. Zwei Kollegen. Ein neues Projekt als Auslöser. Die vollständige Tempus-Demo als lebendige Geschichte — von der Projektanlage bis zum Bulk Flatgrid.</span>
+      <span class="t-de">Aufbau wie im <strong>Project Manager Training</strong>: Navigating Tempus → Project Management Grid → Single Project Allocation (inkl. Ressourcenanfragen) → Bulk Project Allocation Flatgrid → Q&amp;A. Reto &amp; Peter bleiben der rote Faden; die Szenen sind darauf gemappt — inklusive optionaler Vertiefung (Portfolio-Grid, Reports).</span>
       <span class="t-en">A real working day. Two colleagues. A new project as the trigger. The complete Tempus demo as a living story — from project creation to the Bulk Flatgrid.</span>
     </p>
     <div class="hero-meta">
       <div class="hero-meta-item">⏱️ <span class="t-de">ca. 45–60 Min.</span><span class="t-en">approx. 45–60 min.</span></div>
-      <div class="hero-meta-item">👥 <span class="t-de">Intern &amp; Kunden</span><span class="t-en">Internal &amp; Customers</span></div>
-      <div class="hero-meta-item">📋 <span class="t-de">11 Demo-Schritte</span><span class="t-en">11 demo steps</span></div>
+      <div class="hero-meta-item">👥 <span class="t-de">Schulung &amp; Kunden</span><span class="t-en">Internal &amp; Customers</span></div>
+      <div class="hero-meta-item">📋 <span class="t-de">5 Blöcke + Vertiefungsszenen</span><span class="t-en">11 demo steps</span></div>
       <div class="hero-meta-item"><span class="t-de">🔗 trial5.tempus-resource.com/slot4</span><span class="t-en">🔗 trial5.tempus-resource.com/slot4</span></div>
     </div>
   </div>
@@ -591,6 +594,9 @@ input.media-file-input { display: none; }
     <span class="t-de">💬 <strong>Ablauf pro Szene:</strong> Story-Einstieg sagen → ins Tool klicken (Klickpfad folgen) → Feature-Erklärung sprechen → Peter-Frage aufgreifen → Wirkungssatz → Überleitung zur nächsten Szene</span>
     <span class="t-en">💬 <strong>Flow per scene:</strong> Say the story intro → click in the tool (follow click path) → speak the feature explanation → pick up Peter's question → impact statement → transition to next scene</span>
   </div>
+  <div class="t-de" style="margin-top:12px;padding:10px 14px;background:#f0fdf4;border-radius:5px;font-size:12px;color:var(--gray-700);border:1px solid #86efac;line-height:1.55;">
+    <strong>Moderation (PM Training):</strong> Führen Sie strikt nach der Agenda-Box unten — erst Orientierung, dann Grid/Projekt, dann Single Allocation mit Ressourcenanfragen, dann Bulk Flatgrid. Die orangefarbenen Fragen funktionieren als <strong>Teilnehmerfragen</strong> (analog zu „Peter“). Ohne wörtliche Mentor-Transkription ist dies die verbindliche Struktur; feinjustierung erfolgt beim nächsten Feedback-Termin.
+  </div>
 </div>
 
 <!-- ═══ PRE-DEMO PREP ════════════════════════ -->
@@ -643,19 +649,15 @@ input.media-file-input { display: none; }
 
 <!-- ═══ AGENDA ═════════════════════════════════ -->
 <div class="agenda-card">
-  <h3><span class="t-de">Agenda</span><span class="t-en">Agenda</span></h3>
+  <h3><span class="t-de">Agenda — Project Manager Training</span><span class="t-en">Agenda</span></h3>
   <div class="agenda-grid">
-    <div class="agenda-item"><span class="agenda-num">1</span><span class="t-de">Einleitung &amp; Story-Setup</span><span class="t-en">Introduction &amp; Story Setup</span></div>
-    <div class="agenda-item"><span class="agenda-num">2</span><span class="t-de">Projekt anlegen in Tempus</span><span class="t-en">Creating a project in Tempus</span></div>
-    <div class="agenda-item"><span class="agenda-num">3</span><span class="t-de">Ressourcen zuweisen</span><span class="t-en">Allocating resources</span></div>
-    <div class="agenda-item"><span class="agenda-num">4</span><span class="t-de">Planned Allocation bearbeiten</span><span class="t-en">Planned allocation editing</span></div>
-    <div class="agenda-item"><span class="agenda-num">5</span><span class="t-de">Actual Allocation bearbeiten</span><span class="t-en">Actual allocation editing</span></div>
-    <div class="agenda-item"><span class="agenda-num">6</span><span class="t-de">Project Allocation Grid — Default · Resource · Project</span><span class="t-en">Project Allocation Grid — Default · Resource · Project</span></div>
-    <div class="agenda-item"><span class="agenda-num">7</span><span class="t-de">Bulk Project Allocation Flatgrid</span><span class="t-en">Bulk Project Allocation Flatgrid</span></div>
-    <div class="agenda-item"><span class="agenda-num">8</span><span class="t-de">Views &amp; Szenarien speichern</span><span class="t-en">Views &amp; saving scenarios</span></div>
-    <div class="agenda-item"><span class="agenda-num">9</span><span class="t-de">Plan vs. Actual Report</span><span class="t-en">Planned vs. Actual Report</span></div>
-    <div class="agenda-item"><span class="agenda-num">10</span><span class="t-de">RAR2 Charts</span><span class="t-en">RAR2 Charts</span></div>
-    <div class="agenda-item"><span class="agenda-num">11</span><span class="t-de">Feedback &amp; Q&amp;A</span><span class="t-en">Feedback &amp; Q&amp;A</span></div>
+    <div class="agenda-item"><span class="agenda-num">1</span><div class="agenda-item-wrap"><span class="t-de">Navigating Tempus</span><span class="t-en">Introduction &amp; Story Setup</span><span class="agenda-item-sub t-de">Orientierung in der App, Kacheln, technische Voraussetzungen (Allocations)</span><span class="agenda-item-sub t-en">Story intro, tiles, Allocations mode</span></div></div>
+    <div class="agenda-item"><span class="agenda-num">2</span><div class="agenda-item-wrap"><span class="t-de">Project Management Grid</span><span class="t-en">Creating a project &amp; views</span><span class="agenda-item-sub t-de">View-Management — öffentliche &amp; benutzerdefinierte Views · Projektattribute ansehen (Szene 02 + 08)</span><span class="agenda-item-sub t-en">Public &amp; custom views · project attributes (scenes 02 &amp; 08)</span></div></div>
+    <div class="agenda-item"><span class="agenda-num">3</span><div class="agenda-item-wrap"><span class="t-de">Single Project Allocation</span><span class="t-en">Single Project Allocation</span><span class="agenda-item-sub t-de">Grid-Überblick · Ressourcenanfragen erstellen · Status Ressourcenanfragen (Szenen 03–05)</span><span class="agenda-item-sub t-en">Grid overview · resource requests · status (scenes 03–05)</span></div></div>
+    <div class="agenda-item"><span class="agenda-num">4</span><div class="agenda-item-wrap"><span class="t-de">Bulk Project Allocation Flatgrid</span><span class="t-en">Bulk Project Allocation Flatgrid</span><span class="agenda-item-sub t-de">Grid-Überblick · Aktionen: Status RR, RR anlegen, neue Zuweisungen (Szene 07; optional Szene 06 Portfolio-Grid)</span><span class="agenda-item-sub t-en">Grid overview · actions: RR status, create RR, add assignments (scene 07)</span></div></div>
+    <div class="agenda-item"><span class="agenda-num">5</span><div class="agenda-item-wrap"><span class="t-de">Q&amp;A</span><span class="t-en">Feedback &amp; Q&amp;A</span><span class="agenda-item-sub t-de">Abschluss, Fragen, optional Reports aus Szene 09/10 nachziehen</span><span class="agenda-item-sub t-en">Closing; optional deep-dive reports</span></div></div>
+    <div class="agenda-footnote t-de"><strong>Vertiefung in diesem Guide (nicht Teil der 5 Hauptpunkte der Agenda-Folie):</strong> Szenen 06 (<em>Project Allocation Grid</em> — drei Modi), 09/10 (<em>Plan vs. Actual · RAR2</em>) — für Management-Reports und Portfolio-Sicht.</div>
+    <div class="agenda-footnote t-en"><strong>Optional deep-dive in this guide:</strong> Scenes 06 (Project Allocation Grid), 09–10 (reports) — extend the core training flow when time allows.</div>
   </div>
 </div>
 
@@ -671,9 +673,9 @@ input.media-file-input { display: none; }
       <div class="scene-num-label">Intro</div>
     </div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Einleitung</span><span class="t-en">Introduction</span></div>
-      <div class="scene-title"><span class="t-de">Eine neue Art, Tempus zu erleben</span><span class="t-en">A new way to experience Tempus</span></div>
-      <div class="scene-subtitle"><span class="t-de">Storytelling statt Produktpräsentation — Peter nimmt am Geschehen teil</span><span class="t-en">Storytelling instead of product slides — Peter takes part in the story</span></div>
+      <div class="scene-act"><span class="t-de">Block 1 · Navigating Tempus</span><span class="t-en">Introduction</span></div>
+      <div class="scene-title"><span class="t-de">Einleitung — Orientierung &amp; roter Faden</span><span class="t-en">A new way to experience Tempus</span></div>
+      <div class="scene-subtitle"><span class="t-de">Startseite &amp; Erwartung setzen · Story mit Reto &amp; Peter · optional ohne Story sachlich einsteigen</span><span class="t-en">Storytelling instead of product slides — Peter takes part in the story</span></div>
     </div>
   </div>
   <div class="scene-body">
@@ -734,9 +736,9 @@ input.media-file-input { display: none; }
       <div class="scene-num-label"><span class="t-de">Projekt</span><span class="t-en">Project</span></div>
     </div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Projekt anlegen</span><span class="t-en">Creating a project</span></div>
-      <div class="scene-title"><span class="t-de">„Ich lege es einfach direkt an — sieh selbst."</span><span class="t-en">"I'll just set it up right now — watch."</span></div>
-      <div class="scene-subtitle"><span class="t-de">Project Management · Create Project · Name, Datum, Felder</span><span class="t-en">Project Management · Create Project · Name, dates, fields</span></div>
+      <div class="scene-act"><span class="t-de">Block 2 · Project Management Grid (Teil 1)</span><span class="t-en">Creating a project</span></div>
+      <div class="scene-title"><span class="t-de">Projekt anlegen — „Ich lege es einfach direkt an — sieh selbst."</span><span class="t-en">"I'll just set it up right now — watch."</span></div>
+      <div class="scene-subtitle"><span class="t-de">Project Management · Create Project · <strong>Projektattribute</strong> (Name, Datum, PMO-Felder, Custom Fields)</span><span class="t-en">Project Management · Create Project · Name, dates, fields</span></div>
     </div>
   </div>
   <div class="scene-tags">
@@ -805,9 +807,9 @@ input.media-file-input { display: none; }
       <div class="scene-num-label"><span class="t-de">Ressourcen</span><span class="t-en">Resources</span></div>
     </div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Ressourcen &amp; Tasks</span><span class="t-en">Resources &amp; Tasks</span></div>
-      <div class="scene-title"><span class="t-de">Wer arbeitet woran — und ab wann?</span><span class="t-en">Who works on what — and when?</span></div>
-      <div class="scene-subtitle"><span class="t-de">Ressourcen hinzufügen · Tasks anlegen · Task-First-View erklären</span><span class="t-en">Add resources · create tasks · explain task-first view</span></div>
+      <div class="scene-act"><span class="t-de">Block 3 · Single Project Allocation</span><span class="t-en">Resources &amp; Tasks</span></div>
+      <div class="scene-title"><span class="t-de">Grid-Überblick — Team, Tasks, erste Stunden</span><span class="t-en">Who works on what — and when?</span></div>
+      <div class="scene-subtitle"><span class="t-de">Ressourcen &amp; Tasks · <strong>Ressourcenanfragen (Resource Requests)</strong> anlegen &amp; Status zeigen, wo im Tool vorgesehen</span><span class="t-en">Add resources · create tasks · explain task-first view</span></div>
     </div>
   </div>
   <div class="scene-tags">
@@ -828,6 +830,13 @@ input.media-file-input { display: none; }
           <li><div class="click-step-num">6</div><div><span class="t-de">Stunden je Task und Monat eintragen</span><span class="t-en">Enter 20h in November for Eric on Requirements (concrete example)</span></div></li>
         </ul>
         <p class="optional-inline"><span class="t-de">(optional) Nur wenn Zeit: Tag-Ansicht oder Zusatzfelder zeigen.</span><span class="t-en">(optional) Day view or extra fields — only if time or asked.</span></p>
+      </div>
+    </div>
+    <div class="box box-tip">
+      <div class="box-header"><span class="box-icon">📋</span><span class="t-de">Schulungsagenda: Ressourcenanfragen</span><span class="t-en">Resource requests (training)</span></div>
+      <div class="box-body">
+        <span class="t-de">Im PM Training gehören dazu: <strong>Ressourcenanfragen erstellen</strong> und den <strong>Status von Resource Requests</strong> zeigen — dort, wo Ihre Instanz das vorsieht (Menüs/Buttons können je nach Release leicht abweichen). Ordnen Sie die Demo so, dass mindestens einmal klar wird: Anfrage auslösen → Status nachverfolgen.</span>
+        <span class="t-en">Per the PM training agenda: create resource requests and show request status where your instance exposes them (labels may vary by release).</span>
       </div>
     </div>
     <div class="box box-story">
@@ -880,9 +889,9 @@ input.media-file-input { display: none; }
       <div class="scene-num-label">Planned</div>
     </div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Planned Allocation bearbeiten</span><span class="t-en">Planned allocation editing</span></div>
+      <div class="scene-act"><span class="t-de">Block 3 · Single Project Allocation (Plan)</span><span class="t-en">Planned allocation editing</span></div>
       <div class="scene-title"><span class="t-de">Der Plan verändert sich — und das ist normal</span><span class="t-en">Adjust plan (reality changed)</span></div>
-      <div class="scene-subtitle"><span class="t-de">Checkout · Stunden anpassen · Monat / Woche / Tag · Planned vs. Actual</span><span class="t-en">Checkout · adjust hours · month / week / day · Planned vs. Actual</span></div>
+      <div class="scene-subtitle"><span class="t-de">Checkout · Stunden anpassen · Monat / Woche / Tag · Planned vs. Actual · <strong>RR-Status</strong> im Blick behalten</span><span class="t-en">Checkout · adjust hours · month / week / day · Planned vs. Actual</span></div>
     </div>
   </div>
   <div class="scene-tags">
@@ -962,9 +971,9 @@ input.media-file-input { display: none; }
       <div class="scene-num-label">Actual</div>
     </div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Actual Allocation</span><span class="t-en">Actual Allocation</span></div>
+      <div class="scene-act"><span class="t-de">Block 3 · Single Project Allocation (Ist)</span><span class="t-en">Actual Allocation</span></div>
       <div class="scene-title"><span class="t-de">Was geplant war — und was wirklich passiert ist</span><span class="t-en">Truth vs. plan (while you can still react)</span></div>
-      <div class="scene-subtitle"><span class="t-de">Actual-Ansicht · Task-Ebene · Plan vs. Ist-Vergleich live</span><span class="t-en">Actual view · task level · live plan vs. actual comparison</span></div>
+      <div class="scene-subtitle"><span class="t-de">Actual-Ansicht · Task-Ebene · Plan vs. Ist — Abgleich zu Ressourcenanfragen / Kapazität kurz erwähnen</span><span class="t-en">Actual view · task level · live plan vs. actual comparison</span></div>
     </div>
   </div>
   <div class="scene-tags">
@@ -1032,9 +1041,9 @@ input.media-file-input { display: none; }
       <div class="scene-num-label">Grid</div>
     </div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Project Allocation Grid</span><span class="t-en">Project Allocation Grid</span></div>
+      <div class="scene-act"><span class="t-de">Vertiefung · Project Allocation Grid</span><span class="t-en">Project Allocation Grid</span></div>
       <div class="scene-title"><span class="t-de">Drei Perspektiven — ein Grid</span><span class="t-en">Same data — three perspectives</span></div>
-      <div class="scene-subtitle"><span class="t-de">Default · Resource · Project Mode · Zeitrahmen steuert Sicht</span><span class="t-en">Default · Resource · Project Mode · Timeframe controls visibility</span></div>
+      <div class="scene-subtitle"><span class="t-de">Optional nach Block 3 · Default · Resource · Project · Überlastung portfolio-weit</span><span class="t-en">Default · Resource · Project Mode · Timeframe controls visibility</span></div>
     </div>
   </div>
   <div class="scene-tags">
@@ -1117,9 +1126,9 @@ input.media-file-input { display: none; }
       <div class="scene-num-label">Flatgrid</div>
     </div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Das beliebteste Feature</span><span class="t-en">Where most people actually work</span></div>
-      <div class="scene-title">Bulk Project Allocation Flatgrid</div>
-      <div class="scene-subtitle"><span class="t-de">Heatmap · Notes · Planned/Actual · Quicklink · Grid Options</span><span class="t-en">Heatmap · Notes · Planned/Actual · Quicklink · Grid Options</span></div>
+      <div class="scene-act"><span class="t-de">Block 4 · Bulk Project Allocation Flatgrid</span><span class="t-en">Where most people actually work</span></div>
+      <div class="scene-title"><span class="t-de">Bulk Flatgrid — Grid-Überblick &amp; Aktionen</span><span class="t-en">Bulk Project Allocation Flatgrid</span></div>
+      <div class="scene-subtitle"><span class="t-de">Heatmap · Notes · Planned/Actual · Quicklink · <strong>Aktionen:</strong> RR-Status, Ressourcenanfragen, neue Zuweisungen</span><span class="t-en">Heatmap · Notes · Planned/Actual · Quicklink · Grid Options</span></div>
     </div>
   </div>
   <div class="scene-tags">
@@ -1139,6 +1148,9 @@ input.media-file-input { display: none; }
           <li><div class="click-step-num">3</div><div><span class="t-de"><strong>Notes:</strong> Assignment → Notes-Feld → Text → <em>Save</em></span><span class="t-en"><strong>Notes:</strong> assignment → Notes → type → <em>Save</em></span></div></li>
           <li><div class="click-step-num">4</div><div><span class="t-de"><strong>Planned / Actual</strong> umschalten</span><span class="t-en"><strong>Planned / Actual</strong> toggle</span></div></li>
           <li><div class="click-step-num">5</div><div><span class="t-de"><strong>Quicklink</strong> zu Assignment-Details</span><span class="t-en"><strong>Quicklink</strong> → assignment detail</span></div></li>
+          <li><div class="click-step-num">6</div><div><span class="t-de"><strong>Agenda — Aktionen:</strong> Status von Ressourcenanfragen einblenden bzw. nachverfolgen (wo die Instanz das anbietet)</span><span class="t-en"><strong>Training agenda — actions:</strong> show or follow resource-request status (where available)</span></div></li>
+          <li><div class="click-step-num">7</div><div><span class="t-de"><strong>Ressourcenanfrage</strong> aus dem Bulk-Kontext heraus auslösen — falls vorgesehen</span><span class="t-en"><strong>Create resource request</strong> from bulk context if supported</span></div></li>
+          <li><div class="click-step-num">8</div><div><span class="t-de"><strong>Neue Zuweisungen</strong> ergänzen (Add new assignments) — kurz zeigen, ohne jedes Menü zu öffnen</span><span class="t-en"><strong>Add new assignments</strong> — show briefly without every submenu</span></div></li>
         </ul>
       </div>
     </div>
@@ -1196,9 +1208,9 @@ input.media-file-input { display: none; }
       <div class="scene-num-label">Views</div>
     </div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Views &amp; Szenarien</span><span class="t-en">Views &amp; Scenarios</span></div>
-      <div class="scene-title"><span class="t-de">Einmal einrichten — jeden Montag nutzen</span><span class="t-en">Set it up once — use it every Monday</span></div>
-      <div class="scene-subtitle"><span class="t-de">Neue View · Lock · Favorit · Views arrangieren</span><span class="t-en">New view · lock · favourite · arrange views</span></div>
+      <div class="scene-act"><span class="t-de">Block 2 · Project Management Grid (Teil 2)</span><span class="t-en">Views &amp; Scenarios</span></div>
+      <div class="scene-title"><span class="t-de">View-Management — öffentliche &amp; eigene Views</span><span class="t-en">Set it up once — use it every Monday</span></div>
+      <div class="scene-subtitle"><span class="t-de">Neue View · Lock · Favorit · Arrangieren · <strong>Custom vs. Public</strong> im Gespräch benennen</span><span class="t-en">New view · lock · favourite · arrange views</span></div>
     </div>
   </div>
   <div class="scene-tags">
@@ -1272,9 +1284,9 @@ input.media-file-input { display: none; }
       <div class="scene-num-label">Reports</div>
     </div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Plan vs. Actual · RAR2 Charts</span><span class="t-en">Plan vs. Actual · RAR2 Charts</span></div>
-      <div class="scene-title"><span class="t-de">Aus Daten werden Entscheidungen</span><span class="t-en">Data becomes decisions</span></div>
-      <div class="scene-subtitle"><span class="t-de">PMO-Sicht vs. Management-Sicht · Pivot · Barchart · Capacity</span><span class="t-en">PMO view vs. management view · Pivot · Barchart · Capacity</span></div>
+      <div class="scene-act"><span class="t-de">Vertiefung · Reports (nach Bedarf)</span><span class="t-en">Plan vs. Actual · RAR2 Charts</span></div>
+      <div class="scene-title"><span class="t-de">Plan vs. Actual · RAR2 — aus Daten werden Entscheidungen</span><span class="t-en">Data becomes decisions</span></div>
+      <div class="scene-subtitle"><span class="t-de">Optional vor oder nach Block 5 (Q&amp;A) · PMO vs. Management · Kapazität</span><span class="t-en">PMO view vs. management view · Pivot · Barchart · Capacity</span></div>
     </div>
   </div>
   <div class="scene-tags">
@@ -1455,7 +1467,7 @@ input.media-file-input { display: none; }
      CLOSING – SZENE 13
 ══════════════════════════════════════════════ -->
 <div class="closing">
-  <h2><span class="t-de">Peters Fazit — und die Bekehrung</span><span class="t-en">Peter's verdict — and the conversion</span></h2>
+  <h2><span class="t-de">Block 5 · Q&amp;A — Abschluss &amp; Peters Fazit</span><span class="t-en">Peter's verdict — and the conversion</span></h2>
   <div class="story-hook" style="margin-bottom:20px;border-radius:6px;overflow:hidden;">
     <div class="story-hook-header" style="background:rgba(0,0,0,0.35);font-size:13px;color:white;">📖 <span class="t-de">Der letzte Story-Moment</span><span class="t-en">The final story moment</span></div>
     <div class="story-hook-body" style="background:rgba(0,0,0,0.25);color:#e2e8f0;border-left-color:#7dd3e8;">
@@ -1493,17 +1505,17 @@ input.media-file-input { display: none; }
         </tr>
       </thead>
       <tbody>
-        <tr><td>01</td><td><span class="t-de">Intro</span><span class="t-en">Intro</span></td><td><span class="t-de">Publikum als Peter einladen</span><span class="t-en">Invite audience to be Peter</span></td><td>–</td></tr>
-        <tr><td>02</td><td><span class="t-de">Projekt anlegen</span><span class="t-en">Create project</span></td><td><span class="t-de">„30 Sekunden bis zum steuerbaren Rahmen"</span><span class="t-en">"30 seconds to a manageable framework"</span></td><td><code>PM Tile → Create</code></td></tr>
-        <tr><td>03</td><td><span class="t-de">Ressourcen</span><span class="t-en">Resources</span></td><td><span class="t-de">„Task-Level = Verantwortung"</span><span class="t-en">"Task level = accountability"</span></td><td><code>Group by Tasks → Tasks anlegen</code></td></tr>
-        <tr><td>04</td><td>Planned</td><td><span class="t-de">„Checkout + Planned/Actual/Remaining"</span><span class="t-en">"Checkout + Planned/Actual/Remaining"</span></td><td><code>Check out → Monat/Woche/Tag</code></td></tr>
-        <tr><td>05</td><td>Actual</td><td><span class="t-de">„Planwerte = Absicht. Ist = Wahrheit."</span><span class="t-en">"Plan = intent. Actual = truth."</span></td><td><code>Actual View → Task-Ebene</code></td></tr>
-        <tr><td>06</td><td><span class="t-de">Project Allocation Grid</span><span class="t-en">Project Allocation Grid</span></td><td><span class="t-de">„Default → Assignment-Lock · Resource → Simon Wespi · Project → Stardust"</span><span class="t-en">"Default → Assignment lock · Resource → Simon Wespi · Project → Stardust"</span></td><td><code>Grid Tile → Default → Resource → Project</code></td></tr>
-        <tr><td>07</td><td>Flatgrid</td><td><span class="t-de">„Beliebtestes Feature — Notes, Heatmap, Quicklink"</span><span class="t-en">"Most popular feature — Notes, Heatmap, Quicklink"</span></td><td><code>Bulk Flatgrid Tile → Grid Options</code></td></tr>
-        <tr><td>08</td><td>Views</td><td><span class="t-de">„Lock + Favorit + Arrangieren"</span><span class="t-en">"Lock + Favourite + Arrange"</span></td><td><code>New View → Q1 2027 → Amber, Apollo</code></td></tr>
-        <tr><td>09</td><td>Planned vs. Actual</td><td><span class="t-de">Marc: +18% Mehraufwand → Frühwarnung</span><span class="t-en">Marc: +18% overrun → early warning</span></td><td><code>Report Mgmt → Plan vs. Actual → Stardust, Feb–Mär</code></td></tr>
-        <tr><td>10</td><td>RAR2 Charts</td><td><span class="t-de">Marc 12h/d = Stardust + Apollo → Ressourcenkonflikt rot</span><span class="t-en">Marc 12h/d = Stardust + Apollo → resource conflict in red</span></td><td><code>RAR2 → Q1 2026, Projekte Stardust + Apollo</code></td></tr>
-        <tr><td>11</td><td>Q&amp;A</td><td><span class="t-de">Peters Bekehrung als natürlichen Abschluss nutzen</span><span class="t-en">Use Peter's conversion as natural close</span></td><td>–</td></tr>
+        <tr><td>01</td><td><span class="t-de">Navigating Tempus</span><span class="t-en">Intro</span></td><td><span class="t-de">Agenda vorweg · Publikum einladen</span><span class="t-en">Invite audience to be Peter</span></td><td>–</td></tr>
+        <tr><td>02</td><td><span class="t-de">PM Grid (Projekt)</span><span class="t-en">Create project</span></td><td><span class="t-de">Projektattribute · schneller Projektstart</span><span class="t-en">"30 seconds to a manageable framework"</span></td><td><code>PM Tile → Create</code></td></tr>
+        <tr><td>03</td><td><span class="t-de">Single SPA + RR</span><span class="t-en">Resources</span></td><td><span class="t-de">Grid · Tasks · Ressourcenanfragen</span><span class="t-en">"Task level = accountability"</span></td><td><code>Group by Tasks → Tasks → RR</code></td></tr>
+        <tr><td>04</td><td><span class="t-de">Single SPA (Plan)</span><span class="t-en">Planned</span></td><td><span class="t-de">Checkout · Plan anpassen · RR-Status</span><span class="t-en">"Checkout + Planned/Actual/Remaining"</span></td><td><code>Check out → Zellen</code></td></tr>
+        <tr><td>05</td><td><span class="t-de">Single SPA (Ist)</span><span class="t-en">Actual</span></td><td><span class="t-de">Ist auf Task-Ebene</span><span class="t-en">"Plan = intent. Actual = truth."</span></td><td><code>Actual → Task</code></td></tr>
+        <tr><td>06</td><td><span class="t-de">Vertiefung PAG</span><span class="t-en">Project Allocation Grid</span></td><td><span class="t-de">Drei Modi · Assignment-Lock</span><span class="t-en">"Default → Assignment lock · Resource → Simon Wespi · Project → Stardust"</span></td><td><code>Grid Tile → Default → Resource → Project</code></td></tr>
+        <tr><td>07</td><td><span class="t-de">Bulk Flatgrid</span><span class="t-en">Flatgrid</span></td><td><span class="t-de">Aktionen: RR, Zuweisungen, Heatmap</span><span class="t-en">"Most popular feature — Notes, Heatmap, Quicklink"</span></td><td><code>Bulk Tile → Options → Aktionen</code></td></tr>
+        <tr><td>08</td><td><span class="t-de">PM Grid (Views)</span><span class="t-en">Views</span></td><td><span class="t-de">Public/Custom · Lock · Favorit</span><span class="t-en">"Lock + Favourite + Arrange"</span></td><td><code>New View → Q1 2027 → Amber, Apollo</code></td></tr>
+        <tr><td>09</td><td><span class="t-de">Report PvA</span><span class="t-en">Planned vs. Actual</span></td><td><span class="t-de">Marc +18% · optional</span><span class="t-en">Marc: +18% overrun → early warning</span></td><td><code>Report Mgmt → Plan vs. Actual</code></td></tr>
+        <tr><td>10</td><td><span class="t-de">Report RAR2</span><span class="t-en">RAR2 Charts</span></td><td><span class="t-de">Überlastung rot · optional</span><span class="t-en">Marc 12h/d → red</span></td><td><code>RAR2 → Filter</code></td></tr>
+        <tr><td>—</td><td><span class="t-de">Q&amp;A Block 5</span><span class="t-en">Q&amp;A</span></td><td><span class="t-de">Fragen · Fazit · Peters Schlusswort</span><span class="t-en">Use Peter's conversion as natural close</span></td><td>–</td></tr>
       </tbody>
     </table>
 
