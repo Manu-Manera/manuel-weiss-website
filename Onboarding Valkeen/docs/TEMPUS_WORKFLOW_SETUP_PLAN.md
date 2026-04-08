@@ -75,11 +75,7 @@ Tempus hat ein Standard-Feld **Phase** für Projekte:
 | GET | /Projects | Alle Projekte |
 | PUT | /Projects/CustomFieldValues | Projekt Custom Fields |
 | GET | /CustomFields | Alle Custom Fields |
-| POST | /CustomFields | Attribute **Definitionen** anlegen (siehe `scripts/setup_sandbox_attribute_types.py`) |
 | GET | /Roles | Alle Rollen |
-
-**Sandbox: Meilenstein- & Finanz-Attributtypen (nur Schema, keine Projekt-Werte)**  
-Skript `Onboarding Valkeen/scripts/setup_sandbox_attribute_types.py` legt sinnvolle **Custom Field Types** auf `Project` (Liefer-Meilenstein-Datum/Status, Budget, Marge %, Business-Case) und `Milestone` (Art, Relevanz) an — Abgrenzung zu nativen Meilensteinen und Financials siehe Docstring im Skript.
 
 ---
 
