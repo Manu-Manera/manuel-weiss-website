@@ -350,6 +350,27 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
   margin-bottom: -1px;
 }
 
+.edit-mode-active .scene { position: relative; }
+.scene-delete-btn {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  z-index: 6;
+  border: none;
+  background: rgba(254, 226, 226, 0.97);
+  color: #dc2626;
+  font-size: 20px;
+  line-height: 1;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.scene-delete-btn:hover { background: #fecaca; }
+.scene-delete-btn:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
 /* Editable text */
 .edit-mode-active [contenteditable] {
   border-radius: 3px;
@@ -1970,6 +1991,7 @@ function toggleEditMode() {
     icon.textContent  = '✕';
     extra.style.display = 'flex';
     initDrag();
+    initSceneDeleteButtons();
     initInlineEdit();
     initClickStepEditing();
     initBoxDrag();
@@ -1990,6 +2012,7 @@ function toggleEditMode() {
     extra.style.display = 'none';
     clearContentEditable();
     removeDragListeners();
+    removeSceneDeleteButtons();
     removeStepButtons();
     removeBoxDragListeners();
     removeBoxAddButtons();
@@ -2097,6 +2120,37 @@ function removeDragListeners() {
     const badge = scene.querySelector('.scene-num-badge');
     if (badge) badge.onmousedown = null;
   });
+}
+
+function initSceneDeleteButtons() {
+  document.querySelectorAll('.scene').forEach(scene => {
+    if (scene.querySelector('.scene-delete-btn')) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'scene-delete-btn';
+    btn.textContent = '×';
+    btn.title = 'Szene löschen';
+    btn.setAttribute('aria-label', 'Szene löschen');
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      e.preventDefault();
+      const titleEl = scene.querySelector('.scene-title');
+      const hint = titleEl ? titleEl.textContent.trim().replace(/\s+/g, ' ').slice(0, 48) : '';
+      const msg = hint
+        ? `Diese Szene löschen?\n\n„${hint}${hint.length >= 48 ? '…' : ''}“`
+        : 'Diese Szene löschen?';
+      if (confirm(msg)) {
+        scene.remove();
+        renumberScenes();
+        autoSave(800);
+      }
+    });
+    scene.appendChild(btn);
+  });
+}
+
+function removeSceneDeleteButtons() {
+  document.querySelectorAll('.scene-delete-btn').forEach(el => el.remove());
 }
 
 function onDragStart(e) {
@@ -2574,7 +2628,7 @@ function serializeScenes() {
     const clone = scene.cloneNode(true);
 
     // Edit-Mode-UI entfernen
-    clone.querySelectorAll('.step-delete-btn, .step-add-btn, .box-drag-handle, .box-delete-btn, .box-add-btn').forEach(el => el.remove());
+    clone.querySelectorAll('.step-delete-btn, .step-add-btn, .box-drag-handle, .box-delete-btn, .box-add-btn, .scene-delete-btn').forEach(el => el.remove());
 
     // Media-Controls entfernen — das Bild/Video bleibt via <img>/<video src="..."> erhalten
     clone.querySelectorAll('.media-controls').forEach(el => el.remove());
