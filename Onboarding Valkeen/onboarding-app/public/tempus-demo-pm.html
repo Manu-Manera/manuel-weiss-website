@@ -400,6 +400,139 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 }
 .step-add-btn:hover { background: var(--green-light); border-color: var(--green); }
 
+/* Agenda bearbeiten (PM-Training Vollfläche) */
+.edit-mode-active .agenda-fullpage-num {
+  cursor: grab;
+  user-select: none;
+}
+.edit-mode-active .agenda-fullpage-num:active { cursor: grabbing; }
+.edit-mode-active .agenda-fullpage-num::before {
+  content: '⠿';
+  display: block;
+  font-size: 12px;
+  opacity: 0.45;
+  margin-bottom: 2px;
+  line-height: 1;
+}
+.edit-mode-active .agenda-fullpage-num:hover::before { opacity: 1; }
+.edit-mode-active .agenda-fullpage-block { position: relative; }
+.agenda-block-delete-btn {
+  position: absolute;
+  top: 6px;
+  right: 0;
+  z-index: 3;
+  border: none;
+  background: rgba(254, 226, 226, 0.95);
+  color: #dc2626;
+  font-size: 18px;
+  line-height: 1;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+}
+.agenda-block-delete-btn:hover { background: #fecaca; }
+.agenda-fullpage-block.agenda-block-dragging {
+  opacity: 0.38;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+}
+.agenda-fullpage-block.agenda-block-over-top {
+  border-top: 3px solid var(--teal);
+  margin-top: -1px;
+  padding-top: 19px;
+}
+.agenda-fullpage-block.agenda-block-over-bottom {
+  border-bottom: 3px solid var(--teal);
+  margin-bottom: -1px;
+  padding-bottom: 19px;
+}
+.agenda-add-block-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 4px;
+  padding: 10px 14px;
+  border: 2px dashed #93c5d6;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.6);
+  color: var(--teal);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.agenda-add-block-btn:hover { background: var(--teal-light); border-color: var(--teal); }
+.edit-mode-active .agenda-fullpage-block ul {
+  list-style: none;
+  padding-left: 0;
+}
+.edit-mode-active .agenda-fullpage-block ul li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 6px 0;
+  padding: 4px 0;
+  border-radius: 4px;
+}
+.edit-mode-active .agenda-fullpage-block ul li:hover { background: rgba(13,127,160,0.04); }
+.agenda-li-drag {
+  border: none;
+  background: transparent;
+  color: var(--gray-500);
+  font-size: 14px;
+  line-height: 1;
+  cursor: grab;
+  padding: 2px 4px 0 0;
+  flex-shrink: 0;
+  opacity: 0.55;
+}
+.agenda-li-drag:hover { opacity: 1; color: var(--teal); }
+.agenda-li-drag:active { cursor: grabbing; }
+.agenda-li-delete-btn {
+  border: none;
+  background: transparent;
+  color: #dc2626;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: auto;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.edit-mode-active .agenda-fullpage-block ul li:hover .agenda-li-delete-btn,
+.edit-mode-active .agenda-fullpage-block ul li:focus-within .agenda-li-delete-btn { opacity: 1; }
+.agenda-li-delete-btn:hover { background: #fee2e2; }
+.agenda-li-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  margin-bottom: 4px;
+  padding: 6px 12px;
+  border: 2px dashed #b6dfc8;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  width: fit-content;
+  max-width: 100%;
+}
+.agenda-li-add-btn:hover { background: var(--green-light); border-color: var(--green); }
+.agenda-fullpage-block li.agenda-li-dragging { opacity: 0.4; }
+.agenda-fullpage-block li.agenda-li-over-top { border-top: 2px solid var(--teal); }
+.agenda-fullpage-block li.agenda-li-over-bottom { border-bottom: 2px solid var(--teal); }
+
 /* Editable scene title area */
 .edit-mode-active .scene-title-area { background: #f0f8ff; }
 .edit-mode-active .pm-editable-intro {
@@ -1818,7 +1951,7 @@ function createEditToolbar() {
       <button class="edit-actions-btn edit-reset-btn" onclick="resetAll()">↩ Reset</button>
     </div>
     <span id="edit-unsaved">● ungespeichert</span>
-    <span id="edit-status">✓ Gespeichert</span>
+    <span id="edit-status">Gespeichert</span>
   `;
   document.body.appendChild(bar);
 }
@@ -1842,6 +1975,7 @@ function toggleEditMode() {
     initBoxDrag();
     initBoxAdding();
     initMediaBoxes();
+    initAgendaEditing();
     hasUnsavedChanges = false;
     setUnsaved(false);
   } else {
@@ -1860,6 +1994,7 @@ function toggleEditMode() {
     removeBoxDragListeners();
     removeBoxAddButtons();
     removeMediaControls();
+    removeAgendaEditing();
     closeBoxPicker();
     hasUnsavedChanges = false;
     setUnsaved(false);
@@ -2103,6 +2238,317 @@ function renumberSteps(ul) {
 }
 
 /* ═══════════════════════════════════════════════════
+   PM-TRAINING-AGENDA: Blöcke & Punkte (CRUD + Drag)
+═══════════════════════════════════════════════════ */
+let agendaEditCleanups = [];
+let agendaBlockDragSrc = null;
+let agendaLiDragSrc = null;
+
+function renumberAgendaBlocks(wrap) {
+  const container = wrap || document.querySelector('#pm-training-agenda .agenda-fullpage-blocks');
+  if (!container) return;
+  container.querySelectorAll(':scope > .agenda-fullpage-block').forEach((block, i) => {
+    const num = block.querySelector('.agenda-fullpage-num');
+    if (num) num.textContent = String(i + 1);
+  });
+}
+
+function enableAgendaContentEditable(root) {
+  if (!root) return;
+  ['de', 'en'].forEach(lang => {
+    root.querySelectorAll(`.t-${lang}`).forEach(el => {
+      el.contentEditable = 'true';
+      el.spellcheck = false;
+      el.setAttribute('data-lang', lang.toUpperCase());
+      el.addEventListener('input', markUnsaved);
+      el.addEventListener('keydown', preventEnterIfNotWanted);
+    });
+  });
+  root.querySelectorAll('.click-path').forEach(el => {
+    el.contentEditable = 'true';
+    el.spellcheck = false;
+    el.addEventListener('input', markUnsaved);
+  });
+}
+
+function onAgendaBlockDragStart(e) {
+  agendaBlockDragSrc = this;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+  setTimeout(() => this.classList.add('agenda-block-dragging'), 0);
+}
+
+function onAgendaBlockDragOver(e) {
+  if (!agendaBlockDragSrc || agendaBlockDragSrc === this) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  const rect = this.getBoundingClientRect();
+  const mid = rect.top + rect.height / 2;
+  this.classList.remove('agenda-block-over-top', 'agenda-block-over-bottom');
+  this.classList.add(e.clientY < mid ? 'agenda-block-over-top' : 'agenda-block-over-bottom');
+}
+
+function onAgendaBlockDragLeave() {
+  this.classList.remove('agenda-block-over-top', 'agenda-block-over-bottom');
+}
+
+function onAgendaBlockDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  this.classList.remove('agenda-block-over-top', 'agenda-block-over-bottom');
+  if (!agendaBlockDragSrc || agendaBlockDragSrc === this) return;
+  const parent = this.parentNode;
+  if (!parent || !parent.classList.contains('agenda-fullpage-blocks')) return;
+  const rect = this.getBoundingClientRect();
+  if (e.clientY < rect.top + rect.height / 2) {
+    parent.insertBefore(agendaBlockDragSrc, this);
+  } else {
+    parent.insertBefore(agendaBlockDragSrc, this.nextSibling);
+  }
+  renumberAgendaBlocks(parent);
+  autoSave();
+}
+
+function onAgendaBlockDragEnd() {
+  this.draggable = false;
+  this.classList.remove('agenda-block-dragging');
+  document.querySelectorAll('.agenda-fullpage-block').forEach(b => {
+    b.classList.remove('agenda-block-over-top', 'agenda-block-over-bottom');
+  });
+  agendaBlockDragSrc = null;
+}
+
+function setupAgendaBlock(block, blocksWrap) {
+  const num = block.querySelector('.agenda-fullpage-num');
+  if (!num) return;
+
+  const onNumDown = () => { block.draggable = true; };
+  num.addEventListener('mousedown', onNumDown);
+
+  const ds = e => onAgendaBlockDragStart.call(block, e);
+  const de = () => onAgendaBlockDragEnd.call(block);
+  const dov = e => onAgendaBlockDragOver.call(block, e);
+  const dl = () => onAgendaBlockDragLeave.call(block);
+  const dr = e => onAgendaBlockDrop.call(block, e);
+
+  block.addEventListener('dragstart', ds);
+  block.addEventListener('dragend', de);
+  block.addEventListener('dragover', dov);
+  block.addEventListener('dragleave', dl);
+  block.addEventListener('drop', dr);
+
+  agendaEditCleanups.push(() => {
+    num.removeEventListener('mousedown', onNumDown);
+    block.removeEventListener('dragstart', ds);
+    block.removeEventListener('dragend', de);
+    block.removeEventListener('dragover', dov);
+    block.removeEventListener('dragleave', dl);
+    block.removeEventListener('drop', dr);
+  });
+
+  if (!block.querySelector('.agenda-block-delete-btn')) {
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'agenda-block-delete-btn';
+    del.textContent = '×';
+    del.title = 'Block löschen';
+    del.addEventListener('click', ev => {
+      ev.stopPropagation();
+      if (confirm('Diesen Agenda-Block löschen?')) {
+        block.remove();
+        renumberAgendaBlocks(blocksWrap);
+        autoSave(800);
+      }
+    });
+    block.appendChild(del);
+  }
+}
+
+function onAgendaLiDragStart(e) {
+  agendaLiDragSrc = this;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+  setTimeout(() => this.classList.add('agenda-li-dragging'), 0);
+}
+
+function onAgendaLiDragOver(e) {
+  if (!agendaLiDragSrc || agendaLiDragSrc === this) return;
+  if (agendaLiDragSrc.parentNode !== this.parentNode) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  const rect = this.getBoundingClientRect();
+  const mid = rect.top + rect.height / 2;
+  this.classList.remove('agenda-li-over-top', 'agenda-li-over-bottom');
+  this.classList.add(e.clientY < mid ? 'agenda-li-over-top' : 'agenda-li-over-bottom');
+}
+
+function onAgendaLiDragLeave() {
+  this.classList.remove('agenda-li-over-top', 'agenda-li-over-bottom');
+}
+
+function onAgendaLiDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  this.classList.remove('agenda-li-over-top', 'agenda-li-over-bottom');
+  if (!agendaLiDragSrc || agendaLiDragSrc === this) return;
+  const parent = this.parentNode;
+  if (agendaLiDragSrc.parentNode !== parent) return;
+  const rect = this.getBoundingClientRect();
+  if (e.clientY < rect.top + rect.height / 2) {
+    parent.insertBefore(agendaLiDragSrc, this);
+  } else {
+    parent.insertBefore(agendaLiDragSrc, this.nextSibling);
+  }
+  autoSave();
+}
+
+function onAgendaLiDragEnd() {
+  this.draggable = false;
+  this.classList.remove('agenda-li-dragging');
+  this.parentNode && this.parentNode.querySelectorAll(':scope > li').forEach(li => {
+    li.classList.remove('agenda-li-over-top', 'agenda-li-over-bottom');
+  });
+  agendaLiDragSrc = null;
+}
+
+function setupAgendaLi(li, ul) {
+  if (li.querySelector('.agenda-li-drag')) return;
+
+  const drag = document.createElement('button');
+  drag.type = 'button';
+  drag.className = 'agenda-li-drag';
+  drag.textContent = '⠿';
+  drag.title = 'Ziehen zum Sortieren';
+  drag.addEventListener('mousedown', () => { li.draggable = true; });
+  li.insertBefore(drag, li.firstChild);
+
+  const del = document.createElement('button');
+  del.type = 'button';
+  del.className = 'agenda-li-delete-btn';
+  del.textContent = '×';
+  del.title = 'Punkt löschen';
+  del.addEventListener('click', ev => {
+    ev.stopPropagation();
+    if (confirm('Diesen Punkt löschen?')) {
+      li.remove();
+      autoSave(800);
+    }
+  });
+  li.appendChild(del);
+
+  const ds = e => onAgendaLiDragStart.call(li, e);
+  const de = () => onAgendaLiDragEnd.call(li);
+  const dov = e => onAgendaLiDragOver.call(li, e);
+  const dl = () => onAgendaLiDragLeave.call(li);
+  const dr = e => onAgendaLiDrop.call(li, e);
+
+  li.addEventListener('dragstart', ds);
+  li.addEventListener('dragend', de);
+  li.addEventListener('dragover', dov);
+  li.addEventListener('dragleave', dl);
+  li.addEventListener('drop', dr);
+
+  agendaEditCleanups.push(() => {
+    li.removeEventListener('dragstart', ds);
+    li.removeEventListener('dragend', de);
+    li.removeEventListener('dragover', dov);
+    li.removeEventListener('dragleave', dl);
+    li.removeEventListener('drop', dr);
+    drag.remove();
+    del.remove();
+  });
+}
+
+function setupAgendaUl(ul) {
+  ul.querySelectorAll(':scope > li').forEach(li => setupAgendaLi(li, ul));
+  if (ul.nextElementSibling && ul.nextElementSibling.classList.contains('agenda-li-add-btn')) return;
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'agenda-li-add-btn';
+  btn.textContent = '＋ Punkt hinzufügen';
+  btn.addEventListener('click', () => addAgendaLi(ul));
+  ul.after(btn);
+}
+
+function addAgendaLi(ul) {
+  const li = document.createElement('li');
+  li.innerHTML =
+    '<span class="t-de">Neuer Punkt — Text bearbeiten</span>' +
+    '<span class="t-en">New bullet — edit text</span>';
+  ul.appendChild(li);
+  enableAgendaContentEditable(li);
+  setupAgendaLi(li, ul);
+  setUnsaved(true);
+  autoSave();
+}
+
+function addAgendaBlock(blocksWrap) {
+  const addBtn = blocksWrap.querySelector('.agenda-add-block-btn');
+  const block = document.createElement('div');
+  block.className = 'agenda-fullpage-block';
+  block.innerHTML = `
+    <div class="agenda-fullpage-num">0</div>
+    <div>
+      <h4><span class="t-de">Neuer Blocktitel</span><span class="t-en">New block title</span></h4>
+      <ul>
+        <li><span class="t-de">Erster Punkt</span><span class="t-en">First bullet</span></li>
+      </ul>
+    </div>
+  `;
+  if (addBtn) blocksWrap.insertBefore(block, addBtn);
+  else blocksWrap.appendChild(block);
+  renumberAgendaBlocks(blocksWrap);
+  enableAgendaContentEditable(block);
+  setupAgendaBlock(block, blocksWrap);
+  const ul = block.querySelector('ul');
+  if (ul) setupAgendaUl(ul);
+  setUnsaved(true);
+  autoSave();
+}
+
+function initAgendaEditing() {
+  removeAgendaEditing();
+  const root = document.getElementById('pm-training-agenda');
+  if (!root) return;
+  const blocksWrap = root.querySelector('.agenda-fullpage-blocks');
+  if (!blocksWrap) return;
+
+  if (!blocksWrap.querySelector('.agenda-add-block-btn')) {
+    const addBlock = document.createElement('button');
+    addBlock.type = 'button';
+    addBlock.className = 'agenda-add-block-btn';
+    addBlock.textContent = '＋ Block hinzufügen';
+    addBlock.addEventListener('click', () => addAgendaBlock(blocksWrap));
+    blocksWrap.appendChild(addBlock);
+  }
+
+  blocksWrap.querySelectorAll(':scope > .agenda-fullpage-block').forEach(block => {
+    setupAgendaBlock(block, blocksWrap);
+  });
+  root.querySelectorAll('.agenda-fullpage-block ul').forEach(ul => setupAgendaUl(ul));
+}
+
+function removeAgendaEditing() {
+  agendaEditCleanups.forEach(fn => {
+    try { fn(); } catch (e) { /* ignore */ }
+  });
+  agendaEditCleanups = [];
+  agendaBlockDragSrc = null;
+  agendaLiDragSrc = null;
+  document.querySelectorAll(
+    '#pm-training-agenda .agenda-block-delete-btn, #pm-training-agenda .agenda-add-block-btn, ' +
+    '#pm-training-agenda .agenda-li-delete-btn, #pm-training-agenda .agenda-li-add-btn, #pm-training-agenda .agenda-li-drag'
+  ).forEach(el => el.remove());
+  document.querySelectorAll('#pm-training-agenda .agenda-fullpage-block, #pm-training-agenda .agenda-fullpage-block li').forEach(el => {
+    el.draggable = false;
+    el.classList.remove(
+      'agenda-block-dragging', 'agenda-block-over-top', 'agenda-block-over-bottom',
+      'agenda-li-dragging', 'agenda-li-over-top', 'agenda-li-over-bottom'
+    );
+  });
+}
+
+/* ═══════════════════════════════════════════════════
    AWS S3 PERSISTENZ
    State wird als JSON in S3 gespeichert und von dort geladen.
    Enthält: hero, intro, Vollflächen-Agenda (#pm-training-agenda), alle Szenen.
@@ -2153,6 +2599,12 @@ function serializeScenes() {
 function serializeHeroOrIntro(el) {
   if (!el) return null;
   const clone = el.cloneNode(true);
+  clone.querySelectorAll(
+    '.agenda-block-delete-btn, .agenda-add-block-btn, .agenda-li-delete-btn, .agenda-li-add-btn, .agenda-li-drag'
+  ).forEach(node => node.remove());
+  clone.querySelectorAll('.agenda-fullpage-block, .agenda-fullpage-block li').forEach(node => {
+    node.removeAttribute('draggable');
+  });
   clone.querySelectorAll('[contenteditable]').forEach(node => {
     node.removeAttribute('contenteditable');
     node.removeAttribute('spellcheck');
@@ -2191,7 +2643,7 @@ async function saveAll() {
     if (res.status >= 200 && res.status < 300) {
       localStorage.setItem(STORAGE_KEY, payload);
       setUnsaved(false);
-      flashStatus('☁️ In AWS gespeichert (S3)', false);
+      flashStatus('Gespeichert', false);
     } else {
       const hint = res.status === 403 ? ' Presigned-URL abgelaufen?' : '';
       throw new Error(`HTTP ${res.status}${hint}`);
@@ -2613,9 +3065,9 @@ async function uploadMediaFile(file, mediaBody) {
 
     // Auto-Save: Seitenstand sofort sichern damit Media nach Refresh erhalten bleibt
     setUnsaved(true);
-    statusEl.textContent = '⏳ Speichere Seitenstand in AWS…';
+    statusEl.textContent = 'Speichert…';
     await saveAll();
-    statusEl.textContent = '✅ Gespeichert — bleibt nach Refresh erhalten!';
+    statusEl.textContent = 'Gespeichert';
     setTimeout(() => {
       statusEl.textContent = '';
       if (progressWrap) progressWrap.classList.remove('visible');
