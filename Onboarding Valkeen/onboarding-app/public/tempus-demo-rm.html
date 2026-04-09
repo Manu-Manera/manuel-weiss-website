@@ -194,9 +194,111 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 .closing-final strong { font-weight: 700; font-style: normal; }
 .doc-footer { text-align: center; padding: 28px 0 40px; color: var(--gray-500); font-size: 13px; line-height: 1.8; }
 
+/* ════════════════════════════════════════
+   EDIT MODE
+════════════════════════════════════════ */
+#edit-toolbar { position:fixed;top:56px;right:20px;z-index:1000;display:flex;flex-direction:column;align-items:stretch;gap:6px;max-width:min(380px,94vw);background:rgba(255,255,255,0.97);border:1px solid var(--gray-300);border-radius:14px;padding:6px 8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);backdrop-filter:blur(8px);font-family:'Inter',sans-serif; }
+.edit-toolbar-main { display:flex;align-items:center;gap:6px;flex-wrap:wrap; }
+.edit-format-bar { display:none;flex-wrap:wrap;gap:4px;align-items:center;padding-top:4px;border-top:1px solid var(--gray-200); }
+.edit-mode-active .edit-format-bar { display:flex; }
+.edit-fmt-btn { min-width:28px;padding:4px 8px;border:1px solid var(--gray-300);border-radius:6px;background:var(--gray-100);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;color:var(--gray-800);line-height:1.2; }
+.edit-fmt-btn:hover { background:var(--gray-200);border-color:var(--gray-400); }
+.edit-fmt-btn:active { transform:scale(0.97); }
+.edit-fmt-sep { width:1px;height:18px;background:var(--gray-300);margin:0 2px;flex-shrink:0; }
+.edit-fmt-hint { font-size:10px;color:var(--gray-500);width:100%;margin-top:2px;line-height:1.3; }
+#edit-toggle-btn { display:flex;align-items:center;gap:6px;padding:6px 14px;border:none;background:transparent;border-radius:20px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--gray-500);transition:all 0.18s; }
+#edit-toggle-btn:hover { background:var(--gray-200);color:var(--gray-900); }
+.edit-mode-active #edit-toggle-btn { background:#fee2e2;color:#dc2626; }
+.edit-actions-btn { padding:5px 12px;border:none;border-radius:16px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;transition:all 0.18s;white-space:nowrap; }
+.edit-save-btn { background:#dcfce7;color:#166534; }
+.edit-save-btn:hover { background:#bbf7d0; }
+.edit-reset-btn { background:var(--gray-100);color:var(--gray-500); }
+.edit-reset-btn:hover { background:var(--gray-200);color:var(--gray-700); }
+#edit-status { font-size:11px;font-weight:600;color:#16a34a;padding:0 6px;display:none; }
+#edit-unsaved { font-size:11px;font-weight:600;color:#d97706;padding:0 4px;display:none; }
+.edit-mode-active .scene-num-badge { cursor:grab;user-select:none; }
+.edit-mode-active .scene-num-badge:active { cursor:grabbing; }
+.edit-mode-active .scene-num-badge::before { content:'⠿';display:block;font-size:14px;opacity:0.45;margin-bottom:4px;line-height:1; }
+.edit-mode-active .scene-num-badge:hover::before { opacity:1; }
+.scene.scene-dragging { opacity:0.35;box-shadow:0 12px 40px rgba(0,0,0,0.22); }
+.scene.scene-drag-over-top { border-top:3px solid var(--teal);margin-top:-1px; }
+.scene.scene-drag-over-bottom { border-bottom:3px solid var(--teal);margin-bottom:-1px; }
+.edit-mode-active .scene { position:relative; }
+.scene-delete-btn { position:absolute;top:8px;right:10px;z-index:6;border:none;background:rgba(254,226,226,0.97);color:#dc2626;font-size:20px;line-height:1;width:36px;height:36px;border-radius:8px;cursor:pointer;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,0.08); }
+.scene-delete-btn:hover { background:#fecaca; }
+.edit-mode-active [contenteditable] { border-radius:3px;outline:none;cursor:text;transition:background 0.15s,box-shadow 0.15s;min-width:4px; }
+.edit-mode-active [contenteditable]:hover { background:rgba(13,127,160,0.07) !important;box-shadow:0 0 0 1px rgba(13,127,160,0.2); }
+.edit-mode-active [contenteditable]:focus { background:rgba(13,127,160,0.11) !important;box-shadow:0 0 0 2px rgba(13,127,160,0.3); }
+.edit-mode-active [contenteditable][data-lang]::before { content:attr(data-lang);display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.08em;background:rgba(13,127,160,0.15);color:var(--teal);border-radius:3px;padding:1px 4px;margin-right:4px;vertical-align:middle;pointer-events:none;font-style:normal; }
+.step-delete-btn { border:none;background:transparent;color:#dc2626;font-size:16px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:4px;margin-left:6px;flex-shrink:0;opacity:0;transition:opacity 0.15s,background 0.15s; }
+.click-steps li:hover .step-delete-btn,.click-steps li:focus-within .step-delete-btn { opacity:1; }
+.step-delete-btn:hover { background:#fee2e2; }
+.edit-mode-active .click-steps li:hover .step-drag-btn,.edit-mode-active .click-steps li:focus-within .step-drag-btn { opacity:1; }
+.step-drag-btn { border:none;background:transparent;color:var(--gray-500);font-size:14px;line-height:1;cursor:grab;padding:2px 4px 0 0;flex-shrink:0;opacity:0.45;align-self:flex-start;margin-top:1px; }
+.step-drag-btn:hover { opacity:1;color:var(--teal); }
+.step-drag-btn:active { cursor:grabbing; }
+.click-steps li.click-step-li-dragging { opacity:0.4; }
+.click-steps li.click-step-over-top { border-top:2px solid var(--teal); }
+.click-steps li.click-step-over-bottom { border-bottom:2px solid var(--teal); }
+.step-add-btn { display:flex;align-items:center;gap:8px;width:100%;margin-top:8px;padding:8px 14px;border:2px dashed #b6dfc8;border-radius:6px;background:transparent;color:var(--green);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all 0.18s; }
+.step-add-btn:hover { background:var(--green-light);border-color:var(--green); }
+.edit-mode-active .agenda-fullpage-num { cursor:grab;user-select:none; }
+.edit-mode-active .agenda-fullpage-num:active { cursor:grabbing; }
+.edit-mode-active .agenda-fullpage-num::before { content:'⠿';display:block;font-size:12px;opacity:0.45;margin-bottom:2px;line-height:1; }
+.edit-mode-active .agenda-fullpage-num:hover::before { opacity:1; }
+.edit-mode-active .agenda-fullpage-block { position:relative; }
+.agenda-block-delete-btn { position:absolute;top:6px;right:0;z-index:3;border:none;background:rgba(254,226,226,0.95);color:#dc2626;font-size:18px;line-height:1;width:32px;height:32px;border-radius:6px;cursor:pointer;font-weight:700; }
+.agenda-block-delete-btn:hover { background:#fecaca; }
+.agenda-fullpage-block.agenda-block-dragging { opacity:0.38;box-shadow:0 12px 32px rgba(0,0,0,0.15); }
+.agenda-fullpage-block.agenda-block-over-top { border-top:3px solid var(--teal);margin-top:-1px;padding-top:19px; }
+.agenda-fullpage-block.agenda-block-over-bottom { border-bottom:3px solid var(--teal);margin-bottom:-1px;padding-bottom:19px; }
+.agenda-add-block-btn { display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:4px;padding:10px 14px;border:2px dashed #93c5d6;border-radius:8px;background:rgba(255,255,255,0.6);color:var(--teal);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all 0.18s; }
+.agenda-add-block-btn:hover { background:var(--teal-light);border-color:var(--teal); }
+.edit-mode-active .agenda-fullpage-block ul { list-style:none;padding-left:0; }
+.edit-mode-active .agenda-fullpage-block ul li { display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin:6px 0;padding:4px 0;border-radius:4px; }
+.edit-mode-active .agenda-fullpage-block ul li:hover { background:rgba(13,127,160,0.04); }
+.agenda-li-drag { border:none;background:transparent;color:var(--gray-500);font-size:14px;line-height:1;cursor:grab;padding:2px 4px 0 0;flex-shrink:0;opacity:0.55; }
+.agenda-li-drag:hover { opacity:1;color:var(--teal); }
+.agenda-li-drag:active { cursor:grabbing; }
+.agenda-li-delete-btn { border:none;background:transparent;color:#dc2626;font-size:15px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:4px;margin-left:auto;flex-shrink:0;opacity:0;transition:opacity 0.15s; }
+.edit-mode-active .agenda-fullpage-block ul li:hover .agenda-li-delete-btn,.edit-mode-active .agenda-fullpage-block ul li:focus-within .agenda-li-delete-btn { opacity:1; }
+.agenda-li-delete-btn:hover { background:#fee2e2; }
+.agenda-li-add-btn { display:flex;align-items:center;gap:6px;margin-top:6px;margin-bottom:4px;padding:6px 12px;border:2px dashed #b6dfc8;border-radius:6px;background:transparent;color:var(--green);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;width:fit-content;max-width:100%; }
+.agenda-li-add-btn:hover { background:var(--green-light);border-color:var(--green); }
+.agenda-fullpage-block li.agenda-li-dragging { opacity:0.4; }
+.agenda-fullpage-block li.agenda-li-over-top { border-top:2px solid var(--teal); }
+.agenda-fullpage-block li.agenda-li-over-bottom { border-bottom:2px solid var(--teal); }
+.edit-mode-active .scene-title-area { background:#f0f8ff; }
+.edit-mode-active .hero-inner { outline:2px dashed rgba(255,255,255,0.45);outline-offset:6px;border-radius:8px; }
+.edit-mode-active .scene-title-area [contenteditable] { display:block;padding:2px 4px; }
+#edit-hint { position:fixed;bottom:0;left:0;right:0;z-index:999;background:rgba(6,95,70,0.93);color:white;font-size:12px;font-weight:500;font-family:'Inter',sans-serif;text-align:center;padding:8px 16px;letter-spacing:0.02em;display:none; }
+.edit-mode-active #edit-hint { display:block; }
+.box-drag-handle { display:inline-flex;align-items:center;cursor:grab;font-size:13px;color:rgba(255,255,255,0.45);margin-right:7px;user-select:none;padding:0 2px;transition:color 0.15s;flex-shrink:0; }
+.box-drag-handle:hover { color:rgba(255,255,255,0.9); }
+.box-drag-handle:active { cursor:grabbing; }
+.box-delete-btn { margin-left:auto;flex-shrink:0;border:none;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);border-radius:4px;padding:2px 8px;font-size:15px;line-height:1;cursor:pointer;transition:all 0.15s; }
+.box-delete-btn:hover { background:rgba(220,38,38,0.55);color:white; }
+.box.box-dragging { opacity:0.3;transform:scale(0.99);box-shadow:0 8px 32px rgba(0,0,0,0.25); }
+.box.box-drop-top { border-top:3px solid rgba(255,255,255,0.65);margin-top:-1px; }
+.box.box-drop-bottom { border-bottom:3px solid rgba(255,255,255,0.65);margin-bottom:-1px; }
+.box-add-btn { display:flex;align-items:center;gap:8px;width:100%;margin-top:12px;padding:10px 16px;border:2px dashed var(--gray-300);border-radius:8px;background:transparent;color:var(--gray-500);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all 0.18s; }
+.box-add-btn:hover { border-color:var(--teal);color:var(--teal);background:var(--teal-light); }
+#box-picker-overlay { position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:20px;animation:bpFadeIn .15s ease; }
+@keyframes bpFadeIn { from{opacity:0}to{opacity:1} }
+#box-picker { background:white;border-radius:14px;padding:26px 24px;max-width:580px;width:100%;box-shadow:0 32px 96px rgba(0,0,0,0.35);max-height:90vh;overflow-y:auto;animation:bpSlide .18s ease; }
+@keyframes bpSlide { from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1} }
+#box-picker h3 { font-size:15px;font-weight:700;color:var(--gray-900);margin-bottom:16px; }
+.bp-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:9px;margin-bottom:14px; }
+.bp-card { border:2px solid var(--gray-200);border-radius:9px;overflow:hidden;cursor:pointer;transition:all 0.16s; }
+.bp-card:hover { border-color:var(--teal);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.13); }
+.bp-card-header { padding:9px 12px;font-size:12px;font-weight:700;color:white;display:flex;align-items:center;gap:6px; }
+.bp-card-body { padding:7px 12px;font-size:11px;color:var(--gray-500);background:var(--gray-100);line-height:1.4; }
+.bp-cancel { width:100%;padding:9px;border:1px solid var(--gray-300);border-radius:7px;background:white;color:var(--gray-500);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:background 0.15s;margin-top:2px; }
+.bp-cancel:hover { background:var(--gray-100); }
+
 @media print {
   body { background: white; }
-  .lang-switcher { display: none; }
+  .lang-switcher, #edit-toolbar, .edit-format-bar { display: none; }
   .scene { box-shadow: none; break-inside: avoid; }
   .hero, .closing { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
@@ -242,7 +344,7 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
   </div>
 </div>
 
-<div class="page">
+<div class="page" id="rm-editable-intro">
 
 <!-- GUIDE LEGEND -->
 <div class="guide-legend" style="margin-top:24px;">
@@ -870,12 +972,1068 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
   <span style="font-size:12px;display:block;margin-top:4px;">trial5.tempus-resource.com/slot4 · <span class="t-de">Resource Manager Rolle</span><span class="t-en">Resource Manager role</span></span>
 </div>
 
+<div id="edit-hint">
+  ✏️ Texte direkt anklicken · ⠿ Bereiche/Szenen an «⠿» ziehen zum Umordnen · ＋ Neuen Bereich unten in jeder Szene · × Bereich löschen · 💾 Speichern nicht vergessen
+</div>
+
 <script>
+/* ═══════════════════════════════════════════════════
+   LANGUAGE SWITCHER
+═══════════════════════════════════════════════════ */
 function setLang(lang) {
   document.documentElement.classList.remove('lang-de','lang-en');
   document.documentElement.classList.add('lang-' + lang);
   document.getElementById('btn-de').classList.toggle('active', lang==='de');
   document.getElementById('btn-en').classList.toggle('active', lang==='en');
+  if (editMode) {
+    clearContentEditable();
+    initInlineEdit();
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   EDIT MODE ENGINE
+═══════════════════════════════════════════════════ */
+const STORAGE_KEY = 'tempus-demo-rm-v1';
+const RM_STATE_SCHEMA_VERSION = 1;
+let editMode = false;
+let dragSrc = null;
+let clickStepLiDragSrc = null;
+let clickStepDragCleanups = [];
+let hasUnsavedChanges = false;
+
+/* ── Bootstrap ─────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  loadSaved();
+  createEditToolbar();
+  initFormatToolbar();
+
+  window.addEventListener('beforeunload', (e) => {
+    if (editMode && hasUnsavedChanges) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+});
+
+/* ── Toolbar ────────────────────────────────────── */
+function createEditToolbar() {
+  const bar = document.createElement('div');
+  bar.id = 'edit-toolbar';
+  bar.innerHTML = `
+    <div class="edit-toolbar-main">
+      <button id="edit-toggle-btn" onclick="toggleEditMode()">
+        <span id="edit-icon">✏️</span>
+        <span id="edit-label">Bearbeiten</span>
+      </button>
+      <div id="edit-extra" style="display:none;align-items:center;gap:6px;">
+        <button class="edit-actions-btn edit-save-btn" onclick="saveAll()">💾 Speichern</button>
+        <button class="edit-actions-btn edit-reset-btn" onclick="resetAll()">↩ Reset</button>
+      </div>
+      <span id="edit-unsaved">● ungespeichert</span>
+      <span id="edit-status">Gespeichert</span>
+    </div>
+    <div id="edit-format-bar" class="edit-format-bar" aria-label="Textformatierung"></div>
+  `;
+  document.body.appendChild(bar);
+}
+
+function initFormatToolbar() {
+  const bar = document.getElementById('edit-format-bar');
+  if (!bar || bar.dataset.wired) return;
+  bar.dataset.wired = '1';
+
+  const addBtn = (label, title, fn) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'edit-fmt-btn';
+    b.textContent = label;
+    b.title = title;
+    b.addEventListener('mousedown', e => { e.preventDefault(); });
+    b.addEventListener('click', () => { fn(); markUnsaved(); });
+    bar.appendChild(b);
+  };
+
+  addBtn('B', 'Fett (Strg+B)', () => { document.execCommand('bold'); });
+  addBtn('K', 'Kursiv (Strg+I)', () => { document.execCommand('italic'); });
+  addBtn('N', 'Normal — Formatierung der Auswahl entfernen', () => {
+    document.execCommand('removeFormat');
+    try { document.execCommand('unlink'); } catch (e) { /* ignore */ }
+  });
+
+  const sep = document.createElement('span');
+  sep.className = 'edit-fmt-sep';
+  sep.setAttribute('aria-hidden', 'true');
+  bar.appendChild(sep);
+
+  addBtn('A+', 'Schrift grösser', () => {
+    try {
+      if (document.queryCommandSupported && document.queryCommandSupported('increaseFontSize')) {
+        document.execCommand('increaseFontSize');
+      } else { document.execCommand('fontSize', false, '4'); }
+    } catch (e) { document.execCommand('fontSize', false, '4'); }
+  });
+  addBtn('A−', 'Schrift kleiner', () => {
+    try {
+      if (document.queryCommandSupported && document.queryCommandSupported('decreaseFontSize')) {
+        document.execCommand('decreaseFontSize');
+      } else { document.execCommand('fontSize', false, '2'); }
+    } catch (e) { document.execCommand('fontSize', false, '2'); }
+  });
+
+  const hint = document.createElement('div');
+  hint.className = 'edit-fmt-hint';
+  hint.textContent = 'Text markieren, dann Format wählen — gilt für alle bearbeitbaren Bereiche.';
+  bar.appendChild(hint);
+}
+
+/* ── Toggle ─────────────────────────────────────── */
+function toggleEditMode() {
+  editMode = !editMode;
+  document.body.classList.toggle('edit-mode-active', editMode);
+
+  const extra = document.getElementById('edit-extra');
+  const label = document.getElementById('edit-label');
+  const icon  = document.getElementById('edit-icon');
+
+  if (editMode) {
+    label.textContent = 'Fertig';
+    icon.textContent  = '✕';
+    extra.style.display = 'flex';
+    initDrag();
+    initSceneDeleteButtons();
+    initInlineEdit();
+    initClickStepEditing();
+    initBoxDrag();
+    initBoxAdding();
+    initAgendaEditing();
+    hasUnsavedChanges = false;
+    setUnsaved(false);
+  } else {
+    if (hasUnsavedChanges &&
+        !confirm('Nicht gespeicherte Änderungen verwerfen und Bearbeitungsmodus beenden?')) {
+      editMode = true;
+      return;
+    }
+    label.textContent = 'Bearbeiten';
+    icon.textContent  = '✏️';
+    extra.style.display = 'none';
+    clearContentEditable();
+    removeDragListeners();
+    removeSceneDeleteButtons();
+    removeStepButtons();
+    removeBoxDragListeners();
+    removeBoxAddButtons();
+    removeAgendaEditing();
+    closeBoxPicker();
+    hasUnsavedChanges = false;
+    setUnsaved(false);
+  }
+}
+
+function setUnsaved(state) {
+  hasUnsavedChanges = state;
+  const el = document.getElementById('edit-unsaved');
+  if (el) el.style.display = state ? 'inline' : 'none';
+}
+
+let _autoSaveTimer = null;
+function autoSave(delayMs = 1500) {
+  setUnsaved(true);
+  clearTimeout(_autoSaveTimer);
+  _autoSaveTimer = setTimeout(() => { saveAll().catch(() => {}); }, delayMs);
+}
+
+/* ═══════════════════════════════════════════════════
+   INLINE TEXT EDITING
+═══════════════════════════════════════════════════ */
+function initInlineEdit() {
+  const lang = document.documentElement.classList.contains('lang-de') ? 'de' : 'en';
+
+  document.querySelectorAll(`.hero .t-${lang}, #rm-editable-intro .t-${lang}, #rm-training-agenda .t-${lang}, .scene .t-${lang}`).forEach(el => {
+    el.contentEditable = 'true';
+    el.spellcheck = false;
+    el.setAttribute('data-lang', lang.toUpperCase());
+    el.addEventListener('input', markUnsaved);
+    el.addEventListener('keydown', preventEnterIfNotWanted);
+  });
+
+  document.querySelectorAll('.scene .click-path, #rm-editable-intro .click-path, #rm-training-agenda .click-path').forEach(el => {
+    el.contentEditable = 'true';
+    el.spellcheck = false;
+    el.addEventListener('input', markUnsaved);
+  });
+}
+
+function clearContentEditable() {
+  document.querySelectorAll('[contenteditable]').forEach(el => {
+    el.removeAttribute('contenteditable');
+    el.removeAttribute('spellcheck');
+    el.removeAttribute('data-lang');
+    el.removeEventListener('input', markUnsaved);
+    el.removeEventListener('keydown', preventEnterIfNotWanted);
+  });
+}
+
+function markUnsaved() { setUnsaved(true); }
+
+function preventEnterIfNotWanted(e) {
+  const isTitle = this.closest(
+    '.scene-title, .scene-act, .scene-subtitle, .box-icon, .hero-title, .hero-eyebrow, .hero-meta-item'
+  );
+  if (isTitle && e.key === 'Enter') e.preventDefault();
+}
+
+/* ═══════════════════════════════════════════════════
+   DRAG & DROP SCENE REORDERING
+═══════════════════════════════════════════════════ */
+function initDrag() {
+  document.querySelectorAll('.scene').forEach(scene => {
+    scene.draggable = false;
+    const badge = scene.querySelector('.scene-num-badge');
+    if (badge) badge.addEventListener('mousedown', () => { scene.draggable = true; });
+    scene.addEventListener('dragstart',  onDragStart);
+    scene.addEventListener('dragover',   onDragOver);
+    scene.addEventListener('dragleave',  onDragLeave);
+    scene.addEventListener('drop',       onDrop);
+    scene.addEventListener('dragend',    onDragEnd);
+  });
+}
+
+function removeDragListeners() {
+  document.querySelectorAll('.scene').forEach(scene => {
+    scene.draggable = false;
+    scene.removeEventListener('dragstart',  onDragStart);
+    scene.removeEventListener('dragover',   onDragOver);
+    scene.removeEventListener('dragleave',  onDragLeave);
+    scene.removeEventListener('drop',       onDrop);
+    scene.removeEventListener('dragend',    onDragEnd);
+    const badge = scene.querySelector('.scene-num-badge');
+    if (badge) badge.onmousedown = null;
+  });
+}
+
+function initSceneDeleteButtons() {
+  document.querySelectorAll('.scene').forEach(scene => {
+    if (scene.querySelector('.scene-delete-btn')) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'scene-delete-btn';
+    btn.textContent = '×';
+    btn.title = 'Szene löschen';
+    btn.setAttribute('aria-label', 'Szene löschen');
+    btn.addEventListener('click', e => {
+      e.stopPropagation(); e.preventDefault();
+      const titleEl = scene.querySelector('.scene-title');
+      const hint = titleEl ? titleEl.textContent.trim().replace(/\s+/g, ' ').slice(0, 48) : '';
+      const msg = hint
+        ? `Diese Szene löschen?\n\n„${hint}${hint.length >= 48 ? '…' : ''}"`
+        : 'Diese Szene löschen?';
+      if (confirm(msg)) { scene.remove(); renumberScenes(); autoSave(800); }
+    });
+    scene.appendChild(btn);
+  });
+}
+
+function removeSceneDeleteButtons() {
+  document.querySelectorAll('.scene-delete-btn').forEach(el => el.remove());
+}
+
+function onDragStart(e) {
+  dragSrc = this;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+  setTimeout(() => this.classList.add('scene-dragging'), 0);
+}
+function onDragOver(e) {
+  if (!dragSrc || dragSrc === this) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  const rect = this.getBoundingClientRect();
+  const mid  = rect.top + rect.height / 2;
+  this.classList.remove('scene-drag-over-top', 'scene-drag-over-bottom');
+  this.classList.add(e.clientY < mid ? 'scene-drag-over-top' : 'scene-drag-over-bottom');
+}
+function onDragLeave() { this.classList.remove('scene-drag-over-top', 'scene-drag-over-bottom'); }
+function onDrop(e) {
+  e.preventDefault(); e.stopPropagation();
+  this.classList.remove('scene-drag-over-top', 'scene-drag-over-bottom');
+  if (!dragSrc || dragSrc === this) return;
+  const parent = this.parentNode;
+  const rect   = this.getBoundingClientRect();
+  if (e.clientY < rect.top + rect.height / 2) parent.insertBefore(dragSrc, this);
+  else parent.insertBefore(dragSrc, this.nextSibling);
+  renumberScenes(); autoSave();
+}
+function onDragEnd() {
+  this.draggable = false;
+  this.classList.remove('scene-dragging');
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('scene-drag-over-top', 'scene-drag-over-bottom'));
+  dragSrc = null;
+}
+function renumberScenes() {
+  document.querySelectorAll('.scene').forEach((scene, i) => {
+    const el = scene.querySelector('.scene-num-big');
+    if (el) el.textContent = String(i + 1).padStart(2, '0');
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   CLICK STEP CRUD + Reihenfolge (Drag)
+═══════════════════════════════════════════════════ */
+function initClickStepEditing() {
+  document.querySelectorAll('.click-steps').forEach(ul => {
+    ul.querySelectorAll('li').forEach(li => { attachStepDrag(li, ul); attachDeleteBtn(li, ul); });
+    attachAddBtn(ul);
+  });
+}
+
+function removeStepButtons() {
+  clickStepDragCleanups.forEach(fn => { try { fn(); } catch (e) { /* ignore */ } });
+  clickStepDragCleanups = [];
+  clickStepLiDragSrc = null;
+  document.querySelectorAll('.step-delete-btn, .step-add-btn, .step-drag-btn').forEach(el => el.remove());
+  document.querySelectorAll('.click-steps li').forEach(li => {
+    li.draggable = false;
+    li.classList.remove('click-step-li-dragging', 'click-step-over-top', 'click-step-over-bottom');
+  });
+}
+
+function onClickStepDragStart(e) {
+  clickStepLiDragSrc = this;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+  setTimeout(() => this.classList.add('click-step-li-dragging'), 0);
+}
+function onClickStepDragOver(e) {
+  if (!clickStepLiDragSrc || clickStepLiDragSrc === this) return;
+  if (clickStepLiDragSrc.parentNode !== this.parentNode) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  const rect = this.getBoundingClientRect();
+  const mid = rect.top + rect.height / 2;
+  this.classList.remove('click-step-over-top', 'click-step-over-bottom');
+  this.classList.add(e.clientY < mid ? 'click-step-over-top' : 'click-step-over-bottom');
+}
+function onClickStepDragLeave() { this.classList.remove('click-step-over-top', 'click-step-over-bottom'); }
+function onClickStepDrop(e) {
+  e.preventDefault(); e.stopPropagation();
+  this.classList.remove('click-step-over-top', 'click-step-over-bottom');
+  if (!clickStepLiDragSrc || clickStepLiDragSrc === this) return;
+  const parent = this.parentNode;
+  if (!parent || !parent.classList.contains('click-steps')) return;
+  if (clickStepLiDragSrc.parentNode !== parent) return;
+  const rect = this.getBoundingClientRect();
+  if (e.clientY < rect.top + rect.height / 2) parent.insertBefore(clickStepLiDragSrc, this);
+  else parent.insertBefore(clickStepLiDragSrc, this.nextSibling);
+  renumberSteps(parent); autoSave();
+}
+function onClickStepDragEnd() {
+  this.draggable = false;
+  this.classList.remove('click-step-li-dragging');
+  const ul = this.parentNode;
+  if (ul) ul.querySelectorAll(':scope > li').forEach(li => li.classList.remove('click-step-over-top', 'click-step-over-bottom'));
+  clickStepLiDragSrc = null;
+}
+
+function attachStepDrag(li, ul) {
+  if (li.querySelector('.step-drag-btn')) return;
+  const drag = document.createElement('button');
+  drag.type = 'button'; drag.className = 'step-drag-btn';
+  drag.textContent = '⠿'; drag.title = 'Ziehen zum Sortieren';
+  drag.addEventListener('mousedown', () => { li.draggable = true; });
+
+  const ds = e => onClickStepDragStart.call(li, e);
+  const de = () => onClickStepDragEnd.call(li);
+  const dov = e => onClickStepDragOver.call(li, e);
+  const dl = () => onClickStepDragLeave.call(li);
+  const dr = e => onClickStepDrop.call(li, e);
+
+  li.addEventListener('dragstart', ds);
+  li.addEventListener('dragend', de);
+  li.addEventListener('dragover', dov);
+  li.addEventListener('dragleave', dl);
+  li.addEventListener('drop', dr);
+  li.insertBefore(drag, li.firstChild);
+
+  clickStepDragCleanups.push(() => {
+    li.removeEventListener('dragstart', ds);
+    li.removeEventListener('dragend', de);
+    li.removeEventListener('dragover', dov);
+    li.removeEventListener('dragleave', dl);
+    li.removeEventListener('drop', dr);
+    drag.remove();
+  });
+}
+
+function attachDeleteBtn(li, ul) {
+  if (li.querySelector('.step-delete-btn')) return;
+  const btn = document.createElement('button');
+  btn.className = 'step-delete-btn'; btn.type = 'button';
+  btn.textContent = '×'; btn.title = 'Schritt löschen';
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (confirm('Diesen Schritt löschen?')) { li.remove(); renumberSteps(ul); autoSave(800); }
+  });
+  li.appendChild(btn);
+}
+
+function attachAddBtn(ul) {
+  const existing = ul.parentNode.querySelector('.step-add-btn');
+  if (existing) existing.remove();
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'step-add-btn';
+  btn.textContent = '＋ Schritt hinzufügen';
+  btn.addEventListener('click', () => addClickStep(ul));
+  ul.after(btn);
+}
+
+function addClickStep(ul) {
+  const lang = document.documentElement.classList.contains('lang-de') ? 'de' : 'en';
+  const num  = ul.querySelectorAll('li').length + 1;
+  const placeholder = lang === 'de'
+    ? 'Neuer Schritt — hier klicken und Text eingeben'
+    : 'New step — click here to edit';
+  const li = document.createElement('li');
+  li.innerHTML = `<div class="click-step-num">${num}</div><div><span class="t-${lang}" contenteditable="true" spellcheck="false" data-lang="${lang.toUpperCase()}" style="display:inline;min-width:40px">${placeholder}</span></div>`;
+  li.querySelector('[contenteditable]').addEventListener('input', markUnsaved);
+  attachStepDrag(li, ul); attachDeleteBtn(li, ul);
+  ul.appendChild(li); setUnsaved(true);
+  setTimeout(() => {
+    const editable = li.querySelector('[contenteditable]');
+    editable.focus();
+    const range = document.createRange();
+    range.selectNodeContents(editable);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+  }, 50);
+}
+
+function renumberSteps(ul) {
+  ul.querySelectorAll('li').forEach((li, i) => {
+    const n = li.querySelector('.click-step-num');
+    if (n) n.textContent = i + 1;
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   RM-TRAINING-AGENDA: Blöcke & Punkte (CRUD + Drag)
+═══════════════════════════════════════════════════ */
+let agendaEditCleanups = [];
+let agendaBlockDragSrc = null;
+let agendaLiDragSrc = null;
+
+function renumberAgendaBlocks(wrap) {
+  const container = wrap || document.querySelector('#rm-training-agenda .agenda-fullpage-blocks');
+  if (!container) return;
+  container.querySelectorAll(':scope > .agenda-fullpage-block').forEach((block, i) => {
+    const num = block.querySelector('.agenda-fullpage-num');
+    if (num) num.textContent = String(i + 1);
+  });
+}
+
+function enableAgendaContentEditable(root) {
+  if (!root) return;
+  ['de', 'en'].forEach(lang => {
+    root.querySelectorAll(`.t-${lang}`).forEach(el => {
+      el.contentEditable = 'true'; el.spellcheck = false;
+      el.setAttribute('data-lang', lang.toUpperCase());
+      el.addEventListener('input', markUnsaved);
+      el.addEventListener('keydown', preventEnterIfNotWanted);
+    });
+  });
+  root.querySelectorAll('.click-path').forEach(el => {
+    el.contentEditable = 'true'; el.spellcheck = false;
+    el.addEventListener('input', markUnsaved);
+  });
+}
+
+function onAgendaBlockDragStart(e) {
+  agendaBlockDragSrc = this;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+  setTimeout(() => this.classList.add('agenda-block-dragging'), 0);
+}
+function onAgendaBlockDragOver(e) {
+  if (!agendaBlockDragSrc || agendaBlockDragSrc === this) return;
+  e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+  const rect = this.getBoundingClientRect();
+  const mid = rect.top + rect.height / 2;
+  this.classList.remove('agenda-block-over-top', 'agenda-block-over-bottom');
+  this.classList.add(e.clientY < mid ? 'agenda-block-over-top' : 'agenda-block-over-bottom');
+}
+function onAgendaBlockDragLeave() { this.classList.remove('agenda-block-over-top', 'agenda-block-over-bottom'); }
+function onAgendaBlockDrop(e) {
+  e.preventDefault(); e.stopPropagation();
+  this.classList.remove('agenda-block-over-top', 'agenda-block-over-bottom');
+  if (!agendaBlockDragSrc || agendaBlockDragSrc === this) return;
+  const parent = this.parentNode;
+  if (!parent || !parent.classList.contains('agenda-fullpage-blocks')) return;
+  const rect = this.getBoundingClientRect();
+  if (e.clientY < rect.top + rect.height / 2) parent.insertBefore(agendaBlockDragSrc, this);
+  else parent.insertBefore(agendaBlockDragSrc, this.nextSibling);
+  renumberAgendaBlocks(parent); autoSave();
+}
+function onAgendaBlockDragEnd() {
+  this.draggable = false;
+  this.classList.remove('agenda-block-dragging');
+  document.querySelectorAll('.agenda-fullpage-block').forEach(b => b.classList.remove('agenda-block-over-top', 'agenda-block-over-bottom'));
+  agendaBlockDragSrc = null;
+}
+
+function setupAgendaBlock(block, blocksWrap) {
+  const num = block.querySelector('.agenda-fullpage-num');
+  if (!num) return;
+
+  const onNumDown = () => { block.draggable = true; };
+  num.addEventListener('mousedown', onNumDown);
+
+  const ds = e => onAgendaBlockDragStart.call(block, e);
+  const de = () => onAgendaBlockDragEnd.call(block);
+  const dov = e => onAgendaBlockDragOver.call(block, e);
+  const dl = () => onAgendaBlockDragLeave.call(block);
+  const dr = e => onAgendaBlockDrop.call(block, e);
+
+  block.addEventListener('dragstart', ds);
+  block.addEventListener('dragend', de);
+  block.addEventListener('dragover', dov);
+  block.addEventListener('dragleave', dl);
+  block.addEventListener('drop', dr);
+
+  agendaEditCleanups.push(() => {
+    num.removeEventListener('mousedown', onNumDown);
+    block.removeEventListener('dragstart', ds);
+    block.removeEventListener('dragend', de);
+    block.removeEventListener('dragover', dov);
+    block.removeEventListener('dragleave', dl);
+    block.removeEventListener('drop', dr);
+  });
+
+  if (!block.querySelector('.agenda-block-delete-btn')) {
+    const del = document.createElement('button');
+    del.type = 'button'; del.className = 'agenda-block-delete-btn';
+    del.textContent = '×'; del.title = 'Block löschen';
+    del.addEventListener('click', ev => {
+      ev.stopPropagation();
+      if (confirm('Diesen Agenda-Block löschen?')) { block.remove(); renumberAgendaBlocks(blocksWrap); autoSave(800); }
+    });
+    block.appendChild(del);
+  }
+}
+
+function onAgendaLiDragStart(e) {
+  agendaLiDragSrc = this;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+  setTimeout(() => this.classList.add('agenda-li-dragging'), 0);
+}
+function onAgendaLiDragOver(e) {
+  if (!agendaLiDragSrc || agendaLiDragSrc === this) return;
+  if (agendaLiDragSrc.parentNode !== this.parentNode) return;
+  e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+  const rect = this.getBoundingClientRect();
+  const mid = rect.top + rect.height / 2;
+  this.classList.remove('agenda-li-over-top', 'agenda-li-over-bottom');
+  this.classList.add(e.clientY < mid ? 'agenda-li-over-top' : 'agenda-li-over-bottom');
+}
+function onAgendaLiDragLeave() { this.classList.remove('agenda-li-over-top', 'agenda-li-over-bottom'); }
+function onAgendaLiDrop(e) {
+  e.preventDefault(); e.stopPropagation();
+  this.classList.remove('agenda-li-over-top', 'agenda-li-over-bottom');
+  if (!agendaLiDragSrc || agendaLiDragSrc === this) return;
+  const parent = this.parentNode;
+  if (agendaLiDragSrc.parentNode !== parent) return;
+  const rect = this.getBoundingClientRect();
+  if (e.clientY < rect.top + rect.height / 2) parent.insertBefore(agendaLiDragSrc, this);
+  else parent.insertBefore(agendaLiDragSrc, this.nextSibling);
+  autoSave();
+}
+function onAgendaLiDragEnd() {
+  this.draggable = false;
+  this.classList.remove('agenda-li-dragging');
+  this.parentNode && this.parentNode.querySelectorAll(':scope > li').forEach(li => li.classList.remove('agenda-li-over-top', 'agenda-li-over-bottom'));
+  agendaLiDragSrc = null;
+}
+
+function setupAgendaLi(li, ul) {
+  if (li.querySelector('.agenda-li-drag')) return;
+  const drag = document.createElement('button');
+  drag.type = 'button'; drag.className = 'agenda-li-drag';
+  drag.textContent = '⠿'; drag.title = 'Ziehen zum Sortieren';
+  drag.addEventListener('mousedown', () => { li.draggable = true; });
+  li.insertBefore(drag, li.firstChild);
+
+  const del = document.createElement('button');
+  del.type = 'button'; del.className = 'agenda-li-delete-btn';
+  del.textContent = '×'; del.title = 'Punkt löschen';
+  del.addEventListener('click', ev => {
+    ev.stopPropagation();
+    if (confirm('Diesen Punkt löschen?')) { li.remove(); autoSave(800); }
+  });
+  li.appendChild(del);
+
+  const ds = e => onAgendaLiDragStart.call(li, e);
+  const de = () => onAgendaLiDragEnd.call(li);
+  const dov = e => onAgendaLiDragOver.call(li, e);
+  const dl = () => onAgendaLiDragLeave.call(li);
+  const dr = e => onAgendaLiDrop.call(li, e);
+
+  li.addEventListener('dragstart', ds);
+  li.addEventListener('dragend', de);
+  li.addEventListener('dragover', dov);
+  li.addEventListener('dragleave', dl);
+  li.addEventListener('drop', dr);
+
+  agendaEditCleanups.push(() => {
+    li.removeEventListener('dragstart', ds);
+    li.removeEventListener('dragend', de);
+    li.removeEventListener('dragover', dov);
+    li.removeEventListener('dragleave', dl);
+    li.removeEventListener('drop', dr);
+    drag.remove(); del.remove();
+  });
+}
+
+function setupAgendaUl(ul) {
+  ul.querySelectorAll(':scope > li').forEach(li => setupAgendaLi(li, ul));
+  if (ul.nextElementSibling && ul.nextElementSibling.classList.contains('agenda-li-add-btn')) return;
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'agenda-li-add-btn';
+  btn.textContent = '＋ Punkt hinzufügen';
+  btn.addEventListener('click', () => addAgendaLi(ul));
+  ul.after(btn);
+}
+
+function addAgendaLi(ul) {
+  const li = document.createElement('li');
+  li.innerHTML = '<span class="t-de">Neuer Punkt — Text bearbeiten</span><span class="t-en">New bullet — edit text</span>';
+  ul.appendChild(li);
+  enableAgendaContentEditable(li);
+  setupAgendaLi(li, ul);
+  setUnsaved(true); autoSave();
+}
+
+function addAgendaBlock(blocksWrap) {
+  const addBtn = blocksWrap.querySelector('.agenda-add-block-btn');
+  const block = document.createElement('div');
+  block.className = 'agenda-fullpage-block';
+  block.innerHTML = `<div class="agenda-fullpage-num">0</div><div><h4><span class="t-de">Neuer Blocktitel</span><span class="t-en">New block title</span></h4><ul><li><span class="t-de">Erster Punkt</span><span class="t-en">First bullet</span></li></ul></div>`;
+  if (addBtn) blocksWrap.insertBefore(block, addBtn);
+  else blocksWrap.appendChild(block);
+  renumberAgendaBlocks(blocksWrap);
+  enableAgendaContentEditable(block);
+  setupAgendaBlock(block, blocksWrap);
+  const ul = block.querySelector('ul');
+  if (ul) setupAgendaUl(ul);
+  setUnsaved(true); autoSave();
+}
+
+function initAgendaEditing() {
+  removeAgendaEditing();
+  const root = document.getElementById('rm-training-agenda');
+  if (!root) return;
+  const blocksWrap = root.querySelector('.agenda-fullpage-blocks');
+  if (!blocksWrap) return;
+
+  if (!blocksWrap.querySelector('.agenda-add-block-btn')) {
+    const addBlock = document.createElement('button');
+    addBlock.type = 'button'; addBlock.className = 'agenda-add-block-btn';
+    addBlock.textContent = '＋ Block hinzufügen';
+    addBlock.addEventListener('click', () => addAgendaBlock(blocksWrap));
+    blocksWrap.appendChild(addBlock);
+  }
+
+  blocksWrap.querySelectorAll(':scope > .agenda-fullpage-block').forEach(block => setupAgendaBlock(block, blocksWrap));
+  root.querySelectorAll('.agenda-fullpage-block ul').forEach(ul => setupAgendaUl(ul));
+}
+
+function removeAgendaEditing() {
+  agendaEditCleanups.forEach(fn => { try { fn(); } catch (e) { /* ignore */ } });
+  agendaEditCleanups = [];
+  agendaBlockDragSrc = null;
+  agendaLiDragSrc = null;
+  document.querySelectorAll(
+    '#rm-training-agenda .agenda-block-delete-btn, #rm-training-agenda .agenda-add-block-btn, ' +
+    '#rm-training-agenda .agenda-li-delete-btn, #rm-training-agenda .agenda-li-add-btn, #rm-training-agenda .agenda-li-drag'
+  ).forEach(el => el.remove());
+  document.querySelectorAll('#rm-training-agenda .agenda-fullpage-block, #rm-training-agenda .agenda-fullpage-block li').forEach(el => {
+    el.draggable = false;
+    el.classList.remove('agenda-block-dragging', 'agenda-block-over-top', 'agenda-block-over-bottom',
+      'agenda-li-dragging', 'agenda-li-over-top', 'agenda-li-over-bottom');
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   PERSISTENZ — localStorage (kein S3 für RM-Demo)
+═══════════════════════════════════════════════════ */
+function serializeScenes() {
+  const scenes = [];
+  document.querySelectorAll('.scene').forEach(scene => {
+    const clone = scene.cloneNode(true);
+    clone.querySelectorAll('.step-delete-btn, .step-add-btn, .step-drag-btn, .box-drag-handle, .box-delete-btn, .box-add-btn, .scene-delete-btn').forEach(el => el.remove());
+    clone.querySelectorAll('.click-steps li').forEach(li => {
+      li.removeAttribute('draggable');
+      li.classList.remove('click-step-li-dragging', 'click-step-over-top', 'click-step-over-bottom');
+    });
+    clone.querySelectorAll('[contenteditable]').forEach(el => {
+      el.removeAttribute('contenteditable');
+      el.removeAttribute('spellcheck');
+      el.removeAttribute('data-lang');
+    });
+    scenes.push(clone.outerHTML);
+  });
+  return scenes;
+}
+
+function serializeHeroOrIntro(el) {
+  if (!el) return null;
+  const clone = el.cloneNode(true);
+  clone.querySelectorAll(
+    '.agenda-block-delete-btn, .agenda-add-block-btn, .agenda-li-delete-btn, .agenda-li-add-btn, .agenda-li-drag'
+  ).forEach(node => node.remove());
+  clone.querySelectorAll('.agenda-fullpage-block, .agenda-fullpage-block li').forEach(node => {
+    node.removeAttribute('draggable');
+  });
+  clone.querySelectorAll('[contenteditable]').forEach(node => {
+    node.removeAttribute('contenteditable');
+    node.removeAttribute('spellcheck');
+    node.removeAttribute('data-lang');
+  });
+  return clone.outerHTML;
+}
+
+async function saveAll() {
+  const btn = document.querySelector('.edit-save-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Speichert…'; }
+
+  const scenes = serializeScenes();
+  const heroHtml = serializeHeroOrIntro(document.querySelector('.hero'));
+  const introHtml = serializeHeroOrIntro(document.querySelector('#rm-editable-intro'));
+  const agendaHtml = serializeHeroOrIntro(document.querySelector('#rm-training-agenda'));
+  const payload = JSON.stringify({
+    scenes, heroHtml, introHtml, agendaHtml,
+    ts: Date.now(),
+    schemaVersion: RM_STATE_SCHEMA_VERSION
+  });
+
+  try {
+    localStorage.setItem(STORAGE_KEY, payload);
+    setUnsaved(false);
+    flashStatus('Gespeichert', false);
+  } catch (e) {
+    alert('Speichern fehlgeschlagen (Browser-Speicher voll?)');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '💾 Speichern'; }
+  }
+}
+
+function flashStatus(msg, isWarning) {
+  const status = document.getElementById('edit-status');
+  if (!status) return;
+  status.textContent = msg;
+  status.style.display = 'inline';
+  status.style.color = isWarning ? '#c2410c' : '#16a34a';
+  status.style.maxWidth = 'min(420px, 92vw)';
+  status.style.whiteSpace = 'normal';
+  status.style.lineHeight = '1.35';
+  const ms = isWarning ? 9000 : 5000;
+  setTimeout(() => {
+    status.style.display = 'none';
+    status.textContent = '';
+    status.style.color = '';
+    status.style.maxWidth = '';
+    status.style.whiteSpace = '';
+    status.style.lineHeight = '';
+  }, ms);
+}
+
+async function loadSaved() {
+  let data = null;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) data = JSON.parse(raw);
+  } catch (e) { /* ignore */ }
+
+  if (!data || !Array.isArray(data.scenes)) return;
+  if ((data.schemaVersion || 0) < RM_STATE_SCHEMA_VERSION) {
+    console.info('tempus-demo-rm: Gespeicherter Stand zu alt — eingebaute HTML-Szenen werden verwendet.');
+    return;
+  }
+  if (!data.scenes.length) return;
+  applyState(data);
+}
+
+function applyState(data) {
+  try {
+    const page = document.querySelectorAll('.page')[1];
+    const closing = page ? page.querySelector('.closing') : null;
+    if (!closing) return;
+
+    if (data.heroHtml) {
+      const t = document.createElement('template');
+      t.innerHTML = data.heroHtml.trim();
+      const node = t.content.firstElementChild;
+      const cur = document.querySelector('.hero');
+      if (node && cur && node.classList && node.classList.contains('hero')) cur.replaceWith(node);
+    }
+
+    if (data.introHtml) {
+      const t = document.createElement('template');
+      t.innerHTML = data.introHtml.trim();
+      const node = t.content.firstElementChild;
+      const cur = document.querySelector('#rm-editable-intro');
+      if (node && cur && node.id === 'rm-editable-intro') cur.replaceWith(node);
+    }
+
+    if (data.agendaHtml) {
+      const t = document.createElement('template');
+      t.innerHTML = data.agendaHtml.trim();
+      const node = t.content.firstElementChild;
+      const cur = document.querySelector('#rm-training-agenda');
+      if (node && cur && node.id === 'rm-training-agenda') cur.replaceWith(node);
+    }
+
+    page.querySelectorAll('.scene').forEach(s => s.remove());
+    const frag = document.createDocumentFragment();
+    data.scenes.forEach(html => {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      if (tmp.firstElementChild) frag.appendChild(tmp.firstElementChild);
+    });
+    page.insertBefore(frag, closing);
+
+    showRestoredBanner(data.ts);
+  } catch (e) {
+    console.warn('Could not apply state:', e);
+  }
+}
+
+function showRestoredBanner(ts) {
+  const banner = document.createElement('div');
+  const when   = ts ? new Date(ts).toLocaleString('de-CH') : '';
+  banner.style.cssText = [
+    'position:fixed', 'bottom:12px', 'left:50%', 'transform:translateX(-50%)',
+    'z-index:9999', 'background:rgba(22,163,74,0.9)', 'color:white',
+    'font-size:12px', 'font-weight:600', 'font-family:Inter,sans-serif',
+    'padding:8px 20px', 'border-radius:100px', 'box-shadow:0 4px 16px rgba(0,0,0,0.2)',
+    'pointer-events:none'
+  ].join(';');
+  banner.textContent = `💾 Gespeicherte Version geladen (${when})`;
+  document.body.appendChild(banner);
+  setTimeout(() => banner.remove(), 3500);
+}
+
+function resetAll() {
+  if (confirm('Alle eigenen Änderungen löschen und die Original-Version wiederherstellen?')) {
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   BOX DRAG & DROP (Bereiche innerhalb einer Szene)
+═══════════════════════════════════════════════════ */
+let dragSrcBox = null;
+
+function initBoxDrag() {
+  document.querySelectorAll('.scene .scene-body .box').forEach(box => attachBoxDnd(box));
+}
+
+function attachBoxDnd(box) {
+  const header = box.querySelector('.box-header');
+  if (header && !header.querySelector('.box-drag-handle')) {
+    const h = document.createElement('span');
+    h.className = 'box-drag-handle'; h.innerHTML = '⠿';
+    h.title = 'Ziehen zum Verschieben';
+    header.insertBefore(h, header.firstChild);
+  }
+  if (header && !header.querySelector('.box-delete-btn')) {
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'box-delete-btn';
+    btn.innerHTML = '×'; btn.title = 'Bereich löschen';
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (confirm('Diesen Bereich löschen?')) { box.remove(); autoSave(800); }
+    });
+    header.appendChild(btn);
+  }
+
+  box.draggable = false;
+  const handle = header ? header.querySelector('.box-drag-handle') : null;
+  if (handle) handle.addEventListener('mousedown', () => { box.draggable = true; });
+
+  box.addEventListener('dragstart',  onBoxDragStart);
+  box.addEventListener('dragover',   onBoxDragOver);
+  box.addEventListener('dragleave',  onBoxDragLeave);
+  box.addEventListener('drop',       onBoxDrop);
+  box.addEventListener('dragend',    onBoxDragEnd);
+}
+
+function removeBoxDragListeners() {
+  document.querySelectorAll('.scene .scene-body .box').forEach(box => {
+    box.draggable = false;
+    box.removeEventListener('dragstart',  onBoxDragStart);
+    box.removeEventListener('dragover',   onBoxDragOver);
+    box.removeEventListener('dragleave',  onBoxDragLeave);
+    box.removeEventListener('drop',       onBoxDrop);
+    box.removeEventListener('dragend',    onBoxDragEnd);
+  });
+  document.querySelectorAll('.box-drag-handle, .box-delete-btn').forEach(el => el.remove());
+}
+
+function onBoxDragStart(e) {
+  dragSrcBox = this;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+  e.stopPropagation();
+  setTimeout(() => this.classList.add('box-dragging'), 0);
+}
+function onBoxDragOver(e) {
+  if (!dragSrcBox || dragSrcBox === this) return;
+  if (dragSrcBox.parentNode !== this.parentNode) return;
+  e.preventDefault(); e.stopPropagation();
+  e.dataTransfer.dropEffect = 'move';
+  const mid = this.getBoundingClientRect().top + this.getBoundingClientRect().height / 2;
+  this.classList.remove('box-drop-top', 'box-drop-bottom');
+  this.classList.add(e.clientY < mid ? 'box-drop-top' : 'box-drop-bottom');
+}
+function onBoxDragLeave(e) {
+  if (!e.relatedTarget || !this.contains(e.relatedTarget)) this.classList.remove('box-drop-top', 'box-drop-bottom');
+}
+function onBoxDrop(e) {
+  e.preventDefault(); e.stopPropagation();
+  this.classList.remove('box-drop-top', 'box-drop-bottom');
+  if (!dragSrcBox || dragSrcBox === this) return;
+  if (dragSrcBox.parentNode !== this.parentNode) return;
+  const mid = this.getBoundingClientRect().top + this.getBoundingClientRect().height / 2;
+  this.parentNode.insertBefore(dragSrcBox, e.clientY < mid ? this : this.nextSibling);
+  autoSave();
+}
+function onBoxDragEnd() {
+  this.draggable = false;
+  this.classList.remove('box-dragging');
+  document.querySelectorAll('.box').forEach(b => b.classList.remove('box-drop-top', 'box-drop-bottom'));
+  dragSrcBox = null;
+}
+
+/* ═══════════════════════════════════════════════════
+   BOX ADDING — "+" Button und Typ-Auswahl
+═══════════════════════════════════════════════════ */
+const BOX_TYPES = [
+  { type: 'story',   icon: '📖', label: 'Story-Einstieg',     desc: 'Narrativer Einstieg vor dem ersten Klick',    bg: '#0f2342' },
+  { type: 'say',     icon: '🎙️', label: 'Erklärpunkte',       desc: 'Was du während der Demo sagst',               bg: '#065f46' },
+  { type: 'click',   icon: '🖱️', label: 'Klickpfad',          desc: 'Nummerierte Schritt-für-Schritt-Liste',        bg: '#1a7a3c' },
+  { type: 'reto',    icon: '📱', label: 'Reto / Peter',       desc: 'Verbindung zur PM-Story',                     bg: '#7c3f00' },
+  { type: 'context', icon: '💡', label: 'Hintergrund-Info',    desc: 'Zusatzwissen für den Moderator',              bg: '#c8860a' },
+  { type: 'impact',  icon: '⚡', label: 'Wirkungssatz',        desc: 'Abschlusssatz der Szene',                     bg: '#5b3fa0' },
+  { type: 'warn',    icon: '🔧', label: 'Fallback / Warnung',  desc: 'Was tun wenn etwas nicht klappt',             bg: '#c0392b' },
+  { type: 'tip',     icon: '✅', label: 'Tipp',                desc: 'Hilfreicher Hinweis',                         bg: '#2d6a4f' },
+];
+
+let boxPickerTarget = null;
+
+function initBoxAdding() {
+  document.querySelectorAll('.scene .scene-body').forEach(body => {
+    if (!body.querySelector('.box-add-btn')) {
+      const btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'box-add-btn';
+      btn.textContent = '＋ Bereich hinzufügen';
+      btn.addEventListener('click', (e) => { e.stopPropagation(); openBoxPicker(body); });
+      body.appendChild(btn);
+    }
+  });
+}
+
+function removeBoxAddButtons() {
+  document.querySelectorAll('.box-add-btn').forEach(el => el.remove());
+}
+
+function openBoxPicker(sceneBody) {
+  boxPickerTarget = sceneBody;
+  const overlay = document.createElement('div');
+  overlay.id = 'box-picker-overlay';
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeBoxPicker(); });
+
+  const picker = document.createElement('div');
+  picker.id = 'box-picker';
+  picker.innerHTML = `<h3>Welchen Bereich möchtest du hinzufügen?</h3><div class="bp-grid" id="bp-grid"></div><button class="bp-cancel" onclick="closeBoxPicker()">Abbrechen</button>`;
+
+  const grid = picker.querySelector('#bp-grid');
+  BOX_TYPES.forEach(bt => {
+    const card = document.createElement('div');
+    card.className = 'bp-card';
+    card.innerHTML = `<div class="bp-card-header" style="background:${bt.bg}"><span>${bt.icon}</span>${bt.label}</div><div class="bp-card-body">${bt.desc}</div>`;
+    card.addEventListener('click', () => { insertNewBox(bt); closeBoxPicker(); });
+    grid.appendChild(card);
+  });
+
+  overlay.appendChild(picker);
+  document.body.appendChild(overlay);
+}
+
+function closeBoxPicker() {
+  const el = document.getElementById('box-picker-overlay');
+  if (el) el.remove();
+  boxPickerTarget = null;
+}
+
+function insertNewBox(bt) {
+  if (!boxPickerTarget) return;
+  const lang = document.documentElement.classList.contains('lang-de') ? 'de' : 'en';
+  const ph   = lang === 'de' ? 'Hier klicken und Text eingeben…' : 'Click here to edit…';
+
+  let innerBody;
+  if (bt.type === 'click') {
+    innerBody = `<ul class="click-steps"><li><div class="click-step-num">1</div><div><span class="t-${lang}">${ph}</span></div></li></ul>`;
+  } else {
+    innerBody = `<span class="t-${lang}">${ph}</span>`;
+  }
+
+  const box = document.createElement('div');
+  box.className = `box box-${bt.type}`;
+  box.innerHTML = `<div class="box-header"><span class="box-drag-handle" title="Ziehen zum Verschieben">⠿</span><span class="box-icon">${bt.icon}</span><span class="t-${lang}" contenteditable="true" spellcheck="false" data-lang="${lang.toUpperCase()}">${bt.label}</span><button class="box-delete-btn" type="button" title="Bereich löschen">×</button></div><div class="box-body">${innerBody}</div>`;
+
+  box.querySelector('.box-delete-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    if (confirm('Diesen Bereich löschen?')) { box.remove(); autoSave(800); }
+  });
+
+  box.draggable = false;
+  const newHandle = box.querySelector('.box-drag-handle');
+  if (newHandle) newHandle.addEventListener('mousedown', () => { box.draggable = true; });
+  box.addEventListener('dragstart',  onBoxDragStart);
+  box.addEventListener('dragover',   onBoxDragOver);
+  box.addEventListener('dragleave',  onBoxDragLeave);
+  box.addEventListener('drop',       onBoxDrop);
+  box.addEventListener('dragend',    onBoxDragEnd);
+
+  box.querySelectorAll('.t-de, .t-en').forEach(el => {
+    el.contentEditable = 'true'; el.spellcheck = false;
+    el.setAttribute('data-lang', lang.toUpperCase());
+    el.addEventListener('input', markUnsaved);
+    el.addEventListener('keydown', preventEnterIfNotWanted);
+  });
+
+  if (bt.type === 'click') {
+    const ul = box.querySelector('.click-steps');
+    ul.querySelectorAll('li').forEach(li => { attachStepDrag(li, ul); attachDeleteBtn(li, ul); });
+    attachAddBtn(ul);
+  }
+
+  const addBtn = boxPickerTarget.querySelector('.box-add-btn');
+  boxPickerTarget.insertBefore(box, addBtn);
+  setUnsaved(true);
+
+  setTimeout(() => {
+    const first = box.querySelector('.box-body [contenteditable]');
+    if (first) {
+      first.focus();
+      const r = document.createRange();
+      r.selectNodeContents(first);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(r);
+    }
+  }, 60);
 }
 </script>
 </body>
