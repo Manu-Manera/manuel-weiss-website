@@ -269,7 +269,7 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 
 @media print {
   body { background: white; }
-  .lang-switcher, #edit-toolbar { display: none; }
+  .lang-switcher, #edit-toolbar, .edit-format-bar { display: none; }
   .hero, .scene-num-badge, .box-story .box-header, .box-say .box-header, .box-click .box-header, .box-peter .box-header, .box-context .box-header, .box-impact .box-header, .box-watchout .box-header, .qr-header, .closing { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .scene { box-shadow: none; break-inside: avoid; }
 }
@@ -283,15 +283,61 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
   right: 20px;
   z-index: 1000;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 6px;
+  max-width: min(380px, 94vw);
   background: rgba(255,255,255,0.97);
   border: 1px solid var(--gray-300);
-  border-radius: 30px;
-  padding: 4px 8px;
+  border-radius: 14px;
+  padding: 6px 8px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.12);
   backdrop-filter: blur(8px);
   font-family: 'Inter', sans-serif;
+}
+.edit-toolbar-main {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.edit-format-bar {
+  display: none;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  padding-top: 4px;
+  border-top: 1px solid var(--gray-200);
+}
+.edit-mode-active .edit-format-bar { display: flex; }
+.edit-fmt-btn {
+  min-width: 28px;
+  padding: 4px 8px;
+  border: 1px solid var(--gray-300);
+  border-radius: 6px;
+  background: var(--gray-100);
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  color: var(--gray-800);
+  line-height: 1.2;
+}
+.edit-fmt-btn:hover { background: var(--gray-200); border-color: var(--gray-400); }
+.edit-fmt-btn:active { transform: scale(0.97); }
+.edit-fmt-sep {
+  width: 1px;
+  height: 18px;
+  background: var(--gray-300);
+  margin: 0 2px;
+  flex-shrink: 0;
+}
+.edit-fmt-hint {
+  font-size: 10px;
+  color: var(--gray-500);
+  width: 100%;
+  margin-top: 2px;
+  line-height: 1.3;
 }
 #edit-toggle-btn {
   display: flex; align-items: center; gap: 6px;
@@ -409,6 +455,27 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 .click-steps li:hover .step-delete-btn,
 .click-steps li:focus-within .step-delete-btn { opacity: 1; }
 .step-delete-btn:hover { background: #fee2e2; }
+
+.edit-mode-active .click-steps li:hover .step-drag-btn,
+.edit-mode-active .click-steps li:focus-within .step-drag-btn { opacity: 1; }
+.step-drag-btn {
+  border: none;
+  background: transparent;
+  color: var(--gray-500);
+  font-size: 14px;
+  line-height: 1;
+  cursor: grab;
+  padding: 2px 4px 0 0;
+  flex-shrink: 0;
+  opacity: 0.45;
+  align-self: flex-start;
+  margin-top: 1px;
+}
+.step-drag-btn:hover { opacity: 1; color: var(--teal); }
+.step-drag-btn:active { cursor: grabbing; }
+.click-steps li.click-step-li-dragging { opacity: 0.4; }
+.click-steps li.click-step-over-top { border-top: 2px solid var(--teal); }
+.click-steps li.click-step-over-bottom { border-bottom: 2px solid var(--teal); }
 
 /* Add step button */
 .step-add-btn {
@@ -1942,12 +2009,15 @@ const STORAGE_KEY = 'tempus-demo-pm-v1';
 const PM_STATE_SCHEMA_VERSION = 3;
 let editMode = false;
 let dragSrc = null;
+let clickStepLiDragSrc = null;
+let clickStepDragCleanups = [];
 let hasUnsavedChanges = false;
 
 /* ── Bootstrap ─────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   loadSaved();
   createEditToolbar();
+  initFormatToolbar();
 
   // Warn before leaving with unsaved changes
   window.addEventListener('beforeunload', (e) => {
@@ -1963,18 +2033,81 @@ function createEditToolbar() {
   const bar = document.createElement('div');
   bar.id = 'edit-toolbar';
   bar.innerHTML = `
-    <button id="edit-toggle-btn" onclick="toggleEditMode()">
-      <span id="edit-icon">✏️</span>
-      <span id="edit-label">Bearbeiten</span>
-    </button>
-    <div id="edit-extra" style="display:none;align-items:center;gap:6px;">
-      <button class="edit-actions-btn edit-save-btn" onclick="saveAll()">💾 Speichern</button>
-      <button class="edit-actions-btn edit-reset-btn" onclick="resetAll()">↩ Reset</button>
+    <div class="edit-toolbar-main">
+      <button id="edit-toggle-btn" onclick="toggleEditMode()">
+        <span id="edit-icon">✏️</span>
+        <span id="edit-label">Bearbeiten</span>
+      </button>
+      <div id="edit-extra" style="display:none;align-items:center;gap:6px;">
+        <button class="edit-actions-btn edit-save-btn" onclick="saveAll()">💾 Speichern</button>
+        <button class="edit-actions-btn edit-reset-btn" onclick="resetAll()">↩ Reset</button>
+      </div>
+      <span id="edit-unsaved">● ungespeichert</span>
+      <span id="edit-status">Gespeichert</span>
     </div>
-    <span id="edit-unsaved">● ungespeichert</span>
-    <span id="edit-status">Gespeichert</span>
+    <div id="edit-format-bar" class="edit-format-bar" aria-label="Textformatierung"></div>
   `;
   document.body.appendChild(bar);
+}
+
+function initFormatToolbar() {
+  const bar = document.getElementById('edit-format-bar');
+  if (!bar || bar.dataset.wired) return;
+  bar.dataset.wired = '1';
+
+  const addBtn = (label, title, fn) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'edit-fmt-btn';
+    b.textContent = label;
+    b.title = title;
+    b.addEventListener('mousedown', e => { e.preventDefault(); });
+    b.addEventListener('click', () => {
+      fn();
+      markUnsaved();
+    });
+    bar.appendChild(b);
+  };
+
+  addBtn('B', 'Fett (Strg+B)', () => { document.execCommand('bold'); });
+  addBtn('K', 'Kursiv (Strg+I)', () => { document.execCommand('italic'); });
+  addBtn('N', 'Normal — Formatierung der Auswahl entfernen', () => {
+    document.execCommand('removeFormat');
+    try { document.execCommand('unlink'); } catch (e) { /* ignore */ }
+  });
+
+  const sep = document.createElement('span');
+  sep.className = 'edit-fmt-sep';
+  sep.setAttribute('aria-hidden', 'true');
+  bar.appendChild(sep);
+
+  addBtn('A+', 'Schrift grösser', () => {
+    try {
+      if (document.queryCommandSupported && document.queryCommandSupported('increaseFontSize')) {
+        document.execCommand('increaseFontSize');
+      } else {
+        document.execCommand('fontSize', false, '4');
+      }
+    } catch (e) {
+      document.execCommand('fontSize', false, '4');
+    }
+  });
+  addBtn('A−', 'Schrift kleiner', () => {
+    try {
+      if (document.queryCommandSupported && document.queryCommandSupported('decreaseFontSize')) {
+        document.execCommand('decreaseFontSize');
+      } else {
+        document.execCommand('fontSize', false, '2');
+      }
+    } catch (e) {
+      document.execCommand('fontSize', false, '2');
+    }
+  });
+
+  const hint = document.createElement('div');
+  hint.className = 'edit-fmt-hint';
+  hint.textContent = 'Text markieren, dann Format wählen — gilt für alle bearbeitbaren Bereiche.';
+  bar.appendChild(hint);
 }
 
 /* ── Toggle ─────────────────────────────────────── */
@@ -2208,17 +2341,115 @@ function renumberScenes() {
 }
 
 /* ═══════════════════════════════════════════════════
-   CLICK STEP CRUD
+   CLICK STEP CRUD + Reihenfolge (Drag)
 ═══════════════════════════════════════════════════ */
 function initClickStepEditing() {
   document.querySelectorAll('.click-steps').forEach(ul => {
-    ul.querySelectorAll('li').forEach(li => attachDeleteBtn(li, ul));
+    ul.querySelectorAll('li').forEach(li => {
+      attachStepDrag(li, ul);
+      attachDeleteBtn(li, ul);
+    });
     attachAddBtn(ul);
   });
 }
 
 function removeStepButtons() {
-  document.querySelectorAll('.step-delete-btn, .step-add-btn').forEach(el => el.remove());
+  clickStepDragCleanups.forEach(fn => {
+    try { fn(); } catch (e) { /* ignore */ }
+  });
+  clickStepDragCleanups = [];
+  clickStepLiDragSrc = null;
+  document.querySelectorAll('.step-delete-btn, .step-add-btn, .step-drag-btn').forEach(el => el.remove());
+  document.querySelectorAll('.click-steps li').forEach(li => {
+    li.draggable = false;
+    li.classList.remove('click-step-li-dragging', 'click-step-over-top', 'click-step-over-bottom');
+  });
+}
+
+function onClickStepDragStart(e) {
+  clickStepLiDragSrc = this;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+  setTimeout(() => this.classList.add('click-step-li-dragging'), 0);
+}
+
+function onClickStepDragOver(e) {
+  if (!clickStepLiDragSrc || clickStepLiDragSrc === this) return;
+  if (clickStepLiDragSrc.parentNode !== this.parentNode) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  const rect = this.getBoundingClientRect();
+  const mid = rect.top + rect.height / 2;
+  this.classList.remove('click-step-over-top', 'click-step-over-bottom');
+  this.classList.add(e.clientY < mid ? 'click-step-over-top' : 'click-step-over-bottom');
+}
+
+function onClickStepDragLeave() {
+  this.classList.remove('click-step-over-top', 'click-step-over-bottom');
+}
+
+function onClickStepDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  this.classList.remove('click-step-over-top', 'click-step-over-bottom');
+  if (!clickStepLiDragSrc || clickStepLiDragSrc === this) return;
+  const parent = this.parentNode;
+  if (!parent || !parent.classList.contains('click-steps')) return;
+  if (clickStepLiDragSrc.parentNode !== parent) return;
+  const rect = this.getBoundingClientRect();
+  if (e.clientY < rect.top + rect.height / 2) {
+    parent.insertBefore(clickStepLiDragSrc, this);
+  } else {
+    parent.insertBefore(clickStepLiDragSrc, this.nextSibling);
+  }
+  renumberSteps(parent);
+  autoSave();
+}
+
+function onClickStepDragEnd() {
+  this.draggable = false;
+  this.classList.remove('click-step-li-dragging');
+  const ul = this.parentNode;
+  if (ul) {
+    ul.querySelectorAll(':scope > li').forEach(li => {
+      li.classList.remove('click-step-over-top', 'click-step-over-bottom');
+    });
+  }
+  clickStepLiDragSrc = null;
+}
+
+function attachStepDrag(li, ul) {
+  if (li.querySelector('.step-drag-btn')) return;
+
+  const drag = document.createElement('button');
+  drag.type = 'button';
+  drag.className = 'step-drag-btn';
+  drag.textContent = '⠿';
+  drag.title = 'Ziehen zum Sortieren';
+  drag.addEventListener('mousedown', () => { li.draggable = true; });
+
+  const ds = e => onClickStepDragStart.call(li, e);
+  const de = () => onClickStepDragEnd.call(li);
+  const dov = e => onClickStepDragOver.call(li, e);
+  const dl = () => onClickStepDragLeave.call(li);
+  const dr = e => onClickStepDrop.call(li, e);
+
+  li.addEventListener('dragstart', ds);
+  li.addEventListener('dragend', de);
+  li.addEventListener('dragover', dov);
+  li.addEventListener('dragleave', dl);
+  li.addEventListener('drop', dr);
+
+  li.insertBefore(drag, li.firstChild);
+
+  clickStepDragCleanups.push(() => {
+    li.removeEventListener('dragstart', ds);
+    li.removeEventListener('dragend', de);
+    li.removeEventListener('dragover', dov);
+    li.removeEventListener('dragleave', dl);
+    li.removeEventListener('drop', dr);
+    drag.remove();
+  });
 }
 
 function attachDeleteBtn(li, ul) {
@@ -2269,6 +2500,7 @@ function addClickStep(ul) {
     </div>
   `;
   li.querySelector('[contenteditable]').addEventListener('input', markUnsaved);
+  attachStepDrag(li, ul);
   attachDeleteBtn(li, ul);
   ul.appendChild(li);
   setUnsaved(true);
@@ -2628,7 +2860,11 @@ function serializeScenes() {
     const clone = scene.cloneNode(true);
 
     // Edit-Mode-UI entfernen
-    clone.querySelectorAll('.step-delete-btn, .step-add-btn, .box-drag-handle, .box-delete-btn, .box-add-btn, .scene-delete-btn').forEach(el => el.remove());
+    clone.querySelectorAll('.step-delete-btn, .step-add-btn, .step-drag-btn, .box-drag-handle, .box-delete-btn, .box-add-btn, .scene-delete-btn').forEach(el => el.remove());
+    clone.querySelectorAll('.click-steps li').forEach(li => {
+      li.removeAttribute('draggable');
+      li.classList.remove('click-step-li-dragging', 'click-step-over-top', 'click-step-over-bottom');
+    });
 
     // Media-Controls entfernen — das Bild/Video bleibt via <img>/<video src="..."> erhalten
     clone.querySelectorAll('.media-controls').forEach(el => el.remove());
@@ -3272,10 +3508,13 @@ function insertNewBox(bt) {
     el.addEventListener('keydown', preventEnterIfNotWanted);
   });
 
-  // Click-steps: wire up add/delete
+  // Click-steps: add/delete + Reihenfolge
   if (bt.type === 'click') {
     const ul = box.querySelector('.click-steps');
-    ul.querySelectorAll('li').forEach(li => attachDeleteBtn(li, ul));
+    ul.querySelectorAll('li').forEach(li => {
+      attachStepDrag(li, ul);
+      attachDeleteBtn(li, ul);
+    });
     attachAddBtn(ul);
   }
 
