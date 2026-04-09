@@ -2074,6 +2074,23 @@ function initFormatToolbar() {
   addBtn('N', 'Normal — Formatierung der Auswahl entfernen', () => {
     document.execCommand('removeFormat');
     try { document.execCommand('unlink'); } catch (e) { /* ignore */ }
+    // <font>-Tags und inline font-size aggressiv aufräumen
+    const sel = window.getSelection();
+    if (sel.rangeCount) {
+      const c = sel.getRangeAt(0).commonAncestorContainer;
+      const editable = (c.nodeType === 3 ? c.parentElement : c);
+      const root = editable ? (editable.closest('[contenteditable]') || editable) : null;
+      if (root) {
+        root.querySelectorAll('font').forEach(f => {
+          while (f.firstChild) f.parentNode.insertBefore(f.firstChild, f);
+          f.remove();
+        });
+        root.querySelectorAll('[style]').forEach(el => {
+          el.style.removeProperty('font-size');
+          if (!el.getAttribute('style').trim()) el.removeAttribute('style');
+        });
+      }
+    }
   });
 
   const sep = document.createElement('span');
