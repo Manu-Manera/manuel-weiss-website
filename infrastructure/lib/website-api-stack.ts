@@ -801,42 +801,17 @@ export class WebsiteApiStack extends cdk.Stack {
     demoScriptResource.addMethod('POST', new apigateway.LambdaIntegration(demoScriptLambda));
 
     // ========================================
-    // TEMPUS LOGIN MAILER (E-Mail Vorlagen in S3)
+    // TEMPUS LOGIN MAILER
     // ========================================
-
-    const tempusMailerLambda = new lambda.Function(this, 'TempusMailerFunction', {
-      functionName: 'website-tempus-mailer-api',
-      runtime: lambda.Runtime.NODEJS_18_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromAsset('../lambda/tempus-mailer-api'),
-      role: lambdaRole,
-      timeout: cdk.Duration.seconds(30),
-      memorySize: 256,
-      environment: {
-        S3_BUCKET: 'manuel-weiss-website',
-        S3_PREFIX: 'tempus-mailer/templates/',
-        EDIT_PASSWORD: 'tempus-mailer-edit-2024'
-      }
-    });
-
-    tempusMailerLambda.addToRolePolicy(new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: ['s3:GetObject', 's3:PutObject', 's3:DeleteObject', 's3:ListBucket'],
-      resources: [
-        'arn:aws:s3:::manuel-weiss-website',
-        'arn:aws:s3:::manuel-weiss-website/tempus-mailer/*'
-      ]
-    }));
-
-    // /tempus-mailer/templates + /tempus-mailer/templates/{slug}[/images[/{name}]]
-    const tempusMailerResource  = this.api.root.addResource('tempus-mailer');
-    const tempusTemplatesResource = tempusMailerResource.addResource('templates');
-    tempusTemplatesResource.addMethod('GET',  new apigateway.LambdaIntegration(tempusMailerLambda));
-    tempusTemplatesResource.addMethod('POST', new apigateway.LambdaIntegration(tempusMailerLambda));
-    tempusTemplatesResource.addProxy({
-      anyMethod: true,
-      defaultIntegration: new apigateway.LambdaIntegration(tempusMailerLambda)
-    });
+    // Läuft aktuell OHNE Lambda: Templates werden als einzelner State
+    // (s3://manuel-weiss-website/data/tempus-mailer-state.json) abgelegt,
+    // öffentlich gelesen und per Presigned PUT-URL geschrieben.
+    // Grund: `lambda:CreateFunction` ist im Konto geblockt (siehe
+    // docs/RECOVERY_demo-script-lambda.md). Sobald das wieder geht, kann
+    // hier analog zur demo-script-Lambda eine eigene Route angelegt werden.
+    //
+    // Presigned-URL alle 7 Tage via `./refresh-mailer-state-url.sh` neu
+    // erzeugen.
 
     // ========================================
     // FLASHCARDS (KI-Lernkarten mit Leitner-System)

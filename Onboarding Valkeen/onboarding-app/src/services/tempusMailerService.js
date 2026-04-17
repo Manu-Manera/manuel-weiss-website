@@ -1,20 +1,35 @@
 /**
- * Tempus Login Mailer - Service
+ * Tempus Login Mailer – Service
  *
- * Versucht zuerst die AWS Lambda (website-tempus-mailer-api) anzusprechen.
- * Wenn diese nicht erreichbar ist (noch nicht deployed / Netzwerkfehler),
- * wird transparent auf IndexedDB / localStorage gefallen, damit das Tool
- * trotzdem nutzbar ist. Templates werden dann im Browser des Admins gehalten.
+ * Speichert ALLE Templates + Bilder als einzelnes State-Objekt in S3 (wie das
+ * tempus-demo-pm Skript). Das ist nötig, weil `lambda:CreateFunction` im
+ * AWS-Account aktuell geblockt ist und wir daher keine eigene API-Lambda
+ * anlegen können (siehe docs/RECOVERY_demo-script-lambda.md).
  *
- * - Liest Mode aus localStorage['tempus_mailer_storage_mode'] ('cloud' | 'local' | 'auto')
- * - Default 'auto': probiert Cloud, fällt bei Fehler auf Local zurück
+ *   Lesen   – öffentliches GET auf `STATE_READ_URL` (Bucket-Policy
+ *             `PublicReadGetObject` ist für manuel-weiss-website aktiv).
+ *   Schreiben – Presigned S3 PUT (SigV4, max. 7 Tage gültig).
+ *               URL alle 7 Tage via `./refresh-mailer-state-url.sh` erneuern.
+ *
+ * Wenn das Schreiben scheitert (z.B. Presigned-URL abgelaufen, Offline),
+ * fallen wir automatisch auf localStorage zurück, damit man trotzdem
+ * weiterarbeiten kann. Die Public-API (listTemplates/getTemplate/…) ist
+ * ein dünner Wrapper über ein normalisiertes In-Memory-State-Objekt und
+ * bleibt kompatibel mit der vorherigen Lambda-basierten Version.
  */
 
-const API_BASE = 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
-const PW_STORAGE_KEY   = 'tempus_mailer_edit_password';
-const MODE_KEY         = 'tempus_mailer_storage_mode';
-const LOCAL_INDEX_KEY  = 'tempus_mailer_templates_v1';
-const LOCAL_IMG_PREFIX = 'tempus_mailer_image_v1__';
+const STATE_READ_URL =
+  'https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-mailer-state.json';
+
+// Wird vom Skript refresh-mailer-state-url.sh automatisch gesetzt.
+// Marker für das Skript: `const MAILER_STATE_PUT_URL = '…';`
+const MAILER_STATE_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-mailer-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3MG2WEBUJ%2F20260417%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260417T131645Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=7935b2c753fe2e8dd78f1d4c217c807323f87960da8ff5c22222a16135daee54';
+
+const PW_STORAGE_KEY    = 'tempus_mailer_edit_password';
+const MODE_KEY          = 'tempus_mailer_storage_mode';
+const LOCAL_STATE_KEY   = 'tempus_mailer_state_v2';
+
+const EDIT_PASSWORD_HASH_CHECK = 'tempus-mailer-edit-2024';
 
 // ---------------------------------------------------------------------------
 // Mode / Password
@@ -39,82 +54,184 @@ export function setEditPassword(pw) {
   } catch { /* ignore */ }
 }
 
-function authHeaders(extra = {}) {
+function requirePassword() {
   const pw = getEditPassword();
+  if (pw !== EDIT_PASSWORD_HASH_CHECK) {
+    const err = new Error('Ungültiges oder fehlendes Admin-Passwort');
+    err.status = 403;
+    throw err;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// State laden / speichern (S3 bzw. lokaler Fallback)
+// ---------------------------------------------------------------------------
+
+const EMPTY_STATE = { schemaVersion: 1, ts: 0, templates: [] };
+
+let cachedState = null;   // neueste Kopie im Memory
+let cachedFrom  = null;   // 'cloud' | 'local' | null
+let cloudBroken = false;
+
+function shouldUseCloud() {
+  const mode = getStorageMode();
+  if (mode === 'local') return false;
+  if (mode === 'cloud') return true;
+  return !cloudBroken;
+}
+
+export function isUsingLocalFallback() {
+  return !shouldUseCloud();
+}
+
+async function loadStateFromCloud() {
+  const url = `${STATE_READ_URL}?t=${Date.now()}`;
+  const res = await fetch(url, { method: 'GET', cache: 'no-store' });
+  if (!res.ok) throw new Error(`S3 GET ${res.status}`);
+  const data = await res.json();
+  return normalizeState(data);
+}
+
+function loadStateFromLocal() {
+  try {
+    const raw = localStorage.getItem(LOCAL_STATE_KEY);
+    if (!raw) return { ...EMPTY_STATE };
+    return normalizeState(JSON.parse(raw));
+  } catch {
+    return { ...EMPTY_STATE };
+  }
+}
+
+function saveStateToLocal(state) {
+  try {
+    localStorage.setItem(LOCAL_STATE_KEY, JSON.stringify(state));
+  } catch (err) {
+    throw new Error('Lokaler Speicher voll: ' + err.message);
+  }
+}
+
+async function saveStateToCloud(state) {
+  if (!MAILER_STATE_PUT_URL || MAILER_STATE_PUT_URL.includes('PLACEHOLDER')) {
+    throw new Error('Keine gültige Presigned-URL – bitte ./refresh-mailer-state-url.sh ausführen');
+  }
+  const body = JSON.stringify(state);
+  const res = await fetch(MAILER_STATE_PUT_URL, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body,
+  });
+  if (!(res.status >= 200 && res.status < 300)) {
+    const hint = res.status === 403 ? ' – Presigned-URL abgelaufen? ./refresh-mailer-state-url.sh' : '';
+    throw new Error(`S3 PUT ${res.status}${hint}`);
+  }
+}
+
+function normalizeState(data) {
+  const s = data && typeof data === 'object' ? data : {};
   return {
-    'Content-Type': 'application/json',
-    ...(pw ? { 'X-Mailer-Password': pw } : {}),
-    ...extra,
+    schemaVersion: 1,
+    ts: Number(s.ts) || 0,
+    templates: Array.isArray(s.templates) ? s.templates : [],
   };
 }
 
-async function handle(res) {
-  if (!res.ok) {
-    let msg = `HTTP ${res.status}`;
+async function getState({ forceReload = false } = {}) {
+  if (cachedState && !forceReload) return cachedState;
+
+  if (shouldUseCloud()) {
     try {
-      const data = await res.json();
-      if (data?.error) msg = data.error;
-    } catch { /* ignore */ }
-    const err = new Error(msg);
-    err.status = res.status;
-    throw err;
+      cachedState = await loadStateFromCloud();
+      cachedFrom  = 'cloud';
+      return cachedState;
+    } catch (err) {
+      console.warn('[TempusMailer] Cloud-State nicht lesbar, Fallback lokal:', err.message);
+      cloudBroken = true;
+    }
   }
-  return res.json();
+
+  cachedState = loadStateFromLocal();
+  cachedFrom  = 'local';
+  return cachedState;
+}
+
+async function persistState(nextState) {
+  nextState.ts = Date.now();
+  cachedState = nextState;
+
+  if (shouldUseCloud()) {
+    try {
+      await saveStateToCloud(nextState);
+      cachedFrom = 'cloud';
+      // auch lokal spiegeln – falls später die Presigned-URL abläuft
+      try { saveStateToLocal(nextState); } catch { /* ignore */ }
+      return;
+    } catch (err) {
+      console.warn('[TempusMailer] Cloud-Save fehlgeschlagen, nur lokal:', err.message);
+      cloudBroken = true;
+    }
+  }
+
+  saveStateToLocal(nextState);
+  cachedFrom = 'local';
 }
 
 // ---------------------------------------------------------------------------
-// LocalStorage backend
+// Template-Helpers
 // ---------------------------------------------------------------------------
 
-function loadLocalIndex() {
-  try {
-    const raw = localStorage.getItem(LOCAL_INDEX_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch { return {}; }
+function findTemplateIndex(state, slug) {
+  return (state.templates || []).findIndex((t) => t.slug === slug);
 }
 
-function saveLocalIndex(idx) {
-  try { localStorage.setItem(LOCAL_INDEX_KEY, JSON.stringify(idx)); }
-  catch (err) { throw new Error('Lokaler Speicher voll: ' + err.message); }
-}
-
-function localImageKey(slug, name) { return `${LOCAL_IMG_PREFIX}${slug}__${name}`; }
-
-function localListTemplates() {
-  const idx = loadLocalIndex();
-  return Object.values(idx).map((t) => ({
+function templateSummary(t) {
+  return {
     id: t.slug,
     slug: t.slug,
     title: t.title,
-    subject: t.subject,
-    bodyFile: t.bodyFile,
-    updatedAt: t.updatedAt,
-  })).sort((a, b) => a.title.localeCompare(b.title, 'de'));
-}
-
-function localGetTemplate(slug) {
-  const idx = loadLocalIndex();
-  const t = idx[slug];
-  if (!t) throw new Error('Template nicht gefunden');
-  const images = (t.images || []).map((name) => ({ name, size: 0 }));
-  return {
-    id: slug,
-    slug,
-    title: t.title,
-    subject: t.subject,
-    bodyFile: t.bodyFile,
-    bodyExt: t.bodyExt,
-    bodyText: t.bodyExt === 'docx' ? null : (t.bodyText || ''),
-    bodyBase64: t.bodyExt === 'docx' ? (t.bodyBase64 || '') : null,
-    images,
-    updatedAt: t.updatedAt,
+    subject: t.subject || '',
+    bodyFile: t.bodyFile || (t.bodyExt === 'docx' ? 'body.docx' : 'body.html'),
+    updatedAt: t.updatedAt || null,
   };
 }
 
-function localSaveTemplate({ slug, title, subject, bodyHtml, bodyText, bodyBase64Docx }) {
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
+
+export async function listTemplates() {
+  const state = await getState();
+  return [...(state.templates || [])]
+    .map(templateSummary)
+    .sort((a, b) => (a.title || '').localeCompare(b.title || '', 'de'));
+}
+
+export async function getTemplate(slug) {
+  const state = await getState();
+  const t = state.templates.find((x) => x.slug === slug);
+  if (!t) throw new Error('Template nicht gefunden');
+  const images = (t.images || []).map((img) => ({ name: img.name, size: img.size || 0 }));
+  return {
+    id: t.slug,
+    slug: t.slug,
+    title: t.title,
+    subject: t.subject || '',
+    bodyFile: t.bodyFile || (t.bodyExt === 'docx' ? 'body.docx' : 'body.html'),
+    bodyExt: t.bodyExt || 'html',
+    bodyText: t.bodyExt === 'docx' ? null : (t.bodyText || ''),
+    bodyBase64: t.bodyExt === 'docx' ? (t.bodyBase64 || '') : null,
+    images,
+    updatedAt: t.updatedAt || null,
+  };
+}
+
+export async function saveTemplate({ slug, title, subject, bodyHtml, bodyText, bodyBase64Docx }) {
+  requirePassword();
   if (!slug) throw new Error('slug fehlt');
-  const idx = loadLocalIndex();
-  const existing = idx[slug] || { images: [] };
+
+  const state = await getState({ forceReload: true });
+  const idx = findTemplateIndex(state, slug);
+  const existing = idx >= 0 ? state.templates[idx] : { slug, images: [] };
+
   const next = {
     ...existing,
     slug,
@@ -122,6 +239,7 @@ function localSaveTemplate({ slug, title, subject, bodyHtml, bodyText, bodyBase6
     subject: subject ?? existing.subject ?? '',
     updatedAt: new Date().toISOString(),
   };
+
   if (typeof bodyHtml === 'string') {
     next.bodyExt = 'html';
     next.bodyFile = 'body.html';
@@ -137,184 +255,74 @@ function localSaveTemplate({ slug, title, subject, bodyHtml, bodyText, bodyBase6
     next.bodyFile = 'body.docx';
     next.bodyText = '';
     next.bodyBase64 = bodyBase64Docx;
-  } else {
-    if (!next.bodyExt) {
-      next.bodyExt = 'html';
-      next.bodyFile = 'body.html';
-      next.bodyText = '';
-    }
+  } else if (!next.bodyExt) {
+    next.bodyExt = 'html';
+    next.bodyFile = 'body.html';
+    next.bodyText = '';
   }
-  idx[slug] = next;
-  saveLocalIndex(idx);
+
+  if (!Array.isArray(next.images)) next.images = [];
+
+  if (idx >= 0) state.templates[idx] = next;
+  else state.templates.push(next);
+
+  await persistState(state);
   return { ok: true, id: slug, slug, title: next.title, subject: next.subject, bodyFile: next.bodyFile };
 }
 
-function localDeleteTemplate(slug) {
-  const idx = loadLocalIndex();
-  const t = idx[slug];
-  if (t?.images) {
-    for (const name of t.images) {
-      try { localStorage.removeItem(localImageKey(slug, name)); } catch { /* ignore */ }
-    }
-  }
-  delete idx[slug];
-  saveLocalIndex(idx);
+export async function deleteTemplate(slug) {
+  requirePassword();
+  const state = await getState({ forceReload: true });
+  state.templates = (state.templates || []).filter((t) => t.slug !== slug);
+  await persistState(state);
   return { ok: true, id: slug };
 }
 
-async function localUploadImage(slug, file) {
+export async function uploadImage(slug, file) {
+  requirePassword();
   const base64 = await fileToBase64(file);
-  const idx = loadLocalIndex();
-  const t = idx[slug];
-  if (!t) throw new Error('Template nicht gefunden');
-  t.images = t.images || [];
-  if (!t.images.includes(file.name)) t.images.push(file.name);
-  try {
-    localStorage.setItem(localImageKey(slug, file.name), JSON.stringify({
-      name: file.name,
-      contentType: file.type || 'application/octet-stream',
-      bodyBase64: base64,
-    }));
-  } catch (err) {
-    throw new Error('Lokaler Speicher voll: ' + err.message);
-  }
-  idx[slug] = t;
-  saveLocalIndex(idx);
+  const state = await getState({ forceReload: true });
+  const idx = findTemplateIndex(state, slug);
+  if (idx < 0) throw new Error('Template nicht gefunden');
+  const t = state.templates[idx];
+  if (!Array.isArray(t.images)) t.images = [];
+  const existingImgIdx = t.images.findIndex((i) => i.name === file.name);
+  const entry = {
+    name: file.name,
+    contentType: file.type || 'application/octet-stream',
+    bodyBase64: base64,
+    size: file.size || 0,
+  };
+  if (existingImgIdx >= 0) t.images[existingImgIdx] = entry;
+  else t.images.push(entry);
+  state.templates[idx] = t;
+  await persistState(state);
   return { ok: true, name: file.name };
 }
 
-function localDeleteImage(slug, name) {
-  const idx = loadLocalIndex();
-  const t = idx[slug];
-  if (!t) return { ok: true };
-  t.images = (t.images || []).filter((n) => n !== name);
-  try { localStorage.removeItem(localImageKey(slug, name)); } catch { /* ignore */ }
-  idx[slug] = t;
-  saveLocalIndex(idx);
+export async function deleteImage(slug, name) {
+  requirePassword();
+  const state = await getState({ forceReload: true });
+  const idx = findTemplateIndex(state, slug);
+  if (idx < 0) return { ok: true };
+  const t = state.templates[idx];
+  t.images = (t.images || []).filter((i) => i.name !== name);
+  state.templates[idx] = t;
+  await persistState(state);
   return { ok: true };
 }
 
-function localGetImage(slug, name) {
-  try {
-    const raw = localStorage.getItem(localImageKey(slug, name));
-    if (!raw) throw new Error('Bild nicht gefunden');
-    return JSON.parse(raw);
-  } catch (err) {
-    throw new Error(err.message || 'Bild nicht gefunden');
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Cloud/Local Gateway (mit Auto-Fallback)
-// ---------------------------------------------------------------------------
-
-let cloudBroken = false; // sobald ein Cloud-Call fehlschlägt, verwenden wir lokal
-
-function shouldUseCloud() {
-  const mode = getStorageMode();
-  if (mode === 'local') return false;
-  if (mode === 'cloud') return true;
-  return !cloudBroken; // 'auto'
-}
-
-async function tryCloud(fn, fallback) {
-  if (!shouldUseCloud()) return fallback();
-  try {
-    return await fn();
-  } catch (err) {
-    if (err?.status === 403) throw err; // Passwort-Fehler nicht schlucken
-    console.warn('[TempusMailer] Cloud nicht erreichbar, Fallback auf lokalen Speicher:', err.message);
-    cloudBroken = true;
-    return fallback();
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
-
-export async function listTemplates() {
-  return tryCloud(
-    async () => {
-      const res = await fetch(`${API_BASE}/tempus-mailer/templates`, { method: 'GET', headers: { 'Content-Type': 'application/json' } });
-      const data = await handle(res);
-      return Array.isArray(data?.templates) ? data.templates : [];
-    },
-    () => localListTemplates()
-  );
-}
-
-export async function getTemplate(slug) {
-  return tryCloud(
-    async () => {
-      const res = await fetch(`${API_BASE}/tempus-mailer/templates/${encodeURIComponent(slug)}`, { method: 'GET', headers: { 'Content-Type': 'application/json' } });
-      return handle(res);
-    },
-    () => localGetTemplate(slug)
-  );
-}
-
-export async function saveTemplate(payload) {
-  const slug = payload?.slug;
-  const url = slug
-    ? `${API_BASE}/tempus-mailer/templates/${encodeURIComponent(slug)}`
-    : `${API_BASE}/tempus-mailer/templates`;
-  const method = slug ? 'PUT' : 'POST';
-  return tryCloud(
-    async () => {
-      const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(payload) });
-      return handle(res);
-    },
-    () => localSaveTemplate(payload)
-  );
-}
-
-export async function deleteTemplate(slug) {
-  return tryCloud(
-    async () => {
-      const res = await fetch(`${API_BASE}/tempus-mailer/templates/${encodeURIComponent(slug)}`, { method: 'DELETE', headers: authHeaders() });
-      return handle(res);
-    },
-    () => localDeleteTemplate(slug)
-  );
-}
-
-export async function uploadImage(slug, file) {
-  return tryCloud(
-    async () => {
-      const base64 = await fileToBase64(file);
-      const res = await fetch(`${API_BASE}/tempus-mailer/templates/${encodeURIComponent(slug)}/images`, {
-        method: 'POST', headers: authHeaders(),
-        body: JSON.stringify({ fileName: file.name, contentType: file.type || 'application/octet-stream', bodyBase64: base64 }),
-      });
-      return handle(res);
-    },
-    () => localUploadImage(slug, file)
-  );
-}
-
-export async function deleteImage(slug, name) {
-  return tryCloud(
-    async () => {
-      const res = await fetch(`${API_BASE}/tempus-mailer/templates/${encodeURIComponent(slug)}/images/${encodeURIComponent(name)}`, { method: 'DELETE', headers: authHeaders() });
-      return handle(res);
-    },
-    () => localDeleteImage(slug, name)
-  );
-}
-
 export async function getImage(slug, name) {
-  return tryCloud(
-    async () => {
-      const res = await fetch(`${API_BASE}/tempus-mailer/templates/${encodeURIComponent(slug)}/images/${encodeURIComponent(name)}`, { method: 'GET', headers: { 'Content-Type': 'application/json' } });
-      return handle(res);
-    },
-    () => localGetImage(slug, name)
-  );
-}
-
-export function isUsingLocalFallback() {
-  return !shouldUseCloud();
+  const state = await getState();
+  const t = (state.templates || []).find((x) => x.slug === slug);
+  if (!t) throw new Error('Template nicht gefunden');
+  const img = (t.images || []).find((i) => i.name === name);
+  if (!img) throw new Error('Bild nicht gefunden');
+  return {
+    name: img.name,
+    contentType: img.contentType || 'application/octet-stream',
+    bodyBase64: img.bodyBase64 || '',
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -326,8 +334,8 @@ export function fileToBase64(file) {
     const reader = new FileReader();
     reader.onload = () => {
       const result = String(reader.result || '');
-      const idx = result.indexOf('base64,');
-      resolve(idx >= 0 ? result.slice(idx + 7) : result);
+      const i = result.indexOf('base64,');
+      resolve(i >= 0 ? result.slice(i + 7) : result);
     };
     reader.onerror = () => reject(reader.error || new Error('FileReader failed'));
     reader.readAsDataURL(file);
