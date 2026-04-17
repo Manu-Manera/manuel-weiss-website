@@ -1,0 +1,32 @@
+Hello {NAME},
+
+E-mail: {EMAIL}
+
+Please see below your login details. Could you please confirm that you were able to login successfully and update your password?
+
+URL: {URL}
+Username: {USERNAME}
+Password: {PASSWORD}
+
+To update your password
+
+1. Click on your username menu on the top right corner of your browser and select Profile.
+2. Enter and confirm your new password in the highlighted fields.
+3. Click Update password.
+
+
+Many thanks,
+Aayushi
+
+__________________________
+Aayushi Paiolo-Sethi
+Implementation Specialist
+
+VALKEEN
+Valkeen GmbH
+Bahnhofstrasse 64
+8001-Zurich
+Switzerland
+paiolo-sethi@valkeen.com
+www.valkeen.com
+Strategic Partner for Tempus Resource by ProSymmetry

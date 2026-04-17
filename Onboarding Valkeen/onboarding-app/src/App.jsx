@@ -13,6 +13,7 @@ import TrainingAdmin from './pages/TrainingAdmin';
 import Flashcards from './pages/Flashcards';
 import SSOSetup from './pages/SSOSetup';
 import TempusDemo from './pages/TempusDemo';
+import LoginMailer from './pages/LoginMailer';
 
 function checkAdminSession() {
   try {
@@ -75,6 +76,7 @@ function App() {
           <Route path="training-admin" element={<TrainingAdmin />} />
           <Route path="sso-setup" element={<SSOSetup />} />
           <Route path="tempus-demo" element={<TempusDemo />} />
+          <Route path="login-mailer" element={<LoginMailer />} />
         </Route>
       </Routes>
     </BrowserRouter>

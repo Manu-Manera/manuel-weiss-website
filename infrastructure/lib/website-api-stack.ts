@@ -801,6 +801,44 @@ export class WebsiteApiStack extends cdk.Stack {
     demoScriptResource.addMethod('POST', new apigateway.LambdaIntegration(demoScriptLambda));
 
     // ========================================
+    // TEMPUS LOGIN MAILER (E-Mail Vorlagen in S3)
+    // ========================================
+
+    const tempusMailerLambda = new lambda.Function(this, 'TempusMailerFunction', {
+      functionName: 'website-tempus-mailer-api',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('../lambda/tempus-mailer-api'),
+      role: lambdaRole,
+      timeout: cdk.Duration.seconds(30),
+      memorySize: 256,
+      environment: {
+        S3_BUCKET: 'manuel-weiss-website',
+        S3_PREFIX: 'tempus-mailer/templates/',
+        EDIT_PASSWORD: 'tempus-mailer-edit-2024'
+      }
+    });
+
+    tempusMailerLambda.addToRolePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['s3:GetObject', 's3:PutObject', 's3:DeleteObject', 's3:ListBucket'],
+      resources: [
+        'arn:aws:s3:::manuel-weiss-website',
+        'arn:aws:s3:::manuel-weiss-website/tempus-mailer/*'
+      ]
+    }));
+
+    // /tempus-mailer/templates + /tempus-mailer/templates/{slug}[/images[/{name}]]
+    const tempusMailerResource  = this.api.root.addResource('tempus-mailer');
+    const tempusTemplatesResource = tempusMailerResource.addResource('templates');
+    tempusTemplatesResource.addMethod('GET',  new apigateway.LambdaIntegration(tempusMailerLambda));
+    tempusTemplatesResource.addMethod('POST', new apigateway.LambdaIntegration(tempusMailerLambda));
+    tempusTemplatesResource.addProxy({
+      anyMethod: true,
+      defaultIntegration: new apigateway.LambdaIntegration(tempusMailerLambda)
+    });
+
+    // ========================================
     // FLASHCARDS (KI-Lernkarten mit Leitner-System)
     // ========================================
 

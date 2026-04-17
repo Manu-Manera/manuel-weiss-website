@@ -8,6 +8,7 @@ import {
   Calendar, 
   BookOpen,
   Mail,
+  MailPlus,
   GraduationCap,
   Settings,
   Sparkles,
@@ -34,6 +35,7 @@ const navItems = [
   { path: '/training', icon: GraduationCap, label: 'Training', description: 'Tempus RM/PM/Admin' },
   { path: '/training-admin', icon: Settings, label: 'Training Admin', description: 'Inhalte bearbeiten' },
   { path: '/tempus-demo', icon: Monitor, label: 'Tempus Demo', description: 'Live Demo-Umgebung' },
+  { path: '/login-mailer', icon: MailPlus, label: 'Login Mailer', description: 'Entwürfe aus Excel' },
 ];
 
 export default function Layout() {
