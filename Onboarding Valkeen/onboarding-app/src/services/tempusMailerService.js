@@ -21,14 +21,11 @@
 const MAILER_STATE_API_URL =
   'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1/mailer-state';
 
-const PW_STORAGE_KEY    = 'tempus_mailer_edit_password';
 const MODE_KEY          = 'tempus_mailer_storage_mode';
 const LOCAL_STATE_KEY   = 'tempus_mailer_state_v2';
 
-const EDIT_PASSWORD_HASH_CHECK = 'tempus-mailer-edit-2024';
-
 // ---------------------------------------------------------------------------
-// Mode / Password
+// Speicher-Modus (Cloud vs. lokaler Fallback)
 // ---------------------------------------------------------------------------
 
 export function getStorageMode() {
@@ -37,26 +34,6 @@ export function getStorageMode() {
 
 export function setStorageMode(mode) {
   try { localStorage.setItem(MODE_KEY, mode); } catch { /* ignore */ }
-}
-
-export function getEditPassword() {
-  try { return localStorage.getItem(PW_STORAGE_KEY) || ''; } catch { return ''; }
-}
-
-export function setEditPassword(pw) {
-  try {
-    if (pw) localStorage.setItem(PW_STORAGE_KEY, pw);
-    else localStorage.removeItem(PW_STORAGE_KEY);
-  } catch { /* ignore */ }
-}
-
-function requirePassword() {
-  const pw = getEditPassword();
-  if (pw !== EDIT_PASSWORD_HASH_CHECK) {
-    const err = new Error('Ungültiges oder fehlendes Admin-Passwort');
-    err.status = 403;
-    throw err;
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -217,7 +194,6 @@ export async function getTemplate(slug) {
 }
 
 export async function saveTemplate({ slug, title, subject, bodyHtml, bodyText, bodyBase64Docx }) {
-  requirePassword();
   if (!slug) throw new Error('slug fehlt');
 
   const state = await getState({ forceReload: true });
@@ -263,7 +239,6 @@ export async function saveTemplate({ slug, title, subject, bodyHtml, bodyText, b
 }
 
 export async function deleteTemplate(slug) {
-  requirePassword();
   const state = await getState({ forceReload: true });
   state.templates = (state.templates || []).filter((t) => t.slug !== slug);
   await persistState(state);
@@ -271,7 +246,6 @@ export async function deleteTemplate(slug) {
 }
 
 export async function uploadImage(slug, file) {
-  requirePassword();
   const base64 = await fileToBase64(file);
   const state = await getState({ forceReload: true });
   const idx = findTemplateIndex(state, slug);
@@ -293,7 +267,6 @@ export async function uploadImage(slug, file) {
 }
 
 export async function deleteImage(slug, name) {
-  requirePassword();
   const state = await getState({ forceReload: true });
   const idx = findTemplateIndex(state, slug);
   if (idx < 0) return { ok: true };

@@ -11,7 +11,6 @@ import {
   Eye,
   Users,
   Image as ImageIcon,
-  Lock,
   Check,
   AlertTriangle,
   Loader2,
@@ -29,8 +28,6 @@ import {
   uploadImage,
   deleteImage,
   getImage,
-  getEditPassword,
-  setEditPassword as storeEditPassword,
   getStorageMode,
   setStorageMode,
   isUsingLocalFallback,
@@ -74,19 +71,10 @@ const DEFAULT_NEW_BODY = `<!DOCTYPE html>
 
 export default function LoginMailer() {
   const [step, setStep] = useState('data');
-
-  // --- Auth / Passwort für Schreib-Aktionen ---
-  const [pw, setPw] = useState('');
-  const [pwSaved, setPwSaved] = useState(false);
   const [storageMode, setStorageModeState] = useState('auto');
   const [usingLocal, setUsingLocal] = useState(false);
 
   useEffect(() => {
-    const stored = getEditPassword();
-    if (stored) {
-      setPw(stored);
-      setPwSaved(true);
-    }
     setStorageModeState(getStorageMode());
   }, []);
 
@@ -95,11 +83,6 @@ export default function LoginMailer() {
     setStorageModeState(mode);
     // Seite neu laden, damit Templates aus dem gewählten Backend kommen
     window.location.reload();
-  };
-
-  const savePw = () => {
-    storeEditPassword(pw || '');
-    setPwSaved(Boolean(pw));
   };
 
   // --- Daten: Excel ---
@@ -197,7 +180,6 @@ export default function LoginMailer() {
   };
 
   const handleSave = async () => {
-    if (!pw) { alert('Bitte zuerst oben das Passwort hinterlegen.'); return; }
     setBusy(true);
     try {
       await saveTemplate({
@@ -217,7 +199,6 @@ export default function LoginMailer() {
   };
 
   const handleNewTemplate = async () => {
-    if (!pw) { alert('Bitte zuerst oben das Passwort hinterlegen.'); return; }
     const title = prompt('Name der neuen Vorlage:', 'Neue Vorlage');
     if (!title) return;
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 60) || 'neu_' + Date.now();
@@ -235,7 +216,6 @@ export default function LoginMailer() {
 
   const handleDelete = async () => {
     if (!activeTemplate) return;
-    if (!pw) { alert('Bitte zuerst oben das Passwort hinterlegen.'); return; }
     if (!confirm(`Vorlage "${activeTemplate.title}" wirklich löschen?`)) return;
     setBusy(true);
     try {
@@ -252,7 +232,6 @@ export default function LoginMailer() {
 
   const handleUploadDocx = async (file) => {
     if (!activeTemplate) return;
-    if (!pw) { alert('Bitte zuerst oben das Passwort hinterlegen.'); return; }
     setBusy(true);
     try {
       const base64 = await fileToBase64(file);
@@ -272,7 +251,6 @@ export default function LoginMailer() {
 
   const handleImageUpload = async (file) => {
     if (!activeTemplate) return;
-    if (!pw) { alert('Bitte zuerst oben das Passwort hinterlegen.'); return; }
     setBusy(true);
     try {
       await uploadImage(activeTemplate.slug, file);
@@ -286,7 +264,6 @@ export default function LoginMailer() {
 
   const handleImageDelete = async (name) => {
     if (!activeTemplate) return;
-    if (!pw) { alert('Bitte zuerst oben das Passwort hinterlegen.'); return; }
     if (!confirm(`Bild "${name}" löschen?`)) return;
     setBusy(true);
     try {
@@ -406,31 +383,6 @@ export default function LoginMailer() {
           </select>
         </div>
       )}
-
-      {/* ── PASSWORT-LEISTE ── */}
-      <div className="glass rounded-2xl p-4 border border-amber-400/20 bg-amber-500/5">
-        <div className="flex items-center gap-3 flex-wrap">
-          <Lock className="w-5 h-5 text-amber-400 flex-shrink-0" />
-          <div className="flex-1 min-w-[220px]">
-            <p className="font-semibold text-amber-200">Bearbeitungs-Passwort</p>
-            <p className="text-xs text-white/50">Für Speichern / Löschen / Upload von Vorlagen (wird lokal gemerkt).</p>
-          </div>
-          <input
-            type="password"
-            value={pw}
-            onChange={(e) => setPw(e.target.value)}
-            placeholder="Passwort…"
-            className="px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm min-w-[200px]"
-          />
-          <button
-            onClick={savePw}
-            className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-900 text-sm font-semibold flex items-center gap-2"
-          >
-            {pwSaved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
-            {pwSaved ? 'Gespeichert' : 'Speichern'}
-          </button>
-        </div>
-      </div>
 
       {/* ── SCHRITTLEISTE ── */}
       <div className="flex items-center gap-2 overflow-x-auto">
