@@ -1,8 +1,9 @@
 #!/bin/bash
 # ──────────────────────────────────────────────────────────
 # refresh-demo-state-url.sh
-# Generiert eine neue 7-Tage-Presigned-URL für das
-# tempus-demo-pm.html State-Saving und aktualisiert die HTML-Datei.
+# Generiert eine neue Presigned-URL (max. 7 Tage — AWS-Obergrenze für SigV4)
+# für das tempus-demo-pm.html State-Saving als Fallback und aktualisiert die HTML-Datei.
+# Hauptspeicherung: API POST /v1/demo-script (läuft nicht ab).
 #
 # Ausführen: ./refresh-demo-state-url.sh
 #
@@ -18,7 +19,7 @@ REGION="eu-central-1"
 BUCKET="manuel-weiss-website"
 KEY="data/tempus-demo-pm-state.json"
 
-echo "🔑 Generiere neue Presigned PUT-URL (7 Tage)..."
+echo "🔑 Generiere neue Presigned PUT-URL (max. 7 Tage, ExpiresIn=604800)..."
 
 export NEW_URL
 NEW_URL=$(python3 -c "

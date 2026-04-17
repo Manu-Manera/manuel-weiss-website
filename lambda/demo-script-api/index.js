@@ -94,10 +94,11 @@ exports.handler = async (event) => {
         return response(400, { error: 'scenes array fehlt' }, origin);
       }
 
+      // Vollständigen State speichern (tempus-demo-pm: heroHtml, introHtml, agendaHtml, schemaVersion, …)
       const state = {
-        scenes: body.scenes,
+        ...body,
         savedBy: 'editor',
-        ts: Date.now()
+        ts: typeof body.ts === 'number' ? body.ts : Date.now()
       };
       await saveState(state);
       return response(200, { ok: true, ts: state.ts }, origin);
