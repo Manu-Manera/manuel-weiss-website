@@ -43,7 +43,16 @@ import {
   sanitizeFileName,
   downloadBlob,
   downloadEmlZip,
+  suggestNameFromEmail,
+  suggestUsernameFromName,
+  USERNAME_MODE_FIRSTNAME,
+  USERNAME_MODE_FULLNAME,
+  DEFAULT_TEMPUS_PASSWORD,
 } from '../utils/mailerUtils';
+
+const GLOBAL_URL_KEY      = 'tempus_mailer_global_url';
+const DEFAULT_PW_KEY      = 'tempus_mailer_default_pw';
+const USERNAME_MODE_KEY   = 'tempus_mailer_username_mode';
 
 const PLACEHOLDER_HINT = ['{NAME}', '{EMAIL}', '{URL}', '{USERNAME}', '{PASSWORD}'];
 
@@ -95,13 +104,51 @@ export default function LoginMailer() {
     try { localStorage.setItem('tempus_mailer_sender', senderEmail || ''); } catch { /* ignore */ }
   }, [senderEmail]);
 
+  // --- Globale Defaults (analog Desktop-App) ---
+  const [globalUrl, setGlobalUrl] = useState(() => {
+    try { return localStorage.getItem(GLOBAL_URL_KEY) || ''; } catch { return ''; }
+  });
+  const [defaultPassword, setDefaultPassword] = useState(() => {
+    try { return localStorage.getItem(DEFAULT_PW_KEY) || DEFAULT_TEMPUS_PASSWORD; } catch { return DEFAULT_TEMPUS_PASSWORD; }
+  });
+  const [usernameMode, setUsernameMode] = useState(() => {
+    try { return localStorage.getItem(USERNAME_MODE_KEY) || USERNAME_MODE_FIRSTNAME; } catch { return USERNAME_MODE_FIRSTNAME; }
+  });
+  useEffect(() => { try { localStorage.setItem(GLOBAL_URL_KEY, globalUrl || ''); } catch { /* ignore */ } }, [globalUrl]);
+  useEffect(() => { try { localStorage.setItem(DEFAULT_PW_KEY, defaultPassword || ''); } catch { /* ignore */ } }, [defaultPassword]);
+  useEffect(() => { try { localStorage.setItem(USERNAME_MODE_KEY, usernameMode); } catch { /* ignore */ } }, [usernameMode]);
+
+  const effectivePassword = () => (defaultPassword?.trim() || DEFAULT_TEMPUS_PASSWORD);
+
+  // Defaults + Auto-Vorschläge auf einen einzelnen Empfänger anwenden (wie in
+  // app.py::_add_row bzw. _import_excel): URL/Passwort füllen, Name aus Email
+  // raten falls leer, Username aus Name ableiten (Modus beachten).
+  const enrichEntry = (e, { forceUsernameFromName = false } = {}) => {
+    const out = { ...e };
+    if (!out.url && globalUrl.trim()) out.url = globalUrl.trim();
+    if (!(out.password || '').trim()) out.password = effectivePassword();
+    if (!out.name && out.email) out.name = suggestNameFromEmail(out.email);
+    const name = (out.name || '').trim();
+    const shouldSetUser = forceUsernameFromName || !(out.username || '').trim();
+    if (name && shouldSetUser) {
+      const derived = suggestUsernameFromName(name, usernameMode);
+      out.username = derived;
+      out._autoUsername = derived; // Marker für später: Username wurde automatisch gesetzt
+    }
+    return out;
+  };
+
   const excelInputRef = useRef(null);
 
   const onPickExcel = async (file) => {
     if (!file) return;
     try {
       const { entries: imported, report } = await parseExcelFile(file);
-      setEntries((prev) => [...prev, ...imported]);
+      // Beim Import: Username immer aus dem Anzeigenamen ableiten (die Excel-
+      // Spalte „Benutzername" ist oft falsch/leer), Passwörter und URL aus den
+      // globalen Defaults füllen. Das deckt sich mit app.py::_import_excel.
+      const enriched = imported.map((e) => enrichEntry(e, { forceUsernameFromName: true }));
+      setEntries((prev) => [...prev, ...enriched]);
       setParseReport({ file: file.name, sheets: report });
     } catch (err) {
       alert('Excel konnte nicht gelesen werden: ' + (err?.message || err));
@@ -111,12 +158,44 @@ export default function LoginMailer() {
   const addManualEntry = () => {
     setEntries((prev) => [
       ...prev,
-      { name: '', email: '', username: '', password: '', url: '', _manual: true },
+      enrichEntry({ name: '', email: '', username: '', password: '', url: '', _manual: true }),
     ]);
   };
 
   const updateEntry = (idx, field, value) => {
-    setEntries((prev) => prev.map((e, i) => (i === idx ? { ...e, [field]: value } : e)));
+    setEntries((prev) => prev.map((e, i) => {
+      if (i !== idx) return e;
+      const next = { ...e, [field]: value };
+
+      // Reaktive Ableitung wie in app.py::_on_email_changed / _on_name_changed
+      if (field === 'email') {
+        const email = (value || '').trim();
+        if (email && email.includes('@') && !next.name) {
+          next.name = suggestNameFromEmail(email);
+        }
+        if (next.name && !(next.username || '').trim()) {
+          const derived = suggestUsernameFromName(next.name, usernameMode);
+          next.username = derived;
+          next._autoUsername = derived;
+        }
+        if (!(next.password || '').trim()) next.password = effectivePassword();
+      } else if (field === 'name') {
+        const name = (value || '').trim();
+        if (name) {
+          const derivedNow = suggestUsernameFromName(name, usernameMode);
+          const current = (next.username || '').trim();
+          // Username mitziehen, wenn er leer ist oder noch dem letzten Auto-Wert entspricht.
+          if (!current || current === (e._autoUsername || '')) {
+            next.username = derivedNow;
+            next._autoUsername = derivedNow;
+          }
+        }
+      } else if (field === 'username') {
+        // Manuell angepasst → Auto-Marker entfernen, damit spätere Namenänderung ihn nicht mehr überschreibt.
+        delete next._autoUsername;
+      }
+      return next;
+    }));
   };
 
   const removeEntry = (idx) => {
@@ -127,6 +206,41 @@ export default function LoginMailer() {
     if (entries.length && !confirm(`Alle ${entries.length} Empfänger wirklich entfernen?`)) return;
     setEntries([]);
     setParseReport(null);
+  };
+
+  // --- Bulk-Aktionen (analog Desktop-App) ---
+  const applyUrlToAll = () => {
+    const g = globalUrl.trim();
+    if (!g) { alert('Bitte zuerst eine globale URL eingeben.'); return; }
+    if (!entries.length) { alert('Keine Empfänger vorhanden.'); return; }
+    const nonempty = entries.filter(e => (e.url || '').trim()).length;
+    let overwriteAll = true;
+    if (nonempty) {
+      const r = confirm(
+        'Einige Zeilen haben bereits eine URL.\n\n' +
+        'OK = alle mit der globalen URL überschreiben\n' +
+        'Abbrechen = nur leere URL-Zellen füllen'
+      );
+      overwriteAll = r === true;
+    }
+    setEntries(prev => prev.map(e => (overwriteAll || !(e.url || '').trim()) ? { ...e, url: g } : e));
+  };
+
+  const applyPasswordToAll = () => {
+    const pw = effectivePassword();
+    if (!entries.length) { alert('Keine Empfänger vorhanden.'); return; }
+    if (!confirm('Alle Passwort-Felder mit dem Initialpasswort überschreiben?')) return;
+    setEntries(prev => prev.map(e => ({ ...e, password: pw })));
+  };
+
+  const reapplyUsernames = () => {
+    if (!entries.length) { alert('Keine Empfänger vorhanden.'); return; }
+    setEntries(prev => prev.map(e => {
+      const name = (e.name || '').trim();
+      if (!name) return e;
+      const derived = suggestUsernameFromName(name, usernameMode);
+      return { ...e, username: derived, _autoUsername: derived };
+    }));
   };
 
   // --- Templates ---
@@ -476,7 +590,83 @@ export default function LoginMailer() {
                   className="hidden"
                 />
               </div>
-              <p className="text-xs text-white/40 mt-1">Neue Zeilen werden an die bestehende Liste angehängt.</p>
+              <p className="text-xs text-white/40 mt-1">Beim Import werden URL, Passwort und Username gemäß den Defaults unten ergänzt.</p>
+            </div>
+          </div>
+
+          {/* ── GLOBALE DEFAULTS (URL / Passwort / Username-Modus) ── */}
+          <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 space-y-3">
+            <p className="text-sm font-semibold text-white/80">Globale Defaults</p>
+
+            <div className="grid md:grid-cols-[2fr_auto] gap-2 items-end">
+              <div>
+                <label className="block text-xs text-white/50 mb-1">Globale URL (für alle)</label>
+                <input
+                  value={globalUrl}
+                  onChange={(e) => setGlobalUrl(e.target.value)}
+                  onBlur={() => {
+                    // Wie in der Desktop-App: beim Verlassen des Felds leere URL-Zellen füllen.
+                    if (!globalUrl.trim()) return;
+                    setEntries(prev => prev.map(e => !(e.url || '').trim() ? { ...e, url: globalUrl.trim() } : e));
+                  }}
+                  placeholder="https://zugang.firma.ch"
+                  className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm"
+                />
+              </div>
+              <button
+                onClick={applyUrlToAll}
+                className="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-sm whitespace-nowrap"
+              >
+                URL in alle Zeilen
+              </button>
+            </div>
+
+            <div className="grid md:grid-cols-[2fr_auto] gap-2 items-end">
+              <div>
+                <label className="block text-xs text-white/50 mb-1">Initialpasswort</label>
+                <input
+                  value={defaultPassword}
+                  onChange={(e) => setDefaultPassword(e.target.value)}
+                  placeholder={DEFAULT_TEMPUS_PASSWORD}
+                  className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm font-mono"
+                />
+              </div>
+              <button
+                onClick={applyPasswordToAll}
+                className="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-sm whitespace-nowrap"
+              >
+                Passwörter setzen
+              </button>
+            </div>
+
+            <div>
+              <label className="block text-xs text-white/50 mb-1">Username-Modus</label>
+              <div className="flex items-center gap-4 flex-wrap">
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="username_mode"
+                    checked={usernameMode === USERNAME_MODE_FIRSTNAME}
+                    onChange={() => setUsernameMode(USERNAME_MODE_FIRSTNAME)}
+                  />
+                  Nur Vorname <span className="text-white/40 text-xs">(z. B. Leonie)</span>
+                </label>
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="username_mode"
+                    checked={usernameMode === USERNAME_MODE_FULLNAME}
+                    onChange={() => setUsernameMode(USERNAME_MODE_FULLNAME)}
+                  />
+                  Vor- &amp; Nachname <span className="text-white/40 text-xs">(z. B. Maria Mueller)</span>
+                </label>
+                <button
+                  onClick={reapplyUsernames}
+                  className="ml-auto px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-sm"
+                >
+                  Usernames neu setzen
+                </button>
+              </div>
             </div>
           </div>
 
@@ -488,6 +678,13 @@ export default function LoginMailer() {
                   <li key={i}>
                     Blatt <span className="font-mono text-white/90">{s.sheet}</span>: {s.imported} Zeilen importiert
                     {' '}(<span className="text-emerald-300">{s.withEmail} mit E-Mail</span>)
+                    {s.inferredEmails > 0 && (
+                      <>
+                        {' · '}
+                        <span className="text-amber-300">{s.inferredEmails} aus Muster ergänzt</span>
+                        <span className="text-white/40"> ({s.inferredPattern})</span>
+                      </>
+                    )}
                   </li>
                 ))}
               </ul>

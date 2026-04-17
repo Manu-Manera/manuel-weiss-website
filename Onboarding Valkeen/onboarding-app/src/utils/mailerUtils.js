@@ -1,9 +1,13 @@
 /**
  * Helpers für den Tempus Login Mailer:
- * - Excel-Parser (SheetJS) mit Spalten-Erkennung (E-Mail, Username, Passwort, URL, Name)
+ * - Excel-Parser (SheetJS) mit Spalten-Erkennung (E-Mail, Username, Passwort, URL, Name,
+ *   Vorname, Nachname), inklusive Hyperlink-Erkennung (mailto:) und Lernen von
+ *   Email-Mustern (z. B. {vorname}.{nachname}@firma.com), um fehlende Adressen
+ *   aus Namen zu ergänzen.
  * - docx → HTML (mammoth)
  * - Platzhalter-Ersetzung {NAME} {EMAIL} {URL} {USERNAME} {PASSWORD}
  * - EML-Datei-Generator (RFC 822 / MIME multipart/related mit inline Bildern)
+ * - Namens-/Usernames-Vorschläge (analog zur Desktop-App in services/name_suggester.py)
  * - Helfer zur Dateinamenbereinigung und ZIP-Batch-Download
  */
 
@@ -15,17 +19,160 @@ import JSZip from 'jszip';
 // Excel Parsing
 // ---------------------------------------------------------------------------
 
+// 1:1 aus tempus-login-mailer/services/excel_parser.py portiert.
+// Kein nacktes „adresse" (fängt sonst Straßen-Spalten ein).
 const COLUMN_PATTERNS = {
-  email:    /(e[-_\s]?mail|mail\s*adresse|mail\s*address|empf.+mail|recipient|^email$|^mail$)/i,
+  email:    /(e[-_\s]?mail|^\s*email\s*$|^\s*e_mail\s*$|^\s*mail\s*$|mail\s*adresse|mail\s*address|e.?mail\s*adresse|empf.+mail|recipient|work\s*e[-_]?mail|business\s*e[-_]?mail|primary\s*e[-_]?mail|contact\s*e[-_]?mail|\bemail\s*address\b|\bemail\b)/i,
   username: /(user\s?name|user\s?id|benutzer|benutzername|login.?id)/i,
-  password: /(pass\s?word|passwort|kennwort|^pw$|^pwd$)/i,
+  password: /(pass\s?word|passwort|kennwort|\bpw\b|\bpwd\b)/i,
   url:      /(url|link|website|login.?url|zugang)/i,
-  name:     /(^name$|full\s?name|display\s?name|anzeigename|kunde|kontakt|empf[äa]nger|teilnehmer|vor[\s\-/]*(?:und|&|\+|u\.)?[\s\-/]*nachname|vor[\s\-/]*nachname)/i,
-  vorname:  /^(vorname|firstname|given\s?name|pr[eé]nom)$/i,
-  nachname: /^(nachname|lastname|surname|family\s?name|nom)$/i,
+  name:     /(^name$|full\s?name|display\s?name|anzeigename|client\s?name|kunde|kontakt|empf[äa]nger|teilnehmer|vor[\s\-/]*(?:und|&|\+|u\.)?[\s\-/]*nachname|vor[\s\-/]*nachname|name\s*\(vorname)/i,
+  vorname:  /(^vorname$|^firstname$|^given\s?name$|^voornaam$|^pr[eé]nom$)/i,
+  nachname: /(^nachname$|^lastname$|^surname$|^family\s?name$|^achternaam$|^nom$)/i,
 };
 
+// Strenger: ASCII-typisch (wird zuerst geprüft).
+const EMAIL_STRICT = /^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
+// Weicher: erlaubt Umlaute im lokalen Teil, IDN-Domains.
+const EMAIL_LOOSE_FULL = /^[^\s<>,;:"']+@[^\s<>,;:"']+\.[^\s<>,;:"']{2,}$/;
 const EMAIL_RE = /[^\s<>,;:"']+@[^\s<>,;:"']+\.[^\s<>,;:"']{2,}/;
+
+// ---------------------------------------------------------------------------
+// Transliteration & Namens-/Username-Vorschläge (Port aus name_suggester.py)
+// ---------------------------------------------------------------------------
+
+const UMLAUT_MAP = { 'ä': 'ae', 'ö': 'oe', 'ü': 'ue', 'ß': 'ss', 'Ä': 'Ae', 'Ö': 'Oe', 'Ü': 'Ue' };
+
+/** Umlaute → ae/oe/ue/ss, Diakritika entfernen, ASCII-ähnlich. */
+function translit(s) {
+  if (!s) return '';
+  let out = '';
+  for (const ch of String(s)) out += (UMLAUT_MAP[ch] || ch);
+  return out.normalize('NFKD').replace(/\p{Diacritic}/gu, '');
+}
+
+export const USERNAME_MODE_FIRSTNAME = 'firstname';
+export const USERNAME_MODE_FULLNAME  = 'fullname';
+
+export const DEFAULT_TEMPUS_PASSWORD = 'Passwort123@Tempus';
+
+/** Ableitung: „leonie.dahl@firma.com" → „Leonie Dahl". */
+export function suggestNameFromEmail(email) {
+  if (!email || !email.includes('@')) return '';
+  const local = email.split('@')[0].trim().toLowerCase();
+  for (const sep of ['.', '_', '-']) {
+    if (local.includes(sep)) {
+      const parts = local.split(sep).filter(Boolean);
+      if (parts.length >= 2) {
+        return parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+      }
+    }
+  }
+  const m = local.match(/^([a-z])([a-z]+)$/);
+  if (m && m[2].length >= 3) {
+    return `${m[1].toUpperCase()}. ${m[2].charAt(0).toUpperCase() + m[2].slice(1)}`;
+  }
+  return local.charAt(0).toUpperCase() + local.slice(1);
+}
+
+function slugLoginToken(s) {
+  return translit(String(s || '').toLowerCase().trim()).replace(/[^a-z0-9]/g, '');
+}
+
+function formatUsernameProperCase(username) {
+  if (!username) return '';
+  const cap = (seg) => !seg ? seg : (seg.length > 1 ? seg[0].toUpperCase() + seg.slice(1) : seg.toUpperCase());
+  if (username.includes('.')) return username.split('.').filter(Boolean).map(cap).join('.');
+  if (/\s/.test(username.trim())) return username.split(/\s+/).filter(Boolean).map(cap).join(' ');
+  return cap(username);
+}
+
+/**
+ * Username aus Anzeigenamen ableiten.
+ * mode = 'firstname' → nur Vorname (z. B. „Leonie")
+ * mode = 'fullname'  → „Vorname Nachname" (erster + letzter Token, Leerzeichen)
+ */
+export function suggestUsernameFromName(displayName, mode = USERNAME_MODE_FIRSTNAME) {
+  const parts = String(displayName || '').trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return '';
+  const tokens = parts.map(slugLoginToken).filter(Boolean);
+  if (!tokens.length) return '';
+  let raw;
+  if (mode === USERNAME_MODE_FIRSTNAME) {
+    raw = tokens[0];
+  } else if (tokens.length === 1) {
+    raw = tokens[0];
+  } else {
+    raw = `${tokens[0]} ${tokens[tokens.length - 1]}`;
+  }
+  return formatUsernameProperCase(raw);
+}
+
+// ---------------------------------------------------------------------------
+// E-Mail-Muster lernen (aus bestehenden Paaren Name+E-Mail) und fehlende Adressen
+// ableiten. Analog zu _learn_email_pattern + _format_local in excel_parser.py.
+// ---------------------------------------------------------------------------
+
+const LOCAL_PATTERNS = [
+  '{vorname}.{nachname}',
+  '{nachname}.{vorname}',
+  '{v}.{nachname}',
+  '{vorname}.{n}',
+  '{vorname}{nachname}',
+  '{nachname}{vorname}',
+  '{vorname}_{nachname}',
+  '{vorname}-{nachname}',
+  '{v}{nachname}',
+  '{vorname}',
+  '{nachname}',
+];
+
+function formatLocal(pattern, vorname, nachname) {
+  const v = translit(vorname).toLowerCase().replace(/\s+/g, '');
+  const n = translit(nachname).toLowerCase().replace(/\s+/g, '');
+  if (!v && !n) return '';
+  return pattern
+    .replace('{vorname}', v || '')
+    .replace('{nachname}', n || '')
+    .replace('{v}', v ? v[0] : '')
+    .replace('{n}', n ? n[0] : '');
+}
+
+function learnEmailPattern(pairs) {
+  const votes = new Map();
+  for (const [name, email] of pairs) {
+    if (!email || !email.includes('@')) continue;
+    const [local, domain] = email.split('@');
+    const [vor, nach] = splitName(name);
+    if (!vor && !nach) continue;
+    const localL = local.toLowerCase();
+    const domainL = (domain || '').toLowerCase();
+    for (const pat of LOCAL_PATTERNS) {
+      const cand = formatLocal(pat, vor, nach);
+      if (cand && cand === localL) {
+        const key = `${pat}\u0000${domainL}`;
+        votes.set(key, (votes.get(key) || 0) + 1);
+        break;
+      }
+    }
+  }
+  if (!votes.size) return null;
+  let bestKey = null, bestCount = -1;
+  for (const [k, c] of votes) { if (c > bestCount) { bestCount = c; bestKey = k; } }
+  const [pattern, domain] = bestKey.split('\u0000');
+  return { pattern, domain };
+}
+
+function pickDominantDomain(emails) {
+  const c = new Map();
+  for (const e of emails) {
+    const d = (e.split('@')[1] || '').trim().toLowerCase();
+    if (d) c.set(d, (c.get(d) || 0) + 1);
+  }
+  let best = '', max = 0;
+  for (const [d, n] of c) if (n > max) { max = n; best = d; }
+  return best;
+}
 
 function cellToStr(v) {
   if (v === null || v === undefined) return '';
@@ -37,12 +184,19 @@ function cellToStr(v) {
 }
 
 function normalizeEmail(raw) {
-  const s = cellToStr(raw).replace(/^mailto:/i, '').replace(/^"+|"+$/g, '').trim();
-  if (!s || !s.includes('@')) return '';
-  const m = s.match(/<([^<>@\s]+@[^>]+)>/);
-  if (m) return m[1].trim();
-  const m2 = s.match(EMAIL_RE);
-  return m2 ? m2[0].trim() : '';
+  let s = cellToStr(raw);
+  if (!s) return '';
+  if (s.toLowerCase().startsWith('mailto:')) s = s.slice(7).trim();
+  const bracket = s.match(/<([^<>@\s]+@[^>]+)>/);
+  if (bracket) s = bracket[1].trim();
+  s = s.trim().replace(/^["']+|["']+$/g, '');
+  if (!s.includes('@')) return '';
+  // Zuerst strikt (fullmatch), dann loose (fullmatch), dann Teilstring-Suche als
+  // letzte Rettung. Verhindert, dass „müller@…" als „ller@…" zurückkommt.
+  if (EMAIL_STRICT.test(s)) return s;
+  if (EMAIL_LOOSE_FULL.test(s)) return s;
+  const m = s.match(EMAIL_RE);
+  return m ? m[0].trim() : '';
 }
 
 function firstEmailInRow(row) {
@@ -138,16 +292,34 @@ function pickHeaderRow(rows, maxScan = 30) {
   return 0;
 }
 
-function splitName(name) {
+export function splitName(name) {
   const n = (name || '').trim();
   if (!n) return ['', ''];
   if (n.includes(',')) {
-    const [a, b] = n.split(',', 2).map(s => s.trim());
+    const idx = n.indexOf(',');
+    const a = n.slice(0, idx).trim();
+    const b = n.slice(idx + 1).trim();
     if (a && b) return [b, a];
   }
   const toks = n.split(/\s+/);
   if (toks.length === 1) return [toks[0], ''];
   return [toks[0], toks.slice(1).join(' ')];
+}
+
+/** „Nachname, Vorname" → „Vorname Nachname"; sonst unverändert. */
+function normalizeNameCell(raw) {
+  const [vor, nach] = splitName(raw);
+  if (vor && nach) return `${vor} ${nach}`.trim();
+  return (raw || '').trim();
+}
+
+/** True, wenn die „Kopf"-Zeile eigentlich schon Daten ist (nur E-Mail-Adressen). */
+function headerRowLooksLikeDataRow(headers, cmap) {
+  const nonempty = headers.filter(Boolean);
+  if (!nonempty.length) return false;
+  const nEmail = nonempty.filter(h => normalizeEmail(h)).length;
+  const other = Object.entries(cmap).filter(([k, v]) => v !== null && k !== 'email').length;
+  return other === 0 && nEmail === nonempty.length && nEmail >= 1;
 }
 
 export async function parseExcelFile(file) {
@@ -166,9 +338,22 @@ export async function parseExcelFile(file) {
     const headers = (rows[hi] || []).map(cellToStr);
     const cmap = detectColumns(headers);
 
-    // Daten ab nächste Zeile (oder Header-Zeile, falls schon Daten)
-    const firstIsData = cmap.email === null && headers.some(h => EMAIL_RE.test(h));
-    const dataStart = firstIsData ? hi : hi + 1;
+    // Sonderfall: erste Zeile enthält schon @-Adressen (kein echter Kopf).
+    let headerIsData = false;
+    if (cmap.email === null) {
+      for (let idx = 0; idx < (rows[hi] || []).length; idx++) {
+        const cell = (rows[hi] || [])[idx];
+        if (cell && String(cell).includes('@')) {
+          cmap.email = idx;
+          headerIsData = true;
+          break;
+        }
+      }
+    }
+    if (!headerIsData && headerRowLooksLikeDataRow(headers, cmap)) {
+      headerIsData = true;
+    }
+    const dataStart = headerIsData ? hi : hi + 1;
 
     const col = (row, idx) => (idx == null || idx < 0 || idx >= row.length) ? '' : cellToStr(row[idx]);
     const linkAt = (r, idx) => (idx == null || idx < 0 || !linkEmails[r] || idx >= linkEmails[r].length) ? '' : (linkEmails[r][idx] || '');
@@ -183,15 +368,26 @@ export async function parseExcelFile(file) {
       const vor  = col(row, cmap.vorname);
       const nach = col(row, cmap.nachname);
       const combined = `${vor} ${nach}`.trim();
-      const singleName = col(row, cmap.name);
-      const name = combined || singleName;
+      const singleNameRaw = col(row, cmap.name);
+      const singleName = normalizeNameCell(singleNameRaw);
+      let name = combined || singleName;
 
       // E-Mail-Suche: 1) Email-Spalte als Text, 2) Email-Spalte als Hyperlink-Target,
       // 3) irgendeine andere Zelle mit Text-Email, 4) irgendeine Zelle mit Hyperlink.
-      let email = normalizeEmail(col(row, cmap.email));
+      const rawEmailCell = col(row, cmap.email);
+      let email = normalizeEmail(rawEmailCell);
       if (!email) email = linkAt(r, cmap.email);
       if (!email) email = firstEmailInRow(row);
       if (!email) email = firstEmailInLinks(linkEmails[r]);
+
+      // Notfall: In der E-Mail-Spalte steht „Nachname, Vorname" (kein @) und sonst
+      // kein Name → als Namen übernehmen.
+      if (!email && rawEmailCell && !name) {
+        const maybeName = normalizeNameCell(rawEmailCell);
+        if (maybeName && maybeName.includes(' ') && !maybeName.includes('@')) {
+          name = maybeName;
+        }
+      }
 
       sheetEntries.push({
         name,
@@ -203,11 +399,38 @@ export async function parseExcelFile(file) {
       });
     }
 
+    // E-Mail-Muster aus vorhandenen (Name, E-Mail)-Paaren lernen und fehlende
+    // Adressen ableiten. Bricht still ab, wenn kein Muster erkennbar; dann wird
+    // als Fallback die dominante Domain + {vorname}.{nachname} versucht.
+    const pairs = sheetEntries
+      .filter(e => e.name && e.email)
+      .map(e => [e.name, e.email]);
+    let learned = learnEmailPattern(pairs);
+    if (!learned) {
+      const domain = pickDominantDomain(sheetEntries.filter(e => e.email).map(e => e.email));
+      if (domain) learned = { pattern: '{vorname}.{nachname}', domain };
+    }
+    let inferred = 0;
+    if (learned) {
+      for (const e of sheetEntries) {
+        if (e.email) continue;
+        const [vor, nach] = splitName(e.name || '');
+        if (!vor || !nach) continue;
+        const local = formatLocal(learned.pattern, vor, nach);
+        if (!local) continue;
+        e.email = `${local}@${learned.domain}`;
+        e._inferred = true;
+        inferred++;
+      }
+    }
+
     sheetReports.push({
       sheet: sheetName,
       rows: rows.length,
       imported: sheetEntries.length,
       withEmail: sheetEntries.filter(e => e.email).length,
+      inferredEmails: inferred,
+      inferredPattern: learned ? `${learned.pattern}@${learned.domain}` : '',
     });
     allEntries.push(...sheetEntries);
   }
