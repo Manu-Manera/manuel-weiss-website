@@ -35,6 +35,11 @@ import {
   AlignCenter,
   AlignRight,
   ExternalLink,
+  Zap,
+  Plug,
+  CheckCircle2,
+  XCircle,
+  MinusCircle,
 } from 'lucide-react';
 
 import {
@@ -65,11 +70,23 @@ import {
   USERNAME_MODE_FIRSTNAME,
   USERNAME_MODE_FULLNAME,
   DEFAULT_TEMPUS_PASSWORD,
+  TEMPUS_DEFAULT_BASE_URL,
+  tempusIdentity,
+  tempusListGlobalRoles,
+  tempusListResourceSecurityGroups,
+  tempusResourceNameExists,
+  tempusCreateResource,
 } from '../utils/mailerUtils';
 
 const GLOBAL_URL_KEY      = 'tempus_mailer_global_url';
 const DEFAULT_PW_KEY      = 'tempus_mailer_default_pw';
 const USERNAME_MODE_KEY   = 'tempus_mailer_username_mode';
+
+// Tempus-API-Konfiguration. Der Key wird NICHT im localStorage persistiert.
+const TEMPUS_BASE_URL_KEY   = 'tempus_mailer_api_base_url';
+const TEMPUS_ROLE_KEY       = 'tempus_mailer_api_role_id';
+const TEMPUS_SG_KEY         = 'tempus_mailer_api_sg_id';
+const TEMPUS_TIMESHEET_KEY  = 'tempus_mailer_api_timesheet';
 
 const PLACEHOLDER_HINT = ['{NAME}', '{EMAIL}', '{URL}', '{USERNAME}', '{PASSWORD}'];
 
@@ -302,6 +319,154 @@ export default function LoginMailer() {
       const derived = suggestUsernameFromName(name, usernameMode);
       return { ...e, username: derived, _autoUsername: derived };
     }));
+  };
+
+  // ---------------------------------------------------------------------------
+  // Tempus-API-Sync: Resources nacheinander anlegen
+  // ---------------------------------------------------------------------------
+  // Der API-Key wird bewusst nur im State gehalten (nicht in localStorage),
+  // damit er nach Reload weg ist. Die Auswahlparameter (Rolle, Security-Group,
+  // Timesheet-Flag, Base-URL) werden persistiert.
+
+  const [tempusApiKey, setTempusApiKey] = useState('');
+  const [tempusBaseUrl, setTempusBaseUrl] = useState(() => {
+    try { return localStorage.getItem(TEMPUS_BASE_URL_KEY) || TEMPUS_DEFAULT_BASE_URL; }
+    catch { return TEMPUS_DEFAULT_BASE_URL; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem(TEMPUS_BASE_URL_KEY, tempusBaseUrl || ''); } catch { /* ignore */ }
+  }, [tempusBaseUrl]);
+
+  const [tempusIdentityInfo, setTempusIdentityInfo]   = useState(null);
+  const [tempusRoles, setTempusRoles]                 = useState([]);
+  const [tempusGroups, setTempusGroups]               = useState([]);
+  const [tempusConnectError, setTempusConnectError]  = useState('');
+  const [tempusConnecting, setTempusConnecting]      = useState(false);
+
+  const [tempusRoleId, setTempusRoleId] = useState(() => {
+    try { const v = localStorage.getItem(TEMPUS_ROLE_KEY); return v ? Number(v) : null; }
+    catch { return null; }
+  });
+  const [tempusSecurityGroupId, setTempusSecurityGroupId] = useState(() => {
+    try { const v = localStorage.getItem(TEMPUS_SG_KEY); return v ? Number(v) : null; }
+    catch { return null; }
+  });
+  const [tempusIsTimesheetUser, setTempusIsTimesheetUser] = useState(() => {
+    try { return localStorage.getItem(TEMPUS_TIMESHEET_KEY) === '1'; } catch { return false; }
+  });
+  useEffect(() => {
+    try { tempusRoleId != null ? localStorage.setItem(TEMPUS_ROLE_KEY, String(tempusRoleId)) : localStorage.removeItem(TEMPUS_ROLE_KEY); } catch { /* ignore */ }
+  }, [tempusRoleId]);
+  useEffect(() => {
+    try { tempusSecurityGroupId != null ? localStorage.setItem(TEMPUS_SG_KEY, String(tempusSecurityGroupId)) : localStorage.removeItem(TEMPUS_SG_KEY); } catch { /* ignore */ }
+  }, [tempusSecurityGroupId]);
+  useEffect(() => {
+    try { localStorage.setItem(TEMPUS_TIMESHEET_KEY, tempusIsTimesheetUser ? '1' : '0'); } catch { /* ignore */ }
+  }, [tempusIsTimesheetUser]);
+
+  // Status pro Empfänger-Zeile beim Sync-Lauf.
+  // Jeder Eintrag: { status: 'pending'|'running'|'created'|'exists'|'error'|'skipped', message?, resourceId? }
+  const [tempusSyncRows, setTempusSyncRows] = useState([]);
+  const [tempusSyncRunning, setTempusSyncRunning] = useState(false);
+
+  const handleTempusConnect = async () => {
+    const key = tempusApiKey.trim();
+    if (!key) { setTempusConnectError('API-Key fehlt.'); return; }
+    setTempusConnecting(true);
+    setTempusConnectError('');
+    try {
+      const [identity, roles, groups] = await Promise.all([
+        tempusIdentity(key),
+        tempusListGlobalRoles(key).catch(() => []),
+        tempusListResourceSecurityGroups(key).catch(() => []),
+      ]);
+      setTempusIdentityInfo(identity);
+      setTempusRoles(roles);
+      setTempusGroups(groups);
+      // Defaults setzen, falls noch nichts gewählt
+      setTempusRoleId((curr) => {
+        if (curr != null && roles.some(r => r.id === curr)) return curr;
+        const nonAdmin = roles.find(r => r.systemKey !== 'Administrator');
+        return (nonAdmin || roles[0])?.id ?? null;
+      });
+      setTempusSecurityGroupId((curr) => {
+        if (curr != null && groups.some(g => g.id === curr)) return curr;
+        return groups[0]?.id ?? null;
+      });
+    } catch (err) {
+      setTempusIdentityInfo(null);
+      setTempusConnectError(err?.message || String(err));
+    } finally {
+      setTempusConnecting(false);
+    }
+  };
+
+  const handleTempusDisconnect = () => {
+    setTempusApiKey('');
+    setTempusIdentityInfo(null);
+    setTempusRoles([]);
+    setTempusGroups([]);
+    setTempusConnectError('');
+    setTempusSyncRows([]);
+  };
+
+  const handleTempusSync = async () => {
+    if (!tempusIdentityInfo) { alert('Bitte zuerst mit Tempus verbinden.'); return; }
+    if (tempusRoleId == null || tempusSecurityGroupId == null) {
+      alert('Bitte Globale Rolle und Security-Group wählen.');
+      return;
+    }
+    const targets = entries
+      .map((e, idx) => ({ idx, name: (e.name || '').trim(), email: (e.email || '').trim() }))
+      .filter(t => t.name);
+
+    if (!targets.length) {
+      alert('Keine Empfänger mit Namen vorhanden. (Die Tempus-API benötigt zwingend einen Namen.)');
+      return;
+    }
+
+    const ok = confirm(
+      `Es werden ${targets.length} Resources nacheinander in Tempus angelegt.\n\n` +
+      `Ziel: ${tempusBaseUrl}\n` +
+      `Rolle: ${(tempusRoles.find(r => r.id === tempusRoleId)?.name) || tempusRoleId}\n` +
+      `Security-Group: ${(tempusGroups.find(g => g.id === tempusSecurityGroupId)?.name) || tempusSecurityGroupId}\n` +
+      `Timesheet-User: ${tempusIsTimesheetUser ? 'ja' : 'nein'}\n\n` +
+      `Fortfahren?`
+    );
+    if (!ok) return;
+
+    setTempusSyncRunning(true);
+    const initial = targets.map(t => ({ idx: t.idx, name: t.name, email: t.email, status: 'pending' }));
+    setTempusSyncRows(initial);
+
+    const updateRow = (idx, patch) => {
+      setTempusSyncRows(prev => prev.map(r => (r.idx === idx ? { ...r, ...patch } : r)));
+    };
+
+    for (const t of targets) {
+      updateRow(t.idx, { status: 'running' });
+      try {
+        const exists = await tempusResourceNameExists(tempusApiKey, t.name);
+        if (exists) {
+          updateRow(t.idx, { status: 'exists', message: 'Name in Tempus bereits vergeben — übersprungen.' });
+        } else {
+          const newId = await tempusCreateResource(tempusApiKey, {
+            name: t.name,
+            globalRoleId: tempusRoleId,
+            securityGroupId: tempusSecurityGroupId,
+            isEnabled: true,
+            isTimesheetUser: tempusIsTimesheetUser,
+          });
+          updateRow(t.idx, { status: 'created', resourceId: newId, message: `Angelegt (Id ${newId}).` });
+        }
+      } catch (err) {
+        updateRow(t.idx, { status: 'error', message: err?.message || String(err) });
+      }
+      // Kurze Pause, damit die API nicht überlastet wird und der Fortschritt sichtbar ist.
+      await new Promise(res => setTimeout(res, 150));
+    }
+
+    setTempusSyncRunning(false);
   };
 
   // --- Templates ---
@@ -1058,6 +1223,179 @@ export default function LoginMailer() {
               {entries.length > 200 && (
                 <div className="px-3 py-2 text-xs text-white/40 bg-white/5 border-t border-white/10">
                   … {entries.length - 200} weitere Zeilen ausgeblendet. Für &gt;200 Empfänger bitte in Batches verarbeiten.
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── TEMPUS-API-SYNC ─────────────────────────────────────────── */}
+          {entries.length > 0 && (
+            <div className="mt-4 p-4 rounded-xl border border-indigo-400/30 bg-indigo-500/[0.06] space-y-4">
+              <div className="flex items-start gap-3">
+                <Zap className="w-6 h-6 text-indigo-300 shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold">User in Tempus anlegen (optional)</h3>
+                  <p className="text-xs text-white/60 mt-1">
+                    Legt pro Empfänger einen <span className="font-semibold text-white/80">Tempus-Resource-Eintrag</span> (Stammdatensatz) via API
+                    an. Bestehende Namen werden übersprungen, E-Mail/Username/Passwort werden NICHT über die API gesetzt —
+                    diese kommen weiterhin via Login-Mail. Ziel-Instanz ist aktuell fest:
+                    {' '}<span className="font-mono text-white/70">{TEMPUS_DEFAULT_BASE_URL}</span>.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-[1fr_auto] gap-2 items-end">
+                <div>
+                  <label className="block text-xs text-white/50 mb-1">Tempus API-Key</label>
+                  <input
+                    type="password"
+                    autoComplete="off"
+                    value={tempusApiKey}
+                    onChange={(e) => setTempusApiKey(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && !tempusConnecting) handleTempusConnect(); }}
+                    placeholder="z. B. 373-79b17597-9bc4-4912-9ecb-bcbfcb223050"
+                    className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm font-mono"
+                  />
+                  <p className="text-xs text-white/40 mt-1">
+                    Profil → <span className="text-white/60">API Token</span> in Tempus. Wird nicht gespeichert; nach Reload erneut eingeben.
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  {!tempusIdentityInfo ? (
+                    <button
+                      onClick={handleTempusConnect}
+                      disabled={tempusConnecting || !tempusApiKey.trim()}
+                      className="px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-400 disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium text-sm flex items-center gap-2"
+                    >
+                      {tempusConnecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plug className="w-4 h-4" />}
+                      Verbinden
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleTempusDisconnect}
+                      className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm flex items-center gap-2"
+                    >
+                      <X className="w-4 h-4" /> Trennen
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {tempusConnectError && (
+                <div className="p-3 rounded-lg bg-red-500/10 border border-red-400/30 text-sm text-red-200 flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+                  <span className="break-words">{tempusConnectError}</span>
+                </div>
+              )}
+
+              {tempusIdentityInfo && (
+                <>
+                  <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-400/30 text-sm text-emerald-200 flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />
+                    <span>
+                      Verbunden als <span className="font-semibold">{tempusIdentityInfo.name}</span>
+                      {' '}(Id {tempusIdentityInfo.id})
+                      {tempusIdentityInfo.globalRoleId && <span className="text-white/60"> · globalRoleId {tempusIdentityInfo.globalRoleId}</span>}
+                    </span>
+                  </div>
+
+                  <div className="grid md:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-xs text-white/50 mb-1">Globale Rolle für neue User</label>
+                      <select
+                        value={tempusRoleId ?? ''}
+                        onChange={(e) => setTempusRoleId(e.target.value ? Number(e.target.value) : null)}
+                        className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm"
+                      >
+                        <option value="">– bitte wählen –</option>
+                        {tempusRoles.map(r => (
+                          <option key={r.id} value={r.id}>
+                            {r.name}{r.systemKey === 'Administrator' ? ' ⚠︎' : ''}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs text-white/50 mb-1">Security-Group</label>
+                      <select
+                        value={tempusSecurityGroupId ?? ''}
+                        onChange={(e) => setTempusSecurityGroupId(e.target.value ? Number(e.target.value) : null)}
+                        className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm"
+                      >
+                        <option value="">– bitte wählen –</option>
+                        {tempusGroups.map(g => (
+                          <option key={g.id} value={g.id}>{g.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs text-white/50 mb-1">Timesheets</label>
+                      <label className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/20 text-sm cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={tempusIsTimesheetUser}
+                          onChange={(e) => setTempusIsTimesheetUser(e.target.checked)}
+                        />
+                        isTimesheetUser = true
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/10">
+                    <p className="text-xs text-white/60">
+                      {entries.filter(e => (e.name || '').trim()).length} von {entries.length} Empfängern haben einen Namen und werden versucht anzulegen.
+                    </p>
+                    <button
+                      onClick={handleTempusSync}
+                      disabled={tempusSyncRunning || !entries.length || tempusRoleId == null || tempusSecurityGroupId == null}
+                      className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed text-slate-900 font-semibold text-sm flex items-center gap-2"
+                    >
+                      {tempusSyncRunning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Users className="w-4 h-4" />}
+                      {tempusSyncRunning ? 'Lege an …' : `Alle ${entries.filter(e => (e.name || '').trim()).length} in Tempus anlegen`}
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {tempusSyncRows.length > 0 && (
+                <div className="mt-3 rounded-xl border border-white/10 overflow-hidden">
+                  <div className="flex items-center justify-between px-3 py-2 bg-white/5 text-xs text-white/60">
+                    <span>
+                      Fortschritt:
+                      {' '}<span className="text-emerald-300">{tempusSyncRows.filter(r => r.status === 'created').length} angelegt</span>
+                      {' · '}<span className="text-amber-300">{tempusSyncRows.filter(r => r.status === 'exists').length} existieren</span>
+                      {' · '}<span className="text-red-300">{tempusSyncRows.filter(r => r.status === 'error').length} Fehler</span>
+                      {' · '}<span className="text-white/50">{tempusSyncRows.filter(r => r.status === 'pending' || r.status === 'running').length} offen</span>
+                    </span>
+                  </div>
+                  <div className="max-h-72 overflow-y-auto">
+                    <table className="w-full text-sm">
+                      <tbody>
+                        {tempusSyncRows.map((r) => {
+                          const iconMap = {
+                            pending:  <MinusCircle className="w-4 h-4 text-white/30" />,
+                            running:  <Loader2 className="w-4 h-4 animate-spin text-indigo-300" />,
+                            created:  <CheckCircle2 className="w-4 h-4 text-emerald-400" />,
+                            exists:   <AlertTriangle className="w-4 h-4 text-amber-300" />,
+                            error:    <XCircle className="w-4 h-4 text-red-400" />,
+                            skipped:  <MinusCircle className="w-4 h-4 text-white/30" />,
+                          };
+                          return (
+                            <tr key={r.idx} className="border-t border-white/5">
+                              <td className="px-3 py-2 w-8">{iconMap[r.status] || null}</td>
+                              <td className="px-2 py-2">
+                                <div className="font-medium text-white/90">{r.name || <span className="text-white/40">(kein Name)</span>}</div>
+                                {r.email && <div className="text-xs text-white/40 font-mono">{r.email}</div>}
+                              </td>
+                              <td className="px-2 py-2 text-xs text-white/60">
+                                {r.message || (r.status === 'running' ? 'läuft …' : r.status === 'pending' ? 'warte …' : '')}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
             </div>

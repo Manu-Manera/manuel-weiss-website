@@ -643,3 +643,155 @@ export async function downloadEmlZip(filename, emlEntries) {
   const blob = await zip.generateAsync({ type: 'blob' });
   downloadBlob(filename, blob);
 }
+
+// ---------------------------------------------------------------------------
+// Tempus Supergrid API Client
+// ---------------------------------------------------------------------------
+//
+// Der Browser kann aus CORS-Gründen nicht direkt Tempus aufrufen. Stattdessen
+// läuft jeder Call über unseren API-Gateway-Proxy. Dieser leitet den Pfad
+// 1:1 an die Tempus-Trial-Instanz weiter und tauscht den gelieferten
+// X-Tempus-Auth-Header wieder auf Authorization um (da Authorization vom
+// API-Gateway reserviert ist).
+//
+// Hinweis: Die Ziel-Basis-URL ist momentan FIX konfiguriert
+//   https://trial5.tempus-resource.com/slot4
+// Für weitere Tempus-Instanzen muss eine zusätzliche Proxy-Route angelegt
+// werden (siehe docs/RECOVERY_tempus-mailer-api.md als Muster).
+
+export const TEMPUS_PROXY_BASE =
+  'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1/tempus-proxy';
+
+export const TEMPUS_DEFAULT_BASE_URL = 'https://trial5.tempus-resource.com/slot4';
+
+/**
+ * Kleiner Helfer für alle Tempus-Aufrufe.
+ * @param {Object} opts
+ * @param {string} opts.apiKey     - Tempus API-Key (z. B. "373-...")
+ * @param {string} opts.method     - GET | POST | PUT | DELETE
+ * @param {string} opts.path       - Tempus-Pfad ab Instanz-Root (z. B. "api/sg/v1/Resources")
+ * @param {Object} [opts.query]    - optionale Query-Parameter
+ * @param {Object} [opts.body]     - optionaler JSON-Body
+ */
+export async function callTempus({ apiKey, method = 'GET', path, query, body }) {
+  if (!apiKey) throw new Error('Tempus API-Key fehlt.');
+  if (!path) throw new Error('Tempus API-Pfad fehlt.');
+
+  const cleanPath = String(path).replace(/^\/+/, '');
+  const url = new URL(`${TEMPUS_PROXY_BASE}/${cleanPath}`);
+  if (query && typeof query === 'object') {
+    for (const [k, v] of Object.entries(query)) {
+      if (v === undefined || v === null) continue;
+      url.searchParams.set(k, Array.isArray(v) ? v.join(',') : String(v));
+    }
+  }
+
+  const init = {
+    method,
+    headers: {
+      'X-Tempus-Auth': `Bearer ${apiKey}`,
+      Accept: 'application/json',
+    },
+  };
+  if (body !== undefined && method !== 'GET') {
+    init.headers['Content-Type'] = 'application/json';
+    init.body = typeof body === 'string' ? body : JSON.stringify(body);
+  }
+
+  let res;
+  try {
+    res = await fetch(url.toString(), init);
+  } catch (e) {
+    throw new Error(`Netzwerkfehler beim Tempus-Aufruf: ${e.message}`);
+  }
+
+  const text = await res.text();
+  let data = null;
+  if (text) {
+    try { data = JSON.parse(text); } catch { /* plain text */ }
+  }
+
+  if (!res.ok) {
+    const msg =
+      (data && (data.message || data.error)) ||
+      (typeof data === 'string' ? data : null) ||
+      text ||
+      `HTTP ${res.status}`;
+    const error = new Error(`Tempus ${method} ${cleanPath} → ${res.status}: ${msg}`);
+    error.status = res.status;
+    error.data = data ?? text;
+    throw error;
+  }
+
+  return data;
+}
+
+/** Identity-Check: liefert den Resource-Datensatz des API-Key-Besitzers. */
+export function tempusIdentity(apiKey) {
+  return callTempus({ apiKey, path: 'api/sg/v1/Resources/Identity' });
+}
+
+/** Alle globalen Rollen (Admin/normale Nutzer/Team-Leader …). */
+export async function tempusListGlobalRoles(apiKey) {
+  const data = await callTempus({ apiKey, path: 'api/sg/v1/Roles' });
+  return (Array.isArray(data) ? data : [])
+    .filter(r => String(r.roleType || '').toLowerCase() === 'global')
+    .map(r => ({ id: r.id, name: r.name, systemKey: r.systemGlobalRoleKey || null }));
+}
+
+/** Security-Groups vom Typ Resource (für Zuordnung neuer User). */
+export async function tempusListResourceSecurityGroups(apiKey) {
+  const data = await callTempus({
+    apiKey,
+    path: 'api/sg/v1/SecurityGroups',
+    query: { securityGroupType: 'Resource' },
+  });
+  return (Array.isArray(data) ? data : []).map(g => ({ id: g.id, name: g.name }));
+}
+
+/**
+ * Prüft, ob ein Resource-Name in Tempus bereits vergeben ist.
+ * Nutzt den CheckNameExist-Endpoint, der von der API als Bulk-Check
+ * gedacht ist (liefert boolean).
+ */
+export async function tempusResourceNameExists(apiKey, name) {
+  if (!name) return false;
+  const data = await callTempus({
+    apiKey,
+    path: 'api/sg/v1/Resources/CheckNameExist',
+    query: { name },
+  });
+  return data === true || data === 'true';
+}
+
+/**
+ * Legt EINE Resource in Tempus an und gibt die neue Id zurück.
+ * @returns {Promise<number>}
+ */
+export async function tempusCreateResource(apiKey, resource) {
+  if (!resource || !resource.name) throw new Error('Resource-Name fehlt.');
+  const body = [{
+    name: resource.name,
+    globalRoleId: resource.globalRoleId ?? 1,
+    updateGlobalRole: true,
+    securityGroupId: resource.securityGroupId ?? 1,
+    updateSecurityGroup: true,
+    isEnabled: resource.isEnabled !== false,
+    isTimesheetUser: !!resource.isTimesheetUser,
+    isTeamResource: false,
+    updateDefaultRate: false,
+    updateAdvancedRate: false,
+    updateAutoCalculateRate: false,
+  }];
+  const data = await callTempus({
+    apiKey,
+    method: 'POST',
+    path: 'api/sg/v1/Resources',
+    body,
+  });
+  const id = Array.isArray(data) ? data[0] : null;
+  if (typeof id !== 'number') {
+    throw new Error('Tempus antwortete ohne Resource-Id.');
+  }
+  return id;
+}
