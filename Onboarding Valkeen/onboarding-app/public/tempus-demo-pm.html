@@ -2855,24 +2855,20 @@ function removeAgendaEditing() {
    AWS PERSISTENZ
    State wird als JSON in S3 gespeichert und von dort geladen.
    Enthält: hero, intro, Vollflächen-Agenda (#pm-training-agenda), alle Szenen.
-   Lesen:    S3 (STATE_READ_URL) oder optional identisch via API GET /demo-script
-   Schreiben: Zuerst API POST /demo-script (läuft nicht ab — Lambda schreibt in S3).
-              Fallback: Presigned PUT (max. 7 Tage — AWS-Limit; ./refresh-demo-state-url.sh)
+   Lesen:    S3 direkt (STATE_READ_URL)
+   Schreiben: Presigned PUT (AWS-Limit: max. 604800 s = 7 Tage, nicht verlängerbar).
+              Erneuern via ./refresh-demo-state-url.sh (generiert frische URL + deployed).
 ═══════════════════════════════════════════════════ */
 
-// API Gateway — gleiche Basis wie onboarding awsService.js (kein Token-Ablauf)
-const DEMO_SCRIPT_API_URL = 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1/demo-script';
-
-// Presigned PUT-URL — nur Fallback; max. 604800 s (7 Tage), dann refresh-demo-state-url.sh
-const PRESIGNED_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-demo-pm-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3MG2WEBUJ%2F20260407%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260407T192755Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=8175c11897badb19c2cfb32cf88da1c0ea6cc03b792a8a2ed93ec80144b04173';
+// Presigned PUT-URL — max. 604800 s (7 Tage, AWS-SigV4-Obergrenze).
+// Ablaufdatum kontrollieren: Im X-Amz-Date stecken Jahr-Monat-Tag + Zeit (UTC).
+// X-Amz-Expires (Sekunden) + X-Amz-Date = Ablaufzeitpunkt.
+const PRESIGNED_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-demo-pm-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3MG2WEBUJ%2F20260417%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260417T074740Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=6e2a52bf0704d72bd2fa4c2aaa5ae1adf6934c2427918fe6abdec1ba22caf2c8';
 
 // Öffentliche Lese-URL (via CloudFront, kein Cache-Problem durch Timestamp)
 // Direkt von S3 lesen statt CloudFront — CloudFront cached den alten State bis zu 24h
 // (ForwardedValues.QueryString=false → ?v=timestamp Cache-Buster wirkungslos)
 const STATE_READ_URL = 'https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-demo-pm-state.json';
-
-// Passwort zum Speichern (schützt vor versehentlichem Überschreiben)
-const EDIT_PASSWORD = 'tempus-demo-edit-2024';
 
 /* ─── Szenen serialisieren (bereinigt) ────────────── */
 function serializeScenes() {
@@ -2945,53 +2941,32 @@ async function saveAll() {
   const payload = JSON.stringify(payloadObj);
 
   try {
-    // 1) API — kein Ablauf (Passwort wie im Editor)
-    const apiRes = await fetch(DEMO_SCRIPT_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Demo-Password': EDIT_PASSWORD
-      },
+    const res = await fetch(PRESIGNED_PUT_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
       body: payload
     });
-    if (apiRes.ok) {
+
+    /* S3 PUT: typisch 200; ohne Body. Nicht nur truthy prüfen — 0 wäre falsch. */
+    if (res.status >= 200 && res.status < 300) {
       localStorage.setItem(STORAGE_KEY, payload);
       setUnsaved(false);
-      flashStatus('Gespeichert (AWS)', false);
+      flashStatus('Gespeichert (AWS S3)', false);
     } else {
-      const errText = await apiRes.text().catch(() => '');
-      throw new Error(`API ${apiRes.status} ${errText}`);
+      const hint = res.status === 403 ? ' Presigned-URL abgelaufen? → ./refresh-demo-state-url.sh' : '';
+      throw new Error(`HTTP ${res.status}${hint}`);
     }
-  } catch (apiErr) {
-    console.warn('API save failed, trying presigned S3 PUT:', apiErr);
+  } catch (err) {
+    console.warn('S3 save failed:', err);
     try {
-      const res = await fetch(PRESIGNED_PUT_URL, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: payload
-      });
-
-      /* S3 PUT: typisch 200; ohne Body. Nicht nur truthy — 0 wäre falsch. */
-      if (res.status >= 200 && res.status < 300) {
-        localStorage.setItem(STORAGE_KEY, payload);
-        setUnsaved(false);
-        flashStatus('Gespeichert (S3 Fallback)', false);
-      } else {
-        const hint = res.status === 403 ? ' Presigned-URL abgelaufen?' : '';
-        throw new Error(`HTTP ${res.status}${hint}`);
-      }
-    } catch (err) {
-      console.warn('S3 save failed:', err);
-      try {
-        localStorage.setItem(STORAGE_KEY, payload);
-        setUnsaved(false);
-        flashStatus(
-          '⚠️ Nur im Browser gespeichert — nicht in AWS. API/Presigned-URL prüfen oder ./refresh-demo-state-url.sh & Deploy.',
-          true
-        );
-      } catch (e2) {
-        alert('Speichern fehlgeschlagen (weder API, S3 noch Browser-Speicher).');
-      }
+      localStorage.setItem(STORAGE_KEY, payload);
+      setUnsaved(false);
+      flashStatus(
+        '⚠️ Nur im Browser gespeichert — nicht in AWS. ./refresh-demo-state-url.sh & Deploy erneuern die URL.',
+        true
+      );
+    } catch (e2) {
+      alert('Speichern fehlgeschlagen (weder S3 noch Browser-Speicher).');
     }
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = '💾 Speichern'; }
@@ -3137,20 +3112,11 @@ function showRestoredBanner(ts) {
 function resetAll() {
   if (confirm('Alle eigenen Änderungen löschen und die Original-Version wiederherstellen?\n\nDies überschreibt auch die gespeicherte AWS-Version!')) {
     const resetBody = JSON.stringify({ scenes: [], ts: Date.now(), reset: true, schemaVersion: PM_STATE_SCHEMA_VERSION });
-    fetch(DEMO_SCRIPT_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Demo-Password': EDIT_PASSWORD
-      },
+    fetch(PRESIGNED_PUT_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
       body: resetBody
-    }).catch(() => {
-      fetch(PRESIGNED_PUT_URL, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: resetBody
-      }).catch(() => {});
-    });
+    }).catch(() => {});
     localStorage.removeItem(STORAGE_KEY);
     location.reload();
   }
