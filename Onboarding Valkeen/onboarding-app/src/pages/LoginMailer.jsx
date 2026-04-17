@@ -60,7 +60,7 @@ const STEP_DEF = [
   { id: 'data',     label: 'Empfänger',  desc: 'Excel laden' },
   { id: 'template', label: 'Vorlage',    desc: 'Auswählen / bearbeiten' },
   { id: 'preview',  label: 'Vorschau',   desc: 'E-Mails prüfen' },
-  { id: 'download', label: 'Download',   desc: 'EML-Dateien' },
+  { id: 'download', label: 'Senden',     desc: 'In Outlook öffnen' },
 ];
 
 const DEFAULT_NEW_BODY = `<!DOCTYPE html>
@@ -482,6 +482,39 @@ export default function LoginMailer() {
     await downloadEmlZip(zipName, entriesZip);
   };
 
+  /**
+   * Lädt alle .eml-Dateien einzeln nacheinander herunter. Weil .eml auf macOS/
+   * Windows standardmäßig mit Outlook bzw. Mail.app verknüpft ist, öffnet das
+   * OS jede Datei direkt als Entwurf. Der Browser fragt beim ersten Mal, ob
+   * mehrere Downloads erlaubt sein sollen — danach läuft es durch.
+   */
+  const [sequentialOpening, setSequentialOpening] = useState(false);
+  const [sequentialProgress, setSequentialProgress] = useState(0);
+
+  const openAllInOutlook = async () => {
+    if (!validEntries.length || !activeTemplate) return;
+    if (validEntries.length > 20) {
+      const ok = confirm(
+        `${validEntries.length} Entwürfe werden gleichzeitig in Outlook geöffnet.\n\n` +
+        `Das kann Outlook ausbremsen. Fortfahren?`
+      );
+      if (!ok) return;
+    }
+    setSequentialOpening(true);
+    setSequentialProgress(0);
+    try {
+      for (let i = 0; i < validEntries.length; i++) {
+        downloadSingleEml(validEntries[i]);
+        setSequentialProgress(i + 1);
+        // Kleine Pause, damit der Browser nicht alle Downloads blockt und das OS
+        // die einzelnen .eml-Dateien der Reihe nach in Outlook aufmachen kann.
+        await new Promise(res => setTimeout(res, 350));
+      }
+    } finally {
+      setSequentialOpening(false);
+    }
+  };
+
   // ------------------------------------------------------------------
 
   return (
@@ -492,7 +525,7 @@ export default function LoginMailer() {
           <span className="gradient-text">Tempus Login Mailer</span>
         </h1>
         <p className="text-white/60">
-          Excel laden → Vorlage wählen → personalisierte Outlook-Entwürfe (.eml) herunterladen
+          Excel laden → Vorlage wählen → personalisierte Outlook-Entwürfe direkt öffnen
         </p>
       </div>
 
@@ -1119,47 +1152,80 @@ export default function LoginMailer() {
               disabled={!activeTemplate || !validEntries.length}
               className="px-5 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium"
             >
-              Weiter: Download →
+              Weiter: In Outlook öffnen →
             </button>
           </div>
         </section>
       )}
 
-      {/* ── STEP 4: DOWNLOAD ── */}
+      {/* ── STEP 4: SENDEN / ENTWÜRFE ÖFFNEN ── */}
       {step === 'download' && (
         <section className="glass rounded-2xl p-6 border border-white/10 space-y-4">
           <div className="flex items-center gap-3">
-            <Download className="w-6 h-6 text-emerald-400" />
-            <h2 className="text-xl font-semibold">E-Mails herunterladen</h2>
+            <Mail className="w-6 h-6 text-emerald-400" />
+            <h2 className="text-xl font-semibold">Entwürfe in Outlook öffnen</h2>
           </div>
 
           <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-sm text-white/70 space-y-2">
             <p>
-              Alle Entwürfe liegen als <b>.eml</b>-Datei vor. Doppelklick auf Mac öffnet sie in <b>Outlook/Mail</b> als Entwurf,
-              auf Windows öffnet sie Outlook ebenfalls als Entwurf inkl. HTML-Body und eingebundener Bilder.
+              Ein Klick auf <b>„Alle in Outlook öffnen"</b> lädt alle <b>.eml</b>-Dateien nacheinander herunter.
+              Weil <b>.eml</b> auf macOS/Windows standardmäßig mit Outlook (bzw. Mail.app) verknüpft ist,
+              öffnet das Betriebssystem jede Datei automatisch als <b>Entwurf</b> – inklusive HTML-Body und eingebundener Bilder.
             </p>
             <p className="text-xs text-white/50">
-              Tipp: Für viele Empfänger als ZIP herunterladen, entpacken, alle .eml-Dateien markieren und auf das
-              Outlook-Symbol im Dock ziehen.
+              Der Browser fragt beim ersten Mal einmal nach, ob mehrere Downloads erlaubt sind („Zulassen" wählen).
+              Auf macOS: sicherstellen, dass <b>.eml</b>-Dateien standardmäßig mit Outlook geöffnet werden
+              (Finder → Info → „Öffnen mit: Outlook" → „Alle ändern…").
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-3">
-            <button
-              onClick={downloadAllEmls}
-              disabled={!validEntries.length || !activeTemplate}
-              className="p-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-semibold disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-3"
-            >
-              <Archive className="w-5 h-5" />
-              <div className="text-left">
-                <p>ZIP aller {validEntries.length} Entwürfe</p>
-                <p className="text-xs opacity-70 font-normal">Eine .zip mit allen .eml-Dateien</p>
-              </div>
-            </button>
+          {/* Haupt-Action: alle in Outlook öffnen */}
+          <button
+            onClick={openAllInOutlook}
+            disabled={!validEntries.length || !activeTemplate || sequentialOpening}
+            className="w-full p-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-semibold disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-3"
+          >
+            {sequentialOpening ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Mail className="w-5 h-5" />
+            )}
+            <div className="text-left flex-1">
+              <p>
+                {sequentialOpening
+                  ? `Öffne ${sequentialProgress} / ${validEntries.length} in Outlook…`
+                  : `Alle ${validEntries.length} in Outlook öffnen`}
+              </p>
+              <p className="text-xs opacity-70 font-normal">
+                Jede E-Mail wird als Entwurf im Mail-Client geöffnet
+              </p>
+            </div>
+            {!sequentialOpening && <Download className="w-5 h-5 opacity-60" />}
+          </button>
 
-            <div className="p-5 rounded-xl bg-white/5 border border-white/10">
+          <div className="grid md:grid-cols-2 gap-3">
+            {/* Alternative: ZIP-Download */}
+            <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2">
+              <p className="text-sm font-semibold flex items-center gap-2">
+                <Archive className="w-4 h-4 text-indigo-300" /> Stattdessen als ZIP
+              </p>
+              <p className="text-xs text-white/50">
+                Sinnvoll bei sehr vielen Empfängern: eine einzige <b>.zip</b> herunterladen, entpacken,
+                alle <b>.eml</b> markieren und auf das Outlook-Icon im Dock ziehen.
+              </p>
+              <button
+                onClick={downloadAllEmls}
+                disabled={!validEntries.length || !activeTemplate}
+                className="w-full px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-sm font-medium disabled:opacity-40 flex items-center justify-center gap-2"
+              >
+                <Archive className="w-4 h-4" /> ZIP aller {validEntries.length} Entwürfe
+              </button>
+            </div>
+
+            {/* Einzeln öffnen */}
+            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
               <p className="text-sm font-semibold mb-2 flex items-center gap-2">
-                <Mail className="w-4 h-4 text-indigo-400" /> Einzeln herunterladen
+                <Mail className="w-4 h-4 text-indigo-400" /> Einzeln öffnen
               </p>
               <div className="max-h-[260px] overflow-y-auto space-y-1 text-sm">
                 {validEntries.map((e, i) => (
@@ -1167,12 +1233,13 @@ export default function LoginMailer() {
                     key={i}
                     onClick={() => downloadSingleEml(e)}
                     className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-left"
+                    title="In Outlook als Entwurf öffnen"
                   >
                     <span className="truncate">
                       <span className="text-white/60 text-xs mr-2">{i + 1}.</span>
                       <span>{e.name || e.email}</span>
                     </span>
-                    <Download className="w-4 h-4 text-white/40 flex-shrink-0" />
+                    <Mail className="w-4 h-4 text-white/40 flex-shrink-0" />
                   </button>
                 ))}
               </div>
