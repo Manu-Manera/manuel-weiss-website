@@ -1,29 +1,25 @@
 /**
  * Tempus Login Mailer – Service
  *
- * Speichert ALLE Templates + Bilder als einzelnes State-Objekt in S3 (wie das
- * tempus-demo-pm Skript). Das ist nötig, weil `lambda:CreateFunction` im
- * AWS-Account aktuell geblockt ist und wir daher keine eigene API-Lambda
- * anlegen können (siehe docs/RECOVERY_demo-script-lambda.md).
+ * Speichert ALLE Templates + Bilder als einzelnes State-Objekt in S3:
+ *   s3://manuel-weiss-website/data/tempus-mailer-state.json
  *
- *   Lesen   – öffentliches GET auf `STATE_READ_URL` (Bucket-Policy
- *             `PublicReadGetObject` ist für manuel-weiss-website aktiv).
- *   Schreiben – Presigned S3 PUT (SigV4, max. 7 Tage gültig).
- *               URL alle 7 Tage via `./refresh-mailer-state-url.sh` erneuern.
+ * Zugriff läuft über eine dauerhafte API-Gateway-Route, die direkt in S3
+ * schreibt/liest (AWS-Service-Integration, keine Lambda nötig):
  *
- * Wenn das Schreiben scheitert (z.B. Presigned-URL abgelaufen, Offline),
- * fallen wir automatisch auf localStorage zurück, damit man trotzdem
- * weiterarbeiten kann. Die Public-API (listTemplates/getTemplate/…) ist
- * ein dünner Wrapper über ein normalisiertes In-Memory-State-Objekt und
- * bleibt kompatibel mit der vorherigen Lambda-basierten Version.
+ *   GET / PUT https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1/mailer-state
+ *
+ * Die Route nutzt die IAM-Rolle `apigw-mailer-state-s3` und läuft nicht
+ * ab – kein 7-Tage-Presigned-URL-Refresh mehr nötig.
+ *
+ * Wenn das Schreiben trotzdem scheitert (Offline, AWS-Ausfall), fallen
+ * wir automatisch auf localStorage zurück, damit man weiterarbeiten kann.
+ * Die Public-API (listTemplates/getTemplate/…) ist ein dünner Wrapper über
+ * ein normalisiertes In-Memory-State-Objekt.
  */
 
-const STATE_READ_URL =
-  'https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-mailer-state.json';
-
-// Wird vom Skript refresh-mailer-state-url.sh automatisch gesetzt.
-// Marker für das Skript: `const MAILER_STATE_PUT_URL = '…';`
-const MAILER_STATE_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-mailer-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3MG2WEBUJ%2F20260417%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260417T131645Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=7935b2c753fe2e8dd78f1d4c217c807323f87960da8ff5c22222a16135daee54';
+const MAILER_STATE_API_URL =
+  'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1/mailer-state';
 
 const PW_STORAGE_KEY    = 'tempus_mailer_edit_password';
 const MODE_KEY          = 'tempus_mailer_storage_mode';
@@ -85,9 +81,9 @@ export function isUsingLocalFallback() {
 }
 
 async function loadStateFromCloud() {
-  const url = `${STATE_READ_URL}?t=${Date.now()}`;
+  const url = `${MAILER_STATE_API_URL}?t=${Date.now()}`;
   const res = await fetch(url, { method: 'GET', cache: 'no-store' });
-  if (!res.ok) throw new Error(`S3 GET ${res.status}`);
+  if (!res.ok) throw new Error(`API GET ${res.status}`);
   const data = await res.json();
   return normalizeState(data);
 }
@@ -111,18 +107,14 @@ function saveStateToLocal(state) {
 }
 
 async function saveStateToCloud(state) {
-  if (!MAILER_STATE_PUT_URL || MAILER_STATE_PUT_URL.includes('PLACEHOLDER')) {
-    throw new Error('Keine gültige Presigned-URL – bitte ./refresh-mailer-state-url.sh ausführen');
-  }
   const body = JSON.stringify(state);
-  const res = await fetch(MAILER_STATE_PUT_URL, {
+  const res = await fetch(MAILER_STATE_API_URL, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body,
   });
   if (!(res.status >= 200 && res.status < 300)) {
-    const hint = res.status === 403 ? ' – Presigned-URL abgelaufen? ./refresh-mailer-state-url.sh' : '';
-    throw new Error(`S3 PUT ${res.status}${hint}`);
+    throw new Error(`API PUT ${res.status}`);
   }
 }
 
