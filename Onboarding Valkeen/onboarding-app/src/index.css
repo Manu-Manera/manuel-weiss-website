@@ -303,3 +303,32 @@ body {
     padding-top: 2rem;
   }
 }
+
+/* Visueller Editor im Tempus Login Mailer — reset für den contenteditable-Bereich,
+   damit Inhalte aus Word (Tabellen, Bilder, Listen) sauber dargestellt werden. */
+.mailer-visual-editor img {
+  max-width: 100%;
+  height: auto;
+}
+.mailer-visual-editor table {
+  border-collapse: collapse;
+  max-width: 100%;
+}
+.mailer-visual-editor p {
+  margin: 0 0 0.75em 0;
+}
+.mailer-visual-editor ul,
+.mailer-visual-editor ol {
+  padding-left: 1.5em;
+  margin: 0 0 0.75em 0;
+}
+.mailer-visual-editor a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+.mailer-visual-editor h1,
+.mailer-visual-editor h2,
+.mailer-visual-editor h3 {
+  margin: 0.5em 0 0.35em 0;
+  font-weight: 600;
+}

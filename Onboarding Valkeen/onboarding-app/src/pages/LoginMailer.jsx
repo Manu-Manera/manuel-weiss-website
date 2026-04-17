@@ -18,6 +18,8 @@ import {
   X,
   Edit3,
   Archive,
+  Type,
+  Code2,
 } from 'lucide-react';
 
 import {
@@ -301,27 +303,98 @@ export default function LoginMailer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSlug]);
 
-  const [editDraft, setEditDraft] = useState({ slug: '', title: '', subject: '', bodyHtml: '' });
+  const [editDraft, setEditDraft] = useState({ slug: '', title: '', subject: '', bodyHtml: '', fromExt: 'html' });
+  const [editorMode, setEditorMode] = useState('visual'); // 'visual' | 'html'
+  const visualRef = useRef(null);
 
   const openEditor = () => {
     if (!activeTemplate) return;
+    // Für HTML-Vorlagen: bodyText ist der Quelltext.
+    // Für DOCX-Vorlagen: es gibt keinen editierbaren „Quelltext" — wir nehmen das
+    // von mammoth gerenderte HTML (mit Bildern als data:-URIs), damit der Nutzer
+    // lesbaren Inhalt sieht und direkt bearbeiten kann.
+    const initialHtml = activeTemplate.bodyExt === 'docx'
+      ? (activeTemplate.renderedHtml || '')
+      : (activeTemplate.bodyText || '');
     setEditDraft({
       slug: activeTemplate.slug,
       title: activeTemplate.title,
       subject: activeTemplate.subject,
-      bodyHtml: activeTemplate.bodyText || activeTemplate.renderedHtml || '',
+      bodyHtml: initialHtml,
+      fromExt: activeTemplate.bodyExt || 'html',
     });
+    setEditorMode('visual');
     setEditing(true);
   };
 
+  // Beim Aktivieren des visuellen Editors bzw. beim Öffnen: innerHTML einmal
+  // setzen. Danach arbeiten wir über onInput direkt auf dem DOM-Inhalt, damit
+  // React den Cursor nicht bei jedem Tastendruck verliert.
+  useEffect(() => {
+    if (!editing) return;
+    if (editorMode !== 'visual') return;
+    const el = visualRef.current;
+    if (!el) return;
+    if (el.innerHTML !== editDraft.bodyHtml) {
+      el.innerHTML = editDraft.bodyHtml || '';
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editing, editorMode]);
+
+  const syncVisualToDraft = () => {
+    const el = visualRef.current;
+    if (!el) return;
+    setEditDraft(d => ({ ...d, bodyHtml: el.innerHTML }));
+  };
+
+  const insertPlaceholder = (token) => {
+    if (editorMode === 'visual') {
+      const el = visualRef.current;
+      if (!el) return;
+      el.focus();
+      // execCommand ist zwar als deprecated markiert, wird aber für Rich-Text-
+      // Insert in allen gängigen Browsern weiterhin unterstützt.
+      const ok = document.execCommand && document.execCommand('insertText', false, token);
+      if (!ok) {
+        // Fallback: Selection-API
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount) {
+          const range = sel.getRangeAt(0);
+          range.deleteContents();
+          range.insertNode(document.createTextNode(token));
+          range.collapse(false);
+        } else {
+          el.appendChild(document.createTextNode(token));
+        }
+      }
+      syncVisualToDraft();
+    } else {
+      setEditDraft(d => ({ ...d, bodyHtml: (d.bodyHtml || '') + token }));
+    }
+  };
+
   const handleSave = async () => {
+    // Falls der Nutzer zuletzt im Visual-Modus getippt hat, aktuellen Stand
+    // aus dem DOM ziehen (useState kennt erst den letzten onInput-Sync).
+    const el = visualRef.current;
+    const bodyHtml = (editorMode === 'visual' && el) ? el.innerHTML : editDraft.bodyHtml;
+
+    if (editDraft.fromExt === 'docx') {
+      const ok = confirm(
+        'Diese Vorlage war bisher eine Word-Datei (.docx).\n\n' +
+        'Beim Speichern wird sie durch die bearbeitete HTML-Version ersetzt. ' +
+        'Die Original-.docx geht dabei verloren.\n\nFortfahren?'
+      );
+      if (!ok) return;
+    }
+
     setBusy(true);
     try {
       await saveTemplate({
         slug: editDraft.slug,
         title: editDraft.title,
         subject: editDraft.subject,
-        bodyHtml: editDraft.bodyHtml,
+        bodyHtml,
       });
       await loadAllTemplates();
       await loadTemplateBySlug(editDraft.slug);
@@ -1008,6 +1081,19 @@ export default function LoginMailer() {
                     <Edit3 className="w-5 h-5 text-indigo-400" />
                     <h3 className="text-lg font-semibold">Vorlage bearbeiten</h3>
                   </div>
+
+                  {editDraft.fromExt === 'docx' && (
+                    <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-400/30 text-xs text-amber-100 flex items-start gap-2">
+                      <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <div>
+                        Diese Vorlage war eine <b>Word-Datei</b>. Du bearbeitest gerade die automatisch
+                        aus <span className="font-mono">body.docx</span> konvertierte HTML-Ansicht. Wenn
+                        du speicherst, wird die <span className="font-mono">.docx</span> durch diese
+                        HTML-Version ersetzt.
+                      </div>
+                    </div>
+                  )}
+
                   <input
                     value={editDraft.title}
                     onChange={(e) => setEditDraft(d => ({ ...d, title: e.target.value }))}
@@ -1020,33 +1106,96 @@ export default function LoginMailer() {
                     placeholder="Betreff"
                     className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm"
                   />
-                  <div className="flex flex-wrap gap-1">
+
+                  {/* Modus-Wechsel */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <div className="inline-flex rounded-lg bg-white/5 border border-white/10 p-0.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (editorMode === 'html') {
+                            // Von HTML-Quelltext → Visual: der visuelle Editor zieht
+                            // sich den aktuellen bodyHtml über den useEffect oben.
+                          }
+                          setEditorMode('visual');
+                        }}
+                        className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition ${
+                          editorMode === 'visual'
+                            ? 'bg-indigo-500 text-white'
+                            : 'text-white/60 hover:text-white'
+                        }`}
+                      >
+                        <Type className="w-3.5 h-3.5" /> Visuell
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          syncVisualToDraft();
+                          setEditorMode('html');
+                        }}
+                        className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition ${
+                          editorMode === 'html'
+                            ? 'bg-indigo-500 text-white'
+                            : 'text-white/60 hover:text-white'
+                        }`}
+                      >
+                        <Code2 className="w-3.5 h-3.5" /> HTML-Quelltext
+                      </button>
+                    </div>
+
+                    <span className="text-xs text-white/40 mx-1">Platzhalter:</span>
                     {PLACEHOLDER_HINT.map(p => (
                       <button
                         key={p}
                         type="button"
-                        onClick={() => setEditDraft(d => ({ ...d, bodyHtml: d.bodyHtml + p }))}
+                        onClick={() => insertPlaceholder(p)}
                         className="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-xs font-mono"
                       >
                         {p}
                       </button>
                     ))}
                   </div>
-                  <textarea
-                    value={editDraft.bodyHtml}
-                    onChange={(e) => setEditDraft(d => ({ ...d, bodyHtml: e.target.value }))}
-                    rows={18}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-900/80 border border-white/20 text-sm font-mono"
-                  />
-                  <div className="flex justify-end gap-2">
-                    <button onClick={() => setEditing(false)} className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-sm">Abbrechen</button>
-                    <button
-                      onClick={handleSave}
-                      disabled={busy}
-                      className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-900 text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
-                    >
-                      {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Speichern
-                    </button>
+
+                  {editorMode === 'visual' ? (
+                    <div
+                      ref={visualRef}
+                      contentEditable
+                      suppressContentEditableWarning
+                      onInput={syncVisualToDraft}
+                      onBlur={syncVisualToDraft}
+                      className="w-full min-h-[420px] max-h-[600px] overflow-auto px-5 py-4 rounded-lg bg-white text-slate-900 border border-white/20 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-indigo-400/40 shadow-inner mailer-visual-editor"
+                      style={{
+                        // Gleiches Base-Styling wie die Vorschau, damit Tabellen/
+                        // Bilder/Absätze nicht völlig anders aussehen.
+                        fontFamily: "Calibri, 'Segoe UI', Arial, sans-serif",
+                      }}
+                    />
+                  ) : (
+                    <textarea
+                      value={editDraft.bodyHtml}
+                      onChange={(e) => setEditDraft(d => ({ ...d, bodyHtml: e.target.value }))}
+                      rows={22}
+                      spellCheck={false}
+                      className="w-full px-3 py-2 rounded-lg bg-slate-900/80 border border-white/20 text-xs font-mono leading-relaxed"
+                    />
+                  )}
+
+                  <div className="flex justify-between gap-2 items-center">
+                    <p className="text-xs text-white/40">
+                      {editorMode === 'visual'
+                        ? 'Direkt bearbeiten wie in Word. Platzhalter wie {NAME} werden später beim Versand ersetzt.'
+                        : 'HTML-Quelltext. Praktisch für Profis und zum Ersetzen von Bild-Pfaden wie src="bilder/logo.png".'}
+                    </p>
+                    <div className="flex gap-2">
+                      <button onClick={() => setEditing(false)} className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-sm">Abbrechen</button>
+                      <button
+                        onClick={handleSave}
+                        disabled={busy}
+                        className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-900 text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
+                      >
+                        {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Speichern
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
