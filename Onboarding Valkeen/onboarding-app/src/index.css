@@ -332,3 +332,29 @@ body {
   margin: 0.5em 0 0.35em 0;
   font-weight: 600;
 }
+/* Sicherheitsnetz: falls jemand weiße Schrift aus der dunklen App in den Editor
+   pastet, überschreiben wir helle Farben auf dem weißen Editor-Hintergrund, damit
+   nichts "unsichtbar" wird. */
+.mailer-visual-editor [style*="color: white" i],
+.mailer-visual-editor [style*="color:#fff" i],
+.mailer-visual-editor [style*="color: #fff" i],
+.mailer-visual-editor [style*="color:rgb(255" i],
+.mailer-visual-editor [style*="color: rgb(255" i] {
+  color: #0f172a !important;
+}
+.mailer-visual-editor {
+  color: #0f172a;
+}
+.mailer-visual-editor kbd {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 0.85em;
+}
+.mailer-visual-editor blockquote {
+  border-left: 3px solid #cbd5e1;
+  padding: 0.25em 0.75em;
+  color: #475569;
+  margin: 0 0 0.75em 0;
+}

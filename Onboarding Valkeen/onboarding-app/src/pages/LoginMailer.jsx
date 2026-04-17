@@ -20,6 +20,21 @@ import {
   Archive,
   Type,
   Code2,
+  Copy,
+  Bold,
+  Italic,
+  Underline,
+  List,
+  ListOrdered,
+  Link as LinkIcon,
+  Palette,
+  Eraser,
+  Heading2,
+  Heading3,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  ExternalLink,
 } from 'lucide-react';
 
 import {
@@ -58,12 +73,56 @@ const USERNAME_MODE_KEY   = 'tempus_mailer_username_mode';
 
 const PLACEHOLDER_HINT = ['{NAME}', '{EMAIL}', '{URL}', '{USERNAME}', '{PASSWORD}'];
 
+// Strukturierte Liste für das Platzhalter-Panel im Editor.
+const PLACEHOLDERS = [
+  { token: '{NAME}',     label: 'Name',        desc: 'Vor- und Nachname' },
+  { token: '{EMAIL}',    label: 'E-Mail',      desc: 'E-Mail-Adresse' },
+  { token: '{USERNAME}', label: 'Username',    desc: 'Benutzername' },
+  { token: '{PASSWORD}', label: 'Passwort',    desc: 'Initialpasswort' },
+  { token: '{URL}',      label: 'Login-URL',   desc: 'Zugangs-Link' },
+];
+
+// HTML → grober Plain-Text (für mailto:-Fallback beim Öffnen im Mailclient).
+function htmlToPlainText(html) {
+  if (!html) return '';
+  return String(html)
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/(p|div|h[1-6]|li|tr)>/gi, '\n')
+    .replace(/<li[^>]*>/gi, '• ')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 const STEP_DEF = [
   { id: 'data',     label: 'Empfänger',  desc: 'Excel laden' },
   { id: 'template', label: 'Vorlage',    desc: 'Auswählen / bearbeiten' },
   { id: 'preview',  label: 'Vorschau',   desc: 'E-Mails prüfen' },
   { id: 'download', label: 'Senden',     desc: 'In Outlook öffnen' },
 ];
+
+// Kleine Wiederverwendbare UI-Bausteine für die Formatierungs-Toolbar.
+function ToolbarButton({ onClick, title, children }) {
+  return (
+    <button
+      type="button"
+      onMouseDown={(e) => e.preventDefault()} // verhindert, dass der Editor-Cursor verloren geht
+      onClick={onClick}
+      title={title}
+      className="p-1.5 rounded hover:bg-white/10 text-white/70 hover:text-white transition"
+    >
+      {children}
+    </button>
+  );
+}
+function ToolbarDivider() {
+  return <span className="w-px h-5 bg-white/10 mx-1" aria-hidden="true" />;
+}
 
 const DEFAULT_NEW_BODY = `<!DOCTYPE html>
 <html lang="de">
@@ -353,10 +412,10 @@ export default function LoginMailer() {
       if (!el) return;
       el.focus();
       // execCommand ist zwar als deprecated markiert, wird aber für Rich-Text-
-      // Insert in allen gängigen Browsern weiterhin unterstützt.
+      // Insert in allen gängigen Browsern weiterhin unterstützt. Wir fügen als
+      // reinen Text ein, damit keine Farben o. ä. aus der Zwischenablage kommen.
       const ok = document.execCommand && document.execCommand('insertText', false, token);
       if (!ok) {
-        // Fallback: Selection-API
         const sel = window.getSelection();
         if (sel && sel.rangeCount) {
           const range = sel.getRangeAt(0);
@@ -371,6 +430,59 @@ export default function LoginMailer() {
     } else {
       setEditDraft(d => ({ ...d, bodyHtml: (d.bodyHtml || '') + token }));
     }
+  };
+
+  // Rich-Text-Toolbar: execCommand-Wrapper mit anschließendem Sync.
+  const exec = (cmd, value) => {
+    const el = visualRef.current;
+    if (!el) return;
+    el.focus();
+    document.execCommand(cmd, false, value);
+    syncVisualToDraft();
+  };
+
+  // Fix gegen "weiße Schrift auf weißem Hintergrund": Wenn der Nutzer Text aus
+  // einer dunklen Oberfläche (wie unserer App) kopiert und im Editor einfügt,
+  // nimmt der Browser Farb-Styles mit. Wir entfernen weiße/helle Schriftfarben
+  // und dunkle Hintergründe aus den Paste-Daten und fügen dann bereinigt ein.
+  const onEditorPaste = (e) => {
+    e.preventDefault();
+    const html = e.clipboardData.getData('text/html');
+    const text = e.clipboardData.getData('text/plain');
+    if (html) {
+      const cleaned = html
+        // white / #fff / #ffffff / rgb(255,255,255) / rgba(255,255,255,x)
+        .replace(/color\s*:\s*(?:white|#fff(?:fff)?|rgba?\(\s*255[,\s]+255[,\s]+255[\s,\d.]*\))\s*;?/gi, '')
+        // fast-weiße Farben (rgb >= 230,230,230) pauschal entfernen
+        .replace(/color\s*:\s*rgba?\(\s*2[3-5]\d[,\s]+2[3-5]\d[,\s]+2[3-5]\d[\s,\d.]*\)\s*;?/gi, '')
+        // Hintergrundfarben aus Dark-UIs entfernen (macht den Editor lesbar)
+        .replace(/background(-color)?\s*:\s*[^;"']*;?/gi, '')
+        // leere style=""-Reste aufräumen
+        .replace(/\sstyle\s*=\s*(['"])\s*\1/gi, '');
+      document.execCommand('insertHTML', false, cleaned);
+    } else if (text) {
+      document.execCommand('insertText', false, text);
+    }
+    syncVisualToDraft();
+  };
+
+  const [copiedToken, setCopiedToken] = useState('');
+  const copyToClipboard = async (token) => {
+    try {
+      await navigator.clipboard.writeText(token);
+    } catch {
+      // Fallback
+      const ta = document.createElement('textarea');
+      ta.value = token;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch { /* ignore */ }
+      ta.remove();
+    }
+    setCopiedToken(token);
+    setTimeout(() => setCopiedToken(t => (t === token ? '' : t)), 1400);
   };
 
   const handleSave = async () => {
@@ -585,6 +697,46 @@ export default function LoginMailer() {
       }
     } finally {
       setSequentialOpening(false);
+    }
+  };
+
+  /**
+   * Alternative: öffnet den Entwurf direkt im System-Mailclient (Standard: Outlook
+   * auf Windows, konfigurierbar auf macOS) über einen mailto:-Link. Ohne Download-
+   * Umweg, aber ohne HTML-Formatierung und ohne eingebettete Bilder — wir fallen
+   * auf Plain-Text aus dem HTML-Body zurück.
+   */
+  const openInMailClient = (entry) => {
+    if (!activeTemplate) return;
+    const filledHtml = fillTemplate(templateRawHtml, entry);
+    const filledSubject = fillTemplate(activeTemplate.subject || '', entry);
+    const plain = htmlToPlainText(filledHtml);
+    const url =
+      `mailto:${encodeURIComponent(entry.email)}` +
+      `?subject=${encodeURIComponent(filledSubject)}` +
+      `&body=${encodeURIComponent(plain)}`;
+    // mailto: via <a>-Klick ist zuverlässiger als location.href (letzteres
+    // navigiert weg, wenn das OS den Handler erst noch öffnet).
+    const a = document.createElement('a');
+    a.href = url;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+
+  const openAllInMailClient = async () => {
+    if (!validEntries.length || !activeTemplate) return;
+    const ok = confirm(
+      `Es werden ${validEntries.length} Entwürfe nacheinander im Standard-Mailclient (mailto:) geöffnet.\n\n` +
+      `Hinweis: Über mailto: gehen HTML-Formatierung und Inline-Bilder verloren – es wird eine Plain-Text-Version gesendet. ` +
+      `Für formatierte Entwürfe nutze "Alle in Outlook öffnen" (.eml).\n\nFortfahren?`
+    );
+    if (!ok) return;
+    for (let i = 0; i < validEntries.length; i++) {
+      openInMailClient(validEntries[i]);
+      // Kurze Pause, damit das OS den mailto-Handler nacheinander verarbeitet.
+      await new Promise(res => setTimeout(res, 800));
     }
   };
 
@@ -905,7 +1057,7 @@ export default function LoginMailer() {
               </table>
               {entries.length > 200 && (
                 <div className="px-3 py-2 text-xs text-white/40 bg-white/5 border-t border-white/10">
-                  … {entries.length - 200} weitere Zeilen ausgeblendet. Für >200 Empfänger bitte in Batches verarbeiten.
+                  … {entries.length - 200} weitere Zeilen ausgeblendet. Für &gt;200 Empfänger bitte in Batches verarbeiten.
                 </div>
               )}
             </div>
@@ -1080,6 +1232,31 @@ export default function LoginMailer() {
                   <div className="flex items-center gap-2">
                     <Edit3 className="w-5 h-5 text-indigo-400" />
                     <h3 className="text-lg font-semibold">Vorlage bearbeiten</h3>
+
+                    <div className="ml-auto inline-flex rounded-lg bg-white/5 border border-white/10 p-0.5">
+                      <button
+                        type="button"
+                        onClick={() => setEditorMode('visual')}
+                        className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition ${
+                          editorMode === 'visual'
+                            ? 'bg-indigo-500 text-white'
+                            : 'text-white/60 hover:text-white'
+                        }`}
+                      >
+                        <Type className="w-3.5 h-3.5" /> Visuell
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { syncVisualToDraft(); setEditorMode('html'); }}
+                        className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition ${
+                          editorMode === 'html'
+                            ? 'bg-indigo-500 text-white'
+                            : 'text-white/60 hover:text-white'
+                        }`}
+                      >
+                        <Code2 className="w-3.5 h-3.5" /> HTML-Quelltext
+                      </button>
+                    </div>
                   </div>
 
                   {editDraft.fromExt === 'docx' && (
@@ -1107,83 +1284,140 @@ export default function LoginMailer() {
                     className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm"
                   />
 
-                  {/* Modus-Wechsel */}
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <div className="inline-flex rounded-lg bg-white/5 border border-white/10 p-0.5">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (editorMode === 'html') {
-                            // Von HTML-Quelltext → Visual: der visuelle Editor zieht
-                            // sich den aktuellen bodyHtml über den useEffect oben.
-                          }
-                          setEditorMode('visual');
-                        }}
-                        className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition ${
-                          editorMode === 'visual'
-                            ? 'bg-indigo-500 text-white'
-                            : 'text-white/60 hover:text-white'
-                        }`}
-                      >
-                        <Type className="w-3.5 h-3.5" /> Visuell
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          syncVisualToDraft();
-                          setEditorMode('html');
-                        }}
-                        className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition ${
-                          editorMode === 'html'
-                            ? 'bg-indigo-500 text-white'
-                            : 'text-white/60 hover:text-white'
-                        }`}
-                      >
-                        <Code2 className="w-3.5 h-3.5" /> HTML-Quelltext
-                      </button>
+                  <div className="grid md:grid-cols-[220px_1fr] gap-3">
+                    {/* Platzhalter-Panel links */}
+                    <aside className="space-y-3">
+                      <div className="rounded-lg bg-white/5 border border-white/10 p-3">
+                        <p className="text-xs font-semibold text-white/80 mb-2">Platzhalter</p>
+                        <p className="text-[11px] text-white/40 mb-2 leading-snug">
+                          Klick = an Cursor einfügen · <Copy className="w-3 h-3 inline-block" /> = kopieren (nur als Text einfügen)
+                        </p>
+                        <ul className="space-y-1">
+                          {PLACEHOLDERS.map(({ token, label, desc }) => (
+                            <li key={token} className="flex items-stretch gap-1">
+                              <button
+                                type="button"
+                                onClick={() => insertPlaceholder(token)}
+                                className="flex-1 text-left px-2 py-1.5 rounded-md bg-white/5 hover:bg-indigo-500/20 border border-white/5 hover:border-indigo-400/40 transition"
+                                title={`${token} an Cursor einfügen`}
+                              >
+                                <span className="block font-mono text-xs text-indigo-200">{token}</span>
+                                <span className="block text-[10px] text-white/40 leading-tight">{label} — {desc}</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => copyToClipboard(token)}
+                                className={`px-2 rounded-md border text-white/60 hover:text-white transition ${
+                                  copiedToken === token
+                                    ? 'bg-emerald-500/30 border-emerald-400/60 text-emerald-100'
+                                    : 'bg-white/5 hover:bg-white/10 border-white/5 hover:border-white/20'
+                                }`}
+                                title="In Zwischenablage kopieren"
+                              >
+                                {copiedToken === token ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="rounded-lg bg-white/5 border border-white/10 p-3">
+                        <p className="text-xs font-semibold text-white/80 mb-2">Tipps</p>
+                        <ul className="text-[11px] text-white/50 space-y-1.5 leading-snug">
+                          <li>Platzhalter werden beim Versand automatisch durch die Daten aus der Empfängerliste ersetzt.</li>
+                          <li>Beim Einfügen aus der App wird die Farbe automatisch bereinigt (keine weiße Schrift mehr).</li>
+                          <li><kbd className="px-1 py-0.5 rounded bg-white/10 text-[10px]">⌘/Ctrl+B</kbd> fett · <kbd className="px-1 py-0.5 rounded bg-white/10 text-[10px]">⌘/Ctrl+I</kbd> kursiv · <kbd className="px-1 py-0.5 rounded bg-white/10 text-[10px]">⌘/Ctrl+U</kbd> unterstrichen.</li>
+                        </ul>
+                      </div>
+                    </aside>
+
+                    {/* Editor rechts (Toolbar + Eingabefeld) */}
+                    <div className="space-y-0">
+                      {editorMode === 'visual' && (
+                        <div className="flex items-center gap-0.5 flex-wrap px-2 py-1.5 rounded-t-lg bg-slate-800/80 border border-b-0 border-white/20">
+                          <ToolbarButton onClick={() => exec('bold')} title="Fett (⌘/Ctrl+B)"><Bold className="w-4 h-4" /></ToolbarButton>
+                          <ToolbarButton onClick={() => exec('italic')} title="Kursiv (⌘/Ctrl+I)"><Italic className="w-4 h-4" /></ToolbarButton>
+                          <ToolbarButton onClick={() => exec('underline')} title="Unterstrichen (⌘/Ctrl+U)"><Underline className="w-4 h-4" /></ToolbarButton>
+                          <ToolbarDivider />
+                          <select
+                            onChange={(e) => { if (e.target.value) { exec('formatBlock', e.target.value); e.target.value = ''; } }}
+                            className="px-1.5 py-1 text-xs rounded bg-white/5 hover:bg-white/10 border border-white/10 text-white/70"
+                            title="Absatz-Format"
+                            defaultValue=""
+                          >
+                            <option value="" disabled>Format</option>
+                            <option value="p">Absatz</option>
+                            <option value="h1">Überschrift 1</option>
+                            <option value="h2">Überschrift 2</option>
+                            <option value="h3">Überschrift 3</option>
+                            <option value="blockquote">Zitat</option>
+                            <option value="pre">Code-Block</option>
+                          </select>
+                          <ToolbarButton onClick={() => exec('formatBlock', 'h2')} title="Überschrift 2"><Heading2 className="w-4 h-4" /></ToolbarButton>
+                          <ToolbarButton onClick={() => exec('formatBlock', 'h3')} title="Überschrift 3"><Heading3 className="w-4 h-4" /></ToolbarButton>
+                          <ToolbarDivider />
+                          <ToolbarButton onClick={() => exec('insertUnorderedList')} title="Aufzählungsliste"><List className="w-4 h-4" /></ToolbarButton>
+                          <ToolbarButton onClick={() => exec('insertOrderedList')} title="Nummerierte Liste"><ListOrdered className="w-4 h-4" /></ToolbarButton>
+                          <ToolbarDivider />
+                          <ToolbarButton onClick={() => exec('justifyLeft')} title="Linksbündig"><AlignLeft className="w-4 h-4" /></ToolbarButton>
+                          <ToolbarButton onClick={() => exec('justifyCenter')} title="Zentriert"><AlignCenter className="w-4 h-4" /></ToolbarButton>
+                          <ToolbarButton onClick={() => exec('justifyRight')} title="Rechtsbündig"><AlignRight className="w-4 h-4" /></ToolbarButton>
+                          <ToolbarDivider />
+                          <ToolbarButton
+                            onClick={() => {
+                              const sel = window.getSelection()?.toString();
+                              const url = prompt('Link-URL (inkl. https://):', 'https://');
+                              if (!url) return;
+                              if (!sel) {
+                                // kein Text markiert → Text + Link in einem Rutsch einfügen
+                                const label = prompt('Link-Text:', url) || url;
+                                exec('insertHTML', `<a href="${url}">${label}</a>`);
+                              } else {
+                                exec('createLink', url);
+                              }
+                            }}
+                            title="Link einfügen"
+                          ><LinkIcon className="w-4 h-4" /></ToolbarButton>
+                          <label className="relative inline-flex items-center px-1 py-1 rounded hover:bg-white/10 cursor-pointer" title="Textfarbe">
+                            <Palette className="w-4 h-4 text-white/70" />
+                            <input
+                              type="color"
+                              onChange={(e) => exec('foreColor', e.target.value)}
+                              className="absolute inset-0 opacity-0 cursor-pointer"
+                            />
+                          </label>
+                          <ToolbarDivider />
+                          <ToolbarButton onClick={() => exec('removeFormat')} title="Formatierung entfernen"><Eraser className="w-4 h-4" /></ToolbarButton>
+                        </div>
+                      )}
+
+                      {editorMode === 'visual' ? (
+                        <div
+                          ref={visualRef}
+                          contentEditable
+                          suppressContentEditableWarning
+                          onInput={syncVisualToDraft}
+                          onBlur={syncVisualToDraft}
+                          onPaste={onEditorPaste}
+                          className="w-full min-h-[460px] max-h-[600px] overflow-auto px-5 py-4 rounded-b-lg bg-white text-slate-900 border border-white/20 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-indigo-400/40 shadow-inner mailer-visual-editor"
+                          style={{ fontFamily: "Calibri, 'Segoe UI', Arial, sans-serif" }}
+                        />
+                      ) : (
+                        <textarea
+                          value={editDraft.bodyHtml}
+                          onChange={(e) => setEditDraft(d => ({ ...d, bodyHtml: e.target.value }))}
+                          rows={24}
+                          spellCheck={false}
+                          className="w-full px-3 py-2 rounded-lg bg-slate-900/80 border border-white/20 text-xs font-mono leading-relaxed"
+                        />
+                      )}
                     </div>
-
-                    <span className="text-xs text-white/40 mx-1">Platzhalter:</span>
-                    {PLACEHOLDER_HINT.map(p => (
-                      <button
-                        key={p}
-                        type="button"
-                        onClick={() => insertPlaceholder(p)}
-                        className="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-xs font-mono"
-                      >
-                        {p}
-                      </button>
-                    ))}
                   </div>
-
-                  {editorMode === 'visual' ? (
-                    <div
-                      ref={visualRef}
-                      contentEditable
-                      suppressContentEditableWarning
-                      onInput={syncVisualToDraft}
-                      onBlur={syncVisualToDraft}
-                      className="w-full min-h-[420px] max-h-[600px] overflow-auto px-5 py-4 rounded-lg bg-white text-slate-900 border border-white/20 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-indigo-400/40 shadow-inner mailer-visual-editor"
-                      style={{
-                        // Gleiches Base-Styling wie die Vorschau, damit Tabellen/
-                        // Bilder/Absätze nicht völlig anders aussehen.
-                        fontFamily: "Calibri, 'Segoe UI', Arial, sans-serif",
-                      }}
-                    />
-                  ) : (
-                    <textarea
-                      value={editDraft.bodyHtml}
-                      onChange={(e) => setEditDraft(d => ({ ...d, bodyHtml: e.target.value }))}
-                      rows={22}
-                      spellCheck={false}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-900/80 border border-white/20 text-xs font-mono leading-relaxed"
-                    />
-                  )}
 
                   <div className="flex justify-between gap-2 items-center">
                     <p className="text-xs text-white/40">
                       {editorMode === 'visual'
-                        ? 'Direkt bearbeiten wie in Word. Platzhalter wie {NAME} werden später beim Versand ersetzt.'
+                        ? 'Direkt bearbeiten wie in Word. Platzhalter werden beim Versand ersetzt.'
                         : 'HTML-Quelltext. Praktisch für Profis und zum Ersetzen von Bild-Pfaden wie src="bilder/logo.png".'}
                     </p>
                     <div className="flex gap-2">
@@ -1315,42 +1549,87 @@ export default function LoginMailer() {
             <h2 className="text-xl font-semibold">Entwürfe in Outlook öffnen</h2>
           </div>
 
-          <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-sm text-white/70 space-y-2">
+          <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-sm text-white/70 space-y-3">
             <p>
-              Ein Klick auf <b>„Alle in Outlook öffnen"</b> lädt alle <b>.eml</b>-Dateien nacheinander herunter.
-              Weil <b>.eml</b> auf macOS/Windows standardmäßig mit Outlook (bzw. Mail.app) verknüpft ist,
-              öffnet das Betriebssystem jede Datei automatisch als <b>Entwurf</b> – inklusive HTML-Body und eingebundener Bilder.
+              Zwei Wege, alle Entwürfe zu öffnen:
             </p>
-            <p className="text-xs text-white/50">
-              Der Browser fragt beim ersten Mal einmal nach, ob mehrere Downloads erlaubt sind („Zulassen" wählen).
-              Auf macOS: sicherstellen, dass <b>.eml</b>-Dateien standardmäßig mit Outlook geöffnet werden
-              (Finder → Info → „Öffnen mit: Outlook" → „Alle ändern…").
-            </p>
+            <ul className="space-y-2 text-xs">
+              <li className="flex gap-2">
+                <span className="shrink-0 w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-[10px] font-bold">A</span>
+                <span>
+                  <b className="text-white/90">Mit HTML &amp; Bildern (empfohlen) →</b>{' '}
+                  <b>„Alle in Outlook öffnen (.eml)"</b> lädt die Dateien herunter. Das OS öffnet jede <b>.eml</b> als Entwurf in Outlook – wenn die Datei-Verknüpfung stimmt.
+                </span>
+              </li>
+              <li className="flex gap-2">
+                <span className="shrink-0 w-5 h-5 rounded-full bg-sky-500/20 text-sky-300 flex items-center justify-center text-[10px] font-bold">B</span>
+                <span>
+                  <b className="text-white/90">Sofort-Compose (nur Plain-Text) →</b>{' '}
+                  <b>„Alle im Mailclient öffnen (mailto)"</b> startet Outlook direkt ohne Download. <b>Ohne</b> HTML-Format und <b>ohne</b> Bilder.
+                </span>
+              </li>
+            </ul>
+
+            <details className="rounded-lg bg-black/20 border border-white/10 p-3 text-xs text-white/60">
+              <summary className="cursor-pointer select-none font-semibold text-white/80">
+                Outlook öffnet meine .eml nicht automatisch? (einmalige Einrichtung)
+              </summary>
+              <div className="mt-2 space-y-2">
+                <p>
+                  <b className="text-white/80">macOS</b> — im Finder eine beliebige <span className="font-mono">.eml</span> rechts-klicken →{' '}
+                  <b>„Informationen"</b> → unter <b>„Öffnen mit"</b> Outlook wählen → <b>„Alle ändern…"</b> klicken.
+                  Danach öffnet sich jede .eml per Doppelklick direkt als Outlook-Entwurf.
+                </p>
+                <p>
+                  <b className="text-white/80">Chrome</b> — nach dem ersten Download einmal den kleinen Pfeil neben der Datei in der Download-Leiste öffnen
+                  und <b>„Dateien dieses Typs immer öffnen"</b> aktivieren. Danach startet Chrome jede neue .eml direkt im Mail-Handler.
+                </p>
+                <p>
+                  <b className="text-white/80">Windows</b> — Einstellungen → Standard-Apps → Mail → Outlook wählen, oder eine .eml rechts-klicken →
+                  <b> „Öffnen mit"</b> → <b>„Andere App auswählen"</b> → Outlook + <b>„Immer diese App verwenden"</b>.
+                </p>
+              </div>
+            </details>
           </div>
 
-          {/* Haupt-Action: alle in Outlook öffnen */}
-          <button
-            onClick={openAllInOutlook}
-            disabled={!validEntries.length || !activeTemplate || sequentialOpening}
-            className="w-full p-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-semibold disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-3"
-          >
-            {sequentialOpening ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <Mail className="w-5 h-5" />
-            )}
-            <div className="text-left flex-1">
-              <p>
-                {sequentialOpening
-                  ? `Öffne ${sequentialProgress} / ${validEntries.length} in Outlook…`
-                  : `Alle ${validEntries.length} in Outlook öffnen`}
-              </p>
-              <p className="text-xs opacity-70 font-normal">
-                Jede E-Mail wird als Entwurf im Mail-Client geöffnet
-              </p>
-            </div>
-            {!sequentialOpening && <Download className="w-5 h-5 opacity-60" />}
-          </button>
+          {/* Haupt-Actions: zwei Wege */}
+          <div className="grid md:grid-cols-2 gap-3">
+            <button
+              onClick={openAllInOutlook}
+              disabled={!validEntries.length || !activeTemplate || sequentialOpening}
+              className="p-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-semibold disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-3"
+            >
+              {sequentialOpening ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Mail className="w-5 h-5" />
+              )}
+              <div className="text-left flex-1">
+                <p>
+                  {sequentialOpening
+                    ? `Öffne ${sequentialProgress} / ${validEntries.length} in Outlook…`
+                    : `Alle ${validEntries.length} in Outlook öffnen (.eml)`}
+                </p>
+                <p className="text-xs opacity-70 font-normal">
+                  Weg A — Mit HTML &amp; Bildern · Download + OS-Handler
+                </p>
+              </div>
+            </button>
+
+            <button
+              onClick={openAllInMailClient}
+              disabled={!validEntries.length || !activeTemplate}
+              className="p-5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-semibold disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-3"
+            >
+              <ExternalLink className="w-5 h-5" />
+              <div className="text-left flex-1">
+                <p>Alle {validEntries.length} im Mailclient öffnen</p>
+                <p className="text-xs opacity-80 font-normal">
+                  Weg B — Sofort ohne Download · Plain-Text (mailto:)
+                </p>
+              </div>
+            </button>
+          </div>
 
           <div className="grid md:grid-cols-2 gap-3">
             {/* Alternative: ZIP-Download */}
@@ -1376,20 +1655,31 @@ export default function LoginMailer() {
               <p className="text-sm font-semibold mb-2 flex items-center gap-2">
                 <Mail className="w-4 h-4 text-indigo-400" /> Einzeln öffnen
               </p>
+              <p className="text-[11px] text-white/40 mb-2">
+                <Mail className="w-3 h-3 inline-block" /> .eml (HTML + Bilder) · <ExternalLink className="w-3 h-3 inline-block" /> mailto (direkt im Mailclient, Plain-Text)
+              </p>
               <div className="max-h-[260px] overflow-y-auto space-y-1 text-sm">
                 {validEntries.map((e, i) => (
-                  <button
-                    key={i}
-                    onClick={() => downloadSingleEml(e)}
-                    className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-left"
-                    title="In Outlook als Entwurf öffnen"
-                  >
-                    <span className="truncate">
-                      <span className="text-white/60 text-xs mr-2">{i + 1}.</span>
-                      <span>{e.name || e.email}</span>
-                    </span>
-                    <Mail className="w-4 h-4 text-white/40 flex-shrink-0" />
-                  </button>
+                  <div key={i} className="flex items-stretch gap-1">
+                    <button
+                      onClick={() => downloadSingleEml(e)}
+                      className="flex-1 flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-left"
+                      title="Als .eml herunterladen und in Outlook öffnen (HTML + Bilder)"
+                    >
+                      <span className="truncate">
+                        <span className="text-white/60 text-xs mr-2">{i + 1}.</span>
+                        <span>{e.name || e.email}</span>
+                      </span>
+                      <Mail className="w-4 h-4 text-white/40 flex-shrink-0" />
+                    </button>
+                    <button
+                      onClick={() => openInMailClient(e)}
+                      className="px-3 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 border border-sky-400/20 text-sky-200"
+                      title="Direkt im Standard-Mailclient öffnen (mailto, Plain-Text)"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </button>
+                  </div>
                 ))}
               </div>
             </div>
