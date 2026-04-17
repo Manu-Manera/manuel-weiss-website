@@ -53,6 +53,51 @@ function firstEmailInRow(row) {
   return '';
 }
 
+function firstEmailInLinks(linkRow) {
+  if (!linkRow) return '';
+  for (const le of linkRow) {
+    if (le) return le;
+  }
+  return '';
+}
+
+/**
+ * Liest das Sheet als 2D-Matrix – analog zu XLSX.utils.sheet_to_json({header:1}),
+ * berücksichtigt aber zusätzlich Hyperlinks (cell.l.Target). Wenn die Zelle
+ * sichtbar leer ist, das Hyperlink-Target aber eine mailto:-Adresse enthält,
+ * wird diese im parallelen `linkEmails`-Array gemerkt. Das ist nötig, weil
+ * Outlook-Kontakt-Exporte E-Mails häufig nur als Hyperlink speichern.
+ */
+function sheetToRowsWithLinks(ws) {
+  const ref = ws['!ref'];
+  if (!ref) return { rows: [], linkEmails: [] };
+  const range = XLSX.utils.decode_range(ref);
+  const rows = [];
+  const linkEmails = [];
+
+  for (let R = range.s.r; R <= range.e.r; R++) {
+    const row = [];
+    const linkRow = [];
+    for (let C = range.s.c; C <= range.e.c; C++) {
+      const addr = XLSX.utils.encode_cell({ r: R, c: C });
+      const cell = ws[addr];
+      if (!cell) { row.push(''); linkRow.push(''); continue; }
+      const text = cell.w != null ? String(cell.w) : (cell.v != null ? String(cell.v) : '');
+      let linkEmail = '';
+      if (cell.l && cell.l.Target) {
+        const t = String(cell.l.Target).replace(/^mailto:/i, '').split('?')[0].trim();
+        const m = t.match(EMAIL_RE);
+        if (m) linkEmail = m[0];
+      }
+      row.push(text);
+      linkRow.push(linkEmail);
+    }
+    rows.push(row);
+    linkEmails.push(linkRow);
+  }
+  return { rows, linkEmails };
+}
+
 function detectColumns(headers) {
   const map = { email: null, username: null, password: null, url: null, name: null, vorname: null, nachname: null };
   for (let i = 0; i < headers.length; i++) {
@@ -114,8 +159,8 @@ export async function parseExcelFile(file) {
 
   for (const sheetName of wb.SheetNames) {
     const ws = wb.Sheets[sheetName];
-    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, defval: '' });
-    if (!rows || !rows.length) continue;
+    const { rows, linkEmails } = sheetToRowsWithLinks(ws);
+    if (!rows.length) continue;
 
     const hi = pickHeaderRow(rows);
     const headers = (rows[hi] || []).map(cellToStr);
@@ -126,11 +171,14 @@ export async function parseExcelFile(file) {
     const dataStart = firstIsData ? hi : hi + 1;
 
     const col = (row, idx) => (idx == null || idx < 0 || idx >= row.length) ? '' : cellToStr(row[idx]);
+    const linkAt = (r, idx) => (idx == null || idx < 0 || !linkEmails[r] || idx >= linkEmails[r].length) ? '' : (linkEmails[r][idx] || '');
 
     const sheetEntries = [];
     for (let r = dataStart; r < rows.length; r++) {
       const row = rows[r] || [];
-      if (!row.length || row.every(c => cellToStr(c) === '')) continue;
+      const hasText = row.some(c => cellToStr(c) !== '');
+      const hasLink = (linkEmails[r] || []).some(Boolean);
+      if (!row.length || (!hasText && !hasLink)) continue;
 
       const vor  = col(row, cmap.vorname);
       const nach = col(row, cmap.nachname);
@@ -138,8 +186,12 @@ export async function parseExcelFile(file) {
       const singleName = col(row, cmap.name);
       const name = combined || singleName;
 
+      // E-Mail-Suche: 1) Email-Spalte als Text, 2) Email-Spalte als Hyperlink-Target,
+      // 3) irgendeine andere Zelle mit Text-Email, 4) irgendeine Zelle mit Hyperlink.
       let email = normalizeEmail(col(row, cmap.email));
+      if (!email) email = linkAt(r, cmap.email);
       if (!email) email = firstEmailInRow(row);
+      if (!email) email = firstEmailInLinks(linkEmails[r]);
 
       sheetEntries.push({
         name,
