@@ -10,12 +10,56 @@
 Browser                                ── Authorization-Header wird vom
   │  X-Tempus-Auth: Bearer …              API-Gateway vor dem Weiterreichen
   ▼                                        umgeschrieben auf Authorization
-API Gateway 6i6ysj9c8c
+[1] CloudFront  E305V0ATIXMNNG         (optional – empfehlenswert)
+  │  /v1/tempus-proxy/*
+  ▼
+[2] API Gateway 6i6ysj9c8c
   └ /v1/tempus-proxy/{proxy+}
        ANY  → HTTP_PROXY
               https://trial5.tempus-resource.com/slot4/{proxy}
        OPTIONS → MOCK (CORS)
 ```
+
+### Warum zusätzlich über CloudFront same-origin?
+
+Viele Adblocker/Privacy-Tools (uBlock Origin, Brave Shields,
+Privacy Badger, …) blockieren Aufrufe an `*.execute-api.*.amazonaws.com`
+als „potentielle Tracker". Das äußert sich im Browser als
+`TypeError: Failed to fetch` – obwohl der API-Key korrekt ist und das
+API Gateway tadellos läuft. Die Abhilfe: die Route unter einem
+same-origin-Pfad (`manuel-weiss.ch/v1/tempus-proxy/...`) verfügbar
+machen.
+
+Der Frontend-Client (`mailerUtils.js → callTempus`) versucht daher
+zuerst den same-origin-Pfad und fällt bei Nicht-Verfügbarkeit (oder
+404/403 vom S3-Bucket, falls die CloudFront-Behavior noch nicht
+ausgerollt ist) automatisch auf die absolute API-Gateway-URL zurück.
+
+### CloudFront-Behavior einrichten
+
+In der AWS-Konsole → CloudFront → Distribution `E305V0ATIXMNNG` →
+**Origins** → „Create origin":
+
+- Origin domain: `6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com`
+- Origin path: *(leer)*
+- Protocol: HTTPS only, TLSv1.2
+- Origin ID: `APIGW-TempusProxy`
+
+Danach unter **Behaviors** → „Create behavior":
+
+- Path pattern: `/v1/tempus-proxy/*`
+- Origin: `APIGW-TempusProxy`
+- Viewer protocol policy: Redirect HTTP to HTTPS
+- Allowed HTTP methods: `GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE`
+- Cache policy: `CachingDisabled` (MinTTL/DefaultTTL/MaxTTL = 0)
+- Origin request policy: `AllViewerExceptHostHeader` (damit `X-Tempus-Auth`
+  und Query-String weitergereicht werden) – alternativ Legacy
+  „Forward headers: X-Tempus-Auth, Authorization, Content-Type, Accept"
+  und „Forward query strings: yes".
+
+Hinweis: Das Update kann per AWS CLI unzuverlässig sein
+(`UpdateDistribution → ServiceUnavailable`). In dem Fall klappt es
+zuverlässig über die Web-Konsole.
 
 - **Ziel-Basis-URL** (hart verdrahtet): `https://trial5.tempus-resource.com/slot4`
   → für weitere Tempus-Instanzen pro Instanz eine weitere Route anlegen.

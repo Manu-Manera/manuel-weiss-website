@@ -649,20 +649,53 @@ export async function downloadEmlZip(filename, emlEntries) {
 // ---------------------------------------------------------------------------
 //
 // Der Browser kann aus CORS-Gründen nicht direkt Tempus aufrufen. Stattdessen
-// läuft jeder Call über unseren API-Gateway-Proxy. Dieser leitet den Pfad
-// 1:1 an die Tempus-Trial-Instanz weiter und tauscht den gelieferten
-// X-Tempus-Auth-Header wieder auf Authorization um (da Authorization vom
-// API-Gateway reserviert ist).
+// läuft jeder Call über unseren Proxy (API Gateway, das 1:1 an die Tempus-
+// Trial-Instanz weiterleitet und den X-Tempus-Auth-Header wieder auf
+// Authorization mappt – Authorization ist vom API-Gateway reserviert).
+//
+// Wichtig: direkte Aufrufe an *.execute-api.amazonaws.com werden von vielen
+// Adblockern/Privacy-Tools (uBlock, Brave Shield, Privacy Badger, …)
+// geblockt → „TypeError: Failed to fetch". Darum bevorzugen wir im Browser
+// den Same-Origin-Pfad /v1/tempus-proxy/… (CloudFront-Behavior vor
+// manuel-weiss.ch leitet das transparent an das API-Gateway weiter). Falls
+// das nicht verfügbar ist (z. B. Dev-Server ohne CloudFront), fällt der
+// Client automatisch auf die absolute API-Gateway-URL zurück.
 //
 // Hinweis: Die Ziel-Basis-URL ist momentan FIX konfiguriert
 //   https://trial5.tempus-resource.com/slot4
 // Für weitere Tempus-Instanzen muss eine zusätzliche Proxy-Route angelegt
-// werden (siehe docs/RECOVERY_tempus-mailer-api.md als Muster).
+// werden (siehe docs/RECOVERY_tempus-proxy.md als Muster).
 
-export const TEMPUS_PROXY_BASE =
+// absolute Fallback-URL (wird in Dev / ohne CloudFront genutzt)
+export const TEMPUS_PROXY_ABSOLUTE =
   'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1/tempus-proxy';
 
+// same-origin Pfad (wird vor manuel-weiss.ch via CloudFront weitergereicht)
+export const TEMPUS_PROXY_SAMEORIGIN = '/v1/tempus-proxy';
+
+// Backward-Compat: war früher die absolute URL, bleibt als export erhalten.
+export const TEMPUS_PROXY_BASE = TEMPUS_PROXY_ABSOLUTE;
+
 export const TEMPUS_DEFAULT_BASE_URL = 'https://trial5.tempus-resource.com/slot4';
+
+function buildTempusBases() {
+  // In Node/SSR (kein window) nutzen wir direkt die Absolute-URL.
+  if (typeof window === 'undefined' || !window.location) {
+    return [TEMPUS_PROXY_ABSOLUTE];
+  }
+  const host = window.location.host || '';
+  // Wenn wir auf manuel-weiss.ch oder einer bekannten CloudFront-Domain laufen,
+  // probieren wir zuerst Same-Origin (umgeht Adblocker), dann Absolute.
+  const isProductionHost =
+    /(^|\.)manuel-weiss\.ch$/i.test(host) ||
+    /\.cloudfront\.net$/i.test(host);
+  if (isProductionHost) {
+    const sameOrigin = `${window.location.origin}${TEMPUS_PROXY_SAMEORIGIN}`;
+    return [sameOrigin, TEMPUS_PROXY_ABSOLUTE];
+  }
+  // Dev/unbekannter Host: nur absolute URL.
+  return [TEMPUS_PROXY_ABSOLUTE];
+}
 
 /**
  * Kleiner Helfer für alle Tempus-Aufrufe.
@@ -678,13 +711,7 @@ export async function callTempus({ apiKey, method = 'GET', path, query, body }) 
   if (!path) throw new Error('Tempus API-Pfad fehlt.');
 
   const cleanPath = String(path).replace(/^\/+/, '');
-  const url = new URL(`${TEMPUS_PROXY_BASE}/${cleanPath}`);
-  if (query && typeof query === 'object') {
-    for (const [k, v] of Object.entries(query)) {
-      if (v === undefined || v === null) continue;
-      url.searchParams.set(k, Array.isArray(v) ? v.join(',') : String(v));
-    }
-  }
+  const bases = buildTempusBases();
 
   const init = {
     method,
@@ -698,11 +725,57 @@ export async function callTempus({ apiKey, method = 'GET', path, query, body }) 
     init.body = typeof body === 'string' ? body : JSON.stringify(body);
   }
 
+  // Reihenfolge: zuerst same-origin (wenn vorhanden), dann absolute URL.
+  // Fallback-Trigger: (a) Netzwerkfehler (Adblocker / Offline) oder
+  //                   (b) 403/404 mit text/html Body (Bucket-Fehlerseite, weil
+  //                       die CloudFront-Route noch nicht ausgerollt ist).
   let res;
-  try {
-    res = await fetch(url.toString(), init);
-  } catch (e) {
-    throw new Error(`Netzwerkfehler beim Tempus-Aufruf: ${e.message}`);
+  let lastNetError = null;
+  let lastBadRes = null;
+  for (let i = 0; i < bases.length; i += 1) {
+    const base = bases[i];
+    const isAbsolute = /^https?:\/\//i.test(base);
+    const url = new URL(
+      `${base}/${cleanPath}`,
+      isAbsolute ? undefined : (window?.location?.origin || 'http://localhost')
+    );
+    if (query && typeof query === 'object') {
+      for (const [k, v] of Object.entries(query)) {
+        if (v === undefined || v === null) continue;
+        url.searchParams.set(k, Array.isArray(v) ? v.join(',') : String(v));
+      }
+    }
+    let attempt;
+    try {
+      attempt = await fetch(url.toString(), init);
+    } catch (e) {
+      lastNetError = e;
+      if (i < bases.length - 1) continue;
+      break;
+    }
+    if (
+      (attempt.status === 403 || attempt.status === 404) &&
+      /text\/html/i.test(attempt.headers.get('content-type') || '') &&
+      i < bases.length - 1
+    ) {
+      lastBadRes = attempt;
+      continue;
+    }
+    res = attempt;
+    break;
+  }
+  if (!res) {
+    if (lastBadRes) {
+      res = lastBadRes;
+    } else {
+      const hint =
+        ' Möglicherweise blockiert ein Browser-Adblocker oder Datenschutz-Plugin' +
+        ' die AWS-API-URL. Bitte uBlock/Brave-Shield/Privacy Badger für diese' +
+        ' Seite deaktivieren oder einen anderen Browser/Inkognito-Modus probieren.';
+      throw new Error(
+        `Netzwerkfehler beim Tempus-Aufruf: ${lastNetError?.message || 'Failed to fetch'}.${hint}`
+      );
+    }
   }
 
   const text = await res.text();

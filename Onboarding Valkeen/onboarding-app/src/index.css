@@ -358,3 +358,114 @@ body {
   color: #475569;
   margin: 0 0 0.75em 0;
 }
+
+/* ------------------------------------------------------------------------- */
+/* Globale UI-Luft: ~1–2 mm zusätzlicher Abstand zwischen Text und Rahmen    */
+/* in Inputs, Selects, Textareas, Tabellenzellen & Buttons (sofern der       */
+/* jeweilige Komponenten-Code nicht schon explizit ein p-X oder p-Y setzt,   */
+/* das gleich groß oder größer ist).                                         */
+/* ------------------------------------------------------------------------- */
+
+/* Form-Elemente: nativ, unabhängig von Tailwind-Klassen */
+input:where(
+  [type="text"], [type="email"], [type="password"], [type="search"],
+  [type="url"], [type="tel"], [type="number"], [type="date"], [type="time"],
+  [type="datetime-local"]
+):not(.glass-input):not([class*="px-"]):not([class*="p-"]),
+select:not(.glass-input):not([class*="px-"]):not([class*="p-"]),
+textarea:not(.glass-input):not([class*="px-"]):not([class*="p-"]) {
+  padding: 10px 14px;
+}
+
+/* Mindest-Innenabstand auch für Felder mit Tailwind-Klassen, die zu eng sind.
+   Wir erhöhen nur das Minimum – nicht das Absolutmaß –, damit bestehende
+   großzügige Paddings erhalten bleiben. */
+input[class*="px-2"]:where(:not([class*="px-20"]):not([class*="px-24"])),
+select[class*="px-2"]:where(:not([class*="px-20"]):not([class*="px-24"])),
+textarea[class*="px-2"]:where(:not([class*="px-20"]):not([class*="px-24"])) {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+input[class*="py-1"]:where(:not([class*="py-10"]):not([class*="py-12"]):not([class*="py-14"]):not([class*="py-16"])),
+select[class*="py-1"]:where(:not([class*="py-10"]):not([class*="py-12"]):not([class*="py-14"]):not([class*="py-16"])),
+textarea[class*="py-1"]:where(:not([class*="py-10"]):not([class*="py-12"]):not([class*="py-14"]):not([class*="py-16"])) {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+/* Tabellen: Zellen mit py-1/py-2 oder px-2 bekommen etwas mehr Luft.        */
+table td,
+table th {
+  vertical-align: middle;
+}
+table td[class*="px-2"]:where(:not([class*="px-20"]):not([class*="px-24"])),
+table th[class*="px-2"]:where(:not([class*="px-20"]):not([class*="px-24"])) {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+table td[class*="py-1"]:where(:not([class*="py-10"]):not([class*="py-12"])),
+table th[class*="py-1"]:where(:not([class*="py-10"]):not([class*="py-12"])) {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+table td[class*="py-2"]:where(:not([class*="py-20"]):not([class*="py-24"])),
+table th[class*="py-2"]:where(:not([class*="py-20"]):not([class*="py-24"])) {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+/* Buttons (außer Icon-Only): mindestens 10px/14px Innenabstand, damit sie
+   nicht mehr quetschen – Tailwind-px-3/py-2 wird nicht überschrieben. */
+button[class*="px-2"]:where(
+  :not([class*="px-20"]):not([class*="px-24"]):not([class*="aspect-"])
+),
+a[class*="px-2"]:where(
+  :not([class*="px-20"]):not([class*="px-24"]):not([class*="aspect-"])
+) {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+button[class*="py-1"]:where(
+  :not([class*="py-10"]):not([class*="py-12"])
+),
+a[class*="py-1"]:where(
+  :not([class*="py-10"]):not([class*="py-12"])
+) {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+/* Cards / Glas-Card Inhalte bekommen immer ein bisschen Innenabstand,      */
+/* falls die Komponente nur p-3 / p-4 setzt – minimal 16 px.                */
+.glass-card:where(:not([class*="p-0"]):not([class*="p-1"]):not([class*="p-2"])) {
+  padding: 16px;
+}
+@media (min-width: 640px) {
+  .glass-card:where(:not([class*="p-0"]):not([class*="p-1"]):not([class*="p-2"])) {
+    padding: 20px;
+  }
+}
+@media (min-width: 1024px) {
+  .glass-card:where(:not([class*="p-0"]):not([class*="p-1"]):not([class*="p-2"])) {
+    padding: 24px;
+  }
+}
+
+/* Labels brauchen etwas Abstand zu ihrem Input, sonst klebt der Text direkt
+   am Rahmen / Input. */
+label + input,
+label + select,
+label + textarea {
+  margin-top: 4px;
+}
+
+/* Dropdown-Options (native select): etwas luftiger lesbar. */
+select option {
+  padding: 6px 10px;
+}
+
+/* contenteditable (Mailer-Editor) & eingebaute Rich-Text-Bereiche */
+[contenteditable="true"] {
+  padding: 10px 14px;
+}
+
