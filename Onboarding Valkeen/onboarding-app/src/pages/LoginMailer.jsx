@@ -60,6 +60,7 @@ import {
   parseExcelFile,
   docxToHtml,
   fillTemplate,
+  ensureHtmlDocument,
   inlineImagesAsDataUris,
   buildEml,
   sanitizeFileName,
@@ -711,9 +712,10 @@ export default function LoginMailer() {
     const el = visualRef.current;
     const rawBody = (editorMode === 'visual' && el) ? el.innerHTML : editDraft.bodyHtml;
 
-    // Vor dem Speichern helle/weiße Schrift-Farben herausstreichen, damit der
-    // Text später in Outlook & in der Body-Vorschau nicht unsichtbar wird.
-    const bodyHtml = stripHiddenTextColors(rawBody);
+    // Vor dem Speichern helle/weiße Schrift-Farben herausstreichen (Outlook-
+    // Sicherheit) und in ein vollständiges HTML-Dokument wickeln (damit
+    // Outlook nicht seinen Default-Style nimmt und die Mail nicht abschneidet).
+    const bodyHtml = ensureHtmlDocument(stripHiddenTextColors(rawBody));
 
     if (editDraft.fromExt === 'docx') {
       const ok = confirm(

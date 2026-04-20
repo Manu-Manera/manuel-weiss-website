@@ -508,6 +508,44 @@ function randomBoundary(prefix) {
   return `----=_${prefix}_${Date.now().toString(36)}_${r}`;
 }
 
+/**
+ * Stellt sicher, dass ein HTML-Body einen vollständigen Wrapper hat
+ * (DOCTYPE + <html> + <head> + <body>). `contentEditable` entfernt beim
+ * Öffnen der Vorlage diese Tags; ohne sie nutzt Outlook seine Default-
+ * Formatierung (andere Schriftart, oft blaue Farbe) und manche Versionen
+ * brechen die Anzeige sogar vorzeitig ab ("Nachricht abgeschnitten").
+ *
+ * Wenn der gespeicherte Body ein reines Fragment ist, wickeln wir ihn in
+ * ein Standard-Gerüst mit Calibri / 11pt / Schwarz ein. Hat die Vorlage
+ * bereits eigene Styles im <body>, lassen wir sie unangetastet.
+ */
+export function ensureHtmlDocument(html) {
+  const raw = String(html ?? '').trim();
+  if (!raw) {
+    return (
+      '<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"></head>' +
+      '<body style="font-family: Calibri, \'Segoe UI\', Arial, sans-serif; font-size: 11pt; color: #000000;">' +
+      '</body></html>'
+    );
+  }
+  const hasHtmlTag = /<html[\s>]/i.test(raw);
+  const hasBodyTag = /<body[\s>]/i.test(raw);
+  const hasDoctype = /^<!doctype/i.test(raw);
+  if (hasHtmlTag && hasBodyTag) {
+    // Schon ein komplettes Dokument – ggf. DOCTYPE voranstellen.
+    return hasDoctype ? raw : `<!DOCTYPE html>${raw}`;
+  }
+  if (hasBodyTag && !hasHtmlTag) {
+    return `<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"></head>${raw}</html>`;
+  }
+  return (
+    '<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"></head>' +
+    '<body style="font-family: Calibri, \'Segoe UI\', Arial, sans-serif; font-size: 11pt; color: #000000; line-height: 1.5;">' +
+    raw +
+    '</body></html>'
+  );
+}
+
 function foldHeader(value) {
   const s = String(value || '').replace(/\r?\n/g, ' ');
   if (/^[\x20-\x7e]*$/.test(s)) return s;
@@ -537,9 +575,15 @@ function wrapBase64(s, width = 76) {
  * @param {{name:string, contentType:string, bodyBase64:string}[]} [opts.images]  // werden als cid: eingebettet
  */
 export function buildEml({ to, from, subject, html, images }) {
+  // Body IMMER in ein vollständiges HTML-Dokument wickeln. Ohne <html>/<body>
+  // nutzt Outlook den Default-Style (oft blaue Schrift) und kann den HTML-Teil
+  // bei manchen Versionen sogar vorzeitig beenden ("abgeschnitten"). Mit
+  // Wrapper bekommen wir konsistent Calibri 11pt Schwarz.
+  const htmlDoc = ensureHtmlDocument(html);
+
   // Alle <img src="..."> auf cid:bild<N> mappen, passende Bilder beilegen
   const cidMap = new Map();
-  let replaced = html || '';
+  let replaced = htmlDoc;
   if (images?.length) {
     let counter = 0;
     const byName = new Map();
@@ -570,8 +614,30 @@ export function buildEml({ to, from, subject, html, images }) {
     '',
   ].filter(Boolean).join('\r\n');
 
-  // Plain text fallback: roher Text ohne Tags
-  const textFallback = String(replaced).replace(/<br\s*\/?>/gi, '\n').replace(/<\/p>/gi, '\n\n').replace(/<[^>]+>/g, '').replace(/\s+\n/g, '\n');
+  // Plain text fallback: nur den Body-Inhalt nehmen (ohne DOCTYPE/head/style),
+  // dann Tags raus & die wichtigsten HTML-Entities decodieren (Umlaute, Quotes).
+  const bodyOnly = (String(replaced).match(/<body[^>]*>([\s\S]*?)<\/body>/i)?.[1]) || String(replaced);
+  const textFallback = bodyOnly
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/(p|div|h[1-6]|li|tr)>/gi, '\n')
+    .replace(/<li[^>]*>/gi, '• ')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&auml;/gi, 'ä').replace(/&Auml;/g, 'Ä')
+    .replace(/&ouml;/gi, 'ö').replace(/&Ouml;/g, 'Ö')
+    .replace(/&uuml;/gi, 'ü').replace(/&Uuml;/g, 'Ü')
+    .replace(/&szlig;/gi, 'ß')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\r/g, '')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
 
   const plainPart = [
     `--${bAlt}`,
