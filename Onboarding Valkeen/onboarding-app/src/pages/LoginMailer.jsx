@@ -395,6 +395,17 @@ export default function LoginMailer() {
   const [tempusGroups, setTempusGroups]               = useState([]);
   const [tempusConnectError, setTempusConnectError]  = useState('');
   const [tempusConnecting, setTempusConnecting]      = useState(false);
+  const tempusErrorRef = useRef(null);
+  // ID erhöht sich mit jedem Connect-Versuch, damit der Effekt sicher feuert
+  // (auch wenn dieselbe Fehlermeldung zweimal hintereinander auftritt).
+  const [tempusErrorBumpId, setTempusErrorBumpId] = useState(0);
+  useEffect(() => {
+    if (tempusConnectError && tempusErrorRef.current) {
+      try {
+        tempusErrorRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch { /* ignore */ }
+    }
+  }, [tempusConnectError, tempusErrorBumpId]);
 
   const [tempusRoleId, setTempusRoleId] = useState(() => {
     try { const v = localStorage.getItem(TEMPUS_ROLE_KEY); return v ? Number(v) : null; }
@@ -423,20 +434,63 @@ export default function LoginMailer() {
   const [tempusSyncRunning, setTempusSyncRunning] = useState(false);
 
   const handleTempusConnect = async () => {
-    const key = tempusApiKey.trim();
-    if (!key) { setTempusConnectError('API-Key fehlt.'); return; }
-    setTempusConnecting(true);
+    // Robust: trim + alle Whitespaces/Zero-Width-Chars entfernen, die per
+    // Copy/Paste aus PDFs/E-Mails reinrutschen und sonst zu „401 Unauthorized“
+    // führen ohne dass der User es sieht.
+    const rawKey = tempusApiKey || '';
+    const key = rawKey
+      .replace(/[\u200B-\u200D\uFEFF]/g, '') // Zero-Width-Chars
+      .replace(/\s+/g, '')                   // Spaces, Tabs, Zeilenumbrüche
+      .trim();
+    if (key !== rawKey) {
+      // Bereinigten Key zurückschreiben, damit der User das auch sieht.
+      setTempusApiKey(key);
+    }
+
     setTempusConnectError('');
+    if (!key) {
+      setTempusConnectError('API-Key fehlt.');
+      setTempusErrorBumpId(x => x + 1);
+      return;
+    }
+    // Sehr lockere Format-Prüfung: Tempus-Keys haben das Schema
+    // "<resourceId>-<uuid>" (z. B. 373-79b17597-9bc4-4912-9ecb-bcbfcb223050).
+    if (!/^\d+-[0-9a-f-]{30,}$/i.test(key)) {
+      setTempusConnectError(
+        'Der eingegebene API-Key sieht nicht wie ein Tempus-Key aus ' +
+        '(erwartet: „<Zahlen>-<UUID>“, z. B. 373-79b17597-9bc4-4912-9ecb-bcbfcb223050). ' +
+        'Bitte prüfen, ob der Key vollständig kopiert wurde.'
+      );
+      setTempusErrorBumpId(x => x + 1);
+      return;
+    }
+
+    setTempusConnecting(true);
+    // Hilfreich beim Debuggen aus der Browser-Konsole
+    // (Key wird maskiert ausgegeben, nie vollständig).
+    const masked = key.length > 12 ? `${key.slice(0, 6)}…${key.slice(-4)}` : '***';
+    // eslint-disable-next-line no-console
+    console.info('[Tempus] Verbinde mit Tempus', { keyLength: key.length, masked, baseUrl: tempusBaseUrl });
+
     try {
-      const [identity, roles, groups] = await Promise.all([
-        tempusIdentity(key),
-        tempusListGlobalRoles(key).catch(() => []),
-        tempusListResourceSecurityGroups(key).catch(() => []),
+      const identity = await tempusIdentity(key);
+      const [roles, groups] = await Promise.all([
+        tempusListGlobalRoles(key).catch((e) => {
+          // eslint-disable-next-line no-console
+          console.warn('[Tempus] Rollen konnten nicht geladen werden', e);
+          return [];
+        }),
+        tempusListResourceSecurityGroups(key).catch((e) => {
+          // eslint-disable-next-line no-console
+          console.warn('[Tempus] Security-Groups konnten nicht geladen werden', e);
+          return [];
+        }),
       ]);
+      // eslint-disable-next-line no-console
+      console.info('[Tempus] Verbunden', { identity, roleCount: roles.length, groupCount: groups.length });
       setTempusIdentityInfo(identity);
       setTempusRoles(roles);
       setTempusGroups(groups);
-      // Defaults setzen, falls noch nichts gewählt
       setTempusRoleId((curr) => {
         if (curr != null && roles.some(r => r.id === curr)) return curr;
         const nonAdmin = roles.find(r => r.systemKey !== 'Administrator');
@@ -447,8 +501,23 @@ export default function LoginMailer() {
         return groups[0]?.id ?? null;
       });
     } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[Tempus] Verbindungs-Fehler', err);
       setTempusIdentityInfo(null);
-      setTempusConnectError(err?.message || String(err));
+      const status = err?.status;
+      let msg = err?.message || String(err);
+      if (status === 401 || status === 403) {
+        msg = `Tempus hat den API-Key abgelehnt (HTTP ${status}). ` +
+              `Bitte prüfen, ob der Key noch gültig ist und für die Instanz ` +
+              `${tempusBaseUrl} ausgegeben wurde. Original-Antwort: ${msg}`;
+      } else if (/failed to fetch|networkerror|load failed/i.test(msg)) {
+        msg = `Netzwerk-/Browser-Fehler beim Tempus-Aufruf. ` +
+              `Häufigste Ursache: ein Adblocker (uBlock, Brave Shield, Privacy Badger, …) ` +
+              `blockiert AWS-API-URLs. Bitte für diese Seite deaktivieren oder Inkognito ` +
+              `probieren. Original: ${msg}`;
+      }
+      setTempusConnectError(msg);
+      setTempusErrorBumpId(x => x + 1);
     } finally {
       setTempusConnecting(false);
     }
@@ -1350,9 +1419,28 @@ export default function LoginMailer() {
               </div>
 
               {tempusConnectError && (
-                <div className="p-3 rounded-lg bg-red-500/10 border border-red-400/30 text-sm text-red-200 flex items-start gap-2">
-                  <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
-                  <span className="break-words">{tempusConnectError}</span>
+                <div
+                  ref={tempusErrorRef}
+                  role="alert"
+                  className="p-4 rounded-lg bg-red-500/15 border-2 border-red-400/60 text-sm text-red-100 flex items-start gap-3 shadow-lg shadow-red-500/10"
+                >
+                  <AlertTriangle className="w-5 h-5 mt-0.5 shrink-0 text-red-300" />
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-red-200 mb-1">
+                      Verbindung zu Tempus fehlgeschlagen
+                    </div>
+                    <span className="break-words whitespace-pre-wrap">{tempusConnectError}</span>
+                    <div className="mt-2 text-xs text-red-200/70">
+                      Tipp: Browser-Konsole öffnen (F12 → Console) für Details. Suche nach „[Tempus]“.
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setTempusConnectError('')}
+                    className="text-red-200/70 hover:text-red-100 shrink-0"
+                    title="Fehler ausblenden"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
               )}
 

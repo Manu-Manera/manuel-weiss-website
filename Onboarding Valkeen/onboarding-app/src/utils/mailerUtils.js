@@ -851,11 +851,19 @@ export async function callTempus({ apiKey, method = 'GET', path, query, body }) 
   }
 
   if (!res.ok) {
-    const msg =
+    // 401/403 enthalten oft KEINEN Body → ohne Sondertext steht da nur
+    // „… → 401: HTTP 401“. Mit explizitem Hinweis ist klar, was zu tun ist.
+    let msg =
       (data && (data.message || data.error)) ||
       (typeof data === 'string' ? data : null) ||
-      text ||
-      `HTTP ${res.status}`;
+      (text && text.trim()) ||
+      '';
+    if (!msg) {
+      if (res.status === 401) msg = 'API-Key ungültig oder abgelaufen (kein Response-Body).';
+      else if (res.status === 403) msg = 'API-Key hat keine Berechtigung für diesen Aufruf.';
+      else if (res.status === 404) msg = 'Tempus-Endpoint nicht gefunden (Pfad oder Instanz prüfen).';
+      else msg = `HTTP ${res.status}`;
+    }
     const error = new Error(`Tempus ${method} ${cleanPath} → ${res.status}: ${msg}`);
     error.status = res.status;
     error.data = data ?? text;
