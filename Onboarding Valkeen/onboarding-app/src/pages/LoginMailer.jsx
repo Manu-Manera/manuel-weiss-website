@@ -217,9 +217,36 @@ export default function LoginMailer() {
   const [usernameMode, setUsernameMode] = useState(() => {
     try { return localStorage.getItem(USERNAME_MODE_KEY) || USERNAME_MODE_FIRSTNAME; } catch { return USERNAME_MODE_FIRSTNAME; }
   });
+  // Zuletzt "angewandte" globale URL. Wird genutzt, um bei einer Änderung der
+  // globalen URL automatisch genau die Zeilen mitzuziehen, die vorher auf
+  // diesem Wert standen (typisch: alle, die enrichEntry() gesetzt hat).
+  // Zeilen mit individuell abweichender URL bleiben unangetastet.
+  const lastAppliedGlobalUrlRef = useRef(globalUrl || '');
   useEffect(() => { try { localStorage.setItem(GLOBAL_URL_KEY, globalUrl || ''); } catch { /* ignore */ } }, [globalUrl]);
   useEffect(() => { try { localStorage.setItem(DEFAULT_PW_KEY, defaultPassword || ''); } catch { /* ignore */ } }, [defaultPassword]);
   useEffect(() => { try { localStorage.setItem(USERNAME_MODE_KEY, usernameMode); } catch { /* ignore */ } }, [usernameMode]);
+
+  // Übernimmt die neue globale URL in alle Zeilen, die leer waren ODER die
+  // bisher exakt auf dem zuletzt angewandten globalen Wert standen.
+  // Rückgabe: { changed, preserved } — Anzahl geänderter / beibehaltener Zeilen.
+  const propagateGlobalUrlChange = (nextUrl) => {
+    const next = (nextUrl || '').trim();
+    const prev = (lastAppliedGlobalUrlRef.current || '').trim();
+    if (next === prev) return { changed: 0, preserved: 0 };
+    let changed = 0;
+    let preserved = 0;
+    setEntries(list => list.map(e => {
+      const u = (e.url || '').trim();
+      if (!u || u === prev) {
+        if (u !== next) changed += 1;
+        return { ...e, url: next };
+      }
+      preserved += 1;
+      return e;
+    }));
+    lastAppliedGlobalUrlRef.current = next;
+    return { changed, preserved };
+  };
 
   const effectivePassword = () => (defaultPassword?.trim() || DEFAULT_TEMPUS_PASSWORD);
 
@@ -1066,9 +1093,10 @@ export default function LoginMailer() {
                   value={globalUrl}
                   onChange={(e) => setGlobalUrl(e.target.value)}
                   onBlur={() => {
-                    // Wie in der Desktop-App: beim Verlassen des Felds leere URL-Zellen füllen.
-                    if (!globalUrl.trim()) return;
-                    setEntries(prev => prev.map(e => !(e.url || '').trim() ? { ...e, url: globalUrl.trim() } : e));
+                    // Beim Verlassen des Felds leere Zellen + alle auf den
+                    // alten globalen Wert gesetzten Zellen mitziehen.
+                    // Individuell abweichende URLs bleiben erhalten.
+                    propagateGlobalUrlChange(globalUrl);
                   }}
                   placeholder="https://zugang.firma.ch"
                   className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm"
@@ -1441,7 +1469,13 @@ export default function LoginMailer() {
 
           <div className="flex justify-end gap-2 pt-2">
             <button
-              onClick={() => setStep('template')}
+              onClick={() => {
+                // Sicherheitsnetz: wenn der Nutzer die globale URL im Feld
+                // geändert, aber noch nicht "bestätigt" hat (kein Blur), die
+                // Änderung jetzt noch kurz vor dem Wechsel propagieren.
+                propagateGlobalUrlChange(globalUrl);
+                setStep('template');
+              }}
               disabled={!validEntries.length}
               className="px-5 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium"
             >
