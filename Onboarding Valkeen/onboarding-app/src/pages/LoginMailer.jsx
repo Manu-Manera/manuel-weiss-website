@@ -99,6 +99,31 @@ const PLACEHOLDERS = [
   { token: '{URL}',      label: 'Login-URL',   desc: 'Zugangs-Link' },
 ];
 
+// Entfernt „versteckte" helle/weiße Textfarben aus HTML. Solche Farben stammen
+// aus Copy/Paste aus dunklen Oberflächen und machen den Text auf weißem Mail-
+// Hintergrund unsichtbar. Wir lassen die Browser-Default-Farbe (Schwarz) greifen.
+// Wird vor Speichern, beim Öffnen im Editor und vor dem Anzeigen aufgerufen.
+function stripHiddenTextColors(html) {
+  if (!html) return '';
+  let out = String(html);
+  // Farbnamen: white
+  out = out.replace(/color\s*:\s*white\s*(!important)?\s*;?/gi, '');
+  // #fff, #ffffff (auch Groß-/Kleinschreibung, mit/ohne #)
+  out = out.replace(/color\s*:\s*#\s*(?:fff|ffffff)\b\s*(!important)?\s*;?/gi, '');
+  // rgb/rgba(255,255,255[,x])
+  out = out.replace(/color\s*:\s*rgba?\(\s*255\s*[,\s]\s*255\s*[,\s]\s*255\s*[,\s\d.]*\)\s*(!important)?\s*;?/gi, '');
+  // nah-weiße Farben rgb(≥230, ≥230, ≥230) pauschal entfernen
+  out = out.replace(
+    /color\s*:\s*rgba?\(\s*(2[3-9]\d|25[0-5])\s*[,\s]\s*(2[3-9]\d|25[0-5])\s*[,\s]\s*(2[3-9]\d|25[0-5])\s*[,\s\d.]*\)\s*(!important)?\s*;?/gi,
+    ''
+  );
+  // <font color="white" | "#fff…" | "#eee…"> vom alten execCommand-Output
+  out = out.replace(/<font\b([^>]*)\scolor\s*=\s*(["'])\s*(?:white|#\s*(?:fff|ffffff|eee|eeeeee))\s*\2([^>]*)>/gi, '<font$1$3>');
+  // leer gewordene style="" aufräumen
+  out = out.replace(/\sstyle\s*=\s*(['"])\s*\1/gi, '');
+  return out;
+}
+
 // HTML → grober Plain-Text (für mailto:-Fallback beim Öffnen im Mailclient).
 function htmlToPlainText(html) {
   if (!html) return '';
@@ -537,9 +562,12 @@ export default function LoginMailer() {
     // Für DOCX-Vorlagen: es gibt keinen editierbaren „Quelltext" — wir nehmen das
     // von mammoth gerenderte HTML (mit Bildern als data:-URIs), damit der Nutzer
     // lesbaren Inhalt sieht und direkt bearbeiten kann.
-    const initialHtml = activeTemplate.bodyExt === 'docx'
+    const rawHtml = activeTemplate.bodyExt === 'docx'
       ? (activeTemplate.renderedHtml || '')
       : (activeTemplate.bodyText || '');
+    // Helle/weiße Farben aus dem Quelltext entfernen, bevor sie im weiß-
+    // hintergrund-Editor unsichtbar werden.
+    const initialHtml = stripHiddenTextColors(rawHtml);
     setEditDraft({
       slug: activeTemplate.slug,
       title: activeTemplate.title,
@@ -654,7 +682,11 @@ export default function LoginMailer() {
     // Falls der Nutzer zuletzt im Visual-Modus getippt hat, aktuellen Stand
     // aus dem DOM ziehen (useState kennt erst den letzten onInput-Sync).
     const el = visualRef.current;
-    const bodyHtml = (editorMode === 'visual' && el) ? el.innerHTML : editDraft.bodyHtml;
+    const rawBody = (editorMode === 'visual' && el) ? el.innerHTML : editDraft.bodyHtml;
+
+    // Vor dem Speichern helle/weiße Schrift-Farben herausstreichen, damit der
+    // Text später in Outlook & in der Body-Vorschau nicht unsichtbar wird.
+    const bodyHtml = stripHiddenTextColors(rawBody);
 
     if (editDraft.fromExt === 'docx') {
       const ok = confirm(
@@ -781,9 +813,15 @@ export default function LoginMailer() {
     })();
   }, [activeTemplate]);
 
-  const templateRawHtml = activeTemplate?.bodyExt === 'docx'
-    ? (activeTemplate.renderedHtml || '')
-    : (activeTemplate?.bodyText || '');
+  // Body-HTML der aktiven Vorlage. Helle/weiße Farben werden auch hier
+  // aktiv entfernt – so wirken Platzhalter in der Vorschau und in
+  // Outlook-Entwürfen nicht „unsichtbar", falls sie noch aus einem alten
+  // Save mit weißer Schrift stammen.
+  const templateRawHtml = stripHiddenTextColors(
+    activeTemplate?.bodyExt === 'docx'
+      ? (activeTemplate.renderedHtml || '')
+      : (activeTemplate?.bodyText || '')
+  );
 
   const validEntries = useMemo(() => entries.filter(e => e.email), [entries]);
 
@@ -1501,13 +1539,15 @@ export default function LoginMailer() {
                   <div>
                     <p className="text-sm text-white/60 mb-2">Body-Vorschau (roh, ohne Platzhalter-Ersetzung)</p>
                     <div
-                      className="rounded-xl bg-white text-slate-900 p-4 max-h-[400px] overflow-auto text-sm"
+                      className="rounded-xl bg-white text-slate-900 p-4 max-h-[400px] overflow-auto text-sm mailer-visual-editor"
                       dangerouslySetInnerHTML={{
-                        __html: inlineImagesAsDataUris(
-                          activeTemplate.bodyExt === 'docx'
-                            ? (activeTemplate.renderedHtml || '')
-                            : (activeTemplate.bodyText || ''),
-                          imageData
+                        __html: stripHiddenTextColors(
+                          inlineImagesAsDataUris(
+                            activeTemplate.bodyExt === 'docx'
+                              ? (activeTemplate.renderedHtml || '')
+                              : (activeTemplate.bodyText || ''),
+                            imageData
+                          )
                         )
                       }}
                     />

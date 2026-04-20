@@ -333,17 +333,44 @@ body {
   font-weight: 600;
 }
 /* Sicherheitsnetz: falls jemand weiße Schrift aus der dunklen App in den Editor
-   pastet, überschreiben wir helle Farben auf dem weißen Editor-Hintergrund, damit
-   nichts "unsichtbar" wird. */
-.mailer-visual-editor [style*="color: white" i],
-.mailer-visual-editor [style*="color:#fff" i],
-.mailer-visual-editor [style*="color: #fff" i],
-.mailer-visual-editor [style*="color:rgb(255" i],
-.mailer-visual-editor [style*="color: rgb(255" i] {
-  color: #0f172a !important;
+   pastet oder im Body-Preview rendert, überschreiben wir helle Farben auf dem
+   weißen Editor-Hintergrund, damit nichts "unsichtbar" wird. */
+.mailer-visual-editor,
+.mailer-visual-editor * {
+  color: inherit;
 }
 .mailer-visual-editor {
   color: #0f172a;
+}
+.mailer-visual-editor [style*="color: white" i],
+.mailer-visual-editor [style*="color:white" i],
+.mailer-visual-editor [style*="color:#fff" i],
+.mailer-visual-editor [style*="color: #fff" i],
+.mailer-visual-editor [style*="color:#FFF" i],
+.mailer-visual-editor [style*="color: #FFF" i],
+.mailer-visual-editor [style*="color:rgb(255" i],
+.mailer-visual-editor [style*="color: rgb(255" i],
+.mailer-visual-editor [style*="color:rgba(255" i],
+.mailer-visual-editor [style*="color: rgba(255" i],
+.mailer-visual-editor font[color="white" i],
+.mailer-visual-editor font[color="#fff" i],
+.mailer-visual-editor font[color="#ffffff" i],
+.mailer-visual-editor .text-white,
+.mailer-visual-editor [class*="text-white"] {
+  color: #0f172a !important;
+}
+/* Und dunkle Hintergründe aus gepasteten Dark-UIs neutralisieren, damit
+   der weiße Mail-Hintergrund erhalten bleibt. */
+.mailer-visual-editor [style*="background:#0" i],
+.mailer-visual-editor [style*="background: #0" i],
+.mailer-visual-editor [style*="background:#1" i],
+.mailer-visual-editor [style*="background: #1" i],
+.mailer-visual-editor [style*="background-color:#0" i],
+.mailer-visual-editor [style*="background-color: #0" i],
+.mailer-visual-editor [style*="background-color:#1" i],
+.mailer-visual-editor [style*="background-color: #1" i] {
+  background: transparent !important;
+  background-color: transparent !important;
 }
 .mailer-visual-editor kbd {
   background: #f1f5f9;
