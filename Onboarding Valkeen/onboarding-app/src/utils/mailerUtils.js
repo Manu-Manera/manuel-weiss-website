@@ -745,19 +745,28 @@ export const TEMPUS_PROXY_BASE = TEMPUS_PROXY_ABSOLUTE;
 export const TEMPUS_DEFAULT_BASE_URL = 'https://trial5.tempus-resource.com/slot4';
 
 function buildTempusBases() {
+  // WICHTIG: CloudFront-Behavior für /v1/tempus-proxy/* ist NOCH NICHT aktiv!
+  // Solange das fehlt, schlägt Same-Origin fehl (liefert S3-Indexseite oder
+  // 404). Darum ZUERST die absolute AWS-API-URL probieren (funktioniert, wenn
+  // kein Adblocker aktiv ist), DANN Same-Origin als Fallback. Sobald Cloud-
+  // Front konfiguriert ist, Reihenfolge wieder tauschen (Same-Origin zuerst,
+  // weil das Adblocker umgeht).
+  //
+  // TODO: Reihenfolge ändern zu [sameOrigin, TEMPUS_PROXY_ABSOLUTE] sobald
+  //       CloudFront-Behavior aktiv ist.
+
   // In Node/SSR (kein window) nutzen wir direkt die Absolute-URL.
   if (typeof window === 'undefined' || !window.location) {
     return [TEMPUS_PROXY_ABSOLUTE];
   }
   const host = window.location.host || '';
-  // Wenn wir auf manuel-weiss.ch oder einer bekannten CloudFront-Domain laufen,
-  // probieren wir zuerst Same-Origin (umgeht Adblocker), dann Absolute.
   const isProductionHost =
     /(^|\.)manuel-weiss\.ch$/i.test(host) ||
     /\.cloudfront\.net$/i.test(host);
   if (isProductionHost) {
     const sameOrigin = `${window.location.origin}${TEMPUS_PROXY_SAMEORIGIN}`;
-    return [sameOrigin, TEMPUS_PROXY_ABSOLUTE];
+    // Absolute zuerst (CloudFront-Route fehlt noch), Same-Origin als Fallback.
+    return [TEMPUS_PROXY_ABSOLUTE, sameOrigin];
   }
   // Dev/unbekannter Host: nur absolute URL.
   return [TEMPUS_PROXY_ABSOLUTE];
@@ -791,13 +800,20 @@ export async function callTempus({ apiKey, method = 'GET', path, query, body }) 
     init.body = typeof body === 'string' ? body : JSON.stringify(body);
   }
 
-  // Reihenfolge: zuerst same-origin (wenn vorhanden), dann absolute URL.
-  // Fallback-Trigger: (a) Netzwerkfehler (Adblocker / Offline) oder
-  //                   (b) 403/404 mit text/html Body (Bucket-Fehlerseite, weil
-  //                       die CloudFront-Route noch nicht ausgerollt ist).
-  let res;
+  // Reihenfolge: Absolute-URL zuerst (CloudFront Same-Origin fehlt noch),
+  // dann Same-Origin als Fallback (für wenn CloudFront konfiguriert ist).
+  //
+  // Fallback-Trigger:
+  //   (a) Netzwerkfehler (Adblocker / Offline / CORS)
+  //   (b) Antwort ist kein JSON (z. B. S3-Fehlerseite, SPA-index.html, …)
+  //   (c) 403/404 mit HTML-Body
+  let res = null;
+  let text = null;
+  let data = null;
   let lastNetError = null;
-  let lastBadRes = null;
+  let lastNonJsonRes = null;
+  let lastNonJsonText = null;
+
   for (let i = 0; i < bases.length; i += 1) {
     const base = bases[i];
     const isAbsolute = /^https?:\/\//i.test(base);
@@ -811,28 +827,70 @@ export async function callTempus({ apiKey, method = 'GET', path, query, body }) 
         url.searchParams.set(k, Array.isArray(v) ? v.join(',') : String(v));
       }
     }
+
     let attempt;
     try {
+      // eslint-disable-next-line no-console
+      console.debug(`[Tempus] Versuche ${url.toString()} …`);
       attempt = await fetch(url.toString(), init);
     } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn(`[Tempus] Netzwerkfehler bei ${base}`, e);
       lastNetError = e;
       if (i < bases.length - 1) continue;
       break;
     }
-    if (
-      (attempt.status === 403 || attempt.status === 404) &&
-      /text\/html/i.test(attempt.headers.get('content-type') || '') &&
-      i < bases.length - 1
-    ) {
-      lastBadRes = attempt;
+
+    // Body auslesen
+    let attemptText;
+    try {
+      attemptText = await attempt.text();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn(`[Tempus] Body-Read-Fehler bei ${base}`, e);
+      lastNetError = e;
+      if (i < bases.length - 1) continue;
+      break;
+    }
+
+    // Versuchen, als JSON zu parsen
+    let attemptData = null;
+    if (attemptText) {
+      try {
+        attemptData = JSON.parse(attemptText);
+      } catch { /* kein JSON */ }
+    }
+
+    // Wenn die Antwort KEIN JSON ist, ist das sehr wahrscheinlich eine S3-
+    // Fehlerseite oder die SPA-Indexseite → nächste Base probieren.
+    const isJson = attemptData !== null;
+    const contentType = attempt.headers.get('content-type') || '';
+    const looksLikeHtml = /text\/html/i.test(contentType) ||
+                          (attemptText && /^\s*<!doctype|^\s*<html/i.test(attemptText));
+
+    if (!isJson && looksLikeHtml && i < bases.length - 1) {
+      // eslint-disable-next-line no-console
+      console.warn(`[Tempus] HTML statt JSON von ${base} (${attempt.status}) – versuche nächste Base`);
+      lastNonJsonRes = attempt;
+      lastNonJsonText = attemptText;
       continue;
     }
+
+    // Gültige Antwort (JSON oder zumindest kein HTML-Fallback mehr)
     res = attempt;
+    text = attemptText;
+    data = attemptData;
+    // eslint-disable-next-line no-console
+    console.debug(`[Tempus] Antwort von ${base}`, { status: attempt.status, isJson, dataKeys: data ? Object.keys(data).slice(0, 5) : null });
     break;
   }
+
+  // Wenn alle Bases fehlgeschlagen sind
   if (!res) {
-    if (lastBadRes) {
-      res = lastBadRes;
+    if (lastNonJsonRes) {
+      res = lastNonJsonRes;
+      text = lastNonJsonText;
+      data = null;
     } else {
       const hint =
         ' Möglicherweise blockiert ein Browser-Adblocker oder Datenschutz-Plugin' +
@@ -842,12 +900,6 @@ export async function callTempus({ apiKey, method = 'GET', path, query, body }) 
         `Netzwerkfehler beim Tempus-Aufruf: ${lastNetError?.message || 'Failed to fetch'}.${hint}`
       );
     }
-  }
-
-  const text = await res.text();
-  let data = null;
-  if (text) {
-    try { data = JSON.parse(text); } catch { /* plain text */ }
   }
 
   if (!res.ok) {

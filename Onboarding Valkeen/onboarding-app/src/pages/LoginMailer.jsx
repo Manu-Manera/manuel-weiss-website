@@ -940,20 +940,38 @@ export default function LoginMailer() {
 
   // --- Downloads ---
 
-  const buildEmlForEntry = (entry) => {
+  const buildEmlForEntry = (entry, { debug = false } = {}) => {
     const filledHtml = fillTemplate(templateRawHtml, entry);
     const filledSubject = fillTemplate(activeTemplate?.subject || '', entry);
-    return buildEml({
+    const eml = buildEml({
       to: entry.email,
       from: senderEmail || undefined,
       subject: filledSubject,
       html: filledHtml,
       images: imageData,
     });
+    if (debug) {
+      // eslint-disable-next-line no-console
+      console.group('[EML Debug]', entry.email);
+      // eslint-disable-next-line no-console
+      console.log('Länge:', eml.length, 'Zeichen');
+      // eslint-disable-next-line no-console
+      console.log('Start (erste 800 Zeichen):\n', eml.slice(0, 800));
+      // eslint-disable-next-line no-console
+      console.log('Header-Check:', {
+        hatTo: eml.startsWith('To:'),
+        hatMimeVersion: eml.includes('MIME-Version:'),
+        hatXUnsent: eml.includes('X-Unsent: 1'),
+        hatBoundary: eml.includes('boundary='),
+      });
+      // eslint-disable-next-line no-console
+      console.groupEnd();
+    }
+    return eml;
   };
 
-  const downloadSingleEml = (entry) => {
-    const content = buildEmlForEntry(entry);
+  const downloadSingleEml = (entry, { debug = false } = {}) => {
+    const content = buildEmlForEntry(entry, { debug: debug || entries.length < 5 });
     const fname = `${sanitizeFileName(entry.name || entry.email)}.eml`;
     downloadBlob(fname, new Blob([content], { type: 'message/rfc822' }));
   };
@@ -2159,6 +2177,23 @@ export default function LoginMailer() {
               </p>
               <p className="text-[11px] text-white/40 mb-2">
                 <Mail className="w-3 h-3 inline-block" /> .eml (HTML + Bilder) · <ExternalLink className="w-3 h-3 inline-block" /> mailto (direkt im Mailclient, Plain-Text)
+                <button
+                  onClick={() => {
+                    if (!validEntries.length) return;
+                    const sample = buildEmlForEntry(validEntries[0], { debug: true });
+                    // eslint-disable-next-line no-console
+                    console.log('[EML] Voller Inhalt der ersten E-Mail:', sample);
+                    alert(
+                      `EML-Debug (erste E-Mail) — öffne F12 → Console für Details.\n\n` +
+                      `Länge: ${sample.length} Zeichen\n` +
+                      `Anfang:\n${sample.slice(0, 400)}…`
+                    );
+                  }}
+                  className="ml-2 underline text-indigo-300 hover:text-indigo-200"
+                  title="Zeigt die ersten Zeichen der generierten EML in der Konsole/Alert"
+                >
+                  (Debug)
+                </button>
               </p>
               <div className="max-h-[260px] overflow-y-auto space-y-1 text-sm">
                 {validEntries.map((e, i) => (
