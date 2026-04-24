@@ -1890,7 +1890,8 @@ function setLang(lang) {
 ═══════════════════════════════════════════════════ */
 const STORAGE_KEY = 'tempus-demo-pm-v1';
 /** Gespeicherte Zustände ohne diese Version ignorieren (verhindert, dass alte AWS-Kopien die neuen Szenen überschreiben). */
-const PM_STATE_SCHEMA_VERSION = 3;
+/** Erhöhen, wenn gespeicherter S3/localStorage-Stand die eingebaute Vorlage kaputt ersetzen soll (ignoriert alte Saves). v4: kaputte Agenda auf AWS zurücksetzen. */
+const PM_STATE_SCHEMA_VERSION = 4;
 let editMode = false;
 let dragSrc = null;
 let clickStepLiDragSrc = null;
