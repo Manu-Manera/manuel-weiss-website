@@ -2957,6 +2957,23 @@ async function loadSaved() {
   applyState(data);
 }
 
+/**
+ * Gespeicherte Vollflächen-Agenda darf die eingebaute Vorlage nicht überschreiben, wenn sie
+ * nur aus Bearbeitungs-Platzhaltern besteht oder unvollständig ist (typisch: EN-only Entwurf
+ * mit „New block title“ auf S3 — DE-Seite wirkte korrekt, EN nicht).
+ */
+function isValidSavedAgendaHtml(html) {
+  if (!html || typeof html !== 'string') return false;
+  const s = html.trim();
+  if (!/id\s*=\s*["']pm-training-agenda["']/.test(s) && !/agenda-fullpage-wrap/.test(s)) return false;
+  const blockMatches = s.match(/agenda-fullpage-block/g);
+  const blockCount = blockMatches ? blockMatches.length : 0;
+  if (blockCount < 5) return false;
+  const placeholder = /New block title|Neuer Blocktitel|New bullet — edit text|Neuer Punkt — Text bearbeiten|<span class="t-de">Erster Punkt<\/span>|<span class="t-en">First bullet<\/span>/i;
+  if (placeholder.test(s)) return false;
+  return true;
+}
+
 function applyState(data) {
   try {
     const page    = document.querySelector('.page');
@@ -2983,7 +3000,7 @@ function applyState(data) {
       }
     }
 
-    if (data.agendaHtml) {
+    if (data.agendaHtml && isValidSavedAgendaHtml(data.agendaHtml)) {
       const t = document.createElement('template');
       t.innerHTML = data.agendaHtml.trim();
       const node = t.content.firstElementChild;
@@ -2991,6 +3008,10 @@ function applyState(data) {
       if (node && cur && node.id === 'pm-training-agenda') {
         cur.replaceWith(node);
       }
+    } else if (data.agendaHtml) {
+      console.warn(
+        'tempus-demo-pm: Gespeicherte Agenda verworfen (Platzhalter oder &lt; 5 Blöcke) — eingebaute DE/EN-Vorlage bleibt aktiv.'
+      );
     }
 
     page.querySelectorAll('.scene').forEach(s => s.remove());
