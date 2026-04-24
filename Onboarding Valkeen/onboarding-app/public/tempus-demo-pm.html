@@ -2969,7 +2969,19 @@ function isValidSavedAgendaHtml(html) {
   const blockMatches = s.match(/agenda-fullpage-block/g);
   const blockCount = blockMatches ? blockMatches.length : 0;
   if (blockCount < 5) return false;
-  const placeholder = /New block title|Neuer Blocktitel|New bullet — edit text|Neuer Punkt — Text bearbeiten|<span class="t-de">Erster Punkt<\/span>|<span class="t-en">First bullet<\/span>/i;
+  /* Eingebaute Vorlage: Aayushi + Block „SPA Phase 2 / Grid vertiefen“. Entwürfe mit 6 Blöcken
+     und „Single Project Allocation“ statt zweigeteilter SPA schlagen das oft weg. */
+  if (!/Aayushi/i.test(s)) return false;
+  if (!/(Grid vertiefen|SPA Phase 2|deepen the grid)/i.test(s)) return false;
+  if (/Matches the official PM training slide|Deep dive in this guide \(not on the slide\)/i.test(s)) {
+    return false;
+  }
+  const placeholder = new RegExp(
+    'New block title|Neuer Blocktitel|First bullet|Erster Punkt|' +
+      'New bullet\\s*[\\u2013\\u2014\\-\\u002d]\\s*edit text|' +
+      'Neuer Punkt\\s*[\\u2013\\u2014\\-\\u002d]\\s*Text bearbeiten',
+    'i'
+  );
   if (placeholder.test(s)) return false;
   return true;
 }
