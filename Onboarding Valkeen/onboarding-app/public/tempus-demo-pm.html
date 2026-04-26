@@ -2959,31 +2959,24 @@ async function loadSaved() {
 }
 
 /**
- * Gespeicherte Vollflächen-Agenda darf die eingebaute Vorlage nicht überschreiben, wenn sie
- * nur aus Bearbeitungs-Platzhaltern besteht oder unvollständig ist (typisch: EN-only Entwurf
- * mit „New block title“ auf S3 — DE-Seite wirkte korrekt, EN nicht).
+ * Prüft, ob gespeicherte Vollflächen-Agenda-HTML übernommen werden kann.
+ * Früher: harte Inhalts-Heuristiken (z. B. Aayushi, SPA/Grid, ≥5 Blöcke) — dadurch wurde
+ * nach grünem S3-Speichern die Agenda beim Neuladen verworfen, sobald jemand sinnvoll
+ * Texte/Blöcke angepasst hatte. Heute: nur Struktur, kein fester Inhalt.
  */
 function isValidSavedAgendaHtml(html) {
   if (!html || typeof html !== 'string') return false;
   const s = html.trim();
-  if (!/id\s*=\s*["']pm-training-agenda["']/.test(s) && !/agenda-fullpage-wrap/.test(s)) return false;
+  if (!/id\s*=\s*["']pm-training-agenda["']/.test(s) && !/agenda-fullpage-wrap/.test(s)) {
+    return false;
+  }
   const blockMatches = s.match(/agenda-fullpage-block/g);
   const blockCount = blockMatches ? blockMatches.length : 0;
-  if (blockCount < 5) return false;
-  /* Eingebaute Vorlage: Aayushi + Block „SPA Phase 2 / Grid vertiefen“. Entwürfe mit 6 Blöcken
-     und „Single Project Allocation“ statt zweigeteilter SPA schlagen das oft weg. */
-  if (!/Aayushi/i.test(s)) return false;
-  if (!/(Grid vertiefen|SPA Phase 2|deepen the grid)/i.test(s)) return false;
+  if (blockCount < 1) return false;
+  /* Alte S3-„Rumpf“-Folien, die in der Praxis störten; weiterhin ausschließen. */
   if (/Matches the official PM training slide|Deep dive in this guide \(not on the slide\)/i.test(s)) {
     return false;
   }
-  const placeholder = new RegExp(
-    'New block title|Neuer Blocktitel|First bullet|Erster Punkt|' +
-      'New bullet\\s*[\\u2013\\u2014\\-\\u002d]\\s*edit text|' +
-      'Neuer Punkt\\s*[\\u2013\\u2014\\-\\u002d]\\s*Text bearbeiten',
-    'i'
-  );
-  if (placeholder.test(s)) return false;
   return true;
 }
 
@@ -3023,7 +3016,7 @@ function applyState(data) {
       }
     } else if (data.agendaHtml) {
       console.warn(
-        'tempus-demo-pm: Gespeicherte Agenda verworfen (Platzhalter oder &lt; 5 Blöcke) — eingebaute DE/EN-Vorlage bleibt aktiv.'
+        'tempus-demo-pm: Gespeicherte Agenda verworfen (kein #pm-training-agenda-Struktur) — Vorlage blieb aktiv.'
       );
     }
 
