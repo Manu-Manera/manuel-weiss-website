@@ -1634,6 +1634,7 @@ input.media-file-input { display: none; }
           <li><div class="click-step-num">3</div><div><span class="t-de"><strong>RAR2 Charts:</strong> gleicher Filter → visueller Barchart Plan vs. Actual</span><span class="t-en"><strong>RAR2 Charts:</strong> same filter → visual barchart Plan vs. Actual</span></div></li>
           <li><div class="click-step-num">4</div><div><span class="t-de"><strong>Allocation vs. Capacity:</strong> Kapazität über Portfolio — Engpass Richtung Jahresende</span><span class="t-en"><strong>Allocation vs. Capacity:</strong> capacity across the portfolio — bottleneck toward year-end</span></div></li>
           <li><div class="click-step-num">5</div><div><span class="t-de"><strong>Pivot (Monats-Status):</strong> <span class="click-path">New</span> → Pivot → Filter Projekt + <strong>ein Monat</strong> · Zeilen: Ressource + Aktivität · Spalte: <strong>Monat</strong> · Werte: Planned/Actual (s. grüner Kasten unten) → <strong>Speichern</strong> + ausführen.</span><span class="t-en"><strong>Pivot (monthly status):</strong> <span class="click-path">New</span> → pivot → filter <strong>project + one month</strong> · rows: resource + activity · column: <strong>month</strong> · measures: planned/actual (see green box) → <strong>save</strong> + run.</span></div></li>
+          <li><div class="click-step-num">6</div><div><span class="t-de"><strong>Optional RAR2 (Tabelle):</strong> <span class="click-path">New</span> → <strong>Resource Allocation Report v2</strong> — General/Config/<strong>Data Series</strong> (s. orangefarbener Kasten) → <strong>Save</strong>.</span><span class="t-en"><strong>Optional RAR2 (table):</strong> <span class="click-path">New</span> → <strong>Resource allocation report v2</strong> — General/Config/<strong>Data series</strong> (see orange box) → <strong>Save</strong>.</span></div></li>
         </ul>
         <p style="margin-top:10px;font-size:13px;color:var(--gray-500);">💡 <span class="t-de">HR Campus Demo: RAR oder RAR2 → PMO Area = Consulting, Q2/Q3 2026</span><span class="t-en">HR Campus demo: RAR or RAR2 → PMO Area = Consulting, Q2/Q3 2026</span></p>
       </div>
@@ -1701,6 +1702,41 @@ input.media-file-input { display: none; }
             <span class="t-en"><strong>If the report is “Status Report Snapshots”:</strong> the tree is <span class="click-path">Snapshot dimensions</span> (e.g. <strong>Snapshot name</strong> in <strong>rows</strong>, <strong>Project start date</strong> in <strong>columns</strong>, <strong>Count</strong> in <strong>measures</strong>) — that is a <em>snapshot</em> view, not full allocation. For a <strong>classic</strong> allocation pivot, start a <strong>new</strong> pivot with <span class="click-path">date Date</span> / <span class="click-path">Project / resource</span> at the top of the list.</span>
           </p>
         </div>
+      </div>
+    </div>
+
+    <!-- RAR2 / Tabellen-Report: Projektcontrolling (eigener Reporttyp, nicht dasselbe UI wie Pivot) -->
+    <div class="box" style="border:1px solid #fdba74;box-shadow:0 2px 16px rgba(234,88,12,0.12);margin-top:16px;">
+      <div class="box-header" style="background:linear-gradient(90deg,#ea580c,#c2410c);color:#fff;"><span class="box-icon">📊</span><span class="t-de">RAR2: Projektcontrolling (Ressourcen-Allokation, Tabelle)</span><span class="t-en">RAR2: Project controlling (resource allocation, table)</span></div>
+      <div class="box-body" style="font-size:13px;line-height:1.65;color:var(--gray-800);">
+        <p style="margin:0 0 10px;">
+          <span class="t-de"><strong>Wofür:</strong> Zeitreihe pro Ressource/Projekt in <strong>Stunden</strong> (kein DnD-Pivot-Layout). Gut für: „Wer steckt wo drin, Monat für Monat?“ — ergänzt den <strong>Pivot-Monatsstatus</strong> oben, ersetzt ihn nicht.</span>
+          <span class="t-en"><strong>What for:</strong> A time series by <strong>resource / project in hours</strong> (not the pivot field canvas). Complements the <strong>monthly pivot</strong> above; it does not replace it.</span>
+        </p>
+        <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px 14px;margin-bottom:12px;">
+          <div style="font-weight:800;font-size:12px;letter-spacing:0.04em;text-transform:uppercase;color:#9a3412;margin-bottom:8px;"><span class="t-de">Klickpfad (typisch)</span><span class="t-en">Typical click path</span></div>
+          <ol style="margin:0;padding-left:18px;font-size:12.5px;color:var(--gray-800);line-height:1.75;">
+            <li><span class="click-path">Report Management</span> → <span class="click-path">New</span> (oder <span class="click-path">Create</span>)</li>
+            <li><span class="t-de">Reporttyp: <strong>Resource Allocation Report v2</strong> / <strong>RAR2</strong> (nicht „RAR2 Charts“ und nicht Pivot).</span><span class="t-en">Type: <strong>Resource allocation report v2</strong> / <strong>RAR2</strong> (not “RAR2 charts”, not pivot).</span></li>
+            <li><span class="t-de"><strong>General:</strong> aussagekräftigen <strong>Report name</strong> setzen · <strong>Source model</strong> = Live (oder euer freigegebenes <strong>Snapshot</strong>).</span><span class="t-en"><strong>General:</strong> clear <strong>report name</strong> · <strong>source</strong> = live or an approved <strong>snapshot</strong>.</span></li>
+            <li><span class="t-de"><strong>Config:</strong> <strong>Month</strong> + <strong>Hours</strong> · <strong>From / To</strong> auf euren Steuerungszeitraum (z. B. Q2/Q3) · ggf. Gitternetz für Screenshots.</span><span class="t-en"><strong>Config:</strong> <strong>Month</strong> + <strong>Hours</strong> · set <strong>from / to</strong> to your control window.</span></li>
+            <li><span class="t-de"><strong>Data Series:</strong> Filter setzen (z. B. <strong>Project</strong>, ggf. <strong>PMO</strong>, <strong>Resource</strong>) per Auswahl/Drag, wie in eurer Instanz vorgesehen — wie beim Pivot: erst Filter, sonst leere Tabelle.</span><span class="t-en"><strong>Data series:</strong> set filters (project, PMO, resource) as in your build — no filters often means an empty result.</span></li>
+            <li><span class="t-de"><strong>Save</strong> → Report ausführen / <strong>Queue</strong> abwarten (wie im Pivot).</span><span class="t-en"><strong>Save</strong> → run / wait in the <strong>queue</strong> (same idea as pivot).</span></li>
+          </ol>
+        </div>
+        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 14px;">
+          <div style="font-weight:800;font-size:12px;letter-spacing:0.04em;text-transform:uppercase;color:#b91c1c;margin-bottom:6px;"><span class="t-de">Wenn „Speichern“ nicht reagiert</span><span class="t-en">If Save does nothing</span></div>
+          <ul style="margin:0;padding-left:18px;font-size:12.3px;color:var(--gray-800);line-height:1.65;">
+            <li><span class="t-de">Mit der Maus <strong>genau auf die orangefarbene Fläche „Save“</strong> klicken (nicht auf den Titel <em>RAR 2</em>, nicht auf den runden <strong>Zurück</strong>-Pfeil daneben — der löst ggf. „Ungespeicherte Änderungen?“ aus).</span><span class="t-en">Click the <strong>orange Save</strong> control, not the <em>title</em> and not the round <strong>back</strong> button (that can open the “unsaved changes” dialog).</span></li>
+            <li><span class="t-de">Browser <strong>Zoom 100 %</strong> · Seitenleiste zu · kurz warten, bis die Maske „fertig“ geladen ist (schwere Reports bauen die Maske nach).</span><span class="t-en">Set browser <strong>zoom to 100 %</strong> · close side panels · wait until the form has finished loading.</span></li>
+            <li><span class="t-de">Tastatur: Fokus mit <strong>Tab</strong> auf den sichtbaren Aktion-Button fahren, <strong>Enter</strong> / <strong>Leertaste</strong> (je nach Build).</span><span class="t-en">Keyboard: <strong>Tab</strong> to the action button, then <strong>Enter</strong> / <strong>Space</strong>.</span></li>
+            <li><span class="t-de">Dialog <strong>Ungespeicherte Änderungen</strong> → <strong>Nein, auf der Seite bleiben</strong> — damit eure Eingaben erhalten bleiben und ihr erneut speichern könnt.</span><span class="t-en">If a dialog <strong>unsaved changes</strong> appears, choose <strong>stay on this page</strong> to keep your work and try Save again.</span></li>
+          </ul>
+        </div>
+        <p style="margin:12px 0 0;font-size:11.5px;color:var(--gray-600);">
+          <span class="t-de"><strong>Hinweis Training:</strong> Vollautomatisierte Klicks in eingebetteten Browsern treffen die Save-Schicht nicht immer; die Schritte oben reichen fürs Live-Training. Drag&amp;Drop in <strong>Data Series</strong> muss in Tempus ggf. manuell erfolgen (gleiche technische Einschränkung wie beim Pivot-Baum).</span>
+          <span class="t-en"><strong>Training note:</strong> embedded browsers may not hit the right Save target; use the steps above in the real UI. <strong>Data series</strong> DnD may need to be done manually in Tempus (same limitation as the pivot field tree).</span>
+        </p>
       </div>
     </div>
 
@@ -1918,6 +1954,7 @@ input.media-file-input { display: none; }
           <li><strong><span class="t-de">Keine Actuals?</span><span class="t-en">No actuals?</span></strong> → <span class="t-de">RAR Report nutzen; erklären: Ist-Daten kommen aus Timesheets oder Bulk Flatgrid</span><span class="t-en">Use RAR report; explain: actual data comes from timesheets or Bulk Flatgrid</span></li>
           <li><strong><span class="t-de">RAR2 zeigt Marc nicht rot?</span><span class="t-en">RAR2 doesn't show Marc in red?</span></strong> → <span class="t-de">Zeitraum auf März 2026 einengen, Projekte Stardust + Apollo beide selektieren</span><span class="t-en">Narrow period to March 2026, select both projects Stardust + Apollo</span></li>
           <li><strong><span class="t-de">Report leer?</span><span class="t-en">Report empty?</span></strong> → <span class="t-de">Queue-Status prüfen (Report Management → Queue Items), kurz warten</span><span class="t-en">Check queue status (Report Management → Queue Items), wait a moment</span></li>
+          <li><strong><span class="t-de">RAR2 speichert nicht?</span><span class="t-en">RAR2 won’t save?</span></strong> → <span class="t-de">Echten <strong>Save</strong>-Button klicken (s. orangefarbener Kasten in Szene 09) — nicht <strong>Zurück</strong> · ggf. Tab+Fokus · Zoom 100 %.</span><span class="t-en">Click the real <strong>Save</strong> control (see orange box in scene 09) — not <strong>back</strong> · try <strong>tab</strong> focus · zoom 100 %.</span></li>
         </ul>
       </div>
     </div>
