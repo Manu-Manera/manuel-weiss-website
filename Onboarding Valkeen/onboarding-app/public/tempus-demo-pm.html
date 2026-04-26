@@ -2778,7 +2778,7 @@ function removeAgendaEditing() {
 // Presigned PUT-URL — max. 604800 s (7 Tage, AWS-SigV4-Obergrenze).
 // Ablaufdatum kontrollieren: Im X-Amz-Date stecken Jahr-Monat-Tag + Zeit (UTC).
 // X-Amz-Expires (Sekunden) + X-Amz-Date = Ablaufzeitpunkt.
-const PRESIGNED_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-demo-pm-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3MG2WEBUJ%2F20260417%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260417T074740Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=6e2a52bf0704d72bd2fa4c2aaa5ae1adf6934c2427918fe6abdec1ba22caf2c8';
+const PRESIGNED_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-demo-pm-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3MG2WEBUJ%2F20260426%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260426T123842Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=2109dc784cbcc3252ab450328e0158dbeb6b50c81079cac68bdc0a0f81cbc94d';
 
 // Öffentliche Lese-URL (via CloudFront, kein Cache-Problem durch Timestamp)
 // Direkt von S3 lesen statt CloudFront — CloudFront cached den alten State bis zu 24h
