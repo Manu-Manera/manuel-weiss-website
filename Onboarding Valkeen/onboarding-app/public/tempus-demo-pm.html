@@ -1622,6 +1622,7 @@ input.media-file-input { display: none; }
     <span class="tag tag-blue">Report Management</span>
     <span class="tag tag-purple">RAR2 Charts</span>
     <span class="tag tag-orange">Plan vs. Actual</span>
+    <span class="tag tag-teal">Pivot Grid</span>
   </div>
   <div class="scene-body">
     <div class="box box-click">
@@ -1632,10 +1633,60 @@ input.media-file-input { display: none; }
           <li><div class="click-step-num">2</div><div><span class="t-de"><strong>Plan vs. Actual:</strong> Filter PMO Area = Consulting, Q2 2026, Gruppierung nach Ressource</span><span class="t-en"><strong>Plan vs. Actual:</strong> filter PMO Area = Consulting, Q2 2026, group by resource</span></div></li>
           <li><div class="click-step-num">3</div><div><span class="t-de"><strong>RAR2 Charts:</strong> gleicher Filter → visueller Barchart Plan vs. Actual</span><span class="t-en"><strong>RAR2 Charts:</strong> same filter → visual barchart Plan vs. Actual</span></div></li>
           <li><div class="click-step-num">4</div><div><span class="t-de"><strong>Allocation vs. Capacity:</strong> Kapazität über Portfolio — Engpass Richtung Jahresende</span><span class="t-en"><strong>Allocation vs. Capacity:</strong> capacity across the portfolio — bottleneck toward year-end</span></div></li>
+          <li><div class="click-step-num">5</div><div><span class="t-de"><strong>Pivot (Monats-Status):</strong> <span class="click-path">New</span> → Pivot → Filter Projekt + <strong>ein Monat</strong> · Zeilen: Ressource + Aktivität · Spalte: <strong>Monat</strong> · Werte: Planned/Actual (s. grüner Kasten unten) → <strong>Speichern</strong> + ausführen.</span><span class="t-en"><strong>Pivot (monthly status):</strong> <span class="click-path">New</span> → pivot → filter <strong>project + one month</strong> · rows: resource + activity · column: <strong>month</strong> · measures: planned/actual (see green box) → <strong>save</strong> + run.</span></div></li>
         </ul>
         <p style="margin-top:10px;font-size:13px;color:var(--gray-500);">💡 <span class="t-de">HR Campus Demo: RAR oder RAR2 → PMO Area = Consulting, Q2/Q3 2026</span><span class="t-en">HR Campus demo: RAR or RAR2 → PMO Area = Consulting, Q2/Q3 2026</span></p>
       </div>
     </div>
+
+    <!-- Pivot / Monatlicher PM-Status (im Produkt: Report Management → New; Namen ggf. je Instanz) -->
+    <div class="box" style="border:1px solid #99f6e4;box-shadow:0 2px 16px rgba(13,127,160,0.12);">
+      <div class="box-header" style="background:linear-gradient(90deg,#0d9488,#0f766e);color:#fff;"><span class="box-icon">📅</span><span class="t-de">Pivot: Monatlicher Projekt-Status (für Projektmanager)</span><span class="t-en">Pivot: Monthly project status (for project managers)</span></div>
+      <div class="box-body" style="font-size:13px;line-height:1.65;color:var(--gray-800);">
+        <p style="margin:0 0 12px;">
+          <span class="t-de"><strong>Zielbild:</strong> Ein Blick, der zeigt, ob <strong>dein</strong> Projekt pro Monat <strong>planmäßig belegt</strong> ist, wo <strong>Ist abweicht</strong> und <strong>wer</strong> am stärksten gebunden ist. Im Tempus-UI meist: <span class="click-path">Report Management</span> → <span class="click-path">New</span> / <span class="click-path">Create</span> → Reporttyp <strong>Pivot</strong> oder <strong>Pivot Report</strong> (Bezeichnung je nach Release) → Felder wählen → speichern, Report ausführen (ggf. <strong>Queue</strong> abwarten).</span>
+          <span class="t-en"><strong>Outcome:</strong> One view that shows how <strong>your</strong> project is <strong>reserved per month</strong>, where <strong>actuals diverge</strong>, and <strong>who</strong> is most committed. In Tempus: <span class="click-path">Report Management</span> → <span class="click-path">New</span> / <span class="click-path">Create</span> → report type <strong>Pivot</strong> (wording may vary) → map fields → save, run the report (wait for <strong>queue</strong> if needed).</span>
+        </p>
+        <div style="background:#f0fdfa;border:1px solid #5eead4;border-radius:8px;padding:12px 14px;margin-bottom:12px;">
+          <div style="font-weight:800;font-size:12px;letter-spacing:0.04em;text-transform:uppercase;color:#0f766e;margin-bottom:8px;">PM status — empfohlenes Layout</div>
+          <table style="width:100%;font-size:12.5px;border-collapse:collapse;">
+            <thead>
+              <tr style="color:var(--navy-dark);border-bottom:2px solid #99f6e4;">
+                <th style="text-align:left;padding:4px 6px 8px 0;">Bereich / Area</th>
+                <th style="text-align:left;padding:4px 0 8px 6px;"><span class="t-de">Sinnvolle Wahl (HR Campus / Trial)</span><span class="t-en">Sensible choice (HR Campus / trial)</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="padding:5px 6px 5px 0;vertical-align:top;"><strong>Filter</strong></td><td style="padding:5px 0 5px 6px;">
+                <span class="t-de"><strong>Project</strong> = dein Demoprojekt (z. B. <em>Stardust</em> / DermaCare) · <strong>Date range / Period</strong> = <em>ein Kalendermonat</em> (z. B. nur März 2026) · optional <strong>PMO Area</strong> = Consulting.</span>
+                <span class="t-en"><strong>Project</strong> = your demo project (e.g. <em>Stardust</em> / DermaCare) · <strong>date range / period</strong> = <em>one calendar month</em> (e.g. March 2026) · optional <strong>PMO area</strong> = Consulting.</span>
+              </td></tr>
+              <tr><td style="padding:5px 6px 5px 0;vertical-align:top;"><strong>Rows</strong></td><td style="padding:5px 0 5px 6px;">
+                <span class="t-de"><strong>Resource</strong> (oder <em>Resource name</em>) <strong>+</strong> <strong>Activity / Task</strong> — damit jede Zeile „Wer / was“ beantwortet.</span>
+                <span class="t-en"><strong>Resource</strong> (or <em>Resource name</em>) <strong>+</strong> <strong>Activity / task</strong> so each line answers <em>who / what</em>.</span>
+              </td></tr>
+              <tr><td style="padding:5px 6px 5px 0;vertical-align:top;"><strong>Columns</strong></td><td style="padding:5px 0 5px 6px;">
+                <span class="t-de"><strong>Time period</strong> in Monats-Granularität (z. B. <em>Year–Month</em> / <em>Calendar month</em>) — ein schmaler <strong>Monats-Schnappschuss</strong> statt 12 leerer Spalten.</span>
+                <span class="t-en"><strong>Time period</strong> at <strong>month</strong> grain (e.g. <em>Year–Month</em>) — a tight monthly snapshot, not 12 empty columns.</span>
+              </td></tr>
+              <tr><td style="padding:5px 6px 5px 0;vertical-align:top;"><strong>Values / Measures</strong></td><td style="padding:5px 0 5px 6px;">
+                <span class="t-de">Mindestens: <strong>Planned hours</strong> (oder FTE) <strong>und</strong> <strong>Actual hours</strong> (falls im Datensatz) — daraus leiten sich Abweichung und Monats-„Ampel“ ab. Ohne Actuals: nur Planned + ggf. <strong>Allocation %</strong>.</span>
+                <span class="t-en">At least: <strong>planned hours</strong> (or FTE) <strong>and</strong> <strong>actual hours</strong> if in the data — that drives the monthly signal. If no actuals: planned + optional <strong>allocation %</strong>.</span>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin:0 0 10px;font-size:12.5px;color:var(--gray-600);">
+          <span class="t-de"><strong>Visuell „schön“ im Meeting:</strong> Nach dem Pivot dieselben Filter in <span class="click-path">RAR2 Charts</span> / <span class="click-path">Planned vs. Actual</span> setzen — der <strong>Barchart</strong> liefert die <strong>Management-Folie</strong>, die Tabelle liefert die <strong>PMO-Verteidigung</strong>. <strong>Excel-Export</strong> aus dem Report, damit Steuerungsausschuss eine Datei bekommt.</span>
+          <span class="t-en"><strong>Polished in the room:</strong> Reuse the same filters in <span class="click-path">RAR2 charts</span> / <span class="click-path">Planned vs. actual</span> — the <strong>bar chart</strong> is the <strong>exec slide</strong>, the <strong>table</strong> is the <strong>PMO drilldown</strong>. <strong>Export to Excel</strong> for stakeholders who want a file.</span>
+        </p>
+        <ol style="margin:0;padding-left:18px;font-size:12.5px;color:var(--gray-700);line-height:1.75;">
+          <li><span class="t-de">Report <strong>speichern</strong> als <em>„PM [Projekt] — Monatsstatus (Pivot)“</em> · ggf. <strong>öffentliche / gespeicherte View</strong> fürs Team.</span><span class="t-en">Save the report as <em>“PM [project] — monthly status (pivot)”</em> · optional a <strong>public / saved view</strong> for the team.</span></li>
+          <li><span class="t-de">Gleiche Logik: nächster Monat nur <strong>Datumsfilter</strong> anpassen — wiederverwendbarer Statusbericht.</span><span class="t-en">Next month: change only the <strong>date filter</strong> — a reusable status cadence.</span></li>
+        </ol>
+      </div>
+    </div>
+
     <div class="box box-story">
       <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say this aloud</span></div>
       <div class="box-body">
