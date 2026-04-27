@@ -417,6 +417,44 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 .scene-delete-btn:hover { background: #fecaca; }
 .scene-delete-btn:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
 
+/* × auf Hero-Meta, Intro-Kacheln, Story-Hooks, Tags … (nicht in .box-header — eigene Klasse) */
+.edit-mode-active .edit-removable-target { position: relative; }
+.edit-chrome-remove-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 25;
+  border: none;
+  background: rgba(254, 226, 226, 0.97);
+  color: #dc2626;
+  font-size: 18px;
+  line-height: 1;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.edit-chrome-remove-btn:hover { background: #fecaca; }
+.edit-chrome-remove-btn:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+.hero-meta-item .edit-chrome-remove-btn,
+.continuity-badge .edit-chrome-remove-btn {
+  top: 2px;
+  right: 2px;
+  width: 22px;
+  height: 22px;
+  font-size: 15px;
+}
+.pre-demo-strip .edit-chrome-remove-btn { top: 10px; right: 10px; }
+.scene-tags .edit-chrome-remove-btn { top: 6px; right: 8px; }
+.story-hook .edit-chrome-remove-btn,
+.transition .edit-chrome-remove-btn { top: 8px; right: 8px; }
+
 /* Editable text */
 .edit-mode-active [contenteditable] {
   border-radius: 3px;
@@ -1979,9 +2017,31 @@ input.media-file-input { display: none; }
 </div>
 
 <div id="edit-hint">
-  <span class="t-de">✏️ Texte direkt anklicken · ⠿ Bereiche/Szenen an «⠿» ziehen zum Umordnen · ＋ Neuen Bereich unten in jeder Szene · × Bereich löschen · 💾 Speichern nicht vergessen</span>
-  <span class="t-en">✏️ Click text to edit · ⠿ Drag blocks/scenes by «⠿» to reorder · ＋ New block at bottom of each scene · × Delete block · 💾 Don’t forget to save</span>
+  <span class="t-de">✏️ Texte direkt anklicken · ⠿ Bereiche/Szenen an «⠿» ziehen zum Umordnen · ＋ Neuen Bereich unten in jeder Szene · ＋ Szene für neue 01/02-Blöcke · × Kästchen löschen · 💾 Speichern nicht vergessen</span>
+  <span class="t-en">✏️ Click text to edit · ⠿ Drag blocks/scenes by «⠿» to reorder · ＋ New block at bottom of each scene · ＋ Scene for new 01/02 blocks · × Delete boxes · 💾 Don’t forget to save</span>
 </div>
+
+<template id="pm-empty-scene-template">
+<div class="scene">
+  <div class="scene-header">
+    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--navy),var(--teal))">
+      <div class="scene-num-big">01</div>
+      <div class="scene-num-label"><span class="t-de">Neu</span><span class="t-en">New</span></div>
+    </div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Neuer Block</span><span class="t-en">New block</span></div>
+      <div class="scene-title"><span class="t-de">Neue Szene — Titel bearbeiten</span><span class="t-en">New scene — edit title</span></div>
+      <div class="scene-subtitle"><span class="t-de">Untertitel (optional)</span><span class="t-en">Subtitle (optional)</span></div>
+    </div>
+  </div>
+  <div class="scene-body">
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
+      <div class="box-body"><span class="t-de">Hier Inhalt einfügen…</span><span class="t-en">Add content here…</span></div>
+    </div>
+  </div>
+</div>
+</template>
 
 <script>
 /* ═══════════════════════════════════════════════════
@@ -2039,6 +2099,10 @@ function syncPresenterChromeLang() {
     const editing = icon.textContent === '✕';
     editLabel.textContent = editing ? (L === 'de' ? 'Fertig' : 'Done') : (L === 'de' ? 'Bearbeiten' : 'Edit');
   }
+  const addSceneBtn = document.querySelector('.edit-add-scene-btn');
+  if (addSceneBtn && !addSceneBtn.disabled) {
+    addSceneBtn.textContent = L === 'de' ? '＋ Szene' : '＋ Scene';
+  }
 }
 
 /* ── Bootstrap ─────────────────────────────────── */
@@ -2067,7 +2131,8 @@ function createEditToolbar() {
         <span id="edit-icon">✏️</span>
         <span id="edit-label">Edit</span>
       </button>
-      <div id="edit-extra" style="display:none;align-items:center;gap:6px;">
+      <div id="edit-extra" style="display:none;align-items:center;gap:6px;flex-wrap:wrap;">
+        <button type="button" class="edit-actions-btn edit-add-scene-btn" onclick="insertEmptyScene()">＋ Szene</button>
         <button class="edit-actions-btn edit-save-btn" onclick="saveAll()">💾 Save</button>
         <button class="edit-actions-btn edit-reset-btn" onclick="resetAll()">↩ Reset</button>
       </div>
@@ -2169,6 +2234,7 @@ function toggleEditMode() {
     label.textContent = presenterLang() === 'de' ? 'Fertig' : 'Done';
     icon.textContent  = '✕';
     extra.style.display = 'flex';
+    initGlobalChromeRemovables();
     initDrag();
     initSceneDeleteButtons();
     initInlineEdit();
@@ -2199,6 +2265,7 @@ function toggleEditMode() {
     removeBoxAddButtons();
     removeMediaControls();
     removeAgendaEditing();
+    removeGlobalChromeRemovables();
     closeBoxPicker();
     hasUnsavedChanges = false;
     setUnsaved(false);
@@ -2220,6 +2287,137 @@ function autoSave(delayMs = 1500) {
   _autoSaveTimer = setTimeout(() => {
     saveAll().catch(() => {});
   }, delayMs);
+}
+
+/* ═══════════════════════════════════════════════════
+   × auf Kacheln (Hero, Intro, Tags, Story-Hook, …)
+═══════════════════════════════════════════════════ */
+function stripEditChromeFromClone(clone) {
+  if (!clone) return;
+  clone.querySelectorAll('.edit-chrome-remove-btn').forEach(n => n.remove());
+  clone.querySelectorAll('.edit-removable-target').forEach(el => el.classList.remove('edit-removable-target'));
+}
+
+function attachEditChromeRemove(el, opts) {
+  if (!el || !el.parentNode) return;
+  if (el.querySelector(':scope > .edit-chrome-remove-btn')) return;
+  el.classList.add('edit-removable-target');
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'edit-chrome-remove-btn';
+  btn.textContent = '×';
+  const L = presenterLang();
+  btn.title = opts.title || (L === 'de' ? 'Kästchen löschen' : 'Delete box');
+  btn.setAttribute('aria-label', btn.title);
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const msg = opts.confirmMsg || (L === 'de' ? 'Dieses Kästchen löschen?' : 'Remove this box?');
+    if (confirm(msg)) {
+      el.remove();
+      autoSave(800);
+    }
+  });
+  el.appendChild(btn);
+}
+
+function initGlobalChromeRemovables() {
+  const L = presenterLang();
+  const title = L === 'de' ? 'Kästchen löschen' : 'Delete box';
+  const confirmMsg = L === 'de' ? 'Dieses Kästchen löschen?' : 'Remove this box?';
+  const o = { title, confirmMsg };
+
+  document.querySelectorAll('.hero-meta-item').forEach(el => attachEditChromeRemove(el, o));
+  document.querySelectorAll('.continuity-badge').forEach(el => attachEditChromeRemove(el, o));
+  document.querySelectorAll('.pre-demo-strip').forEach(el => attachEditChromeRemove(el, o));
+
+  const pmIntro = document.getElementById('pm-editable-intro');
+  if (pmIntro) {
+    pmIntro.querySelectorAll(':scope > .box').forEach(el => attachEditChromeRemove(el, o));
+    pmIntro.querySelectorAll(':scope > .cast-section .cast-card').forEach(el => attachEditChromeRemove(el, o));
+    const firstBlock = pmIntro.firstElementChild;
+    if (firstBlock && !firstBlock.classList.contains('pre-demo-strip') && !firstBlock.classList.contains('cast-section') && !firstBlock.classList.contains('box')) {
+      [...firstBlock.children].forEach(row => {
+        const st = row.getAttribute('style') || '';
+        if (/display\s*:\s*grid/i.test(st)) {
+          row.querySelectorAll(':scope > div').forEach(cell => attachEditChromeRemove(cell, o));
+        } else {
+          attachEditChromeRemove(row, o);
+        }
+      });
+    }
+  }
+
+  const rmIntro = document.getElementById('rm-editable-intro');
+  if (rmIntro) {
+    rmIntro.querySelectorAll('.guide-legend .guide-legend-title').forEach(el => attachEditChromeRemove(el, o));
+    rmIntro.querySelectorAll('.guide-legend .legend-item').forEach(el => attachEditChromeRemove(el, o));
+    rmIntro.querySelectorAll('.guide-legend .legend-flow').forEach(el => attachEditChromeRemove(el, o));
+    rmIntro.querySelectorAll(':scope > .pre-demo-strip').forEach(el => attachEditChromeRemove(el, o));
+    rmIntro.querySelectorAll(':scope > .story-hook').forEach(el => attachEditChromeRemove(el, o));
+    rmIntro.querySelectorAll(':scope > .cast-section .cast-card').forEach(el => attachEditChromeRemove(el, o));
+  }
+
+  if (document.getElementById('rm-editable-intro')) {
+    const tailPage = document.querySelector('.page:not(#rm-editable-intro)');
+    if (tailPage) {
+      tailPage.querySelectorAll(':scope > .story-hook, :scope > .box').forEach(el => attachEditChromeRemove(el, o));
+    }
+  }
+
+  document.querySelectorAll('#rm-training-agenda .agenda-verbal-block').forEach(el => attachEditChromeRemove(el, o));
+
+  document.querySelectorAll('.scene .scene-tags').forEach(el => attachEditChromeRemove(el, o));
+  document.querySelectorAll('.scene .scene-body > .story-hook').forEach(el => attachEditChromeRemove(el, o));
+  document.querySelectorAll('.scene .scene-body > .transition').forEach(el => attachEditChromeRemove(el, o));
+}
+
+function removeGlobalChromeRemovables() {
+  document.querySelectorAll('.edit-chrome-remove-btn').forEach(b => b.remove());
+  document.querySelectorAll('.edit-removable-target').forEach(el => el.classList.remove('edit-removable-target'));
+}
+
+function wireNewSceneForEdit(scene) {
+  if (!scene || !scene.classList.contains('scene')) return;
+  scene.draggable = false;
+  const badge = scene.querySelector('.scene-num-badge');
+  if (badge) badge.addEventListener('mousedown', () => { scene.draggable = true; });
+  scene.addEventListener('dragstart', onDragStart);
+  scene.addEventListener('dragover', onDragOver);
+  scene.addEventListener('dragleave', onDragLeave);
+  scene.addEventListener('drop', onDrop);
+  scene.addEventListener('dragend', onDragEnd);
+  initSceneDeleteButtons();
+  scene.querySelectorAll('.scene-body .box').forEach(box => attachBoxDnd(box));
+  initBoxAdding();
+  initClickStepEditing();
+  initMediaBoxes();
+  const lang = presenterLang();
+  scene.querySelectorAll(`.t-${lang}`).forEach(el => {
+    el.contentEditable = 'true';
+    el.spellcheck = false;
+    el.setAttribute('data-lang', lang.toUpperCase());
+    el.addEventListener('input', markUnsaved);
+    el.addEventListener('keydown', preventEnterIfNotWanted);
+  });
+  scene.querySelectorAll('.click-path').forEach(el => {
+    el.contentEditable = 'true';
+    el.spellcheck = false;
+    el.addEventListener('input', markUnsaved);
+  });
+  initGlobalChromeRemovables();
+}
+
+function insertEmptyScene() {
+  const page = document.querySelector('.page');
+  const closing = page && page.querySelector('.closing');
+  const tpl = document.getElementById('pm-empty-scene-template');
+  if (!page || !closing || !tpl || !tpl.content.firstElementChild) return;
+  const node = tpl.content.firstElementChild.cloneNode(true);
+  page.insertBefore(node, closing);
+  renumberScenes();
+  if (editMode) wireNewSceneForEdit(node);
+  autoSave(800);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -2910,7 +3108,8 @@ function serializeScenes() {
     const clone = scene.cloneNode(true);
 
     // Edit-Mode-UI entfernen
-    clone.querySelectorAll('.step-delete-btn, .step-add-btn, .step-drag-btn, .box-drag-handle, .box-delete-btn, .box-add-btn, .scene-delete-btn').forEach(el => el.remove());
+    clone.querySelectorAll('.step-delete-btn, .step-add-btn, .step-drag-btn, .box-drag-handle, .box-delete-btn, .box-add-btn, .scene-delete-btn, .edit-chrome-remove-btn').forEach(el => el.remove());
+    clone.querySelectorAll('.edit-removable-target').forEach(el => el.classList.remove('edit-removable-target'));
     clone.querySelectorAll('.click-steps li').forEach(li => {
       li.removeAttribute('draggable');
       li.classList.remove('click-step-li-dragging', 'click-step-over-top', 'click-step-over-bottom');
@@ -2939,6 +3138,7 @@ function serializeScenes() {
 function serializeHeroOrIntro(el) {
   if (!el) return null;
   const clone = el.cloneNode(true);
+  stripEditChromeFromClone(clone);
   clone.querySelectorAll(
     '.agenda-block-delete-btn, .agenda-add-block-btn, .agenda-li-delete-btn, .agenda-li-add-btn, .agenda-li-drag'
   ).forEach(node => node.remove());
