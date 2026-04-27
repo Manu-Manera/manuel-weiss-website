@@ -2886,9 +2886,9 @@ function removeAgendaEditing() {
    AWS PERSISTENZ
    State als JSON in S3 (data/tempus-demo-pm-state.json).
    Enthält: hero, intro, Vollflächen-Agenda (#pm-training-agenda), alle Szenen.
-   Reihenfolge: zuerst API /v1/demo-script (Lambda → S3). Wenn Lambda blockiert
-   oder die Route fehlschlägt → Presigned PUT (max. 7 Tage, ./refresh-demo-state-url.sh).
-   Laden: GET API, sonst S3, sonst localStorage.
+   Speichern: zuerst POST /v1/demo-script (Lambda → S3), sonst Presigned PUT (7 Tage, ./refresh-demo-state-url.sh).
+   Laden: nur STATE_READ_URL (dieselbe JSON-Datei in S3 wie bei Lambda — kein GET /demo-script,
+   damit keine CORS/403 von einer toten API den Ladevorgang stören). Sonst localStorage.
 ═══════════════════════════════════════════════════ */
 
 const DEMO_SCRIPT_API_URL =
@@ -3057,28 +3057,18 @@ function flashStatus(msg, isWarning) {
   }, ms);
 }
 
-/* ─── Laden: S3 + localStorage — bei Konflikt neuerer `ts` gewinnt ──────────── */
+/* ─── Laden: öffentliche JSON (S3 / gleiche Origin in Prod) + localStorage ─── */
 async function loadSaved() {
   let remoteData = null;
   try {
-    const res = await fetch(DEMO_SCRIPT_API_URL, { cache: 'no-store' });
-    if (res.ok && res.status !== 204) {
+    const res = await fetch(STATE_READ_URL + '?v=' + Date.now(), {
+      cache: 'no-store'
+    });
+    if (res.ok) {
       remoteData = await res.json();
     }
   } catch (err) {
-    console.log('Demo-script API load skipped:', err.message);
-  }
-  if (!remoteData) {
-    try {
-      const res = await fetch(STATE_READ_URL + '?v=' + Date.now(), {
-        cache: 'no-store'
-      });
-      if (res.ok) {
-        remoteData = await res.json();
-      }
-    } catch (err) {
-      console.log('S3 load skipped (network/CORS):', err.message);
-    }
+    console.log('Remote state load skipped (network/CORS):', err.message);
   }
 
   let localData = null;
