@@ -2886,16 +2886,17 @@ function removeAgendaEditing() {
    AWS PERSISTENZ
    State als JSON in S3 (data/tempus-demo-pm-state.json).
    Enthält: hero, intro, Vollflächen-Agenda (#pm-training-agenda), alle Szenen.
-   Schreiben: primär POST /v1/demo-script (Lambda), Fallback Presigned PUT (7 Tage).
-   Lesen: GET /v1/demo-script, dann S3, dann localStorage.
+   Reihenfolge: zuerst API /v1/demo-script (Lambda → S3). Wenn Lambda blockiert
+   oder die Route fehlschlägt → Presigned PUT (max. 7 Tage, ./refresh-demo-state-url.sh).
+   Laden: GET API, sonst S3, sonst localStorage.
 ═══════════════════════════════════════════════════ */
 
 const DEMO_SCRIPT_API_URL =
   'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1/demo-script';
-/** Gleiches Secret wie Lambda EDIT_PASSWORD (demo-script-api). */
+/** Muss mit Lambda EDIT_PASSWORD (demo-script-api) übereinstimmen. */
 const DEMO_SCRIPT_EDIT_PASSWORD = 'tempus-demo-edit-2024';
 
-// Presigned PUT nur Fallback — max. 604800 s (7 Tage). ./refresh-demo-state-url.sh
+// Presigned PUT — Fallback wenn API nicht erreichbar (max. 604800 s).
 const PRESIGNED_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-demo-pm-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3MG2WEBUJ%2F20260426%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260426T123842Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=2109dc784cbcc3252ab450328e0158dbeb6b50c81079cac68bdc0a0f81cbc94d';
 
 const STATE_READ_URL = 'https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-demo-pm-state.json';
@@ -2972,21 +2973,28 @@ async function saveAll() {
   const payload = JSON.stringify(payloadObj);
 
   try {
-    let res = await fetch(DEMO_SCRIPT_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Demo-Password': DEMO_SCRIPT_EDIT_PASSWORD
-      },
-      body: payload
-    });
+    let apiOk = false;
+    try {
+      const apiRes = await fetch(DEMO_SCRIPT_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Demo-Password': DEMO_SCRIPT_EDIT_PASSWORD
+        },
+        body: payload
+      });
+      apiOk = apiRes.ok;
+      if (apiOk) {
+        localStorage.setItem(STORAGE_KEY, payload);
+        setUnsaved(false);
+        flashStatus(L === 'de' ? 'Gespeichert (AWS, API)' : 'Saved (AWS, API)', false);
+      }
+    } catch (apiErr) {
+      console.warn('Demo API save unreachable:', apiErr);
+    }
 
-    if (res.ok) {
-      localStorage.setItem(STORAGE_KEY, payload);
-      setUnsaved(false);
-      flashStatus(L === 'de' ? 'Gespeichert (AWS)' : 'Saved (AWS)', false);
-    } else {
-      res = await fetch(PRESIGNED_PUT_URL, {
+    if (!apiOk) {
+      const res = await fetch(PRESIGNED_PUT_URL, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: payload
@@ -3007,8 +3015,8 @@ async function saveAll() {
       setUnsaved(false);
       flashStatus(
         L === 'de'
-          ? '⚠️ Nur im Browser gespeichert — nicht in AWS (API & Presigned-URL fehlgeschlagen).'
-          : '⚠️ Saved in browser only — AWS API and presigned URL failed.',
+          ? '⚠️ Nur im Browser gespeichert — API & Presigned-URL fehlgeschlagen. Nach Lambda-Freigabe reicht Neuladen; sonst ./refresh-demo-state-url.sh'
+          : '⚠️ Browser only — API & presigned failed. Reload after Lambda is back, or run ./refresh-demo-state-url.sh',
         true
       );
     } catch (e2) {

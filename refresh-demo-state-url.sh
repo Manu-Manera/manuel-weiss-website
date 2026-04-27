@@ -2,9 +2,8 @@
 # ──────────────────────────────────────────────────────────
 # refresh-demo-state-url.sh
 # Generiert eine neue Presigned-URL (max. 7 Tage — AWS-Obergrenze für SigV4)
-# für das tempus-demo-pm.html State-Saving als Fallback und aktualisiert die HTML-Datei.
-# Hauptspeicherung im Frontend: POST /v1/demo-script (tempus-demo-pm.html). Dieses
-# Skript erneuert nur die Presigned-URL für den Fallback nach API-Fehlern.
+# für tempus-demo-pm.html: Presigned-PUT-Fallback, wenn POST /v1/demo-script (Lambda) nicht geht.
+# Sobald Lambda wieder läuft, ist keine Erneuerung nötig; Presigned max. 7 Tage (AWS-Limit).
 #
 # Ausführen: ./refresh-demo-state-url.sh
 #
