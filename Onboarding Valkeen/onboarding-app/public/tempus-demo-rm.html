@@ -1750,8 +1750,28 @@ function removeAgendaEditing() {
 }
 
 /* ═══════════════════════════════════════════════════
-   PERSISTENZ — localStorage (kein S3 für RM-Demo)
+   AWS PERSISTENZ (wie PM-Demo)
+   Speichern: POST /v1/demo-script/rm, sonst Presigned PUT. Laden: /data/tempus-demo-rm-state.json.
 ═══════════════════════════════════════════════════ */
+
+const DEMO_SCRIPT_API_URL =
+  'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1/demo-script/rm';
+const DEMO_SCRIPT_EDIT_PASSWORD = 'tempus-demo-edit-2024';
+
+const PRESIGNED_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-demo-rm-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3MG2WEBUJ%2F20260427%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260427T165759Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=18b877fa7e3ee71a31a9364c940ba00c9b82be492bcda0e0b76b6aff64946730';
+
+const STATE_READ_URL = (function () {
+  const h = location.hostname;
+  if (h === 'manuel-weiss.ch' || h === 'www.manuel-weiss.ch') {
+    return location.protocol + '//' + h + '/data/tempus-demo-rm-state.json';
+  }
+  return 'https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-demo-rm-state.json';
+})();
+
+function rmLang() {
+  return document.documentElement.classList.contains('lang-de') ? 'de' : 'en';
+}
+
 function serializeScenes() {
   const scenes = [];
   document.querySelectorAll('.scene').forEach(scene => {
@@ -1760,6 +1780,11 @@ function serializeScenes() {
     clone.querySelectorAll('.click-steps li').forEach(li => {
       li.removeAttribute('draggable');
       li.classList.remove('click-step-li-dragging', 'click-step-over-top', 'click-step-over-bottom');
+    });
+    clone.querySelectorAll('.media-controls').forEach(el => el.remove());
+    clone.querySelectorAll('img.media-preview, video.media-preview').forEach(el => {
+      const attr = 'src';
+      if (el[attr]) el.setAttribute(attr, el[attr].split('?v=')[0]);
     });
     clone.querySelectorAll('[contenteditable]').forEach(el => {
       el.removeAttribute('contenteditable');
@@ -1789,27 +1814,86 @@ function serializeHeroOrIntro(el) {
 }
 
 async function saveAll() {
+  const L = rmLang();
   const btn = document.querySelector('.edit-save-btn');
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ Speichert…'; }
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = L === 'de' ? '⏳ Speichert…' : '⏳ Saving…';
+  }
 
   const scenes = serializeScenes();
   const heroHtml = serializeHeroOrIntro(document.querySelector('.hero'));
   const introHtml = serializeHeroOrIntro(document.querySelector('#rm-editable-intro'));
   const agendaHtml = serializeHeroOrIntro(document.querySelector('#rm-training-agenda'));
-  const payload = JSON.stringify({
-    scenes, heroHtml, introHtml, agendaHtml,
+  const payloadObj = {
+    scenes,
+    heroHtml,
+    introHtml,
+    agendaHtml,
     ts: Date.now(),
     schemaVersion: RM_STATE_SCHEMA_VERSION
-  });
+  };
+  const payload = JSON.stringify(payloadObj);
 
   try {
-    localStorage.setItem(STORAGE_KEY, payload);
-    setUnsaved(false);
-    flashStatus('Gespeichert', false);
-  } catch (e) {
-    alert('Speichern fehlgeschlagen (Browser-Speicher voll?)');
+    let apiOk = false;
+    try {
+      const apiRes = await fetch(DEMO_SCRIPT_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Demo-Password': DEMO_SCRIPT_EDIT_PASSWORD
+        },
+        body: payload
+      });
+      apiOk = apiRes.ok;
+      if (apiOk) {
+        localStorage.setItem(STORAGE_KEY, payload);
+        setUnsaved(false);
+        flashStatus(L === 'de' ? 'Gespeichert (AWS, API)' : 'Saved (AWS, API)', false);
+      }
+    } catch (apiErr) {
+      console.warn('Demo API save unreachable:', apiErr);
+    }
+
+    if (!apiOk) {
+      const res = await fetch(PRESIGNED_PUT_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload
+      });
+      if (res.status >= 200 && res.status < 300) {
+        localStorage.setItem(STORAGE_KEY, payload);
+        setUnsaved(false);
+        flashStatus(L === 'de' ? 'Gespeichert (AWS S3, Presigned)' : 'Saved (AWS S3, presigned)', false);
+      } else {
+        const hint = res.status === 403
+          ? (L === 'de' ? ' Presigned-URL abgelaufen? → ./refresh-demo-state-url.sh' : ' Presigned URL expired? → ./refresh-demo-state-url.sh')
+          : '';
+        throw new Error(`HTTP ${res.status}${hint}`);
+      }
+    }
+  } catch (err) {
+    console.warn('AWS save failed:', err);
+    try {
+      localStorage.setItem(STORAGE_KEY, payload);
+      setUnsaved(false);
+      flashStatus(
+        L === 'de'
+          ? '⚠️ Nur im Browser — API & Presigned fehlgeschlagen. ./refresh-demo-state-url.sh oder Lambda-Freigabe.'
+          : '⚠️ Browser only — API & presigned failed.',
+        true
+      );
+    } catch (e2) {
+      alert(L === 'de'
+        ? 'Speichern fehlgeschlagen (weder Cloud noch Browser-Speicher).'
+        : 'Save failed (cloud and local storage).');
+    }
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = '💾 Speichern'; }
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = L === 'de' ? '💾 Speichern' : '💾 Save';
+    }
   }
 }
 
@@ -1834,11 +1918,37 @@ function flashStatus(msg, isWarning) {
 }
 
 async function loadSaved() {
-  let data = null;
+  let remoteData = null;
+  try {
+    const res = await fetch(STATE_READ_URL + '?v=' + Date.now(), {
+      cache: 'no-store'
+    });
+    if (res.ok) {
+      remoteData = await res.json();
+    }
+  } catch (err) {
+    console.log('Remote state load skipped:', err.message);
+  }
+
+  let localData = null;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) data = JSON.parse(raw);
+    if (raw) localData = JSON.parse(raw);
   } catch (e) { /* ignore */ }
+
+  let data = remoteData;
+  if (remoteData && localData && Array.isArray(localData.scenes)) {
+    const ls = localData.schemaVersion || 0;
+    const rs = remoteData.schemaVersion || 0;
+    if (ls >= RM_STATE_SCHEMA_VERSION && rs >= RM_STATE_SCHEMA_VERSION) {
+      if ((localData.ts || 0) > (remoteData.ts || 0)) {
+        data = localData;
+        console.info('tempus-demo-rm: Neuerer Stand im Browser als in AWS — lokale Version angewendet (ts).');
+      }
+    }
+  } else if (!data && localData) {
+    data = localData;
+  }
 
   if (!data || !Array.isArray(data.scenes)) return;
   if ((data.schemaVersion || 0) < RM_STATE_SCHEMA_VERSION) {
@@ -1910,7 +2020,22 @@ function showRestoredBanner(ts) {
 }
 
 function resetAll() {
-  if (confirm('Alle eigenen Änderungen löschen und die Original-Version wiederherstellen?')) {
+  const L = rmLang();
+  const msg = L === 'de'
+    ? 'Alle eigenen Änderungen löschen und die Original-Version wiederherstellen?\n\nDies überschreibt auch die gespeicherte AWS-Version!'
+    : 'Discard all changes and restore the original?\n\nThis also overwrites the saved cloud copy!';
+  if (confirm(msg)) {
+    const resetBody = JSON.stringify({
+      scenes: [],
+      ts: Date.now(),
+      reset: true,
+      schemaVersion: RM_STATE_SCHEMA_VERSION
+    });
+    fetch(PRESIGNED_PUT_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: resetBody
+    }).catch(() => {});
     localStorage.removeItem(STORAGE_KEY);
     location.reload();
   }

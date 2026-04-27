@@ -774,7 +774,7 @@ export class WebsiteApiStack extends cdk.Stack {
     trainingAdminScreenshotsResource.addMethod('GET', new apigateway.LambdaIntegration(trainingAdminLambda));
 
     // ========================================
-    // DEMO SCRIPT (tempus-demo-pm.html Bearbeitungsstand in S3)
+    // DEMO SCRIPT (PM + RM Bearbeitungsstand in S3)
     // ========================================
 
     const demoScriptLambda = new lambda.Function(this, 'DemoScriptFunction', {
@@ -794,12 +794,19 @@ export class WebsiteApiStack extends cdk.Stack {
     demoScriptLambda.addToRolePolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['s3:GetObject', 's3:PutObject'],
-      resources: ['arn:aws:s3:::manuel-weiss-website/data/tempus-demo-pm-state.json']
+      resources: [
+        'arn:aws:s3:::manuel-weiss-website/data/tempus-demo-pm-state.json',
+        'arn:aws:s3:::manuel-weiss-website/data/tempus-demo-rm-state.json'
+      ]
     }));
 
+    const demoScriptIntegration = new apigateway.LambdaIntegration(demoScriptLambda);
     const demoScriptResource = this.api.root.addResource('demo-script');
-    demoScriptResource.addMethod('GET',  new apigateway.LambdaIntegration(demoScriptLambda));
-    demoScriptResource.addMethod('POST', new apigateway.LambdaIntegration(demoScriptLambda));
+    demoScriptResource.addMethod('GET',  demoScriptIntegration);
+    demoScriptResource.addMethod('POST', demoScriptIntegration);
+    const demoScriptRmResource = demoScriptResource.addResource('rm');
+    demoScriptRmResource.addMethod('GET',  demoScriptIntegration);
+    demoScriptRmResource.addMethod('POST', demoScriptIntegration);
 
     // ========================================
     // TEMPUS LOGIN MAILER

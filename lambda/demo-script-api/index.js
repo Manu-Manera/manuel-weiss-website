@@ -1,29 +1,39 @@
 /**
  * Lambda: Demo Script State API
  *
- * Speichert und lädt den Bearbeitungsstand des tempus-demo-pm.html
- * als JSON in S3 (manuel-weiss-website/data/tempus-demo-pm-state.json).
- *
- * Endpoints:
- *   GET  /demo-script  → State laden (öffentlich)
- *   POST /demo-script  → State speichern (passwortgeschützt via X-Demo-Password Header)
+ * PM: s3://…/data/tempus-demo-pm-state.json  — GET/POST /v1/demo-script
+ * RM: s3://…/data/tempus-demo-rm-state.json  — GET/POST /v1/demo-script/rm
  */
 
 const { S3Client, GetObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3');
 
 const s3 = new S3Client({ region: process.env.AWS_REGION || 'eu-central-1' });
 
-const BUCKET     = process.env.S3_BUCKET    || 'manuel-weiss-website';
-const STATE_KEY  = 'data/tempus-demo-pm-state.json';
-const EDIT_PW    = process.env.EDIT_PASSWORD || 'tempus-demo-edit-2024';
+const BUCKET = process.env.S3_BUCKET || 'manuel-weiss-website';
+const EDIT_PW = process.env.EDIT_PASSWORD || 'tempus-demo-edit-2024';
+
+const STATE_KEY_PM = 'data/tempus-demo-pm-state.json';
+const STATE_KEY_RM = 'data/tempus-demo-rm-state.json';
 
 const ALLOWED_ORIGINS = [
   'https://manuel-weiss.ch',
   'https://www.manuel-weiss.ch',
   'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:4173',
   'http://localhost:5500',
+  'http://localhost:8888',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:4173',
   'http://127.0.0.1:5500'
 ];
+
+function stateKeyFromEvent(event) {
+  const p = event.path || event.requestContext?.path || '';
+  if (p.includes('/demo-script/rm')) return STATE_KEY_RM;
+  return STATE_KEY_PM;
+}
 
 function corsHeaders(origin) {
   const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
@@ -39,9 +49,9 @@ function response(statusCode, body, origin) {
   return { statusCode, headers: corsHeaders(origin), body: JSON.stringify(body) };
 }
 
-async function loadState() {
+async function loadState(key) {
   try {
-    const res = await s3.send(new GetObjectCommand({ Bucket: BUCKET, Key: STATE_KEY }));
+    const res = await s3.send(new GetObjectCommand({ Bucket: BUCKET, Key: key }));
     const text = await res.Body.transformToString();
     return JSON.parse(text);
   } catch (err) {
@@ -50,10 +60,10 @@ async function loadState() {
   }
 }
 
-async function saveState(data) {
+async function saveState(data, key) {
   await s3.send(new PutObjectCommand({
     Bucket: BUCKET,
-    Key: STATE_KEY,
+    Key: key,
     Body: JSON.stringify(data),
     ContentType: 'application/json',
     CacheControl: 'no-cache, no-store, must-revalidate'
@@ -69,9 +79,11 @@ exports.handler = async (event) => {
     return { statusCode: 200, headers: corsHeaders(origin), body: '' };
   }
 
+  const s3Key = stateKeyFromEvent(event);
+
   try {
     if (method === 'GET') {
-      const state = await loadState();
+      const state = await loadState(s3Key);
       if (!state) return response(204, { message: 'No saved state' }, origin);
       return response(200, state, origin);
     }
@@ -94,13 +106,12 @@ exports.handler = async (event) => {
         return response(400, { error: 'scenes array fehlt' }, origin);
       }
 
-      // Vollständigen State speichern (tempus-demo-pm: heroHtml, introHtml, agendaHtml, schemaVersion, …)
       const state = {
         ...body,
         savedBy: 'editor',
         ts: typeof body.ts === 'number' ? body.ts : Date.now()
       };
-      await saveState(state);
+      await saveState(state, s3Key);
       return response(200, { ok: true, ts: state.ts }, origin);
     }
 
