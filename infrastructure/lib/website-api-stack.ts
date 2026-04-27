@@ -107,7 +107,8 @@ export class WebsiteApiStack extends cdk.Stack {
           'X-User-Id',
           'X-Amz-Date',
           'X-Api-Key',
-          'X-Amz-Security-Token'
+          'X-Amz-Security-Token',
+          'X-Demo-Password'
         ],
         allowCredentials: true
       },

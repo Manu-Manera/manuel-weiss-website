@@ -3,7 +3,8 @@
 # refresh-demo-state-url.sh
 # Generiert eine neue Presigned-URL (max. 7 Tage — AWS-Obergrenze für SigV4)
 # für das tempus-demo-pm.html State-Saving als Fallback und aktualisiert die HTML-Datei.
-# Hauptspeicherung: API POST /v1/demo-script (läuft nicht ab).
+# Hauptspeicherung im Frontend: POST /v1/demo-script (tempus-demo-pm.html). Dieses
+# Skript erneuert nur die Presigned-URL für den Fallback nach API-Fehlern.
 #
 # Ausführen: ./refresh-demo-state-url.sh
 #

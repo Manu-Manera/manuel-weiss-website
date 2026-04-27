@@ -1713,6 +1713,13 @@ input.media-file-input { display: none; }
           <span class="t-de"><strong>Wofür:</strong> Zeitreihe pro Ressource/Projekt in <strong>Stunden</strong> (kein DnD-Pivot-Layout). Gut für: „Wer steckt wo drin, Monat für Monat?“ — ergänzt den <strong>Pivot-Monatsstatus</strong> oben, ersetzt ihn nicht.</span>
           <span class="t-en"><strong>What for:</strong> A time series by <strong>resource / project in hours</strong> (not the pivot field canvas). Complements the <strong>monthly pivot</strong> above; it does not replace it.</span>
         </p>
+        <div style="background:#fffbeb;border:1px solid #fbbf24;border-radius:8px;padding:12px 14px;margin-bottom:12px;">
+          <div style="font-weight:800;font-size:12px;letter-spacing:0.04em;text-transform:uppercase;color:#a16207;margin-bottom:6px;">⚠️ <span class="t-de">Speichern geht nicht? Meldung „at least one active series“</span><span class="t-en">Can’t save? Message “at least one active series”</span></div>
+          <p style="margin:0;font-size:12.5px;color:var(--gray-800);line-height:1.6;">
+            <span class="t-de">Das ist <strong>kein</strong> Klick-Problem auf <strong>Save</strong>, sondern eine <strong>Validierung</strong>: Im Reiter <span class="click-path">Data Series</span> muss mindestens <strong>eine aktive Datenreihe</strong> (Series) definiert sein — Filter, Kennzahl und ggf. „aktiv“ / Häkchen, je nach eurer Maske. Erst danach akzeptiert Tempus <strong>Save</strong>. Wenn am Tab <strong>Data Series</strong> ein roter Hinweis (z. B. „1“) steht, zuerst dort abschließen, dann speichern.</span>
+            <span class="t-en">This is <strong>not</strong> a wrong <strong>Save</strong> click — it is <strong>validation</strong>. On the <span class="click-path">Data series</span> tab you need at least <strong>one active series</strong> (filters, measure, and any “active” toggle your UI shows). <strong>Save</strong> stays blocked until that is complete. A badge on the <strong>Data series</strong> tab usually means work left there first.</span>
+          </p>
+        </div>
         <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px 14px;margin-bottom:12px;">
           <div style="font-weight:800;font-size:12px;letter-spacing:0.04em;text-transform:uppercase;color:#9a3412;margin-bottom:8px;"><span class="t-de">Klickpfad (typisch)</span><span class="t-en">Typical click path</span></div>
           <ol style="margin:0;padding-left:18px;font-size:12.5px;color:var(--gray-800);line-height:1.75;">
@@ -1720,13 +1727,14 @@ input.media-file-input { display: none; }
             <li><span class="t-de">Reporttyp: <strong>Resource Allocation Report v2</strong> / <strong>RAR2</strong> (nicht „RAR2 Charts“ und nicht Pivot).</span><span class="t-en">Type: <strong>Resource allocation report v2</strong> / <strong>RAR2</strong> (not “RAR2 charts”, not pivot).</span></li>
             <li><span class="t-de"><strong>General:</strong> aussagekräftigen <strong>Report name</strong> setzen · <strong>Source model</strong> = Live (oder euer freigegebenes <strong>Snapshot</strong>).</span><span class="t-en"><strong>General:</strong> clear <strong>report name</strong> · <strong>source</strong> = live or an approved <strong>snapshot</strong>.</span></li>
             <li><span class="t-de"><strong>Config:</strong> <strong>Month</strong> + <strong>Hours</strong> · <strong>From / To</strong> auf euren Steuerungszeitraum (z. B. Q2/Q3) · ggf. Gitternetz für Screenshots.</span><span class="t-en"><strong>Config:</strong> <strong>Month</strong> + <strong>Hours</strong> · set <strong>from / to</strong> to your control window.</span></li>
-            <li><span class="t-de"><strong>Data Series:</strong> Filter setzen (z. B. <strong>Project</strong>, ggf. <strong>PMO</strong>, <strong>Resource</strong>) per Auswahl/Drag, wie in eurer Instanz vorgesehen — wie beim Pivot: erst Filter, sonst leere Tabelle.</span><span class="t-en"><strong>Data series:</strong> set filters (project, PMO, resource) as in your build — no filters often means an empty result.</span></li>
+            <li><span class="t-de"><strong>Data Series (Pflicht für Save):</strong> mindestens <strong>eine aktive Series</strong> anlegen — Filter (z. B. <strong>Project</strong> / Ressource) + Kennzahl wählen, bis die gelbe Meldung <em>„at least one active series“</em> <strong>verschwindet</strong>. Ohne das blockiert Tempus das Speichern.</span><span class="t-en"><strong>Data series (required to save):</strong> add at least <strong>one active series</strong> (filters + measure) until the yellow <em>“at least one active series”</em> banner <strong>clears</strong>. Save stays blocked until then.</span></li>
             <li><span class="t-de"><strong>Save</strong> → Report ausführen / <strong>Queue</strong> abwarten (wie im Pivot).</span><span class="t-en"><strong>Save</strong> → run / wait in the <strong>queue</strong> (same idea as pivot).</span></li>
           </ol>
         </div>
         <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 14px;">
           <div style="font-weight:800;font-size:12px;letter-spacing:0.04em;text-transform:uppercase;color:#b91c1c;margin-bottom:6px;"><span class="t-de">Wenn „Speichern“ nicht reagiert</span><span class="t-en">If Save does nothing</span></div>
           <ul style="margin:0;padding-left:18px;font-size:12.3px;color:var(--gray-800);line-height:1.65;">
+            <li><span class="t-de">Zuerst prüfen: <strong>keine</strong> gelbe Warnung <em>„at least one active series“</em> — sonst Reiter <span class="click-path">Data Series</span> (s. gelber Kasten oben), nicht am Save rumbasteln.</span><span class="t-en">First: if you see <em>“at least one active series”</em>, fix the <span class="click-path">Data series</span> tab (see yellow box above) — not the Save button.</span></li>
             <li><span class="t-de">Mit der Maus <strong>genau auf die orangefarbene Fläche „Save“</strong> klicken (nicht auf den Titel <em>RAR 2</em>, nicht auf den runden <strong>Zurück</strong>-Pfeil daneben — der löst ggf. „Ungespeicherte Änderungen?“ aus).</span><span class="t-en">Click the <strong>orange Save</strong> control, not the <em>title</em> and not the round <strong>back</strong> button (that can open the “unsaved changes” dialog).</span></li>
             <li><span class="t-de">Browser <strong>Zoom 100 %</strong> · Seitenleiste zu · kurz warten, bis die Maske „fertig“ geladen ist (schwere Reports bauen die Maske nach).</span><span class="t-en">Set browser <strong>zoom to 100 %</strong> · close side panels · wait until the form has finished loading.</span></li>
             <li><span class="t-de">Tastatur: Fokus mit <strong>Tab</strong> auf den sichtbaren Aktion-Button fahren, <strong>Enter</strong> / <strong>Leertaste</strong> (je nach Build).</span><span class="t-en">Keyboard: <strong>Tab</strong> to the action button, then <strong>Enter</strong> / <strong>Space</strong>.</span></li>
@@ -1954,7 +1962,7 @@ input.media-file-input { display: none; }
           <li><strong><span class="t-de">Keine Actuals?</span><span class="t-en">No actuals?</span></strong> → <span class="t-de">RAR Report nutzen; erklären: Ist-Daten kommen aus Timesheets oder Bulk Flatgrid</span><span class="t-en">Use RAR report; explain: actual data comes from timesheets or Bulk Flatgrid</span></li>
           <li><strong><span class="t-de">RAR2 zeigt Marc nicht rot?</span><span class="t-en">RAR2 doesn't show Marc in red?</span></strong> → <span class="t-de">Zeitraum auf März 2026 einengen, Projekte Stardust + Apollo beide selektieren</span><span class="t-en">Narrow period to March 2026, select both projects Stardust + Apollo</span></li>
           <li><strong><span class="t-de">Report leer?</span><span class="t-en">Report empty?</span></strong> → <span class="t-de">Queue-Status prüfen (Report Management → Queue Items), kurz warten</span><span class="t-en">Check queue status (Report Management → Queue Items), wait a moment</span></li>
-          <li><strong><span class="t-de">RAR2 speichert nicht?</span><span class="t-en">RAR2 won’t save?</span></strong> → <span class="t-de">Echten <strong>Save</strong>-Button klicken (s. orangefarbener Kasten in Szene 09) — nicht <strong>Zurück</strong> · ggf. Tab+Fokus · Zoom 100 %.</span><span class="t-en">Click the real <strong>Save</strong> control (see orange box in scene 09) — not <strong>back</strong> · try <strong>tab</strong> focus · zoom 100 %.</span></li>
+          <li><strong><span class="t-de">RAR2 speichert nicht / gelbe Leiste?</span><span class="t-en">RAR2 won’t save / yellow banner?</span></strong> → <span class="t-de">Wenn <em>„at least one active series“</em>: <strong>Data Series</strong> tab — mindestens eine Reihe vollständig (s. gelber Kasten Szene 09). Sonst: echter <strong>Save</strong>-Klick, nicht <strong>Zurück</strong>.</span><span class="t-en">If <em>“at least one active series”</em>: open <strong>Data series</strong> and complete at least one series. Else: real <strong>Save</strong> — not <strong>back</strong>.</span></li>
         </ul>
       </div>
     </div>
@@ -2876,21 +2884,20 @@ function removeAgendaEditing() {
 
 /* ═══════════════════════════════════════════════════
    AWS PERSISTENZ
-   State wird als JSON in S3 gespeichert und von dort geladen.
+   State als JSON in S3 (data/tempus-demo-pm-state.json).
    Enthält: hero, intro, Vollflächen-Agenda (#pm-training-agenda), alle Szenen.
-   Lesen:    S3 direkt (STATE_READ_URL)
-   Schreiben: Presigned PUT (AWS-Limit: max. 604800 s = 7 Tage, nicht verlängerbar).
-              Erneuern via ./refresh-demo-state-url.sh (generiert frische URL + deployed).
+   Schreiben: primär POST /v1/demo-script (Lambda), Fallback Presigned PUT (7 Tage).
+   Lesen: GET /v1/demo-script, dann S3, dann localStorage.
 ═══════════════════════════════════════════════════ */
 
-// Presigned PUT-URL — max. 604800 s (7 Tage, AWS-SigV4-Obergrenze).
-// Ablaufdatum kontrollieren: Im X-Amz-Date stecken Jahr-Monat-Tag + Zeit (UTC).
-// X-Amz-Expires (Sekunden) + X-Amz-Date = Ablaufzeitpunkt.
+const DEMO_SCRIPT_API_URL =
+  'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1/demo-script';
+/** Gleiches Secret wie Lambda EDIT_PASSWORD (demo-script-api). */
+const DEMO_SCRIPT_EDIT_PASSWORD = 'tempus-demo-edit-2024';
+
+// Presigned PUT nur Fallback — max. 604800 s (7 Tage). ./refresh-demo-state-url.sh
 const PRESIGNED_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-demo-pm-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3MG2WEBUJ%2F20260426%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260426T123842Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=2109dc784cbcc3252ab450328e0158dbeb6b50c81079cac68bdc0a0f81cbc94d';
 
-// Öffentliche Lese-URL (via CloudFront, kein Cache-Problem durch Timestamp)
-// Direkt von S3 lesen statt CloudFront — CloudFront cached den alten State bis zu 24h
-// (ForwardedValues.QueryString=false → ?v=timestamp Cache-Buster wirkungslos)
 const STATE_READ_URL = 'https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-demo-pm-state.json';
 
 /* ─── Szenen serialisieren (bereinigt) ────────────── */
@@ -2965,30 +2972,43 @@ async function saveAll() {
   const payload = JSON.stringify(payloadObj);
 
   try {
-    const res = await fetch(PRESIGNED_PUT_URL, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+    let res = await fetch(DEMO_SCRIPT_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Demo-Password': DEMO_SCRIPT_EDIT_PASSWORD
+      },
       body: payload
     });
 
-    /* S3 PUT: typisch 200; ohne Body. Nicht nur truthy prüfen — 0 wäre falsch. */
-    if (res.status >= 200 && res.status < 300) {
+    if (res.ok) {
       localStorage.setItem(STORAGE_KEY, payload);
       setUnsaved(false);
-      flashStatus(L === 'de' ? 'Gespeichert (AWS S3)' : 'Saved (AWS S3)', false);
+      flashStatus(L === 'de' ? 'Gespeichert (AWS)' : 'Saved (AWS)', false);
     } else {
-      const hint = res.status === 403 ? ' Presigned-URL abgelaufen? → ./refresh-demo-state-url.sh' : '';
-      throw new Error(`HTTP ${res.status}${hint}`);
+      res = await fetch(PRESIGNED_PUT_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload
+      });
+      if (res.status >= 200 && res.status < 300) {
+        localStorage.setItem(STORAGE_KEY, payload);
+        setUnsaved(false);
+        flashStatus(L === 'de' ? 'Gespeichert (AWS S3, Presigned)' : 'Saved (AWS S3, presigned)', false);
+      } else {
+        const hint = res.status === 403 ? ' Presigned-URL abgelaufen? → ./refresh-demo-state-url.sh' : '';
+        throw new Error(`HTTP ${res.status}${hint}`);
+      }
     }
   } catch (err) {
-    console.warn('S3 save failed:', err);
+    console.warn('AWS save failed:', err);
     try {
       localStorage.setItem(STORAGE_KEY, payload);
       setUnsaved(false);
       flashStatus(
         L === 'de'
-          ? '⚠️ Nur im Browser gespeichert — nicht in AWS. ./refresh-demo-state-url.sh & Deploy erneuern die URL.'
-          : '⚠️ Saved in browser only — not in AWS. ./refresh-demo-state-url.sh & deploy refresh the URL.',
+          ? '⚠️ Nur im Browser gespeichert — nicht in AWS (API & Presigned-URL fehlgeschlagen).'
+          : '⚠️ Saved in browser only — AWS API and presigned URL failed.',
         true
       );
     } catch (e2) {
@@ -3023,16 +3043,26 @@ function flashStatus(msg, isWarning) {
 
 /* ─── Laden: S3 + localStorage — bei Konflikt neuerer `ts` gewinnt ──────────── */
 async function loadSaved() {
-  let s3Data = null;
+  let remoteData = null;
   try {
-    const res = await fetch(STATE_READ_URL + '?v=' + Date.now(), {
-      cache: 'no-store'
-    });
-    if (res.ok) {
-      s3Data = await res.json();
+    const res = await fetch(DEMO_SCRIPT_API_URL, { cache: 'no-store' });
+    if (res.ok && res.status !== 204) {
+      remoteData = await res.json();
     }
   } catch (err) {
-    console.log('S3 load skipped (network/CORS):', err.message);
+    console.log('Demo-script API load skipped:', err.message);
+  }
+  if (!remoteData) {
+    try {
+      const res = await fetch(STATE_READ_URL + '?v=' + Date.now(), {
+        cache: 'no-store'
+      });
+      if (res.ok) {
+        remoteData = await res.json();
+      }
+    } catch (err) {
+      console.log('S3 load skipped (network/CORS):', err.message);
+    }
   }
 
   let localData = null;
@@ -3041,14 +3071,14 @@ async function loadSaved() {
     if (raw) localData = JSON.parse(raw);
   } catch (e) { /* ignore */ }
 
-  let data = s3Data;
-  if (s3Data && localData && Array.isArray(localData.scenes)) {
+  let data = remoteData;
+  if (remoteData && localData && Array.isArray(localData.scenes)) {
     const ls = localData.schemaVersion || 0;
-    const ss = s3Data.schemaVersion || 0;
-    if (ls >= PM_STATE_SCHEMA_VERSION && ss >= PM_STATE_SCHEMA_VERSION) {
-      if ((localData.ts || 0) > (s3Data.ts || 0)) {
+    const rs = remoteData.schemaVersion || 0;
+    if (ls >= PM_STATE_SCHEMA_VERSION && rs >= PM_STATE_SCHEMA_VERSION) {
+      if ((localData.ts || 0) > (remoteData.ts || 0)) {
         data = localData;
-        console.info('tempus-demo-pm: Neuerer Stand im Browser als auf S3 — lokale Version angewendet (ts).');
+        console.info('tempus-demo-pm: Neuerer Stand im Browser als in AWS — lokale Version angewendet (ts).');
       }
     }
   } else if (!data && localData) {
