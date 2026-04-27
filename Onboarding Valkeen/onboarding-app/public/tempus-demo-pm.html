@@ -2887,8 +2887,8 @@ function removeAgendaEditing() {
    State als JSON in S3 (data/tempus-demo-pm-state.json).
    Enthält: hero, intro, Vollflächen-Agenda (#pm-training-agenda), alle Szenen.
    Speichern: zuerst POST /v1/demo-script (Lambda → S3), sonst Presigned PUT (7 Tage, ./refresh-demo-state-url.sh).
-   Laden: nur STATE_READ_URL (dieselbe JSON-Datei in S3 wie bei Lambda — kein GET /demo-script,
-   damit keine CORS/403 von einer toten API den Ladevorgang stören). Sonst localStorage.
+   Laden: direkt S3 (STATE_READ_URL) — nicht manuel-weiss.ch/data/…: CloudFront liefert dort
+   oft gecachte JSON trotz ?v= (Query wird typisch nicht mitgeforwarded). Sonst localStorage.
 ═══════════════════════════════════════════════════ */
 
 const DEMO_SCRIPT_API_URL =
@@ -2899,15 +2899,9 @@ const DEMO_SCRIPT_EDIT_PASSWORD = 'tempus-demo-edit-2024';
 // Presigned PUT — Fallback wenn API nicht erreichbar (max. 604800 s).
 const PRESIGNED_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-demo-pm-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3MG2WEBUJ%2F20260427%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260427T165209Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=f033fa448d2555260b12ce6dedb5e7fff57008f27e4779d0377dd84c89718252';
 
-/* Auf manuel-weiss.ch: gleiche Origin wie die Demo → kein Cross-Origin-GET zu S3 (robuster).
-   Lokal/Dev: direkt S3 (Vite liefert /data/… meist nicht aus). */
-const STATE_READ_URL = (function () {
-  const h = location.hostname;
-  if (h === 'manuel-weiss.ch' || h === 'www.manuel-weiss.ch') {
-    return location.protocol + '//' + h + '/data/tempus-demo-pm-state.json';
-  }
-  return 'https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-demo-pm-state.json';
-})();
+/* Immer S3 REST (eu-central-1): Objekt ist nach PUT sofort konsistent; CloudFront-URL wäre stale. */
+const STATE_READ_URL =
+  'https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-demo-pm-state.json';
 
 /* ─── Szenen serialisieren (bereinigt) ────────────── */
 function serializeScenes() {
@@ -3057,7 +3051,7 @@ function flashStatus(msg, isWarning) {
   }, ms);
 }
 
-/* ─── Laden: öffentliche JSON (S3 / gleiche Origin in Prod) + localStorage ─── */
+/* ─── Laden: JSON direkt von S3 + localStorage (höherer ts gewinnt) ─── */
 async function loadSaved() {
   let remoteData = null;
   try {

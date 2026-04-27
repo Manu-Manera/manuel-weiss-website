@@ -1760,13 +1760,9 @@ const DEMO_SCRIPT_EDIT_PASSWORD = 'tempus-demo-edit-2024';
 
 const PRESIGNED_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-demo-rm-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3MG2WEBUJ%2F20260427%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260427T165759Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=18b877fa7e3ee71a31a9364c940ba00c9b82be492bcda0e0b76b6aff64946730';
 
-const STATE_READ_URL = (function () {
-  const h = location.hostname;
-  if (h === 'manuel-weiss.ch' || h === 'www.manuel-weiss.ch') {
-    return location.protocol + '//' + h + '/data/tempus-demo-rm-state.json';
-  }
-  return 'https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-demo-rm-state.json';
-})();
+/* Immer S3 direkt — nicht manuel-weiss.ch/data/… (CloudFront-Cache, nicht geräteübergreifend frisch). */
+const STATE_READ_URL =
+  'https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-demo-rm-state.json';
 
 function rmLang() {
   return document.documentElement.classList.contains('lang-de') ? 'de' : 'en';
