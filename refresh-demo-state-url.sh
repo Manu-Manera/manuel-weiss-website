@@ -6,6 +6,8 @@
 # Sobald Lambda wieder läuft, ist keine Erneuerung nötig; Presigned max. 7 Tage (AWS-Limit).
 #
 # Ausführen: ./refresh-demo-state-url.sh
+# S3-CORS (Browser-PUT): aws s3api put-bucket-cors --bucket manuel-weiss-website
+#   --region eu-central-1 --cors-configuration file://config/s3-cors-manuel-weiss-website.json
 #
 # Hinweis: sed darf hier NICHT genutzt werden — Presigned-URLs enthalten
 # "&" (Query-String). In sed-Ersetzungen bedeutet "&" das komplette Match

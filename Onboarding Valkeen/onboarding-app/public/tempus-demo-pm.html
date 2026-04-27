@@ -2897,9 +2897,17 @@ const DEMO_SCRIPT_API_URL =
 const DEMO_SCRIPT_EDIT_PASSWORD = 'tempus-demo-edit-2024';
 
 // Presigned PUT — Fallback wenn API nicht erreichbar (max. 604800 s).
-const PRESIGNED_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-demo-pm-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3MG2WEBUJ%2F20260426%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260426T123842Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=2109dc784cbcc3252ab450328e0158dbeb6b50c81079cac68bdc0a0f81cbc94d';
+const PRESIGNED_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-demo-pm-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3MG2WEBUJ%2F20260427%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260427T165209Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=f033fa448d2555260b12ce6dedb5e7fff57008f27e4779d0377dd84c89718252';
 
-const STATE_READ_URL = 'https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-demo-pm-state.json';
+/* Auf manuel-weiss.ch: gleiche Origin wie die Demo → kein Cross-Origin-GET zu S3 (robuster).
+   Lokal/Dev: direkt S3 (Vite liefert /data/… meist nicht aus). */
+const STATE_READ_URL = (function () {
+  const h = location.hostname;
+  if (h === 'manuel-weiss.ch' || h === 'www.manuel-weiss.ch') {
+    return location.protocol + '//' + h + '/data/tempus-demo-pm-state.json';
+  }
+  return 'https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-demo-pm-state.json';
+})();
 
 /* ─── Szenen serialisieren (bereinigt) ────────────── */
 function serializeScenes() {
