@@ -269,7 +269,7 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 
 @media print {
   body { background: white; }
-  .lang-switcher, #edit-toolbar, .edit-format-bar { display: none; }
+  .lang-switcher, #edit-toolbar, .edit-format-bar, .edit-versions-panel { display: none; }
   .hero, .scene-num-badge, .box-story .box-header, .box-say .box-header, .box-click .box-header, .box-peter .box-header, .box-context .box-header, .box-impact .box-header, .box-watchout .box-header, .qr-header, .closing { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .scene { box-shadow: none; break-inside: avoid; }
 }
@@ -339,6 +339,82 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
   margin-top: 2px;
   line-height: 1.3;
 }
+.edit-versions-panel {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10002;
+  background: rgba(15, 23, 42, 0.45);
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 16px;
+  box-sizing: border-box;
+}
+.edit-versions-panel.open { display: flex; }
+.edit-versions-panel-inner {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid var(--gray-300);
+  max-width: min(420px, 96vw);
+  max-height: min(520px, 78vh);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+  font-family: 'Inter', sans-serif;
+}
+.edit-versions-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--gray-200);
+  font-size: 13px;
+}
+.edit-versions-close {
+  border: none;
+  background: var(--gray-100);
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--gray-700);
+}
+.edit-versions-close:hover { background: var(--gray-200); }
+.edit-versions-list {
+  overflow: auto;
+  padding: 8px 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.edit-versions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  font-size: 12px;
+}
+.edit-versions-row button {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--gray-300);
+  background: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+.edit-versions-row button:hover { background: var(--gray-100); }
+.edit-versions-empty { font-size: 12px; color: var(--gray-500); padding: 8px 4px; }
 #edit-toggle-btn {
   display: flex; align-items: center; gap: 6px;
   padding: 6px 14px; border: none; background: transparent;
@@ -355,8 +431,8 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 }
 .edit-save-btn  { background: #dcfce7; color: #166534; }
 .edit-save-btn:hover  { background: #bbf7d0; }
-.edit-reset-btn { background: var(--gray-100); color: var(--gray-500); }
-.edit-reset-btn:hover { background: var(--gray-200); color: var(--gray-700); }
+.edit-versions-btn { background: var(--gray-100); color: var(--gray-500); }
+.edit-versions-btn:hover { background: var(--gray-200); color: var(--gray-700); }
 #edit-status {
   font-size: 11px; font-weight: 600; color: #16a34a;
   padding: 0 6px; display: none;
@@ -417,6 +493,32 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 .scene-delete-btn:hover { background: #fecaca; }
 .scene-delete-btn:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
 
+/* ＋ Neue Szene — nur Bearbeiten, direkt unter jeder Szenen-Kachel */
+.edit-scene-add-below {
+  display: none;
+  margin: 4px 0 10px;
+  padding: 0;
+  text-align: center;
+  clear: both;
+}
+.edit-mode-active .edit-scene-add-below { display: block; }
+.edit-scene-add-below-btn {
+  border: 1px dashed var(--teal);
+  background: var(--teal-light);
+  color: #0a5f7a;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.edit-scene-add-below-btn:hover {
+  background: #b8e8f2;
+  border-color: var(--teal);
+}
+
 /* × auf Hero-Meta, Intro-Kacheln, Story-Hooks, Tags … (nicht in .box-header — eigene Klasse) */
 .edit-mode-active .edit-removable-target { position: relative; }
 .edit-chrome-remove-btn {
@@ -454,6 +556,41 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 .scene-tags .edit-chrome-remove-btn { top: 6px; right: 8px; }
 .story-hook .edit-chrome-remove-btn,
 .transition .edit-chrome-remove-btn { top: 8px; right: 8px; }
+
+/* Trennlinie + ＋ nur im Bearbeiten-Modus (grosse Blöcke) */
+.editable-macro-split {
+  display: none;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  margin: 12px 0 20px;
+  clear: both;
+}
+.edit-mode-active .editable-macro-split { display: flex; }
+.editable-macro-split-line {
+  height: 0;
+  border: none;
+  border-top: 2px dashed rgba(13, 127, 160, 0.45);
+  margin: 0 8px;
+}
+.editable-macro-split-btn {
+  align-self: center;
+  min-width: 44px;
+  height: 36px;
+  padding: 0 18px;
+  border: 2px dashed var(--teal);
+  background: var(--teal-light);
+  color: #0a5f7a;
+  border-radius: 10px;
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 1;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s;
+}
+.editable-macro-split-btn:hover { background: #c8eef5; border-color: #0d7fa0; }
+.demo-macro-free-block { position: relative; }
 
 /* Editable text */
 .edit-mode-active [contenteditable] {
@@ -2017,8 +2154,8 @@ input.media-file-input { display: none; }
 </div>
 
 <div id="edit-hint">
-  <span class="t-de">✏️ Texte direkt anklicken · ⠿ Bereiche/Szenen an «⠿» ziehen zum Umordnen · ＋ Neuen Bereich unten in jeder Szene · ＋ Szene für neue 01/02-Blöcke · × Kästchen löschen · 💾 Speichern nicht vergessen</span>
-  <span class="t-en">✏️ Click text to edit · ⠿ Drag blocks/scenes by «⠿» to reorder · ＋ New block at bottom of each scene · ＋ Scene for new 01/02 blocks · × Delete boxes · 💾 Don’t forget to save</span>
+  <span class="t-de">✏️ Texte direkt anklicken · ⠿ Bereiche/Szenen an «⠿» ziehen zum Umordnen · ＋ Neuen Bereich unten in jeder Szene · ＋ Neue Szene unter jeder Szenen-Kachel (Nummern passen sich an) · × Kästchen löschen · 💾 Speichern nicht vergessen</span>
+  <span class="t-en">✏️ Click text to edit · ⠿ Drag blocks/scenes by «⠿» to reorder · ＋ New block at bottom of each scene · ＋ New scene under each scene card (numbers update) · × Delete boxes · 💾 Don’t forget to save</span>
 </div>
 
 <template id="pm-empty-scene-template">
@@ -2057,8 +2194,11 @@ function setLang(lang) {
   if (editMode) {
     clearContentEditable();
     initInlineEdit();
+    initSceneAddBelowButtons();
   }
   syncPresenterChromeLang();
+  const pmVerLbl = document.getElementById('edit-versions-btn-label-pm');
+  if (pmVerLbl) pmVerLbl.textContent = presenterLang() === 'de' ? 'Versionen' : 'Versions';
 }
 
 /* ═══════════════════════════════════════════════════
@@ -2099,10 +2239,6 @@ function syncPresenterChromeLang() {
     const editing = icon.textContent === '✕';
     editLabel.textContent = editing ? (L === 'de' ? 'Fertig' : 'Done') : (L === 'de' ? 'Bearbeiten' : 'Edit');
   }
-  const addSceneBtn = document.querySelector('.edit-add-scene-btn');
-  if (addSceneBtn && !addSceneBtn.disabled) {
-    addSceneBtn.textContent = L === 'de' ? '＋ Szene' : '＋ Scene';
-  }
 }
 
 /* ── Bootstrap ─────────────────────────────────── */
@@ -2132,9 +2268,8 @@ function createEditToolbar() {
         <span id="edit-label">Edit</span>
       </button>
       <div id="edit-extra" style="display:none;align-items:center;gap:6px;flex-wrap:wrap;">
-        <button type="button" class="edit-actions-btn edit-add-scene-btn" onclick="insertEmptyScene()">＋ Szene</button>
         <button class="edit-actions-btn edit-save-btn" onclick="saveAll()">💾 Save</button>
-        <button class="edit-actions-btn edit-reset-btn" onclick="resetAll()">↩ Reset</button>
+        <button type="button" class="edit-actions-btn edit-versions-btn" onclick="togglePmVersionsPanel()" title="Letzte gespeicherte Stände (AWS)">📜 <span id="edit-versions-btn-label-pm"></span></button>
       </div>
       <span id="edit-unsaved">● unsaved</span>
       <span id="edit-status"></span>
@@ -2142,6 +2277,8 @@ function createEditToolbar() {
     <div id="edit-format-bar" class="edit-format-bar" aria-label="Textformatierung"></div>
   `;
   document.body.appendChild(bar);
+  const pmVerLbl = document.getElementById('edit-versions-btn-label-pm');
+  if (pmVerLbl) pmVerLbl.textContent = presenterLang() === 'de' ? 'Versionen' : 'Versions';
 }
 
 function initFormatToolbar() {
@@ -2243,6 +2380,8 @@ function toggleEditMode() {
     initBoxAdding();
     initMediaBoxes();
     initAgendaEditing();
+    initMacroBlockSplitters();
+    initSceneAddBelowButtons();
     hasUnsavedChanges = false;
     setUnsaved(false);
   } else {
@@ -2266,10 +2405,40 @@ function toggleEditMode() {
     removeMediaControls();
     removeAgendaEditing();
     removeGlobalChromeRemovables();
+    removeMacroBlockSplitters();
+    removeSceneAddBelowButtons();
     closeBoxPicker();
+    closePmVersionsPanel();
     hasUnsavedChanges = false;
     setUnsaved(false);
   }
+}
+
+function refreshEditModeDomAfterStateRestorePm() {
+  if (!editMode) return;
+  clearContentEditable();
+  removeDragListeners();
+  removeSceneDeleteButtons();
+  removeStepButtons();
+  removeBoxDragListeners();
+  removeBoxAddButtons();
+  removeMediaControls();
+  removeAgendaEditing();
+  removeGlobalChromeRemovables();
+  removeMacroBlockSplitters();
+  removeSceneAddBelowButtons();
+  closeBoxPicker();
+  initGlobalChromeRemovables();
+  initDrag();
+  initSceneDeleteButtons();
+  initInlineEdit();
+  initClickStepEditing();
+  initBoxDrag();
+  initBoxAdding();
+  initMediaBoxes();
+  initAgendaEditing();
+  initMacroBlockSplitters();
+  initSceneAddBelowButtons();
 }
 
 function setUnsaved(state) {
@@ -2285,7 +2454,7 @@ function autoSave(delayMs = 1500) {
   setUnsaved(true);
   clearTimeout(_autoSaveTimer);
   _autoSaveTimer = setTimeout(() => {
-    saveAll().catch(() => {});
+    saveAll({ fromAutosave: true }).catch((e) => { console.warn('autoSave: saveAll rejected', e); });
   }, delayMs);
 }
 
@@ -2296,6 +2465,8 @@ function stripEditChromeFromClone(clone) {
   if (!clone) return;
   clone.querySelectorAll('.edit-chrome-remove-btn').forEach(n => n.remove());
   clone.querySelectorAll('.edit-removable-target').forEach(el => el.classList.remove('edit-removable-target'));
+  clone.querySelectorAll('.editable-macro-split').forEach(n => n.remove());
+  clone.querySelectorAll('.edit-scene-add-below').forEach(n => n.remove());
 }
 
 function attachEditChromeRemove(el, opts) {
@@ -2370,11 +2541,118 @@ function initGlobalChromeRemovables() {
   document.querySelectorAll('.scene .scene-tags').forEach(el => attachEditChromeRemove(el, o));
   document.querySelectorAll('.scene .scene-body > .story-hook').forEach(el => attachEditChromeRemove(el, o));
   document.querySelectorAll('.scene .scene-body > .transition').forEach(el => attachEditChromeRemove(el, o));
+  document.querySelectorAll('.demo-macro-free-block').forEach(el => attachEditChromeRemove(el, {
+    title: L === 'de' ? 'Grossen Block löschen' : 'Delete large block',
+    confirmMsg: L === 'de' ? 'Diesen grossen Block löschen?' : 'Delete this large block?'
+  }));
 }
 
 function removeGlobalChromeRemovables() {
   document.querySelectorAll('.edit-chrome-remove-btn').forEach(b => b.remove());
   document.querySelectorAll('.edit-removable-target').forEach(el => el.classList.remove('edit-removable-target'));
+}
+
+function removeMacroBlockSplitters() {
+  document.querySelectorAll('.editable-macro-split').forEach(n => n.remove());
+}
+
+function pmMacroSplitButtonLabel() {
+  return presenterLang() === 'de' ? 'Grossen Textblock hier einfügen' : 'Insert large text block here';
+}
+
+function createMacroSplitButton(onAdd, title) {
+  const wrap = document.createElement('div');
+  wrap.className = 'editable-macro-split';
+  wrap.setAttribute('role', 'separator');
+  const line = document.createElement('div');
+  line.className = 'editable-macro-split-line';
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'editable-macro-split-btn';
+  btn.textContent = '＋';
+  btn.title = title;
+  btn.setAttribute('aria-label', title);
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onAdd();
+  });
+  wrap.appendChild(line);
+  wrap.appendChild(btn);
+  return wrap;
+}
+
+function buildPmMacroFreeBlock() {
+  const div = document.createElement('div');
+  div.className = 'demo-macro-free-block';
+  div.style.cssText = 'background:white;border:1px solid var(--gray-300);border-radius:8px;padding:18px 22px;margin:16px 0;box-shadow:var(--shadow);';
+  div.innerHTML = `
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray-500);margin-bottom:10px;">
+      <span class="t-de">Grosser Block</span><span class="t-en">Large block</span>
+    </div>
+    <p style="margin:0;line-height:1.65;color:var(--gray-800);">
+      <span class="t-de">Hier klicken und Inhalt der Präsentation einfügen…</span>
+      <span class="t-en">Click and add your presenter content…</span>
+    </p>`;
+  return div;
+}
+
+function wireNewMacroBlockEditable(root) {
+  if (!root) return;
+  const lang = presenterLang();
+  root.querySelectorAll(`.t-${lang}`).forEach(el => {
+    el.contentEditable = 'true';
+    el.spellcheck = false;
+    el.setAttribute('data-lang', lang.toUpperCase());
+    el.addEventListener('input', markUnsaved);
+    el.addEventListener('keydown', preventEnterIfNotWanted);
+  });
+}
+
+function insertMacroFreeBlockBefore(beforeNode) {
+  if (!beforeNode) return;
+  const block = buildPmMacroFreeBlock();
+  const agenda = document.getElementById('pm-training-agenda');
+  if (agenda && beforeNode === agenda) {
+    const intro = document.getElementById('pm-editable-intro');
+    if (intro) intro.appendChild(block);
+    else if (beforeNode.parentNode) beforeNode.parentNode.insertBefore(block, beforeNode);
+    else return;
+  } else {
+    if (!beforeNode.parentNode) return;
+    beforeNode.parentNode.insertBefore(block, beforeNode);
+  }
+  wireNewMacroBlockEditable(block);
+  removeMacroBlockSplitters();
+  initMacroBlockSplitters();
+  initGlobalChromeRemovables();
+  markUnsaved();
+  autoSave(800);
+}
+
+function initMacroBlockSplitters() {
+  if (!editMode) return;
+  removeMacroBlockSplitters();
+
+  const page = document.querySelector('.page');
+  const intro = document.getElementById('pm-editable-intro');
+  const agenda = document.getElementById('pm-training-agenda');
+  if (intro) {
+    const ch = Array.from(intro.querySelectorAll(':scope > *'));
+    for (let i = ch.length - 1; i >= 1; i--) {
+      const before = ch[i];
+      intro.insertBefore(
+        createMacroSplitButton(() => insertMacroFreeBlockBefore(before), pmMacroSplitButtonLabel()),
+        before
+      );
+    }
+  }
+  if (page && agenda) {
+    page.insertBefore(
+      createMacroSplitButton(() => insertMacroFreeBlockBefore(agenda), pmMacroSplitButtonLabel()),
+      agenda
+    );
+  }
 }
 
 function wireNewSceneForEdit(scene) {
@@ -2406,15 +2684,19 @@ function wireNewSceneForEdit(scene) {
     el.addEventListener('input', markUnsaved);
   });
   initGlobalChromeRemovables();
+  initMacroBlockSplitters();
+  initSceneAddBelowButtons();
 }
 
-function insertEmptyScene() {
+function insertEmptyScene(beforeNode) {
   const page = document.querySelector('.page');
   const closing = page && page.querySelector('.closing');
   const tpl = document.getElementById('pm-empty-scene-template');
-  if (!page || !closing || !tpl || !tpl.content.firstElementChild) return;
+  if (!page || !tpl || !tpl.content.firstElementChild) return;
+  const ref = (beforeNode && beforeNode.classList && beforeNode.classList.contains('scene')) ? beforeNode : closing;
+  if (!ref) return;
   const node = tpl.content.firstElementChild.cloneNode(true);
-  page.insertBefore(node, closing);
+  page.insertBefore(node, ref);
   renumberScenes();
   if (editMode) wireNewSceneForEdit(node);
   autoSave(800);
@@ -2427,7 +2709,7 @@ function initInlineEdit() {
   const lang = document.documentElement.classList.contains('lang-de') ? 'de' : 'en';
 
   // 1. Language-specific text: Hero, Intro-Bereich (Guide, Cast, Agenda …), Szenen
-  document.querySelectorAll(`.hero .t-${lang}, #pm-editable-intro .t-${lang}, #pm-training-agenda .t-${lang}, .scene .t-${lang}`).forEach(el => {
+  document.querySelectorAll(`.hero .t-${lang}, #pm-editable-intro .t-${lang}, .demo-macro-free-block .t-${lang}, #pm-training-agenda .t-${lang}, .scene .t-${lang}`).forEach(el => {
     el.contentEditable = 'true';
     el.spellcheck = false;
     el.setAttribute('data-lang', lang.toUpperCase());
@@ -2521,6 +2803,10 @@ function initSceneDeleteButtons() {
       if (confirm(msg)) {
         scene.remove();
         renumberScenes();
+        if (editMode) {
+          initSceneAddBelowButtons();
+          initMacroBlockSplitters();
+        }
         autoSave(800);
       }
     });
@@ -2530,6 +2816,51 @@ function initSceneDeleteButtons() {
 
 function removeSceneDeleteButtons() {
   document.querySelectorAll('.scene-delete-btn').forEach(el => el.remove());
+}
+
+function findNextSceneSibling(el) {
+  if (!el) return null;
+  let n = el.nextElementSibling;
+  while (n) {
+    if (n.classList && n.classList.contains('scene')) return n;
+    n = n.nextElementSibling;
+  }
+  return null;
+}
+
+function insertEmptySceneAfter(scene) {
+  if (!scene || !scene.classList || !scene.classList.contains('scene')) return;
+  const next = findNextSceneSibling(scene);
+  insertEmptyScene(next);
+}
+
+function removeSceneAddBelowButtons() {
+  document.querySelectorAll('.edit-scene-add-below').forEach(el => el.remove());
+}
+
+function initSceneAddBelowButtons() {
+  if (!editMode) return;
+  removeSceneAddBelowButtons();
+  const L = presenterLang();
+  const label = L === 'de' ? '＋ Neue Szene' : '＋ New scene';
+  const title = L === 'de' ? 'Neue Szene unter dieser Kachel einfügen' : 'Insert a new scene below this card';
+  document.querySelectorAll('.scene').forEach(scene => {
+    const wrap = document.createElement('div');
+    wrap.className = 'edit-scene-add-below';
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'edit-scene-add-below-btn';
+    btn.textContent = label;
+    btn.title = title;
+    btn.setAttribute('aria-label', title);
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      insertEmptySceneAfter(scene);
+    });
+    wrap.appendChild(btn);
+    scene.parentNode.insertBefore(wrap, scene.nextSibling);
+  });
 }
 
 function onDragStart(e) {
@@ -2564,9 +2895,19 @@ function onDrop(e) {
   if (e.clientY < rect.top + rect.height / 2) {
     parent.insertBefore(dragSrc, this);
   } else {
-    parent.insertBefore(dragSrc, this.nextSibling);
+    const next = findNextSceneSibling(this);
+    if (next) parent.insertBefore(dragSrc, next);
+    else {
+      const closing = parent.querySelector('.closing');
+      if (closing) parent.insertBefore(dragSrc, closing);
+      else parent.appendChild(dragSrc);
+    }
   }
   renumberScenes();
+  if (editMode) {
+    initMacroBlockSplitters();
+    initSceneAddBelowButtons();
+  }
   autoSave();
 }
 
@@ -3083,23 +3424,236 @@ function removeAgendaEditing() {
 /* ═══════════════════════════════════════════════════
    AWS PERSISTENZ
    State als JSON in S3 (data/tempus-demo-pm-state.json).
+   Quelle API-URL: infrastructure/cdk-outputs.json (WebsiteApiUrl) + /demo-script — siehe docs/DEMO_SCRIPT_API_EINHEITLICH_AWS.md
    Enthält: hero, intro, Vollflächen-Agenda (#pm-training-agenda), alle Szenen.
    Speichern: zuerst POST /v1/demo-script (Lambda → S3), sonst Presigned PUT (7 Tage, ./refresh-demo-state-url.sh).
    Laden: direkt S3 (STATE_READ_URL) — nicht manuel-weiss.ch/data/…: CloudFront liefert dort
    oft gecachte JSON trotz ?v= (Query wird typisch nicht mitgeforwarded). Sonst localStorage.
 ═══════════════════════════════════════════════════ */
 
-const DEMO_SCRIPT_API_URL =
-  'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1/demo-script';
+/* Website-API: muss mit infrastructure/cdk-outputs.json (WebsiteApiUrl) übereinstimmen — kein trailing slash. */
+const WEBSITE_API_BASE = 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
+const DEMO_SCRIPT_API_URL = `${WEBSITE_API_BASE}/demo-script`;
 /** Muss mit Lambda EDIT_PASSWORD (demo-script-api) übereinstimmen. */
 const DEMO_SCRIPT_EDIT_PASSWORD = 'tempus-demo-edit-2024';
 
 // Presigned PUT — Fallback wenn API nicht erreichbar (max. 604800 s).
-const PRESIGNED_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-demo-pm-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3MG2WEBUJ%2F20260427%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260427T165209Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=f033fa448d2555260b12ce6dedb5e7fff57008f27e4779d0377dd84c89718252';
+const PRESIGNED_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-demo-pm-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3MG2WEBUJ%2F20260427%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260427T202237Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=916e0612ecca11dace253eedfde898a8696e9ae6ee9b80508add35b9bebe3a31';
 
 /* Immer S3 REST (eu-central-1): Objekt ist nach PUT sofort konsistent; CloudFront-URL wäre stale. */
 const STATE_READ_URL =
   'https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-demo-pm-state.json';
+
+/** Letzte vollständige AWS-Nutzlast (inkl. history) — für den nächsten Speichern-Schritt (append history). */
+let __tempusPmLastPersisted = null;
+/** Inhaltlicher Bezug für „Versionen“ beim expliziten Speichern — wird durch Auto-Save nicht angepasst (sonst kein Historieneintrag mehr möglich). */
+let __pmManualHistoryBaseline = null;
+
+const HISTORY_MAX_ENTRIES = 10;
+const HISTORY_MAX_JSON_CHARS = 4500000;
+
+function snapshotPayloadWithoutHistory(p) {
+  if (!p || typeof p !== 'object' || !Array.isArray(p.scenes)) return null;
+  return {
+    scenes: p.scenes,
+    heroHtml: p.heroHtml != null ? p.heroHtml : null,
+    introHtml: p.introHtml != null ? p.introHtml : null,
+    agendaHtml: p.agendaHtml != null ? p.agendaHtml : null,
+    ts: typeof p.ts === 'number' ? p.ts : Date.now(),
+    schemaVersion: typeof p.schemaVersion === 'number' ? p.schemaVersion : 0
+  };
+}
+
+function stateContentEquals(a, b) {
+  if (!a || !b) return false;
+  try {
+    return JSON.stringify({
+      scenes: a.scenes,
+      heroHtml: a.heroHtml,
+      introHtml: a.introHtml,
+      agendaHtml: a.agendaHtml
+    }) === JSON.stringify({
+      scenes: b.scenes,
+      heroHtml: b.heroHtml,
+      introHtml: b.introHtml,
+      agendaHtml: b.agendaHtml
+    });
+  } catch (e) {
+    return false;
+  }
+}
+
+function trimHistoryPayloadSize(obj) {
+  try {
+    while (JSON.stringify(obj).length > HISTORY_MAX_JSON_CHARS && Array.isArray(obj.history) && obj.history.length > 0) {
+      obj.history = obj.history.slice(0, -1);
+    }
+  } catch (e) {
+    obj.history = [];
+  }
+  return obj;
+}
+
+function buildPayloadWithHistory(lastPersisted, freshParts, schemaVer, opts = {}) {
+  const fromAutosave = !!opts.fromAutosave;
+  const base = {
+    scenes: freshParts.scenes,
+    heroHtml: freshParts.heroHtml,
+    introHtml: freshParts.introHtml,
+    agendaHtml: freshParts.agendaHtml,
+    ts: freshParts.ts,
+    schemaVersion: schemaVer
+  };
+  const prevHist = lastPersisted && Array.isArray(lastPersisted.history)
+    ? lastPersisted.history.slice()
+    : [];
+  let archived;
+  if (fromAutosave) {
+    archived = snapshotPayloadWithoutHistory(lastPersisted);
+  } else {
+    archived = __pmManualHistoryBaseline != null
+      ? __pmManualHistoryBaseline
+      : snapshotPayloadWithoutHistory(lastPersisted);
+  }
+  const freshSnap = snapshotPayloadWithoutHistory({
+    ...freshParts,
+    schemaVersion: schemaVer
+  });
+  let history = prevHist.slice(0, HISTORY_MAX_ENTRIES);
+  if (archived && freshSnap && !stateContentEquals(archived, freshSnap)) {
+    const dup = history.length && stateContentEquals(history[0], archived);
+    if (!dup) {
+      const archCopy = JSON.parse(JSON.stringify(archived));
+      history = [archCopy, ...prevHist].slice(0, HISTORY_MAX_ENTRIES);
+    }
+  }
+  base.history = history;
+  return trimHistoryPayloadSize(base);
+}
+
+function persistPmLastKnownPayload(parsed, opts = {}) {
+  try {
+    __tempusPmLastPersisted = JSON.parse(JSON.stringify(parsed));
+  } catch (e) {
+    __tempusPmLastPersisted = parsed;
+  }
+  if (opts.syncManualBaseline !== false) {
+    const snap = snapshotPayloadWithoutHistory(__tempusPmLastPersisted);
+    __pmManualHistoryBaseline = snap ? JSON.parse(JSON.stringify(snap)) : null;
+  }
+}
+
+function ensurePmVersionsPanel() {
+  let panel = document.getElementById('edit-versions-panel-pm');
+  if (panel) return panel;
+  panel = document.createElement('div');
+  panel.id = 'edit-versions-panel-pm';
+  panel.className = 'edit-versions-panel';
+  panel.setAttribute('role', 'dialog');
+  panel.setAttribute('aria-modal', 'true');
+  panel.innerHTML = `
+    <div class="edit-versions-panel-inner">
+      <div class="edit-versions-panel-head">
+        <strong id="edit-versions-panel-title-pm"></strong>
+        <button type="button" class="edit-versions-close" id="edit-versions-close-pm" aria-label="Close">✕</button>
+      </div>
+      <div class="edit-versions-list" id="edit-versions-list-pm"></div>
+    </div>
+  `;
+  document.body.appendChild(panel);
+  document.getElementById('edit-versions-close-pm').addEventListener('click', closePmVersionsPanel);
+  panel.addEventListener('click', e => {
+    if (e.target === panel) closePmVersionsPanel();
+  });
+  return panel;
+}
+
+function renderPmVersionsPanel() {
+  const L = presenterLang();
+  const list = document.getElementById('edit-versions-list-pm');
+  const title = document.getElementById('edit-versions-panel-title-pm');
+  if (!list || !title) return;
+  title.textContent = L === 'de' ? 'Letzte Versionen (AWS)' : 'Recent versions (AWS)';
+  const hist = (__tempusPmLastPersisted && Array.isArray(__tempusPmLastPersisted.history))
+    ? __tempusPmLastPersisted.history
+    : [];
+  list.innerHTML = '';
+  if (!hist.length) {
+    const empty = document.createElement('div');
+    empty.className = 'edit-versions-empty';
+    empty.textContent = L === 'de'
+      ? 'Noch keine ältere Version gespeichert — nach einer Änderung auf „Speichern“ (auch wenn Auto-Save schon lief) taucht hier ein Eintrag auf.'
+      : 'No older snapshot yet — after editing, click Save (even if auto-save ran) to list a rollback point.';
+    list.appendChild(empty);
+    return;
+  }
+  const locale = L === 'de' ? 'de-CH' : 'en-GB';
+  hist.forEach((entry, idx) => {
+    const row = document.createElement('div');
+    row.className = 'edit-versions-row';
+    const when = entry && entry.ts
+      ? new Date(entry.ts).toLocaleString(locale)
+      : '—';
+    const label = document.createElement('span');
+    label.textContent = when + (entry.schemaVersion != null ? ' · v' + entry.schemaVersion : '');
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = L === 'de' ? 'Wiederherstellen' : 'Restore';
+    btn.addEventListener('click', () => restorePmHistoryEntry(idx));
+    row.appendChild(label);
+    row.appendChild(btn);
+    list.appendChild(row);
+  });
+}
+
+function togglePmVersionsPanel() {
+  const panel = ensurePmVersionsPanel();
+  const open = !panel.classList.contains('open');
+  if (open) {
+    renderPmVersionsPanel();
+    panel.classList.add('open');
+  } else {
+    closePmVersionsPanel();
+  }
+}
+
+function closePmVersionsPanel() {
+  const panel = document.getElementById('edit-versions-panel-pm');
+  if (panel) panel.classList.remove('open');
+}
+
+function restorePmHistoryEntry(idx) {
+  const L = presenterLang();
+  const hist = (__tempusPmLastPersisted && Array.isArray(__tempusPmLastPersisted.history))
+    ? __tempusPmLastPersisted.history
+    : [];
+  const entry = hist[idx];
+  if (!entry || !Array.isArray(entry.scenes)) return;
+  const msg = L === 'de'
+    ? 'Diese gespeicherte Version in die Seite laden? Aktuelle (nicht gespeicherte) Bearbeitungen gehen verloren.'
+    : 'Load this saved version into the page? Unsaved edits will be lost.';
+  if (!confirm(msg)) return;
+  const keepHist = hist.slice();
+  applyState(entry);
+  persistPmLastKnownPayload({
+    scenes: entry.scenes,
+    heroHtml: entry.heroHtml,
+    introHtml: entry.introHtml,
+    agendaHtml: entry.agendaHtml,
+    ts: entry.ts,
+    schemaVersion: entry.schemaVersion,
+    history: keepHist
+  });
+  if (editMode) refreshEditModeDomAfterStateRestorePm();
+  markUnsaved(true);
+  closePmVersionsPanel();
+  flashStatus(
+    L === 'de'
+      ? 'Version wiederhergestellt — „Speichern“ schreibt nach AWS.'
+      : 'Version restored — use Save to publish to AWS.',
+    false
+  );
+}
 
 /* ─── Szenen serialisieren (bereinigt) ────────────── */
 function serializeScenes() {
@@ -3115,6 +3669,8 @@ function serializeScenes() {
       li.classList.remove('click-step-li-dragging', 'click-step-over-top', 'click-step-over-bottom');
     });
 
+    // Edit-UI unter Szenen (nicht im gespeicherten HTML)
+    clone.querySelectorAll('.edit-scene-add-below').forEach(el => el.remove());
     // Media-Controls entfernen — das Bild/Video bleibt via <img>/<video src="..."> erhalten
     clone.querySelectorAll('.media-controls').forEach(el => el.remove());
 
@@ -3154,25 +3710,39 @@ function serializeHeroOrIntro(el) {
 }
 
 /* ─── Speichern: S3 + localStorage als Fallback ───── */
-async function saveAll() {
+async function saveAll(opts = {}) {
+  const fromAutosave = !!opts.fromAutosave;
   const L = presenterLang();
   const btn = document.querySelector('.edit-save-btn');
   if (btn) { btn.disabled = true; btn.textContent = L === 'de' ? '⏳ Speichert…' : '⏳ Saving…'; }
 
-  const scenes = serializeScenes();
-  const heroHtml = serializeHeroOrIntro(document.querySelector('.hero'));
-  const introHtml = serializeHeroOrIntro(document.querySelector('#pm-editable-intro'));
-  /** Vollflächen-Agenda (#pm-training-agenda) — war früher nicht im Payload, Änderungen gingen beim Neuladen „verloren“. */
-  const agendaHtml = serializeHeroOrIntro(document.querySelector('#pm-training-agenda'));
-  const payloadObj = {
-    scenes,
-    heroHtml,
-    introHtml,
-    agendaHtml,
-    ts: Date.now(),
-    schemaVersion: PM_STATE_SCHEMA_VERSION
-  };
-  const payload = JSON.stringify(payloadObj);
+  let payload;
+  try {
+    const scenes = serializeScenes();
+    const heroHtml = serializeHeroOrIntro(document.querySelector('.hero'));
+    const introHtml = serializeHeroOrIntro(document.querySelector('#pm-editable-intro'));
+    /** Vollflächen-Agenda (#pm-training-agenda) — war früher nicht im Payload, Änderungen gingen beim Neuladen „verloren“. */
+    const agendaHtml = serializeHeroOrIntro(document.querySelector('#pm-training-agenda'));
+    const payloadObj = buildPayloadWithHistory(__tempusPmLastPersisted, {
+      scenes,
+      heroHtml,
+      introHtml,
+      agendaHtml,
+      ts: Date.now()
+    }, PM_STATE_SCHEMA_VERSION, { fromAutosave });
+    payload = JSON.stringify(payloadObj);
+  } catch (prepErr) {
+    console.error('saveAll: Aufbau des Speicher-JSON fehlgeschlagen', prepErr);
+    const msg = prepErr && prepErr.message ? prepErr.message : String(prepErr);
+    alert(L === 'de'
+      ? 'Speichern abgebrochen (Seiteninhalt konnte nicht serialisiert werden): ' + msg
+      : 'Save aborted (could not serialize page): ' + msg);
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = L === 'de' ? '💾 Speichern' : '💾 Save';
+    }
+    return;
+  }
 
   try {
     let apiOk = false;
@@ -3188,6 +3758,9 @@ async function saveAll() {
       apiOk = apiRes.ok;
       if (apiOk) {
         localStorage.setItem(STORAGE_KEY, payload);
+        try {
+          persistPmLastKnownPayload(JSON.parse(payload), { syncManualBaseline: !fromAutosave });
+        } catch (e) {}
         setUnsaved(false);
         flashStatus(L === 'de' ? 'Gespeichert (AWS, API)' : 'Saved (AWS, API)', false);
       }
@@ -3203,6 +3776,9 @@ async function saveAll() {
       });
       if (res.status >= 200 && res.status < 300) {
         localStorage.setItem(STORAGE_KEY, payload);
+        try {
+          persistPmLastKnownPayload(JSON.parse(payload), { syncManualBaseline: !fromAutosave });
+        } catch (e) {}
         setUnsaved(false);
         flashStatus(L === 'de' ? 'Gespeichert (AWS S3, Presigned)' : 'Saved (AWS S3, presigned)', false);
       } else {
@@ -3214,6 +3790,9 @@ async function saveAll() {
     console.warn('AWS save failed:', err);
     try {
       localStorage.setItem(STORAGE_KEY, payload);
+      try {
+        persistPmLastKnownPayload(JSON.parse(payload), { syncManualBaseline: !fromAutosave });
+      } catch (e) {}
       setUnsaved(false);
       flashStatus(
         L === 'de'
@@ -3294,6 +3873,7 @@ async function loadSaved() {
 
   // State anwenden
   applyState(data);
+  persistPmLastKnownPayload(data);
 }
 
 /**
@@ -3395,7 +3975,13 @@ function showRestoredBanner(ts) {
 
 function resetAll() {
   if (confirm('Alle eigenen Änderungen löschen und die Original-Version wiederherstellen?\n\nDies überschreibt auch die gespeicherte AWS-Version!')) {
-    const resetBody = JSON.stringify({ scenes: [], ts: Date.now(), reset: true, schemaVersion: PM_STATE_SCHEMA_VERSION });
+    const resetBody = JSON.stringify({
+      scenes: [],
+      history: [],
+      ts: Date.now(),
+      reset: true,
+      schemaVersion: PM_STATE_SCHEMA_VERSION
+    });
     fetch(PRESIGNED_PUT_URL, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
