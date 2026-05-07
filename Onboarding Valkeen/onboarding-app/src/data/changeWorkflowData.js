@@ -301,3 +301,67 @@ export const CHANGE_PHASES = [
     facilitatorChecklist: ['Protokollverteiler und Archiv-Ort festlegen'],
   },
 ];
+
+/** Pro Phase: Liste eingebetteter SVG‑Diagramme (id siehe DIAGRAM_REGISTRY in ChangeWorkflowDiagrams.jsx). */
+export const CHANGE_PHASE_DIAGRAMS = {
+  orient: [
+    {
+      id: 'orient-flow',
+      caption: 'Analog zu Präsentationsfolien für den Ablauf: vom Check‑in zur Verdichtung der nächsten Schritte.',
+    },
+  ],
+  basics: [
+    {
+      id: 'emotion-curve',
+      caption: 'Orientierend — kein Zeitmodell. Besprecht, wo eure Bereiche etwa stehen können.',
+    },
+    {
+      id: 'kotter-8',
+      caption: 'Gängige Ursachenliste für stockende Change‑Programme als Moderationshilfe.',
+    },
+  ],
+  success_formula: [
+    {
+      id: 'pm-cm-rails',
+      caption: 'Projekt‑Lieferzyklen liegen oft in Change‑Begleitung: beide Strange brauchen slots im Plan.',
+    },
+    {
+      id: 'head-heart-hand',
+      caption: 'Dreiklange aus Verstehen, Mitgehen und konkretem Tun — häufige Präsentationsgrafik zur Verquickung.',
+    },
+  ],
+  why: [
+    {
+      id: 'why-layers',
+      caption: 'Schichtweise Warum‑Ebenen: Organisation, Team und Einzelperson sprechen ihr eigenes Narrativ.',
+    },
+  ],
+  stakeholders: [
+    {
+      id: 'stakeholder-matrix',
+      caption: 'Quadrantenlogik zur Priorisierung: wen einbinden, wen informieren, wen aktivieren.',
+    },
+  ],
+  comms: [
+    {
+      id: 'comms-pyramid',
+      caption: 'Prinzipdiagramm: höhere Interaktionsintensität vs. höhere Reichweite.',
+    },
+    {
+      id: 'story-arc',
+      caption: 'Dramaturgie für Storytelling rund um euer Vorhaben.',
+    },
+  ],
+  pitch_plan: [
+    {
+      id: 'elevator-pitch',
+      caption: 'Strukturkette für sehr kurzen Vorstellungs‑ und Entscheider‑Pitch.',
+    },
+  ],
+  wrap: [
+    {
+      id: 'change-lifecycle',
+      caption: 'Change Arbeitspakte als Leitlinie quer durch den Projektverlauf (nicht erst „bei Go‑live«).',
+    },
+  ],
+};

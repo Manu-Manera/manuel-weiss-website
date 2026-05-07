@@ -840,6 +840,56 @@
   }
 }
 
+/* --- Workshop-Diagramme (SVG „Präsi“-Bausteine) --- */
+.cw-diagram-stack {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 2.5vw, 1.75rem);
+  margin-bottom: clamp(1.5rem, 3vw, 2.75rem);
+}
+
+.cw-diagram-frame {
+  margin: 0;
+  padding: clamp(1.125rem, 2vw, 1.5rem) clamp(1.25rem, 2.2vw, 1.875rem)
+    clamp(1.375rem, 2.6vw, 1.875rem);
+  border-radius: var(--cw-radius-lg);
+  border: 1px solid var(--cw-border);
+  background: var(--cw-card-soft);
+  box-shadow: var(--cw-shadow-soft);
+}
+
+.cw-diagram-svg-wrap {
+  overflow-x: auto;
+  margin: calc(-1 * var(--cw-space-stack));
+  padding: var(--cw-space-stack) 2px var(--cw-space-stack);
+}
+
+.cw-diagram-svg-wrap:focus-within {
+  outline: none;
+}
+
+.cw-diagram-svg text {
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cw-diagram-svg * {
+    transition: none;
+  }
+}
+
+.cw-diagram-caption {
+  margin-top: clamp(0.875rem, 2vw, 1.125rem);
+  margin-bottom: 0;
+  font-size: 0.8125rem;
+  line-height: 1.52;
+  text-align: center;
+  color: var(--cw-text-muted);
+  max-width: 42rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .cw-workshop ::selection {
   background: rgba(124, 58, 237, 0.22);
 }

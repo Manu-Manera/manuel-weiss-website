@@ -18,8 +18,9 @@ import {
 import '../styles/change-workshop.css';
 
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import { CHANGE_WORKFLOW_META, CHANGE_PHASES } from '../data/changeWorkflowData';
+import { CHANGE_WORKFLOW_META, CHANGE_PHASES, CHANGE_PHASE_DIAGRAMS } from '../data/changeWorkflowData';
 import { downloadChangeWorkshopPdf, previewChangeWorkshopPdf } from '../utils/changeWorkflowPdf';
+import { ChangeWorkflowDiagrams } from '../components/change-workflow/ChangeWorkflowDiagrams';
 
 const CHECKLIST_KEY = 'change_workflow_facilitator_checks_v1';
 const NOTES_KEY = 'change_workflow_phase_notes_v1';
@@ -168,8 +169,6 @@ export default function ChangeWorkflow() {
     [phase.id, setNotes]
   );
 
-  const hubUrl = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}`;
-
   const pdfBase = useCallback(
     () => ({
       notes,
@@ -264,7 +263,7 @@ export default function ChangeWorkflow() {
             />
             <div className="flex flex-wrap gap-2 sm:gap-3">
               <Link
-                to={hubUrl}
+                to="/"
                 className="cw-btn cw-btn-ghost cw-link-hub flex-1 sm:flex-none min-w-[7rem] min-h-[3rem]"
               >
                 <PanelLeftOpen className="w-4 h-4 opacity-80" aria-hidden />
@@ -363,6 +362,8 @@ export default function ChangeWorkflow() {
                   </div>
                 </div>
               </div>
+
+              <ChangeWorkflowDiagrams entries={CHANGE_PHASE_DIAGRAMS[phase.id]} />
 
               <p className="cw-kicker mb-5 flex items-center gap-2.5">
                 <ListChecks className="w-4 h-4 opacity-80 shrink-0" aria-hidden />

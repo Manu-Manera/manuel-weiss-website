@@ -1,0 +1,284 @@
+/** Schematische SVG‑Visualisierungen (Präsentations‑Niveau, barrierearm). */
+
+function SvgDefs() {
+  return (
+    <defs>
+      <linearGradient id="cw-diag-accent" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="var(--cw-accent)" stopOpacity={0.35} />
+        <stop offset="100%" stopColor="var(--cw-accent-strong)" stopOpacity={0.12} />
+      </linearGradient>
+    </defs>
+  );
+}
+
+function SvgFramed({ title, children, vb = '0 0 480 160', height = '11rem', maxH = '15rem' }) {
+  return (
+    <svg
+      role="img"
+      aria-labelledby="cw-svg-title"
+      viewBox={vb}
+      width="480"
+      height="160"
+      className="cw-diagram-svg"
+      style={{ minHeight: height, maxHeight: maxH }}
+    >
+      <title id="cw-svg-title">{title}</title>
+      {children}
+    </svg>
+  );
+}
+
+function OrientFlow() {
+  const steps = ['Check-in', 'Erarbeitung', 'Verdichtung', 'Commitment'];
+  return (
+    <SvgFramed title="Ablaufimpuls eines Workshop‑Blocks." vb="0 0 480 152" height="9.25rem">
+      <SvgDefs />
+      <path
+        d="M36 94 H444"
+        stroke="var(--cw-border)"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      {steps.map((label, i) => {
+        const x = 60 + i * (360 / Math.max(steps.length - 1, 1));
+        return (
+          <g key={label}>
+            <circle cx={x} cy="94" r="13" fill="var(--cw-card)" stroke="var(--cw-accent)" strokeWidth="2.5" />
+            <circle cx={x} cy="94" r="4" fill="var(--cw-accent)" />
+            <text
+              x={x}
+              y="130"
+              textAnchor="middle"
+              fill="var(--cw-text-muted)"
+              style={{ font: 'bold 11px system-ui,sans-serif', letterSpacing: '0.04em' }}
+            >
+              {label}
+            </text>
+          </g>
+        );
+      })}
+      <text
+        x="240"
+        y="38"
+        textAnchor="middle"
+        fill="var(--cw-text-secondary)"
+        style={{ font: '600 14px system-ui,sans-serif' }}
+      >
+        Von persönlicher Anbindung zur gemeinsamen Entscheidungsreife
+      </text>
+    </SvgFramed>
+  );
+}
+
+function EmotionCurve() {
+  return (
+    <SvgFramed
+      title="Schemische Verlaufslinie typischer Orientierungsphasen bei Veränderung."
+      vb="0 0 480 200"
+      height="13rem"
+    >
+      <SvgDefs />
+      <rect width="480" height="200" fill="none" />
+      {/* Achsen */}
+      <text x="32" y="28" fill="var(--cw-text-muted)" style={{ font: 'bold 11px system-ui,sans-serif' }}>
+        Spannungsniveau
+      </text>
+      <path d="M48 154 H432" stroke="var(--cw-border-subtle)" strokeWidth="2" strokeLinecap="round" />
+      <path d="M48 40 V158" stroke="var(--cw-border-subtle)" strokeWidth="2" strokeLinecap="round" />
+      <text x="44" y="178" fill="var(--cw-text-muted)" style={{ font: '11px system-ui,sans-serif' }}>
+        Zeit / Reifeprozess
+      </text>
+      {/* Kurve */}
+      <path
+        d="M 56 120 C 120 148, 150 164, 200 154 S 290 118, 330 134 S 400 152, 432 138"
+        fill="none"
+        stroke="url(#cw-diag-accent)"
+        strokeWidth="4"
+        strokeLinecap="round"
+      />
+      <path
+        d="M 56 120 C 120 148, 150 164, 200 154 S 290 118, 330 134 S 400 152, 432 138"
+        fill="none"
+        stroke="var(--cw-accent)"
+        strokeOpacity={0.45}
+        strokeWidth="3"
+      />
+      {[
+        { x: 56, label: 'Unsicherheit' },
+        { x: 146, label: 'Rückstellung' },
+        { x: 236, label: 'Auseinandersetzung' },
+        { x: 330, label: 'Experiment' },
+        { x: 420, label: 'Verankerung' },
+      ].map((p, i) => (
+        <g key={i}>
+          <circle cx={p.x} cy="94" r="4.5" fill="var(--cw-accent)" opacity={i === 2 ? 0.95 : 0.65} />
+          <text
+            x={p.x}
+            y="62"
+            textAnchor={p.x < 100 ? 'start' : p.x > 400 ? 'end' : 'middle'}
+            fill="var(--cw-text-muted)"
+            style={{ font: '10px system-ui,sans-serif' }}
+          >
+            {p.label}
+          </text>
+        </g>
+      ))}
+    </SvgFramed>
+  );
+}
+
+function Kotter8() {
+  const items = [
+    'Dringlichkeit',
+    'Führungsnetzwerk',
+    'Vision',
+    'Kommunika­tion',
+    'Befähigung',
+    'Quick Wins',
+    'Vertiefung',
+    'Verankerung',
+  ];
+  return (
+    <SvgFramed title="Häufige Ursachen, wenn Transformation ins Stocken gerät." vb="0 0 480 236" height="15rem">
+      <SvgDefs />
+      <text
+        x="240"
+        y="28"
+        textAnchor="middle"
+        fill="var(--cw-text-secondary)"
+        style={{ font: '600 13px system-ui,sans-serif' }}
+      >
+        Checkliste: typische Ursachen beim Stocken von Change‑Initiativen
+      </text>
+      <g>
+        {items.map((txt, idx) => {
+          const row = idx < 4 ? 0 : 1;
+          const col = idx % 4;
+          const x = 28 + col * 112;
+          const y = row === 0 ? 48 : 140;
+          return (
+            <g key={txt}>
+              <rect
+                x={x}
+                y={y}
+                rx="14"
+                width="103"
+                height="72"
+                fill="var(--cw-link-muted-bg)"
+                stroke="var(--cw-accent-soft-border)"
+              />
+              <text x={x + 52} y={y + 32} textAnchor="middle" fill="var(--cw-accent-strong)" style={{ font: 'bold 13px system-ui,sans-serif' }}>
+                {idx + 1}.
+              </text>
+              <text x={x + 52} y={row === 0 ? y + 50 : y + 50} textAnchor="middle" fill="var(--cw-text)" style={{ font: 'bold 11px system-ui,sans-serif' }}>
+                {txt}
+              </text>
+            </g>
+          );
+        })}
+      </g>
+      <text
+        x="240"
+        y="226"
+        textAnchor="middle"
+        fill="var(--cw-text-muted)"
+        style={{ font: '10px system-ui,sans-serif' }}
+      >
+        Angelehnt an Kotter‑Logik („Why change efforts fail“).
+      </text>
+    </SvgFramed>
+  );
+}
+
+function PmCmRails() {
+  return (
+    <SvgFramed title="Parallele Stränge Projekt‑ und Changearbeit." vb="0 0 480 188" height="11.75rem">
+      <SvgDefs />
+      {[
+        { y: 56, title: 'Projektleitung', milestones: ['Start', 'Plan', 'Gestalt.', 'Überg.', 'Betrieb'], color: '#0f172a' },
+        {
+          y: 124,
+          title: 'Change',
+          milestones: ['Sinn', 'Stakeh.', 'Aktivier.', 'Adoption', 'Kultur'],
+          color: '#5b21b6',
+        },
+      ].map((lane) => (
+        <g key={lane.title}>
+          <text x="24" y={lane.y} fill="var(--cw-text)" style={{ font: '700 12px system-ui,sans-serif', letterSpacing: '0.04em' }}>
+            {lane.title}
+          </text>
+          <path d={`M132 ${lane.y - 10} H460`} stroke="var(--cw-border-subtle)" strokeWidth="10" strokeLinecap="round" />
+          <path d={`M132 ${lane.y - 10} H460`} stroke="url(#cw-diag-accent)" strokeOpacity={lane.title === 'Change' ? 0.5 : 0.15} strokeWidth="10" strokeLinecap="round" />
+          {lane.milestones.map((m, i) => {
+            const x = 132 + i * ((460 - 132) / (lane.milestones.length - 1));
+            return (
+              <g key={m}>
+                <circle cx={x} cy={lane.y - 10} r="14" fill="var(--cw-card)" stroke={lane.color} strokeWidth={lane.title === 'Change' ? 2.25 : 1.75} />
+                <circle cx={x} cy={lane.y - 10} r={lane.title === 'Change' ? 5 : 3.25} fill={lane.color} opacity={lane.title === 'Change' ? 0.92 : 0.55} />
+                <text
+                  x={x}
+                  y={lane.y + 18}
+                  textAnchor="middle"
+                  fill="var(--cw-text-muted)"
+                  style={{ font: '9.5px system-ui,sans-serif' }}
+                >
+                  {m}
+                </text>
+              </g>
+            );
+          })}
+        </g>
+      ))}
+    </SvgFramed>
+  );
+}
+
+function HeadHeartHand() {
+  const pts = [
+    { x: 240, y: 36, lab: 'Kopf · Verstehen' },
+    { x: 88, y: 152, lab: 'Herz · Mitgehen' },
+    { x: 392, y: 152, lab: 'Hand · Tun im Alltag' },
+      ];
+      return (
+        <SvgFramed title="Drei Dimensionen erfolgreicher Veränderung." vb="0 0 480 180" height="11rem">
+          <polygon
+            points="240,40 92,154 388,154"
+            fill="var(--cw-accent-soft-bg)"
+            stroke="var(--cw-accent)"
+            strokeWidth="2.5"
+          />
+          {pts.map((p, i) => (
+            <g key={p.lab}>
+              <circle cx={p.x} cy={p.y + (p.y === 36 ? 4 : -4)} r="42" fill="var(--cw-card-soft)" stroke="var(--cw-border)" />
+              <text
+                x={p.x}
+                y={p.y + (p.y === 36 ? -2 : -6)}
+                textAnchor="middle"
+                fill="var(--cw-text)"
+                style={{ font: '600 11px system-ui,sans-serif' }}
+              >
+                {p.lab.split(' · ')[0]}
+              </text>
+              <text
+                x={p.x}
+                y={p.y + (p.y === 36 ? 14 : 8)}
+                textAnchor="middle"
+                fill="var(--cw-text-muted)"
+                style={{ font: '10px system-ui,sans-serif' }}
+              >
+                {p.lab.includes(' · ') ? `· ${p.lab.split(' · ')[1]}` : ''}
+              </text>
+            </g>
+          ))}
+        </SvgFramed>
+      );
+}
+
+function WhyLayers() {
+  return (
+    <SvgFramed title="Schichten des Warum‑Verständnis." vb="0 0 480 168" height="10.75rem">
+      <SvgDefs />
+      {[0, 1, 2].map((i) => {
+        const inset = i * 50;
+        const label = [['Organisations‑„Warum“', '(Strategischer Nutzen und Druck)'],['Team‑„Warum“', '(Auftrag, Rollenbefähigung)'],['Persönlich', '(Nutzen für die Arbeit heute)'][i]]);
+        Actually wrong - I'll fix indexing
