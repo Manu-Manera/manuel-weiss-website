@@ -398,9 +398,9 @@ input:where(
   [type="text"], [type="email"], [type="password"], [type="search"],
   [type="url"], [type="tel"], [type="number"], [type="date"], [type="time"],
   [type="datetime-local"]
-):not(.glass-input):not([class*="px-"]):not([class*="p-"]),
+):not(.glass-input):not([class*="px-"]):not([class*="p-"]):not(.cw-input-text),
 select:not(.glass-input):not([class*="px-"]):not([class*="p-"]),
-textarea:not(.glass-input):not([class*="px-"]):not([class*="p-"]) {
+textarea:not(.glass-input):not([class*="px-"]):not([class*="p-"]):not(.cw-textarea) {
   padding: 10px 14px;
 }
 
@@ -494,5 +494,17 @@ select option {
 /* contenteditable (Mailer-Editor) & eingebaute Rich-Text-Bereiche */
 [contenteditable="true"] {
   padding: 10px 14px;
+}
+
+/* Change Workshop: reduzierte Bewegung (Barrierefreiheit) */
+@media (prefers-reduced-motion: reduce) {
+  .cw-workshop *,
+  .cw-workshop *::before,
+  .cw-workshop *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 

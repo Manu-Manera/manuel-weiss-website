@@ -584,13 +584,28 @@ export function buildEml({ to, from, subject, html, images }) {
   // Alle <img src="..."> auf cid:bild<N> mappen, passende Bilder beilegen
   const cidMap = new Map();
   let replaced = htmlDoc;
+  let counter = 0;
+
+  // 1. Zuerst data: URIs extrahieren und zu cid: konvertieren
+  // Viele Mail-Clients (Apple Mail, Outlook) blockieren data: URIs aus Sicherheitsgründen
+  replaced = replaced.replace(/src\s*=\s*(['"])data:([^;]+);base64,([^'"]+)\1/gi, (match, quote, contentType, base64Data) => {
+    counter += 1;
+    const cid = `dataimg${counter}@tempus-mailer`;
+    const ext = contentType.split('/')[1] || 'png';
+    cidMap.set(cid, {
+      name: `embedded-image-${counter}.${ext}`,
+      contentType,
+      bodyBase64: base64Data,
+    });
+    return `src=${quote}cid:${cid}${quote}`;
+  });
+
+  // 2. Dann relative Pfade aus dem images-Array mappen
   if (images?.length) {
-    let counter = 0;
     const byName = new Map();
     for (const img of images) byName.set(img.name.toLowerCase(), img);
-
     replaced = replaced.replace(/src\s*=\s*(['"])([^'"]+)\1/gi, (match, quote, src) => {
-      if (/^(https?:|data:|cid:)/i.test(src)) return match;
+      if (/^(https?:|cid:)/i.test(src)) return match;
       const clean = src.replace(/^\.?\/?/, '').replace(/^bilder\//i, '').toLowerCase();
       const img = byName.get(clean) || byName.get(src.toLowerCase());
       if (!img) return match;
@@ -604,15 +619,16 @@ export function buildEml({ to, from, subject, html, images }) {
   const bRelated = randomBoundary('rel');
   const bAlt     = randomBoundary('alt');
 
-  const headers = [
+  const headerLines = [
     `To: ${foldHeader(to)}`,
     from ? `From: ${foldHeader(from)}` : null,
     `Subject: ${foldHeader(subject || '')}`,
     'MIME-Version: 1.0',
     'X-Unsent: 1',
     `Content-Type: multipart/related; boundary="${bRelated}"; type="multipart/alternative"`,
-    '',
-  ].filter(Boolean).join('\r\n');
+  ].filter(Boolean);
+  // RFC 2046: leere Zeile zwischen Header und Body ist PFLICHT
+  const headers = headerLines.join('\r\n') + '\r\n';
 
   // Plain text fallback: nur den Body-Inhalt nehmen (ohne DOCTYPE/head/style),
   // dann Tags raus & die wichtigsten HTML-Entities decodieren (Umlaute, Quotes).
@@ -732,43 +748,27 @@ export async function downloadEmlZip(filename, emlEntries) {
 // Für weitere Tempus-Instanzen muss eine zusätzliche Proxy-Route angelegt
 // werden (siehe docs/RECOVERY_tempus-proxy.md als Muster).
 
-// absolute Fallback-URL (wird in Dev / ohne CloudFront genutzt)
+// REST API V1 mit HTTP_PROXY: Leitet Query-Parameter durch, OPTIONS via MOCK für CORS
+// X-Tempus-Auth Header wird zu Authorization gemappt
 export const TEMPUS_PROXY_ABSOLUTE =
   'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1/tempus-proxy';
 
 // same-origin Pfad (wird vor manuel-weiss.ch via CloudFront weitergereicht)
+// TODO: CloudFront-Behavior für /v1/tempus-proxy/* anlegen für Adblocker-Umgehung
 export const TEMPUS_PROXY_SAMEORIGIN = '/v1/tempus-proxy';
 
-// Backward-Compat: war früher die absolute URL, bleibt als export erhalten.
+// Backward-Compat: war früher die alte REST API URL, jetzt die neue V2 API.
 export const TEMPUS_PROXY_BASE = TEMPUS_PROXY_ABSOLUTE;
 
 export const TEMPUS_DEFAULT_BASE_URL = 'https://trial5.tempus-resource.com/slot4';
 
 function buildTempusBases() {
-  // WICHTIG: CloudFront-Behavior für /v1/tempus-proxy/* ist NOCH NICHT aktiv!
-  // Solange das fehlt, schlägt Same-Origin fehl (liefert S3-Indexseite oder
-  // 404). Darum ZUERST die absolute AWS-API-URL probieren (funktioniert, wenn
-  // kein Adblocker aktiv ist), DANN Same-Origin als Fallback. Sobald Cloud-
-  // Front konfiguriert ist, Reihenfolge wieder tauschen (Same-Origin zuerst,
-  // weil das Adblocker umgeht).
-  //
-  // TODO: Reihenfolge ändern zu [sameOrigin, TEMPUS_PROXY_ABSOLUTE] sobald
-  //       CloudFront-Behavior aktiv ist.
-
-  // In Node/SSR (kein window) nutzen wir direkt die Absolute-URL.
+  // Die neue HTTP API V2 hat eingebauten CORS-Support, daher nutzen wir sie
+  // direkt. Same-Origin bleibt als Fallback für Adblocker-Szenarien.
   if (typeof window === 'undefined' || !window.location) {
     return [TEMPUS_PROXY_ABSOLUTE];
   }
-  const host = window.location.host || '';
-  const isProductionHost =
-    /(^|\.)manuel-weiss\.ch$/i.test(host) ||
-    /\.cloudfront\.net$/i.test(host);
-  if (isProductionHost) {
-    const sameOrigin = `${window.location.origin}${TEMPUS_PROXY_SAMEORIGIN}`;
-    // Absolute zuerst (CloudFront-Route fehlt noch), Same-Origin als Fallback.
-    return [TEMPUS_PROXY_ABSOLUTE, sameOrigin];
-  }
-  // Dev/unbekannter Host: nur absolute URL.
+  // Immer die absolute URL zuerst, da sie CORS-Header hat.
   return [TEMPUS_PROXY_ABSOLUTE];
 }
 
@@ -791,6 +791,8 @@ export async function callTempus({ apiKey, method = 'GET', path, query, body }) 
   const init = {
     method,
     headers: {
+      // REST API V1 mapped X-Tempus-Auth → Authorization für das Backend.
+      // Dieser Header ist auch in der CORS-Config als erlaubt konfiguriert.
       'X-Tempus-Auth': `Bearer ${apiKey}`,
       Accept: 'application/json',
     },
@@ -819,7 +821,7 @@ export async function callTempus({ apiKey, method = 'GET', path, query, body }) 
     const isAbsolute = /^https?:\/\//i.test(base);
     const url = new URL(
       `${base}/${cleanPath}`,
-      isAbsolute ? undefined : (window?.location?.origin || 'http://localhost')
+      isAbsolute ? undefined : (window?.location?.origin || 'https://manuel-weiss.ch')
     );
     if (query && typeof query === 'object') {
       for (const [k, v] of Object.entries(query)) {
@@ -960,7 +962,17 @@ export async function tempusResourceNameExists(apiKey, name) {
     path: 'api/sg/v1/Resources/CheckNameExist',
     query: { name },
   });
-  return data === true || data === 'true';
+  console.log('[Tempus] CheckNameExist Antwort:', data, typeof data);
+  // Flexibles Parsing: true, 'true', { result: true }, { exists: true }, etc.
+  if (data === true || data === 'true') return true;
+  if (typeof data === 'object' && data !== null) {
+    // API-Gateway könnte das Ergebnis in einem Objekt wrappen
+    if (data.result === true || data.result === 'true') return true;
+    if (data.exists === true || data.exists === 'true') return true;
+    // Falls die API direkt einen boolean im Body zurückgibt, könnte JSON.parse nötig sein
+    if (Object.keys(data).length === 0) return false; // leeres Objekt = nicht existent
+  }
+  return false;
 }
 
 /**
@@ -969,25 +981,33 @@ export async function tempusResourceNameExists(apiKey, name) {
  */
 export async function tempusCreateResource(apiKey, resource) {
   if (!resource || !resource.name) throw new Error('Resource-Name fehlt.');
-  const body = [{
+  const entry = {
     name: resource.name,
     globalRoleId: resource.globalRoleId ?? 1,
     updateGlobalRole: true,
-    securityGroupId: resource.securityGroupId ?? 1,
-    updateSecurityGroup: true,
     isEnabled: resource.isEnabled !== false,
     isTimesheetUser: !!resource.isTimesheetUser,
     isTeamResource: false,
     updateDefaultRate: false,
     updateAdvancedRate: false,
     updateAutoCalculateRate: false,
-  }];
+  };
+  // SecurityGroup nur setzen wenn explizit angegeben
+  if (resource.securityGroupId != null) {
+    entry.securityGroupId = resource.securityGroupId;
+    entry.updateSecurityGroup = true;
+  } else {
+    entry.updateSecurityGroup = false;
+  }
+  const body = [entry];
+  console.log('[Tempus] Creating resource:', JSON.stringify(entry));
   const data = await callTempus({
     apiKey,
     method: 'POST',
     path: 'api/sg/v1/Resources',
     body,
   });
+  console.log('[Tempus] Create response:', data);
   const id = Array.isArray(data) ? data[0] : null;
   if (typeof id !== 'number') {
     throw new Error('Tempus antwortete ohne Resource-Id.');

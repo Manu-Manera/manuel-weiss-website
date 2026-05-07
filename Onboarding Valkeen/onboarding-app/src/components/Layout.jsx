@@ -16,11 +16,19 @@ import {
   Layers,
   Menu,
   X,
-  Monitor
+  Monitor,
+  GitBranch,
+  ExternalLink
 } from 'lucide-react';
 import { useProgress } from '../hooks/useLocalStorage';
 import { weeks } from '../data/onboardingData';
 import { useMemo } from 'react';
+
+/** Absolute URL zum Workshop (Volldisplay), für target="_blank" mit korrektem Vite-BASE_URL */
+function workshopWindowHref() {
+  const base = import.meta.env.BASE_URL || '/';
+  return new URL('change-workflow', window.location.origin + base).href;
+}
 
 const navItems = [
   { path: '/', icon: LayoutDashboard, label: 'Dashboard', description: 'Übersicht' },
@@ -36,6 +44,12 @@ const navItems = [
   { path: '/training-admin', icon: Settings, label: 'Training Admin', description: 'Inhalte bearbeiten' },
   { path: '/tempus-demo', icon: Monitor, label: 'Tempus Demo', description: 'Live Demo-Umgebung' },
   { path: '/login-mailer', icon: MailPlus, label: 'Login Mailer', description: 'Entwürfe aus Excel' },
+  {
+    workshopNewWindow: true,
+    icon: GitBranch,
+    label: 'Change Workflow',
+    description: 'Workshop (neues Fenster)',
+  },
 ];
 
 export default function Layout() {
@@ -120,21 +134,43 @@ export default function Layout() {
 
         {/* Navigation - mehr Abstand zwischen Items */}
         <nav className="flex-1 space-y-2 overflow-y-auto pr-1">
-          {navItems.map(({ path, icon: Icon, label }) => (
-            <NavLink
-              key={path}
-              to={path}
-              onClick={closeSidebar}
-              className={({ isActive }) =>
-                `nav-item flex items-center gap-4 ${
-                  isActive ? 'active text-white' : 'text-white/50 hover:text-white'
-                }`
-              }
-            >
-              <Icon className="w-5 h-5 flex-shrink-0" />
-              <span className="font-medium">{label}</span>
-            </NavLink>
-          ))}
+          {navItems.map((item) => {
+            const { path, icon: Icon, label, workshopNewWindow } = item;
+
+            if (workshopNewWindow) {
+              return (
+                <a
+                  key="change-workflow-workshop"
+                  href={workshopWindowHref()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={closeSidebar}
+                  className="nav-item flex items-center gap-4 text-white/50 hover:text-white"
+                  title="Öffnet den Change-Workshop in einem neuen Fenster – ideal für Kundentermine"
+                >
+                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  <span className="font-medium flex-1 min-w-0">{label}</span>
+                  <ExternalLink className="w-4 h-4 shrink-0 opacity-45" aria-hidden />
+                </a>
+              );
+            }
+
+            return (
+              <NavLink
+                key={path}
+                to={path}
+                onClick={closeSidebar}
+                className={({ isActive }) =>
+                  `nav-item flex items-center gap-4 ${
+                    isActive ? 'active text-white' : 'text-white/50 hover:text-white'
+                  }`
+                }
+              >
+                <Icon className="w-5 h-5 flex-shrink-0" />
+                <span className="font-medium">{label}</span>
+              </NavLink>
+            );
+          })}
         </nav>
 
         {/* User Info - mehr Padding */}

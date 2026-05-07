@@ -104,8 +104,8 @@ export default function TrainingAdmin() {
     { id: 'screenshots', label: 'Screenshots', icon: Image }
   ];
 
-  const selectedTabForPage = selectedPageTab || config.tabs[0]?.id;
-  const pageBlocks = (config.pages?.[selectedTabForPage]?.blocks || []);
+  const selectedTabForPage = selectedPageTab || config?.tabs?.[0]?.id;
+  const pageBlocks = config?.pages?.[selectedTabForPage]?.blocks || [];
 
   if (loading || !config) {
     return (

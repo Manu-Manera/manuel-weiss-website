@@ -14,6 +14,8 @@ import Flashcards from './pages/Flashcards';
 import SSOSetup from './pages/SSOSetup';
 import TempusDemo from './pages/TempusDemo';
 import LoginMailer from './pages/LoginMailer';
+import ChangeWorkflow from './pages/ChangeWorkflow';
+import LegacyChangeWorkflowRedirect from './pages/LegacyChangeWorkflowRedirect';
 
 function checkAdminSession() {
   try {
@@ -63,6 +65,8 @@ function App() {
   return (
     <BrowserRouter basename="/onboarding">
       <Routes>
+        <Route path="change-workflow" element={<ChangeWorkflow />} />
+        <Route path="login-mailer/change-workflow" element={<LegacyChangeWorkflowRedirect />} />
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path="tracker" element={<Tracker />} />
