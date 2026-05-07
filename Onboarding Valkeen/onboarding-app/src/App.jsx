@@ -65,6 +65,7 @@ function App() {
   return (
     <BrowserRouter basename="/onboarding">
       <Routes>
+        <Route path="change-workflow/teilnehmer" element={<ChangeWorkflow />} />
         <Route path="change-workflow" element={<ChangeWorkflow />} />
         <Route path="login-mailer/change-workflow" element={<LegacyChangeWorkflowRedirect />} />
         <Route path="/" element={<Layout />}>

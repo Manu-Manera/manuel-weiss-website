@@ -28,11 +28,12 @@ function resolvePhases(phaseIds) {
  *   notes: Record<string, string>,
  *   checks: Record<string, boolean>,
  *   sessionTitle?: string,
- *   phaseIds?: string[]
+ *   phaseIds?: string[],
+ *   followUpNotes?: string
  * }} data — optional phaseIds: nur diese Phasen (Reihenfolge wie in CHANGE_PHASES)
  */
 export function buildChangeWorkshopPdf(data) {
-  const { notes, checks, sessionTitle, phaseIds } = data;
+  const { notes, checks, sessionTitle, phaseIds, followUpNotes } = data;
   const phases = resolvePhases(phaseIds);
   const isPartial = phaseIds?.length > 0 && phaseIds.length < CHANGE_PHASES.length;
 
@@ -124,6 +125,24 @@ export function buildChangeWorkshopPdf(data) {
     doc.line(margin, y, pageW - margin, y);
     y += 6;
   });
+
+  const follow = (followUpNotes || '').trim();
+  if (follow) {
+    if (y > 230) {
+      doc.addPage();
+      y = 18;
+    }
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(88, 28, 135);
+    doc.text('Follow-up & Entscheide', margin, y);
+    y += 8;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(60, 60, 65);
+    y = addWrappedText(doc, follow, margin, y, maxW, 4.5);
+    y += 6;
+  }
 
   doc.setFontSize(8);
   doc.setTextColor(120, 120, 125);

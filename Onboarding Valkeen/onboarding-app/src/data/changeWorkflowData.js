@@ -6,6 +6,16 @@ export const CHANGE_WORKFLOW_META = {
     'Geführter Ablauf für eine kompakte Change-Session: von gemeinsamen Grundlagen über Ausgangslage und Stakeholder bis zu Kommunikation und Planung.',
 };
 
+/** Remote-Moderation: Checklisten & Kurzcodes unabhängig vom Meeting-Tool. */
+export const CHANGE_WORKFLOW_REMOTE_META = {
+  screenShareChecklist: [
+    'Eigenes Moderationsfenster: nur diese Oberfläche oder die geplanten Folien zeigen — private Tabs und Benachrichtigungen schließen.',
+    'Vor Slot: Teilnehmenden-Link, Aufzeichnung (falls genutzt) und Chat-/Q&A-Moderation geklärt.',
+    'Breakouts: Zuweisung kurz demonstrieren oder Alternativformat (Geschlossene Gruppen / async) vereinbart.',
+    'Audio: Kopfhörer nutzen, Mikrofon stumm wenn nicht gesprochen wird; klare Signal-Regel (Hand heben, Reaktionen).',
+  ],
+};
+
 export const CHANGE_PHASES = [
   {
     id: 'orient',
@@ -37,6 +47,19 @@ export const CHANGE_PHASES = [
       'Moderationsmaterial (Zeitnehmer, Dokumentationsfläche) bereit',
       'Digitale Vorlage oder Protokoll für Gruppenergebnisse',
     ],
+    remotePlaybook: {
+      facilitatorSetup: [
+        'Gemeinsame Dokumentationsfläche oder Board öffnen; Chat- oder Kurz-Reaktions-Regel («Hand heben») in 30 Sekunden erklären.',
+        'Optional: Teilnehmenden bitten, die Kamera im Check-in kurz einzuschalten — wer nicht kann, erhält Platz im Chat.',
+      ],
+      workFormat:
+        'Plenum für Check-in und Ziele (~5–7 Min.), danach synchrone Arbeit in Kleingruppen oder still einzeln mit Ergebnis auf der gemeinsamen Fläche (~10 Min.).',
+      breakoutInvite:
+        'Ihr habt jetzt 10 Minuten. Sammelt 3–5 Stichworte: Was hat in früheren Veränderungsprojekten gut funktioniert? Wo ist es gehakt?\n\nEine Person trägt in der geteilten Fläche zusammen — die anderen bereichern mit. Bei Rückfragen nutzt ihr den Chat; wir sammeln offene Punkte am Schluss dieser Phase («Parkplatz»).',
+      parkPlatePrompt:
+        'Parkplatz: Alles, was wir vertiefen aber jetzt nicht blockieren soll, gleich hier im Protokoll oder auf dem Board unter «Parkplatz» festhalten.',
+      timerSuggestionMinutes: 15,
+    },
     exercisePrompt:
       'Sammelt in 10 Minuten 3–5 Stichworte zu euren bisherigen Erfahrungen mit Veränderungsprojekten: Was hat gut funktioniert? Wo ist es gehakt?',
   },
@@ -95,8 +118,15 @@ export const CHANGE_PHASES = [
       'Diskutiert kurz anhand eurer eigene Situation: In welcher Phase stehen verschiedene Gruppen vermutlich — und warum?',
     facilitatorChecklist: [
       'Eskalationspfade klar haben, falls Diskussion sehr emotional wird',
-      'Beispiele aus eurer Organisation anonymisiert einplanen',
+      'Beispiele aus euer Organisation anonymisiert einplanen',
     ],
+    remotePlaybook: {
+      workFormat:
+        'Kurzvortrag oder Dialog im Plenum, danach kleine Reflexionsrunde (Partner:innen oder Breakouts, je nach Grösse).',
+      breakoutInvite:
+        'Jetzt habt ihr 15 Minuten — in Zweiergruppen, Kleingruppen oder still für euch allein mit anschliessender Kurzvorstellung im Plenum:\n\nIn welcher der besprochenen Phasen stehen typische Nutzer-, Fach- oder Führungsgruppen bei euch aktuell — und was deutet darauf hin? Notiert zwei Teams oder Rollen und eine Vermutung pro Eintrag.',
+      timerSuggestionMinutes: 45,
+    },
   },
 
   {
@@ -125,6 +155,40 @@ export const CHANGE_PHASES = [
     exercisePrompt:
       'Ordnet bei eurem aktuellen Thema zu: Wo stehen wir bei Kopf / Herz / Hand — und was ist der nächste sinnvolle Schritt?',
     facilitatorChecklist: ['Zeichnung oder Matrix auf gemeinsamer Fläche bereithalten'],
+    neutralDualTrackExamples: {
+      heading: 'Neutraler Abgleich: «Steuerung» und «Mitgehen» ergänzen sich',
+      intro:
+        'Viele Organisationen nutzen strukturierte Pläne, Portfolios und Terminlogiken parallel zu Change-Themen. Gemeint sind typische Kombinationen — nicht ein bestimmtes Produkt.',
+      rows: [
+        {
+          pillar: 'Planung / Ressourcen / Termine',
+          examples:
+            'Umfang strukturieren, Abhängigkeiten sichtbar machen, Status und Reporting zusammenhalten.',
+        },
+        {
+          pillar: 'Nutzung, Beteiligung, Verfügbarkeit',
+          examples:
+            'Reale Teilnahme, Rollen beim Mitgestalten, klares «Warum» und Übungen statt nur Ankündigungen.',
+        },
+        {
+          pillar: 'PMO / Projekt-Core',
+          examples:
+            'Scope, Risiko, Releases, operative Steuerungsrunden — dort Change-Slots oder Adoption-Tasks verankern.',
+        },
+        {
+          pillar: 'Fachbereich, IT, Schlüsselanwender:innen',
+          examples:
+            'Botschaften verdichten, Widerstände zeitnah klären, Feedback in den Plan zurückspielen.',
+        },
+      ],
+    },
+    remotePlaybook: {
+      workFormat:
+        'Kurzes Plenum zu den beiden Strängen, dann Partner- oder Kleingruppenarbeit für Zuordnung «Kopf / Herz / Hand».',
+      breakoutInvite:
+        'Ihr habt 18 Minuten. Ordnet gemeinsam euer konkretes Vorhaben zu:\n• Wo ist «Kopf» schon klar?\n• Wo hapert «Herz» (Motivation)?\n• Was braucht es bei «Hand» als nächstes konkretes Tun?\n\nEine Person präsentiert in 90 Sekunden pro Gruppe einen Satz zum grössten nächsten Hebel.',
+      timerSuggestionMinutes: 25,
+    },
   },
 
   {
@@ -155,6 +219,13 @@ export const CHANGE_PHASES = [
       'Vorab Fakten und Rahmen (Scope, Zeit, Budget) kurz teilen',
       'Diskussion auf eine dokumentierbare Fläche lenken',
     ],
+    remotePlaybook: {
+      workFormat:
+        'Input im Plenum, gefolgt von 20 Minuten Gruppenarbeit (Breakouts oder ein gemeinsamer Abschnitt im Dokument mit stiller Arbeit).',
+      breakoutInvite:
+        '20 Minuten Arbeitszeit: Beantwortet gemeinsam — Welche Ausgangslage haben wir heute?\nWelches Problem lösen wir mit dem Vorhaben?\nWas passiert ohne Veränderung («weiter wie bisher»)?\nWelches beste erreichbare Bild stellen wir uns in etwa 12 Monaten vor?\n\nTragt vier knappe Stichwort-Antworten auf dem Board zusammen.',
+      timerSuggestionMinutes: 40,
+    },
   },
 
   {
@@ -185,6 +256,13 @@ export const CHANGE_PHASES = [
     exercisePrompt:
       '1) Liste in 5 Min. primäre Stakeholder. 2) Tragt sie in die Matrix ein. 3) Pro «kritischem» oder «hoch Einfluss / wenig Support»-Feld: eine konkrete Massnahme notieren.',
     facilitatorChecklist: ['Matrix-Vorlage (digital oder Flipchart) vorbereiten'],
+    remotePlaybook: {
+      workFormat:
+        'Kurzdurchgang Matrix-Logik, dann Arbeit in Kleingruppen mit anschliessendem Peer-Feedback (optional 2×2 Minute).',
+      breakoutInvite:
+        '15 Minuten: Listet erst gemeinschaftlich eure primären Stakeholder auf. Vergesst keine «stillen», aber mächtigen Gruppen (z. B. Support).\nDanach tragt ihr sie in Matrix & Felder ein. Pro «kritischem» Quadranten: eine Massnahme in einem Satz.\nNach der Zeit kurz austauschen, wer was präsentiert.',
+      timerSuggestionMinutes: 50,
+    },
   },
 
   {
@@ -238,6 +316,15 @@ export const CHANGE_PHASES = [
       'Beispiel-Good-Story (anonymisiert) als Orientierung optional',
       'Zeitbox für Präsentation der Gruppenergebnisse einplanen',
     ],
+    remotePlaybook: {
+      workFormat:
+        'Plenum zur Story-Line, dann geschlossene 30 Minuten Arbeit (Breakouts ~4–6 Personen, je nach Kultur gleiche oder gemischte Rollen).',
+      breakoutInvite:
+        'Ab jetzt 30 Minuten: Erarbeitet als Team «Unsere Story» nach der Struktur — Ausgangssituation • Projektbegründung • Kernbotschaft • drei Schlüsselargumente • Call-to-Action.\nNutzt gemeinsamen Texteditor oder Kartensystem. Wir hören später vier Kurz pitches à 120 Sekunden (ohne Zwischenfragen — Feedback folgt strukturiert).',
+      recapPrompt:
+        'Nach den Pitches zwei Runden Feedback: erst «Was wirkt bereits glaubhaft», dann höchstens zwei Verbesserungsimpulse.',
+      timerSuggestionMinutes: 55,
+    },
   },
 
   {
@@ -267,6 +354,13 @@ export const CHANGE_PHASES = [
     exercisePrompt:
       '15 Min.: Pro Team ein 90-Sekunden-Pitch testen. Danach: erste Zeilen des Kommunikationsplans (3 Meilensteine × Zielgruppe × Kanal).',
     facilitatorChecklist: ['Timer 90 s', 'Feedback-Regeln: zuerst Was wirkte, dann Verbesserung'],
+    remotePlaybook: {
+      workFormat:
+        'Straffe Pitches mit sichtbarem Countdown und anschliessendem Schnell-Schreib-Moment für Kommunikationsplan.',
+      breakoutInvite:
+        'Zwei Runden á 90 Sekunden Pitches aus den Kleingruppen — ich gebe Zwischenstände durch den Timer bekannt. Danach noch 15 Minuten, um drei Meilensteine × Zielgruppe × Kanal grob auszuarbeiten (Stichwortformat).',
+      timerSuggestionMinutes: 35,
+    },
   },
 
   {
@@ -299,6 +393,15 @@ export const CHANGE_PHASES = [
     exercisePrompt:
       'Jede Person: eine konkrete nächste Aktion mit Datum. Moderation: auf Protokoll schreiben und Versand klären.',
     facilitatorChecklist: ['Protokollverteiler und Archiv-Ort festlegen'],
+    remotePlaybook: {
+      workFormat:
+        'Runde im Plenum: jeweils eine nächste Aktion mit Datum verbal abgeben — Moderationsduo dokumentiert simultan auf der gemeinsamen Fläche.',
+      breakoutInvite:
+        'Letzte Übung zusammen ohne Breakouts:\n• Jede Person nennt der Reihe nach eine konkrete nächste Aktion bis zu einem konkreten Termin oder Review.\n• Pro Person maximal 45 Sekunden — Details gehen später in Tasks.\nModeration dokumentiert direkt hier im Protokoll.',
+      recapPrompt:
+        'Klärt Ende offen: Protokollversand bis wann — wer folgt verschobenen Parkplatz-Themen?',
+      timerSuggestionMinutes: 20,
+    },
   },
 ];
 

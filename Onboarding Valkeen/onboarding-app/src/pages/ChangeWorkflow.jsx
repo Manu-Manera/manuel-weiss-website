@@ -1,5 +1,5 @@
-import { useMemo, useState, useCallback, useId } from 'react';
-import { Link } from 'react-router-dom';
+import { useMemo, useState, useCallback, useId, useEffect } from 'react';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import {
   Check,
   ClipboardList,
@@ -13,18 +13,28 @@ import {
   ExternalLink,
   ListChecks,
   Eye,
+  Clock,
+  Copy,
+  Monitor,
 } from 'lucide-react';
 
 import '../styles/change-workshop.css';
 
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import { CHANGE_WORKFLOW_META, CHANGE_PHASES, CHANGE_PHASE_DIAGRAMS } from '../data/changeWorkflowData';
+import {
+  CHANGE_WORKFLOW_META,
+  CHANGE_PHASES,
+  CHANGE_PHASE_DIAGRAMS,
+  CHANGE_WORKFLOW_REMOTE_META,
+} from '../data/changeWorkflowData';
 import { downloadChangeWorkshopPdf, previewChangeWorkshopPdf } from '../utils/changeWorkflowPdf';
 import { ChangeWorkflowDiagrams } from '../components/change-workflow/ChangeWorkflowDiagrams';
 
 const CHECKLIST_KEY = 'change_workflow_facilitator_checks_v1';
 const NOTES_KEY = 'change_workflow_phase_notes_v1';
 const SESSION_TITLE_KEY = 'change_workflow_session_title_v1';
+const FACILITATOR_MODE_KEY = 'change_workflow_facilitator_mode_v1';
+const FOLLOW_UP_KEY = 'change_workflow_follow_up_v1';
 
 function GuidelineAccordion({ step, defaultOpen }) {
   const [open, setOpen] = useState(!!defaultOpen);
@@ -143,11 +153,237 @@ function SegmentSwitch({ tab, setTab }) {
   );
 }
 
+function formatTimer(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+function guessTimerPresetMinutes(phase) {
+  const n = phase?.remotePlaybook?.timerSuggestionMinutes;
+  if (typeof n === 'number' && n > 0) return Math.min(Math.round(n), 240);
+  const hit = String(phase?.durationHint || '').match(/(\d+)\s*Min/i);
+  if (hit) return Math.min(Number(hit[1]), 240);
+  return 15;
+}
+
+function PhaseTimer({ presetMinutes }) {
+  const [remaining, setRemaining] = useState(presetMinutes * 60);
+  const [running, setRunning] = useState(false);
+
+  useEffect(() => {
+    setRemaining(presetMinutes * 60);
+    setRunning(false);
+  }, [presetMinutes]);
+
+  useEffect(() => {
+    if (!running) return undefined;
+    const id = window.setInterval(() => {
+      setRemaining((prev) => {
+        if (prev <= 1) {
+          queueMicrotask(() => setRunning(false));
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [running]);
+
+  const onReset = () => {
+    setRunning(false);
+    setRemaining(presetMinutes * 60);
+  };
+
+  return (
+    <div className="cw-timer-strip" role="group" aria-label="Zeitnehmer für diese Phase">
+      <div className="cw-timer-left">
+        <Clock className="cw-timer-icon" aria-hidden />
+        <span className="cw-timer-label">Phasentimer · Vorschlag {presetMinutes} Min.</span>
+        <span className="cw-timer-display" aria-live="polite">
+          {formatTimer(remaining)}
+        </span>
+      </div>
+      <div className="cw-timer-actions">
+        <button type="button" className="cw-btn cw-btn-ghost cw-btn-compact" onClick={() => setRunning((x) => !x)}>
+          {running ? 'Pause' : 'Start'}
+        </button>
+        <button type="button" className="cw-btn cw-btn-outline-muted cw-btn-compact" onClick={onReset}>
+          Zurücksetzen
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function CopySnippetButton({ text, label }) {
+  const [ok, setOk] = useState(false);
+
+  const onCopy = useCallback(async () => {
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setOk(true);
+      window.setTimeout(() => setOk(false), 2000);
+    } catch {
+      window.alert('Zwischenablage nicht verfügbar — Text bitte manuell kopieren.');
+    }
+  }, [text]);
+
+  return (
+    <div className="cw-copy-block">
+      <pre className="cw-copy-pre" tabIndex={0}>
+        {text}
+      </pre>
+      <button type="button" className="cw-btn cw-btn-accent-outline cw-btn-compact cw-copy-btn" onClick={onCopy}>
+        <Copy className="w-4 h-4 shrink-0" aria-hidden />
+        {ok ? 'Kopiert' : label}
+      </button>
+    </div>
+  );
+}
+
+function RemotePlaybookPanel({ playbook }) {
+  if (!playbook || typeof playbook !== 'object') return null;
+
+  const hasInvite = !!playbook.breakoutInvite?.trim();
+  const hasSetup = playbook.facilitatorSetup?.length > 0;
+  const showFormat = !!playbook.workFormat?.trim();
+  const hasRecap = !!playbook.recapPrompt?.trim();
+  const hasPark = !!playbook.parkPlatePrompt?.trim();
+
+  if (!hasInvite && !hasSetup && !showFormat && !hasRecap && !hasPark) return null;
+
+  return (
+    <section className="cw-remote-panel" aria-label="Moderation: Remote-Ablauf dieser Phase">
+      <div className="cw-remote-panel-head">
+        <Monitor className="cw-remote-panel-icon" aria-hidden />
+        <div>
+          <p className="cw-remote-panel-title">Remote-Ablauf (Moderator:innen)</p>
+          <p className="cw-remote-panel-sub">
+            Hinweise für Videokonferenzen — formulierungsneutral, ohne Tool-Zwang.
+          </p>
+        </div>
+      </div>
+
+      {hasSetup && (
+        <div className="cw-remote-section">
+          <p className="cw-remote-label">Setup vor dem Slot</p>
+          <ul className="cw-remote-list">
+            {playbook.facilitatorSetup.map((line, i) => (
+              <li key={i}>{line}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {showFormat && (
+        <div className="cw-remote-section">
+          <p className="cw-remote-label">Empfohlene Arbeitsform</p>
+          <p className="cw-remote-body">{playbook.workFormat}</p>
+        </div>
+      )}
+
+      {hasInvite && (
+        <div className="cw-remote-section">
+          <p className="cw-remote-label">Breakout-/Arbeits‑Skript (copy & paste)</p>
+          <CopySnippetButton text={playbook.breakoutInvite} label="Einladung kopieren" />
+        </div>
+      )}
+
+      {hasRecap && (
+        <div className="cw-remote-section">
+          <p className="cw-remote-label">Nach der Arbeit</p>
+          <p className="cw-remote-body">{playbook.recapPrompt}</p>
+        </div>
+      )}
+
+      {hasPark && (
+        <div className="cw-remote-section">
+          <p className="cw-remote-label">Parkplatz</p>
+          <p className="cw-remote-body">{playbook.parkPlatePrompt}</p>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function NeutralDualTrackCallout({ payload }) {
+  if (!payload?.rows?.length) return null;
+
+  return (
+    <section className="cw-dual-callout" aria-label={payload.heading}>
+      <p className="cw-callout-heading">{payload.heading}</p>
+      {payload.intro && <p className="cw-callout-body cw-dual-intro">{payload.intro}</p>}
+      <dl className="cw-dual-grid">
+        {payload.rows.map((row, idx) => (
+          <div className="cw-dual-cell" key={idx}>
+            <dt>{row.pillar}</dt>
+            <dd>{row.examples}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
+}
+
+function ScreenShareChecklistCollapse() {
+  const [open, setOpen] = useState(false);
+  const panelId = useId();
+  const headerId = useId();
+
+  return (
+    <div className="cw-screen-coll">
+      <button
+        type="button"
+        id={headerId}
+        className="cw-screen-coll-trigger"
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <Monitor className="w-4 h-4 shrink-0 opacity-85" aria-hidden />
+        <span>Screen‑Sharing‑Checkliste</span>
+        <ChevronDown className={`cw-acc-chevron ${open ? 'is-open' : ''}`} aria-hidden />
+      </button>
+      <div id={panelId} role="region" aria-labelledby={headerId} hidden={!open}>
+        {open && (
+          <ul className="cw-screen-coll-list">
+            {CHANGE_WORKFLOW_REMOTE_META.screenShareChecklist.map((item, i) => (
+              <li key={i}>{item}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function ChangeWorkflow() {
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const participantOnly = useMemo(() => {
+    const path = `${location.pathname}`.replace(/\/+$/, '');
+    const endsTeilnehmer = path.endsWith('change-workflow/teilnehmer');
+    const q =
+      searchParams.get('teilnehmer') === '1' ||
+      searchParams.get('teilnehmer') === 'true' ||
+      searchParams.get('modus') === 'teilnehmer';
+    return endsTeilnehmer || q;
+  }, [location.pathname, searchParams]);
+
+  const teilnehmerShareUrl = useMemo(() => {
+    const base = import.meta.env.BASE_URL || '/onboarding/';
+    return new URL('change-workflow/teilnehmer', window.location.origin + base).href;
+  }, []);
+
   const [phaseId, setPhaseId] = useState(CHANGE_PHASES[0]?.id ?? 'orient');
   const [checks, setChecks] = useLocalStorage(CHECKLIST_KEY, {});
   const [notes, setNotes] = useLocalStorage(NOTES_KEY, {});
   const [sessionTitle, setSessionTitle] = useLocalStorage(SESSION_TITLE_KEY, '');
+  const [followUpNotes, setFollowUpNotes] = useLocalStorage(FOLLOW_UP_KEY, '');
+  const [facilitatorModeStored, setFacilitatorMode] = useLocalStorage(FACILITATOR_MODE_KEY, true);
+  const facilitatorMode = participantOnly ? false : facilitatorModeStored !== false;
   const [mobileTab, setMobileTab] = useState('guide');
   const [pdfBusy, setPdfBusy] = useState(false);
 
@@ -156,6 +392,7 @@ export default function ChangeWorkflow() {
     [phaseId]
   );
   const phaseIdx = CHANGE_PHASES.findIndex((p) => p.id === phaseId);
+  const timerPresetMinutes = useMemo(() => guessTimerPresetMinutes(phase), [phase]);
 
   const toggleCheck = useCallback((pid, idx) => {
     const ck = `${pid}::${idx}`;
@@ -174,8 +411,9 @@ export default function ChangeWorkflow() {
       notes,
       checks,
       sessionTitle: sessionTitle.trim() || undefined,
+      followUpNotes: followUpNotes.trim() || undefined,
     }),
-    [notes, checks, sessionTitle]
+    [notes, checks, sessionTitle, followUpNotes]
   );
 
   const withPdfBusy = useCallback(async (fn) => {
@@ -237,6 +475,24 @@ export default function ChangeWorkflow() {
       <div className="cw-workshop-page-overlay" aria-hidden />
 
       <header className="cw-wh-header">
+        {participantOnly && (
+          <div className="cw-container pt-6 sm:pt-7 pb-0">
+            <div className="cw-participant-banner" role="status">
+              <p className="cw-participant-banner-text">
+                Teilnehmer:innen‑Ansicht: Moderationshinweise, Timer und Breakout‑Skripte sind ausgeblendet.
+                Zum Moderieren diese Seite offenhalten:{' '}
+                <Link className="cw-participant-banner-link" to="/change-workflow">
+                  Moderator:innen‑Ansicht
+                </Link>
+              </p>
+              <p className="cw-participant-banner-muted">
+                Direktlink zum Teilen: <code className="cw-participant-banner-code">{teilnehmerShareUrl}</code>{' '}
+                · alternativ gleiche Seite unter{' '}
+                <code className="cw-participant-banner-code">…/change-workflow?teilnehmer=1</code>
+              </p>
+            </div>
+          </div>
+        )}
         <div className="cw-container py-6 sm:py-7 flex flex-col gap-7 xl:flex-row xl:items-start xl:justify-between">
           <div className="flex items-start gap-4 min-w-0">
             <div className="cw-icon-badge shrink-0" aria-hidden>
@@ -288,6 +544,22 @@ export default function ChangeWorkflow() {
                 PDF exportieren
               </button>
             </div>
+            {!participantOnly && (
+              <button
+                type="button"
+                className={`cw-fac-toggle ${facilitatorMode ? 'is-on' : ''}`}
+                aria-pressed={facilitatorMode}
+                onClick={() => setFacilitatorMode((v) => !v)}
+                title={
+                  facilitatorMode
+                    ? 'Moderationshinweise ausblenden (z. B. wenn nur die Kerninhalte geteilt werden sollen)'
+                    : 'Moderations-, Timer und Breakout‑Skripte einblenden'
+                }
+              >
+                <span className="cw-fac-dot" aria-hidden />
+                Moderator:innen‑Ansicht {facilitatorMode ? 'an' : 'aus'}
+              </button>
+            )}
           </div>
         </div>
 
@@ -299,6 +571,7 @@ export default function ChangeWorkflow() {
             </span>
           </div>
           <PhaseStepper phaseId={phaseId} onSelect={setPhaseId} />
+          {facilitatorMode && <ScreenShareChecklistCollapse />}
         </div>
       </header>
 
@@ -363,6 +636,12 @@ export default function ChangeWorkflow() {
                 </div>
               </div>
 
+              <NeutralDualTrackCallout payload={phase.neutralDualTrackExamples} />
+
+              {facilitatorMode && (
+                <PhaseTimer key={phase.id} presetMinutes={timerPresetMinutes} />
+              )}
+
               <ChangeWorkflowDiagrams entries={CHANGE_PHASE_DIAGRAMS[phase.id]} />
 
               <p className="cw-kicker mb-5 flex items-center gap-2.5">
@@ -374,6 +653,8 @@ export default function ChangeWorkflow() {
                   <GuidelineAccordion key={i} step={s} defaultOpen={i === 0} />
                 ))}
               </div>
+
+              {facilitatorMode && <RemotePlaybookPanel playbook={phase.remotePlaybook} />}
 
               <div className="cw-callout-accent mt-10">
                 <div className="flex gap-5">
@@ -391,6 +672,28 @@ export default function ChangeWorkflow() {
             className={`xl:col-span-5 space-y-7 ${mobileTab === 'guide' ? 'hidden xl:block' : ''}`}
           >
             <div className="xl:sticky xl:top-[9rem] space-y-7">
+              <div className="cw-card-aside space-y-0">
+                <div className="cw-protocol-head">
+                  <PenLine className="cw-callout-icon" aria-hidden />
+                  <h3 className="cw-protocol-title">Follow-up & Entscheide</h3>
+                </div>
+                <p className="cw-protocol-lead">
+                  Übergreifende Punkte, die nach der Session nachverfolgt werden — erscheint im PDF nach allen
+                  Phasenprotokollen.
+                </p>
+                <label className="sr-only" htmlFor="cw-follow-up-notes">
+                  Follow-up und Entscheide
+                </label>
+                <textarea
+                  id="cw-follow-up-notes"
+                  value={followUpNotes}
+                  onChange={(e) => setFollowUpNotes(e.target.value)}
+                  rows={5}
+                  placeholder="Owner, Fälligkeiten, Eskalationen, Parkplatz-Themen…"
+                  className="cw-textarea mb-6"
+                />
+              </div>
+
               <div className="cw-card-aside space-y-0">
                 <div className="cw-protocol-head">
                   <PenLine className="cw-callout-icon" aria-hidden />
@@ -417,7 +720,7 @@ export default function ChangeWorkflow() {
                 />
               </div>
 
-              {phase.facilitatorChecklist?.length > 0 && (
+              {facilitatorMode && phase.facilitatorChecklist?.length > 0 && (
                 <div className="cw-card-subtle">
                   <p className="cw-callout-heading mb-5">Moderation</p>
                   <ul className="space-y-1 list-none m-0 p-0">
@@ -486,9 +789,14 @@ export default function ChangeWorkflow() {
           <button
             type="button"
             onClick={() => {
-              if (confirm('Moderations-Häkchen und alle Protokoll-Notizen löschen?')) {
+              if (
+                confirm(
+                  'Moderations-Häkchen, alle Phasen‑Notizen, Follow-up‑Feld und Sitzungs-Titel löschen?'
+                )
+              ) {
                 setChecks({});
                 setNotes({});
+                setFollowUpNotes('');
                 setSessionTitle('');
               }
             }}
