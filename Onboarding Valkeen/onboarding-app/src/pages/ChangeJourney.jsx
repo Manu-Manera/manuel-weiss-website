@@ -507,7 +507,7 @@ Beantworte Fragen zum Change-Prozess, gib praktische Tipps und ermutige. Antwort
                 </p>
               )}
 
-              <div className="flex items-center gap-2 overflow-x-auto pb-2">
+              <div className="flex items-stretch gap-3 overflow-x-auto pb-3">
                 {JOURNEY_PHASES.map((phase, idx) => {
                   const isCurrent = journey.currentPhase === phase.id;
                   const isPast = JOURNEY_PHASES.findIndex((p) => p.id === journey.currentPhase) > idx;
@@ -517,7 +517,7 @@ Beantworte Fragen zum Change-Prozess, gib praktische Tipps und ermutige. Antwort
                       key={phase.id}
                       type="button"
                       onClick={() => setCurrentPhase(phase.id)}
-                      className={`flex-1 min-w-[140px] p-3 rounded-xl text-left transition-all ${
+                      className={`flex-1 min-w-[160px] px-4 py-4 rounded-xl text-left transition-all ${
                         isCurrent
                           ? 'bg-violet-600 text-white shadow-lg'
                           : isPast
@@ -525,9 +525,9 @@ Beantworte Fragen zum Change-Prozess, gib praktische Tipps und ermutige. Antwort
                           : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                       }`}
                     >
-                      <PhaseIcon className={`w-5 h-5 mb-1 ${isCurrent ? 'text-white' : isPast ? 'text-emerald-600' : 'text-slate-400'}`} />
-                      <p className="text-sm font-semibold m-0">{phase.label}</p>
-                      <p className={`text-[10px] m-0 ${isCurrent ? 'text-violet-200' : 'text-slate-500'}`}>{phase.description}</p>
+                      <PhaseIcon className={`w-5 h-5 mb-2 ${isCurrent ? 'text-white' : isPast ? 'text-emerald-600' : 'text-slate-400'}`} />
+                      <p className="text-sm font-semibold m-0 mb-1">{phase.label}</p>
+                      <p className={`text-[11px] leading-snug m-0 ${isCurrent ? 'text-violet-200' : 'text-slate-500'}`}>{phase.description}</p>
                     </button>
                   );
                 })}
@@ -535,24 +535,24 @@ Beantworte Fragen zum Change-Prozess, gib praktische Tipps und ermutige. Antwort
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              <div className="cw-card text-center">
-                <p className="text-3xl font-bold text-violet-600">{completedKotter}/8</p>
-                <p className="text-xs text-slate-500 m-0">Kotter-Bereiche abgeschlossen</p>
+              <div className="cw-card text-center py-5 px-4">
+                <p className="text-3xl font-bold text-violet-600 mb-2">{completedKotter}/8</p>
+                <p className="text-sm text-slate-500 m-0">Kotter-Bereiche abgeschlossen</p>
               </div>
-              <div className="cw-card text-center">
-                <p className="text-3xl font-bold text-amber-600">{inProgressKotter}</p>
-                <p className="text-xs text-slate-500 m-0">In Bearbeitung</p>
+              <div className="cw-card text-center py-5 px-4">
+                <p className="text-3xl font-bold text-amber-600 mb-2">{inProgressKotter}</p>
+                <p className="text-sm text-slate-500 m-0">In Bearbeitung</p>
               </div>
-              <div className="cw-card text-center">
-                <p className="text-3xl font-bold text-emerald-600">
+              <div className="cw-card text-center py-5 px-4">
+                <p className="text-3xl font-bold text-emerald-600 mb-2">
                   {allActions.filter((a) => a.done).length}/{allActions.length}
                 </p>
-                <p className="text-xs text-slate-500 m-0">Maßnahmen erledigt</p>
+                <p className="text-sm text-slate-500 m-0">Maßnahmen erledigt</p>
               </div>
             </div>
 
             <CollapsibleSection title="Workshop-Phasen" icon={ListChecks} badge={`${WORKSHOP_PHASE_CATALOG.filter((p) => activeProfile?.phaseAnswers?.[p.id]?._status === 'done').length}/8`} defaultOpen>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {WORKSHOP_PHASE_CATALOG.map((p) => {
                   const data = activeProfile?.phaseAnswers?.[p.id] || {};
                   const status = data._status || 'open';
@@ -566,13 +566,13 @@ Beantworte Fragen zum Change-Prozess, gib praktische Tipps und ermutige. Antwort
                     <Link
                       key={p.id}
                       to={`/change-workflow/phase/${p.id}`}
-                      className={`p-3 rounded-xl border text-center no-underline transition-transform hover:scale-105 ${statusColors[status]}`}
+                      className={`px-4 py-4 rounded-xl border text-center no-underline transition-transform hover:scale-105 ${statusColors[status]}`}
                     >
-                      <p className="text-lg font-bold m-0">{p.order}</p>
-                      <p className="text-xs font-semibold m-0">{p.label}</p>
-                      <div className="flex items-center justify-center gap-1 mt-2">
+                      <p className="text-xl font-bold m-0 mb-1">{p.order}</p>
+                      <p className="text-xs font-semibold m-0 mb-2 leading-tight">{p.label}</p>
+                      <div className="flex items-center justify-center gap-1.5">
                         {status === 'done' ? <CheckCircle className="w-4 h-4" /> : <Circle className="w-4 h-4" />}
-                        <span className="text-[10px]">{answeredCount}/{p.prompts.length}</span>
+                        <span className="text-[11px]">{answeredCount}/{p.prompts.length}</span>
                       </div>
                     </Link>
                   );
@@ -581,7 +581,7 @@ Beantworte Fragen zum Change-Prozess, gib praktische Tipps und ermutige. Antwort
             </CollapsibleSection>
 
             <CollapsibleSection title="Kotter-Status-Übersicht" icon={Target} badge={`${completedKotter}/8`} defaultOpen>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {kotterSummary.map((k) => {
                   const statusColors = {
                     done: 'bg-emerald-50 border-emerald-200 text-emerald-700',
@@ -592,11 +592,11 @@ Beantworte Fragen zum Change-Prozess, gib praktische Tipps und ermutige. Antwort
                     <Link
                       key={k.slug}
                       to={`/change-workflow/kotter/${k.slug}`}
-                      className={`p-3 rounded-xl border text-center no-underline transition-transform hover:scale-105 ${statusColors[k.status]}`}
+                      className={`px-4 py-4 rounded-xl border text-center no-underline transition-transform hover:scale-105 ${statusColors[k.status]}`}
                     >
-                      <p className="text-lg font-bold m-0">{k.order}</p>
-                      <p className="text-xs font-semibold m-0">{k.label}</p>
-                      <div className="flex items-center justify-center gap-1 mt-2">
+                      <p className="text-xl font-bold m-0 mb-1">{k.order}</p>
+                      <p className="text-xs font-semibold m-0 mb-2 leading-tight">{k.label}</p>
+                      <div className="flex items-center justify-center gap-1.5">
                         {k.status === 'done' ? (
                           <CheckCircle className="w-4 h-4" />
                         ) : k.status === 'in_progress' ? (
@@ -604,10 +604,10 @@ Beantworte Fragen zum Change-Prozess, gib praktische Tipps und ermutige. Antwort
                         ) : (
                           <Circle className="w-4 h-4" />
                         )}
-                        <span className="text-[10px]">{k.answeredCount}/{k.totalPrompts}</span>
+                        <span className="text-[11px]">{k.answeredCount}/{k.totalPrompts}</span>
                       </div>
                       {k.actions.length > 0 && (
-                        <p className="text-[10px] mt-1 m-0">
+                        <p className="text-[11px] mt-2 m-0">
                           {k.actions.filter((a) => a.done).length}/{k.actions.length} Maßnahmen
                         </p>
                       )}
