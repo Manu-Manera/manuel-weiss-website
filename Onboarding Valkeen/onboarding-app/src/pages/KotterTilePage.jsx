@@ -1,10 +1,30 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, Save, Users } from 'lucide-react';
+import {
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
+  Copy,
+  Import,
+  Link2,
+  Loader2,
+  RefreshCw,
+  Save,
+  Users,
+} from 'lucide-react';
 
 import '../styles/change-workshop.css';
+import { KotterReflectionForm } from '../components/kotter/KotterReflectionForm';
 import { getKotterItemBySlug, KOTTER_CATALOG_ITEMS } from '../data/kotterCatalogData';
 import { useProgress } from '../hooks/useLocalStorage';
+import { loadProgress, saveProgress } from '../services/awsService';
+import {
+  buildMirrorKotterFromFacilitatorProfile,
+  buildProgressBlobWithKotter,
+  kotterShareUserId,
+  mergeGuestTileAnswersIntoProfileTileAnswers,
+  KOTTER_MIRROR_PROFILE_ID,
+} from '../utils/kotterShare';
 
 function newProfileId() {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -13,36 +33,14 @@ function newProfileId() {
   return `kp_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
 }
 
-function KotterReflectionForm({ catalogItem, initial, disabled, onPersist }) {
-  const [draft, setDraft] = useState(() => ({ ...initial }));
-
-  useEffect(() => {
-    const t = window.setTimeout(() => {
-      onPersist(draft);
-    }, 650);
-    return () => window.clearTimeout(t);
-  }, [draft, catalogItem.slug, onPersist]);
-
-  return (
-    <fieldset disabled={disabled} className="space-y-6 border-0 p-0 m-0">
-      <legend className="sr-only">Reflexionsfragen</legend>
-      {catalogItem.prompts.map((p) => (
-        <div key={p.key} className="cw-card-subtle space-y-2">
-          <label className="block" htmlFor={`kotter-${catalogItem.slug}-${p.key}`}>
-            <span className="font-semibold text-slate-800 text-sm leading-snug">{p.question}</span>
-          </label>
-          <textarea
-            id={`kotter-${catalogItem.slug}-${p.key}`}
-            rows={4}
-            className="cw-textarea min-h-0"
-            placeholder={p.placeholder || 'Antworten …'}
-            value={draft[p.key] ?? ''}
-            onChange={(e) => setDraft((d) => ({ ...d, [p.key]: e.target.value }))}
-          />
-        </div>
-      ))}
-    </fieldset>
-  );
+function buildKotterShareAbsoluteUrl(token) {
+  try {
+    const base = `${window.location.origin}${import.meta.env.BASE_URL}`;
+    const root = base.endsWith('/') ? base : `${base}/`;
+    return new URL(`kotter-share/${encodeURIComponent(String(token || '').trim())}/`, root).href;
+  } catch {
+    return `/onboarding/kotter-share/${encodeURIComponent(String(token || '').trim())}/`;
+  }
 }
 
 export default function KotterTilePage() {
@@ -55,6 +53,17 @@ export default function KotterTilePage() {
   const { activeProfileId, profiles } = kotter;
 
   const activeProfile = activeProfileId ? profiles[activeProfileId] : null;
+
+  const [inviteBusy, setInviteBusy] = useState(false);
+  const [mirrorBusy, setMirrorBusy] = useState(false);
+  const [mergeBusy, setMergeBusy] = useState(false);
+  const [inviteHint, setInviteHint] = useState('');
+
+  useEffect(() => {
+    if (!inviteHint) return undefined;
+    const t = window.setTimeout(() => setInviteHint(''), 4200);
+    return () => window.clearTimeout(t);
+  }, [inviteHint]);
 
   /** Erstes speicherbares Paket anlegen, falls noch leer */
   useEffect(() => {
@@ -154,6 +163,118 @@ export default function KotterTilePage() {
       },
     }));
   };
+
+  const pushMirrorToGuestSlot = useCallback(
+    async (token) => {
+      if (!activeProfile) throw new Error('Kein aktives Paket');
+      const slice = buildMirrorKotterFromFacilitatorProfile(activeProfile);
+      await saveProgress(buildProgressBlobWithKotter(slice), kotterShareUserId(token));
+    },
+    [activeProfile]
+  );
+
+  const createOrRotateInviteLink = useCallback(async () => {
+    if (!activeProfileId || !activeProfile) return;
+    setInviteBusy(true);
+    try {
+      const token = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : newProfileId();
+      await pushMirrorToGuestSlot(token);
+      updateChangeWorkshopKotter((cw) => {
+        const id = cw.activeProfileId;
+        const p = id ? cw.profiles[id] : null;
+        if (!id || !p) return cw;
+        return {
+          ...cw,
+          profiles: {
+            ...cw.profiles,
+            [id]: {
+              ...p,
+              inviteShareToken: token,
+              inviteShareCreatedAt: new Date().toISOString(),
+            },
+          },
+        };
+      });
+      const url = buildKotterShareAbsoluteUrl(token);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+        setInviteHint('Link in die Zwischenablage kopiert. Ein neuer Link ersetzt den vorherigen für dieses Paket.');
+      } else {
+        window.prompt('Einladungslink (kopieren):', url);
+      }
+    } catch (e) {
+      window.alert(e?.message || 'Speichern des Einladungslinks fehlgeschlagen.');
+    } finally {
+      setInviteBusy(false);
+    }
+  }, [activeProfile, activeProfileId, pushMirrorToGuestSlot, updateChangeWorkshopKotter]);
+
+  const refreshMirrorKeepingToken = useCallback(async () => {
+    const tok = activeProfile?.inviteShareToken?.trim();
+    if (!tok) {
+      window.alert('Zuerst einen Einladungslink erzeugen.');
+      return;
+    }
+    setMirrorBusy(true);
+    try {
+      await pushMirrorToGuestSlot(tok);
+      setInviteHint('Aktueller Moderationsstand wurde in den Kunden-Link gespiegelt.');
+    } catch (e) {
+      window.alert(e?.message || 'Spiegeln fehlgeschlagen.');
+    } finally {
+      setMirrorBusy(false);
+    }
+  }, [activeProfile?.inviteShareToken, pushMirrorToGuestSlot]);
+
+  const copyInviteLinkOnly = useCallback(async () => {
+    const tok = activeProfile?.inviteShareToken?.trim();
+    if (!tok) return;
+    const url = buildKotterShareAbsoluteUrl(tok);
+    try {
+      if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(url);
+      else window.prompt('Link:', url);
+      setInviteHint('Link erneut in die Zwischenablage kopiert.');
+    } catch {
+      window.prompt('Link:', url);
+    }
+  }, [activeProfile?.inviteShareToken]);
+
+  const absorbGuestAnswers = useCallback(async () => {
+    const tok = activeProfile?.inviteShareToken?.trim();
+    if (!tok || !activeProfileId || !activeProfile) {
+      window.alert('Es liegt kein Einladungslink zu diesem Paket vor.');
+      return;
+    }
+    setMergeBusy(true);
+    try {
+      const blob = await loadProgress(kotterShareUserId(tok));
+      const guestProf = blob?.changeWorkshopKotter?.profiles?.[KOTTER_MIRROR_PROFILE_ID];
+      const guestTiles = guestProf?.tileAnswers;
+      const merged = mergeGuestTileAnswersIntoProfileTileAnswers(activeProfile.tileAnswers, guestTiles);
+      updateChangeWorkshopKotter((cw) => {
+        const id = activeProfileId;
+        const prof = cw.profiles[id];
+        if (!prof) return cw;
+        return {
+          ...cw,
+          profiles: {
+            ...cw.profiles,
+            [id]: {
+              ...prof,
+              tileAnswers: merged,
+              guestAnswersMergedAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+          },
+        };
+      });
+      setInviteHint('Antworten aus dem Kunden-Link wurden in dieses Paket eingemischt.');
+    } catch (e) {
+      window.alert(e?.message || 'Einlesen fehlgeschlagen.');
+    } finally {
+      setMergeBusy(false);
+    }
+  }, [activeProfile, activeProfileId, updateChangeWorkshopKotter]);
 
   if (!slug || !catalogItem) {
     return (
@@ -268,6 +389,85 @@ export default function KotterTilePage() {
                   />
                 </label>
               )}
+              {activeProfile && (
+                <div className="rounded-xl border border-violet-200/70 bg-gradient-to-br from-violet-50/60 to-white p-4 space-y-3">
+                  <p className="m-0 cw-callout-heading text-sm flex items-center gap-2">
+                    <Link2 className="w-4 h-4 text-violet-600 shrink-0" aria-hidden />
+                    Kunden-Link ohne Admin-Login
+                  </p>
+                  <p className="m-0 text-xs text-slate-600 leading-relaxed">
+                    Erzeugt einen geheimen Link. Kund:innen füllen dieselben Kotter-Kacheln; die Antworten liegen unter
+                    eigenem Speicherschlüssel. «Aktuellen Stand spiegeln» überschreibt nur den Kunden-Spiegel —
+                    «Antworten einlesen» ergänzt später die Kundeneinträge hier im Paket pro Frage (Überschreiben
+                    nur, wenn dieselbe Frage erneut ausgefüllt wurde).
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      className="cw-btn cw-btn-primary-solid cw-btn-compact inline-flex items-center gap-2"
+                      onClick={createOrRotateInviteLink}
+                      disabled={inviteBusy || mirrorBusy || mergeBusy || isLoading}
+                    >
+                      {inviteBusy ? (
+                        <Loader2 className="w-4 h-4 animate-spin" aria-hidden />
+                      ) : (
+                        <Link2 className="w-4 h-4" aria-hidden />
+                      )}
+                      Neuen Einladungslink
+                    </button>
+                    <button
+                      type="button"
+                      className="cw-btn cw-btn-accent-outline cw-btn-compact inline-flex items-center gap-2"
+                      onClick={refreshMirrorKeepingToken}
+                      disabled={
+                        !activeProfile.inviteShareToken || mirrorBusy || inviteBusy || mergeBusy || isLoading
+                      }
+                      title="Schreibt den jetzigen Moderationsstand erneut in den bestehenden Link"
+                    >
+                      {mirrorBusy ? (
+                        <Loader2 className="w-4 h-4 animate-spin" aria-hidden />
+                      ) : (
+                        <RefreshCw className="w-4 h-4" aria-hidden />
+                      )}
+                      Stand spiegeln
+                    </button>
+                    <button
+                      type="button"
+                      className="cw-btn cw-btn-ghost cw-btn-compact inline-flex items-center gap-2"
+                      onClick={() => void copyInviteLinkOnly()}
+                      disabled={!activeProfile.inviteShareToken || inviteBusy || mirrorBusy || mergeBusy || isLoading}
+                    >
+                      <Copy className="w-4 h-4" aria-hidden />
+                      Link kopieren
+                    </button>
+                    <button
+                      type="button"
+                      className="cw-btn cw-btn-accent-fill cw-btn-compact inline-flex items-center gap-2"
+                      onClick={() => void absorbGuestAnswers()}
+                      disabled={
+                        !activeProfile.inviteShareToken || mergeBusy || inviteBusy || mirrorBusy || isLoading
+                      }
+                    >
+                      {mergeBusy ? (
+                        <Loader2 className="w-4 h-4 animate-spin" aria-hidden />
+                      ) : (
+                        <Import className="w-4 h-4" aria-hidden />
+                      )}
+                      Antworten einlesen
+                    </button>
+                  </div>
+                  {activeProfile.inviteShareToken ? (
+                    <p className="text-[11px] text-slate-600 break-all font-mono leading-snug m-0">
+                      {buildKotterShareAbsoluteUrl(activeProfile.inviteShareToken)}
+                    </p>
+                  ) : null}
+                  {inviteHint ? (
+                    <p role="status" className="text-xs text-emerald-800 m-0">
+                      {inviteHint}
+                    </p>
+                  ) : null}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -284,6 +484,7 @@ export default function KotterTilePage() {
         <KotterReflectionForm
           key={`${activeProfile?.id}-${catalogItem.slug}`}
           catalogItem={catalogItem}
+          idPrefix="kotter-mod"
           initial={activeProfile?.tileAnswers?.[catalogItem.slug] || {}}
           disabled={isLoading || !activeProfile}
           onPersist={persistCurrentTile}

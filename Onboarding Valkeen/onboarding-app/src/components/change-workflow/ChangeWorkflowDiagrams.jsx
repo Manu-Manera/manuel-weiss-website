@@ -66,7 +66,6 @@ function SvgChartShell({ titleId, titleText, vb, height, children }) {
 /** Beschriftungs‑„Pill« hinter KPI‑Text über der Grafik */
 function SvgLabelBadge({ cx, cy, w, lines, accent = false }) {
   const lh = 13;
-  const padX = 9;
   const padY = 7;
   const h = padY * 2 + lines.length * lh;
   const x = cx - w / 2;
@@ -153,23 +152,41 @@ function OrientFlowDiagram({ titleId }) {
 function EmotionCurveDiagram({ titleId }) {
   const curve =
     'M 64 138 C 128 174, 168 178, 220 154 S 304 118, 352 138 S 420 154, 456 146';
-  const baseY = 178;
+  const baseY = 182;
+  const fillPath = `${curve} L 456 ${baseY} L 64 ${baseY} Z`;
   return (
     <SvgChartShell
       titleId={titleId}
       titleText="Schemisches Spannungs‑ und Aktivierungsfeld über die Zeit eines Change‑Programms."
-      vb="0 0 560 246"
-      height="15rem"
+      vb="0 0 560 254"
+      height="15.875rem"
     >
       {(U) => (
         <>
-          <rect x="22" y="18" width="516" height="208" rx="22" fill={`url(#${U}_pane)`} stroke="var(--cw-border-subtle)" />
+          <defs>
+            <linearGradient id={`${U}_emoRiver`} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#6d28d9" stopOpacity={0.32} />
+              <stop offset="42%" stopColor="#8b5cf6" stopOpacity={0.16} />
+              <stop offset="100%" stopColor="#ede9fe" stopOpacity={0.02} />
+            </linearGradient>
+            <linearGradient id={`${U}_emoGlow`} x1="0%" y1="50%" x2="100%" y2="50%">
+              <stop offset="0%" stopColor="var(--cw-accent-strong)" stopOpacity={0} />
+              <stop offset="50%" stopColor="var(--cw-accent)" stopOpacity={0.42} />
+              <stop offset="100%" stopColor="var(--cw-accent-strong)" stopOpacity={0} />
+            </linearGradient>
+            <linearGradient id={`${U}_emoRail`} x1="50%" y1="0%" x2="50%" y2="100%">
+              <stop offset="0%" stopColor="#f8fafc" stopOpacity={0.94} />
+              <stop offset="100%" stopColor="#e4e8f5" stopOpacity={0.18} />
+            </linearGradient>
+          </defs>
+          <rect x="22" y="18" width="516" height="214" rx="22" fill={`url(#${U}_pane)`} stroke="var(--cw-border-subtle)" />
           <text x="40" y="46" fill="var(--cw-text-secondary)" style={{ font: '700 12.5px system-ui,sans-serif' }}>
             Dynamik unter Veränderung
           </text>
           <text x="40" y="64" fill="var(--cw-text-muted)" style={{ font: '600 11px system-ui,sans-serif' }}>
             Beispieldarstellung zur Moderation · keine Timing‑Pflicht
           </text>
+          <rect x="90" y="84" width="438" height="96" rx="14" fill={`url(#${U}_emoRail)`} stroke="rgba(148,163,184,0.35)" strokeWidth={0.8} opacity={0.85} />
           <text x="48" y="96" fill="var(--cw-text-muted)" transform="rotate(-90 46 146)" style={{ font: '600 10px system-ui,sans-serif', letterSpacing: '0.04em' }}>
             INTENSITÄT
           </text>
@@ -185,9 +202,11 @@ function EmotionCurveDiagram({ titleId }) {
               opacity={0.6}
             />
           ))}
-          <path d={`${curve} L 456 ${baseY} L 64 ${baseY} Z`} fill={`url(#${U}_vioFade)`} stroke="none" opacity={1} />
-          <path d={curve} fill="none" stroke={`url(#${U}_vioStroke)`} strokeWidth={7} strokeLinecap="round" opacity={0.22} />
-          <path d={curve} fill="none" stroke={`url(#${U}_vioStroke)`} strokeWidth={3.4} strokeLinecap="round" filter={`url(#${U}_softDrop)`} />
+          <path d={fillPath} fill={`url(#${U}_emoRiver)`} stroke="none" />
+          <path d={fillPath} fill={`url(#${U}_vioFade)`} stroke="none" opacity={0.75} />
+          <path d={curve} fill="none" stroke={`url(#${U}_emoGlow)`} strokeWidth={16} strokeLinecap="round" opacity={0.35} />
+          <path d={curve} fill="none" stroke={`url(#${U}_vioStroke)`} strokeWidth={7} strokeLinecap="round" opacity={0.2} />
+          <path d={curve} fill="none" stroke={`url(#${U}_vioStroke)`} strokeWidth={3.6} strokeLinecap="round" filter={`url(#${U}_softDrop)`} />
           {[
             { x: 64, lines: ['Unsicherheit'] },
             { x: 160, lines: ['Rückstellung'] },
@@ -196,17 +215,23 @@ function EmotionCurveDiagram({ titleId }) {
             { x: 450, lines: ['Verankerung'] },
           ].map((p, i) => (
             <g key={p.lines.join('-')} filter={`url(#${U}_glowDot)`}>
-              <circle cx={p.x} cy="138" r="8" fill="#fff" stroke={`url(#${U}_vioStroke)`} strokeWidth={2} />
-              <circle cx={p.x} cy="138" r="4.2" fill="var(--cw-accent-strong)" />
-              <SvgLabelBadge cx={p.x} cy={i === 2 ? 106 : i === 0 || i === 4 ? 100 : 100} w={i === 2 ? 118 : i === 0 ? 112 : i === 4 ? 104 : 100} lines={p.lines} accent={i === 2} />
+              <circle cx={p.x} cy="138" r="9.5" fill="#fff" stroke={`url(#${U}_vioStroke)`} strokeWidth={2} />
+              <circle cx={p.x} cy="138" r="5" fill="var(--cw-accent-strong)" />
+              <SvgLabelBadge
+                cx={p.x}
+                cy={i === 2 ? 104 : i === 0 || i === 4 ? 98 : 98}
+                w={i === 2 ? 118 : i === 0 ? 112 : i === 4 ? 104 : 100}
+                lines={p.lines}
+                accent={i === 2}
+              />
             </g>
           ))}
-          <text x="520" y="198" textAnchor="end" fill="var(--cw-text-muted)" style={{ font: '600 11px system-ui,sans-serif', letterSpacing: '0.02em' }}>
+          <text x="520" y="216" textAnchor="end" fill="var(--cw-text-muted)" style={{ font: '600 11px system-ui,sans-serif', letterSpacing: '0.02em' }}>
             Zeit / Reife ⟶
           </text>
-          <rect x="102" y="184" width="120" height="28" rx="8" fill="rgba(248,250,252,0.94)" stroke="var(--cw-border-subtle)" />
-          <text x="111" y="202" fill="var(--cw-text-muted)" style={{ font: '500 10.5px system-ui,sans-serif' }}>
-            ● Meilenpunkt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tspan opacity={0.55}>⋯</tspan> Hilfsraster
+          <rect x="102" y="198" width="132" height="30" rx="8" fill="rgba(248,250,252,0.96)" stroke="var(--cw-border-subtle)" />
+          <text x="111" y="216.5" fill="var(--cw-text-muted)" style={{ font: '500 10.5px system-ui,sans-serif' }}>
+            ● Meilenpunkt&nbsp;&nbsp;<tspan opacity={0.55}>⋯</tspan> Hilfsraster
           </text>
         </>
       )}
@@ -220,10 +245,10 @@ function KotterEightDiagram({ titleId, kotterInteractive = false }) {
     navigate(`/change-workflow/kotter/${kotterSlug}`);
   };
   return (
-    <SvgChartShell titleId={titleId} titleText="Klassische Ursachen wenn Change‑Programme stagnieren." vb="0 0 532 258" height="16.125rem">
+    <SvgChartShell titleId={titleId} titleText="Klassische Ursachen wenn Change‑Programme stagnieren." vb="0 0 532 274" height="17.125rem">
       {(U) => (
         <>
-          <rect x="18" y="18" width="496" height="222" rx="22" fill={`url(#${U}_pane)`} stroke="var(--cw-border-subtle)" />
+          <rect x="18" y="18" width="496" height="238" rx="22" fill={`url(#${U}_pane)`} stroke="var(--cw-border-subtle)" />
           <text x="266" y="48" textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '700 14px system-ui,sans-serif' }}>
             Prüfkatalog (Auszug — Kotter)
           </text>
@@ -234,23 +259,36 @@ function KotterEightDiagram({ titleId, kotterInteractive = false }) {
             const row = idx < 4 ? 0 : 1;
             const col = idx % 4;
             const x = 42 + col * 114;
-            const y = row === 0 ? 88 : 170;
+            const y = row === 0 ? 88 : 174;
             const label = `${item.order}. ${item.label} — Prüfkatalog öffnen`;
+            const halo = idx % 5;
+            const halos = ['rgba(109,40,217,0.075)', 'rgba(59,130,246,0.06)', 'rgba(124,58,237,0.09)', 'rgba(14,165,233,0.065)', 'rgba(168,85,247,0.07)'][halo];
             const inner = (
               <>
-                <rect x={x} y={y} rx="16" width="104" height="84" fill="#ffffff" stroke="var(--cw-accent-soft-border)" strokeWidth={1} />
-                <rect x={x} y={y} width="104" height="26" rx="16" ry="12" fill="rgba(124,58,237,0.14)" stroke="none" />
-                <text x={x + 52} y={y + 18} textAnchor="middle" fill="var(--cw-accent-strong)" style={{ font: 'bold 13px system-ui,sans-serif' }}>
+                <rect x={x - 2} y={y - 2} rx="17" width="108" height="88" fill={halos} stroke="none" />
+                <rect
+                  x={x}
+                  y={y}
+                  rx="16"
+                  width="104"
+                  height="84"
+                  fill="#ffffff"
+                  stroke={`url(#${U}_vioStroke)`}
+                  strokeWidth={1.15}
+                />
+                <rect x={x} y={y} width="104" height="28" rx="16" ry="12" fill="rgba(245,243,255,1)" stroke="none" />
+                <circle cx={x + 52} cy={y + 16} r="13" fill="#fff" stroke="rgba(124,58,237,0.35)" strokeWidth={1} />
+                <text x={x + 52} y={y + 20} textAnchor="middle" fill="var(--cw-accent-strong)" style={{ font: 'bold 13px system-ui,sans-serif' }}>
                   {idx + 1}.
                 </text>
-                <text x={x + 52} y={y + 60} textAnchor="middle" fill="var(--cw-text)" style={{ font: 'bold 11px system-ui,sans-serif', lineHeight: 1.2 }}>
+                <text x={x + 52} y={y + 62} textAnchor="middle" fill="var(--cw-text)" style={{ font: 'bold 11px system-ui,sans-serif', lineHeight: 1.2 }}>
                   {item.label}
                 </text>
               </>
             );
             if (!kotterInteractive) {
               return (
-                <g key={item.slug} filter={`url(#${U}_softDrop)`}>
+                <g key={item.slug} filter={`url(#${U}_nodeLift)`}>
                   {inner}
                 </g>
               );
@@ -259,7 +297,7 @@ function KotterEightDiagram({ titleId, kotterInteractive = false }) {
               <g
                 key={item.slug}
                 className="cw-kotter-tile"
-                filter={`url(#${U}_softDrop)`}
+                filter={`url(#${U}_nodeLift)`}
                 role="button"
                 tabIndex={0}
                 style={{ cursor: 'pointer' }}
@@ -634,7 +672,7 @@ function ElevatorDiagram({ titleId }) {
         <>
           <rect x="18" y="18" width="560" height="138" rx="22" fill={`url(#${U}_pane)`} stroke="var(--cw-border-subtle)" />
           <text x="298" y="48" textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '700 14px system-ui,sans-serif' }}>
-            Pitch‑Gerüst (≙ 90 s Sprechzeit)
+            Pitch-Gerüst (ca. 90 s Sprechzeit)
           </text>
           <text x="298" y="68" textAnchor="middle" fill="var(--cw-text-muted)" style={{ font: '600 11px system-ui,sans-serif' }}>
             Jede Station klar formulieren · nicht überspringen

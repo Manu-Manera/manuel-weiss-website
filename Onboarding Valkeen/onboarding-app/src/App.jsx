@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Tracker from './pages/Tracker';
@@ -16,6 +15,7 @@ import TempusDemo from './pages/TempusDemo';
 import LoginMailer from './pages/LoginMailer';
 import ChangeWorkflow from './pages/ChangeWorkflow';
 import KotterTilePage from './pages/KotterTilePage';
+import KotterPublicShareShell from './pages/KotterPublicShareShell';
 import LegacyChangeWorkflowRedirect from './pages/LegacyChangeWorkflowRedirect';
 import { ProgressProvider } from './hooks/useLocalStorage';
 
@@ -37,58 +37,55 @@ function checkAdminSession() {
   }
 }
 
-function App() {
-  const [authState, setAuthState] = useState('checking');
+/** Öffentlicher Kotter-Share liegt außerhalb der Admin-/Progress-Sitzung — zuerst in den Routes erwischen. */
+function AdminProgressRoutes() {
+  const location = useLocation();
 
-  useEffect(() => {
-    if (checkAdminSession()) {
-      setAuthState('ok');
-    } else {
-      setAuthState('redirect');
-    }
-  }, []);
-
-  if (authState === 'checking') {
+  if (!checkAdminSession()) {
+    window.location.replace(
+      '/admin-login.html?redirect=' + encodeURIComponent(`/onboarding${location.pathname}${location.search}`)
+    );
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#f8fafc', fontFamily: 'system-ui, sans-serif' }}>
-        <div style={{ textAlign: 'center', color: '#64748b' }}>
-          <div style={{ fontSize: 32, marginBottom: 12 }}>🔐</div>
-          <div>Authentifizierung wird geprüft…</div>
-        </div>
+      <div className="min-h-[40vh] flex items-center justify-center text-slate-500 text-sm">
+        Weiterleitung zur Anmeldung…
       </div>
     );
   }
 
-  if (authState === 'redirect') {
-    window.location.href = '/admin-login.html?redirect=' + encodeURIComponent('/onboarding/');
-    return null;
-  }
+  return (
+    <ProgressProvider>
+      <Routes>
+        <Route path="change-workflow/kotter/:slug" element={<KotterTilePage />} />
+        <Route path="change-workflow/teilnehmer" element={<ChangeWorkflow />} />
+        <Route path="change-workflow" element={<ChangeWorkflow />} />
+        <Route path="login-mailer/change-workflow" element={<LegacyChangeWorkflowRedirect />} />
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="tracker" element={<Tracker />} />
+          <Route path="flashcards" element={<Flashcards />} />
+          <Route path="quiz" element={<Quiz />} />
+          <Route path="ai-coach" element={<AICoach />} />
+          <Route path="calendar" element={<Calendar />} />
+          <Route path="resources" element={<Resources />} />
+          <Route path="report" element={<Report />} />
+          <Route path="training" element={<Training />} />
+          <Route path="training-admin" element={<TrainingAdmin />} />
+          <Route path="sso-setup" element={<SSOSetup />} />
+          <Route path="tempus-demo" element={<TempusDemo />} />
+          <Route path="login-mailer" element={<LoginMailer />} />
+        </Route>
+      </Routes>
+    </ProgressProvider>
+  );
+}
 
+function App() {
   return (
     <BrowserRouter basename="/onboarding">
-      <ProgressProvider>
-        <Routes>
-          <Route path="change-workflow/kotter/:slug" element={<KotterTilePage />} />
-          <Route path="change-workflow/teilnehmer" element={<ChangeWorkflow />} />
-          <Route path="change-workflow" element={<ChangeWorkflow />} />
-          <Route path="login-mailer/change-workflow" element={<LegacyChangeWorkflowRedirect />} />
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="tracker" element={<Tracker />} />
-            <Route path="flashcards" element={<Flashcards />} />
-            <Route path="quiz" element={<Quiz />} />
-            <Route path="ai-coach" element={<AICoach />} />
-            <Route path="calendar" element={<Calendar />} />
-            <Route path="resources" element={<Resources />} />
-            <Route path="report" element={<Report />} />
-            <Route path="training" element={<Training />} />
-            <Route path="training-admin" element={<TrainingAdmin />} />
-            <Route path="sso-setup" element={<SSOSetup />} />
-            <Route path="tempus-demo" element={<TempusDemo />} />
-            <Route path="login-mailer" element={<LoginMailer />} />
-          </Route>
-        </Routes>
-      </ProgressProvider>
+      <Routes>
+        <Route path="kotter-share/:shareId/*" element={<KotterPublicShareShell />} />
+        <Route path="*" element={<AdminProgressRoutes />} />
+      </Routes>
     </BrowserRouter>
   );
 }
