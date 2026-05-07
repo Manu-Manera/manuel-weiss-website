@@ -121,6 +121,167 @@
   }
 }
 
+/* Kompakte Kopfzeile (Change Workshop) */
+.cw-wh-header .cw-wh-banner-wrap {
+  padding-top: 0.5rem;
+  padding-bottom: 0;
+}
+
+.cw-wh-header .cw-participant-banner {
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.cw-wh-header .cw-wh-top {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .cw-wh-header .cw-wh-top {
+    padding-top: 0.5625rem;
+    padding-bottom: 0.5625rem;
+  }
+}
+
+.cw-wh-header .cw-wh-brand {
+  gap: 0.5rem;
+}
+
+.cw-wh-header .cw-wh-brand-text > .cw-kicker {
+  margin-bottom: 0.0625rem;
+}
+
+.cw-wh-header .cw-icon-badge {
+  padding: 0.4375rem 0.5625rem;
+  border-radius: 0.625rem;
+}
+
+.cw-wh-header .cw-title {
+  font-size: clamp(1.05rem, 1.85vw, 1.38rem);
+  line-height: 1.22;
+}
+
+.cw-wh-header .cw-subtitle {
+  font-size: 0.6875rem;
+  line-height: 1.35;
+  margin-top: 0.0625rem;
+  max-width: 36rem;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .cw-wh-header .cw-subtitle {
+    font-size: 0.75rem;
+  }
+}
+
+.cw-wh-header .cw-wh-session-input {
+  min-height: 2.125rem !important;
+  padding: 0.375rem 0.625rem !important;
+  font-size: 0.8125rem !important;
+}
+
+.cw-wh-header .cw-wh-toolbar-btns {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.cw-wh-header .cw-wh-toolbar-btns .cw-btn {
+  min-height: 2.125rem !important;
+  padding: 0.375rem 0.6875rem !important;
+  font-size: 0.8125rem !important;
+  border-radius: 0.625rem;
+}
+
+.cw-wh-header .cw-fac-toggle {
+  min-height: 2.125rem !important;
+  margin-top: 0;
+  padding: 0.375rem 0.625rem !important;
+  font-size: 0.75rem !important;
+  border-radius: 0.625rem;
+}
+
+.cw-wh-stepper-zone {
+  padding-top: 0.125rem;
+  padding-bottom: 0.5rem;
+}
+
+.cw-wh-ablauf-label {
+  font-size: 0.625rem;
+}
+
+.cw-wh-header .cw-wh-stepper-nav {
+  padding: 0;
+}
+
+.cw-wh-header .cw-step-list {
+  gap: 0.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+@media (min-width: 640px) {
+  .cw-wh-header .cw-step-list {
+    gap: 0.625rem;
+  }
+}
+
+.cw-wh-header .cw-step {
+  min-width: 6.75rem;
+  padding: 0.3125rem 0.5rem;
+  border-radius: 0.625rem;
+}
+
+@media (min-width: 640px) {
+  .cw-wh-header .cw-step {
+    min-width: 7.25rem;
+  }
+}
+
+.cw-wh-header .cw-step-label-top {
+  font-size: 0.5625rem;
+  margin-bottom: 0.125rem;
+}
+
+.cw-wh-header .cw-step-label-top svg {
+  width: 0.6875rem;
+  height: 0.6875rem;
+}
+
+.cw-wh-header .cw-step-title {
+  font-size: 0.71875rem;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  line-clamp: 1;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+
+.cw-wh-header .cw-wh-step-counter {
+  font-size: 0.625rem;
+  font-weight: 600;
+  white-space: nowrap;
+  min-width: 2.75rem;
+  text-align: right;
+}
+
+.cw-wh-header .cw-screen-coll {
+  margin-top: 0.25rem;
+}
+
+.cw-wh-header .cw-screen-coll-trigger {
+  min-height: 2.125rem;
+  padding: 0.3125rem 0.6875rem;
+  font-size: 0.8125rem;
+  border-radius: 0.625rem;
+}
+
 .cw-kicker {
   font-size: 0.6875rem;
   font-weight: 700;

@@ -89,8 +89,8 @@ function PhaseStepper({ phaseId, onSelect }) {
   const idxActive = CHANGE_PHASES.findIndex((p) => p.id === phaseId);
 
   return (
-    <nav className="w-full overflow-x-auto pb-2 pt-1" aria-label="Phasen">
-      <ol className="cw-step-list py-1 px-0.5">
+    <nav className="cw-wh-stepper-nav w-full" aria-label="Phasen">
+      <ol className="cw-step-list py-0 px-0.5">
         {CHANGE_PHASES.map((p, idx) => {
           const active = p.id === phaseId;
           const done = idx < idxActive;
@@ -476,7 +476,7 @@ export default function ChangeWorkflow() {
 
       <header className="cw-wh-header">
         {participantOnly && (
-          <div className="cw-container pt-6 sm:pt-7 pb-0">
+          <div className="cw-container cw-wh-banner-wrap pb-0">
             <div className="cw-participant-banner" role="status">
               <p className="cw-participant-banner-text">
                 Teilnehmer:innen‑Ansicht: Moderationshinweise, Timer und Breakout‑Skripte sind ausgeblendet.
@@ -493,19 +493,19 @@ export default function ChangeWorkflow() {
             </div>
           </div>
         )}
-        <div className="cw-container py-6 sm:py-7 flex flex-col gap-7 xl:flex-row xl:items-start xl:justify-between">
-          <div className="flex items-start gap-4 min-w-0">
+        <div className="cw-container cw-wh-top flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between xl:gap-4">
+          <div className="flex items-center gap-2.5 min-w-0 cw-wh-brand">
             <div className="cw-icon-badge shrink-0" aria-hidden>
-              <Sparkles className="w-6 h-6 sm:w-7 sm:h-7" />
+              <Sparkles className="w-[1.125rem] h-[1.125rem] sm:w-5 sm:h-5" />
             </div>
-            <div className="min-w-0 pt-0.5 space-y-2">
+            <div className="min-w-0 space-y-0 cw-wh-brand-text">
               <p className="cw-kicker">Workshop</p>
               <h1 className="cw-title">{CHANGE_WORKFLOW_META.title}</h1>
               <p className="cw-subtitle">{CHANGE_WORKFLOW_META.subtitle}</p>
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 shrink-0 w-full xl:w-auto xl:min-w-[20rem] xl:max-w-[28rem]">
+          <div className="cw-wh-toolbar flex flex-col gap-2 xl:flex-row xl:flex-wrap xl:items-center xl:gap-x-2 xl:gap-y-1.5 shrink-0 w-full xl:w-auto xl:max-w-[min(100%,44rem)] xl:justify-end">
             <label className="sr-only" htmlFor="cw-session-title">
               Titel für das Protokoll
             </label>
@@ -515,32 +515,32 @@ export default function ChangeWorkflow() {
               value={sessionTitle}
               onChange={(e) => setSessionTitle(e.target.value)}
               placeholder="z. B. Workshop Projekt XY · Datum"
-              className="cw-input-text min-h-[3rem]"
+              className="cw-input-text cw-wh-session-input w-full xl:w-[13.5rem] xl:shrink-0"
             />
-            <div className="flex flex-wrap gap-2 sm:gap-3">
+            <div className="cw-wh-toolbar-btns">
               <Link
                 to="/"
-                className="cw-btn cw-btn-ghost cw-link-hub flex-1 sm:flex-none min-w-[7rem] min-h-[3rem]"
+                className="cw-btn cw-btn-ghost cw-link-hub"
               >
-                <PanelLeftOpen className="w-4 h-4 opacity-80" aria-hidden />
+                <PanelLeftOpen className="w-3.5 h-3.5 opacity-80" aria-hidden />
                 Hub
               </Link>
               <button
                 type="button"
                 onClick={onPreviewPdfFull}
                 disabled={pdfBusy}
-                className="cw-btn cw-btn-accent-outline flex-1 sm:flex-none min-w-[7rem] min-h-[3rem]"
+                className="cw-btn cw-btn-accent-outline"
               >
-                {pdfBusy ? <PdfSpinner /> : <Eye className="w-4 h-4 shrink-0" aria-hidden />}
+                {pdfBusy ? <PdfSpinner /> : <Eye className="w-3.5 h-3.5 shrink-0" aria-hidden />}
                 Vorschau
               </button>
               <button
                 type="button"
                 onClick={onExportPdfFull}
                 disabled={pdfBusy}
-                className="cw-btn cw-btn-accent-fill flex-1 sm:flex-none min-w-[9rem] min-h-[3rem]"
+                className="cw-btn cw-btn-accent-fill"
               >
-                {pdfBusy ? <PdfSpinner /> : <FileDown className="w-4 h-4 shrink-0" aria-hidden />}
+                {pdfBusy ? <PdfSpinner /> : <FileDown className="w-3.5 h-3.5 shrink-0" aria-hidden />}
                 PDF exportieren
               </button>
             </div>
@@ -563,19 +563,24 @@ export default function ChangeWorkflow() {
           </div>
         </div>
 
-        <div className="cw-container pb-6 sm:pb-7 pt-2">
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <span className="cw-kicker tracking-[0.12em]">Ablauf</span>
-            <span className="cw-step-counter">
-              Schritt {phaseIdx + 1} / {CHANGE_PHASES.length}
+        <div className="cw-container cw-wh-stepper-zone">
+          <div className="flex items-center gap-2 sm:gap-3 min-h-0">
+            <span className="cw-kicker cw-wh-ablauf-label tracking-[0.12em] shrink-0">Ablauf</span>
+            <div className="min-w-0 flex-1 overflow-x-auto">
+              <PhaseStepper phaseId={phaseId} onSelect={setPhaseId} />
+            </div>
+            <span
+              className="cw-step-counter cw-wh-step-counter shrink-0"
+              aria-label={`Schritt ${phaseIdx + 1} von ${CHANGE_PHASES.length}`}
+            >
+              {phaseIdx + 1} / {CHANGE_PHASES.length}
             </span>
           </div>
-          <PhaseStepper phaseId={phaseId} onSelect={setPhaseId} />
           {facilitatorMode && <ScreenShareChecklistCollapse />}
         </div>
       </header>
 
-      <main className="cw-container py-10 sm:py-12 lg:py-14">
+      <main className="cw-container py-6 sm:py-8 lg:py-10">
         <SegmentSwitch tab={mobileTab} setTab={setMobileTab} />
 
         <div className="grid grid-cols-1 gap-12 xl:grid-cols-12 xl:gap-16 2xl:gap-20">
@@ -671,7 +676,7 @@ export default function ChangeWorkflow() {
           <aside
             className={`xl:col-span-5 space-y-7 ${mobileTab === 'guide' ? 'hidden xl:block' : ''}`}
           >
-            <div className="xl:sticky xl:top-[9rem] space-y-7">
+            <div className="xl:sticky xl:top-[5rem] space-y-7">
               <div className="cw-card-aside space-y-0">
                 <div className="cw-protocol-head">
                   <PenLine className="cw-callout-icon" aria-hidden />
