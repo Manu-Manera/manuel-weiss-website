@@ -16,6 +16,7 @@ import {
   Clock,
   Copy,
   Monitor,
+  Wrench,
 } from 'lucide-react';
 
 import '../styles/change-workshop.css';
@@ -528,6 +529,15 @@ export default function ChangeWorkflow() {
                 <PanelLeftOpen className="w-3.5 h-3.5 opacity-80" aria-hidden />
                 Hub
               </Link>
+              {!participantOnly && (
+                <Link
+                  to="/change-workflow/tools"
+                  className="cw-btn cw-btn-ghost"
+                >
+                  <Wrench className="w-3.5 h-3.5 opacity-80" aria-hidden />
+                  Tools
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={onPreviewPdfFull}

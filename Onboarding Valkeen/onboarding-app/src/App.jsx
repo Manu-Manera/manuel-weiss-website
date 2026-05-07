@@ -15,7 +15,9 @@ import TempusDemo from './pages/TempusDemo';
 import LoginMailer from './pages/LoginMailer';
 import ChangeWorkflow from './pages/ChangeWorkflow';
 import KotterTilePage from './pages/KotterTilePage';
+import WorkshopTools from './pages/WorkshopTools';
 import KotterPublicShareShell from './pages/KotterPublicShareShell';
+import WorkshopPrepPublicShell from './pages/WorkshopPrepPublicShell';
 import LegacyChangeWorkflowRedirect from './pages/LegacyChangeWorkflowRedirect';
 import { ProgressProvider } from './hooks/useLocalStorage';
 
@@ -56,6 +58,7 @@ function AdminProgressRoutes() {
     <ProgressProvider>
       <Routes>
         <Route path="change-workflow/kotter/:slug" element={<KotterTilePage />} />
+        <Route path="change-workflow/tools" element={<WorkshopTools />} />
         <Route path="change-workflow/teilnehmer" element={<ChangeWorkflow />} />
         <Route path="change-workflow" element={<ChangeWorkflow />} />
         <Route path="login-mailer/change-workflow" element={<LegacyChangeWorkflowRedirect />} />
@@ -84,6 +87,7 @@ function App() {
     <BrowserRouter basename="/onboarding">
       <Routes>
         <Route path="kotter-share/:shareId/*" element={<KotterPublicShareShell />} />
+        <Route path="workshop-prep/:shareId" element={<WorkshopPrepPublicShell />} />
         <Route path="*" element={<AdminProgressRoutes />} />
       </Routes>
     </BrowserRouter>
