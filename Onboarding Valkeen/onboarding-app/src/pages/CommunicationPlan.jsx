@@ -1,18 +1,24 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowLeft,
   Bot,
   Calendar,
   CheckCircle,
+  CheckSquare,
   ChevronDown,
   Circle,
+  Download,
   Edit3,
+  FileSpreadsheet,
+  Filter,
   Loader2,
   Megaphone,
   Plus,
   Save,
+  Search,
   Sparkles,
+  Square,
   Trash2,
   Users,
 } from 'lucide-react';
@@ -240,6 +246,83 @@ function CommItemForm({ item, stakeholders, onSave, onCancel }) {
   );
 }
 
+function TimelineView({ items, stakeholders, onEdit }) {
+  const sortedItems = useMemo(() => {
+    return [...items].sort((a, b) => {
+      if (a.dueDate && b.dueDate) return new Date(a.dueDate) - new Date(b.dueDate);
+      if (a.dueDate) return -1;
+      if (b.dueDate) return 1;
+      return 0;
+    });
+  }, [items]);
+
+  const monthGroups = useMemo(() => {
+    const groups = {};
+    sortedItems.forEach((item) => {
+      const key = item.dueDate
+        ? new Date(item.dueDate).toLocaleDateString('de-CH', { year: 'numeric', month: 'long' })
+        : 'Ohne Datum';
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(item);
+    });
+    return groups;
+  }, [sortedItems]);
+
+  return (
+    <div className="space-y-6">
+      {Object.entries(monthGroups).map(([month, monthItems]) => (
+        <div key={month}>
+          <h3 className="text-sm font-semibold text-slate-700 mb-3 sticky top-0 bg-white py-1">{month}</h3>
+          <div className="relative pl-6 border-l-2 border-violet-200 space-y-4">
+            {monthItems.map((item) => {
+              const channel = CHANNEL_OPTIONS.find((c) => c.value === item.channel) || CHANNEL_OPTIONS[0];
+              const status = STATUS_OPTIONS.find((s) => s.value === item.status) || STATUS_OPTIONS[0];
+              const audiences = (item.targetAudience || [])
+                .map((id) => stakeholders.find((s) => s.id === id)?.name)
+                .filter(Boolean);
+
+              return (
+                <div
+                  key={item.id}
+                  className="relative bg-white rounded-lg border border-slate-200 p-3 hover:border-violet-300 transition-colors cursor-pointer"
+                  onClick={() => onEdit(item.id)}
+                >
+                  <div className="absolute -left-[31px] top-3 w-4 h-4 rounded-full border-2 border-violet-300 bg-white flex items-center justify-center">
+                    {item.status === 'done' && <div className="w-2 h-2 rounded-full bg-emerald-500" />}
+                    {item.status === 'in_progress' && <div className="w-2 h-2 rounded-full bg-amber-500" />}
+                  </div>
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">{channel.icon}</span>
+                      <span className="font-medium text-slate-800">{item.title}</span>
+                    </div>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${status.color}`}>
+                      {status.label}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-xs text-slate-500">
+                    {item.dueDate && (
+                      <span>{new Date(item.dueDate).toLocaleDateString('de-CH')}</span>
+                    )}
+                    <span>·</span>
+                    <span className="text-violet-600 font-medium">{item.owner}</span>
+                    {audiences.length > 0 && (
+                      <>
+                        <span>·</span>
+                        <span>{audiences.slice(0, 2).join(', ')}{audiences.length > 2 ? ` +${audiences.length - 2}` : ''}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function CommunicationPlan() {
   const { progress, isLoading, isSyncing, updateChangeWorkshopKotter } = useProgress();
 
@@ -253,6 +336,23 @@ export default function CommunicationPlan() {
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
+  const [viewMode, setViewMode] = useState('list');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterChannel, setFilterChannel] = useState('all');
+  const [selectedIds, setSelectedIds] = useState(new Set());
+
+  const filteredItems = useMemo(() => {
+    return commsPlan.filter((c) => {
+      if (searchTerm && !c.title?.toLowerCase().includes(searchTerm.toLowerCase()) &&
+          !c.owner?.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return false;
+      }
+      if (filterStatus !== 'all' && c.status !== filterStatus) return false;
+      if (filterChannel !== 'all' && c.channel !== filterChannel) return false;
+      return true;
+    });
+  }, [commsPlan, searchTerm, filterStatus, filterChannel]);
 
   const updateCommsPlan = useCallback(
     (updater) => {
@@ -282,9 +382,10 @@ export default function CommunicationPlan() {
     (item) => {
       if (!item.id) {
         item.id = newId();
+        item.createdAt = new Date().toISOString();
         updateCommsPlan((list) => [...list, item]);
       } else {
-        updateCommsPlan((list) => list.map((c) => (c.id === item.id ? item : c)));
+        updateCommsPlan((list) => list.map((c) => (c.id === item.id ? { ...item, updatedAt: new Date().toISOString() } : c)));
       }
       setEditingId(null);
       setShowForm(false);
@@ -296,9 +397,40 @@ export default function CommunicationPlan() {
     (id) => {
       if (!window.confirm('Maßnahme wirklich löschen?')) return;
       updateCommsPlan((list) => list.filter((c) => c.id !== id));
+      setSelectedIds((s) => { const n = new Set(s); n.delete(id); return n; });
     },
     [updateCommsPlan]
   );
+
+  const toggleSelect = (id) => {
+    setSelectedIds((s) => {
+      const n = new Set(s);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      return n;
+    });
+  };
+
+  const selectAll = () => {
+    if (selectedIds.size === filteredItems.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredItems.map((i) => i.id)));
+    }
+  };
+
+  const bulkUpdateStatus = (newStatus) => {
+    updateCommsPlan((list) =>
+      list.map((c) => (selectedIds.has(c.id) ? { ...c, status: newStatus, updatedAt: new Date().toISOString() } : c))
+    );
+    setSelectedIds(new Set());
+  };
+
+  const bulkDelete = () => {
+    if (!window.confirm(`${selectedIds.size} Maßnahmen wirklich löschen?`)) return;
+    updateCommsPlan((list) => list.filter((c) => !selectedIds.has(c.id)));
+    setSelectedIds(new Set());
+  };
 
   const generateAiPlan = useCallback(async () => {
     setAiLoading(true);
@@ -371,15 +503,85 @@ Schlage 3-5 zusätzliche Kommunikationsmaßnahmen vor, die noch fehlen könnten.
         status: 'planned',
         targetAudience: [],
         notes: '(KI-generiert)',
+        createdAt: new Date().toISOString(),
       }));
 
       updateCommsPlan((list) => [...list, ...newItems]);
+      alert(`${newItems.length} Maßnahmen hinzugefügt.`);
     } catch (e) {
       alert(`Fehler: ${e?.message}`);
     } finally {
       setAiLoading(false);
     }
   }, [stakeholders, commsPlan, updateCommsPlan]);
+
+  const exportExcel = useCallback(async () => {
+    try {
+      const XLSX = await import('xlsx');
+      const rows = commsPlan.map((c) => {
+        const channel = CHANNEL_OPTIONS.find((ch) => ch.value === c.channel);
+        const freq = FREQUENCY_OPTIONS.find((f) => f.value === c.frequency);
+        const status = STATUS_OPTIONS.find((s) => s.value === c.status);
+        const audiences = (c.targetAudience || [])
+          .map((id) => stakeholders.find((s) => s.id === id)?.name)
+          .filter(Boolean)
+          .join(', ');
+        return {
+          Titel: c.title,
+          Kanal: channel?.label || c.channel,
+          Frequenz: freq?.label || c.frequency,
+          Zeitraum: c.timing || '',
+          Fälligkeit: c.dueDate || '',
+          Owner: c.owner,
+          Status: status?.label || c.status,
+          Zielgruppe: audiences,
+          Kernbotschaft: c.keyMessage || '',
+          Notizen: c.notes || '',
+        };
+      });
+
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Kommunikationsplan');
+      XLSX.writeFile(wb, `Kommunikationsplan_${activeProfile?.customerLabel || 'Export'}.xlsx`);
+    } catch (e) {
+      alert(`Excel-Export fehlgeschlagen: ${e?.message}`);
+    }
+  }, [commsPlan, stakeholders, activeProfile]);
+
+  const exportIcs = useCallback(() => {
+    const itemsWithDate = commsPlan.filter((c) => c.dueDate);
+    if (itemsWithDate.length === 0) {
+      alert('Keine Maßnahmen mit Fälligkeitsdatum vorhanden.');
+      return;
+    }
+
+    const events = itemsWithDate.map((c) => {
+      const dt = c.dueDate.replace(/-/g, '');
+      const channel = CHANNEL_OPTIONS.find((ch) => ch.value === c.channel);
+      return `BEGIN:VEVENT
+DTSTART;VALUE=DATE:${dt}
+DTEND;VALUE=DATE:${dt}
+SUMMARY:${c.title}
+DESCRIPTION:Owner: ${c.owner}\\nKanal: ${channel?.label || c.channel}\\n${c.keyMessage || ''}
+STATUS:${c.status === 'done' ? 'COMPLETED' : 'TENTATIVE'}
+END:VEVENT`;
+    });
+
+    const ics = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Change Workshop//Kommunikationsplan//DE
+${events.join('\n')}
+END:VCALENDAR`;
+
+    const blob = new Blob([ics], { type: 'text/calendar' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Kommunikationsplan_${activeProfile?.customerLabel || 'Export'}.ics`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [commsPlan, activeProfile]);
 
   if (isLoading) {
     return (
@@ -420,13 +622,13 @@ Schlage 3-5 zusätzliche Kommunikationsmaßnahmen vor, die noch fehlen könnten.
               </span>
             )}
             <Link to="/change-workflow/stakeholders" className="cw-btn cw-btn-accent-outline cw-btn-compact">
-              ← Stakeholder-Analyse
+              ← Stakeholder
             </Link>
           </div>
         </div>
       </header>
 
-      <main className="cw-container py-8 max-w-5xl space-y-6">
+      <main className="cw-container py-8 max-w-6xl space-y-6">
         {!activeProfile ? (
           <div className="cw-card text-center py-8">
             <Megaphone className="w-10 h-10 mx-auto text-slate-400 mb-4" aria-hidden />
@@ -439,7 +641,7 @@ Schlage 3-5 zusätzliche Kommunikationsmaßnahmen vor, die noch fehlen könnten.
         ) : (
           <>
             <div className="cw-card bg-gradient-to-br from-violet-50/80 to-white">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
                 <div>
                   <h1 className="text-xl font-bold text-slate-800 m-0 mb-1">{activeProfile.customerLabel || 'Kommunikationsplan'}</h1>
                   <p className="text-sm text-slate-600 m-0">{commsPlan.length} Maßnahmen geplant</p>
@@ -450,7 +652,7 @@ Schlage 3-5 zusätzliche Kommunikationsmaßnahmen vor, die noch fehlen könnten.
                     onClick={() => { setEditingId(null); setShowForm(true); }}
                     className="cw-btn cw-btn-primary-solid cw-btn-compact inline-flex items-center gap-2"
                   >
-                    <Plus className="w-4 h-4" /> Maßnahme hinzufügen
+                    <Plus className="w-4 h-4" /> Hinzufügen
                   </button>
                   <button
                     type="button"
@@ -460,6 +662,22 @@ Schlage 3-5 zusätzliche Kommunikationsmaßnahmen vor, die noch fehlen könnten.
                   >
                     {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                     KI-Vorschläge
+                  </button>
+                  <button
+                    type="button"
+                    onClick={exportExcel}
+                    disabled={commsPlan.length === 0}
+                    className="cw-btn cw-btn-ghost cw-btn-compact inline-flex items-center gap-2"
+                  >
+                    <FileSpreadsheet className="w-4 h-4" /> Excel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={exportIcs}
+                    disabled={commsPlan.length === 0}
+                    className="cw-btn cw-btn-ghost cw-btn-compact inline-flex items-center gap-2"
+                  >
+                    <Calendar className="w-4 h-4" /> ICS
                   </button>
                 </div>
               </div>
@@ -480,6 +698,102 @@ Schlage 3-5 zusätzliche Kommunikationsmaßnahmen vor, die noch fehlen könnten.
               </div>
             </div>
 
+            <div className="cw-card">
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="relative flex-1 min-w-[200px]">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    type="text"
+                    className="cw-input-text pl-9"
+                    placeholder="Suchen nach Titel, Owner …"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <select
+                  className="cw-input-text w-auto"
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                >
+                  <option value="all">Alle Status</option>
+                  {STATUS_OPTIONS.map((s) => (
+                    <option key={s.value} value={s.value}>{s.label}</option>
+                  ))}
+                </select>
+                <select
+                  className="cw-input-text w-auto"
+                  value={filterChannel}
+                  onChange={(e) => setFilterChannel(e.target.value)}
+                >
+                  <option value="all">Alle Kanäle</option>
+                  {CHANNEL_OPTIONS.map((c) => (
+                    <option key={c.value} value={c.value}>{c.icon} {c.label}</option>
+                  ))}
+                </select>
+                <div className="flex gap-1 border rounded-lg overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('list')}
+                    className={`px-3 py-1.5 text-xs ${viewMode === 'list' ? 'bg-violet-100 text-violet-700' : 'text-slate-600'}`}
+                  >
+                    Liste
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('timeline')}
+                    className={`px-3 py-1.5 text-xs ${viewMode === 'timeline' ? 'bg-violet-100 text-violet-700' : 'text-slate-600'}`}
+                  >
+                    Timeline
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {selectedIds.size > 0 && (
+              <div className="cw-card bg-violet-50 border-violet-200">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <span className="text-sm font-medium text-violet-700">{selectedIds.size} ausgewählt</span>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => bulkUpdateStatus('planned')}
+                      className="text-xs px-2 py-1 rounded bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    >
+                      → Geplant
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => bulkUpdateStatus('in_progress')}
+                      className="text-xs px-2 py-1 rounded bg-amber-100 text-amber-700 hover:bg-amber-200"
+                    >
+                      → In Vorbereitung
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => bulkUpdateStatus('done')}
+                      className="text-xs px-2 py-1 rounded bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+                    >
+                      → Erledigt
+                    </button>
+                    <button
+                      type="button"
+                      onClick={bulkDelete}
+                      className="text-xs px-2 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200"
+                    >
+                      Löschen
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedIds(new Set())}
+                    className="text-xs text-violet-600 hover:underline ml-auto"
+                  >
+                    Auswahl aufheben
+                  </button>
+                </div>
+              </div>
+            )}
+
             {(showForm || editingId) && (
               <div className="cw-card">
                 <h2 className="text-lg font-semibold text-slate-800 mb-4">
@@ -494,88 +808,125 @@ Schlage 3-5 zusätzliche Kommunikationsmaßnahmen vor, die noch fehlen könnten.
               </div>
             )}
 
-            <CollapsibleSection title="Alle Maßnahmen" icon={Calendar} badge={`${commsPlan.length}`} defaultOpen>
-              {commsPlan.length === 0 ? (
-                <p className="text-sm text-slate-500 italic">
-                  Noch keine Kommunikationsmaßnahmen geplant. Klicke «Maßnahme hinzufügen» oder «KI-Vorschläge» um zu beginnen.
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {commsPlan.map((item) => {
-                    const channel = CHANNEL_OPTIONS.find((c) => c.value === item.channel) || CHANNEL_OPTIONS[0];
-                    const frequency = FREQUENCY_OPTIONS.find((f) => f.value === item.frequency) || FREQUENCY_OPTIONS[0];
-                    const status = STATUS_OPTIONS.find((s) => s.value === item.status) || STATUS_OPTIONS[0];
-                    const audiences = (item.targetAudience || [])
-                      .map((id) => stakeholders.find((s) => s.id === id)?.name)
-                      .filter(Boolean);
-
-                    return (
-                      <div key={item.id} className="rounded-xl border border-slate-200 bg-white p-4">
-                        <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
-                          <div className="flex items-start gap-3">
-                            <span className="text-2xl">{channel.icon}</span>
-                            <div>
-                              <p className="font-semibold text-slate-800 m-0">{item.title}</p>
-                              <p className="text-xs text-slate-500 m-0">
-                                {channel.label} · {frequency.label}
-                                {item.timing && ` · ${item.timing}`}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className={`text-[10px] px-2 py-0.5 rounded-full ${status.color}`}>
-                              {status.label}
-                            </span>
-                            {item.dueDate && (
-                              <span className="text-[10px] text-slate-500">
-                                Fällig: {new Date(item.dueDate).toLocaleDateString('de-CH')}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                          <div className="text-xs">
-                            <span className="font-semibold text-slate-600">Owner:</span>{' '}
-                            <span className="text-violet-700 font-medium">{item.owner || '—'}</span>
-                          </div>
-                          {audiences.length > 0 && (
-                            <div className="text-xs">
-                              <span className="font-semibold text-slate-600">Zielgruppe:</span>{' '}
-                              <span className="text-slate-700">{audiences.join(', ')}</span>
-                            </div>
-                          )}
-                        </div>
-
-                        {item.keyMessage && (
-                          <div className="bg-slate-50 rounded-lg p-2 mb-3 text-xs">
-                            <p className="font-semibold text-slate-600 m-0 mb-1">Kernbotschaft</p>
-                            <p className="text-slate-700 m-0">{item.keyMessage}</p>
-                          </div>
+            {viewMode === 'timeline' ? (
+              <CollapsibleSection title="Timeline-Ansicht" icon={Calendar} defaultOpen>
+                {filteredItems.length === 0 ? (
+                  <p className="text-sm text-slate-500 italic">Keine Maßnahmen vorhanden.</p>
+                ) : (
+                  <TimelineView items={filteredItems} stakeholders={stakeholders} onEdit={setEditingId} />
+                )}
+              </CollapsibleSection>
+            ) : (
+              <CollapsibleSection title="Alle Maßnahmen" icon={Calendar} badge={`${filteredItems.length}/${commsPlan.length}`} defaultOpen>
+                {filteredItems.length === 0 ? (
+                  <p className="text-sm text-slate-500 italic">
+                    {commsPlan.length === 0
+                      ? 'Noch keine Kommunikationsmaßnahmen geplant. Klicke «Hinzufügen» oder «KI-Vorschläge» um zu beginnen.'
+                      : 'Keine Maßnahmen entsprechen den Filterkriterien.'}
+                  </p>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-2 mb-3">
+                      <button
+                        type="button"
+                        onClick={selectAll}
+                        className="text-xs text-violet-600 hover:underline flex items-center gap-1"
+                      >
+                        {selectedIds.size === filteredItems.length ? (
+                          <><CheckSquare className="w-3.5 h-3.5" /> Alle abwählen</>
+                        ) : (
+                          <><Square className="w-3.5 h-3.5" /> Alle auswählen</>
                         )}
+                      </button>
+                    </div>
+                    <div className="space-y-3">
+                      {filteredItems.map((item) => {
+                        const channel = CHANNEL_OPTIONS.find((c) => c.value === item.channel) || CHANNEL_OPTIONS[0];
+                        const frequency = FREQUENCY_OPTIONS.find((f) => f.value === item.frequency) || FREQUENCY_OPTIONS[0];
+                        const status = STATUS_OPTIONS.find((s) => s.value === item.status) || STATUS_OPTIONS[0];
+                        const audiences = (item.targetAudience || [])
+                          .map((id) => stakeholders.find((s) => s.id === id)?.name)
+                          .filter(Boolean);
+                        const isSelected = selectedIds.has(item.id);
 
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setEditingId(item.id)}
-                            className="text-xs text-violet-600 hover:underline inline-flex items-center gap-1"
-                          >
-                            <Edit3 className="w-3 h-3" /> Bearbeiten
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => deleteItem(item.id)}
-                            className="text-xs text-red-600 hover:underline inline-flex items-center gap-1"
-                          >
-                            <Trash2 className="w-3 h-3" /> Löschen
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </CollapsibleSection>
+                        return (
+                          <div key={item.id} className={`rounded-xl border bg-white p-4 ${isSelected ? 'border-violet-300 bg-violet-50/30' : 'border-slate-200'}`}>
+                            <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+                              <div className="flex items-start gap-3">
+                                <button
+                                  type="button"
+                                  onClick={() => toggleSelect(item.id)}
+                                  className={`mt-0.5 shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                                    isSelected ? 'bg-violet-500 border-violet-500 text-white' : 'border-slate-300'
+                                  }`}
+                                >
+                                  {isSelected && <CheckCircle className="w-3 h-3" />}
+                                </button>
+                                <span className="text-2xl">{channel.icon}</span>
+                                <div>
+                                  <p className="font-semibold text-slate-800 m-0">{item.title}</p>
+                                  <p className="text-xs text-slate-500 m-0">
+                                    {channel.label} · {frequency.label}
+                                    {item.timing && ` · ${item.timing}`}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className={`text-[10px] px-2 py-0.5 rounded-full ${status.color}`}>
+                                  {status.label}
+                                </span>
+                                {item.dueDate && (
+                                  <span className="text-[10px] text-slate-500">
+                                    Fällig: {new Date(item.dueDate).toLocaleDateString('de-CH')}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                              <div className="text-xs">
+                                <span className="font-semibold text-slate-600">Owner:</span>{' '}
+                                <span className="text-violet-700 font-medium">{item.owner || '—'}</span>
+                              </div>
+                              {audiences.length > 0 && (
+                                <div className="text-xs">
+                                  <span className="font-semibold text-slate-600">Zielgruppe:</span>{' '}
+                                  <span className="text-slate-700">{audiences.join(', ')}</span>
+                                </div>
+                              )}
+                            </div>
+
+                            {item.keyMessage && (
+                              <div className="bg-slate-50 rounded-lg p-2 mb-3 text-xs">
+                                <p className="font-semibold text-slate-600 m-0 mb-1">Kernbotschaft</p>
+                                <p className="text-slate-700 m-0">{item.keyMessage}</p>
+                              </div>
+                            )}
+
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setEditingId(item.id)}
+                                className="text-xs text-violet-600 hover:underline inline-flex items-center gap-1"
+                              >
+                                <Edit3 className="w-3 h-3" /> Bearbeiten
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => deleteItem(item.id)}
+                                className="text-xs text-red-600 hover:underline inline-flex items-center gap-1"
+                              >
+                                <Trash2 className="w-3 h-3" /> Löschen
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </CollapsibleSection>
+            )}
 
             {stakeholders.length === 0 && (
               <div className="cw-card border-amber-200 bg-amber-50">

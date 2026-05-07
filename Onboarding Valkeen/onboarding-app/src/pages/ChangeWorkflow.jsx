@@ -1,6 +1,7 @@
 import { useMemo, useState, useCallback, useId, useEffect } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import {
+  BarChart3,
   Check,
   ClipboardList,
   ChevronDown,
@@ -534,6 +535,13 @@ export default function ChangeWorkflow() {
               </Link>
               {!participantOnly && (
                 <>
+                  <Link
+                    to="/change-workflow/dashboard"
+                    className="cw-btn cw-btn-ghost"
+                  >
+                    <BarChart3 className="w-3.5 h-3.5 opacity-80" aria-hidden />
+                    Dashboard
+                  </Link>
                   <Link
                     to="/change-workflow/tools"
                     className="cw-btn cw-btn-ghost"

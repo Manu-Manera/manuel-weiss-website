@@ -1,38 +1,55 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
+  AlertTriangle,
   ArrowLeft,
+  ArrowUpDown,
   Bot,
   CheckCircle,
   ChevronDown,
   Circle,
+  Copy,
   Edit3,
+  ExternalLink,
+  FileDown,
+  Filter,
+  History,
+  Lightbulb,
+  Link2,
   Loader2,
   Map,
+  MessageSquare,
   Plus,
   Save,
+  Search,
+  Share2,
   Sparkles,
+  Target,
   Trash2,
+  TrendingDown,
+  TrendingUp,
   UserCircle,
+  UserPlus,
   Users,
 } from 'lucide-react';
 
 import '../styles/change-workshop.css';
 import { useProgress } from '../hooks/useLocalStorage';
-import { getOpenAIApiKey } from '../services/awsService';
+import { getOpenAIApiKey, saveProgress, loadProgress } from '../services/awsService';
+import { KOTTER_CATALOG_ITEMS } from '../data/kotterCatalogData';
 
 const INFLUENCE_LEVELS = [
-  { value: 'high', label: 'Hoch', color: 'bg-red-100 text-red-700 border-red-200' },
-  { value: 'medium', label: 'Mittel', color: 'bg-amber-100 text-amber-700 border-amber-200' },
-  { value: 'low', label: 'Niedrig', color: 'bg-slate-100 text-slate-600 border-slate-200' },
+  { value: 'high', label: 'Hoch', color: 'bg-red-100 text-red-700 border-red-200', score: 3 },
+  { value: 'medium', label: 'Mittel', color: 'bg-amber-100 text-amber-700 border-amber-200', score: 2 },
+  { value: 'low', label: 'Niedrig', color: 'bg-slate-100 text-slate-600 border-slate-200', score: 1 },
 ];
 
 const SUPPORT_LEVELS = [
-  { value: 'champion', label: 'Champion', color: 'bg-emerald-100 text-emerald-700', emoji: '🚀' },
-  { value: 'supporter', label: 'Unterstützer', color: 'bg-green-100 text-green-700', emoji: '👍' },
-  { value: 'neutral', label: 'Neutral', color: 'bg-slate-100 text-slate-600', emoji: '😐' },
-  { value: 'skeptic', label: 'Skeptiker', color: 'bg-amber-100 text-amber-700', emoji: '🤔' },
-  { value: 'blocker', label: 'Blocker', color: 'bg-red-100 text-red-700', emoji: '🚫' },
+  { value: 'champion', label: 'Champion', color: 'bg-emerald-100 text-emerald-700', emoji: '🚀', score: 2 },
+  { value: 'supporter', label: 'Unterstützer', color: 'bg-green-100 text-green-700', emoji: '👍', score: 1 },
+  { value: 'neutral', label: 'Neutral', color: 'bg-slate-100 text-slate-600', emoji: '😐', score: 0 },
+  { value: 'skeptic', label: 'Skeptiker', color: 'bg-amber-100 text-amber-700', emoji: '🤔', score: -1 },
+  { value: 'blocker', label: 'Blocker', color: 'bg-red-100 text-red-700', emoji: '🚫', score: -2 },
 ];
 
 const STRATEGY_OPTIONS = [
@@ -44,6 +61,10 @@ const STRATEGY_OPTIONS = [
 
 function newId() {
   return `sh_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function stakeholderShareUserId(token) {
+  return `stakeholder-share-${token}`;
 }
 
 function CollapsibleSection({ title, icon: Icon, badge, defaultOpen = false, children }) {
@@ -67,7 +88,7 @@ function CollapsibleSection({ title, icon: Icon, badge, defaultOpen = false, chi
   );
 }
 
-function StakeholderForm({ stakeholder, onSave, onCancel }) {
+function StakeholderForm({ stakeholder, kotterItems, onSave, onCancel }) {
   const [form, setForm] = useState({ ...stakeholder });
 
   const updateField = (field, value) => setForm((f) => ({ ...f, [field]: value }));
@@ -88,6 +109,25 @@ function StakeholderForm({ stakeholder, onSave, onCancel }) {
 
   const removeAction = (id) => {
     setForm((f) => ({ ...f, actions: f.actions.filter((a) => a.id !== id) }));
+  };
+
+  const addComment = () => {
+    const text = window.prompt('Kommentar hinzufügen:');
+    if (!text?.trim()) return;
+    setForm((f) => ({
+      ...f,
+      comments: [...(f.comments || []), { id: newId(), text, createdAt: new Date().toISOString() }],
+    }));
+  };
+
+  const toggleKotterPhase = (slug) => {
+    setForm((f) => {
+      const current = f.kotterPhases || [];
+      if (current.includes(slug)) {
+        return { ...f, kotterPhases: current.filter((s) => s !== slug) };
+      }
+      return { ...f, kotterPhases: [...current, slug] };
+    });
   };
 
   return (
@@ -140,7 +180,15 @@ function StakeholderForm({ stakeholder, onSave, onCancel }) {
           <select
             className="cw-input-text"
             value={form.support || 'neutral'}
-            onChange={(e) => updateField('support', e.target.value)}
+            onChange={(e) => {
+              const oldSupport = form.support || 'neutral';
+              const newSupport = e.target.value;
+              if (oldSupport !== newSupport) {
+                const history = form.supportHistory || [];
+                history.push({ from: oldSupport, to: newSupport, date: new Date().toISOString() });
+                setForm((f) => ({ ...f, support: newSupport, supportHistory: history }));
+              }
+            }}
           >
             {SUPPORT_LEVELS.map((l) => (
               <option key={l.value} value={l.value}>{l.emoji} {l.label}</option>
@@ -182,6 +230,30 @@ function StakeholderForm({ stakeholder, onSave, onCancel }) {
           placeholder="Welche Bedenken oder Widerstände könnten auftreten?"
         />
       </label>
+
+      <div className="flex flex-col gap-2">
+        <span className="text-xs font-semibold text-slate-500 uppercase">Relevante Kotter-Phasen</span>
+        <div className="flex flex-wrap gap-2">
+          {kotterItems.map((k) => {
+            const isSelected = (form.kotterPhases || []).includes(k.slug);
+            return (
+              <button
+                key={k.slug}
+                type="button"
+                onClick={() => toggleKotterPhase(k.slug)}
+                className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
+                  isSelected
+                    ? 'bg-violet-100 border-violet-300 text-violet-700'
+                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-violet-300'
+                }`}
+              >
+                {isSelected && <CheckCircle className="w-3 h-3 inline mr-1" />}
+                {k.order}. {k.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
         <div className="flex items-center justify-between">
@@ -242,16 +314,57 @@ function StakeholderForm({ stakeholder, onSave, onCancel }) {
         )}
       </div>
 
-      <label className="flex flex-col gap-1">
-        <span className="text-xs font-semibold text-slate-500 uppercase">Notizen</span>
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-semibold text-slate-700">Kommentare / Notizen</span>
+          <button
+            type="button"
+            onClick={addComment}
+            className="text-xs text-violet-600 hover:underline inline-flex items-center gap-1"
+          >
+            <MessageSquare className="w-3 h-3" /> Kommentar
+          </button>
+        </div>
         <textarea
-          className="cw-textarea"
+          className="cw-textarea text-sm"
           rows={2}
           value={form.notes || ''}
           onChange={(e) => updateField('notes', e.target.value)}
-          placeholder="Weitere Hinweise, Kontaktinfos, Historie …"
+          placeholder="Allgemeine Notizen …"
         />
-      </label>
+        {(form.comments || []).length > 0 && (
+          <div className="space-y-2 pt-2 border-t border-slate-200">
+            {form.comments.map((c) => (
+              <div key={c.id} className="text-xs bg-white rounded-lg p-2 border border-slate-200">
+                <p className="text-slate-700 m-0">{c.text}</p>
+                <p className="text-slate-400 m-0 mt-1">{new Date(c.createdAt).toLocaleString('de-CH')}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {(form.supportHistory || []).length > 0 && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+          <p className="text-xs font-semibold text-amber-700 mb-2 flex items-center gap-1">
+            <History className="w-3.5 h-3.5" /> Sentiment-Verlauf
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {form.supportHistory.map((h, i) => {
+              const fromL = SUPPORT_LEVELS.find((l) => l.value === h.from);
+              const toL = SUPPORT_LEVELS.find((l) => l.value === h.to);
+              const improved = (toL?.score || 0) > (fromL?.score || 0);
+              return (
+                <span key={i} className="text-[10px] text-slate-600 inline-flex items-center gap-1">
+                  {fromL?.emoji} → {toL?.emoji}
+                  {improved ? <TrendingUp className="w-3 h-3 text-emerald-600" /> : <TrendingDown className="w-3 h-3 text-red-600" />}
+                  <span className="text-slate-400">({new Date(h.date).toLocaleDateString('de-CH')})</span>
+                </span>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="flex justify-end gap-2 pt-2">
         <button type="button" onClick={onCancel} className="cw-btn cw-btn-ghost cw-btn-compact">
@@ -270,6 +383,75 @@ function StakeholderForm({ stakeholder, onSave, onCancel }) {
   );
 }
 
+function RiskScoreCard({ stakeholders }) {
+  const { score, level, details } = useMemo(() => {
+    if (stakeholders.length === 0) return { score: 0, level: 'none', details: '' };
+
+    let totalRisk = 0;
+    let criticalCount = 0;
+    let highInfluenceNegative = 0;
+
+    stakeholders.forEach((s) => {
+      const inf = INFLUENCE_LEVELS.find((l) => l.value === s.influence);
+      const sup = SUPPORT_LEVELS.find((l) => l.value === s.support);
+      const infScore = inf?.score || 2;
+      const supScore = sup?.score || 0;
+
+      if (supScore < 0) {
+        totalRisk += infScore * Math.abs(supScore);
+        if (infScore === 3 && supScore <= -1) {
+          criticalCount++;
+          highInfluenceNegative++;
+        }
+      }
+    });
+
+    const maxRisk = stakeholders.length * 6;
+    const riskPercent = maxRisk > 0 ? (totalRisk / maxRisk) * 100 : 0;
+
+    let level = 'low';
+    if (riskPercent > 40 || criticalCount >= 2) level = 'high';
+    else if (riskPercent > 20 || criticalCount >= 1) level = 'medium';
+
+    return {
+      score: Math.round(riskPercent),
+      level,
+      details: `${criticalCount} kritische Stakeholder, ${highInfluenceNegative} mit hohem Einfluss & negativer Haltung`,
+    };
+  }, [stakeholders]);
+
+  if (stakeholders.length === 0) return null;
+
+  const levelColors = {
+    low: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    medium: 'bg-amber-100 text-amber-700 border-amber-200',
+    high: 'bg-red-100 text-red-700 border-red-200',
+  };
+
+  const levelLabels = { low: 'Niedrig', medium: 'Mittel', high: 'Hoch' };
+
+  return (
+    <div className={`rounded-xl border p-4 ${levelColors[level]}`}>
+      <div className="flex items-center justify-between mb-2">
+        <span className="font-semibold flex items-center gap-2">
+          <AlertTriangle className="w-5 h-5" />
+          Risiko-Score
+        </span>
+        <span className="text-2xl font-bold">{score}%</span>
+      </div>
+      <div className="w-full bg-white/50 rounded-full h-2 mb-2">
+        <div
+          className={`h-2 rounded-full ${level === 'high' ? 'bg-red-500' : level === 'medium' ? 'bg-amber-500' : 'bg-emerald-500'}`}
+          style={{ width: `${Math.min(score, 100)}%` }}
+        />
+      </div>
+      <p className="text-xs m-0">
+        <span className="font-semibold">Risikostufe: {levelLabels[level]}</span> — {details}
+      </p>
+    </div>
+  );
+}
+
 export default function StakeholderAnalysis() {
   const { progress, isLoading, isSyncing, updateChangeWorkshopKotter } = useProgress();
 
@@ -282,7 +464,33 @@ export default function StakeholderAnalysis() {
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
+  const [aiSuggestLoading, setAiSuggestLoading] = useState(false);
   const [aiTips, setAiTips] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterInfluence, setFilterInfluence] = useState('all');
+  const [filterSupport, setFilterSupport] = useState('all');
+  const [shareBusy, setShareBusy] = useState(false);
+  const [shareHint, setShareHint] = useState('');
+  const [pdfBusy, setPdfBusy] = useState(false);
+
+  useEffect(() => {
+    if (!shareHint) return;
+    const t = setTimeout(() => setShareHint(''), 4000);
+    return () => clearTimeout(t);
+  }, [shareHint]);
+
+  const filteredStakeholders = useMemo(() => {
+    return stakeholders.filter((s) => {
+      if (searchTerm && !s.name?.toLowerCase().includes(searchTerm.toLowerCase()) &&
+          !s.role?.toLowerCase().includes(searchTerm.toLowerCase()) &&
+          !s.department?.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return false;
+      }
+      if (filterInfluence !== 'all' && s.influence !== filterInfluence) return false;
+      if (filterSupport !== 'all' && s.support !== filterSupport) return false;
+      return true;
+    });
+  }, [stakeholders, searchTerm, filterInfluence, filterSupport]);
 
   const updateStakeholders = useCallback(
     (updater) => {
@@ -308,13 +516,30 @@ export default function StakeholderAnalysis() {
     [updateChangeWorkshopKotter]
   );
 
+  const updateProfile = useCallback(
+    (updater) => {
+      updateChangeWorkshopKotter((cw) => {
+        const id = cw.activeProfileId;
+        const prof = id ? cw.profiles[id] : null;
+        if (!id || !prof) return cw;
+        const next = typeof updater === 'function' ? updater(prof) : updater;
+        return {
+          ...cw,
+          profiles: { ...cw.profiles, [id]: { ...next, updatedAt: new Date().toISOString() } },
+        };
+      });
+    },
+    [updateChangeWorkshopKotter]
+  );
+
   const saveStakeholder = useCallback(
     (sh) => {
       if (!sh.id) {
         sh.id = newId();
+        sh.createdAt = new Date().toISOString();
         updateStakeholders((list) => [...list, sh]);
       } else {
-        updateStakeholders((list) => list.map((s) => (s.id === sh.id ? sh : s)));
+        updateStakeholders((list) => list.map((s) => (s.id === sh.id ? { ...sh, updatedAt: new Date().toISOString() } : s)));
       }
       setEditingId(null);
       setShowForm(false);
@@ -380,6 +605,161 @@ Gib für jeden kritischen Stakeholder (Skeptiker/Blocker mit hohem Einfluss) ein
     }
   }, [stakeholders]);
 
+  const generateAiSuggestions = useCallback(async () => {
+    setAiSuggestLoading(true);
+    try {
+      const apiKey = await getOpenAIApiKey();
+      const key = apiKey || localStorage.getItem('openai-api-key');
+      if (!key?.startsWith('sk-')) {
+        alert('Kein OpenAI API-Key gefunden.');
+        return;
+      }
+
+      const existingNames = stakeholders.map((s) => s.name).join(', ') || 'keine';
+      const projectContext = activeProfile?.customerLabel || 'Change-Projekt';
+
+      const prompt = `Du bist ein Change-Management-Experte. Schlage typische Stakeholder-Gruppen für ein Change-Projekt vor.
+
+PROJEKT: ${projectContext}
+BEREITS ERFASST: ${existingNames}
+
+Schlage 5 zusätzliche typische Stakeholder-Gruppen vor, die noch fehlen könnten. Format als JSON-Array:
+[
+  {
+    "name": "Gruppenname",
+    "role": "typische Rolle",
+    "department": "Bereich",
+    "influence": "high|medium|low",
+    "support": "champion|supporter|neutral|skeptic|blocker",
+    "strategy": "engage|involve|inform|monitor",
+    "interests": "typische Interessen",
+    "concerns": "typische Bedenken"
+  }
+]`;
+
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+        body: JSON.stringify({
+          model: 'gpt-4.1',
+          messages: [
+            { role: 'system', content: 'Du bist ein Stakeholder-Experte. Antworte ausschließlich mit validem JSON.' },
+            { role: 'user', content: prompt },
+          ],
+          temperature: 0.7,
+          max_tokens: 1000,
+        }),
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const content = data.choices?.[0]?.message?.content || '';
+      const jsonMatch = content.match(/\[[\s\S]*\]/);
+      if (!jsonMatch) throw new Error('Keine JSON-Antwort erhalten');
+
+      const suggestions = JSON.parse(jsonMatch[0]);
+      const newShs = suggestions.map((s) => ({
+        id: newId(),
+        name: s.name,
+        role: s.role || '',
+        department: s.department || '',
+        influence: s.influence || 'medium',
+        support: s.support || 'neutral',
+        strategy: s.strategy || 'inform',
+        interests: s.interests || '',
+        concerns: s.concerns || '',
+        actions: [],
+        comments: [],
+        notes: '(KI-Vorschlag)',
+        createdAt: new Date().toISOString(),
+      }));
+
+      updateStakeholders((list) => [...list, ...newShs]);
+      alert(`${newShs.length} Stakeholder-Vorschläge hinzugefügt.`);
+    } catch (e) {
+      alert(`Fehler: ${e?.message}`);
+    } finally {
+      setAiSuggestLoading(false);
+    }
+  }, [stakeholders, activeProfile?.customerLabel, updateStakeholders]);
+
+  const createShareLink = useCallback(async () => {
+    setShareBusy(true);
+    try {
+      let token = activeProfile?.stakeholderShareToken;
+      if (!token) {
+        token = crypto.randomUUID();
+        updateProfile((p) => ({ ...p, stakeholderShareToken: token }));
+      }
+      const blob = {
+        stakeholders,
+        customerLabel: activeProfile?.customerLabel,
+        sharedAt: new Date().toISOString(),
+      };
+      await saveProgress(stakeholderShareUserId(token), { stakeholderShare: blob });
+      const url = `${window.location.origin}/onboarding/stakeholder-share/${token}`;
+      await navigator.clipboard.writeText(url);
+      setShareHint('Link kopiert!');
+    } catch (e) {
+      setShareHint(`Fehler: ${e?.message}`);
+    } finally {
+      setShareBusy(false);
+    }
+  }, [activeProfile, stakeholders, updateProfile]);
+
+  const exportPdf = useCallback(async () => {
+    setPdfBusy(true);
+    try {
+      const { jsPDF } = await import('jspdf');
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      const pageW = doc.internal.pageSize.getWidth();
+      let y = 20;
+
+      doc.setFontSize(18);
+      doc.text('Stakeholder-Analyse', 14, y);
+      y += 10;
+      doc.setFontSize(10);
+      doc.text(activeProfile?.customerLabel || 'Change-Projekt', 14, y);
+      y += 8;
+      doc.text(`Erstellt: ${new Date().toLocaleDateString('de-CH')}`, 14, y);
+      y += 12;
+
+      doc.setFontSize(12);
+      doc.text('Übersicht', 14, y);
+      y += 6;
+      doc.setFontSize(9);
+
+      stakeholders.forEach((s) => {
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
+        const inf = INFLUENCE_LEVELS.find((l) => l.value === s.influence)?.label || s.influence;
+        const sup = SUPPORT_LEVELS.find((l) => l.value === s.support)?.label || s.support;
+        const strat = STRATEGY_OPTIONS.find((o) => o.value === s.strategy)?.label || s.strategy;
+        doc.text(`• ${s.name} (${s.role || '-'}, ${s.department || '-'})`, 14, y);
+        y += 4;
+        doc.text(`  Einfluss: ${inf} | Unterstützung: ${sup} | Strategie: ${strat}`, 14, y);
+        y += 4;
+        if (s.interests) {
+          doc.text(`  Interessen: ${s.interests.slice(0, 80)}${s.interests.length > 80 ? '…' : ''}`, 14, y);
+          y += 4;
+        }
+        if (s.concerns) {
+          doc.text(`  Bedenken: ${s.concerns.slice(0, 80)}${s.concerns.length > 80 ? '…' : ''}`, 14, y);
+          y += 4;
+        }
+        y += 3;
+      });
+
+      doc.save(`Stakeholder-Analyse_${activeProfile?.customerLabel || 'Export'}.pdf`);
+    } catch (e) {
+      alert(`PDF-Export fehlgeschlagen: ${e?.message}`);
+    } finally {
+      setPdfBusy(false);
+    }
+  }, [stakeholders, activeProfile]);
+
   const matrixData = useMemo(() => {
     const matrix = {
       high: { champion: [], supporter: [], neutral: [], skeptic: [], blocker: [] },
@@ -395,6 +775,19 @@ Gib für jeden kritischen Stakeholder (Skeptiker/Blocker mit hohem Einfluss) ein
     });
     return matrix;
   }, [stakeholders]);
+
+  const moveStakeholder = useCallback((id, newInfluence, newSupport) => {
+    updateStakeholders((list) =>
+      list.map((s) => {
+        if (s.id !== id) return s;
+        const history = s.supportHistory || [];
+        if (s.support !== newSupport) {
+          history.push({ from: s.support, to: newSupport, date: new Date().toISOString() });
+        }
+        return { ...s, influence: newInfluence, support: newSupport, supportHistory: history };
+      })
+    );
+  }, [updateStakeholders]);
 
   if (isLoading) {
     return (
@@ -437,7 +830,7 @@ Gib für jeden kritischen Stakeholder (Skeptiker/Blocker mit hohem Einfluss) ein
         </div>
       </header>
 
-      <main className="cw-container py-8 max-w-5xl space-y-6">
+      <main className="cw-container py-8 max-w-6xl space-y-6">
         {!activeProfile ? (
           <div className="cw-card text-center py-8">
             <Users className="w-10 h-10 mx-auto text-slate-400 mb-4" aria-hidden />
@@ -450,7 +843,7 @@ Gib für jeden kritischen Stakeholder (Skeptiker/Blocker mit hohem Einfluss) ein
         ) : (
           <>
             <div className="cw-card bg-gradient-to-br from-violet-50/80 to-white">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
                 <div>
                   <h1 className="text-xl font-bold text-slate-800 m-0 mb-1">{activeProfile.customerLabel || 'Stakeholder-Analyse'}</h1>
                   <p className="text-sm text-slate-600 m-0">{stakeholders.length} Stakeholder erfasst</p>
@@ -461,7 +854,16 @@ Gib für jeden kritischen Stakeholder (Skeptiker/Blocker mit hohem Einfluss) ein
                     onClick={() => { setEditingId(null); setShowForm(true); }}
                     className="cw-btn cw-btn-primary-solid cw-btn-compact inline-flex items-center gap-2"
                   >
-                    <Plus className="w-4 h-4" /> Stakeholder hinzufügen
+                    <Plus className="w-4 h-4" /> Hinzufügen
+                  </button>
+                  <button
+                    type="button"
+                    onClick={generateAiSuggestions}
+                    disabled={aiSuggestLoading}
+                    className="cw-btn cw-btn-accent-outline cw-btn-compact inline-flex items-center gap-2"
+                  >
+                    {aiSuggestLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
+                    KI-Vorschläge
                   </button>
                   <button
                     type="button"
@@ -470,9 +872,76 @@ Gib für jeden kritischen Stakeholder (Skeptiker/Blocker mit hohem Einfluss) ein
                     className="cw-btn cw-btn-accent-outline cw-btn-compact inline-flex items-center gap-2"
                   >
                     {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                    KI-Empfehlungen
+                    KI-Strategie
+                  </button>
+                  <button
+                    type="button"
+                    onClick={exportPdf}
+                    disabled={pdfBusy || stakeholders.length === 0}
+                    className="cw-btn cw-btn-ghost cw-btn-compact inline-flex items-center gap-2"
+                  >
+                    {pdfBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+                    PDF
+                  </button>
+                  <button
+                    type="button"
+                    onClick={createShareLink}
+                    disabled={shareBusy}
+                    className="cw-btn cw-btn-ghost cw-btn-compact inline-flex items-center gap-2"
+                  >
+                    {shareBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="w-4 h-4" />}
+                    Teilen
                   </button>
                 </div>
+              </div>
+              {shareHint && (
+                <p className="text-xs text-emerald-600 mt-2 m-0">{shareHint}</p>
+              )}
+            </div>
+
+            <RiskScoreCard stakeholders={stakeholders} />
+
+            <div className="cw-card">
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="relative flex-1 min-w-[200px]">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    type="text"
+                    className="cw-input-text pl-9"
+                    placeholder="Suchen nach Name, Rolle, Abteilung …"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <select
+                  className="cw-input-text w-auto"
+                  value={filterInfluence}
+                  onChange={(e) => setFilterInfluence(e.target.value)}
+                >
+                  <option value="all">Alle Einfluss</option>
+                  {INFLUENCE_LEVELS.map((l) => (
+                    <option key={l.value} value={l.value}>{l.label}</option>
+                  ))}
+                </select>
+                <select
+                  className="cw-input-text w-auto"
+                  value={filterSupport}
+                  onChange={(e) => setFilterSupport(e.target.value)}
+                >
+                  <option value="all">Alle Unterstützung</option>
+                  {SUPPORT_LEVELS.map((l) => (
+                    <option key={l.value} value={l.value}>{l.emoji} {l.label}</option>
+                  ))}
+                </select>
+                {(searchTerm || filterInfluence !== 'all' || filterSupport !== 'all') && (
+                  <button
+                    type="button"
+                    onClick={() => { setSearchTerm(''); setFilterInfluence('all'); setFilterSupport('all'); }}
+                    className="text-xs text-violet-600 hover:underline"
+                  >
+                    Filter zurücksetzen
+                  </button>
+                )}
               </div>
             </div>
 
@@ -482,7 +951,8 @@ Gib für jeden kritischen Stakeholder (Skeptiker/Blocker mit hohem Einfluss) ein
                   {editingId ? 'Stakeholder bearbeiten' : 'Neuer Stakeholder'}
                 </h2>
                 <StakeholderForm
-                  stakeholder={editingStakeholder || { influence: 'medium', support: 'neutral', strategy: 'inform', actions: [] }}
+                  stakeholder={editingStakeholder || { influence: 'medium', support: 'neutral', strategy: 'inform', actions: [], comments: [], kotterPhases: [] }}
+                  kotterItems={KOTTER_CATALOG_ITEMS}
                   onSave={saveStakeholder}
                   onCancel={() => { setEditingId(null); setShowForm(false); }}
                 />
@@ -494,7 +964,7 @@ Gib für jeden kritischen Stakeholder (Skeptiker/Blocker mit hohem Einfluss) ein
                 <div className="flex items-start gap-3">
                   <Bot className="w-5 h-5 text-violet-600 shrink-0 mt-0.5" aria-hidden />
                   <div>
-                    <p className="font-semibold text-violet-700 m-0 mb-2">KI-Empfehlungen</p>
+                    <p className="font-semibold text-violet-700 m-0 mb-2">KI-Strategie-Empfehlungen</p>
                     <div className="text-sm text-slate-700 whitespace-pre-wrap">{aiTips}</div>
                   </div>
                 </div>
@@ -532,14 +1002,32 @@ Gib für jeden kritischen Stakeholder (Skeptiker/Blocker mit hohem Einfluss) ein
                             >
                               <div className="space-y-1">
                                 {items.map((s) => (
-                                  <button
-                                    key={s.id}
-                                    onClick={() => setEditingId(s.id)}
-                                    className="w-full text-left text-xs px-2 py-1 rounded bg-white border border-slate-200 hover:border-violet-300 hover:bg-violet-50 transition-colors truncate"
-                                    title={`${s.name} - Klicken zum Bearbeiten`}
-                                  >
-                                    {s.name}
-                                  </button>
+                                  <div key={s.id} className="group relative">
+                                    <button
+                                      onClick={() => setEditingId(s.id)}
+                                      className="w-full text-left text-xs px-2 py-1 rounded bg-white border border-slate-200 hover:border-violet-300 hover:bg-violet-50 transition-colors truncate"
+                                      title={`${s.name} - Klicken zum Bearbeiten`}
+                                    >
+                                      {s.name}
+                                    </button>
+                                    <select
+                                      className="absolute right-0 top-0 w-5 h-full opacity-0 cursor-pointer"
+                                      value={`${s.influence}|${s.support}`}
+                                      onChange={(e) => {
+                                        const [newInf, newSup] = e.target.value.split('|');
+                                        moveStakeholder(s.id, newInf, newSup);
+                                      }}
+                                      title="In andere Zelle verschieben"
+                                    >
+                                      {INFLUENCE_LEVELS.map((i) =>
+                                        SUPPORT_LEVELS.map((sp) => (
+                                          <option key={`${i.value}|${sp.value}`} value={`${i.value}|${sp.value}`}>
+                                            {i.label} / {sp.label}
+                                          </option>
+                                        ))
+                                      )}
+                                    </select>
+                                  </div>
                                 ))}
                               </div>
                             </td>
@@ -552,34 +1040,44 @@ Gib für jeden kritischen Stakeholder (Skeptiker/Blocker mit hohem Einfluss) ein
               </div>
               <p className="text-xs text-slate-500 mt-3">
                 <span className="inline-block w-3 h-3 bg-red-50 border border-red-200 rounded mr-1"></span>
-                Kritische Zone: Hoher Einfluss + Skeptiker/Blocker = Priorität für Engagement
+                Kritische Zone: Hoher Einfluss + Skeptiker/Blocker = Priorität für Engagement.
+                <span className="ml-2">Tipp: Per Dropdown verschieben für Sentiment-Tracking.</span>
               </p>
             </CollapsibleSection>
 
-            <CollapsibleSection title="Alle Stakeholder" icon={UserCircle} badge={`${stakeholders.length}`} defaultOpen>
-              {stakeholders.length === 0 ? (
+            <CollapsibleSection title="Alle Stakeholder" icon={UserCircle} badge={`${filteredStakeholders.length}/${stakeholders.length}`} defaultOpen>
+              {filteredStakeholders.length === 0 ? (
                 <p className="text-sm text-slate-500 italic">
-                  Noch keine Stakeholder erfasst. Klicke «Stakeholder hinzufügen» um zu beginnen.
+                  {stakeholders.length === 0
+                    ? 'Noch keine Stakeholder erfasst. Klicke «Hinzufügen» oder «KI-Vorschläge» um zu beginnen.'
+                    : 'Keine Stakeholder entsprechen den Filterkriterien.'}
                 </p>
               ) : (
                 <div className="space-y-3">
-                  {stakeholders.map((s) => {
+                  {filteredStakeholders.map((s) => {
                     const infLevel = INFLUENCE_LEVELS.find((l) => l.value === s.influence) || INFLUENCE_LEVELS[1];
                     const supLevel = SUPPORT_LEVELS.find((l) => l.value === s.support) || SUPPORT_LEVELS[2];
                     const strategy = STRATEGY_OPTIONS.find((o) => o.value === s.strategy) || STRATEGY_OPTIONS[2];
                     const actionsDone = (s.actions || []).filter((a) => a.done).length;
                     const actionsTotal = (s.actions || []).length;
+                    const linkedKotter = (s.kotterPhases || []).length;
+                    const hasHistory = (s.supportHistory || []).length > 0;
 
                     return (
                       <div key={s.id} className="rounded-xl border border-slate-200 bg-white p-4">
                         <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
                           <div>
-                            <p className="font-semibold text-slate-800 m-0">{s.name}</p>
+                            <p className="font-semibold text-slate-800 m-0 flex items-center gap-2">
+                              {s.name}
+                              {hasHistory && (
+                                <History className="w-3.5 h-3.5 text-amber-500" title="Sentiment-Verlauf vorhanden" />
+                              )}
+                            </p>
                             <p className="text-xs text-slate-500 m-0">
                               {[s.role, s.department].filter(Boolean).join(' · ') || 'Keine Details'}
                             </p>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
                             <span className={`text-[10px] px-2 py-0.5 rounded-full border ${infLevel.color}`}>
                               Einfluss: {infLevel.label}
                             </span>
@@ -589,6 +1087,12 @@ Gib für jeden kritischen Stakeholder (Skeptiker/Blocker mit hohem Einfluss) ein
                             <span className={`text-[10px] font-medium ${strategy.color}`}>
                               → {strategy.label}
                             </span>
+                            {linkedKotter > 0 && (
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-violet-100 text-violet-700">
+                                <Target className="w-3 h-3 inline mr-0.5" />
+                                {linkedKotter} Kotter
+                              </span>
+                            )}
                           </div>
                         </div>
 
@@ -618,6 +1122,13 @@ Gib für jeden kritischen Stakeholder (Skeptiker/Blocker mit hohem Einfluss) ein
                               </span>
                             ))}
                             {actionsTotal > 2 && <span className="ml-1 text-slate-400">+{actionsTotal - 2} mehr</span>}
+                          </div>
+                        )}
+
+                        {(s.comments || []).length > 0 && (
+                          <div className="text-xs text-slate-500 mb-3 flex items-center gap-1">
+                            <MessageSquare className="w-3 h-3" />
+                            {s.comments.length} Kommentar{s.comments.length > 1 ? 'e' : ''}
                           </div>
                         )}
 
