@@ -1,111 +1,221 @@
-/** Schematische SVG‑Diagramme zum Workshop‑Inhalt (keine externen Bild‑Assets). */
+/** Präsentationsnahe Workshop‑Diagramme (SVG mit Verläufen, Schatten, klarer Hierarchie). */
 
 import { useId } from 'react';
 
-function SvgWrap({ titleId, titleText, vb, height, children }) {
+/** Stabile lokale SVG‑IDs (pro Komponenteninstanz durch useId eindeutig). */
+function useSvgUid(prefix) {
+  return `${prefix}${useId().replace(/[^a-zA-Z0-9_-]/g, 'x')}`;
+}
+
+/**
+ * Gemeinsamer Rahmen mit Standard‑Defs für „Folienstil“ (Violett, Schatten, Flächen).
+ * @param {{ titleId: string, titleText: string, vb: string, height: string, children: (uid: string) => React.ReactNode }} props
+ */
+function SvgChartShell({ titleId, titleText, vb, height, children }) {
+  const U = useSvgUid('cwD');
   return (
     <svg
       role="img"
       aria-labelledby={titleId}
       viewBox={vb}
+      width="560"
       className="cw-diagram-svg"
-      style={{
-        height,
-        width: '100%',
-        display: 'block',
-      }}
+      style={{ height, width: '100%', display: 'block' }}
       preserveAspectRatio="xMidYMid meet"
     >
       <title id={titleId}>{titleText}</title>
-      {children}
+      <defs>
+        <linearGradient id={`${U}_vioStroke`} x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="var(--cw-accent-strong)" />
+          <stop offset="100%" stopColor="var(--cw-accent)" />
+        </linearGradient>
+        <linearGradient id={`${U}_vioFade`} x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="var(--cw-accent)" stopOpacity={0.32} />
+          <stop offset="100%" stopColor="var(--cw-accent-strong)" stopOpacity={0.04} />
+        </linearGradient>
+        <linearGradient id={`${U}_pane`} x1="12%" y1="0%" x2="88%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity={0.98} />
+          <stop offset="100%" stopColor="var(--cw-card-soft)" stopOpacity={1} />
+        </linearGradient>
+        <linearGradient id={`${U}_silver`} x1="0%" y1="50%" x2="100%" y2="50%">
+          <stop offset="0%" stopColor="#cbd5e1" stopOpacity={0.35} />
+          <stop offset="50%" stopColor="#94a3b8" stopOpacity={0.2} />
+          <stop offset="100%" stopColor="#cbd5e1" stopOpacity={0.35} />
+        </linearGradient>
+        <filter id={`${U}_softDrop`} x="-35%" y="-35%" width="170%" height="170%">
+          <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#312e81" floodOpacity="0.12" />
+        </filter>
+        <filter id={`${U}_nodeLift`} x="-50%" y="-50%" width="200%" height="200%">
+          <feDropShadow dx="0" dy="3" stdDeviation="2.5" floodColor="#1e293b" floodOpacity="0.14" />
+        </filter>
+        <filter id={`${U}_glowDot`} x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="2.8" result="b" />
+          <feMerge>
+            <feMergeNode in="b" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      {children(U)}
     </svg>
+  );
+}
+
+/** Beschriftungs‑„Pill« hinter KPI‑Text über der Grafik */
+function SvgLabelBadge({ cx, cy, w, lines, accent = false }) {
+  const lh = 13;
+  const padX = 9;
+  const padY = 7;
+  const h = padY * 2 + lines.length * lh;
+  const x = cx - w / 2;
+  const y = cy - h / 2;
+  return (
+    <g>
+      <rect
+        x={x}
+        y={y}
+        width={w}
+        height={h}
+        rx="11"
+        fill={accent ? 'rgba(124,58,237,0.12)' : 'rgba(255,255,255,0.95)'}
+        stroke={accent ? 'rgba(124,58,237,0.35)' : 'rgba(148,163,184,0.55)'}
+        strokeWidth={1}
+      />
+      {lines.map((line, i) => (
+        <text
+          key={i}
+          x={cx}
+          y={y + padY + 10 + i * lh}
+          textAnchor="middle"
+          fill={accent ? 'var(--cw-accent-strong)' : 'var(--cw-text-muted)'}
+          style={{ font: `${i === 0 ? 'bold' : '500'} ${i === 0 ? '10.5px' : '10px'} system-ui,sans-serif` }}
+        >
+          {line}
+        </text>
+      ))}
+    </g>
   );
 }
 
 function OrientFlowDiagram({ titleId }) {
   const steps = ['Check-in', 'Erarbeitung', 'Verdichtung', 'Commitment'];
   return (
-    <SvgWrap titleId={titleId} titleText="Moderationsimpuls eines kompakten Workshop‑Blocks." vb="0 0 480 152" height="9.35rem">
-      <path d="M36 94 H444" stroke="var(--cw-border)" strokeWidth="2" strokeLinecap="round" />
-      {steps.map((label, i) => {
-        const x = 60 + i * (360 / Math.max(steps.length - 1, 1));
-        return (
-          <g key={label}>
-            <circle cx={x} cy="94" r="13" fill="var(--cw-card)" stroke="var(--cw-accent)" strokeWidth="2.5" />
-            <circle cx={x} cy="94" r="4" fill="var(--cw-accent)" />
-            <text
-              x={x}
-              y="130"
-              textAnchor="middle"
-              fill="var(--cw-text-muted)"
-              style={{ font: 'bold 11px system-ui,sans-serif' }}
-            >
-              {label}
-            </text>
-          </g>
-        );
-      })}
-      <text x="240" y="38" textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '600 14px system-ui,sans-serif' }}>
-        Von persönlicher Anbindung zur gemeinsamen Absicherung der nächsten Schritte
-      </text>
-    </SvgWrap>
+    <SvgChartShell titleId={titleId} titleText="Moderationsimpuls eines kompakten Workshop‑Blocks." vb="0 0 520 164" height="10.75rem">
+      {(U) => (
+        <>
+          <rect x="26" y="22" width="468" height="122" rx="20" fill={`url(#${U}_pane)`} stroke="var(--cw-border-subtle)" />
+          <text x="260" y="48" textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '700 13.5px system-ui,sans-serif' }}>
+            Vom Check‑in zur Verdichtung
+          </text>
+          <path
+            d="M54 118 H472"
+            fill="none"
+            stroke={`url(#${U}_silver)`}
+            strokeWidth={8}
+            strokeLinecap="round"
+          />
+          <path
+            d="M54 118 H472"
+            fill="none"
+            stroke={`url(#${U}_vioStroke)`}
+            strokeOpacity={0.55}
+            strokeWidth={5}
+            strokeLinecap="round"
+            strokeDasharray="2 14"
+          />
+          {steps.map((label, i) => {
+            const x = 68 + i * ((472 - 68) / (steps.length - 1 || 1));
+            return (
+              <g key={label} filter={`url(#${U}_nodeLift)`}>
+                <circle cx={x} cy="118" r="18" fill="#fff" stroke={`url(#${U}_vioStroke)`} strokeWidth={2.5} />
+                <circle cx={x} cy="118" r="10" fill="rgba(167,139,250,0.35)" stroke="none" />
+                <circle cx={x} cy="118" r="5.5" fill="var(--cw-accent-strong)" />
+                <text
+                  x={x}
+                  y="152"
+                  textAnchor="middle"
+                  fill="var(--cw-text)"
+                  style={{ font: '700 11.5px system-ui,sans-serif' }}
+                >
+                  {label}
+                </text>
+              </g>
+            );
+          })}
+        </>
+      )}
+    </SvgChartShell>
   );
 }
 
 function EmotionCurveDiagram({ titleId }) {
+  const curve =
+    'M 64 138 C 128 174, 168 178, 220 154 S 304 118, 352 138 S 420 154, 456 146';
+  const baseY = 178;
   return (
-    <SvgWrap titleId={titleId} titleText="Schemisches Spannungsbild bei einem grösseren organisationalen Umbau." vb="0 0 480 200" height="13rem">
-      <text x="32" y="26" fill="var(--cw-text-muted)" style={{ font: 'bold 11px system-ui,sans-serif' }}>
-        Energie für Veränderung (Beispieldarstellung)
-      </text>
-      <path d="M48 150 H426" stroke="var(--cw-border-subtle)" strokeWidth="2" strokeLinecap="round" />
-      <path d="M48 36 V154" stroke="var(--cw-border-subtle)" strokeWidth="2" strokeLinecap="round" />
-      <text x="380" y="176" fill="var(--cw-text-muted)" style={{ font: '11px system-ui,sans-serif' }}>
-        Projekt‑/ Change‑Zeit →
-      </text>
-      <path
-        d="M 56 118 C 120 146, 150 164, 200 152 S 290 118, 328 134 S 398 150, 430 138"
-        fill="none"
-        stroke="var(--cw-accent)"
-        strokeOpacity={0.38}
-        strokeWidth="9"
-        strokeLinecap="round"
-      />
-      <path
-        d="M 56 118 C 120 146, 150 164, 200 152 S 290 118, 328 134 S 398 150, 430 138"
-        fill="none"
-        stroke="var(--cw-accent-strong)"
-        strokeOpacity={0.76}
-        strokeWidth="3.5"
-      />
-      {[
-        { x: 58, lb: 'Unsicherheit' },
-        { x: 146, lb: 'Rückstellung' },
-        { x: 234, lb: 'Auseinanders.' },
-        { x: 328, lb: 'Experiment' },
-        { x: 418, lb: 'Verankerung' },
-      ].map((p) => (
-        <g key={p.lb}>
-          <circle cx={p.x} cy="92" r="5" fill="var(--cw-accent-strong)" opacity={p.lb.includes('Aus') ? 0.92 : 0.65} />
-          <text
-            x={p.x}
-            y="62"
-            textAnchor={p.x < 96 ? 'start' : p.x > 392 ? 'end' : 'middle'}
-            fill="var(--cw-text-muted)"
-            style={{ font: '10px system-ui,sans-serif' }}
-          >
-            {p.lb}
+    <SvgChartShell
+      titleId={titleId}
+      titleText="Schemisches Spannungs‑ und Aktivierungsfeld über die Zeit eines Change‑Programms."
+      vb="0 0 560 246"
+      height="15rem"
+    >
+      {(U) => (
+        <>
+          <rect x="22" y="18" width="516" height="208" rx="22" fill={`url(#${U}_pane)`} stroke="var(--cw-border-subtle)" />
+          <text x="40" y="46" fill="var(--cw-text-secondary)" style={{ font: '700 12.5px system-ui,sans-serif' }}>
+            Dynamik unter Veränderung
           </text>
-        </g>
-      ))}
-    </SvgWrap>
+          <text x="40" y="64" fill="var(--cw-text-muted)" style={{ font: '600 11px system-ui,sans-serif' }}>
+            Beispieldarstellung zur Moderation · keine Timing‑Pflicht
+          </text>
+          <text x="48" y="96" fill="var(--cw-text-muted)" transform="rotate(-90 46 146)" style={{ font: '600 10px system-ui,sans-serif', letterSpacing: '0.04em' }}>
+            INTENSITÄT
+          </text>
+          <path d={`M92 172 H526`} stroke="var(--cw-border-subtle)" strokeWidth="2" strokeLinecap="round" />
+          <path d={`M92 88 V192`} stroke="var(--cw-border-subtle)" strokeWidth="2" strokeLinecap="round" />
+          {[0.25, 0.55, 0.78].map((pct, idx) => (
+            <path
+              key={idx}
+              d={`M92 ${88 + pct * (172 - 88)} H520`}
+              stroke="var(--cw-border-subtle)"
+              strokeWidth="1"
+              strokeDasharray="3 10"
+              opacity={0.6}
+            />
+          ))}
+          <path d={`${curve} L 456 ${baseY} L 64 ${baseY} Z`} fill={`url(#${U}_vioFade)`} stroke="none" opacity={1} />
+          <path d={curve} fill="none" stroke={`url(#${U}_vioStroke)`} strokeWidth={7} strokeLinecap="round" opacity={0.22} />
+          <path d={curve} fill="none" stroke={`url(#${U}_vioStroke)`} strokeWidth={3.4} strokeLinecap="round" filter={`url(#${U}_softDrop)`} />
+          {[
+            { x: 64, lines: ['Unsicherheit'] },
+            { x: 160, lines: ['Rückstellung'] },
+            { x: 244, lines: ['Auseinander-', 'setzung'] },
+            { x: 356, lines: ['Experiment'] },
+            { x: 450, lines: ['Verankerung'] },
+          ].map((p, i) => (
+            <g key={p.lines.join('-')} filter={`url(#${U}_glowDot)`}>
+              <circle cx={p.x} cy="138" r="8" fill="#fff" stroke={`url(#${U}_vioStroke)`} strokeWidth={2} />
+              <circle cx={p.x} cy="138" r="4.2" fill="var(--cw-accent-strong)" />
+              <SvgLabelBadge cx={p.x} cy={i === 2 ? 106 : i === 0 || i === 4 ? 100 : 100} w={i === 2 ? 118 : i === 0 ? 112 : i === 4 ? 104 : 100} lines={p.lines} accent={i === 2} />
+            </g>
+          ))}
+          <text x="520" y="198" textAnchor="end" fill="var(--cw-text-muted)" style={{ font: '600 11px system-ui,sans-serif', letterSpacing: '0.02em' }}>
+            Zeit / Reife ⟶
+          </text>
+          <rect x="102" y="184" width="120" height="28" rx="8" fill="rgba(248,250,252,0.94)" stroke="var(--cw-border-subtle)" />
+          <text x="111" y="202" fill="var(--cw-text-muted)" style={{ font: '500 10.5px system-ui,sans-serif' }}>
+            ● Meilenpunkt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tspan opacity={0.55}>⋯</tspan> Hilfsraster
+          </text>
+        </>
+      )}
+    </SvgChartShell>
   );
 }
 
 function KotterEightDiagram({ titleId }) {
   const items = [
     'Dringlichkeit',
-    'Führungsnetzwerk',
+    'Führungs‑netz',
     'Vision',
     'Kommunikation',
     'Befähigung',
@@ -114,277 +224,467 @@ function KotterEightDiagram({ titleId }) {
     'Verankerung',
   ];
   return (
-    <SvgWrap titleId={titleId} titleText="Klassische Ursachenfelder wenn Change stockt." vb="0 0 480 228" height="14rem">
-      <text x="240" y="26" textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '600 13px system-ui,sans-serif' }}>
-        Prüfkatalog (Auszug — Kotter)
-      </text>
-      {items.map((txt, idx) => {
-        const row = idx < 4 ? 0 : 1;
-        const col = idx % 4;
-        const x = 26 + col * 112;
-        const y = row === 0 ? 44 : 128;
-        return (
-          <g key={txt}>
-            <rect x={x} y={y} rx="12" width="104" height="72" fill="var(--cw-link-muted-bg)" stroke="var(--cw-accent-soft-border)" />
-            <text x={x + 52} y={y + 28} textAnchor="middle" fill="var(--cw-accent-strong)" style={{ font: 'bold 13px system-ui,sans-serif' }}>
-              {idx + 1}.
-            </text>
-            <text x={x + 52} y={y + 52} textAnchor="middle" fill="var(--cw-text)" style={{ font: 'bold 11px system-ui,sans-serif' }}>
-              {txt}
-            </text>
-          </g>
-        );
-      })}
-    </SvgWrap>
+    <SvgChartShell titleId={titleId} titleText="Klassische Ursachen wenn Change‑Programme stagnieren." vb="0 0 532 258" height="16.125rem">
+      {(U) => (
+        <>
+          <rect x="18" y="18" width="496" height="222" rx="22" fill={`url(#${U}_pane)`} stroke="var(--cw-border-subtle)" />
+          <text x="266" y="48" textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '700 14px system-ui,sans-serif' }}>
+            Prüfkatalog (Auszug — Kotter)
+          </text>
+          <text x="266" y="68" textAnchor="middle" fill="var(--cw-text-muted)" style={{ font: '600 11px system-ui,sans-serif' }}>
+            Acht typische Ursachen bei stockenden Initiativen
+          </text>
+          {items.map((txt, idx) => {
+            const row = idx < 4 ? 0 : 1;
+            const col = idx % 4;
+            const x = 42 + col * 114;
+            const y = row === 0 ? 88 : 170;
+            return (
+              <g key={txt} filter={`url(#${U}_softDrop)`}>
+                <rect x={x} y={y} rx="16" width="104" height="84" fill="#ffffff" stroke="var(--cw-accent-soft-border)" strokeWidth={1} />
+                <rect x={x} y={y} width="104" height="26" rx="16" ry="12" fill="rgba(124,58,237,0.14)" stroke="none" />
+                <text x={x + 52} y={y + 18} textAnchor="middle" fill="var(--cw-accent-strong)" style={{ font: 'bold 13px system-ui,sans-serif' }}>
+                  {idx + 1}.
+                </text>
+                <text x={x + 52} y={y + 60} textAnchor="middle" fill="var(--cw-text)" style={{ font: 'bold 11px system-ui,sans-serif', lineHeight: 1.2 }}>
+                  {txt}
+                </text>
+              </g>
+            );
+          })}
+        </>
+      )}
+    </SvgChartShell>
   );
 }
 
 function PmCmLanesDiagram({ titleId }) {
   const lanes = [
-    { y: 58, label: 'Projektleitung', color: '#64748b', ms: ['Start', 'Plan', 'Gestalt.', 'Liefer.', 'Betrieb'] },
-    { y: 130, label: 'Change', color: '#5b21b6', ms: ['Sinn', 'Stakeh.', 'Motiv.', 'Adopt.', 'Kultur'] },
+    { y: 66, label: 'Projekt', tint: '#64748b', ms: ['Start', 'Plan', 'Gestalt.', 'Liefer.', 'Betrieb'] },
+    { y: 158, label: 'Change', tint: '#5b21b6', ms: ['Sinn', 'Stakeh.', 'Motiv.', 'Adopt.', 'Kultur'] },
   ];
-  const lineY = -12;
   return (
-    <SvgWrap titleId={titleId} titleText="Zwei Strange entlang des Produktlebenszyklus." vb="0 0 480 192" height="12rem">
-      {lanes.map((lane) => (
-        <g key={lane.label}>
-          <text x="26" y={lane.y} fill="var(--cw-text)" style={{ font: '700 12px system-ui,sans-serif', letterSpacing: '0.04em' }}>
-            {lane.label}
+    <SvgChartShell titleId={titleId} titleText="Parallele Arbeitsspuren entlang eines Vorhabens." vb="0 0 548 246" height="15.375rem">
+      {(U) => (
+        <>
+          <rect x="16" y="16" width="516" height="214" rx="22" fill={`url(#${U}_pane)`} stroke="var(--cw-border-subtle)" />
+          <text x="274" y="46" textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '700 14px system-ui,sans-serif' }}>
+            Zwei Strange — gekoppelt, nicht austauschbar
           </text>
-          <path d={`M134 ${lane.y + lineY} H454`} stroke="var(--cw-border-subtle)" strokeWidth="10" strokeLinecap="round" />
-          <path d={`M134 ${lane.y + lineY} H454`} stroke={lane.color} strokeOpacity={lane.label === 'Change' ? 0.12 : 0.06} strokeWidth="10" strokeLinecap="round" />
-          {lane.ms.map((m, i) => {
-            const span = (454 - 134) / (lane.ms.length - 1);
-            const x = 134 + i * span;
-            return (
-              <g key={m}>
-                <circle
-                  cx={x}
-                  cy={lane.y + lineY}
-                  r="13"
-                  fill="var(--cw-card)"
-                  stroke={lane.color}
-                  strokeWidth={lane.label === 'Change' ? 2.3 : 1.65}
-                />
-                <circle
-                  cx={x}
-                  cy={lane.y + lineY}
-                  r="5"
-                  fill={lane.color}
-                  opacity={lane.label === 'Change' ? 0.92 : 0.48}
-                />
-                <text x={x} y={lane.y + 26} textAnchor="middle" fill="var(--cw-text-muted)" style={{ font: '10px system-ui,sans-serif' }}>
-                  {m}
-                </text>
-              </g>
-            );
-          })}
-        </g>
-      ))}
-    </SvgWrap>
+          <text x="274" y="66" textAnchor="middle" fill="var(--cw-text-muted)" style={{ font: '600 11px system-ui,sans-serif' }}>
+            Planung liefern & Menschen aktivieren
+          </text>
+          {lanes.map((lane) => (
+            <g key={lane.label}>
+              <text x={40} y={lane.y + 22} fill="var(--cw-text)" style={{ font: '800 12px system-ui,sans-serif', letterSpacing: '0.08em' }}>
+                {lane.label.toUpperCase()}
+              </text>
+              <path
+                d={`M154 ${lane.y} H492`}
+                stroke="var(--cw-border-subtle)"
+                strokeWidth={14}
+                strokeLinecap="round"
+              />
+              <path
+                d={`M154 ${lane.y} H492`}
+                stroke={lane.tint}
+                opacity={lane.label === 'Change' ? 0.18 : 0.08}
+                strokeWidth={14}
+                strokeLinecap="round"
+              />
+              {lane.ms.map((m, i) => {
+                const span = (492 - 154) / Math.max(lane.ms.length - 1, 1);
+                const x = 154 + i * span;
+                return (
+                  <g key={m} filter={`url(#${U}_nodeLift)`}>
+                    <circle cx={x} cy={lane.y} r="18" fill="#ffffff" stroke={lane.tint} strokeWidth={lane.label === 'Change' ? 2.6 : 2} opacity={lane.label === 'Change' ? 1 : 0.98} />
+                    <circle cx={x} cy={lane.y} r="8" fill={lane.tint} opacity={lane.label === 'Change' ? 0.35 : 0.2} />
+                    <circle cx={x} cy={lane.y} r="5" fill={lane.tint} opacity={lane.label === 'Change' ? 1 : 0.55} />
+                    <text
+                      x={x}
+                      y={lane.y + 34}
+                      textAnchor="middle"
+                      fill="var(--cw-text)"
+                      style={{ font: '600 10px system-ui,sans-serif' }}
+                    >
+                      {m}
+                    </text>
+                  </g>
+                );
+              })}
+            </g>
+          ))}
+        </>
+      )}
+    </SvgChartShell>
   );
 }
 
 function KopfHerzHandDiagram({ titleId }) {
   const nodes = [
-    { cx: 240, cy: 46, primary: 'Kopf · Verstehen', sub: 'Logik & Rollenklarheit' },
-    { cx: 96, cy: 158, primary: 'Herz · Mitgehen', sub: 'Sinn & Teilhabe' },
-    { cx: 384, cy: 158, primary: 'Hand · Tun', sub: 'Rituale · Skills · Alltag' },
+    { cx: 280, cy: 52, p: 'Kopf', s: 'Verstehen • Logik' },
+    { cx: 118, cy: 188, p: 'Herz', s: 'Sinn • Mitgehen' },
+    { cx: 442, cy: 188, p: 'Hand', s: 'Tun • Skills • Alltag' },
   ];
   return (
-    <SvgWrap titleId={titleId} titleText="Überlagerte Hebel: Kopf, Herz und Hand greifen ineinander." vb="0 0 480 190" height="12rem">
-      <polygon points="240,54 118,154 362,154" fill="var(--cw-accent-soft-bg)" stroke="var(--cw-accent)" strokeWidth="2.5" />
-      {nodes.map((n) => (
-        <g key={n.primary}>
-          <circle cx={n.cx} cy={n.cy} r="42" fill="var(--cw-card-soft)" stroke="var(--cw-border-subtle)" />
-          <text x={n.cx} y={n.cy - 12} textAnchor="middle" fill="var(--cw-text)" style={{ font: '600 11.5px system-ui,sans-serif' }}>
-            {n.primary}
+    <SvgChartShell titleId={titleId} titleText="Dreigliedrige Hebel erfolgreicher Veränderungen." vb="0 0 548 268" height="17rem">
+      {(U) => (
+        <>
+          <rect x="18" y="18" width="512" height="232" rx="22" fill={`url(#${U}_pane)`} stroke="var(--cw-border-subtle)" />
+          <text x="274" y="48" textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '700 14px system-ui,sans-serif' }}>
+            Kopf • Herz • Hand gleichberechtigt
           </text>
-          <text x={n.cx} y={n.cy + 10} textAnchor="middle" fill="var(--cw-text-muted)" style={{ font: '10px system-ui,sans-serif' }}>
-            {n.sub}
-          </text>
-        </g>
-      ))}
-    </SvgWrap>
+          <polygon
+            points="280,74 146,218 416,218"
+            fill={`url(#${U}_vioFade)`}
+            stroke={`url(#${U}_vioStroke)`}
+            strokeWidth={3}
+            strokeLinejoin="round"
+          />
+          {nodes.map((n) => (
+            <g key={n.p} filter={`url(#${U}_nodeLift)`}>
+              <circle cx={n.cx} cy={n.cy} r="54" fill="#ffffff" stroke="var(--cw-border-subtle)" strokeWidth={1} />
+              <circle cx={n.cx} cy={n.cy} r="54" fill="rgba(248,250,252,0.5)" stroke="none" />
+              <text x={n.cx} y={n.cy - 14} textAnchor="middle" fill="#5b21b6" style={{ font: '800 15px system-ui,sans-serif' }}>
+                {n.p}
+              </text>
+              <text x={n.cx} y={n.cy + 14} textAnchor="middle" fill="var(--cw-text-muted)" style={{ font: '600 10.5px system-ui,sans-serif' }}>
+                {n.s}
+              </text>
+            </g>
+          ))}
+        </>
+      )}
+    </SvgChartShell>
   );
 }
 
 function WhyLayersDiagram({ titleId }) {
   const layers = [
-    { x: 100, y: 42, w: 280, h: 42, txt: 'Organisation — Kontext · Dringlichkeit' },
-    { x: 80, y: 96, w: 320, h: 42, txt: 'Team — Auftrag · Rollenbild' },
-    { x: 60, y: 150, w: 360, h: 42, txt: 'Persönlich — Vorteile im Alltag heute' },
+    { x: 108, y: 56, w: 324, h: 48, t: 'Organisation — Kontext · Dringlichkeit', z: 0 },
+    { x: 86, y: 116, w: 368, h: 48, t: 'Team — Auftrag · Rollenbilder', z: 1 },
+    { x: 64, y: 176, w: 412, h: 48, t: 'Persönlich — Vorteile im Alltag', z: 2 },
   ];
   return (
-    <SvgWrap titleId={titleId} titleText="Geschachteltes Warum‑Verständnis." vb="0 0 480 206" height="12.95rem">
-      {layers.map((L) => (
-        <g key={L.txt}>
-          <rect
-            x={L.x}
-            y={L.y}
-            rx="16"
-            width={L.w}
-            height={L.h}
-            fill="var(--cw-link-muted-bg)"
-            stroke="var(--cw-accent-soft-border)"
-          />
-          <text x={L.x + L.w / 2} y={L.y + L.h / 2 + 5} textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '600 12px system-ui,sans-serif' }}>
-            {L.txt}
+    <SvgChartShell titleId={titleId} titleText="Verschachtelte Warum‑Ebenen." vb="0 0 548 274" height="17.125rem">
+      {(U) => (
+        <>
+          <rect x="16" y="16" width="516" height="242" rx="22" fill={`url(#${U}_pane)`} stroke="var(--cw-border-subtle)" />
+          <text x="274" y="46" textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '700 14px system-ui,sans-serif' }}>
+            Die drei Schalen des „Warum“
           </text>
-        </g>
-      ))}
-    </SvgWrap>
+          {layers.map((L) => (
+            <g key={L.t} filter={`url(#${U}_softDrop)`}>
+              <rect
+                x={L.x}
+                y={L.y}
+                width={L.w}
+                height={L.h}
+                rx="18"
+                fill={L.z === 2 ? 'rgba(248,250,252,0.92)' : L.z === 1 ? '#ffffff' : 'rgba(255,255,255,0.88)'}
+                stroke="var(--cw-accent-soft-border)"
+                strokeWidth={1}
+              />
+              <rect x={L.x + 14} y={L.y + 12} width="4" height="24" rx="2" fill={`url(#${U}_vioStroke)`} opacity={0.6} />
+              <text x={L.x + L.w / 2} y={L.y + L.h / 2 + 5} textAnchor="middle" fill="var(--cw-text)" style={{ font: '700 13px system-ui,sans-serif' }}>
+                {L.t}
+              </text>
+            </g>
+          ))}
+        </>
+      )}
+    </SvgChartShell>
   );
 }
 
 function StakeholderMatrixDiagram({ titleId }) {
+  const q = [
+    {
+      gx: 90,
+      gy: 98,
+      w: 174,
+      h: 74,
+      fill: 'rgba(148,163,184,0.14)',
+      stroke: 'rgba(100,116,139,0.28)',
+      cx: 176,
+      cy: 138,
+      lines: ['Beobachten', 'informieren halten'],
+    },
+    {
+      gx: 272,
+      gy: 98,
+      w: 174,
+      h: 74,
+      fill: 'rgba(124,58,237,0.11)',
+      stroke: 'rgba(91,33,182,0.32)',
+      cx: 360,
+      cy: 138,
+      lines: ['Aktiv gestalten', '& anführen'],
+    },
+    {
+      gx: 90,
+      gy: 174,
+      w: 174,
+      h: 74,
+      fill: 'rgba(148,163,184,0.09)',
+      stroke: 'rgba(100,116,139,0.22)',
+      cx: 176,
+      cy: 214,
+      lines: ['Gezielt erreichen', 'klare Botschaften'],
+    },
+    {
+      gx: 272,
+      gy: 174,
+      w: 174,
+      h: 74,
+      fill: 'rgba(124,58,237,0.16)',
+      stroke: 'rgba(91,33,182,0.36)',
+      cx: 360,
+      cy: 214,
+      lines: ['Co‑Erstellung', 'einbinden & nutzen'],
+    },
+  ];
   return (
-    <SvgWrap titleId={titleId} titleText="Priorisierung nach Einfluss und Einstellung." vb="0 0 480 218" height="13.85rem">
-      <text x="240" y="28" textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '600 13px system-ui,sans-serif' }}>
-        Stakeholder‑Matrix (Konzept)
-      </text>
-      <rect x="64" y="56" width="352" height="128" rx="14" fill="var(--cw-card-soft)" stroke="var(--cw-border-subtle)" />
-      <path d="M240 56 V184 M64 128 H416" stroke="var(--cw-border-subtle)" strokeWidth="2" />
-      <text x="246" y="96" fill="var(--cw-text-muted)" style={{ font: '11px system-ui,sans-serif' }}>
-        kritisch ← → befürwortend
-      </text>
-      <text x="72" y="124" fill="var(--cw-text-muted)" style={{ font: '11px system-ui,sans-serif' }}>
-        wenig Einfluss
-      </text>
-      <text x="318" y="124" fill="var(--cw-text-muted)" style={{ font: '11px system-ui,sans-serif' }}>
-        grosser Einfluss
-      </text>
-      {[
-        { x: 146, y: 84, lb: 'Beobachten' },
-        { x: 342, y: 84, lb: 'Aktiv gestalten' },
-        { x: 146, y: 160, lb: 'Informieren' },
-        { x: 342, y: 160, lb: 'Einbinden / Co‑Erstellung' },
-      ].map((q) => (
-        <text key={q.lb} x={q.x} y={q.y} textAnchor="middle" fill="var(--cw-text-muted)" style={{ font: '600 11px system-ui,sans-serif' }}>
-          {q.lb}
-        </text>
-      ))}
-    </SvgWrap>
+    <SvgChartShell titleId={titleId} titleText="Priorisierung von Stakeholdern nach Einfluss und Einstellung." vb="0 0 548 294" height="18.375rem">
+      {(U) => (
+        <>
+          <rect x="16" y="16" width="516" height="262" rx="22" fill={`url(#${U}_pane)`} stroke="var(--cw-border-subtle)" />
+          <text x="274" y="48" textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '700 14px system-ui,sans-serif' }}>
+            Einfluss vs. Unterstützung
+          </text>
+          <text x="274" y="70" textAnchor="middle" fill="var(--cw-text-muted)" style={{ font: '600 11px system-ui,sans-serif' }}>
+            Kombination entscheidet über Taktik (informieren • einladen • mitgestalten)
+          </text>
+          <rect x="80" y="88" width="388" height="168" rx="18" fill="rgba(248,250,252,0.85)" stroke="var(--cw-border-subtle)" filter={`url(#${U}_softDrop)`} />
+          <path d="M274 88 V254 M94 174 H458" stroke="var(--cw-border-subtle)" strokeWidth="2.8" opacity={0.85} strokeLinecap="round" />
+          <text x="358" y="108" fill="var(--cw-text-muted)" style={{ font: '600 10px system-ui,sans-serif' }}>
+            kritisch ◀————————▶ treibend / befürwortend
+          </text>
+          <text x="134" y="168" transform="rotate(-90 138 174)" fill="var(--cw-text-muted)" style={{ font: '600 10px system-ui,sans-serif', letterSpacing: '0.04em' }}>
+            WENIG EINFLUSS
+          </text>
+          <text x="412" y="168" transform="rotate(90 408 174)" fill="var(--cw-text-muted)" style={{ font: '600 10px system-ui,sans-serif', letterSpacing: '0.04em' }}>
+            HOHER EINFLUSS
+          </text>
+          {q.map((cell, qi) => (
+            <g key={qi}>
+              <rect x={cell.gx} y={cell.gy} width={cell.w} height={cell.h} rx="14" fill={cell.fill} stroke={cell.stroke} />
+              {cell.lines.map((ln, ri) => (
+                <text
+                  key={`${qi}-${ln}`}
+                  x={cell.cx}
+                  y={cell.cy - 10 + ri * 16}
+                  textAnchor="middle"
+                  fill={ri === 0 ? 'var(--cw-text-secondary)' : 'var(--cw-text-muted)'}
+                  style={{ font: `${ri === 0 ? '700' : '600'} ${ri === 0 ? '11.5px' : '10.5px'} system-ui,sans-serif` }}
+                >
+                  {ln}
+                </text>
+              ))}
+            </g>
+          ))}
+        </>
+      )}
+    </SvgChartShell>
   );
 }
 
 function CommsPyramidDiagram({ titleId }) {
-  const levels = [
-    { y: 48, w: 120, txt: '1:1 / Kleingruppe' },
-    { y: 106, w: 200, txt: 'Workshop • Team' },
-    { y: 164, w: 296, txt: 'All‑Hands • Broadcasts' },
+  const tiers = [
+    {
+      bw: 168,
+      y: 90,
+      h: 48,
+      title: '1:1 · Kleinteams',
+      detail: 'Höchste Tiefe • sensibles Feedback',
+      fill: 'rgba(124,58,237,0.15)',
+      strokeStrength: 2,
+    },
+    {
+      bw: 242,
+      y: 150,
+      h: 50,
+      title: 'Workshops · Produkt‑Squads',
+      detail: 'Mischung aus Mitgestalten & Einordnen',
+      fill: 'rgba(167,139,250,0.16)',
+      strokeStrength: 1.8,
+    },
+    {
+      bw: 348,
+      y: 214,
+      h: 52,
+      title: 'All‑hands · Broadcasts',
+      detail: 'Grosse Reichweite · weniger Detailtiefe',
+      fill: 'rgba(237,233,254,0.94)',
+      strokeStrength: 1.65,
+    },
   ];
-  const cx = 240;
   return (
-    <SvgWrap titleId={titleId} titleText="Mehr Tiefe dort, wo weniger Köpfe entscheiden müssen." vb="0 0 480 224" height="14rem">
-      <text x="240" y="28" textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '600 13px system-ui,sans-serif' }}>
-        Kanalwahl zwischen Reichweite und Detailtiefe
-      </text>
-      {levels.map((L, idx) => (
-        <g key={L.txt}>
-          <rect
-            x={cx - L.w / 2}
-            y={L.y}
-            width={L.w}
-            height="44"
-            rx="12"
-            fill={idx === 2 ? 'var(--cw-accent-soft-bg)' : 'var(--cw-link-muted-bg)'}
-            stroke="var(--cw-accent-soft-border)"
-          />
-          <text x={cx} y={L.y + 29} textAnchor="middle" fill="var(--cw-text)" style={{ font: '600 13px system-ui,sans-serif' }}>
-            {L.txt}
+    <SvgChartShell titleId={titleId} titleText="Formate mit höherem Dialoggrad dort, wo es auf Details ankommt." vb="0 0 548 300" height="18.625rem">
+      {(U) => (
+        <>
+          <rect x="16" y="16" width="516" height="268" rx="22" fill={`url(#${U}_pane)`} stroke="var(--cw-border-subtle)" />
+          <text x="274" y="48" textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '700 14px system-ui,sans-serif' }}>
+            Kommunikations‑Pyramide
           </text>
-        </g>
-      ))}
-    </SvgWrap>
+          <text x="274" y="70" textAnchor="middle" fill="var(--cw-text-muted)" style={{ font: '600 11px system-ui,sans-serif' }}>
+            weiter oben weniger Teilnehmer · mehr Kontexttiefe möglich
+          </text>
+          {tiers.map((tier) => {
+            const x = 274 - tier.bw / 2;
+            return (
+              <g key={tier.title} filter={`url(#${U}_softDrop)`}>
+                <rect
+                  x={x}
+                  y={tier.y}
+                  width={tier.bw}
+                  height={tier.h}
+                  rx="18"
+                  fill={tier.fill}
+                  stroke={`url(#${U}_vioStroke)`}
+                  strokeWidth={tier.strokeStrength}
+                />
+                <rect x={x + tier.bw / 2 - 22} y={tier.y + 14} width="44" height="4" rx="2" fill="var(--cw-accent-strong)" opacity={0.32} />
+                <text x="274" y={tier.y + 30} textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '800 13px system-ui,sans-serif', letterSpacing: '0.01em' }}>
+                  {tier.title}
+                </text>
+                <text x="274" y={tier.y + tier.h - 12} textAnchor="middle" fill="var(--cw-text-muted)" style={{ font: '600 10.5px system-ui,sans-serif' }}>
+                  {tier.detail}
+                </text>
+              </g>
+            );
+          })}
+          <text x="274" y="287" textAnchor="middle" fill="var(--cw-text-muted)" style={{ font: '600 10px system-ui,sans-serif' }}>
+            Stufen nicht verwechseln: weniger granular ≠ weniger Bedeutsamkeit
+          </text>
+        </>
+      )}
+    </SvgChartShell>
   );
 }
 
 function StoryArcDiagram({ titleId }) {
+  const pathD = 'M56 154 C168 174,216 74,294 92 C378 114,394 174,482 174';
   return (
-    <SvgWrap titleId={titleId} titleText="Dramaturgie eines knappen Narrativs zur Veränderung." vb="0 0 480 160" height="10.25rem">
-      <path
-        d="M48 126 C160 132,196 54,266 62 C336 72,392 148,434 146"
-        fill="none"
-        stroke="var(--cw-accent)"
-        strokeOpacity={0.72}
-        strokeWidth="6"
-        strokeLinecap="round"
-      />
-      {[
-        { cx: 64, lb: 'Einleitung' },
-        { cx: 274, lb: 'Kernbotschaft' },
-        { cx: 438, lb: 'Nächste Schritte' },
-      ].map((p) => (
-        <g key={p.lb}>
-          <circle cx={p.cx} cy="126" r="12" fill="var(--cw-card-soft)" stroke="var(--cw-accent-strong)" strokeWidth="2.75" />
-          <text x={p.cx} y="154" textAnchor={p.lb === 'Einleitung' ? 'middle' : p.lb === 'Kernbotschaft' ? 'middle' : 'end'} fill="var(--cw-text-muted)" style={{ font: '600 11px system-ui,sans-serif' }}>
-            {p.lb}
+    <SvgChartShell titleId={titleId} titleText="Dramaturgie einer erzählerischen Change‑Story." vb="0 0 562 216" height="13.625rem">
+      {(U) => (
+        <>
+          <rect x="18" y="18" width="526" height="180" rx="22" fill={`url(#${U}_pane)`} stroke="var(--cw-border-subtle)" />
+          <text x="281" y="48" textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '700 14px system-ui,sans-serif' }}>
+            Story‑Arc: Spannungsaufbau und Auflösung
           </text>
-        </g>
-      ))}
-    </SvgWrap>
+          <path d={`${pathD} L482 174 L56 174 Z`} fill={`url(#${U}_vioFade)`} opacity={0.9} stroke="none" />
+          <path d={pathD} fill="none" stroke={`url(#${U}_vioStroke)`} strokeWidth={8} strokeLinecap="round" opacity={0.2} />
+          <path d={pathD} fill="none" stroke={`url(#${U}_vioStroke)`} strokeWidth={4.2} strokeLinecap="round" filter={`url(#${U}_softDrop)`} />
+          {[
+            { cx: 110, lbs: ['Einleitung'] },
+            { cx: 310, lbs: ['Kernbotschaft'] },
+            { cx: 478, lbs: ['Nächste Schritte'] },
+          ].map((p, i) => (
+            <g key={p.lbs.join()}>
+              <circle cx={p.cx} cy="154" r="22" fill="#ffffff" stroke={`url(#${U}_vioStroke)`} strokeWidth={3} filter={`url(#${U}_nodeLift)`} />
+              <circle cx={p.cx} cy="154" r="9" fill="var(--cw-accent-strong)" opacity={i === 1 ? 0.92 : 0.55} />
+              <SvgLabelBadge cx={p.cx} cy={126} w={134} lines={p.lbs} accent={i === 1} />
+            </g>
+          ))}
+          <path d={`M56 174 H506`} stroke="var(--cw-border-subtle)" strokeDasharray="4 14" opacity={0.75} strokeWidth={1} />
+          <text x="281" y="202" textAnchor="middle" fill="var(--cw-text-muted)" style={{ font: '600 10.5px system-ui,sans-serif' }}>
+            Emotionaler Höhepunkt liegt typischerweise in der Kernbotschaft
+          </text>
+        </>
+      )}
+    </SvgChartShell>
   );
 }
 
 function ElevatorDiagram({ titleId }) {
   const cols = [
-    { x: 44, w: 100, t: 'Problem' },
-    { x: 160, w: 98, t: 'Ansatz' },
-    { x: 274, w: 88, t: 'Nutzen' },
-    { x: 378, w: 80, t: 'Nächster Schritt' },
+    { x: 54, w: 108, t: 'Problem' },
+    { x: 180, w: 100, t: 'Ansatz' },
+    { x: 294, w: 96, t: 'Nutzen' },
+    { x: 402, w: 112, t: 'Nächster Schritt' },
   ];
   return (
-    <SvgWrap titleId={titleId} titleText="Elevator‑Pitch‑Kette in etwa 90 Sekunden." vb="0 0 480 150" height="9.85rem">
-      <text x="240" y="28" textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '600 13px system-ui,sans-serif' }}>
-        Pitch‑Gerüst (≙ 90 s)
-      </text>
-      {cols.map((col, i) => (
-        <g key={col.t}>
-          <rect x={col.x} y="54" width={col.w} height="74" rx="14" fill="var(--cw-link-muted-bg)" stroke="var(--cw-accent-soft-border)" />
-          <text x={col.x + col.w / 2} y="98" textAnchor="middle" fill="var(--cw-text)" style={{ font: '600 12px system-ui,sans-serif' }}>
-            {col.t}
+    <SvgChartShell titleId={titleId} titleText="Elevator‑Pitch‑Kette in etwa 90 Sekunden." vb="0 0 596 174" height="11rem">
+      {(U) => (
+        <>
+          <rect x="18" y="18" width="560" height="138" rx="22" fill={`url(#${U}_pane)`} stroke="var(--cw-border-subtle)" />
+          <text x="298" y="48" textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '700 14px system-ui,sans-serif' }}>
+            Pitch‑Gerüst (≙ 90 s Sprechzeit)
           </text>
-          {i < cols.length - 1 && (
-            <>
-              <path d={`M${col.x + col.w + 2},92 L${col.x + col.w + 12},92`} stroke="var(--cw-text-muted)" strokeWidth="2.5" />
-              <polygon
-                points={`${col.x + col.w + 14},92 ${col.x + col.w + 6},87 ${col.x + col.w + 6},97`}
-                fill="var(--cw-text-muted)"
-              />
-            </>
-          )}
-        </g>
-      ))}
-    </SvgWrap>
+          <text x="298" y="68" textAnchor="middle" fill="var(--cw-text-muted)" style={{ font: '600 11px system-ui,sans-serif' }}>
+            Jede Station klar formulieren · nicht überspringen
+          </text>
+          {cols.map((col, i) => (
+            <g key={col.t} filter={`url(#${U}_softDrop)`}>
+              <rect x={col.x} y="86" width={col.w} height="58" rx="16" fill="#ffffff" stroke="var(--cw-accent-soft-border)" />
+              <rect x={col.x} y="86" width={col.w} height="20" rx="16" ry="10" fill="rgba(124,58,237,0.16)" stroke="none" />
+              <text x={col.x + col.w / 2} y="101" textAnchor="middle" fill="var(--cw-accent-strong)" style={{ font: 'bold 11px system-ui,sans-serif', letterSpacing: '0.04em' }}>
+                {col.t.toUpperCase()}
+              </text>
+              <circle cx={col.x + col.w / 2} cy={124} r="11" fill="#fff" stroke={`url(#${U}_vioStroke)`} strokeWidth={2} />
+              <text x={col.x + col.w / 2} y="129" textAnchor="middle" fill="var(--cw-accent-strong)" style={{ font: 'bold 13px system-ui,sans-serif' }}>
+                {i + 1}.
+              </text>
+              {i < cols.length - 1 && (
+                <>
+                  <path
+                    d={`M${col.x + col.w + 10},117 L${col.x + col.w + 26},117`}
+                    stroke={`url(#${U}_silver)`}
+                    strokeWidth={4}
+                    strokeLinecap="round"
+                  />
+                  <polygon points={`${col.x + col.w + 30},117 ${col.x + col.w + 16},109 ${col.x + col.w + 16},125`} fill="var(--cw-text-muted)" />
+                </>
+              )}
+            </g>
+          ))}
+        </>
+      )}
+    </SvgChartShell>
   );
 }
 
 function LifecycleDiagram({ titleId }) {
-  const ms = [
-    { x: 64, lb: 'Start & Kontext' },
-    { x: 184, lb: 'regelmässige Pulse' },
-    { x: 296, lb: 'Go‑live‑Vorbereitung' },
-    { x: 416, lb: 'Verankern' },
+  const pts = [
+    { x: 84, lbl: ['Start •', 'Kontext'] },
+    { x: 220, lbl: ['Regelm.', 'Pulse'] },
+    { x: 356, lbl: ['Go‑live‑', 'Vorbereitung'] },
+    { x: 478, lbl: ['Verankern', '& skalieren'] },
   ];
   return (
-    <SvgWrap titleId={titleId} titleText="Change als durchgängiges Arbeitspaket neben Projekt‑Meilensteinen." vb="0 0 480 180" height="11.65rem">
-      <path d="M40 90 H446" stroke="var(--cw-border-subtle)" strokeWidth="12" strokeLinecap="round" />
-      <path d="M40 90 H446" stroke="var(--cw-accent)" strokeOpacity={0.18} strokeWidth="12" strokeLinecap="round" />
-      {ms.map((m) => (
-        <g key={m.lb}>
-          <circle cx={m.x} cy="90" r="18" fill="var(--cw-card-soft)" stroke="var(--cw-accent-strong)" strokeWidth="2.75" />
-          <circle cx={m.x} cy="90" r="5" fill="var(--cw-accent-strong)" opacity={0.55} />
-          <text x={m.x} y="138" textAnchor="middle" fill="var(--cw-text-muted)" style={{ font: '600 10.5px system-ui,sans-serif' }}>
-            {m.lb}
+    <SvgChartShell titleId={titleId} titleText="Change als zusätzlicher Arbeitstrang im Projekt." vb="0 0 586 246" height="15.625rem">
+      {(U) => (
+        <>
+          <rect x="18" y="18" width="550" height="210" rx="22" fill={`url(#${U}_pane)`} stroke="var(--cw-border-subtle)" />
+          <text x="293" y="48" textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '700 14px system-ui,sans-serif' }}>
+            Fahrspur durch den Projekt‑Lebenszyklus
           </text>
-        </g>
-      ))}
-      <text x="240" y="168" textAnchor="middle" fill="var(--cw-text-muted)" style={{ font: '500 10px system-ui,sans-serif' }}>
-        Arbeitspunkte sollten wiederkehrend mit im Projektplan stehen
-      </text>
-    </SvgWrap>
+          <text x="293" y="70" textAnchor="middle" fill="var(--cw-text-muted)" style={{ font: '600 11px system-ui,sans-serif' }}>
+            Change‑Arbeit sollte eigene Rhythmik behalten, nicht erst „bei Go‑live«.
+          </text>
+          <path d="M64 154 H554" stroke="var(--cw-border-subtle)" strokeWidth={13} strokeLinecap="round" />
+          <path d="M64 154 H554" stroke={`url(#${U}_vioStroke)`} opacity={0.38} strokeWidth={13} strokeLinecap="round" />
+          {pts.map((p, idx) => (
+            <g key={p.lbl.join('-')} filter={`url(#${U}_nodeLift)`}>
+              <circle cx={p.x} cy="154" r="34" fill="#ffffff" stroke={`url(#${U}_vioStroke)`} strokeWidth={idx === pts.length - 1 ? 3 : 2.4} />
+              <circle cx={p.x} cy="154" r="18" fill="rgba(167,139,250,0.25)" stroke="none" />
+              <circle cx={p.x} cy="154" r="11" fill="var(--cw-accent-strong)" opacity={idx === pts.length - 1 ? 0.95 : 0.72} />
+              <text x={p.x} y="146" textAnchor="middle" fill="var(--cw-text-secondary)" style={{ font: '700 10.5px system-ui,sans-serif' }}>
+                {p.lbl[0]}
+              </text>
+              <text x={p.x} y="162" textAnchor="middle" fill="var(--cw-text-muted)" style={{ font: '600 9.75px system-ui,sans-serif' }}>
+                {p.lbl[1]}
+              </text>
+            </g>
+          ))}
+          <path d={`M94 206 L548 206`} stroke={`url(#${U}_silver)`} strokeDasharray="2 14" opacity={0.9} strokeWidth={2} strokeLinecap="round" />
+          <text x="293" y="228" textAnchor="middle" fill="var(--cw-text-muted)" style={{ font: '600 10.5px system-ui,sans-serif' }}>
+            Arbeitspakte verbindlich im Plan verankern (Review‑Slots nicht vergessen).
+          </text>
+        </>
+      )}
+    </SvgChartShell>
   );
 }
 
