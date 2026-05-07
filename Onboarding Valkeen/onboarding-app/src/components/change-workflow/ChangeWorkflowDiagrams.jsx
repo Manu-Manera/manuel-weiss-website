@@ -1,8 +1,9 @@
-/** Präsentationsnahe Workshop‑Diagramme (SVG mit Verläufen, Schatten, klarer Hierarchie). */
+/** Präsentationsnahe Workshop‑Diagramme: optional gebündelte Folienbilder (src/assets/workshop-slide/), sonst SVG. */
 
 import { useId } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { KOTTER_CATALOG_ITEMS } from '../../data/kotterCatalogData';
+import { getWorkshopSlideUrl } from './workshopSlideAssets';
 
 /** Stabile lokale SVG‑IDs (pro Komponenteninstanz durch useId eindeutig). */
 function useSvgUid(prefix) {
@@ -263,7 +264,7 @@ function KotterEightDiagram({ titleId, kotterInteractive = false }) {
             const label = `${item.order}. ${item.label} — Prüfkatalog öffnen`;
             const halo = idx % 5;
             const halos = ['rgba(109,40,217,0.075)', 'rgba(59,130,246,0.06)', 'rgba(124,58,237,0.09)', 'rgba(14,165,233,0.065)', 'rgba(168,85,247,0.07)'][halo];
-            const inner = (
+            const visuals = (
               <>
                 <rect x={x - 2} y={y - 2} rx="17" width="108" height="88" fill={halos} stroke="none" />
                 <rect
@@ -275,6 +276,7 @@ function KotterEightDiagram({ titleId, kotterInteractive = false }) {
                   fill="#ffffff"
                   stroke={`url(#${U}_vioStroke)`}
                   strokeWidth={1.15}
+                  className="cw-kotter-tile-fill"
                 />
                 <rect x={x} y={y} width="104" height="28" rx="16" ry="12" fill="rgba(245,243,255,1)" stroke="none" />
                 <circle cx={x + 52} cy={y + 16} r="13" fill="#fff" stroke="rgba(124,58,237,0.35)" strokeWidth={1} />
@@ -289,7 +291,7 @@ function KotterEightDiagram({ titleId, kotterInteractive = false }) {
             if (!kotterInteractive) {
               return (
                 <g key={item.slug} filter={`url(#${U}_nodeLift)`}>
-                  {inner}
+                  {visuals}
                 </g>
               );
             }
@@ -310,7 +312,18 @@ function KotterEightDiagram({ titleId, kotterInteractive = false }) {
                   }
                 }}
               >
-                {inner}
+                <g style={{ pointerEvents: 'none' }}>{visuals}</g>
+                <rect
+                  className="cw-kotter-hit"
+                  x={x}
+                  y={y}
+                  width="104"
+                  height="84"
+                  rx="14"
+                  fill="transparent"
+                  stroke="none"
+                  pointerEvents="all"
+                />
               </g>
             );
           })}
@@ -750,6 +763,39 @@ function LifecycleDiagram({ titleId }) {
   );
 }
 
+function WorkshopSlideRasterImage({ slideUrl, captionId }) {
+  return (
+    <img
+      src={slideUrl}
+      alt=""
+      aria-describedby={captionId}
+      className="cw-workshop-slide-img"
+      decoding="async"
+      loading="lazy"
+    />
+  );
+}
+
+function KotterWorkshopSlideRaster({ slideUrl, kotterInteractive, captionId }) {
+  return (
+    <div className="cw-kotter-slide-wrap">
+      <WorkshopSlideRasterImage slideUrl={slideUrl} captionId={captionId} />
+      {kotterInteractive ? (
+        <div className="cw-kotter-slide-hotspots">
+          {KOTTER_CATALOG_ITEMS.map((item) => (
+            <Link
+              key={item.slug}
+              to={`/change-workflow/kotter/${item.slug}`}
+              className="cw-kotter-slide-cell"
+              aria-label={`${item.order}. ${item.label}: Reflexionsfragen öffnen`}
+            />
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 const DIAGRAM_REGISTRY = {
   'orient-flow': OrientFlowDiagram,
   'emotion-curve': EmotionCurveDiagram,
@@ -776,12 +822,22 @@ function Graphic({ variant, titleId, kotterInteractive }) {
 function DiagramFigure({ entry, kotterInteractive }) {
   const capId = useId();
   const titleId = useId();
+  const slideUrl = getWorkshopSlideUrl(entry.id);
   if (!DIAGRAM_REGISTRY[entry.id]) return null;
+
+  const body = slideUrl ? (
+    entry.id === 'kotter-8' ? (
+      <KotterWorkshopSlideRaster slideUrl={slideUrl} kotterInteractive={kotterInteractive} captionId={capId} />
+    ) : (
+      <WorkshopSlideRasterImage slideUrl={slideUrl} captionId={capId} />
+    )
+  ) : (
+    <Graphic variant={entry.id} titleId={titleId} kotterInteractive={kotterInteractive} />
+  );
+
   return (
-    <figure className="cw-diagram-frame" aria-labelledby={capId}>
-      <div className="cw-diagram-svg-wrap">
-        <Graphic variant={entry.id} titleId={titleId} kotterInteractive={kotterInteractive} />
-      </div>
+    <figure className="cw-diagram-frame">
+      <div className="cw-diagram-svg-wrap">{body}</div>
       <figcaption id={capId} className="cw-diagram-caption">
         {entry.caption}
       </figcaption>

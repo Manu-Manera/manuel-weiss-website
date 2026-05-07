@@ -652,7 +652,7 @@ export default function ChangeWorkflow() {
 
               <ChangeWorkflowDiagrams
                 entries={CHANGE_PHASE_DIAGRAMS[phase.id]}
-                kotterInteractive={facilitatorMode && !participantOnly}
+                kotterInteractive={!participantOnly}
               />
 
               <p className="cw-kicker mb-5 flex items-center gap-2.5">

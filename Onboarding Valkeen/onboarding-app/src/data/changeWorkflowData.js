@@ -405,7 +405,7 @@ export const CHANGE_PHASES = [
   },
 ];
 
-/** Pro Phase: Liste eingebetteter SVG‑Diagramme (id siehe DIAGRAM_REGISTRY in ChangeWorkflowDiagrams.jsx). */
+/** Pro Phase: Diagramm-IDs (Dateiname = id unter src/assets/workshop-slide/*.{webp,png,svg}). Ohne Asset: SVG-Fallback. */
 export const CHANGE_PHASE_DIAGRAMS = {
   orient: [
     {

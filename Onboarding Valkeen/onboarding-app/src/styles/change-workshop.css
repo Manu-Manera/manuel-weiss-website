@@ -1417,10 +1417,56 @@
   border-radius: 0.25rem;
 }
 
-/* Kotter-Prüfkatalog: klickbare SVG-Kacheln */
-.cw-diagram-svg g.cw-kotter-tile:focus > rect:first-of-type,
-.cw-diagram-svg g.cw-kotter-tile:hover > rect:first-of-type {
+/* Kotter‑Prüfkatalog: Hover/Focus über volle Hit‑Fläche (SVG oder Folien‑Overlay) */
+.cw-diagram-svg g.cw-kotter-tile:hover rect.cw-kotter-hit,
+.cw-diagram-svg g.cw-kotter-tile:focus-visible rect.cw-kotter-hit {
   stroke: var(--cw-accent);
   stroke-width: 2px;
+}
+
+.cw-workshop-slide-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--cw-radius-md, 0.75rem);
+}
+
+.cw-kotter-slide-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cw-kotter-slide-hotspots {
+  position: absolute;
+  left: 7.9%;
+  top: 32.15%;
+  width: 83.95%;
+  height: 61.8%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  column-gap: 1.82%;
+  row-gap: 2.8%;
+  box-sizing: border-box;
+}
+
+.cw-kotter-slide-cell {
+  display: block;
+  border-radius: 14px;
+  min-height: 44px;
+  outline: none;
+  transition: background-color 0.15s ease;
+}
+
+.cw-kotter-slide-cell:hover {
+  background-color: rgba(124, 58, 237, 0.08);
+}
+
+.cw-kotter-slide-cell:focus-visible {
+  outline: 2px solid var(--cw-accent-ring, #7c3aed);
+  outline-offset: 2px;
 }
 
