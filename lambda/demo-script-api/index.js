@@ -1,5 +1,7 @@
 /**
  * Lambda: Demo Script State API
+ * Routen: CDK `website-api-stack.ts` → /demo-script, /demo-script/rm (Stage v1 in URL-Präfix).
+ * Konfig-Übersicht: docs/DEMO_SCRIPT_API_EINHEITLICH_AWS.md
  *
  * PM: s3://…/data/tempus-demo-pm-state.json  — GET/POST /v1/demo-script
  * RM: s3://…/data/tempus-demo-rm-state.json  — GET/POST /v1/demo-script/rm
