@@ -1,7 +1,5 @@
 # Recovery-Anleitung: `website-demo-script-api` Lambda + API-Route wiederherstellen
 
-> **Kurzüberblick (Repo):** [DEMO_SCRIPT_API_EINHEITLICH_AWS.md](./DEMO_SCRIPT_API_EINHEITLICH_AWS.md) — eine Quelle für URLs, CDK, S3, erwarteter Live-Status.
->
 > **Für wen:** Für einen KI-Agenten oder Entwickler, der diese Aufgabe **ohne Vorwissen** durchführen soll.
 > **Wann:** Sobald AWS wieder Lambda-Schreibzugriffe im Konto **038333965110** erlaubt (aktuell geblockt, siehe Abschnitt 0).
 > **Ergebnis:** `tempus-demo-pm.html` speichert wieder über API (kein 7-Tage-Token-Limit mehr), Fallback auf Presigned-PUT bleibt bestehen.
