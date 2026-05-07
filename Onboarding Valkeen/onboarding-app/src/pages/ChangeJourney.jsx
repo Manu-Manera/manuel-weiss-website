@@ -15,6 +15,7 @@ import {
   ListChecks,
   Loader2,
   Map,
+  Megaphone,
   MessageSquare,
   Plus,
   Send,
@@ -616,6 +617,68 @@ Beantworte Fragen zum Change-Prozess, gib praktische Tipps und ermutige. Antwort
                 })}
               </div>
             </CollapsibleSection>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Link
+                to="/change-workflow/stakeholders"
+                className="cw-card no-underline hover:border-violet-300 transition-all group"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-violet-100 flex items-center justify-center shrink-0">
+                    <Users className="w-5 h-5 text-violet-600" aria-hidden />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-slate-800 m-0 mb-1 group-hover:text-violet-700">Stakeholder-Analyse</p>
+                    <p className="text-xs text-slate-600 m-0">
+                      {(activeProfile?.stakeholders?.length || 0)} Stakeholder erfasst
+                    </p>
+                    {(() => {
+                      const shs = activeProfile?.stakeholders || [];
+                      const critical = shs.filter((s) => s.influence === 'high' && (s.support === 'skeptic' || s.support === 'blocker'));
+                      if (critical.length > 0) {
+                        return (
+                          <p className="text-[10px] text-red-600 mt-1 m-0">
+                            ⚠️ {critical.length} kritische Stakeholder
+                          </p>
+                        );
+                      }
+                      return null;
+                    })()}
+                  </div>
+                </div>
+              </Link>
+
+              <Link
+                to="/change-workflow/comms-plan"
+                className="cw-card no-underline hover:border-violet-300 transition-all group"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-violet-100 flex items-center justify-center shrink-0">
+                    <Megaphone className="w-5 h-5 text-violet-600" aria-hidden />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-slate-800 m-0 mb-1 group-hover:text-violet-700">Kommunikationsplan</p>
+                    <p className="text-xs text-slate-600 m-0">
+                      {(activeProfile?.commsPlan?.length || 0)} Maßnahmen geplant
+                    </p>
+                    {(() => {
+                      const comms = activeProfile?.commsPlan || [];
+                      const planned = comms.filter((c) => c.status === 'planned').length;
+                      const inProgress = comms.filter((c) => c.status === 'in_progress').length;
+                      const done = comms.filter((c) => c.status === 'done').length;
+                      if (comms.length > 0) {
+                        return (
+                          <p className="text-[10px] text-slate-500 mt-1 m-0">
+                            {done} erledigt · {inProgress} in Arbeit · {planned} geplant
+                          </p>
+                        );
+                      }
+                      return null;
+                    })()}
+                  </div>
+                </div>
+              </Link>
+            </div>
 
             <CollapsibleSection
               title="Dynamische Checklisten"

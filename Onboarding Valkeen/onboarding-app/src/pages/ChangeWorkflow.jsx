@@ -16,7 +16,9 @@ import {
   Clock,
   Copy,
   Map,
+  Megaphone,
   Monitor,
+  Users,
   Wrench,
 } from 'lucide-react';
 
@@ -538,6 +540,20 @@ export default function ChangeWorkflow() {
                   >
                     <Wrench className="w-3.5 h-3.5 opacity-80" aria-hidden />
                     Tools
+                  </Link>
+                  <Link
+                    to="/change-workflow/stakeholders"
+                    className="cw-btn cw-btn-ghost"
+                  >
+                    <Users className="w-3.5 h-3.5 opacity-80" aria-hidden />
+                    Stakeholder
+                  </Link>
+                  <Link
+                    to="/change-workflow/comms-plan"
+                    className="cw-btn cw-btn-ghost"
+                  >
+                    <Megaphone className="w-3.5 h-3.5 opacity-80" aria-hidden />
+                    Komm.-Plan
                   </Link>
                   <Link
                     to="/change-workflow/journey"

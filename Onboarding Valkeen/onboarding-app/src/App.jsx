@@ -18,6 +18,8 @@ import KotterTilePage from './pages/KotterTilePage';
 import WorkshopTools from './pages/WorkshopTools';
 import ChangeJourney from './pages/ChangeJourney';
 import PhaseTilePage from './pages/PhaseTilePage';
+import StakeholderAnalysis from './pages/StakeholderAnalysis';
+import CommunicationPlan from './pages/CommunicationPlan';
 import JourneyPublicShell from './pages/JourneyPublicShell';
 import KotterPublicShareShell from './pages/KotterPublicShareShell';
 import WorkshopPrepPublicShell from './pages/WorkshopPrepPublicShell';
@@ -64,6 +66,8 @@ function AdminProgressRoutes() {
         <Route path="change-workflow/tools" element={<WorkshopTools />} />
         <Route path="change-workflow/journey" element={<ChangeJourney />} />
         <Route path="change-workflow/phase/:phaseId" element={<PhaseTilePage />} />
+        <Route path="change-workflow/stakeholders" element={<StakeholderAnalysis />} />
+        <Route path="change-workflow/comms-plan" element={<CommunicationPlan />} />
         <Route path="change-workflow/teilnehmer" element={<ChangeWorkflow />} />
         <Route path="change-workflow" element={<ChangeWorkflow />} />
         <Route path="login-mailer/change-workflow" element={<LegacyChangeWorkflowRedirect />} />
