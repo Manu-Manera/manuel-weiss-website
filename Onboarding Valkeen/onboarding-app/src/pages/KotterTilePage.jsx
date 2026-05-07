@@ -2,12 +2,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
+  CheckCircle,
   ChevronLeft,
   ChevronRight,
+  Circle,
   Copy,
   Import,
   Link2,
   Loader2,
+  Map,
   RefreshCw,
   Save,
   Users,
@@ -469,6 +472,63 @@ export default function KotterTilePage() {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+
+        <div className="mb-6 p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide flex items-center gap-2">
+              <Map className="w-3.5 h-3.5" aria-hidden />
+              Kotter-Fortschritt
+            </span>
+            <Link to="/change-workflow/journey" className="text-xs text-violet-600 hover:underline">
+              → Change Journey
+            </Link>
+          </div>
+          <div className="flex gap-1">
+            {KOTTER_CATALOG_ITEMS.map((item) => {
+              const tileData = activeProfile?.tileAnswers?.[item.slug];
+              const status = tileData?._status || 'open';
+              const hasContent = item.prompts.some((p) => (tileData?.[p.key] || '').trim().length > 0);
+              const isCurrent = item.slug === catalogItem.slug;
+              return (
+                <Link
+                  key={item.slug}
+                  to={`/change-workflow/kotter/${item.slug}`}
+                  title={`${item.order}. ${item.label}${status === 'done' ? ' ✓' : status === 'in_progress' ? ' (in Bearbeitung)' : ''}`}
+                  className={`flex-1 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${
+                    isCurrent
+                      ? 'ring-2 ring-violet-500 ring-offset-1'
+                      : ''
+                  } ${
+                    status === 'done'
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : status === 'in_progress'
+                      ? 'bg-amber-100 text-amber-700'
+                      : hasContent
+                      ? 'bg-violet-100 text-violet-700'
+                      : 'bg-slate-100 text-slate-400'
+                  }`}
+                >
+                  {status === 'done' ? (
+                    <CheckCircle className="w-3.5 h-3.5" />
+                  ) : (
+                    item.order
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+          <div className="flex justify-between mt-2 text-[10px] text-slate-500">
+            <span>
+              {KOTTER_CATALOG_ITEMS.filter((item) => activeProfile?.tileAnswers?.[item.slug]?._status === 'done').length}/8 abgeschlossen
+            </span>
+            <span>
+              {KOTTER_CATALOG_ITEMS.filter((item) => {
+                const ta = activeProfile?.tileAnswers?.[item.slug];
+                return item.prompts.some((p) => (ta?.[p.key] || '').trim().length > 0);
+              }).length}/8 bearbeitet
+            </span>
           </div>
         </div>
 

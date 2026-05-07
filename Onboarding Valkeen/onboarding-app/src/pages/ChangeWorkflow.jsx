@@ -15,6 +15,7 @@ import {
   Eye,
   Clock,
   Copy,
+  Map,
   Monitor,
   Wrench,
 } from 'lucide-react';
@@ -530,13 +531,22 @@ export default function ChangeWorkflow() {
                 Hub
               </Link>
               {!participantOnly && (
-                <Link
-                  to="/change-workflow/tools"
-                  className="cw-btn cw-btn-ghost"
-                >
-                  <Wrench className="w-3.5 h-3.5 opacity-80" aria-hidden />
-                  Tools
-                </Link>
+                <>
+                  <Link
+                    to="/change-workflow/tools"
+                    className="cw-btn cw-btn-ghost"
+                  >
+                    <Wrench className="w-3.5 h-3.5 opacity-80" aria-hidden />
+                    Tools
+                  </Link>
+                  <Link
+                    to="/change-workflow/journey"
+                    className="cw-btn cw-btn-accent-outline"
+                  >
+                    <Map className="w-3.5 h-3.5 opacity-80" aria-hidden />
+                    Journey
+                  </Link>
+                </>
               )}
               <button
                 type="button"

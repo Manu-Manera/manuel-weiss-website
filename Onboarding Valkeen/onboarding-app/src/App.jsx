@@ -16,6 +16,7 @@ import LoginMailer from './pages/LoginMailer';
 import ChangeWorkflow from './pages/ChangeWorkflow';
 import KotterTilePage from './pages/KotterTilePage';
 import WorkshopTools from './pages/WorkshopTools';
+import ChangeJourney from './pages/ChangeJourney';
 import KotterPublicShareShell from './pages/KotterPublicShareShell';
 import WorkshopPrepPublicShell from './pages/WorkshopPrepPublicShell';
 import LegacyChangeWorkflowRedirect from './pages/LegacyChangeWorkflowRedirect';
@@ -59,6 +60,7 @@ function AdminProgressRoutes() {
       <Routes>
         <Route path="change-workflow/kotter/:slug" element={<KotterTilePage />} />
         <Route path="change-workflow/tools" element={<WorkshopTools />} />
+        <Route path="change-workflow/journey" element={<ChangeJourney />} />
         <Route path="change-workflow/teilnehmer" element={<ChangeWorkflow />} />
         <Route path="change-workflow" element={<ChangeWorkflow />} />
         <Route path="login-mailer/change-workflow" element={<LegacyChangeWorkflowRedirect />} />
