@@ -17,6 +17,8 @@ import ChangeWorkflow from './pages/ChangeWorkflow';
 import KotterTilePage from './pages/KotterTilePage';
 import WorkshopTools from './pages/WorkshopTools';
 import ChangeJourney from './pages/ChangeJourney';
+import PhaseTilePage from './pages/PhaseTilePage';
+import JourneyPublicShell from './pages/JourneyPublicShell';
 import KotterPublicShareShell from './pages/KotterPublicShareShell';
 import WorkshopPrepPublicShell from './pages/WorkshopPrepPublicShell';
 import LegacyChangeWorkflowRedirect from './pages/LegacyChangeWorkflowRedirect';
@@ -61,6 +63,7 @@ function AdminProgressRoutes() {
         <Route path="change-workflow/kotter/:slug" element={<KotterTilePage />} />
         <Route path="change-workflow/tools" element={<WorkshopTools />} />
         <Route path="change-workflow/journey" element={<ChangeJourney />} />
+        <Route path="change-workflow/phase/:phaseId" element={<PhaseTilePage />} />
         <Route path="change-workflow/teilnehmer" element={<ChangeWorkflow />} />
         <Route path="change-workflow" element={<ChangeWorkflow />} />
         <Route path="login-mailer/change-workflow" element={<LegacyChangeWorkflowRedirect />} />
@@ -90,6 +93,7 @@ function App() {
       <Routes>
         <Route path="kotter-share/:shareId/*" element={<KotterPublicShareShell />} />
         <Route path="workshop-prep/:shareId" element={<WorkshopPrepPublicShell />} />
+        <Route path="journey-share/:shareId" element={<JourneyPublicShell />} />
         <Route path="*" element={<AdminProgressRoutes />} />
       </Routes>
     </BrowserRouter>

@@ -7,14 +7,18 @@ import {
   CheckCircle,
   ChevronDown,
   Circle,
+  Copy,
+  ExternalLink,
   Flag,
   Lightbulb,
+  Link2,
   ListChecks,
   Loader2,
   Map,
   MessageSquare,
   Plus,
   Send,
+  Share2,
   Sparkles,
   Target,
   Trash2,
@@ -27,6 +31,8 @@ import { useProgress } from '../hooks/useLocalStorage';
 import { getOpenAIApiKey, loadProgress } from '../services/awsService';
 import { KOTTER_CATALOG_ITEMS } from '../data/kotterCatalogData';
 import { WORKSHOP_PREP_QUESTIONS, workshopPrepUserId } from '../utils/workshopPrepShare';
+import { WORKSHOP_PHASE_CATALOG } from '../data/workshopPhaseCatalog';
+import { buildJourneyShareBlob, buildJourneyShareUrl, journeyShareUserId } from '../utils/journeyShare';
 
 const JOURNEY_PHASES = [
   { id: 'workshop', label: 'Workshop', icon: Users, description: 'Analyse & Planung abgeschlossen' },
@@ -78,6 +84,8 @@ export default function ChangeJourney() {
   const [coachInput, setCoachInput] = useState('');
   const [coachLoading, setCoachLoading] = useState(false);
   const [checklistGenLoading, setChecklistGenLoading] = useState(false);
+  const [shareBusy, setShareBusy] = useState(false);
+  const [shareHint, setShareHint] = useState('');
 
   useEffect(() => {
     if (!activeProfile?.prepShareToken) return;
@@ -85,6 +93,79 @@ export default function ChangeJourney() {
       setPrepData(blob?.workshopPrep || null);
     });
   }, [activeProfile?.prepShareToken]);
+
+  useEffect(() => {
+    if (!shareHint) return;
+    const t = setTimeout(() => setShareHint(''), 4500);
+    return () => clearTimeout(t);
+  }, [shareHint]);
+
+  const createJourneyShareLink = useCallback(async () => {
+    if (!activeProfile) return;
+    setShareBusy(true);
+    try {
+      const token = crypto.randomUUID ? crypto.randomUUID() : `js_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+      const blob = buildJourneyShareBlob(activeProfile, KOTTER_CATALOG_ITEMS, WORKSHOP_PHASE_CATALOG);
+      await saveProgress(blob, journeyShareUserId(token));
+      
+      updateChangeWorkshopKotter((cw) => {
+        const id = cw.activeProfileId;
+        const p = cw.profiles[id];
+        if (!p) return cw;
+        return {
+          ...cw,
+          profiles: {
+            ...cw.profiles,
+            [id]: {
+              ...p,
+              journeyShareToken: token,
+              journeyShareCreatedAt: new Date().toISOString(),
+            },
+          },
+        };
+      });
+
+      const url = buildJourneyShareUrl(token);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+        setShareHint('Link kopiert! Kunden können jetzt die Journey einsehen und Checklisten abhaken.');
+      } else {
+        window.prompt('Journey-Link:', url);
+      }
+    } catch (e) {
+      window.alert(e?.message || 'Fehler beim Erstellen des Links');
+    } finally {
+      setShareBusy(false);
+    }
+  }, [activeProfile, updateChangeWorkshopKotter]);
+
+  const refreshJourneyShare = useCallback(async () => {
+    const token = activeProfile?.journeyShareToken;
+    if (!token || !activeProfile) return;
+    setShareBusy(true);
+    try {
+      const blob = buildJourneyShareBlob(activeProfile, KOTTER_CATALOG_ITEMS, WORKSHOP_PHASE_CATALOG);
+      await saveProgress(blob, journeyShareUserId(token));
+      setShareHint('Kunden-Link wurde mit aktuellem Stand aktualisiert.');
+    } catch (e) {
+      window.alert(e?.message || 'Aktualisierung fehlgeschlagen');
+    } finally {
+      setShareBusy(false);
+    }
+  }, [activeProfile]);
+
+  const copyJourneyLink = useCallback(async () => {
+    const token = activeProfile?.journeyShareToken;
+    if (!token) return;
+    const url = buildJourneyShareUrl(token);
+    try {
+      if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(url);
+      else window.prompt('Link:', url);
+      setShareHint('Link erneut kopiert.');
+    } catch {
+      window.prompt('Link:', url);
+    }
+  }, [activeProfile?.journeyShareToken]);
 
   const journey = useMemo(() => {
     return activeProfile?.journey || {
@@ -376,13 +457,55 @@ Beantworte Fragen zum Change-Prozess, gib praktische Tipps und ermutige. Antwort
         ) : (
           <>
             <div className="cw-card bg-gradient-to-br from-violet-50/80 to-white">
-              <div className="flex items-center gap-3 mb-4">
-                <Sparkles className="w-6 h-6 text-violet-600 shrink-0" aria-hidden />
-                <div>
-                  <h1 className="text-xl font-bold text-slate-800 m-0">{activeProfile.customerLabel || 'Change Journey'}</h1>
-                  <p className="text-sm text-slate-600 m-0">Langfristige Begleitung deines Veränderungsprojekts</p>
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+                <div className="flex items-center gap-3">
+                  <Sparkles className="w-6 h-6 text-violet-600 shrink-0" aria-hidden />
+                  <div>
+                    <h1 className="text-xl font-bold text-slate-800 m-0">{activeProfile.customerLabel || 'Change Journey'}</h1>
+                    <p className="text-sm text-slate-600 m-0">Langfristige Begleitung deines Veränderungsprojekts</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={createJourneyShareLink}
+                    disabled={shareBusy}
+                    className="cw-btn cw-btn-primary-solid cw-btn-compact inline-flex items-center gap-2"
+                  >
+                    {shareBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="w-4 h-4" />}
+                    {activeProfile.journeyShareToken ? 'Neuer Kunden-Link' : 'Mit Kunden teilen'}
+                  </button>
+                  {activeProfile.journeyShareToken && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={refreshJourneyShare}
+                        disabled={shareBusy}
+                        className="cw-btn cw-btn-accent-outline cw-btn-compact inline-flex items-center gap-2"
+                        title="Aktuellen Stand zum Kunden-Link synchronisieren"
+                      >
+                        <TrendingUp className="w-4 h-4" /> Aktualisieren
+                      </button>
+                      <button
+                        type="button"
+                        onClick={copyJourneyLink}
+                        disabled={shareBusy}
+                        className="cw-btn cw-btn-ghost cw-btn-compact inline-flex items-center gap-2"
+                      >
+                        <Copy className="w-4 h-4" /> Link kopieren
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
+              {shareHint && (
+                <p className="text-xs text-emerald-700 bg-emerald-50 rounded-lg px-3 py-2 mb-4">{shareHint}</p>
+              )}
+              {activeProfile.journeyShareToken && (
+                <p className="text-[11px] text-slate-500 font-mono break-all mb-4">
+                  {buildJourneyShareUrl(activeProfile.journeyShareToken)}
+                </p>
+              )}
 
               <div className="flex items-center gap-2 overflow-x-auto pb-2">
                 {JOURNEY_PHASES.map((phase, idx) => {
@@ -427,6 +550,35 @@ Beantworte Fragen zum Change-Prozess, gib praktische Tipps und ermutige. Antwort
                 <p className="text-xs text-slate-500 m-0">Maßnahmen erledigt</p>
               </div>
             </div>
+
+            <CollapsibleSection title="Workshop-Phasen" icon={ListChecks} badge={`${WORKSHOP_PHASE_CATALOG.filter((p) => activeProfile?.phaseAnswers?.[p.id]?._status === 'done').length}/8`} defaultOpen>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {WORKSHOP_PHASE_CATALOG.map((p) => {
+                  const data = activeProfile?.phaseAnswers?.[p.id] || {};
+                  const status = data._status || 'open';
+                  const answeredCount = p.prompts.filter((pr) => (data[pr.key] || '').trim().length > 0).length;
+                  const statusColors = {
+                    done: 'bg-emerald-50 border-emerald-200 text-emerald-700',
+                    in_progress: 'bg-amber-50 border-amber-200 text-amber-700',
+                    open: 'bg-slate-50 border-slate-200 text-slate-600',
+                  };
+                  return (
+                    <Link
+                      key={p.id}
+                      to={`/change-workflow/phase/${p.id}`}
+                      className={`p-3 rounded-xl border text-center no-underline transition-transform hover:scale-105 ${statusColors[status]}`}
+                    >
+                      <p className="text-lg font-bold m-0">{p.order}</p>
+                      <p className="text-xs font-semibold m-0">{p.label}</p>
+                      <div className="flex items-center justify-center gap-1 mt-2">
+                        {status === 'done' ? <CheckCircle className="w-4 h-4" /> : <Circle className="w-4 h-4" />}
+                        <span className="text-[10px]">{answeredCount}/{p.prompts.length}</span>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </CollapsibleSection>
 
             <CollapsibleSection title="Kotter-Status-Übersicht" icon={Target} badge={`${completedKotter}/8`} defaultOpen>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
