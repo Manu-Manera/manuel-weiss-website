@@ -1,6 +1,8 @@
 /** Präsentationsnahe Workshop‑Diagramme (SVG mit Verläufen, Schatten, klarer Hierarchie). */
 
 import { useId } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { KOTTER_CATALOG_ITEMS } from '../../data/kotterCatalogData';
 
 /** Stabile lokale SVG‑IDs (pro Komponenteninstanz durch useId eindeutig). */
 function useSvgUid(prefix) {
@@ -212,17 +214,11 @@ function EmotionCurveDiagram({ titleId }) {
   );
 }
 
-function KotterEightDiagram({ titleId }) {
-  const items = [
-    'Dringlichkeit',
-    'Führungs‑netz',
-    'Vision',
-    'Kommunikation',
-    'Befähigung',
-    'Quick Wins',
-    'Vertiefung',
-    'Verankerung',
-  ];
+function KotterEightDiagram({ titleId, kotterInteractive = false }) {
+  const navigate = useNavigate();
+  const go = (kotterSlug) => {
+    navigate(`/change-workflow/kotter/${kotterSlug}`);
+  };
   return (
     <SvgChartShell titleId={titleId} titleText="Klassische Ursachen wenn Change‑Programme stagnieren." vb="0 0 532 258" height="16.125rem">
       {(U) => (
@@ -234,21 +230,49 @@ function KotterEightDiagram({ titleId }) {
           <text x="266" y="68" textAnchor="middle" fill="var(--cw-text-muted)" style={{ font: '600 11px system-ui,sans-serif' }}>
             Acht typische Ursachen bei stockenden Initiativen
           </text>
-          {items.map((txt, idx) => {
+          {KOTTER_CATALOG_ITEMS.map((item, idx) => {
             const row = idx < 4 ? 0 : 1;
             const col = idx % 4;
             const x = 42 + col * 114;
             const y = row === 0 ? 88 : 170;
-            return (
-              <g key={txt} filter={`url(#${U}_softDrop)`}>
+            const label = `${item.order}. ${item.label} — Prüfkatalog öffnen`;
+            const inner = (
+              <>
                 <rect x={x} y={y} rx="16" width="104" height="84" fill="#ffffff" stroke="var(--cw-accent-soft-border)" strokeWidth={1} />
                 <rect x={x} y={y} width="104" height="26" rx="16" ry="12" fill="rgba(124,58,237,0.14)" stroke="none" />
                 <text x={x + 52} y={y + 18} textAnchor="middle" fill="var(--cw-accent-strong)" style={{ font: 'bold 13px system-ui,sans-serif' }}>
                   {idx + 1}.
                 </text>
                 <text x={x + 52} y={y + 60} textAnchor="middle" fill="var(--cw-text)" style={{ font: 'bold 11px system-ui,sans-serif', lineHeight: 1.2 }}>
-                  {txt}
+                  {item.label}
                 </text>
+              </>
+            );
+            if (!kotterInteractive) {
+              return (
+                <g key={item.slug} filter={`url(#${U}_softDrop)`}>
+                  {inner}
+                </g>
+              );
+            }
+            return (
+              <g
+                key={item.slug}
+                className="cw-kotter-tile"
+                filter={`url(#${U}_softDrop)`}
+                role="button"
+                tabIndex={0}
+                style={{ cursor: 'pointer' }}
+                aria-label={label}
+                onClick={() => go(item.slug)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    go(item.slug);
+                  }
+                }}
+              >
+                {inner}
               </g>
             );
           })}
@@ -702,19 +726,23 @@ const DIAGRAM_REGISTRY = {
   'change-lifecycle': LifecycleDiagram,
 };
 
-function Graphic({ variant, titleId }) {
+function Graphic({ variant, titleId, kotterInteractive }) {
   const C = DIAGRAM_REGISTRY[variant];
-  return C ? <C titleId={titleId} /> : null;
+  if (!C) return null;
+  if (variant === 'kotter-8') {
+    return <C titleId={titleId} kotterInteractive={kotterInteractive} />;
+  }
+  return <C titleId={titleId} />;
 }
 
-function DiagramFigure({ entry }) {
+function DiagramFigure({ entry, kotterInteractive }) {
   const capId = useId();
   const titleId = useId();
   if (!DIAGRAM_REGISTRY[entry.id]) return null;
   return (
     <figure className="cw-diagram-frame" aria-labelledby={capId}>
       <div className="cw-diagram-svg-wrap">
-        <Graphic variant={entry.id} titleId={titleId} />
+        <Graphic variant={entry.id} titleId={titleId} kotterInteractive={kotterInteractive} />
       </div>
       <figcaption id={capId} className="cw-diagram-caption">
         {entry.caption}
@@ -724,14 +752,14 @@ function DiagramFigure({ entry }) {
 }
 
 /**
- * @param {{ entries?: { id: string, caption: string }[] }} props
+ * @param {{ entries?: { id: string, caption: string }[], kotterInteractive?: boolean }} props
  */
-export function ChangeWorkflowDiagrams({ entries }) {
+export function ChangeWorkflowDiagrams({ entries, kotterInteractive }) {
   if (!entries?.length) return null;
   return (
     <div className="cw-diagram-stack">
       {entries.map((entry, idx) => (
-        <DiagramFigure key={`${entry.id}-${idx}`} entry={entry} />
+        <DiagramFigure key={`${entry.id}-${idx}`} entry={entry} kotterInteractive={kotterInteractive} />
       ))}
     </div>
   );

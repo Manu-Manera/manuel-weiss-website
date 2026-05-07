@@ -1417,3 +1417,10 @@
   border-radius: 0.25rem;
 }
 
+/* Kotter-Prüfkatalog: klickbare SVG-Kacheln */
+.cw-diagram-svg g.cw-kotter-tile:focus > rect:first-of-type,
+.cw-diagram-svg g.cw-kotter-tile:hover > rect:first-of-type {
+  stroke: var(--cw-accent);
+  stroke-width: 2px;
+}
+

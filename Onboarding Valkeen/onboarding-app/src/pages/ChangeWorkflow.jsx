@@ -20,7 +20,7 @@ import {
 
 import '../styles/change-workshop.css';
 
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useLocalStorage, useProgress } from '../hooks/useLocalStorage';
 import {
   CHANGE_WORKFLOW_META,
   CHANGE_PHASES,
@@ -387,6 +387,8 @@ export default function ChangeWorkflow() {
   const [mobileTab, setMobileTab] = useState('guide');
   const [pdfBusy, setPdfBusy] = useState(false);
 
+  const { progress } = useProgress();
+
   const phase = useMemo(
     () => CHANGE_PHASES.find((p) => p.id === phaseId) ?? CHANGE_PHASES[0],
     [phaseId]
@@ -412,8 +414,9 @@ export default function ChangeWorkflow() {
       checks,
       sessionTitle: sessionTitle.trim() || undefined,
       followUpNotes: followUpNotes.trim() || undefined,
+      kotterWorkshop: progress.changeWorkshopKotter || undefined,
     }),
-    [notes, checks, sessionTitle, followUpNotes]
+    [notes, checks, sessionTitle, followUpNotes, progress.changeWorkshopKotter]
   );
 
   const withPdfBusy = useCallback(async (fn) => {
@@ -647,7 +650,10 @@ export default function ChangeWorkflow() {
                 <PhaseTimer key={phase.id} presetMinutes={timerPresetMinutes} />
               )}
 
-              <ChangeWorkflowDiagrams entries={CHANGE_PHASE_DIAGRAMS[phase.id]} />
+              <ChangeWorkflowDiagrams
+                entries={CHANGE_PHASE_DIAGRAMS[phase.id]}
+                kotterInteractive={facilitatorMode && !participantOnly}
+              />
 
               <p className="cw-kicker mb-5 flex items-center gap-2.5">
                 <ListChecks className="w-4 h-4 opacity-80 shrink-0" aria-hidden />

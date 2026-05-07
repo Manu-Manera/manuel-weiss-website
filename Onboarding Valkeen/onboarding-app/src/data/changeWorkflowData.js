@@ -420,7 +420,8 @@ export const CHANGE_PHASE_DIAGRAMS = {
     },
     {
       id: 'kotter-8',
-      caption: 'Gängige Ursachenliste für stockende Change‑Programme als Moderationshilfe.',
+      caption:
+        'Gängige Ursachenliste für stockende Change‑Programme als Moderationshilfe. Jede Kachel öffnet Reflexionsfragen (gespeichert pro Kundenpaket, inkl. PDF).',
     },
   ],
   success_formula: [

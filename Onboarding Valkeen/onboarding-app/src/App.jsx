@@ -15,7 +15,9 @@ import SSOSetup from './pages/SSOSetup';
 import TempusDemo from './pages/TempusDemo';
 import LoginMailer from './pages/LoginMailer';
 import ChangeWorkflow from './pages/ChangeWorkflow';
+import KotterTilePage from './pages/KotterTilePage';
 import LegacyChangeWorkflowRedirect from './pages/LegacyChangeWorkflowRedirect';
+import { ProgressProvider } from './hooks/useLocalStorage';
 
 function checkAdminSession() {
   try {
@@ -64,26 +66,29 @@ function App() {
 
   return (
     <BrowserRouter basename="/onboarding">
-      <Routes>
-        <Route path="change-workflow/teilnehmer" element={<ChangeWorkflow />} />
-        <Route path="change-workflow" element={<ChangeWorkflow />} />
-        <Route path="login-mailer/change-workflow" element={<LegacyChangeWorkflowRedirect />} />
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="tracker" element={<Tracker />} />
-          <Route path="flashcards" element={<Flashcards />} />
-          <Route path="quiz" element={<Quiz />} />
-          <Route path="ai-coach" element={<AICoach />} />
-          <Route path="calendar" element={<Calendar />} />
-          <Route path="resources" element={<Resources />} />
-          <Route path="report" element={<Report />} />
-          <Route path="training" element={<Training />} />
-          <Route path="training-admin" element={<TrainingAdmin />} />
-          <Route path="sso-setup" element={<SSOSetup />} />
-          <Route path="tempus-demo" element={<TempusDemo />} />
-          <Route path="login-mailer" element={<LoginMailer />} />
-        </Route>
-      </Routes>
+      <ProgressProvider>
+        <Routes>
+          <Route path="change-workflow/kotter/:slug" element={<KotterTilePage />} />
+          <Route path="change-workflow/teilnehmer" element={<ChangeWorkflow />} />
+          <Route path="change-workflow" element={<ChangeWorkflow />} />
+          <Route path="login-mailer/change-workflow" element={<LegacyChangeWorkflowRedirect />} />
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="tracker" element={<Tracker />} />
+            <Route path="flashcards" element={<Flashcards />} />
+            <Route path="quiz" element={<Quiz />} />
+            <Route path="ai-coach" element={<AICoach />} />
+            <Route path="calendar" element={<Calendar />} />
+            <Route path="resources" element={<Resources />} />
+            <Route path="report" element={<Report />} />
+            <Route path="training" element={<Training />} />
+            <Route path="training-admin" element={<TrainingAdmin />} />
+            <Route path="sso-setup" element={<SSOSetup />} />
+            <Route path="tempus-demo" element={<TempusDemo />} />
+            <Route path="login-mailer" element={<LoginMailer />} />
+          </Route>
+        </Routes>
+      </ProgressProvider>
     </BrowserRouter>
   );
 }
