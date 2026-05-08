@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -341,6 +341,15 @@ export default function CommunicationPlan() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterChannel, setFilterChannel] = useState('all');
   const [selectedIds, setSelectedIds] = useState(new Set());
+  const commsFormRef = useRef(null);
+
+  useEffect(() => {
+    if (!showForm && !editingId) return;
+    const t = window.setTimeout(() => {
+      commsFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+    return () => window.clearTimeout(t);
+  }, [showForm, editingId]);
 
   const filteredItems = useMemo(() => {
     return commsPlan.filter((c) => {
@@ -795,7 +804,7 @@ END:VCALENDAR`;
             )}
 
             {(showForm || editingId) && (
-              <div className="cw-card">
+              <div ref={commsFormRef} className="cw-card scroll-mt-24">
                 <h2 className="text-lg font-semibold text-slate-800 mb-4">
                   {editingId ? 'Maßnahme bearbeiten' : 'Neue Kommunikationsmaßnahme'}
                 </h2>

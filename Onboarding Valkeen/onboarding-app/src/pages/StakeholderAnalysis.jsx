@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   AlertTriangle,
@@ -91,6 +91,7 @@ function CollapsibleSection({ title, icon: Icon, badge, defaultOpen = false, chi
 function StakeholderForm({ stakeholder, kotterItems, projectContext, allStakeholders, onSave, onCancel }) {
   const [form, setForm] = useState({ ...stakeholder });
   const [aiActionsLoading, setAiActionsLoading] = useState(false);
+  const measuresSectionRef = useRef(null);
 
   const updateField = (field, value) => setForm((f) => ({ ...f, [field]: value }));
 
@@ -99,6 +100,9 @@ function StakeholderForm({ stakeholder, kotterItems, projectContext, allStakehol
       ...f,
       actions: [...(f.actions || []), { id: newId(), text: '', owner: '', dueDate: '', done: false }],
     }));
+    requestAnimationFrame(() => {
+      measuresSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
   };
 
   const updateAction = (id, field, value) => {
@@ -190,6 +194,9 @@ Schlage 3-4 konkrete, umsetzbare Maßnahmen vor. Format als JSON-Array:
         ...f,
         actions: [...(f.actions || []), ...newActions],
       }));
+      requestAnimationFrame(() => {
+        measuresSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
     } catch (e) {
       alert(`Fehler: ${e?.message}`);
     } finally {
@@ -341,7 +348,7 @@ Schlage 3-4 konkrete, umsetzbare Maßnahmen vor. Format als JSON-Array:
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
+      <div ref={measuresSectionRef} className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3 scroll-mt-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <span className="text-sm font-semibold text-slate-700">Maßnahmen (mit Owner)</span>
           <div className="flex items-center gap-2">
@@ -569,12 +576,21 @@ export default function StakeholderAnalysis() {
   const [shareBusy, setShareBusy] = useState(false);
   const [shareHint, setShareHint] = useState('');
   const [pdfBusy, setPdfBusy] = useState(false);
+  const stakeholderFormRef = useRef(null);
 
   useEffect(() => {
     if (!shareHint) return;
     const t = setTimeout(() => setShareHint(''), 4000);
     return () => clearTimeout(t);
   }, [shareHint]);
+
+  useEffect(() => {
+    if (!showForm && !editingId) return;
+    const t = window.setTimeout(() => {
+      stakeholderFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+    return () => window.clearTimeout(t);
+  }, [showForm, editingId]);
 
   const filteredStakeholders = useMemo(() => {
     return stakeholders.filter((s) => {
@@ -1045,7 +1061,7 @@ Schlage 5 zusätzliche typische Stakeholder-Gruppen vor, die noch fehlen könnte
             </div>
 
             {(showForm || editingId) && (
-              <div className="cw-card">
+              <div ref={stakeholderFormRef} className="cw-card scroll-mt-24">
                 <h2 className="text-lg font-semibold text-slate-800 mb-4">
                   {editingId ? 'Stakeholder bearbeiten' : 'Neuer Stakeholder'}
                 </h2>
