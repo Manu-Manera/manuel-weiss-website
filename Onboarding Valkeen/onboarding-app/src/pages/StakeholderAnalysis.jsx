@@ -88,8 +88,9 @@ function CollapsibleSection({ title, icon: Icon, badge, defaultOpen = false, chi
   );
 }
 
-function StakeholderForm({ stakeholder, kotterItems, onSave, onCancel }) {
+function StakeholderForm({ stakeholder, kotterItems, projectContext, allStakeholders, onSave, onCancel }) {
   const [form, setForm] = useState({ ...stakeholder });
+  const [aiActionsLoading, setAiActionsLoading] = useState(false);
 
   const updateField = (field, value) => setForm((f) => ({ ...f, [field]: value }));
 
@@ -109,6 +110,91 @@ function StakeholderForm({ stakeholder, kotterItems, onSave, onCancel }) {
 
   const removeAction = (id) => {
     setForm((f) => ({ ...f, actions: f.actions.filter((a) => a.id !== id) }));
+  };
+
+  const generateAiActions = async () => {
+    if (!form.name?.trim()) {
+      alert('Bitte zuerst den Stakeholder-Namen eingeben.');
+      return;
+    }
+    setAiActionsLoading(true);
+    try {
+      const apiKey = await getOpenAIApiKey();
+      const key = apiKey || localStorage.getItem('openai-api-key');
+      if (!key?.startsWith('sk-')) {
+        alert('Kein OpenAI API-Key gefunden.');
+        return;
+      }
+
+      const infLabel = INFLUENCE_LEVELS.find((l) => l.value === form.influence)?.label || form.influence;
+      const supLabel = SUPPORT_LEVELS.find((l) => l.value === form.support)?.label || form.support;
+      const stratLabel = STRATEGY_OPTIONS.find((s) => s.value === form.strategy)?.label || form.strategy;
+
+      const otherStakeholders = (allStakeholders || [])
+        .filter((s) => s.id !== form.id)
+        .map((s) => `${s.name} (${s.role || 'k.A.'}, ${SUPPORT_LEVELS.find((l) => l.value === s.support)?.label || s.support})`)
+        .slice(0, 5)
+        .join(', ') || 'keine weiteren';
+
+      const prompt = `Du bist ein Change-Management-Experte. Analysiere den folgenden Stakeholder und schlage 3-4 konkrete Maßnahmen vor, um ihn für das Projekt zu gewinnen bzw. zu managen.
+
+PROJEKT: ${projectContext || 'Change-Projekt'}
+
+STAKEHOLDER:
+- Name: ${form.name}
+- Rolle: ${form.role || 'nicht angegeben'}
+- Abteilung: ${form.department || 'nicht angegeben'}
+- Einfluss: ${infLabel}
+- Aktuelle Unterstützung: ${supLabel}
+- Gewählte Strategie: ${stratLabel}
+- Interessen: ${form.interests || 'nicht angegeben'}
+- Bedenken: ${form.concerns || 'nicht angegeben'}
+
+WEITERE STAKEHOLDER IM PROJEKT: ${otherStakeholders}
+
+Schlage 3-4 konkrete, umsetzbare Maßnahmen vor. Format als JSON-Array:
+[
+  { "text": "Konkrete Maßnahme", "owner": "Vorgeschlagene Rolle (z.B. Projektleiter, Change Manager)" }
+]`;
+
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+        body: JSON.stringify({
+          model: 'gpt-4.1',
+          messages: [
+            { role: 'system', content: 'Du bist ein erfahrener Change-Management-Berater. Antworte ausschließlich mit validem JSON.' },
+            { role: 'user', content: prompt },
+          ],
+          temperature: 0.7,
+          max_tokens: 600,
+        }),
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const content = data.choices?.[0]?.message?.content || '';
+      const jsonMatch = content.match(/\[[\s\S]*\]/);
+      if (!jsonMatch) throw new Error('Keine JSON-Antwort erhalten');
+
+      const suggestions = JSON.parse(jsonMatch[0]);
+      const newActions = suggestions.map((s) => ({
+        id: newId(),
+        text: s.text,
+        owner: s.owner || '',
+        dueDate: '',
+        done: false,
+      }));
+
+      setForm((f) => ({
+        ...f,
+        actions: [...(f.actions || []), ...newActions],
+      }));
+    } catch (e) {
+      alert(`Fehler: ${e?.message}`);
+    } finally {
+      setAiActionsLoading(false);
+    }
   };
 
   const addComment = () => {
@@ -256,15 +342,26 @@ function StakeholderForm({ stakeholder, kotterItems, onSave, onCancel }) {
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <span className="text-sm font-semibold text-slate-700">Maßnahmen (mit Owner)</span>
-          <button
-            type="button"
-            onClick={addAction}
-            className="text-xs text-violet-600 hover:underline inline-flex items-center gap-1"
-          >
-            <Plus className="w-3 h-3" /> Hinzufügen
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={generateAiActions}
+              disabled={aiActionsLoading}
+              className="text-xs text-violet-600 hover:underline inline-flex items-center gap-1"
+            >
+              {aiActionsLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+              KI-Vorschläge
+            </button>
+            <button
+              type="button"
+              onClick={addAction}
+              className="text-xs text-violet-600 hover:underline inline-flex items-center gap-1"
+            >
+              <Plus className="w-3 h-3" /> Hinzufügen
+            </button>
+          </div>
         </div>
         {(!form.actions || form.actions.length === 0) ? (
           <p className="text-xs text-slate-500 italic">Noch keine Maßnahmen definiert.</p>
@@ -956,6 +1053,8 @@ Schlage 5 zusätzliche typische Stakeholder-Gruppen vor, die noch fehlen könnte
                   key={editingId || 'new-stakeholder'}
                   stakeholder={editingStakeholder || { influence: 'medium', support: 'neutral', strategy: 'inform', actions: [], comments: [], kotterPhases: [], supportHistory: [] }}
                   kotterItems={KOTTER_CATALOG_ITEMS}
+                  projectContext={activeProfile?.customerLabel}
+                  allStakeholders={stakeholders}
                   onSave={saveStakeholder}
                   onCancel={() => { setEditingId(null); setShowForm(false); }}
                 />
