@@ -670,6 +670,8 @@ Schlage 5 zusätzliche typische Stakeholder-Gruppen vor, die noch fehlen könnte
         concerns: s.concerns || '',
         actions: [],
         comments: [],
+        kotterPhases: [],
+        supportHistory: [],
         notes: '(KI-Vorschlag)',
         createdAt: new Date().toISOString(),
       }));
@@ -951,7 +953,8 @@ Schlage 5 zusätzliche typische Stakeholder-Gruppen vor, die noch fehlen könnte
                   {editingId ? 'Stakeholder bearbeiten' : 'Neuer Stakeholder'}
                 </h2>
                 <StakeholderForm
-                  stakeholder={editingStakeholder || { influence: 'medium', support: 'neutral', strategy: 'inform', actions: [], comments: [], kotterPhases: [] }}
+                  key={editingId || 'new-stakeholder'}
+                  stakeholder={editingStakeholder || { influence: 'medium', support: 'neutral', strategy: 'inform', actions: [], comments: [], kotterPhases: [], supportHistory: [] }}
                   kotterItems={KOTTER_CATALOG_ITEMS}
                   onSave={saveStakeholder}
                   onCancel={() => { setEditingId(null); setShowForm(false); }}
