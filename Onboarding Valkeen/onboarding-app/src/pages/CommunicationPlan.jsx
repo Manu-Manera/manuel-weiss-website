@@ -800,6 +800,7 @@ END:VCALENDAR`;
                   {editingId ? 'Maßnahme bearbeiten' : 'Neue Kommunikationsmaßnahme'}
                 </h2>
                 <CommItemForm
+                  key={editingId || 'new-comms-item'}
                   item={editingItem || { channel: 'email', frequency: 'once', status: 'planned', targetAudience: [] }}
                   stakeholders={stakeholders}
                   onSave={saveItem}
