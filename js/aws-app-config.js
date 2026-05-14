@@ -79,7 +79,10 @@ window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
     CONTACT_EMAIL: '/contact-email',
     
     // PDF Generator (Puppeteer)
-    PDF_GENERATOR: '/pdf-generator'
+    PDF_GENERATOR: '/pdf-generator',
+
+    // Fokus-Tagebuch (20-Min-Training, DynamoDB)
+    FOKUS_TAGEBUCH: '/fokus-tagebuch'
   },
   
   // ========================================

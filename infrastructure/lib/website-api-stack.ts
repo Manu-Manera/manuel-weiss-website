@@ -105,6 +105,7 @@ export class WebsiteApiStack extends cdk.Stack {
           'Content-Type',
           'Authorization',
           'X-User-Id',
+          'X-Customer-Id',
           'X-Amz-Date',
           'X-Api-Key',
           'X-Amz-Security-Token',
@@ -751,13 +752,15 @@ export class WebsiteApiStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(30),
       memorySize: 256,
       environment: {
-        TRAINING_BUCKET: 'manuel-weiss-website'
+        TRAINING_BUCKET: 'manuel-weiss-website',
+        TRAINING_JWT_SECRET: process.env.TRAINING_JWT_SECRET || 'change-me-locally-set-in-cdk-deploy',
+        TRAINING_ADMIN_PASSWORD: process.env.TRAINING_ADMIN_PASSWORD || ''
       }
     });
 
     trainingAdminLambda.addToRolePolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
-      actions: ['s3:GetObject', 's3:PutObject', 's3:ListBucket'],
+      actions: ['s3:GetObject', 's3:PutObject', 's3:DeleteObject', 's3:ListBucket'],
       resources: [
         'arn:aws:s3:::manuel-weiss-website',
         'arn:aws:s3:::manuel-weiss-website/training-admin/*'
@@ -765,13 +768,30 @@ export class WebsiteApiStack extends cdk.Stack {
     }));
 
     const trainingAdminResource = this.api.root.addResource('training-admin');
+    const trainingAdminIntegration = new apigateway.LambdaIntegration(trainingAdminLambda);
+
+    // Legacy-Routen explizit (für Backwards-Compat)
     const trainingAdminConfigResource = trainingAdminResource.addResource('config');
-    trainingAdminConfigResource.addMethod('GET', new apigateway.LambdaIntegration(trainingAdminLambda));
-    trainingAdminConfigResource.addMethod('PUT', new apigateway.LambdaIntegration(trainingAdminLambda));
+    trainingAdminConfigResource.addMethod('GET', trainingAdminIntegration);
+    trainingAdminConfigResource.addMethod('PUT', trainingAdminIntegration);
     const trainingAdminUploadResource = trainingAdminResource.addResource('upload-url');
-    trainingAdminUploadResource.addMethod('POST', new apigateway.LambdaIntegration(trainingAdminLambda));
+    trainingAdminUploadResource.addMethod('POST', trainingAdminIntegration);
     const trainingAdminScreenshotsResource = trainingAdminResource.addResource('screenshots');
-    trainingAdminScreenshotsResource.addMethod('GET', new apigateway.LambdaIntegration(trainingAdminLambda));
+    trainingAdminScreenshotsResource.addMethod('GET', trainingAdminIntegration);
+
+    // Neue Multi-Tenant-Routen via Greedy Proxy unter /training-admin/customers/{proxy+}
+    // (matcht customers/index, customers/<cid>/branding, .../tours/..., .../slides/..., .../progress/...)
+    const trainingAdminCustomersResource = trainingAdminResource.addResource('customers');
+    trainingAdminCustomersResource.addMethod('GET', trainingAdminIntegration);
+    const trainingAdminCustomersProxy = trainingAdminCustomersResource.addResource('{proxy+}');
+    trainingAdminCustomersProxy.addMethod('ANY', trainingAdminIntegration);
+
+    // Auth-Routen (Magic-Link + Direkt-Token)
+    const authResource = this.api.root.addResource('auth');
+    const authMagicLink = authResource.addResource('magic-link');
+    authMagicLink.addMethod('POST', trainingAdminIntegration);
+    const authToken = authResource.addResource('token');
+    authToken.addMethod('POST', trainingAdminIntegration);
 
     // ========================================
     // DEMO SCRIPT (PM + RM Bearbeitungsstand in S3)
@@ -892,12 +912,12 @@ export class WebsiteApiStack extends cdk.Stack {
     // SINGING TRAINER (Gesangstraining App)
     // ========================================
 
-    const singingProgressTable = new dynamodb.Table(this, 'SingingProgressTable', {
-      tableName: 'mawps-singing-progress',
-      partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
-      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-      removalPolicy: cdk.RemovalPolicy.RETAIN,
-    });
+    // Tabelle existiert in AWS (u. a. nach fehlgeschlagenem Rollback); Referenz statt Create vermeidet ResourceExistenceCheck-Konflikt
+    const singingProgressTable = dynamodb.Table.fromTableName(
+      this,
+      'SingingProgressTable',
+      'mawps-singing-progress'
+    );
 
     const singingTrainerLambda = new lambda.Function(this, 'SingingTrainerFunction', {
       functionName: 'website-singing-trainer-api',
@@ -924,6 +944,41 @@ export class WebsiteApiStack extends cdk.Stack {
 
     const singingCalibrateResource = singingTrainerResource.addResource('calibrate');
     singingCalibrateResource.addMethod('POST', new apigateway.LambdaIntegration(singingTrainerLambda));
+
+    // ========================================
+    // FOKUS-TAGEBUCH (Tagesvertrag / 20-Min-Training, Cognito JWT)
+    // ========================================
+
+    const fokusTagebuchTable = new dynamodb.Table(this, 'FokusTagebuchTable', {
+      tableName: 'mawps-fokus-tagebuch',
+      partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'entryKey', type: dynamodb.AttributeType.STRING },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.RETAIN
+    });
+
+    const fokusTagebuchLambda = new lambda.Function(this, 'FokusTagebuchFunction', {
+      functionName: 'website-fokus-tagebuch-api',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('../lambda/fokus-tagebuch-api'),
+      role: lambdaRole,
+      timeout: cdk.Duration.seconds(15),
+      memorySize: 256,
+      environment: {
+        FOKUS_TABLE: fokusTagebuchTable.tableName
+      }
+    });
+
+    fokusTagebuchTable.grantReadWriteData(fokusTagebuchLambda);
+
+    const fokusTagebuchResource = this.api.root.addResource('fokus-tagebuch');
+    const fokusDayResource = fokusTagebuchResource.addResource('day');
+    fokusDayResource.addMethod('GET', new apigateway.LambdaIntegration(fokusTagebuchLambda));
+    fokusDayResource.addMethod('PUT', new apigateway.LambdaIntegration(fokusTagebuchLambda));
+    const fokusWeekResource = fokusTagebuchResource.addResource('week');
+    fokusWeekResource.addMethod('GET', new apigateway.LambdaIntegration(fokusTagebuchLambda));
+    fokusWeekResource.addMethod('PUT', new apigateway.LambdaIntegration(fokusTagebuchLambda));
 
     // ========================================
     // OUTPUTS

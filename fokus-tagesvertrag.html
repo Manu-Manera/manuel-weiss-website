@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5">
+    <meta name="color-scheme" content="dark light">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <title>Fokus &amp; Tagesvertrag | Manuel Weiss</title>
+    <meta name="description" content="20 Minuten täglich: Fokus, Reset, Review — dein Tagesvertrag. Nur nach Anmeldung, gespeichert in deinem Konto.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="css/fokus-tagesvertrag.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="fokus-tagesvertrag-page">
+
+    <div id="ftAuthGate" class="ft-auth-gate" role="dialog" aria-modal="true" aria-labelledby="ftAuthTitle">
+        <div class="ft-auth-box">
+            <h2 id="ftAuthTitle"><i class="fas fa-lock" aria-hidden="true"></i> Anmeldung erforderlich</h2>
+            <p>Deine Einträge werden nur in deinem Konto in der Cloud gespeichert. Bitte melde dich an.</p>
+            <button type="button" class="ft-btn-primary" id="ftLoginBtn">
+                <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Anmelden
+            </button>
+            <a href="aktivitaeten-uebersicht.html" class="ft-link-singing">Zurück zur Aktivitäten-Übersicht</a>
+        </div>
+    </div>
+
+    <header class="ft-header">
+        <div class="ft-header-inner">
+            <a href="aktivitaeten-uebersicht.html" class="ft-back">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i> Übersicht
+            </a>
+            <h1 class="ft-title">Dein tägliches Training: 20 Minuten reichen</h1>
+            <p class="ft-sub">Fokus · Reset · Review · Wochenritual</p>
+        </div>
+    </header>
+
+    <main id="ftMain" class="ft-main" hidden>
+        <p class="ft-intro">
+            Kurz halten — kein neues Riesenprojekt. Ideal zum Ausfüllen am Handy Zwischen den Terminen.
+        </p>
+
+        <div class="ft-card ft-toolbar">
+            <div class="ft-row-dates">
+                <div class="ft-field-grow">
+                    <label class="ft-label" for="ftDayDate">Tag (Tagesvertrag)</label>
+                    <input class="ft-input ft-date" type="date" id="ftDayDate" name="dayDate" autocomplete="off">
+                </div>
+                <button type="button" class="ft-icon-btn" id="ftTodayBtn" title="Heute">
+                    <i class="fas fa-calendar-day" aria-hidden="true"></i> Heute
+                </button>
+            </div>
+            <div>
+                <span class="ft-label">Kalenderwoche (Sonntags-Ritual)</span>
+                <div class="ft-week-nav">
+                    <button type="button" class="ft-icon-btn" id="ftWeekPrev" aria-label="Vorherige Woche"><i class="fas fa-chevron-left"></i></button>
+                    <span class="ft-week-key" id="ftWeekKey" aria-live="polite">—</span>
+                    <button type="button" class="ft-icon-btn" id="ftWeekNext" aria-label="Nächste Woche"><i class="fas fa-chevron-right"></i></button>
+                    <button type="button" class="ft-icon-btn" id="ftWeekThis" title="Aktuelle Woche">Diese KW</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Morgens -->
+        <section class="ft-card" aria-labelledby="ftH1">
+            <h2 id="ftH1"><span class="ft-badge">5 Min</span> Morgens: Fokus</h2>
+            <p class="ft-subhint">Schreib:</p>
+            <p class="ft-kicker">Heute zählt:</p>
+            <ol class="ft-num-list">
+                <li><input class="ft-input" type="text" id="ftCount1" data-ft-sync="day" enterkeyhint="next" autocomplete="off" placeholder="Punkt 1"></li>
+                <li><input class="ft-input" type="text" id="ftCount2" data-ft-sync="day" enterkeyhint="next" autocomplete="off" placeholder="Punkt 2"></li>
+                <li><input class="ft-input" type="text" id="ftCount3" data-ft-sync="day" enterkeyhint="next" autocomplete="off" placeholder="Punkt 3"></li>
+            </ol>
+            <p class="ft-kicker">Nicht heute:</p>
+            <div class="ft-dash-list">
+                <input class="ft-input" type="text" id="ftNot1" data-ft-sync="day" enterkeyhint="next" autocomplete="off" placeholder="—">
+                <input class="ft-input" type="text" id="ftNot2" data-ft-sync="day" enterkeyhint="next" autocomplete="off" placeholder="—">
+                <input class="ft-input" type="text" id="ftNot3" data-ft-sync="day" enterkeyhint="next" autocomplete="off" placeholder="—">
+            </div>
+            <p class="ft-kicker">Eine Sache, die ich abschließe:</p>
+            <input class="ft-input" type="text" id="ftOneThing" data-ft-sync="day" enterkeyhint="done" autocomplete="off" placeholder="Eine klare Abschluss-Sache">
+            <div class="ft-callout" role="note">Das ist dein Tagesvertrag.</div>
+        </section>
+
+        <!-- Reset -->
+        <section class="ft-card" aria-labelledby="ftH2">
+            <h2 id="ftH2"><span class="ft-badge">3 Min</span> Während des Tages: Reset</h2>
+            <p class="ft-subhint">Wenn du springst oder emotional wirst:</p>
+            <label class="ft-label" for="ftResetDoing">Was mache ich gerade?</label>
+            <textarea class="ft-textarea" id="ftResetDoing" data-ft-sync="day" rows="2" enterkeyhint="next" placeholder="…"></textarea>
+            <label class="ft-label" for="ftResetShould">Was sollte ich eigentlich machen?</label>
+            <textarea class="ft-textarea" id="ftResetShould" data-ft-sync="day" rows="2" enterkeyhint="next" placeholder="…"></textarea>
+            <label class="ft-label" for="ftResetStep">Was ist der nächste kleinste Schritt?</label>
+            <textarea class="ft-textarea" id="ftResetStep" data-ft-sync="day" rows="2" enterkeyhint="done" placeholder="…"></textarea>
+            <p class="ft-callout" style="border-left-color: #6366f1; background: rgba(99,102,241,0.12); color: #c7d2fe;">Dann nur diesen Schritt.</p>
+        </section>
+
+        <!-- Abends -->
+        <section class="ft-card" aria-labelledby="ftH3">
+            <h2 id="ftH3"><span class="ft-badge">7 Min</span> Abends: Review</h2>
+            <p class="ft-subhint">Schreib:</p>
+            <label class="ft-label" for="ftEveDone">Was habe ich abgeschlossen?</label>
+            <textarea class="ft-textarea" id="ftEveDone" data-ft-sync="day" rows="2" placeholder="…"></textarea>
+            <label class="ft-label" for="ftEveJumped">Wo bin ich gesprungen?</label>
+            <textarea class="ft-textarea" id="ftEveJumped" data-ft-sync="day" rows="2" placeholder="…"></textarea>
+            <label class="ft-label" for="ftEveTriggered">Was hat mich getriggert?</label>
+            <textarea class="ft-textarea" id="ftEveTriggered" data-ft-sync="day" rows="2" placeholder="…"></textarea>
+            <label class="ft-label" for="ftEveReacted">Wie habe ich reagiert?</label>
+            <textarea class="ft-textarea" id="ftEveReacted" data-ft-sync="day" rows="2" placeholder="…"></textarea>
+            <label class="ft-label" for="ftEveEasier">Was mache ich morgen einfacher?</label>
+            <textarea class="ft-textarea" id="ftEveEasier" data-ft-sync="day" rows="2" placeholder="…"></textarea>
+            <p class="ft-notlong">Nicht länger. Sonst machst du daraus wieder ein Riesenprojekt.</p>
+        </section>
+
+        <!-- Woche -->
+        <section class="ft-card ft-week-star" aria-labelledby="ftH4">
+            <h2 id="ftH4"><span class="ft-badge">30 Min</span> Wochenritual (Sonntag)</h2>
+            <p class="ft-subhint">Jeden Sonntag beantwortest du diese Fragen (Kalenderwoche oben wählen):</p>
+            <label class="ft-label" for="ftWQ1">1. Was waren meine 3 wichtigsten Ergebnisse der Woche?</label>
+            <textarea class="ft-textarea" id="ftWQ1" data-ft-sync="week" rows="2" placeholder="…"></textarea>
+            <label class="ft-label" for="ftWQ2">2. Wo habe ich mich verzettelt?</label>
+            <textarea class="ft-textarea" id="ftWQ2" data-ft-sync="week" rows="2" placeholder="…"></textarea>
+            <label class="ft-label" for="ftWQ3">3. Was hat mich emotional am meisten getriggert?</label>
+            <textarea class="ft-textarea" id="ftWQ3" data-ft-sync="week" rows="2" placeholder="…"></textarea>
+            <label class="ft-label" for="ftWQ4">4. Welche offene Schleife kann ich schließen?</label>
+            <textarea class="ft-textarea" id="ftWQ4" data-ft-sync="week" rows="2" placeholder="…"></textarea>
+            <label class="ft-label" for="ftWQ5">5. Was sind die 3 Prioritäten für nächste Woche?</label>
+            <textarea class="ft-textarea" id="ftWQ5" data-ft-sync="week" rows="2" placeholder="…"></textarea>
+            <label class="ft-label" for="ftWQ6"><strong>6. Was lasse ich bewusst liegen?</strong> (wichtigste Frage)</label>
+            <textarea class="ft-textarea" id="ftWQ6" data-ft-sync="week" rows="3" placeholder="Not-to-dos — bewusst nein sagen"></textarea>
+            <p class="ft-not-todos">
+                Der wichtigste Punkt ist Nummer 6.
+                <small>Du brauchst nicht nur To-dos. Du brauchst Not-to-dos.</small>
+            </p>
+        </section>
+
+        <p class="ft-intro" style="margin-top:1.5rem;">
+            <i class="fas fa-cloud" aria-hidden="true"></i> Speicherung in deinem Konto (AWS). Nur für dich sichtbar.
+        </p>
+    </main>
+
+    <footer id="ftStatusWrap" class="ft-status-bar" hidden aria-live="polite">
+        <span><i class="fas fa-shield-alt" aria-hidden="true" style="opacity:0.7"></i> Cloud</span>
+        <span id="ftStatusText">Bereit</span>
+    </footer>
+
+    <script src="js/aws-app-config.js"></script>
+    <script src="js/real-user-auth-system.js"></script>
+    <script src="js/fokus-tagesvertrag-app.js"></script>
+</body>
+</html>
