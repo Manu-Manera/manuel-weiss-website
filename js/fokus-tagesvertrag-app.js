@@ -368,8 +368,11 @@
     }
 
     window.ftOpenLogin = function () {
-        if (window.realUserAuth && typeof window.realUserAuth.showLoginForm === 'function') {
-            window.realUserAuth.showLoginForm();
+        // showLoginForm() nur Umschalten der Formulare *im* Modal — das Modal muss mit showAuthModal() sichtbar werden
+        if (window.realUserAuth && typeof window.realUserAuth.showAuthModal === 'function') {
+            window.realUserAuth.showAuthModal();
+        } else {
+            console.warn('realUserAuth.showAuthModal nicht verfügbar');
         }
     };
 
