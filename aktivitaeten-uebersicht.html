@@ -62,26 +62,146 @@
             color: #6b7280;
         }
         
-        /* Services Grid */
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
+        /* Persönliche Projekte — horizontales Scrollen mit Gläserscrollbar */
+        .aktiv-personal-projects {
+            position: relative;
+            width: 100%;
         }
 
-        /* Gesangstraining + Fokus bewusst nebeneinander (Desktop), untereinander auf schmalen Viewports */
-        .services-grid-training-pair {
-            margin-top: 1.5rem;
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 1.5rem;
+        .aktiv-personal-projects .services-scroll-wrap {
+            display: flex;
+            align-items: stretch;
+            gap: 0.65rem;
+            width: 100%;
+            max-width: 100%;
         }
-        @media (max-width: 720px) {
-            .services-grid-training-pair {
-                grid-template-columns: 1fr;
+
+        .aktiv-personal-projects .services-scroll-viewport {
+            flex: 1;
+            min-width: 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-x;
+            padding-bottom: 14px;
+            scrollbar-width: auto;
+            scrollbar-color: rgba(99, 102, 241, 0.45) rgba(255, 255, 255, 0.35);
+        }
+
+        .aktiv-personal-projects .services-scroll-viewport::-webkit-scrollbar {
+            height: 12px;
+        }
+
+        .aktiv-personal-projects .services-scroll-viewport::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.42);
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(16px) saturate(1.35);
+            -webkit-backdrop-filter: blur(16px) saturate(1.35);
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.45), inset 0 -1px 1px rgba(15, 23, 42, 0.06);
+        }
+
+        .aktiv-personal-projects .services-scroll-viewport::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.75) 0%, rgba(199, 210, 254, 0.55) 45%, rgba(99, 102, 241, 0.42) 100%);
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 1px 6px rgba(99, 102, 241, 0.2);
+            min-width: 48px;
+        }
+
+        .aktiv-personal-projects .services-scroll-viewport::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(165, 180, 252, 0.65));
+        }
+
+        .aktiv-personal-projects .services-scroll-track {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 1.25rem;
+            padding: 0.15rem 0.2rem 2px;
+        }
+
+        .aktiv-personal-projects .services-scroll-track .service-card {
+            flex: 0 0 auto;
+            width: min(292px, calc(100vw - 7.5rem));
+            max-width: 292px;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        .aktiv-personal-projects .services-scroll-btn {
+            flex-shrink: 0;
+            align-self: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            background: rgba(255, 255, 255, 0.32);
+            color: #4f46e5;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(14px) saturate(1.2);
+            -webkit-backdrop-filter: blur(14px) saturate(1.2);
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
+            transition: box-shadow 0.28s ease, background 0.28s ease, transform 0.2s ease;
+        }
+
+        .aktiv-personal-projects .services-scroll-btn:hover {
+            background: rgba(255, 255, 255, 0.48);
+            box-shadow: 0 0 22px rgba(99, 102, 241, 0.32), 0 0 10px rgba(129, 140, 248, 0.22), 0 4px 14px rgba(15, 23, 42, 0.1);
+        }
+
+        .aktiv-personal-projects .services-scroll-btn:active {
+            transform: scale(0.96);
+        }
+
+        .aktiv-personal-projects .services-scroll-btn i {
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 520px) {
+            .aktiv-personal-projects .services-scroll-wrap {
+                gap: 0.35rem;
+            }
+            .aktiv-personal-projects .services-scroll-btn {
+                width: 38px;
+                height: 38px;
+            }
+            .aktiv-personal-projects .services-scroll-track .service-card {
+                width: calc(100vw - 6.75rem);
+                max-width: 300px;
             }
         }
-        
+
+        /* Listen: ✓ nicht über Text (übersteuert styles.css mit position:absolute) */
+        .aktiv-personal-projects .service-features li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.55rem;
+            padding: 0.32rem 0;
+            padding-left: 0;
+            position: relative;
+        }
+
+        .aktiv-personal-projects .service-features li::before {
+            content: '✓';
+            position: static;
+            transform: none;
+            flex: 0 0 auto;
+            margin-top: 0.08em;
+            color: #059669;
+            font-weight: 700;
+            font-size: 0.95em;
+            line-height: 1.35;
+            text-shadow: none;
+            z-index: 1;
+        }
         .service-card {
             background: white;
             border-radius: 16px;
@@ -513,8 +633,12 @@
                 <h2 class="section-title">Persönliche Projekte</h2>
                 <p class="section-subtitle">Tools und Anwendungen für persönliche Entwicklung</p>
             </div>
-            
-            <div class="services-grid">
+
+            <div class="aktiv-personal-projects" id="aktivPersonalProjects">
+                <div class="services-scroll-wrap">
+                    <button type="button" class="services-scroll-btn services-scroll-prev" aria-controls="servicesScrollViewport" aria-label="Nach links scrollen"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+                    <div class="services-scroll-viewport" id="servicesScrollViewport" tabindex="0">
+                        <div class="services-scroll-track">
                 <!-- Fachliche Entwicklung -->
                 <div class="service-card" onclick="window.location.href='fachliche-entwicklung.html'">
                     <div class="service-icon">
@@ -644,9 +768,7 @@
                         <i class="fas fa-arrow-right"></i>
                     </div>
                 </div>
-            </div>
 
-            <div class="services-grid services-grid-training-pair" aria-label="Stimme und Fokus">
                 <!-- Gesangstraining -->
                 <div class="service-card" onclick="window.location.href='singing-trainer.html'">
                     <div class="service-icon">
@@ -683,6 +805,10 @@
                         <span>Zum Tagesvertrag</span>
                         <i class="fas fa-arrow-right"></i>
                     </div>
+                </div>
+                        </div>
+                    </div>
+                    <button type="button" class="services-scroll-btn services-scroll-next" aria-controls="servicesScrollViewport" aria-label="Nach rechts scrollen"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
                 </div>
             </div>
         </div>
@@ -802,6 +928,44 @@
         </div>
     </footer>
 
+    <script>
+    (function () {
+        var vp = document.getElementById('servicesScrollViewport');
+        var prev = document.querySelector('.services-scroll-prev');
+        var next = document.querySelector('.services-scroll-next');
+        if (!vp || !prev || !next) return;
+
+        function stepPx() {
+            var w = vp.clientWidth || 300;
+            return Math.max(240, Math.floor(w * 0.72));
+        }
+
+        function syncArrows() {
+            var maxScroll = vp.scrollWidth - vp.clientWidth - 2;
+            if (maxScroll <= 8) {
+                prev.style.visibility = 'hidden';
+                next.style.visibility = 'hidden';
+                return;
+            }
+            prev.style.visibility = vp.scrollLeft <= 4 ? 'hidden' : 'visible';
+            next.style.visibility = vp.scrollLeft >= maxScroll - 4 ? 'hidden' : 'visible';
+        }
+
+        prev.addEventListener('click', function () {
+            vp.scrollBy({ left: -stepPx(), behavior: 'smooth' });
+        });
+        next.addEventListener('click', function () {
+            vp.scrollBy({ left: stepPx(), behavior: 'smooth' });
+        });
+        vp.addEventListener('scroll', syncArrows, { passive: true });
+        window.addEventListener('resize', syncArrows);
+        if (window.requestAnimationFrame) {
+            requestAnimationFrame(syncArrows);
+        } else {
+            setTimeout(syncArrows, 0);
+        }
+    })();
+    </script>
     <script src="js/aws-config.js"></script>
 </body>
 </html>
