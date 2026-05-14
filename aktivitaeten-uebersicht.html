@@ -68,6 +68,19 @@
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
         }
+
+        /* Gesangstraining + Fokus bewusst nebeneinander (Desktop), untereinander auf schmalen Viewports */
+        .services-grid-training-pair {
+            margin-top: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.5rem;
+        }
+        @media (max-width: 720px) {
+            .services-grid-training-pair {
+                grid-template-columns: 1fr;
+            }
+        }
         
         .service-card {
             background: white;
@@ -631,7 +644,9 @@
                         <i class="fas fa-arrow-right"></i>
                     </div>
                 </div>
-                
+            </div>
+
+            <div class="services-grid services-grid-training-pair" aria-label="Stimme und Fokus">
                 <!-- Gesangstraining -->
                 <div class="service-card" onclick="window.location.href='singing-trainer.html'">
                     <div class="service-icon">

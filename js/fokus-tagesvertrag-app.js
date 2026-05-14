@@ -41,10 +41,22 @@
         return (b.endsWith('/') ? b.slice(0, -1) : b) + '/fokus-tagebuch';
     }
 
-    async function getAuthToken() {
-        if (window.realUserAuth && window.realUserAuth.isLoggedIn()) {
-            const u = window.realUserAuth.getCurrentUser();
+    function isUserLoggedIn() {
+        try {
+            if (window.awsAuth?.isLoggedIn?.()) return true;
+            if (window.realUserAuth?.isLoggedIn?.()) return true;
+        } catch (e) {}
+        return false;
+    }
+
+    function getAuthToken() {
+        if (window.awsAuth?.isLoggedIn?.()) {
+            const u = window.awsAuth.getCurrentUser();
             if (u?.idToken) return u.idToken;
+        }
+        if (window.realUserAuth?.isLoggedIn?.()) {
+            const u2 = window.realUserAuth.getCurrentUser();
+            if (u2?.idToken) return u2.idToken;
         }
         const session = localStorage.getItem('aws_auth_session');
         if (session) {
@@ -297,108 +309,99 @@
             return;
         }
 
-        if (!window.realUserAuth || !window.realUserAuth.isLoggedIn()) {
+        if (!isUserLoggedIn()) {
             hideAppUnauthenticated();
             return;
         }
 
         showAppAuthenticated();
 
-        if (app.initialized) {
-            return;
-        }
-        app.initialized = true;
+        if (!app.initialized) {
+            app.initialized = true;
 
-        const dateInput = qs('ftDayDate');
-        if (dateInput) {
-            dateInput.value = app.currentDayISO;
-            dateInput.addEventListener('change', async () => {
-                app.currentDayISO = dateInput.value || todayLocalISO();
-                await reloadDay();
+            const dateInput = qs('ftDayDate');
+            if (dateInput) {
+                dateInput.value = app.currentDayISO;
+                dateInput.addEventListener('change', async () => {
+                    app.currentDayISO = dateInput.value || todayLocalISO();
+                    await reloadDay();
+                });
+            }
+
+            qs('ftTodayBtn')?.addEventListener('click', () => {
+                app.currentDayISO = todayLocalISO();
+                if (dateInput) dateInput.value = app.currentDayISO;
+                reloadDay();
+            });
+
+            qs('ftWeekPrev')?.addEventListener('click', () => {
+                app.weekAnchor.setDate(app.weekAnchor.getDate() - 7);
+                const wk = updateWeekLabel();
+                reloadWeek(wk);
+            });
+            qs('ftWeekNext')?.addEventListener('click', () => {
+                app.weekAnchor.setDate(app.weekAnchor.getDate() + 7);
+                const wk = updateWeekLabel();
+                reloadWeek(wk);
+            });
+            qs('ftWeekThis')?.addEventListener('click', () => {
+                app.weekAnchor = new Date();
+                const wk = updateWeekLabel();
+                reloadWeek(wk);
+            });
+
+            document.querySelectorAll('[data-ft-sync="day"]').forEach((el) => {
+                el.addEventListener('input', () => {
+                    if (app.skipDayLoad) return;
+                    scheduleSaveDay();
+                });
+            });
+
+            document.querySelectorAll('[data-ft-sync="week"]').forEach((el) => {
+                el.addEventListener('input', () => {
+                    if (app.skipDayLoad) return;
+                    scheduleSaveWeek(updateWeekLabel());
+                });
             });
         }
-
-        qs('ftTodayBtn')?.addEventListener('click', () => {
-            app.currentDayISO = todayLocalISO();
-            if (dateInput) dateInput.value = app.currentDayISO;
-            reloadDay();
-        });
-
-        qs('ftWeekPrev')?.addEventListener('click', () => {
-            app.weekAnchor.setDate(app.weekAnchor.getDate() - 7);
-            const wk = updateWeekLabel();
-            reloadWeek(wk);
-        });
-        qs('ftWeekNext')?.addEventListener('click', () => {
-            app.weekAnchor.setDate(app.weekAnchor.getDate() + 7);
-            const wk = updateWeekLabel();
-            reloadWeek(wk);
-        });
-        qs('ftWeekThis')?.addEventListener('click', () => {
-            app.weekAnchor = new Date();
-            const wk = updateWeekLabel();
-            reloadWeek(wk);
-        });
 
         const weekKey = updateWeekLabel();
-
-        document.querySelectorAll('[data-ft-sync="day"]').forEach((el) => {
-            el.addEventListener('input', () => {
-                if (app.skipDayLoad) return;
-                scheduleSaveDay();
-            });
-        });
-
-        document.querySelectorAll('[data-ft-sync="week"]').forEach((el) => {
-            el.addEventListener('input', () => {
-                if (app.skipDayLoad) return;
-                scheduleSaveWeek(updateWeekLabel());
-            });
-        });
-
         await Promise.all([reloadDay(), reloadWeek(weekKey)]);
     }
 
-    function onAuthState() {
-        if (window.realUserAuth && window.realUserAuth.isLoggedIn()) {
-            tryInitAuthenticated();
-        } else {
+    function onUnifiedAuth(ev) {
+        if (ev && ev.detail && ev.detail.loggedIn === false) {
+            app.initialized = false;
             hideAppUnauthenticated();
+            return;
         }
+        tryInitAuthenticated();
     }
 
     window.ftOpenLogin = function () {
-        // showLoginForm() nur Umschalten der Formulare *im* Modal — das Modal muss mit showAuthModal() sichtbar werden
+        if (window.authModals && typeof window.authModals.showLogin === 'function') {
+            window.authModals.showLogin();
+            return;
+        }
+        if (typeof window.showLoginModal === 'function') {
+            window.showLoginModal();
+            return;
+        }
         if (window.realUserAuth && typeof window.realUserAuth.showAuthModal === 'function') {
             window.realUserAuth.showAuthModal();
-        } else {
-            console.warn('realUserAuth.showAuthModal nicht verfügbar');
         }
     };
 
     document.addEventListener('DOMContentLoaded', () => {
-        qs('ftLoginBtn')?.addEventListener('click', () => window.ftOpenLogin());
+        qs('ftLoginBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.ftOpenLogin();
+        });
 
-        document.addEventListener('authStateChange', () => onAuthState());
+        window.addEventListener('authStateChanged', onUnifiedAuth);
+        window.addEventListener('userLoggedIn', () => tryInitAuthenticated());
 
-        const tryLater = () => {
-            if (window.realUserAuth && window.realUserAuth.isLoggedIn()) {
-                tryInitAuthenticated();
-            } else {
-                hideAppUnauthenticated();
-            }
-        };
-
-        setTimeout(tryLater, 400);
-
-        if (window.realUserAuth && typeof window.realUserAuth.onAuthStateChange === 'function') {
-            window.realUserAuth.onAuthStateChange((loggedIn) => {
-                if (loggedIn) tryInitAuthenticated();
-                else {
-                    app.initialized = false;
-                    hideAppUnauthenticated();
-                }
-            });
-        }
+        setTimeout(() => tryInitAuthenticated(), 600);
+        setTimeout(() => tryInitAuthenticated(), 1600);
     });
 })();
