@@ -22,6 +22,8 @@ const DEFAULT_PROGRESS = {
   practiceProgress: {},
   toolConfigProgress: {},
   scenarioProgress: {},
+  /** Eigener Speicherpfad: Fokus/Tagesvertrag (nicht mit Aufgaben-Tracker vermischt) */
+  valkeenTagesvertrag: { days: {}, weeks: {} },
   changeWorkshopKotter: {
     activeProfileId: null,
     profiles: {},
@@ -36,6 +38,13 @@ function normalizeChangeWorkshopKotter(raw) {
     activeProfileId: raw.activeProfileId || null,
     profiles,
   };
+}
+
+function normalizeValkeenTagesvertrag(raw) {
+  if (!raw || typeof raw !== 'object') return { days: {}, weeks: {} };
+  const days = typeof raw.days === 'object' && raw.days !== null ? { ...raw.days } : {};
+  const weeks = typeof raw.weeks === 'object' && raw.weeks !== null ? { ...raw.weeks } : {};
+  return { days, weeks };
 }
 
 function mergeProgressFromStorage(cloudOrLocal) {
@@ -57,6 +66,7 @@ function mergeProgressFromStorage(cloudOrLocal) {
       ...(cloudOrLocal.scenarioProgress || {}),
     },
     changeWorkshopKotter: normalizeChangeWorkshopKotter(cloudOrLocal.changeWorkshopKotter),
+    valkeenTagesvertrag: normalizeValkeenTagesvertrag(cloudOrLocal.valkeenTagesvertrag),
   };
   return merged;
 }
@@ -234,6 +244,7 @@ export function ProgressProvider({ children }) {
       toolConfigProgress: {},
       scenarioProgress: {},
       changeWorkshopKotter: { activeProfileId: null, profiles: {} },
+      valkeenTagesvertrag: { days: {}, weeks: {} },
     };
     setProgressState(emptyProgress);
     localStorage.setItem('onboarding-progress', JSON.stringify(emptyProgress));
@@ -289,6 +300,7 @@ export function ProgressProvider({ children }) {
 
   const value = {
     progress,
+    setProgress,
     isLoading,
     isSyncing,
     lastSyncError,
