@@ -7,6 +7,7 @@ import {
   MessageSquare, 
   Calendar, 
   BookOpen,
+  ClipboardList,
   Mail,
   MailPlus,
   GraduationCap,
@@ -18,7 +19,9 @@ import {
   X,
   Monitor,
   GitBranch,
-  ExternalLink
+  ExternalLink,
+  Puzzle,
+  FileText
 } from 'lucide-react';
 import { useProgress } from '../hooks/useLocalStorage';
 import { weeks } from '../data/onboardingData';
@@ -33,6 +36,12 @@ function workshopWindowHref() {
 const navItems = [
   { path: '/', icon: LayoutDashboard, label: 'Dashboard', description: 'Übersicht' },
   { path: '/tracker', icon: CheckSquare, label: 'Aufgaben', description: 'Fortschritt tracken' },
+  {
+    path: '/tagesvertrag',
+    icon: ClipboardList,
+    label: 'Tagesvertrag',
+    description: '20-Min-Fokus · AWS',
+  },
   { path: '/flashcards', icon: Layers, label: 'Lernkarten', description: 'KI-Karteikarten' },
   { path: '/quiz', icon: Brain, label: 'Quiz', description: 'Wissen testen' },
   { path: '/sso-setup', icon: Shield, label: 'SSO Setup', description: 'Azure ↔ Tempus' },
@@ -44,12 +53,15 @@ const navItems = [
   { path: '/training-admin', icon: Settings, label: 'Training Admin', description: 'Inhalte bearbeiten' },
   { path: '/tempus-demo', icon: Monitor, label: 'Tempus Demo', description: 'Live Demo-Umgebung' },
   { path: '/login-mailer', icon: MailPlus, label: 'Login Mailer', description: 'Entwürfe aus Excel' },
+  { path: '/qrg-builder', icon: FileText, label: 'QRG Builder', description: 'Quick Reference Guides pro Kunde' },
   {
     workshopNewWindow: true,
     icon: GitBranch,
     label: 'Change Workflow',
     description: 'Workshop (neues Fenster)',
   },
+  { path: '/tempus-trainer', icon: Puzzle, label: 'Tempus Trainer', description: 'Extension · Live-Touren' },
+  { path: '/tempus-trainer-admin', icon: Settings, label: 'Trainer Admin', description: 'Touren · Folien · Kunden' },
 ];
 
 export default function Layout() {
@@ -66,25 +78,6 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
-      {/* Mobile Header - kompakter */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 glass border-b border-white/5 px-4 py-3 flex items-center justify-between safe-area-top h-[72px] sm:h-[80px]">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <Sparkles className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <span className="font-bold gradient-text text-lg">Valkeen</span>
-            <p className="text-xs text-white/40 -mt-0.5">Onboarding Hub</p>
-          </div>
-        </div>
-        <button 
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-3 rounded-2xl glass hover:bg-white/10 transition-colors"
-        >
-          {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-      </header>
-
       {/* Overlay for mobile */}
       {sidebarOpen && (
         <div 
@@ -95,7 +88,7 @@ export default function Layout() {
 
       {/* Sidebar - fixed on desktop, overlay on mobile */}
       <aside className={`
-        fixed lg:sticky top-0 left-0 h-screen p-5 lg:p-6 flex flex-col border-r border-white/5 z-50
+        fixed lg:sticky top-0 left-0 h-screen p-5 lg:p-6 flex flex-col border-r border-white/5 z-[60] lg:z-50
         w-72 lg:w-56 xl:w-64 flex-shrink-0
         glass
         transition-transform duration-300 ease-in-out
@@ -112,9 +105,6 @@ export default function Layout() {
             <p className="text-xs text-white/40">Onboarding Hub</p>
           </div>
         </div>
-
-        {/* Mobile: Spacer für Header */}
-        <div className="lg:hidden h-20" />
 
         {/* Quick Progress */}
         {progress.startDate && (
@@ -133,7 +123,7 @@ export default function Layout() {
         )}
 
         {/* Navigation - mehr Abstand zwischen Items */}
-        <nav className="flex-1 space-y-2 overflow-y-auto pr-1">
+        <nav className="flex-1 min-h-0 space-y-2 overflow-y-auto pr-1">
           {navItems.map((item) => {
             const { path, icon: Icon, label, workshopNewWindow } = item;
 
@@ -173,8 +163,8 @@ export default function Layout() {
           })}
         </nav>
 
-        {/* User Info - mehr Padding */}
-        <div className="mt-auto pt-5 border-t border-white/5">
+        {/* Profil fest unten (Navigation scrollt darüber mit min-h-0) */}
+        <div className="mt-auto shrink-0 pt-4 border-t border-white/5">
           <div className="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/5 transition-colors cursor-pointer">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-bold shadow-lg shadow-indigo-500/20">
               MM
@@ -187,10 +177,28 @@ export default function Layout() {
         </div>
       </aside>
 
-      {/* Main Content - großzügiger Abstand oben für mobile Header (Überschrift nicht überdecken) */}
-      <main className="flex-1 min-h-screen pt-[88px] sm:pt-[96px] lg:pt-0 overflow-x-hidden">
-        <div className="px-5 pt-4 pb-12 sm:px-8 sm:pt-6 sm:pb-16 lg:px-10 lg:pt-10 lg:pb-16 xl:p-12 w-full">
-          <div className="max-w-5xl mx-auto">
+      {/* Main: Mobile-Header sticky im Fluss (nicht fixed) – vermeidet Überdeckung/Klickfallen, z. B. Cursor Simple Browser */}
+      <main className="flex-1 min-h-screen flex flex-col lg:block overflow-x-hidden pt-0">
+        <header className="lg:hidden sticky top-0 z-50 shrink-0 glass border-b border-white/5 px-4 py-3 flex items-center justify-between safe-area-top min-h-[72px] sm:min-h-[80px] pointer-events-none">
+          <div className="flex items-center gap-3 pointer-events-auto">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <span className="font-bold gradient-text text-lg">Valkeen</span>
+              <p className="text-xs text-white/40 -mt-0.5">Onboarding Hub</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-3 rounded-2xl glass hover:bg-white/10 transition-colors pointer-events-auto"
+          >
+            {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </header>
+        <div className="flex-1 px-6 pt-6 pb-20 sm:px-10 sm:pt-8 sm:pb-24 lg:px-12 lg:pt-10 lg:pb-28 xl:px-16 2xl:px-20 xl:pb-32 w-full">
+          <div className="max-w-[56rem] lg:max-w-[72rem] xl:max-w-[90rem] 2xl:max-w-[100rem] mx-auto">
             <Outlet />
           </div>
         </div>

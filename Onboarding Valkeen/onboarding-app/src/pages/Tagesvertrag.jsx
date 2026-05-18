@@ -97,18 +97,18 @@ export default function Tagesvertrag() {
    * größere vertikale Abstände zwischen Blöcken als 8px-Grid.
    */
   const cardClass =
-    'rounded-3xl border border-white/[0.09] bg-white/[0.035] p-8 sm:p-12 lg:p-16 backdrop-blur-sm shadow-xl shadow-black/20';
+    'rounded-3xl border border-white/[0.09] bg-white/[0.035] p-10 sm:p-14 lg:p-20 backdrop-blur-sm shadow-xl shadow-black/20';
 
   const fieldClass =
-    'w-full min-h-[56px] rounded-2xl bg-white/[0.07] border border-white/[0.12] px-5 sm:px-6 py-4 text-[16px] leading-[1.7] text-white placeholder:text-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50 transition-shadow';
+    'w-full min-h-[60px] rounded-2xl bg-white/[0.07] border border-white/[0.12] px-6 sm:px-8 py-5 text-[16px] leading-[1.7] text-white placeholder:text-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50 transition-shadow';
 
-  const textareaClass = `${fieldClass} resize-y min-h-[140px] leading-[1.8] py-5`;
+  const textareaClass = `${fieldClass} resize-y min-h-[160px] leading-[1.8] py-6`;
 
   const labelClass =
-    'block text-[15px] sm:text-base font-medium text-white/75 mb-4 leading-[1.6] tracking-wide';
+    'block text-base sm:text-[17px] font-medium text-white/75 mb-6 leading-[1.6] tracking-wide';
 
   const sectionIntroClass =
-    'text-white/60 text-base sm:text-[17px] mb-10 leading-[1.8] max-w-[58ch]';
+    'text-white/60 text-[17px] sm:text-lg mb-12 leading-[1.9] max-w-[58ch]';
 
   return (
     <div className="w-full space-y-14 sm:space-y-16 lg:space-y-20 pb-24 md:pb-32 text-[16px] leading-[1.7] text-white/90">
@@ -123,11 +123,11 @@ export default function Tagesvertrag() {
       </header>
 
       <div
-        className={`${cardClass} flex flex-col lg:flex-row flex-wrap gap-12 lg:gap-16 items-start lg:items-end justify-between`}
+        className={`${cardClass} flex flex-col lg:flex-row flex-wrap gap-16 lg:gap-20 items-start lg:items-end justify-between`}
       >
-        <div className="flex flex-col gap-6 min-w-[min(100%,280px)]">
+        <div className="flex flex-col gap-8 min-w-[min(100%,300px)]">
           <span className={labelClass}>Tag (Tagesvertrag)</span>
-          <div className="flex flex-wrap items-center gap-5">
+          <div className="flex flex-wrap items-center gap-6">
             <input
               type="date"
               value={currentDayISO}
@@ -137,26 +137,26 @@ export default function Tagesvertrag() {
             <button
               type="button"
               onClick={() => setCurrentDayISO(todayLocalISO())}
-              className="min-h-[52px] rounded-2xl px-6 py-3 text-[15px] font-semibold leading-none bg-indigo-600 hover:bg-indigo-500 text-white transition-colors shadow-lg shadow-indigo-900/30"
+              className="min-h-[60px] rounded-2xl px-8 py-4 text-base font-semibold leading-none bg-indigo-600 hover:bg-indigo-500 text-white transition-colors shadow-lg shadow-indigo-900/30"
             >
               Heute
             </button>
           </div>
         </div>
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-8">
           <span className={labelClass}>Kalenderwoche (Sonntags-Ritual)</span>
-          <div className="flex items-center gap-5 flex-wrap">
+          <div className="flex items-center gap-6 flex-wrap">
             <button
               type="button"
               aria-label="Vorherige Woche"
               onClick={() =>
                 setWeekAnchor((d) => new Date(d.getFullYear(), d.getMonth(), d.getDate() - 7))
               }
-              className="min-h-[52px] min-w-[52px] rounded-2xl px-4 bg-white/[0.08] hover:bg-white/[0.12] border border-white/[0.1] text-white text-xl leading-none"
+              className="min-h-[60px] min-w-[60px] rounded-2xl px-5 bg-white/[0.08] hover:bg-white/[0.12] border border-white/[0.1] text-white text-2xl leading-none"
             >
               ‹
             </button>
-            <span className="font-mono text-indigo-300 min-w-[9rem] text-center text-[17px] leading-[1.5] py-3 px-4 rounded-2xl bg-black/25 border border-white/5">
+            <span className="font-mono text-indigo-300 min-w-[10rem] text-center text-lg leading-[1.5] py-4 px-6 rounded-2xl bg-black/25 border border-white/5">
               {weekKey}
             </span>
             <button
@@ -165,14 +165,14 @@ export default function Tagesvertrag() {
               onClick={() =>
                 setWeekAnchor((d) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + 7))
               }
-              className="min-h-[52px] min-w-[52px] rounded-2xl px-4 bg-white/[0.08] hover:bg-white/[0.12] border border-white/[0.1] text-white text-xl leading-none"
+              className="min-h-[60px] min-w-[60px] rounded-2xl px-5 bg-white/[0.08] hover:bg-white/[0.12] border border-white/[0.1] text-white text-2xl leading-none"
             >
               ›
             </button>
             <button
               type="button"
               onClick={() => setWeekAnchor(new Date())}
-              className="min-h-[52px] rounded-2xl px-6 py-3 text-[15px] font-semibold leading-none bg-white/[0.08] hover:bg-white/[0.12] border border-white/[0.1] text-white transition-colors"
+              className="min-h-[60px] rounded-2xl px-8 py-4 text-base font-semibold leading-none bg-white/[0.08] hover:bg-white/[0.12] border border-white/[0.1] text-white transition-colors"
             >
               Diese KW
             </button>
@@ -180,7 +180,7 @@ export default function Tagesvertrag() {
         </div>
       </div>
 
-      <section className={`${cardClass} space-y-12`} aria-labelledby="vt-h1">
+      <section className={`${cardClass} space-y-14`} aria-labelledby="vt-h1">
         <h2
           id="vt-h1"
           className="text-[1.35rem] sm:text-2xl font-semibold text-white leading-snug flex flex-wrap items-center gap-4"
@@ -191,10 +191,10 @@ export default function Tagesvertrag() {
           Morgens: Fokus
         </h2>
         <p className={sectionIntroClass}>Heute zählt:</p>
-        <div className="space-y-8 mb-12">
+        <div className="space-y-10 mb-14">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="flex items-start gap-5">
-              <span className="text-white/50 font-semibold text-lg mt-4 min-w-[2rem]">{i + 1}.</span>
+            <div key={i} className="flex items-start gap-6">
+              <span className="text-white/50 font-semibold text-xl mt-5 min-w-[2.5rem]">{i + 1}.</span>
               <input
                 type="text"
                 value={dayDraft.morning.counts[i]}
@@ -214,7 +214,7 @@ export default function Tagesvertrag() {
           ))}
         </div>
         <p className={`${sectionIntroClass}`}>Nicht heute:</p>
-        <div className="space-y-6 mb-12">
+        <div className="space-y-8 mb-14">
           {[0, 1, 2].map((i) => (
             <input
               key={i}
@@ -252,7 +252,7 @@ export default function Tagesvertrag() {
         </p>
       </section>
 
-      <section className={`${cardClass} space-y-12`} aria-labelledby="vt-h2">
+      <section className={`${cardClass} space-y-14`} aria-labelledby="vt-h2">
         <h2
           id="vt-h2"
           className="text-[1.35rem] sm:text-2xl font-semibold text-white leading-snug flex flex-wrap items-center gap-4"
@@ -263,13 +263,13 @@ export default function Tagesvertrag() {
           Während des Tages: Reset
         </h2>
         <p className={sectionIntroClass}>Wenn du springst oder emotional wirst:</p>
-        <div className="space-y-12">
+        <div className="space-y-14">
           {[
             ['Was mache ich gerade?', 'doing'],
             ['Was sollte ich eigentlich machen?', 'should'],
             ['Was ist der nächste kleinste Schritt?', 'step'],
           ].map(([label, key]) => (
-            <label key={key} className="block space-y-4">
+            <label key={key} className="block space-y-5">
               <span className={labelClass}>{label}</span>
               <textarea
                 rows={4}
@@ -291,7 +291,7 @@ export default function Tagesvertrag() {
         </p>
       </section>
 
-      <section className={`${cardClass} space-y-12`} aria-labelledby="vt-h3">
+      <section className={`${cardClass} space-y-14`} aria-labelledby="vt-h3">
         <h2
           id="vt-h3"
           className="text-[1.35rem] sm:text-2xl font-semibold text-white leading-snug flex flex-wrap items-center gap-4"
@@ -302,7 +302,7 @@ export default function Tagesvertrag() {
           Abends: Review
         </h2>
         <p className={sectionIntroClass}>Kurz festhalten:</p>
-        <div className="space-y-12">
+        <div className="space-y-14">
           {[
             ['done', 'Was habe ich abgeschlossen?'],
             ['jumped', 'Wo bin ich gesprungen?'],
@@ -310,7 +310,7 @@ export default function Tagesvertrag() {
             ['reacted', 'Wie habe ich reagiert?'],
             ['easier', 'Was mache ich morgen einfacher?'],
           ].map(([key, label]) => (
-            <label key={key} className="block space-y-4">
+            <label key={key} className="block space-y-5">
               <span className={labelClass}>{label}</span>
               <textarea
                 rows={4}
@@ -332,7 +332,7 @@ export default function Tagesvertrag() {
         </p>
       </section>
 
-      <section className={`${cardClass} space-y-12 ring-1 ring-amber-400/20`} aria-labelledby="vt-h4">
+      <section className={`${cardClass} space-y-14 ring-1 ring-amber-400/20`} aria-labelledby="vt-h4">
         <h2
           id="vt-h4"
           className="text-[1.35rem] sm:text-2xl font-semibold text-white leading-snug flex flex-wrap items-center gap-4"
@@ -343,7 +343,7 @@ export default function Tagesvertrag() {
           Wochenritual (Sonntag)
         </h2>
         <p className={sectionIntroClass}>Kalenderwoche oben wählen — Fragen beantworten:</p>
-        <div className="space-y-12">
+        <div className="space-y-14">
           {[
             ['q1', '1. Was waren meine 3 wichtigsten Ergebnisse der Woche?'],
             ['q2', '2. Wo habe ich mich verzettelt?'],
@@ -351,7 +351,7 @@ export default function Tagesvertrag() {
             ['q4', '4. Welche offene Schleife kann ich schließen?'],
             ['q5', '5. Was sind die 3 Prioritäten für nächste Woche?'],
           ].map(([key, label]) => (
-            <label key={key} className="block space-y-4">
+            <label key={key} className="block space-y-5">
               <span className={labelClass}>{label}</span>
               <textarea
                 rows={4}
@@ -362,7 +362,7 @@ export default function Tagesvertrag() {
               />
             </label>
           ))}
-          <label className="block space-y-4">
+          <label className="block space-y-5">
             <span className={`${labelClass} text-amber-100/90 font-semibold`}>
               6. Was lasse ich bewusst liegen? (wichtigste Frage)
             </span>
