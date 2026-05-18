@@ -112,30 +112,22 @@ export default function Tagesvertrag() {
 
   return (
     <div className="w-full space-y-14 sm:space-y-16 lg:space-y-20 pb-24 md:pb-32 text-[16px] leading-[1.7] text-white/90">
-      <header className="space-y-6 pt-4">
+      <header className="space-y-8 pt-6 mb-4">
         <h1 className="text-[1.75rem] sm:text-[2.125rem] md:text-[2.35rem] font-bold gradient-text leading-[1.25] tracking-tight">
           Tagesvertrag · 20 Minuten reichen
         </h1>
-        <p className="text-white/65 text-[17px] sm:text-lg leading-[1.75] max-w-[60ch] space-y-4">
-          <span className="block">
-            Fokus, Reset, Review und Wochenritual — kurz halten. Speicherung wie beim Aufgaben-Tracker:
-            sofort im Browser, dieselbe AWS-Onboarding-Sitzung.
-          </span>
-          <span className="block text-[15px] text-white/45 leading-[1.7]">
-            Technischer Pfad:{' '}
-            <code className="text-indigo-300/95 text-[13px] whitespace-nowrap bg-white/5 px-2 py-1 rounded-lg">
-              progress.valkeenTagesvertrag
-            </code>
-          </span>
+        <p className="text-white/65 text-[17px] sm:text-lg leading-[1.8] max-w-[60ch]">
+          Fokus, Reset, Review und Wochenritual — kurz halten. Speicherung wie beim Aufgaben-Tracker:
+          sofort im Browser, dieselbe AWS-Onboarding-Sitzung.
         </p>
       </header>
 
       <div
-        className={`${cardClass} flex flex-col lg:flex-row flex-wrap gap-10 lg:gap-14 items-start lg:items-end justify-between`}
+        className={`${cardClass} flex flex-col lg:flex-row flex-wrap gap-12 lg:gap-16 items-start lg:items-end justify-between`}
       >
-        <div className="flex flex-col gap-4 min-w-[min(100%,260px)]">
+        <div className="flex flex-col gap-6 min-w-[min(100%,280px)]">
           <span className={labelClass}>Tag (Tagesvertrag)</span>
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-wrap items-center gap-5">
             <input
               type="date"
               value={currentDayISO}
@@ -151,9 +143,9 @@ export default function Tagesvertrag() {
             </button>
           </div>
         </div>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-6">
           <span className={labelClass}>Kalenderwoche (Sonntags-Ritual)</span>
-          <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-5 flex-wrap">
             <button
               type="button"
               aria-label="Vorherige Woche"
@@ -199,9 +191,10 @@ export default function Tagesvertrag() {
           Morgens: Fokus
         </h2>
         <p className={sectionIntroClass}>Heute zählt:</p>
-        <ol className="space-y-10 mb-12 list-decimal list-outside ml-8 marker:text-white/45 marker:font-semibold marker:text-base">
+        <div className="space-y-8 mb-12">
           {[0, 1, 2].map((i) => (
-            <li key={i} className="pl-3 leading-[1.7]">
+            <div key={i} className="flex items-start gap-5">
+              <span className="text-white/50 font-semibold text-lg mt-4 min-w-[2rem]">{i + 1}.</span>
               <input
                 type="text"
                 value={dayDraft.morning.counts[i]}
@@ -214,14 +207,14 @@ export default function Tagesvertrag() {
                     },
                   }))
                 }
-                placeholder={`Punkt ${i + 1}`}
-                className={`mt-4 ${fieldClass}`}
+                placeholder={`Priorität ${i + 1}`}
+                className={`flex-1 ${fieldClass}`}
               />
-            </li>
+            </div>
           ))}
-        </ol>
+        </div>
         <p className={`${sectionIntroClass}`}>Nicht heute:</p>
-        <div className="space-y-8 mb-12">
+        <div className="space-y-6 mb-12">
           {[0, 1, 2].map((i) => (
             <input
               key={i}
@@ -236,7 +229,7 @@ export default function Tagesvertrag() {
                   },
                 }))
               }
-              placeholder="—"
+              placeholder={`Nicht heute #${i + 1}`}
               className={fieldClass}
             />
           ))}
