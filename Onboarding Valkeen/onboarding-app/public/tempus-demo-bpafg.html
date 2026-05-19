@@ -1419,7 +1419,7 @@ function wireRmMacroBlockEditable(root) {
 function insertRmMacroFreeBlockBefore(beforeNode) {
   if (!beforeNode) return;
   const block = buildRmMacroFreeBlock();
-  const agenda = document.getElementById('rm-training-agenda');
+  const agenda = document.getElementById('bpafg-training-agenda');
   if (agenda && beforeNode === agenda) {
     const intro = document.getElementById('rm-editable-intro');
     if (intro) intro.appendChild(block);
@@ -1442,7 +1442,7 @@ function initMacroBlockSplitters() {
   removeMacroBlockSplitters();
 
   const intro = document.getElementById('rm-editable-intro');
-  const agenda = document.getElementById('rm-training-agenda');
+  const agenda = document.getElementById('bpafg-training-agenda');
 
   if (intro) {
     const ch = Array.from(intro.querySelectorAll(':scope > *'));
@@ -2060,7 +2060,7 @@ function addAgendaBlock(blocksWrap) {
 
 function initAgendaEditing() {
   removeAgendaEditing();
-  const root = document.getElementById('rm-training-agenda');
+  const root = document.getElementById('bpafg-training-agenda');
   if (!root) return;
   const blocksWrap = root.querySelector('.agenda-fullpage-blocks');
   if (!blocksWrap) return;
@@ -2564,7 +2564,7 @@ function applyState(data) {
       t.innerHTML = data.agendaHtml.trim();
       const node = t.content.firstElementChild;
       const cur = document.querySelector('#bpafg-training-agenda');
-      if (node && cur && node.id === 'rm-training-agenda') cur.replaceWith(node);
+      if (node && cur && node.id === 'bpafg-training-agenda') cur.replaceWith(node);
     }
 
     page.querySelectorAll('.scene').forEach(s => s.remove());
