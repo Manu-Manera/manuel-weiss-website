@@ -11,12 +11,14 @@ import {
   ChevronRight,
   Play,
   Sparkles,
+  Grid3X3,
 } from 'lucide-react';
 
 // Demo-Guides laufen auf AWS (public/*.html → /onboarding/*.html)
 const STORY_URL = '/onboarding/tempus-story.html';
 const PM_DEMO_URL = '/onboarding/tempus-demo-pm.html';
 const RM_DEMO_URL = '/onboarding/tempus-demo-rm.html';
+const BPAFG_DEMO_URL = '/onboarding/tempus-demo-bpafg.html';
 const RM_LIVE_URL = 'https://trial5.tempus-resource.com/slot4';
 
 const demoEnvironments = [
@@ -48,6 +50,21 @@ const demoEnvironments = [
       'Projekt anlegen · Ressourcen zuweisen',
       'Planned & Actual Allocations',
       'Bulk Flatgrid · RAR2 Reports',
+    ],
+  },
+  {
+    id: 'bpafg',
+    name: 'BPAFG Deep Dive',
+    description: 'Bulk Project Allocation Flatgrid — das Herzstück für Resource Manager',
+    url: BPAFG_DEMO_URL,
+    icon: Grid3X3,
+    color: 'from-teal-500 to-cyan-500',
+    badge: '8 Blöcke · DE/EN',
+    features: [
+      '3 Modi: Default, Resource, Project',
+      'View Management & Grid Features',
+      'Optionen: Heatmaps, Net Availability',
+      'Resource Replace Advanced',
     ],
   },
   {
@@ -179,12 +196,16 @@ export default function TempusDemo() {
       <div className="grid sm:grid-cols-2 gap-6">
         {demoEnvironments.map((demo) => {
           const isPM = demo.id === 'pm';
+          const isBPAFG = demo.id === 'bpafg';
+          const isHighlighted = isPM || isBPAFG;
           return (
             <div
               key={demo.id}
               className={`glass rounded-2xl p-6 border transition-all
                 ${isPM
                   ? 'border-purple-400/30 bg-purple-500/5 hover:border-purple-400/50'
+                  : isBPAFG
+                  ? 'border-teal-400/30 bg-teal-500/5 hover:border-teal-400/50'
                   : 'border-white/10 hover:border-white/20'
                 }`}
             >
@@ -194,7 +215,11 @@ export default function TempusDemo() {
                   <demo.icon className="w-6 h-6 text-white" />
                 </div>
                 {demo.badge && (
-                  <span className="text-xs px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-400/20 font-medium">
+                  <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+                    isBPAFG 
+                      ? 'bg-teal-500/20 text-teal-300 border border-teal-400/20'
+                      : 'bg-purple-500/20 text-purple-300 border border-purple-400/20'
+                  }`}>
                     {demo.badge}
                   </span>
                 )}
@@ -217,9 +242,9 @@ export default function TempusDemo() {
                 onClick={() => openInNewTab(demo.url)}
                 className={`w-full py-3 px-4 rounded-xl bg-gradient-to-r ${demo.color} text-white font-medium
                   hover:shadow-lg transition-all flex items-center justify-center gap-2
-                  ${isPM ? 'hover:shadow-purple-500/20' : 'opacity-80'}`}
+                  ${isPM ? 'hover:shadow-purple-500/20' : isBPAFG ? 'hover:shadow-teal-500/20' : 'opacity-80'}`}
               >
-                {isPM ? <Play className="w-4 h-4" /> : <ExternalLink className="w-4 h-4" />}
+                {isHighlighted ? <Play className="w-4 h-4" /> : <ExternalLink className="w-4 h-4" />}
                 Demo öffnen
               </button>
             </div>
@@ -246,6 +271,12 @@ export default function TempusDemo() {
               label: 'PM Demo-Script direkt öffnen',
               sub: 'Reto & Peter · 11 Szenen · DE/EN',
               color: 'purple',
+            },
+            {
+              href: BPAFG_DEMO_URL,
+              label: 'BPAFG Deep Dive öffnen',
+              sub: 'Giacomo · 8 Blöcke · DE/EN',
+              color: 'teal',
             },
             {
               href: RM_LIVE_URL,

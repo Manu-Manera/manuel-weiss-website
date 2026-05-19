@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en" class="lang-en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tempus Demo – BPAFG Deep Dive</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+
+:root {
+  --navy:        #0f2342;
+  --navy-mid:    #1a3a6b;
+  --teal:        #0d7fa0;
+  --teal-light:  #e0f4f9;
+  --gold:        #c8860a;
+  --gold-light:  #fff8e6;
+  --green:       #1a7a3c;
+  --green-light: #e8f7ee;
+  --purple:      #5b3fa0;
+  --purple-light:#f0ebfc;
+  --red:         #c0392b;
+  --red-light:   #fdf0ee;
+  --peter:       #7c3f00;
+  --peter-light: #fef3e2;
+  --gray-100:    #f7f8fa;
+  --gray-200:    #eef0f4;
+  --gray-300:    #d8dce6;
+  --gray-500:    #6b7280;
+  --gray-700:    #374151;
+  --gray-900:    #111827;
+  --radius:      8px;
+  --shadow:      0 2px 8px rgba(0,0,0,0.09);
+  --shadow-lg:   0 8px 24px rgba(0,0,0,0.13);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', -apple-system, sans-serif; font-size: 15px; line-height: 1.65; color: var(--gray-900); background: #f0f3f8; }
+
+/* ── LANG SWITCHER ───────────────────────── */
+.lang-switcher { position: fixed; top: 16px; right: 20px; z-index: 1000; display: flex; gap: 6px; background: rgba(255,255,255,0.95); border: 1px solid var(--gray-300); border-radius: 30px; padding: 5px 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); backdrop-filter: blur(8px); }
+.lang-btn { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border: none; background: transparent; border-radius: 20px; font-size: 13px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.18s ease; color: var(--gray-500); }
+.lang-btn:hover { background: var(--gray-200); color: var(--gray-900); }
+.lang-btn.active { background: var(--navy); color: white; }
+.lang-flag { font-size: 18px; line-height: 1; }
+.lang-de .t-en { display: none; }
+.lang-en .t-de { display: none; }
+
+/* ── HERO ────────────────────────────────── */
+.hero { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 55%, var(--teal) 100%); color: white; padding: 56px 0 48px; position: relative; overflow: hidden; }
+.hero::before { content: ''; position: absolute; top: -80px; right: -80px; width: 400px; height: 400px; border-radius: 50%; background: rgba(255,255,255,0.03); }
+.hero-inner { max-width: 880px; margin: 0 auto; padding: 0 28px; position: relative; z-index: 1; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.9); font-size: 11px; font-weight: 600; letter-spacing: 1.8px; text-transform: uppercase; padding: 5px 14px; border-radius: 20px; margin-bottom: 22px; }
+.hero-title { font-family: 'Playfair Display', Georgia, serif; font-size: 44px; font-weight: 700; line-height: 1.12; margin-bottom: 8px; }
+.hero-title span { color: #7dd3e8; }
+.hero-subtitle { font-size: 17px; opacity: 0.82; margin-bottom: 32px; max-width: 640px; line-height: 1.6; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 12px; }
+.hero-meta-item { display: flex; align-items: center; gap: 8px; font-size: 13px; background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 6px; color: rgba(255,255,255,0.85); }
+
+/* ── LAYOUT ──────────────────────────────── */
+.page { max-width: 880px; margin: 0 auto; padding: 0 28px; }
+
+/* ── PRE-DEMO STRIP ──────────────────────── */
+.pre-demo-strip { background: #fff3cd; border: 1px solid #f59e0b; border-radius: var(--radius); padding: 14px 20px; margin: 24px 0 8px; display: flex; gap: 12px; align-items: flex-start; font-size: 14px; }
+.pre-demo-strip strong { color: #7c5000; display: block; margin-bottom: 4px; }
+
+/* ── STORY HOOK CARD ─────────────────────── */
+.story-hook { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); overflow: hidden; margin-bottom: 8px; box-shadow: var(--shadow); }
+.story-hook-header { background: var(--navy); color: white; padding: 14px 24px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+.story-hook-body { padding: 24px 28px; font-size: 15px; line-height: 1.8; color: var(--gray-700); font-style: italic; border-left: 4px solid var(--teal); }
+.story-hook-body strong { font-style: normal; color: var(--gray-900); }
+
+/* ── CAST ────────────────────────────────── */
+.cast-section { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); padding: 22px 28px; margin-bottom: 8px; box-shadow: var(--shadow); }
+.cast-section h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--gray-500); margin-bottom: 16px; }
+.cast-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.cast-card { border: 1px solid var(--gray-200); border-radius: 6px; padding: 14px 16px; background: var(--gray-100); }
+.cast-card.hero-char { background: linear-gradient(135deg, #e0f4f9, #f0f8ff); border-color: #a8d8e8; }
+.cast-emoji { font-size: 22px; margin-bottom: 8px; }
+.cast-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.cast-role { font-size: 12px; color: var(--gray-500); line-height: 1.4; }
+.cast-quote { font-size: 12px; font-style: italic; color: var(--teal); margin-top: 6px; border-top: 1px solid var(--gray-200); padding-top: 6px; }
+
+/* ── AGENDA ──────────────────────────────── */
+.agenda-card { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); padding: 22px 28px; margin-bottom: 20px; box-shadow: var(--shadow); }
+.agenda-card h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gray-500); margin-bottom: 16px; }
+.agenda-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 28px; }
+.agenda-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--gray-700); padding: 5px 0; border-bottom: 1px solid var(--gray-200); }
+.agenda-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: var(--navy); color: white; border-radius: 4px; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+
+/* ── SCENE CARD ──────────────────────────── */
+.scene { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); margin-bottom: 20px; box-shadow: var(--shadow); overflow: hidden; }
+.scene-header { display: flex; align-items: stretch; border-bottom: 1px solid var(--gray-200); }
+.scene-num-badge { background: var(--navy); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px 20px; min-width: 88px; text-align: center; flex-shrink: 0; }
+.scene-num-big { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 3px; }
+.scene-num-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.6; }
+.scene-title-area { flex: 1; padding: 14px 20px; background: var(--gray-100); display: flex; flex-direction: column; justify-content: center; }
+.scene-act { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--teal); margin-bottom: 3px; }
+.scene-title { font-size: 18px; font-weight: 700; }
+.scene-subtitle { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+.scene-tags { display: flex; flex-wrap: wrap; gap: 5px; padding: 9px 20px; border-bottom: 1px solid var(--gray-200); background: white; }
+.tag { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 4px; border: 1px solid; }
+.tag-blue   { background: #e8f0fe; color: #1a4fa0; border-color: #c5d8f5; }
+.tag-green  { background: var(--green-light); color: var(--green); border-color: #b6dfc8; }
+.tag-orange { background: var(--gold-light); color: var(--gold); border-color: #f0d08a; }
+.tag-purple { background: var(--purple-light); color: var(--purple); border-color: #c9bde8; }
+.tag-teal   { background: var(--teal-light); color: var(--teal); border-color: #a0d4e6; }
+.scene-body { padding: 20px 24px; }
+
+/* ── BOXES ───────────────────────────────── */
+.box { border-radius: var(--radius); margin: 12px 0; overflow: hidden; }
+.box-header { display: flex; align-items: center; gap: 10px; padding: 9px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+.box-body { padding: 14px 18px; font-size: 14px; line-height: 1.7; }
+.box-icon { font-size: 15px; }
+
+/* Story */
+.box-story .box-header { background: var(--navy); color: white; }
+.box-story .box-body { background: #f4f7fb; color: var(--gray-700); font-style: italic; border: 1px solid #d0d8e8; border-top: none; }
+/* Presenter say */
+.box-say .box-header { background: var(--teal); color: white; }
+.box-say .box-body { background: var(--teal-light); color: var(--gray-700); border: 1px solid #b0dcea; border-top: none; }
+/* Click */
+.box-click .box-header { background: var(--green); color: white; }
+.box-click .box-body { background: var(--green-light); color: var(--gray-900); border: 1px solid #b6dfc8; border-top: none; }
+/* Context */
+.box-context .box-header { background: var(--gold); color: white; }
+.box-context .box-body { background: var(--gold-light); color: var(--gray-700); border: 1px solid #ecc87a; border-top: none; }
+/* Impact */
+.box-impact .box-header { background: var(--purple); color: white; }
+.box-impact .box-body { background: var(--purple-light); color: var(--gray-900); border: 1px solid #c9bde8; border-top: none; font-weight: 600; font-style: italic; font-size: 15px; }
+/* Warn / Fallback */
+.box-warn .box-header { background: var(--red); color: white; }
+.box-warn .box-body { background: var(--red-light); color: var(--gray-700); border: 1px solid #f0c0bb; border-top: none; }
+/* Tip */
+.box-tip .box-header { background: #2d6a4f; color: white; }
+.box-tip .box-body { background: #d8f3dc; color: #1b4332; border: 1px solid #b7e4c7; border-top: none; }
+
+.say-bullets { margin: 0; padding-left: 18px; }
+.say-bullets li { margin: 6px 0; }
+
+/* Steps */
+.click-steps { list-style: none; }
+.click-steps li { display: flex; align-items: flex-start; gap: 12px; padding: 7px 0; border-bottom: 1px solid #c4e8ce; font-size: 14px; }
+.click-steps li:last-child { border-bottom: none; }
+.click-step-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: var(--green); color: white; border-radius: 50%; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+.click-path { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: rgba(0,0,0,0.07); padding: 2px 7px; border-radius: 3px; color: #0a4020; white-space: nowrap; }
+.quote-line { border-left: 3px solid var(--teal); padding: 8px 16px; margin: 10px 0; color: var(--gray-700); font-style: italic; font-size: 14px; background: white; border-radius: 0 4px 4px 0; }
+.transition { display: flex; align-items: center; gap: 12px; margin: 16px 0 0; padding: 11px 16px; background: var(--gray-100); border-radius: 6px; border: 1px dashed var(--gray-300); font-size: 13px; color: var(--gray-500); }
+
+/* ── CLOSING ─────────────────────────────── */
+.closing { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%); color: white; border-radius: var(--radius); padding: 36px; margin-bottom: 20px; box-shadow: var(--shadow-lg); }
+.closing h2 { font-family: 'Playfair Display', serif; font-size: 26px; margin-bottom: 20px; }
+.closing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.closing-item { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 14px 16px; font-size: 13px; display: flex; gap: 10px; }
+.closing-final { border-top: 1px solid rgba(255,255,255,0.15); padding-top: 20px; font-size: 18px; font-style: italic; font-weight: 300; line-height: 1.6; }
+.closing-final strong { font-weight: 700; font-style: normal; }
+.doc-footer { text-align: center; padding: 28px 0 40px; color: var(--gray-500); font-size: 13px; line-height: 1.8; }
+
+code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: var(--gray-200); padding: 2px 6px; border-radius: 3px; color: #1a3a6b; }
+
+@media print {
+  body { background: white; }
+  .lang-switcher { display: none; }
+  .hero, .scene-num-badge, .box-story .box-header, .box-say .box-header, .box-click .box-header, .box-context .box-header, .box-impact .box-header, .box-warn .box-header, .closing { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .scene { box-shadow: none; break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<!-- LANGUAGE SWITCHER -->
+<div class="lang-switcher">
+  <button class="lang-btn" data-lang="de"><span class="lang-flag">🇩🇪</span></button>
+  <button class="lang-btn active" data-lang="en"><span class="lang-flag">🇬🇧</span></button>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">🎬 <span class="t-de">BPAFG Deep Dive · Folge-Session zum RM-Training</span><span class="t-en">BPAFG Deep Dive · Follow-up to RM Training</span></div>
+    <h1 class="hero-title">
+      <span class="t-de">Bulk Project Allocation Flatgrid —<br>Deep Dive</span>
+      <span class="t-en">Bulk Project Allocation Flatgrid —<br>Deep Dive</span>
+    </h1>
+    <p class="hero-subtitle">
+      <span class="t-de">Aus Sicht von <strong>Giacomo</strong>, Team Lead E-DOC bei HR Campus. Modi, Views, Optionen, Heatmaps, Resource Requests im Grid, Resource Replace Advanced — und die entscheidenden Optionen, die euch im Alltag wirklich helfen.</span>
+      <span class="t-en">From <strong>Giacomo's</strong> perspective, Team Lead E-DOC at HR Campus. Modes, views, options, heatmaps, resource requests in the grid, Resource Replace Advanced — and the key options that really help in daily work.</span>
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><span class="t-de">⏱️ ca. 20+ Min.</span><span class="t-en">⏱️ approx. 20+ min.</span></div>
+      <div class="hero-meta-item"><span class="t-de">👥 Resource Manager</span><span class="t-en">👥 Resource Managers</span></div>
+      <div class="hero-meta-item"><span class="t-de">📋 8 Blöcke</span><span class="t-en">📋 8 Blocks</span></div>
+      <div class="hero-meta-item">🔗 trial5.tempus-resource.com/slot4</div>
+    </div>
+    <div style="margin-top: 16px;">
+      <a href="tempus-demo-rm.html" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">← <span class="t-de">RM Demo öffnen</span><span class="t-en">Open RM Demo</span></a>
+    </div>
+  </div>
+</div>
+
+<main class="page">
+
+<!-- PRE-DEMO STRIP -->
+<div class="pre-demo-strip">
+  <span style="font-size:20px;">⚙️</span>
+  <div>
+    <strong><span class="t-de">Vor dem Start — Technische Vorbereitung</span><span class="t-en">Before you start — Technical preparation</span></strong>
+    <span class="t-de">Instanz: <code>trial5.tempus-resource.com/slot4</code> · Benutzer: Giacomo · Allocations-Modus aktiv</span>
+    <span class="t-en">Instance: <code>trial5.tempus-resource.com/slot4</code> · User: Giacomo · Allocations mode active</span>
+  </div>
+</div>
+
+<!-- CAST -->
+<div class="cast-section">
+  <h3><span class="t-de">Setting dieser Demo</span><span class="t-en">Setting of this demo</span></h3>
+  <div class="cast-grid">
+    <div class="cast-card hero-char">
+      <div class="cast-emoji">🧑‍💼</div>
+      <div class="cast-name">Giacomo Telesca</div>
+      <div class="cast-role"><span class="t-de">Resource Manager · Team Lead E-DOC bei HR Campus</span><span class="t-en">Resource Manager · Team Lead E-DOC at HR Campus</span></div>
+      <div class="cast-quote"><span class="t-de">„Der BPAFG ist mein wichtigstes Werkzeug."</span><span class="t-en">"The BPAFG is my most important tool."</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- AGENDA -->
+<div class="agenda-card">
+  <h3><span class="t-de">Agenda — Demo-Ablauf</span><span class="t-en">Agenda — Demo Flow</span></h3>
+  <div class="agenda-grid">
+    <div class="agenda-item"><span class="agenda-num">1</span> <span class="t-de">Warum BPAFG? Navigation & Setup</span><span class="t-en">Why BPAFG? Navigation & Setup</span></div>
+    <div class="agenda-item"><span class="agenda-num">2</span> <span class="t-de">Die 3 Modi: Default, Resource, Project</span><span class="t-en">The 3 Modes: Default, Resource, Project</span></div>
+    <div class="agenda-item"><span class="agenda-num">3</span> <span class="t-de">View Management im BPAFG</span><span class="t-en">View Management in BPAFG</span></div>
+    <div class="agenda-item"><span class="agenda-num">4</span> <span class="t-de">Grid Features — die Werkbank</span><span class="t-en">Grid Features — the Workbench</span></div>
+    <div class="agenda-item"><span class="agenda-num">5</span> <span class="t-de">Optionen Deep Dive — die Geheimwaffen</span><span class="t-en">Options Deep Dive — the Secret Weapons</span></div>
+    <div class="agenda-item"><span class="agenda-num">6</span> <span class="t-de">Resource Requests direkt im Grid</span><span class="t-en">Resource Requests directly in Grid</span></div>
+    <div class="agenda-item"><span class="agenda-num">7</span> <span class="t-de">Resource Replace & Advanced</span><span class="t-en">Resource Replace & Advanced</span></div>
+    <div class="agenda-item"><span class="agenda-num">8</span> <span class="t-de">Save vs. Release + Concurrent Usage</span><span class="t-en">Save vs. Release + Concurrent Usage</span></div>
+  </div>
+</div>
+
+<!-- SCENE 01 -->
+<article class="scene">
+  <header class="scene-header">
+    <div class="scene-num-badge"><div class="scene-num-big">01</div><div class="scene-num-label">Block</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Block 1</span><span class="t-en">Block 1</span></div>
+      <div class="scene-title"><span class="t-de">Warum BPAFG? Navigation & Setup</span><span class="t-en">Why BPAFG? Navigation & Setup</span></div>
+      <div class="scene-subtitle"><span class="t-de">Der zentrale Arbeitsbereich für Resource Manager</span><span class="t-en">The central workspace for Resource Managers</span></div>
+    </div>
+  </header>
+  <div class="scene-tags">
+    <span class="tag tag-blue">Bulk Project Allocation Flatgrid</span>
+    <span class="tag tag-green">Date Range</span>
+    <span class="tag tag-orange">Dataset</span>
+  </div>
+  <div class="scene-body">
+    <div class="box box-story">
+      <div class="box-header"><span class="box-icon">📖</span> <span class="t-de">Story-Einstieg</span><span class="t-en">Story intro</span></div>
+      <div class="box-body">
+        <span class="t-de">„Hallo zurück — heute schauen wir uns das Herzstück der Resource-Manager-Welt im Detail an: den Bulk Project Allocation Flatgrid, kurz BPA Flatgrid oder einfach ‚BPAFG'."</span>
+        <span class="t-en">"Hello again — today we'll look at the heart of the resource manager's world in detail: the Bulk Project Allocation Flatgrid, or simply 'BPAFG'."</span>
+      </div>
+    </div>
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span> <span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
+      <div class="box-body">
+        <ul class="say-bullets">
+          <li><span class="t-de">Der BPA Flatgrid ist nicht „ein Bildschirm von vielen" — er ist DER zentrale Arbeitsbereich für Resource Manager.</span><span class="t-en">The BPA Flatgrid isn't "just another screen" — it's THE central workspace for Resource Managers.</span></li>
+          <li><span class="t-de">Hier könnt ihr mehrere Projekte UND mehrere Ressourcen gleichzeitig sehen, Allokationen ändern, Resource Requests genehmigen, Replacements machen — alles in einer Oberfläche.</span><span class="t-en">Here you can see multiple projects AND multiple resources at once, change allocations, approve resource requests, make replacements — all in one interface.</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span> <span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de">Tile <span class="click-path">Bulk Project Allocation Flatgrid</span> auf der Homepage öffnen</span><span class="t-en">Open tile <span class="click-path">Bulk Project Allocation Flatgrid</span> on homepage</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de"><span class="click-path">Date Range Picker</span> öffnen (Kalender-Icon) — dynamische Filter: Current Quarter, Next Quarter, Current Year, etc.</span><span class="t-en">Open <span class="click-path">Date Range Picker</span> (calendar icon) — dynamic filters: Current Quarter, Next Quarter, Current Year, etc.</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de"><span class="click-path">Dataset</span> auswählen: Allocation, Demand, oder Allocation and Demand</span><span class="t-en">Select <span class="click-path">Dataset</span>: Allocation, Demand, or Allocation and Demand</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-context">
+      <div class="box-header"><span class="box-icon">💡</span> <span class="t-de">Hintergrund-Info</span><span class="t-en">Background info</span></div>
+      <div class="box-body">
+        <span class="t-de"><strong>Wichtig:</strong> Der Zeitraum entscheidet, welche Projekte und Ressourcen überhaupt im Grid auftauchen. Ein Projekt erscheint, wenn sein Start- oder Enddatum im Zeitraum liegt. Ressourcen brauchen Capacity in dem Zeitraum.</span>
+        <span class="t-en"><strong>Important:</strong> The timeframe determines which projects and resources appear in the grid. A project shows up if its start or end date falls within the range. Resources need capacity in that period.</span>
+      </div>
+    </div>
+    <div class="box box-tip">
+      <div class="box-header"><span class="box-icon">✅</span> <span class="t-de">Tipp</span><span class="t-en">Tip</span></div>
+      <div class="box-body">
+        <span class="t-de">Im Alltag fahre ich meistens „<strong>Allocation and Demand · Planned</strong>" — so sehe ich auf einen Blick, was schon committed ist und was noch offen.</span>
+        <span class="t-en">In daily work, I usually run "<strong>Allocation and Demand · Planned</strong>" — that way I see at a glance what's already committed and what's still open.</span>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- SCENE 02 -->
+<article class="scene">
+  <header class="scene-header">
+    <div class="scene-num-badge"><div class="scene-num-big">02</div><div class="scene-num-label">Block</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Block 2</span><span class="t-en">Block 2</span></div>
+      <div class="scene-title"><span class="t-de">Die 3 Modi: Default, Resource, Project</span><span class="t-en">The 3 Modes: Default, Resource, Project</span></div>
+      <div class="scene-subtitle"><span class="t-de">Je nach Modus verändert sich die Perspektive</span><span class="t-en">The perspective changes depending on the mode</span></div>
+    </div>
+  </header>
+  <div class="scene-tags">
+    <span class="tag tag-purple">Default Mode</span>
+    <span class="tag tag-blue">Resource Mode</span>
+    <span class="tag tag-green">Project Mode</span>
+  </div>
+  <div class="scene-body">
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span> <span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
+      <div class="box-body">
+        <span class="t-de">„Tempus bietet drei Modi — und je nachdem, was ich vorhabe, ist ein anderer Modus der richtige. Das ist keine Spielerei — das verändert, wie das Grid aufgebaut wird."</span>
+        <span class="t-en">"Tempus offers three modes — and depending on what I'm doing, a different mode is the right one. This isn't gimmicky — it changes how the grid is built."</span>
+      </div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span> <span class="t-de">Resource Mode (80% der Arbeit)</span><span class="t-en">Resource Mode (80% of work)</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de">Tab <span class="click-path">Resource</span> anklicken</span><span class="t-en">Click tab <span class="click-path">Resource</span></span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Links: Ressourcen-Fenster → per Checkbox Personen wählen (z.B. Kristof Ammann)</span><span class="t-en">Left: Resource window → select people via checkbox (e.g. Kristof Ammann)</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de"><span class="click-path">Allow New Projects</span> aktivieren, wenn neue Projekte zugewiesen werden sollen</span><span class="t-en">Enable <span class="click-path">Allow New Projects</span> if you want to assign new projects</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span> <span class="t-de">Project Mode</span><span class="t-en">Project Mode</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de">Tab <span class="click-path">Projects</span> anklicken</span><span class="t-en">Click tab <span class="click-path">Projects</span></span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Projekte wählen → alle zugewiesenen Ressourcen werden angezeigt</span><span class="t-en">Select projects → all assigned resources are displayed</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de"><span class="click-path">Allow New Resources</span> aktivieren für zusätzliche Ressourcen</span><span class="t-en">Enable <span class="click-path">Allow New Resources</span> for additional resources</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span> <span class="t-de">Default Mode (flexibelster)</span><span class="t-en">Default Mode (most flexible)</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de">Tab <span class="click-path">Default</span> anklicken</span><span class="t-en">Click tab <span class="click-path">Default</span></span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Beide selbst wählen: Ressourcen UND Projekte</span><span class="t-en">Choose both yourself: resources AND projects</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">Filter können per Drag & Drop in ihrer Reihenfolge geändert werden</span><span class="t-en">Filters can be reordered via drag & drop</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-context">
+      <div class="box-header"><span class="box-icon">💡</span> <span class="t-de">Hintergrund-Info</span><span class="t-en">Background info</span></div>
+      <div class="box-body">
+        <span class="t-de">Default Mode kann administrativ in General Settings → Alias Tab umbenannt werden. Typischer Einsatz: Ich plane neue Assignments für einen kompletten Workstream — neue Leute, neue Projekte.</span>
+        <span class="t-en">Default Mode can be renamed administratively in General Settings → Alias Tab. Typical use: I'm planning new assignments for an entire workstream — new people, new projects.</span>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- SCENE 03 -->
+<article class="scene">
+  <header class="scene-header">
+    <div class="scene-num-badge"><div class="scene-num-big">03</div><div class="scene-num-label">Block</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Block 3</span><span class="t-en">Block 3</span></div>
+      <div class="scene-title"><span class="t-de">View Management im BPAFG</span><span class="t-en">View Management in BPAFG</span></div>
+      <div class="scene-subtitle"><span class="t-de">Views sind persönlich — euer Tool</span><span class="t-en">Views are personal — your tool</span></div>
+    </div>
+  </header>
+  <div class="scene-tags">
+    <span class="tag tag-teal">Create View</span>
+    <span class="tag tag-orange">Clone</span>
+    <span class="tag tag-purple">Favorite</span>
+    <span class="tag tag-blue">Lock</span>
+  </div>
+  <div class="scene-body">
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span> <span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
+      <div class="box-body">
+        <span class="t-de">„Views sind persönlich, nicht öffentlich. Public Views konfiguriert nur der Admin. Was ihr hier baut, gehört euch — und ist EUER Tool."</span>
+        <span class="t-en">"Views are personal, not public. Public Views are only configured by admins. What you build here belongs to you — it's YOUR tool."</span>
+      </div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span> <span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de"><span class="click-path">Auge-Icon</span> oben rechts im Grid öffnen</span><span class="t-en">Open <span class="click-path">Eye icon</span> at top right of grid</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de"><span class="click-path">Create View</span> Button → neue View „New View" wird angelegt</span><span class="t-en"><span class="click-path">Create View</span> button → new view "New View" is created</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">Bleistift-Icon → umbenennen, z.B. „Mein Team · Pending Requests"</span><span class="t-en">Pencil icon → rename, e.g. "My Team · Pending Requests"</span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de"><strong>Cloning:</strong> View duplizieren als Startpunkt</span><span class="t-en"><strong>Cloning:</strong> Duplicate view as starting point</span></div></li>
+          <li><div class="click-step-num">5</div><div><span class="t-de"><strong>Favoriting:</strong> Stern-Icon → öffnet sich automatisch beim Start</span><span class="t-en"><strong>Favoriting:</strong> Star icon → opens automatically on start</span></div></li>
+          <li><div class="click-step-num">6</div><div><span class="t-de"><strong>Locking:</strong> Schloss-Icon → Änderungen werden NICHT gespeichert</span><span class="t-en"><strong>Locking:</strong> Lock icon → changes are NOT saved</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-warn">
+      <div class="box-header"><span class="box-icon">⚠️</span> <span class="t-de">Wichtig</span><span class="t-en">Important</span></div>
+      <div class="box-body">
+        <span class="t-de"><strong>Deleting:</strong> Kein Confirmation-Dialog — einmal weg, ist weg.</span>
+        <span class="t-en"><strong>Deleting:</strong> No confirmation dialog — once gone, it's gone.</span>
+      </div>
+    </div>
+    <div class="box box-tip">
+      <div class="box-header"><span class="box-icon">✅</span> <span class="t-de">Praktischer Tipp</span><span class="t-en">Practical tip</span></div>
+      <div class="box-body">
+        <span class="t-de">Baut euch 2-3 Views: „Daily" (Pending Requests), „Quarterly Planning" (Group by Project), „Allocation Check" (Heatmap + Net Availability).</span>
+        <span class="t-en">Build 2-3 views: "Daily" (Pending Requests), "Quarterly Planning" (Group by Project), "Allocation Check" (Heatmap + Net Availability).</span>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- SCENE 04 -->
+<article class="scene">
+  <header class="scene-header">
+    <div class="scene-num-badge"><div class="scene-num-big">04</div><div class="scene-num-label">Block</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Block 4</span><span class="t-en">Block 4</span></div>
+      <div class="scene-title"><span class="t-de">Grid Features — die Werkbank</span><span class="t-en">Grid Features — the Workbench</span></div>
+      <div class="scene-subtitle"><span class="t-de">Spalten, Group By, Add Assignment, Filter</span><span class="t-en">Columns, Group By, Add Assignment, Filters</span></div>
+    </div>
+  </header>
+  <div class="scene-tags">
+    <span class="tag tag-green">Insert Columns</span>
+    <span class="tag tag-blue">Group By</span>
+    <span class="tag tag-orange">Add Assignment</span>
+    <span class="tag tag-purple">CSV Export</span>
+  </div>
+  <div class="scene-body">
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span> <span class="t-de">Spalten einfügen</span><span class="t-en">Insert Columns</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de"><span class="click-path">Insert Columns</span> Button öffnen</span><span class="t-en">Open <span class="click-path">Insert Columns</span> button</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Assignment-Attribute (File-Icon): Assignment Start Date, End Date, Notes</span><span class="t-en">Assignment attributes (file icon): Assignment Start Date, End Date, Notes</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">Project-Level-Attribute: Project Priority, Project Manager, Project Risk</span><span class="t-en">Project-level attributes: Project Priority, Project Manager, Project Risk</span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de">Resource-Level-Attribute: Primary Role, Skills, Default Rate</span><span class="t-en">Resource-level attributes: Primary Role, Skills, Default Rate</span></div></li>
+          <li><div class="click-step-num">5</div><div><span class="t-de"><strong>Pin-Option:</strong> Spalten oberhalb der roten Linie sind eingefroren</span><span class="t-en"><strong>Pin option:</strong> Columns above the red line are frozen</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span> <span class="t-de">Group By — 3-Ebenen-Hierarchie</span><span class="t-en">Group By — 3-level hierarchy</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de"><span class="click-path">Group By</span>-Auswahl oberhalb des Grids</span><span class="t-en"><span class="click-path">Group By</span> selection above the grid</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Bis zu 3 Attribute kombinierbar: Assignment-, Resource-, Project-Attribute</span><span class="t-en">Up to 3 attributes combinable: Assignment, Resource, Project attributes</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">Beispiel: Group by „Primary Role" → Consultants, Project Manager gebündelt</span><span class="t-en">Example: Group by "Primary Role" → Consultants, Project Managers bundled</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span> <span class="t-de">Add Assignment</span><span class="t-en">Add Assignment</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de"><span class="click-path">Add Assignment</span> Button</span><span class="t-en"><span class="click-path">Add Assignment</span> button</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Project, Resource, Task auswählen → „Add New Assignment" → neue Zeile im Grid</span><span class="t-en">Select Project, Resource, Task → "Add New Assignment" → new row in grid</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-tip">
+      <div class="box-header"><span class="box-icon">✅</span> <span class="t-de">Hyperlink-Tipp</span><span class="t-en">Hyperlink tip</span></div>
+      <div class="box-body">
+        <span class="t-de">Hover über Projekt- oder Ressourcennamen → kleines Pop-up. Klick aufs Pop-up = neuer Tab. Klick direkt auf den Link = gleicher Tab. Gold wert beim Multitasking!</span>
+        <span class="t-en">Hover over project or resource name → small popup. Click popup = new tab. Click directly on link = same tab. Worth gold when multitasking!</span>
+      </div>
+    </div>
+    <div class="box box-context">
+      <div class="box-header"><span class="box-icon">💡</span> <span class="t-de">CSV Export</span><span class="t-en">CSV Export</span></div>
+      <div class="box-body">
+        <span class="t-de"><span class="click-path">Excel-Icon</span> neben „Start Date" → Exportiert NUR die aktuell sichtbaren Daten. Perfekt für Status-Meetings oder externe Stakeholder.</span>
+        <span class="t-en"><span class="click-path">Excel icon</span> next to "Start Date" → Exports ONLY the currently visible data. Perfect for status meetings or external stakeholders.</span>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- SCENE 05 -->
+<article class="scene">
+  <header class="scene-header">
+    <div class="scene-num-badge"><div class="scene-num-big">05</div><div class="scene-num-label">Block</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Block 5</span><span class="t-en">Block 5</span></div>
+      <div class="scene-title"><span class="t-de">Optionen Deep Dive — die Geheimwaffen</span><span class="t-en">Options Deep Dive — the Secret Weapons</span></div>
+      <div class="scene-subtitle"><span class="t-de">Der Bereich, den 90% aller RMs unterschätzen</span><span class="t-en">The area 90% of all RMs underestimate</span></div>
+    </div>
+  </header>
+  <div class="scene-tags">
+    <span class="tag tag-teal">Heatmap</span>
+    <span class="tag tag-orange">Total Demand Planning</span>
+    <span class="tag tag-purple">Unallocated %</span>
+    <span class="tag tag-green">Net Availability</span>
+  </div>
+  <div class="scene-body">
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span> <span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
+      <div class="box-body">
+        <span class="t-de">„Jetzt kommen wir zu den Optionen — und ich sage euch: Das hier ist der Bereich, den 90% aller RMs unterschätzen. Jede einzelne Option spart euch Klicks, Verwirrung und Fehler."</span>
+        <span class="t-en">"Now we come to the options — and I tell you: this is the area that 90% of all RMs underestimate. Every single option saves you clicks, confusion, and errors."</span>
+      </div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span> <span class="t-de">Overlay Heatmap — 3 Varianten</span><span class="t-en">Overlay Heatmap — 3 variants</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de"><span class="click-path">Options-Dropdown</span> öffnen</span><span class="t-en">Open <span class="click-path">Options dropdown</span></span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de"><strong>Resource:</strong> Färbung basiert auf Allokationsprozent vs. Capacity</span><span class="t-en"><strong>Resource:</strong> Coloring based on allocation percent vs. capacity</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de"><strong>Resource Request:</strong> Färbung basiert auf RR-Status (Pending, Approved, etc.)</span><span class="t-en"><strong>Resource Request:</strong> Coloring based on RR status (Pending, Approved, etc.)</span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de"><strong>Non Zero:</strong> Markiert alle Nicht-Null-Werte blau</span><span class="t-en"><strong>Non Zero:</strong> Marks all non-zero values blue</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-warn">
+      <div class="box-header"><span class="box-icon">⚠️</span> <span class="t-de">KRITISCH WICHTIG: Show Total Demand Planning</span><span class="t-en">CRITICALLY IMPORTANT: Show Total Demand Planning</span></div>
+      <div class="box-body">
+        <span class="t-de">„Das ist die Option, die im RM-Feedback explizit gefordert wurde. <strong>Aktivieren!</strong> Eine neue Zeile zeigt, wie viel Allocation noch auf DP-Resources sitzt — also noch NICHT auf eine namentliche Ressource umverteilt ist."</span>
+        <span class="t-en">"This is the option explicitly requested in RM feedback. <strong>Enable it!</strong> A new row shows how much allocation is still on DP resources — i.e., NOT yet distributed to a named resource."</span>
+      </div>
+    </div>
+    <div class="box box-warn">
+      <div class="box-header"><span class="box-icon">⚠️</span> <span class="t-de">Show Unallocated Percent — die „lapidare Zeile"</span><span class="t-en">Show Unallocated Percent — the "understated row"</span></div>
+      <div class="box-body">
+        <span class="t-de">Berechnung: <code>(Total Demand Planning / Overall Total) × 100</code><br><br>„Diese unscheinbare Zeile entscheidet, ob ich ‚fertig geplant' bin oder nicht."<br><br><strong>Faustregel:</strong> &lt; 20% = Endspurt. &gt; 50% = Quarter noch komplett offen.</span>
+        <span class="t-en">Calculation: <code>(Total Demand Planning / Overall Total) × 100</code><br><br>"This understated row decides whether I'm 'done planning' or not."<br><br><strong>Rule of thumb:</strong> &lt; 20% = final stretch. &gt; 50% = quarter still completely open.</span>
+      </div>
+    </div>
+    <div class="box box-context">
+      <div class="box-header"><span class="box-icon">💡</span> <span class="t-de">Weitere wichtige Optionen</span><span class="t-en">Other important options</span></div>
+      <div class="box-body">
+        <ul class="say-bullets">
+          <li><span class="t-de"><strong>Show Net Availability & Allocation %:</strong> Nur bei Gruppierung nach Resource-Attribut sichtbar</span><span class="t-en"><strong>Show Net Availability & Allocation %:</strong> Only visible when grouped by resource attribute</span></li>
+          <li><span class="t-de"><strong>Capacity out of Bounds Indicator:</strong> Warn-Icon bei Überbuchung</span><span class="t-en"><strong>Capacity out of Bounds Indicator:</strong> Warning icon for overbooking</span></li>
+          <li><span class="t-de"><strong>Show Selection Calculations:</strong> Zellen markieren → Average, Sum, Min, Max, Count</span><span class="t-en"><strong>Show Selection Calculations:</strong> Select cells → Average, Sum, Min, Max, Count</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-tip">
+      <div class="box-header"><span class="box-icon">✅</span> <span class="t-de">Graue Zellen</span><span class="t-en">Gray cells</span></div>
+      <div class="box-body">
+        <span class="t-de">Graue Zellen bedeuten meistens „keine Capacity in dem Zeitraum" oder „Projekt-Zeitraum überschritten". Eingabe ist trotzdem möglich — aber das ist ein Warnsignal!</span>
+        <span class="t-en">Gray cells usually mean "no capacity in that period" or "project period exceeded". Input is still possible — but that's a warning sign!</span>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- SCENE 06 -->
+<article class="scene">
+  <header class="scene-header">
+    <div class="scene-num-badge"><div class="scene-num-big">06</div><div class="scene-num-label">Block</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Block 6</span><span class="t-en">Block 6</span></div>
+      <div class="scene-title"><span class="t-de">Resource Requests direkt im Grid</span><span class="t-en">Resource Requests directly in Grid</span></div>
+      <div class="scene-subtitle"><span class="t-de">RR Review und BPAFG verschmelzen</span><span class="t-en">RR Review and BPAFG merge</span></div>
+    </div>
+  </header>
+  <div class="scene-tags">
+    <span class="tag tag-green">Approve</span>
+    <span class="tag tag-red" style="background: var(--red-light); color: var(--red); border-color: #f0c0bb;">Reject</span>
+    <span class="tag tag-blue">Open RR</span>
+  </div>
+  <div class="scene-body">
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span> <span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
+      <div class="box-body">
+        <span class="t-de">„Hier verschmelzen Resource Request Review und BPAFG. Ihr müsst NICHT immer ins Resource Request Review wechseln — die wichtigsten Aktionen gehen direkt aus dem Grid."</span>
+        <span class="t-en">"Here Resource Request Review and BPAFG merge. You DON'T always have to switch to Resource Request Review — the most important actions work directly from the grid."</span>
+      </div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span> <span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de"><span class="click-path">Options → Overlay Heatmap → Resource Request</span> aktivieren</span><span class="t-en">Enable <span class="click-path">Options → Overlay Heatmap → Resource Request</span></span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Auf eine <strong>Pending-Zelle</strong> klicken (orange/blau je nach Heatmap)</span><span class="t-en">Click on a <strong>Pending cell</strong> (orange/blue depending on heatmap)</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">3 Optionen erscheinen: <strong>Approve</strong>, <strong>Reject</strong>, <strong>Open Resource Request</strong></span><span class="t-en">3 options appear: <strong>Approve</strong>, <strong>Reject</strong>, <strong>Open Resource Request</strong></span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-context">
+      <div class="box-header"><span class="box-icon">💡</span> <span class="t-de">Aktionen verstehen</span><span class="t-en">Understanding actions</span></div>
+      <div class="box-body">
+        <ul class="say-bullets">
+          <li><span class="t-de"><strong>Approve:</strong> Bestätigt den GESAMTEN Pending Request, auch wenn er mehrere Resources umfasst</span><span class="t-en"><strong>Approve:</strong> Confirms the ENTIRE pending request, even if it covers multiple resources</span></li>
+          <li><span class="t-de"><strong>Reject:</strong> Lehnt den GESAMTEN Request ab — Vorsicht: alles oder nichts!</span><span class="t-en"><strong>Reject:</strong> Rejects the ENTIRE request — Caution: all or nothing!</span></li>
+          <li><span class="t-de"><strong>Open Resource Request:</strong> Springt in den Detail-Screen für Partial Approval, Delegate, Replace</span><span class="t-en"><strong>Open Resource Request:</strong> Jumps to detail screen for Partial Approval, Delegate, Replace</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-tip">
+      <div class="box-header"><span class="box-icon">✅</span> <span class="t-de">Faustregel</span><span class="t-en">Rule of thumb</span></div>
+      <div class="box-body">
+        <span class="t-de">Approve/Reject direkt im Grid = der schnelle Fall. „Open Resource Request" = der komplexe Fall, wo Partial Approval oder Empfehlungsengine nötig ist.</span>
+        <span class="t-en">Approve/Reject directly in grid = the fast case. "Open Resource Request" = the complex case where partial approval or recommendation engine is needed.</span>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- SCENE 07 -->
+<article class="scene">
+  <header class="scene-header">
+    <div class="scene-num-badge"><div class="scene-num-big">07</div><div class="scene-num-label">Block</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Block 7</span><span class="t-en">Block 7</span></div>
+      <div class="scene-title"><span class="t-de">Resource Replace & Advanced</span><span class="t-en">Resource Replace & Advanced</span></div>
+      <div class="scene-subtitle"><span class="t-de">Ressourcen austauschen — einfach und erweitert</span><span class="t-en">Replace resources — simple and advanced</span></div>
+    </div>
+  </header>
+  <div class="scene-tags">
+    <span class="tag tag-blue">Resource Replace</span>
+    <span class="tag tag-purple">Replace Advanced</span>
+    <span class="tag tag-green">Net Availability</span>
+    <span class="tag tag-orange">Skill Match</span>
+  </div>
+  <div class="scene-body">
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span> <span class="t-de">Resource Replace (Standard)</span><span class="t-en">Resource Replace (Standard)</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de">Auf die <span class="click-path">Ellipse</span> einer approved Assignment-Zeile → „Resource Replace"</span><span class="t-en">Click <span class="click-path">Ellipsis</span> on an approved assignment row → "Resource Replace"</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Modal-Fenster mit Ressourcenpool öffnet sich</span><span class="t-en">Modal window with resource pool opens</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">Filter z.B. „Internal = true, Primary Role = Developer"</span><span class="t-en">Filter e.g. "Internal = true, Primary Role = Developer"</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-context">
+      <div class="box-header"><span class="box-icon">💡</span> <span class="t-de">Wichtig</span><span class="t-en">Important</span></div>
+      <div class="box-body">
+        <span class="t-de">Volle Ersetzung — die ursprüngliche Ressource wird vollständig durch eine andere ersetzt. Funktioniert NUR, wenn KEINE pendenten Resource Requests auf der Assignment hängen.</span>
+        <span class="t-en">Full replacement — the original resource is completely replaced by another. Only works if NO pending resource requests are attached to the assignment.</span>
+      </div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span> <span class="t-de">Resource Replace Advanced</span><span class="t-en">Resource Replace Advanced</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de">Auf die <span class="click-path">Ellipse</span> → „Resource Replace Advanced"</span><span class="t-en">Click <span class="click-path">Ellipsis</span> → "Resource Replace Advanced"</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de"><strong>Net Availability</strong> aller Kandidaten sehen — wer hat Luft?</span><span class="t-en">See <strong>Net Availability</strong> of all candidates — who has capacity?</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de"><strong>Skill Match Score</strong> wenn Skills hinterlegt sind</span><span class="t-en"><strong>Skill Match Score</strong> if skills are configured</span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de"><strong>Heatmap-View</strong> — wer ist über-/unterbucht?</span><span class="t-en"><strong>Heatmap view</strong> — who is over-/underbooked?</span></div></li>
+          <li><div class="click-step-num">5</div><div><span class="t-de"><strong>MEHRERE Ersatzressourcen</strong> wählen und Allokation verteilen</span><span class="t-en">Select <strong>MULTIPLE replacement resources</strong> and distribute allocation</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-tip">
+      <div class="box-header"><span class="box-icon">✅</span> <span class="t-de">Tipp</span><span class="t-en">Tip</span></div>
+      <div class="box-body">
+        <span class="t-de">Im Replace Advanced kann — abhängig von Berechtigungen — der gesamte Ressourcenpool sichtbar sein, nicht nur „meine" Ressourcen. Perfekt, wenn ich über mein Team hinaus suchen muss.</span>
+        <span class="t-en">In Replace Advanced — depending on permissions — the entire resource pool may be visible, not just "my" resources. Perfect when I need to search beyond my team.</span>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- SCENE 08 -->
+<article class="scene">
+  <header class="scene-header">
+    <div class="scene-num-badge"><div class="scene-num-big">08</div><div class="scene-num-label">Block</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Block 8</span><span class="t-en">Block 8</span></div>
+      <div class="scene-title"><span class="t-de">Save vs. Release + Concurrent Usage</span><span class="t-en">Save vs. Release + Concurrent Usage</span></div>
+      <div class="scene-subtitle"><span class="t-de">Sicheres Mehr-Personen-Editing</span><span class="t-en">Safe multi-person editing</span></div>
+    </div>
+  </header>
+  <div class="scene-tags">
+    <span class="tag tag-green">Save</span>
+    <span class="tag tag-red" style="background: var(--red-light); color: var(--red); border-color: #f0c0bb;">Release</span>
+    <span class="tag tag-blue">Lock</span>
+  </div>
+  <div class="scene-body">
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span> <span class="t-de">Concurrent Usage</span><span class="t-en">Concurrent Usage</span></div>
+      <div class="box-body">
+        <span class="t-de">„Mehrere RMs können gleichzeitig im BPAFG arbeiten. Tempus zeigt in Echtzeit, welche Assignments gerade von wem ‚checked out' sind."</span>
+        <span class="t-en">"Multiple RMs can work in the BPAFG simultaneously. Tempus shows in real-time which assignments are currently 'checked out' by whom."</span>
+      </div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span> <span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
+      <div class="box-body">
+        <ul class="click-steps">
+          <li><div class="click-step-num">1</div><div><span class="t-de">Grüner <span class="click-path">Save</span> Button → Persistiert ALLE Änderungen auf einmal</span><span class="t-en">Green <span class="click-path">Save</span> button → Persists ALL changes at once</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Roter <span class="click-path">Release</span> Button → Verwirft ALLE Änderungen seit dem letzten Save</span><span class="t-en">Red <span class="click-path">Release</span> button → Discards ALL changes since last save</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-context">
+      <div class="box-header"><span class="box-icon">💡</span> <span class="t-de">Locked Rows verstehen</span><span class="t-en">Understanding Locked Rows</span></div>
+      <div class="box-body">
+        <ul class="say-bullets">
+          <li><span class="t-de">Locked Row = nicht editierbar für andere User (visualisiert mit Lock-Icon)</span><span class="t-en">Locked Row = not editable for other users (visualized with lock icon)</span></li>
+          <li><span class="t-de">Wenn eine Assignment im BPAFG gelockt ist, ist sie auch im Single Project Allocation nicht editierbar</span><span class="t-en">If an assignment is locked in BPAFG, it's also not editable in Single Project Allocation</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box box-warn">
+      <div class="box-header"><span class="box-icon">⚠️</span> <span class="t-de">Praktischer Tipp</span><span class="t-en">Practical tip</span></div>
+      <div class="box-body">
+        <span class="t-de"><strong>NIE wegnavigieren</strong>, ohne entweder zu saven oder zu releasen. Sonst bleiben die Assignments für andere gelockt!</span>
+        <span class="t-en"><strong>NEVER navigate away</strong> without either saving or releasing. Otherwise assignments stay locked for others!</span>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- CLOSING -->
+<div class="closing">
+  <h2><span class="t-de">Abschluss & Recap</span><span class="t-en">Closing & Recap</span></h2>
+  <div class="closing-grid">
+    <div class="closing-item">🎯 <span class="t-de"><strong>Setup:</strong> Date Range + Dataset + Mode entscheiden, was im Grid landet</span><span class="t-en"><strong>Setup:</strong> Date Range + Dataset + Mode determine what lands in the grid</span></div>
+    <div class="closing-item">🔀 <span class="t-de"><strong>3 Modi:</strong> Resource (Standard), Project, Default (volle Kontrolle)</span><span class="t-en"><strong>3 Modes:</strong> Resource (standard), Project, Default (full control)</span></div>
+    <div class="closing-item">👁️ <span class="t-de"><strong>View Management:</strong> Persönliche Views erstellen, klonen, locken</span><span class="t-en"><strong>View Management:</strong> Create, clone, lock personal views</span></div>
+    <div class="closing-item">🛠️ <span class="t-de"><strong>Grid Features:</strong> Insert Columns, Group By, Add Assignment, Filter</span><span class="t-en"><strong>Grid Features:</strong> Insert Columns, Group By, Add Assignment, Filter</span></div>
+    <div class="closing-item">⚙️ <span class="t-de"><strong>Optionen:</strong> Total Demand Planning, Unallocated %, Heatmaps</span><span class="t-en"><strong>Options:</strong> Total Demand Planning, Unallocated %, Heatmaps</span></div>
+    <div class="closing-item">✅ <span class="t-de"><strong>RR-Aktionen:</strong> Approve, Reject, Open direkt aus dem Grid</span><span class="t-en"><strong>RR Actions:</strong> Approve, Reject, Open directly from grid</span></div>
+    <div class="closing-item">🔄 <span class="t-de"><strong>Replace Advanced:</strong> Net Availability, Skill Match, Heatmap</span><span class="t-en"><strong>Replace Advanced:</strong> Net Availability, Skill Match, Heatmap</span></div>
+    <div class="closing-item">💾 <span class="t-de"><strong>Save vs. Release:</strong> Sicheres Mehr-Personen-Editing</span><span class="t-en"><strong>Save vs. Release:</strong> Safe multi-person editing</span></div>
+  </div>
+  <div class="closing-final">
+    <span class="t-de">„Der BPA Flatgrid ist wie ein gutes Cockpit: Am Anfang fühlt sich jede Anzeige verwirrend an. Aber wenn ihr ihn jeden Tag 10 Minuten benutzt, wird er zu <strong>eurem wichtigsten Werkzeug</strong>. Versprochen."</span>
+    <span class="t-en">"The BPA Flatgrid is like a good cockpit: At first every display feels confusing. But if you use it 10 minutes every day, it becomes <strong>your most important tool</strong>. Promised."</span>
+  </div>
+</div>
+
+<!-- HAUSAUFGABE -->
+<div class="agenda-card">
+  <h3><span class="t-de">👉 Hausaufgabe bis nächste Woche</span><span class="t-en">👉 Homework until next week</span></h3>
+  <div class="agenda-grid">
+    <div class="agenda-item"><span class="agenda-num">1</span> <span class="t-de">2 eigene Views bauen: „Pending Inbox" und „Quarterly Planning"</span><span class="t-en">Build 2 own views: "Pending Inbox" and "Quarterly Planning"</span></div>
+    <div class="agenda-item"><span class="agenda-num">2</span> <span class="t-de">In Daily-View aktivieren: Show Total Demand Planning + Show Unallocated %</span><span class="t-en">Enable in daily view: Show Total Demand Planning + Show Unallocated %</span></div>
+    <div class="agenda-item"><span class="agenda-num">3</span> <span class="t-de">EIN Resource Replace Advanced machen — auch wenn nur als Test</span><span class="t-en">Do ONE Resource Replace Advanced — even if just as a test</span></div>
+  </div>
+</div>
+
+<footer class="doc-footer">
+  <span class="t-de"><strong>Tempus Resource · BPAFG Deep Dive · Folge-Session zum RM-Training</strong><br>Für internen Gebrauch und Kundenpräsentationen.<br>trial5.tempus-resource.com/slot4</span>
+  <span class="t-en"><strong>Tempus Resource · BPAFG Deep Dive · Follow-up to RM Training</strong><br>For internal use and customer presentations.<br>trial5.tempus-resource.com/slot4</span>
+</footer>
+
+</main>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   LANGUAGE SWITCHER
+═══════════════════════════════════════════════════ */
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const lang = btn.dataset.lang;
+    document.documentElement.classList.remove('lang-de', 'lang-en');
+    document.documentElement.classList.add('lang-' + lang);
+    try { localStorage.setItem('tempus-demo-bpafg-lang', lang); } catch(e) {}
+  });
+});
+
+// Restore language preference
+try {
+  const savedLang = localStorage.getItem('tempus-demo-bpafg-lang');
+  if (savedLang === 'de' || savedLang === 'en') {
+    document.documentElement.classList.remove('lang-de', 'lang-en');
+    document.documentElement.classList.add('lang-' + savedLang);
+    document.querySelectorAll('.lang-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.lang === savedLang);
+    });
+  }
+} catch(e) {}
+</script>
+
+</body>
+</html>
