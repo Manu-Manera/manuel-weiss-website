@@ -68,6 +68,7 @@ PY
 
 presign_and_patch "Onboarding Valkeen/onboarding-app/public/tempus-demo-pm.html" "data/tempus-demo-pm-state.json"
 presign_and_patch "Onboarding Valkeen/onboarding-app/public/tempus-demo-rm.html" "data/tempus-demo-rm-state.json"
+presign_and_patch "Onboarding Valkeen/onboarding-app/public/tempus-demo-bpafg.html" "data/tempus-demo-bpafg-state.json"
 
 echo "🚀 Deploye..."
 ./deploy-aws-website.sh --quick
