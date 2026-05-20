@@ -22,13 +22,14 @@ import JSZip from 'jszip';
 // 1:1 aus tempus-login-mailer/services/excel_parser.py portiert.
 // Kein nacktes „adresse" (fängt sonst Straßen-Spalten ein).
 const COLUMN_PATTERNS = {
-  email:    /(e[-_\s]?mail|^\s*email\s*$|^\s*e_mail\s*$|^\s*mail\s*$|mail\s*adresse|mail\s*address|e.?mail\s*adresse|empf.+mail|recipient|work\s*e[-_]?mail|business\s*e[-_]?mail|primary\s*e[-_]?mail|contact\s*e[-_]?mail|\bemail\s*address\b|\bemail\b)/i,
-  username: /(user\s?name|user\s?id|benutzer|benutzername|login.?id)/i,
-  password: /(pass\s?word|passwort|kennwort|\bpw\b|\bpwd\b)/i,
-  url:      /(url|link|website|login.?url|zugang)/i,
-  name:     /(^name$|full\s?name|display\s?name|anzeigename|client\s?name|kunde|kontakt|empf[äa]nger|teilnehmer|vor[\s\-/]*(?:und|&|\+|u\.)?[\s\-/]*nachname|vor[\s\-/]*nachname|name\s*\(vorname)/i,
-  vorname:  /(^vorname$|^firstname$|^given\s?name$|^voornaam$|^pr[eé]nom$)/i,
-  nachname: /(^nachname$|^lastname$|^surname$|^family\s?name$|^achternaam$|^nom$)/i,
+  email:      /(e[-_\s]?mail|^\s*email\s*$|^\s*e_mail\s*$|^\s*mail\s*$|mail\s*adresse|mail\s*address|e.?mail\s*adresse|empf.+mail|recipient|work\s*e[-_]?mail|business\s*e[-_]?mail|primary\s*e[-_]?mail|contact\s*e[-_]?mail|\bemail\s*address\b|\bemail\b)/i,
+  username:   /(user\s?name|user\s?id|benutzer|benutzername|login.?id)/i,
+  password:   /(pass\s?word|passwort|kennwort|\bpw\b|\bpwd\b)/i,
+  url:        /(url|link|website|login.?url|zugang)/i,
+  name:       /(^name$|full\s?name|display\s?name|anzeigename|client\s?name|kunde|kontakt|empf[äa]nger|teilnehmer|vor[\s\-/]*(?:und|&|\+|u\.)?[\s\-/]*nachname|vor[\s\-/]*nachname|name\s*\(vorname)/i,
+  vorname:    /(^vorname$|^firstname$|^given\s?name$|^voornaam$|^pr[eé]nom$)/i,
+  nachname:   /(^nachname$|^lastname$|^surname$|^family\s?name$|^achternaam$|^nom$)/i,
+  globalRole: /(global\s*role|rolle|role|globale?\s*rolle|berechtigung|permission|lizenz|license|go[-_\s]?live)/i,
 };
 
 // Strenger: ASCII-typisch (wird zuerst geprüft).
@@ -55,6 +56,134 @@ export const USERNAME_MODE_FIRSTNAME = 'firstname';
 export const USERNAME_MODE_FULLNAME  = 'fullname';
 
 export const DEFAULT_TEMPUS_PASSWORD = 'Passwort123@Tempus';
+
+// ---------------------------------------------------------------------------
+// Fuzzy-Matching für Global Role Namen
+// ---------------------------------------------------------------------------
+
+/**
+ * Normalisiert einen Rollen-Namen für Vergleiche:
+ * - Lowercase
+ * - Leerzeichen, +, -, _, & entfernen
+ * - Trailing "s" entfernen (Planner vs Planners)
+ */
+function normalizeRoleName(name) {
+  if (!name) return '';
+  let n = String(name).toLowerCase().trim();
+  // Sonderzeichen und Whitespace entfernen
+  n = n.replace(/[\s+\-_&]+/g, '');
+  // Trailing "s" entfernen für Singular/Plural-Match
+  if (n.length > 3 && n.endsWith('s')) n = n.slice(0, -1);
+  return n;
+}
+
+/**
+ * Berechnet die Levenshtein-Distanz zwischen zwei Strings.
+ */
+function levenshtein(a, b) {
+  if (!a) return b?.length || 0;
+  if (!b) return a.length;
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, (_, i) => [i]);
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (a[i - 1] === b[j - 1]) {
+        dp[i][j] = dp[i - 1][j - 1];
+      } else {
+        dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+      }
+    }
+  }
+  return dp[m][n];
+}
+
+/**
+ * Findet die am besten passende Rolle aus einer Liste von verfügbaren Rollen.
+ * @param {string} excelRole - Der Rollen-Name aus der Excel-Datei
+ * @param {{id: number, name: string}[]} availableRoles - Liste der verfügbaren Rollen von der API
+ * @returns {{id: number, name: string, score: number} | null} - Die beste Übereinstimmung oder null
+ */
+export function matchGlobalRole(excelRole, availableRoles) {
+  if (!excelRole || !availableRoles?.length) return null;
+  
+  const inputNorm = normalizeRoleName(excelRole);
+  if (!inputNorm) return null;
+  
+  let bestMatch = null;
+  let bestScore = Infinity;
+  
+  for (const role of availableRoles) {
+    const roleNorm = normalizeRoleName(role.name);
+    
+    // Exakter Match (nach Normalisierung)
+    if (inputNorm === roleNorm) {
+      return { ...role, score: 0 };
+    }
+    
+    // Prefix-Match (z.B. "Planner" matched "Planner+PPM")
+    if (roleNorm.startsWith(inputNorm) || inputNorm.startsWith(roleNorm)) {
+      const score = Math.abs(roleNorm.length - inputNorm.length) * 0.5;
+      if (score < bestScore) {
+        bestScore = score;
+        bestMatch = { ...role, score };
+      }
+      continue;
+    }
+    
+    // Contains-Match (z.B. "PPM" matched "Planner+PPM")
+    if (roleNorm.includes(inputNorm) || inputNorm.includes(roleNorm)) {
+      const score = Math.abs(roleNorm.length - inputNorm.length) * 0.7;
+      if (score < bestScore) {
+        bestScore = score;
+        bestMatch = { ...role, score };
+      }
+      continue;
+    }
+    
+    // Levenshtein-Distanz für ähnliche Namen
+    const dist = levenshtein(inputNorm, roleNorm);
+    const maxLen = Math.max(inputNorm.length, roleNorm.length);
+    const similarity = 1 - (dist / maxLen);
+    
+    // Nur bei mehr als 60% Ähnlichkeit berücksichtigen
+    if (similarity > 0.6) {
+      const score = dist;
+      if (score < bestScore) {
+        bestScore = score;
+        bestMatch = { ...role, score };
+      }
+    }
+  }
+  
+  // Nur zurückgeben wenn Score gut genug ist (max 3 Edits)
+  return (bestMatch && bestScore <= 3) ? bestMatch : null;
+}
+
+/**
+ * Matched alle Entries mit den verfügbaren Rollen und gibt aktualisierte Entries zurück.
+ * @param {Array} entries - Die Empfänger-Liste
+ * @param {{id: number, name: string}[]} availableRoles - Die verfügbaren Rollen
+ * @returns {Array} - Entries mit gematchten globalRoleId und globalRoleMatched
+ */
+export function matchAllGlobalRoles(entries, availableRoles) {
+  if (!availableRoles?.length) return entries;
+  
+  return entries.map(entry => {
+    if (!entry.globalRole) return entry;
+    
+    const match = matchGlobalRole(entry.globalRole, availableRoles);
+    if (match) {
+      return {
+        ...entry,
+        globalRoleId: match.id,
+        globalRoleMatched: match.name,
+        globalRoleScore: match.score,
+      };
+    }
+    return entry;
+  });
+}
 
 /** Ableitung: „leonie.dahl@firma.com" → „Leonie Dahl". */
 export function suggestNameFromEmail(email) {
@@ -253,7 +382,7 @@ function sheetToRowsWithLinks(ws) {
 }
 
 function detectColumns(headers) {
-  const map = { email: null, username: null, password: null, url: null, name: null, vorname: null, nachname: null };
+  const map = { email: null, username: null, password: null, url: null, name: null, vorname: null, nachname: null, globalRole: null };
   for (let i = 0; i < headers.length; i++) {
     const h = cellToStr(headers[i]);
     if (!h) continue;
@@ -263,7 +392,7 @@ function detectColumns(headers) {
   for (let i = 0; i < headers.length; i++) {
     const h = cellToStr(headers[i]);
     if (!h) continue;
-    for (const key of ['email', 'username', 'password', 'url', 'name']) {
+    for (const key of ['email', 'username', 'password', 'url', 'name', 'globalRole']) {
       if (map[key] === null && COLUMN_PATTERNS[key].test(h)) { map[key] = i; break; }
     }
   }
@@ -392,10 +521,11 @@ export async function parseExcelFile(file) {
       sheetEntries.push({
         name,
         email,
-        username: col(row, cmap.username),
-        password: col(row, cmap.password),
-        url:      col(row, cmap.url),
-        _sheet:   sheetName,
+        username:   col(row, cmap.username),
+        password:   col(row, cmap.password),
+        url:        col(row, cmap.url),
+        globalRole: col(row, cmap.globalRole),
+        _sheet:     sheetName,
       });
     }
 

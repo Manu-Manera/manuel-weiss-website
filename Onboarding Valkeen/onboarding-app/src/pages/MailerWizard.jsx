@@ -67,6 +67,7 @@ import {
   downloadEmlZip,
   suggestNameFromEmail,
   suggestUsernameFromName,
+  matchAllGlobalRoles,
   USERNAME_MODE_FIRSTNAME,
   USERNAME_MODE_FULLNAME,
   DEFAULT_TEMPUS_PASSWORD,
@@ -213,6 +214,8 @@ export default function MailerWizard() {
       out.username = derived;
       out._autoUsername = derived; // Marker für später: Username wurde automatisch gesetzt
     }
+    // globalRole aus Excel beibehalten (wird später beim Verbinden gematched)
+    if (e.globalRole) out.globalRole = e.globalRole;
     return out;
   };
 
@@ -271,6 +274,11 @@ export default function MailerWizard() {
       } else if (field === 'username') {
         // Manuell angepasst → Auto-Marker entfernen, damit spätere Namenänderung ihn nicht mehr überschreibt.
         delete next._autoUsername;
+      } else if (field === 'globalRole') {
+        // GlobalRole manuell gesetzt → Matching zurücksetzen
+        delete next.globalRoleId;
+        delete next.globalRoleMatched;
+        delete next.globalRoleScore;
       }
       return next;
     }));
@@ -369,6 +377,23 @@ export default function MailerWizard() {
   const [tempusSyncRows, setTempusSyncRows] = useState([]);
   const [tempusSyncRunning, setTempusSyncRunning] = useState(false);
 
+  // ---------------------------------------------------------------------------
+  // Sandbox-Umgebung: Zweiter API-Key zum Abrufen von Rollen
+  // ---------------------------------------------------------------------------
+  const [sandboxApiKey, setSandboxApiKey] = useState('');
+  const [sandboxBaseUrl, setSandboxBaseUrl] = useState(() => {
+    try { return localStorage.getItem('tempus_sandbox_base_url') || 'https://trial5.tempus-resource.com/slot4'; }
+    catch { return 'https://trial5.tempus-resource.com/slot4'; }
+  });
+  const [sandboxConnected, setSandboxConnected] = useState(false);
+  const [sandboxRoles, setSandboxRoles] = useState([]);
+  const [sandboxConnecting, setSandboxConnecting] = useState(false);
+  const [sandboxError, setSandboxError] = useState('');
+  
+  useEffect(() => {
+    try { localStorage.setItem('tempus_sandbox_base_url', sandboxBaseUrl || ''); } catch { /* ignore */ }
+  }, [sandboxBaseUrl]);
+
   const handleTempusConnect = async () => {
     const key = tempusApiKey.trim();
     if (!key) { setTempusConnectError('API-Key fehlt.'); return; }
@@ -393,12 +418,46 @@ export default function MailerWizard() {
         if (curr != null && groups.some(g => g.id === curr)) return curr;
         return groups[0]?.id ?? null;
       });
+      
+      // Automatisches Rollen-Matching für Entries mit globalRole aus Excel
+      if (roles.length > 0 && entries.length > 0) {
+        const matchedEntries = matchAllGlobalRoles(entries, roles);
+        const matchCount = matchedEntries.filter(e => e.globalRoleMatched).length;
+        if (matchCount > 0) {
+          setEntries(matchedEntries);
+        }
+      }
     } catch (err) {
       setTempusIdentityInfo(null);
       setTempusConnectError(err?.message || String(err));
     } finally {
       setTempusConnecting(false);
     }
+  };
+  
+  // Sandbox-Verbindung für Rollen-Abgleich
+  const handleSandboxConnect = async () => {
+    const key = sandboxApiKey.trim();
+    if (!key) { setSandboxError('API-Key fehlt.'); return; }
+    setSandboxConnecting(true);
+    setSandboxError('');
+    try {
+      const roles = await tempusListGlobalRoles(key);
+      setSandboxRoles(roles);
+      setSandboxConnected(true);
+    } catch (err) {
+      setSandboxConnected(false);
+      setSandboxError(err?.message || String(err));
+    } finally {
+      setSandboxConnecting(false);
+    }
+  };
+  
+  const handleSandboxDisconnect = () => {
+    setSandboxApiKey('');
+    setSandboxConnected(false);
+    setSandboxRoles([]);
+    setSandboxError('');
   };
 
   const handleTempusDisconnect = () => {
@@ -413,11 +472,17 @@ export default function MailerWizard() {
   const handleTempusSync = async () => {
     if (!tempusIdentityInfo) { alert('Bitte zuerst mit Tempus verbinden.'); return; }
     if (tempusRoleId == null || tempusSecurityGroupId == null) {
-      alert('Bitte Globale Rolle und Security-Group wählen.');
+      alert('Bitte Globale Rolle (Standard) und Security-Group wählen.');
       return;
     }
     const targets = entries
-      .map((e, idx) => ({ idx, name: (e.name || '').trim(), email: (e.email || '').trim() }))
+      .map((e, idx) => ({ 
+        idx, 
+        name: (e.name || '').trim(), 
+        email: (e.email || '').trim(),
+        globalRoleId: e.globalRoleId || null,
+        globalRoleName: e.globalRoleMatched || e.globalRole || null,
+      }))
       .filter(t => t.name);
 
     if (!targets.length) {
@@ -425,10 +490,18 @@ export default function MailerWizard() {
       return;
     }
 
+    // Zähle wie viele individuelle vs. Standard-Rollen
+    const withIndividualRole = targets.filter(t => t.globalRoleId != null).length;
+    const withDefaultRole = targets.length - withIndividualRole;
+    
+    const roleInfo = withIndividualRole > 0
+      ? `${withIndividualRole} mit individueller Rolle aus Excel, ${withDefaultRole} mit Standard-Rolle "${tempusRoles.find(r => r.id === tempusRoleId)?.name || tempusRoleId}"`
+      : `Rolle: ${(tempusRoles.find(r => r.id === tempusRoleId)?.name) || tempusRoleId}`;
+
     const ok = confirm(
       `Es werden ${targets.length} Resources nacheinander in Tempus angelegt.\n\n` +
       `Ziel: ${tempusBaseUrl}\n` +
-      `Rolle: ${(tempusRoles.find(r => r.id === tempusRoleId)?.name) || tempusRoleId}\n` +
+      `${roleInfo}\n` +
       `Security-Group: ${(tempusGroups.find(g => g.id === tempusSecurityGroupId)?.name) || tempusSecurityGroupId}\n` +
       `Timesheet-User: ${tempusIsTimesheetUser ? 'ja' : 'nein'}\n\n` +
       `Fortfahren?`
@@ -436,7 +509,13 @@ export default function MailerWizard() {
     if (!ok) return;
 
     setTempusSyncRunning(true);
-    const initial = targets.map(t => ({ idx: t.idx, name: t.name, email: t.email, status: 'pending' }));
+    const initial = targets.map(t => ({ 
+      idx: t.idx, 
+      name: t.name, 
+      email: t.email, 
+      globalRoleName: t.globalRoleName,
+      status: 'pending' 
+    }));
     setTempusSyncRows(initial);
 
     const updateRow = (idx, patch) => {
@@ -450,14 +529,24 @@ export default function MailerWizard() {
         if (exists) {
           updateRow(t.idx, { status: 'exists', message: 'Name in Tempus bereits vergeben — übersprungen.' });
         } else {
+          // Individuelle Rolle aus Excel verwenden falls vorhanden, sonst Standard
+          const roleIdToUse = t.globalRoleId ?? tempusRoleId;
+          const roleName = t.globalRoleId 
+            ? (tempusRoles.find(r => r.id === t.globalRoleId)?.name || t.globalRoleName)
+            : (tempusRoles.find(r => r.id === tempusRoleId)?.name);
+          
           const newId = await tempusCreateResource(tempusApiKey, {
             name: t.name,
-            globalRoleId: tempusRoleId,
+            globalRoleId: roleIdToUse,
             securityGroupId: tempusSecurityGroupId,
             isEnabled: true,
             isTimesheetUser: tempusIsTimesheetUser,
           });
-          updateRow(t.idx, { status: 'created', resourceId: newId, message: `Angelegt (Id ${newId}).` });
+          updateRow(t.idx, { 
+            status: 'created', 
+            resourceId: newId, 
+            message: `Angelegt (Id ${newId}) mit Rolle "${roleName}".` 
+          });
         }
       } catch (err) {
         updateRow(t.idx, { status: 'error', message: err?.message || String(err) });
@@ -1143,6 +1232,12 @@ export default function MailerWizard() {
                     <th className="px-2 py-2 text-left font-semibold min-w-[160px]">Name</th>
                     <th className="px-2 py-2 text-left font-semibold min-w-[200px]">E-Mail</th>
                     <th className="px-2 py-2 text-left font-semibold min-w-[140px]">Username</th>
+                    <th className="px-2 py-2 text-left font-semibold min-w-[150px]">
+                      Global Role
+                      {tempusRoles.length > 0 && (
+                        <span className="ml-1 text-xs text-emerald-400" title="Rollen von Tempus geladen">✓</span>
+                      )}
+                    </th>
                     <th className="px-2 py-2 text-left font-semibold min-w-[180px]">URL</th>
                     <th className="px-2 py-2 text-left font-semibold min-w-[140px]">Passwort</th>
                     <th className="px-2 py-2 text-right font-semibold w-10"></th>
@@ -1151,6 +1246,8 @@ export default function MailerWizard() {
                 <tbody>
                   {entries.slice(0, 200).map((e, i) => {
                     const emailValid = e.email && /^[^\s@]+@[^\s@]+\.[^\s@]+/.test(e.email);
+                    const hasRoleMatch = e.globalRoleMatched;
+                    const hasRoleNoMatch = e.globalRole && !e.globalRoleMatched && tempusRoles.length > 0;
                     return (
                       <tr key={i} className="border-t border-white/5 hover:bg-white/[0.02]">
                         <td className="px-2 py-1 text-white/40">{i + 1}</td>
@@ -1181,6 +1278,43 @@ export default function MailerWizard() {
                             onChange={(ev) => updateEntry(i, 'username', ev.target.value)}
                             className="w-full px-2 py-1 rounded bg-transparent border border-transparent hover:border-white/10 focus:border-indigo-400/60 focus:bg-white/5 outline-none text-sm"
                           />
+                        </td>
+                        <td className="px-2 py-1">
+                          {tempusRoles.length > 0 ? (
+                            <select
+                              value={e.globalRoleId || ''}
+                              onChange={(ev) => {
+                                const roleId = ev.target.value ? Number(ev.target.value) : null;
+                                const role = tempusRoles.find(r => r.id === roleId);
+                                setEntries(prev => prev.map((entry, idx) => 
+                                  idx === i 
+                                    ? { ...entry, globalRoleId: roleId, globalRoleMatched: role?.name || '', globalRole: role?.name || entry.globalRole }
+                                    : entry
+                                ));
+                              }}
+                              className={`w-full px-2 py-1 rounded bg-white/5 border text-sm ${
+                                hasRoleMatch 
+                                  ? 'border-emerald-400/40 text-emerald-300' 
+                                  : hasRoleNoMatch 
+                                    ? 'border-amber-400/40 text-amber-300'
+                                    : 'border-white/10 text-white/70'
+                              }`}
+                              title={e.globalRole ? `Excel: "${e.globalRole}"${hasRoleMatch ? ` → ${e.globalRoleMatched}` : ' (kein Match)'}` : ''}
+                            >
+                              <option value="">— keine —</option>
+                              {tempusRoles.map(r => (
+                                <option key={r.id} value={r.id}>{r.name}</option>
+                              ))}
+                            </select>
+                          ) : (
+                            <input
+                              value={e.globalRole || ''}
+                              onChange={(ev) => updateEntry(i, 'globalRole', ev.target.value)}
+                              placeholder="z.B. Planner"
+                              className="w-full px-2 py-1 rounded bg-transparent border border-white/10 hover:border-white/20 focus:border-indigo-400/60 focus:bg-white/5 outline-none text-sm text-white/70"
+                              title="Verbinde mit Tempus um Rollen aus Dropdown zu wählen"
+                            />
+                          )}
                         </td>
                         <td className="px-2 py-1">
                           <input
@@ -1331,6 +1465,45 @@ export default function MailerWizard() {
                     </div>
                   </div>
 
+                  {/* Hinweis wenn Entries mit Global Role aus Excel vorhanden sind */}
+                  {entries.some(e => e.globalRole && !e.globalRoleMatched) && (
+                    <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-400/30 text-sm text-amber-200 flex items-center justify-between gap-3">
+                      <div className="flex items-start gap-2">
+                        <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+                        <span>
+                          {entries.filter(e => e.globalRole && !e.globalRoleMatched).length} Empfänger haben eine Global Role aus Excel, 
+                          die noch nicht mit einer Tempus-Rolle gematcht wurde.
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const matched = matchAllGlobalRoles(entries, tempusRoles);
+                          const newMatches = matched.filter(e => e.globalRoleMatched).length - entries.filter(e => e.globalRoleMatched).length;
+                          setEntries(matched);
+                          if (newMatches > 0) {
+                            alert(`${newMatches} neue Rollen-Matches gefunden.`);
+                          } else {
+                            alert('Keine neuen Matches gefunden. Prüfe die Schreibweise der Rollen in der Excel-Datei.');
+                          }
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-900 text-xs font-semibold whitespace-nowrap"
+                      >
+                        Erneut matchen
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Stats: Wie viele haben individuelle Rolle */}
+                  {entries.some(e => e.globalRoleId) && (
+                    <div className="p-3 rounded-lg bg-indigo-500/10 border border-indigo-400/30 text-sm text-indigo-200 flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />
+                      <span>
+                        <span className="font-semibold">{entries.filter(e => e.globalRoleId).length}</span> von {entries.length} Empfängern 
+                        haben eine individuelle Global Role zugewiesen (aus Excel oder manuell gewählt).
+                      </span>
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/10">
                     <p className="text-xs text-white/60">
                       {entries.filter(e => (e.name || '').trim()).length} von {entries.length} Empfängern haben einen Namen und werden versucht anzulegen.
@@ -1376,6 +1549,7 @@ export default function MailerWizard() {
                               <td className="px-2 py-2">
                                 <div className="font-medium text-white/90">{r.name || <span className="text-white/40">(kein Name)</span>}</div>
                                 {r.email && <div className="text-xs text-white/40 font-mono">{r.email}</div>}
+                                {r.globalRoleName && <div className="text-xs text-indigo-300">Rolle: {r.globalRoleName}</div>}
                               </td>
                               <td className="px-2 py-2 text-xs text-white/60">
                                 {r.message || (r.status === 'running' ? 'läuft …' : r.status === 'pending' ? 'warte …' : '')}
@@ -1390,6 +1564,150 @@ export default function MailerWizard() {
               )}
             </div>
           )}
+
+          {/* ── SANDBOX ROLLEN-ABGLEICH ─────────────────────────────────────── */}
+          <div className="mt-4 p-4 rounded-xl border border-cyan-400/30 bg-cyan-500/[0.06] space-y-4">
+            <div className="flex items-start gap-3">
+              <RefreshCw className="w-6 h-6 text-cyan-300 shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold">Rollen von Sandbox laden (optional)</h3>
+                <p className="text-xs text-white/60 mt-1">
+                  Verbinde mit einer Sandbox-Umgebung um verfügbare <span className="font-semibold text-white/80">Global Roles</span> abzurufen.
+                  Die Rollen werden in einer Tabelle angezeigt und können mit den Prod-Rollen verglichen werden.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-[1fr_auto] gap-2 items-end">
+              <div>
+                <label className="block text-xs text-white/50 mb-1">Sandbox API-Key</label>
+                <input
+                  type="password"
+                  autoComplete="off"
+                  value={sandboxApiKey}
+                  onChange={(e) => setSandboxApiKey(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' && !sandboxConnecting) handleSandboxConnect(); }}
+                  placeholder="API-Key der Sandbox-Instanz"
+                  className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm font-mono"
+                />
+              </div>
+              <div className="flex gap-2">
+                {!sandboxConnected ? (
+                  <button
+                    onClick={handleSandboxConnect}
+                    disabled={sandboxConnecting || !sandboxApiKey.trim()}
+                    className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium text-sm flex items-center gap-2"
+                  >
+                    {sandboxConnecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plug className="w-4 h-4" />}
+                    Verbinden
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleSandboxDisconnect}
+                    className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm flex items-center gap-2"
+                  >
+                    <X className="w-4 h-4" /> Trennen
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {sandboxError && (
+              <div className="p-3 rounded-lg bg-red-500/10 border border-red-400/30 text-sm text-red-200 flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+                <span className="break-words">{sandboxError}</span>
+              </div>
+            )}
+
+            {sandboxConnected && sandboxRoles.length > 0 && (
+              <div className="space-y-3">
+                <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-400/30 text-sm text-emerald-200 flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />
+                  <span>{sandboxRoles.length} Rollen von Sandbox geladen</span>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  {/* Sandbox-Rollen */}
+                  <div className="rounded-lg border border-white/10 overflow-hidden">
+                    <div className="px-3 py-2 bg-cyan-500/10 border-b border-white/10 text-sm font-semibold text-cyan-200">
+                      Sandbox-Rollen ({sandboxRoles.length})
+                    </div>
+                    <div className="max-h-48 overflow-y-auto">
+                      <table className="w-full text-sm">
+                        <tbody>
+                          {sandboxRoles.map(r => {
+                            const existsInProd = tempusRoles.some(pr => 
+                              pr.name.toLowerCase().replace(/\s+/g, '') === r.name.toLowerCase().replace(/\s+/g, '')
+                            );
+                            return (
+                              <tr key={r.id} className="border-t border-white/5">
+                                <td className="px-3 py-2">
+                                  <span className={existsInProd ? 'text-white/70' : 'text-amber-300'}>{r.name}</span>
+                                  {r.systemKey && <span className="ml-2 text-xs text-white/30">({r.systemKey})</span>}
+                                </td>
+                                <td className="px-3 py-2 text-right text-xs">
+                                  {existsInProd ? (
+                                    <span className="text-emerald-400">✓ in Prod</span>
+                                  ) : (
+                                    <span className="text-amber-400">nicht in Prod</span>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Prod-Rollen */}
+                  <div className="rounded-lg border border-white/10 overflow-hidden">
+                    <div className="px-3 py-2 bg-indigo-500/10 border-b border-white/10 text-sm font-semibold text-indigo-200">
+                      Prod-Rollen ({tempusRoles.length})
+                      {!tempusIdentityInfo && <span className="ml-2 text-xs text-white/40">(nicht verbunden)</span>}
+                    </div>
+                    <div className="max-h-48 overflow-y-auto">
+                      {tempusRoles.length > 0 ? (
+                        <table className="w-full text-sm">
+                          <tbody>
+                            {tempusRoles.map(r => {
+                              const existsInSandbox = sandboxRoles.some(sr => 
+                                sr.name.toLowerCase().replace(/\s+/g, '') === r.name.toLowerCase().replace(/\s+/g, '')
+                              );
+                              return (
+                                <tr key={r.id} className="border-t border-white/5">
+                                  <td className="px-3 py-2">
+                                    <span className={existsInSandbox ? 'text-white/70' : 'text-cyan-300'}>{r.name}</span>
+                                    {r.systemKey && <span className="ml-2 text-xs text-white/30">({r.systemKey})</span>}
+                                  </td>
+                                  <td className="px-3 py-2 text-right text-xs">
+                                    {existsInSandbox ? (
+                                      <span className="text-emerald-400">✓ in Sandbox</span>
+                                    ) : (
+                                      <span className="text-cyan-400">nur Prod</span>
+                                    )}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <div className="px-3 py-4 text-sm text-white/40 text-center">
+                          Verbinde oben mit Tempus Prod um Rollen zu laden
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-xs text-white/40">
+                  <b>Hinweis:</b> Das Anlegen neuer Rollen in Prod ist ein Admin-Feature und erfordert entsprechende Berechtigungen. 
+                  Die Rollen-Tabelle dient primär dem Vergleich und der Dokumentation.
+                </p>
+              </div>
+            )}
+          </div>
 
           <div className="flex justify-end gap-2 pt-2">
             <button
