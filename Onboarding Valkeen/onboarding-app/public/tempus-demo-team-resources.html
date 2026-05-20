@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tempus Demo – BPAFG Deep Dive</title>
+<title>Tempus Demo – Team Resources</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
 
@@ -380,28 +380,28 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 <div class="hero">
   <div class="hero-inner">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
-      <div class="continuity-badge">🔗 <span class="t-de">Folge-Session · Nach RM-Training</span><span class="t-en">Follow-up session · After RM Training</span></div>
+      <div class="continuity-badge">👥 <span class="t-de">Team Planning · Agile + Waterfall</span><span class="t-en">Team Planning · Agile + Waterfall</span></div>
       <a href="tempus-demo-rm.html" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">← <span class="t-de">RM Demo öffnen</span><span class="t-en">Open RM Demo</span></a>
     </div>
-    <div class="hero-eyebrow">🎬 <span class="t-de">BPAFG Deep Dive · Folge-Session zum RM-Training</span><span class="t-en">BPAFG Deep Dive · Follow-up to RM Training</span></div>
+    <div class="hero-eyebrow">👥 <span class="t-de">Team Resources · Teambasierte Planung</span><span class="t-en">Team Resources · Team-Based Planning</span></div>
     <h1 class="hero-title">
-      <span class="t-de">Bulk Project Allocation Flatgrid —<br><span>Deep Dive für Resource Manager</span></span>
-      <span class="t-en">Bulk Project Allocation Flatgrid —<br><span>Deep Dive for Resource Managers</span></span>
+      <span class="t-de">Team Resources —<br><span>Teams als planbare Einheit</span></span>
+      <span class="t-en">Team Resources —<br><span>Teams as Assignable Units</span></span>
     </h1>
     <p class="hero-subtitle">
-      <span class="t-de">Aus Sicht von <strong>Giacomo</strong>, Team Lead E-DOC bei HR Campus. Modi, Views, Optionen, Heatmaps, Resource Requests im Grid, Resource Replace Advanced — und die entscheidenden Optionen, die euch im Alltag wirklich helfen.</span>
-      <span class="t-en">From <strong>Giacomo's</strong> perspective, Team Lead E-DOC at HR Campus. Modes, views, options, heatmaps, resource requests in the grid, Resource Replace Advanced — and the key options that really help in daily work.</span>
+      <span class="t-de">Wie man in Tempus Resource <strong>Teams</strong> erstellt, Personen zuweist, und Teams auf Projekte allokiert — für Organisationen mit Agile, Waterfall oder gemischten Methoden.</span>
+      <span class="t-en">How to create <strong>Teams</strong> in Tempus Resource, assign people to them, and allocate teams to projects — for organizations using Agile, Waterfall, or mixed methodologies.</span>
     </p>
     <div class="hero-meta">
-      <div class="hero-meta-item">⏱️ <span class="t-de">ca. 20+ Min.</span><span class="t-en">20+ min.</span></div>
-      <div class="hero-meta-item">👥 <span class="t-de">Resource Manager</span><span class="t-en">Resource Managers</span></div>
-      <div class="hero-meta-item">📋 <span class="t-de">8 Blöcke</span><span class="t-en">8 Blocks</span></div>
+      <div class="hero-meta-item">⏱️ <span class="t-de">ca. 15–20 Min.</span><span class="t-en">approx. 15–20 min.</span></div>
+      <div class="hero-meta-item">👥 <span class="t-de">Resource Manager / Team Leads</span><span class="t-en">Resource Managers / Team Leads</span></div>
+      <div class="hero-meta-item">📋 <span class="t-de">5 Blöcke</span><span class="t-en">5 Blocks</span></div>
       <div class="hero-meta-item">🔗 trial5.tempus-resource.com/slot4</div>
     </div>
   </div>
 </div>
 
-<div class="page" id="bpafg-editable-intro">
+<div class="page" id="team-resources-editable-intro">
 
 <!-- GUIDE LEGEND -->
 <div class="guide-legend" style="margin-top:24px;">
@@ -440,22 +440,22 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
   <div style="font-size:22px;">⚙️</div>
   <div>
     <strong><span class="t-de">Vor dem Start — Technische Vorbereitung</span><span class="t-en">Before you start — Technical preparation</span></strong>
-    <span class="t-de">Instanz: <code>trial5.tempus-resource.com/slot4</code> · Benutzer: Giacomo · Allocations-Modus aktiv · In der RM-Demo sollte bereits der BPAFG kurz angesprochen worden sein.</span>
-    <span class="t-en">Instance: <code>trial5.tempus-resource.com/slot4</code> · User: Giacomo · Allocations mode active · BPAFG should have been briefly introduced in the RM demo.</span>
+    <span class="t-de">Instanz: <code>trial5.tempus-resource.com/slot4</code> · Benutzer: Admin oder RM mit Team-Berechtigungen · Ein oder mehrere bestehende Ressourcen sollten vorhanden sein.</span>
+    <span class="t-en">Instance: <code>trial5.tempus-resource.com/slot4</code> · User: Admin or RM with Team permissions · One or more existing resources should be available.</span>
   </div>
 </div>
 
 <!-- STORY HOOK -->
 <div class="story-hook">
-  <div class="story-hook-header">🎙️ <span class="t-de">Intro — Was ist der BPAFG?</span><span class="t-en">Welcome — What is the BPAFG?</span></div>
+  <div class="story-hook-header">🎙️ <span class="t-de">Intro — Was sind Team Resources?</span><span class="t-en">Welcome — What are Team Resources?</span></div>
   <div class="story-hook-body">
     <span class="t-de">
-      „Hallo zurück — heute schauen wir uns das Herzstück der Resource-Manager-Welt im Detail an: den <strong>Bulk Project Allocation Flatgrid</strong>, kurz BPA Flatgrid oder einfach ‚BPAFG'."<br><br>
-      <em>In der RM-Demo haben wir den BPA nur angeschnitten. Heute gehen wir tiefer: Modi, Views, Optionen, Heatmaps, Resource Requests im Grid, Resource Replace Advanced — und vor allem die kleinen, aber entscheidenden Optionen.</em>
+      „Viele Organisationen nutzen eine Mischung aus Agile, operativen und klassischen Projektmethoden. In dieser Realität werden Personen sowohl direkt auf Projekte zugewiesen als auch über <strong>Teams</strong>, zu denen sie gehören."<br><br>
+      <em>Ein Team Resource in Tempus ist ein planbares Team, das aus benannten Personen besteht — mit definiertem Anteil (Prozent oder Story Points) für jedes Teammitglied. Das Team kann dann als Einheit auf Projekte oder Epics zugewiesen werden.</em>
     </span>
     <span class="t-en">
-      "Welcome back — today we'll take a detailed look at the heart of the Resource Manager world: the <strong>Bulk Project Allocation Flat Grid</strong>, short BPA Flatgrid or simply 'BPAFG'."<br><br>
-      <em>In the RM demo we only touched on the BPA. Today we go deeper: modes, views, options, heatmaps, resource requests in the grid, Resource Replace Advanced — and above all the small but decisive options that really help you in your daily work (Percent Allocated, Show Total Demand Planning, Net Availability in the grid).</em>
+      "Many organizations use a mix of Agile, operational, and traditional project methods. In this reality, people are both assigned directly to projects and assigned through <strong>teams</strong> they belong to."<br><br>
+      <em>A Team Resource in Tempus is an assignable team made up of named individuals — with their percentage or story point contribution defined. The team can then be assigned as a unit to projects or epics.</em>
     </span>
   </div>
 </div>
@@ -468,203 +468,165 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
       <div class="cast-emoji">🧑‍💼</div>
       <div class="cast-name">Giacomo Telesca</div>
       <div class="cast-role"><span class="t-de">Resource Manager · Team Lead E-DOC bei HR Campus</span><span class="t-en">Resource Manager · Team Lead E-DOC at HR Campus</span></div>
-      <div class="cast-quote"><span class="t-de">„Der BPAFG ist mein wichtigstes Werkzeug."</span><span class="t-en">"The BPAFG is my most important tool."</span></div>
+      <div class="cast-quote"><span class="t-de">„Ich muss mein Team als Einheit planen können."</span><span class="t-en">"I need to plan my team as a unit."</span></div>
+    </div>
+    <div class="cast-card pm-cameo">
+      <div class="cast-emoji">👨‍💻</div>
+      <div class="cast-name">Reto Brunner</div>
+      <div class="cast-role"><span class="t-de">Project Manager · Braucht ein ganzes Team für sein Projekt</span><span class="t-en">Project Manager · Needs a whole team for his project</span></div>
+      <div class="cast-quote"><span class="t-de">„Ich will nicht jeden einzeln anfragen."</span><span class="t-en">"I don't want to request each person individually."</span></div>
     </div>
   </div>
 </div>
 
 </div><!-- /page -->
 
-<!-- ═══ BPAFG DEEP DIVE AGENDA ═══ -->
-<div class="agenda-fullpage-wrap" id="bpafg-training-agenda">
+<!-- ═══ TEAM RESOURCES AGENDA ═══ -->
+<div class="agenda-fullpage-wrap" id="team-resources-training-agenda">
   <div class="agenda-fullpage-inner">
-    <p class="agenda-fullpage-kicker"><span class="t-de">BPAFG Deep Dive · Folge-Session zum RM-Training</span><span class="t-en">BPAFG Deep Dive · Follow-up to RM Training</span></p>
+    <p class="agenda-fullpage-kicker"><span class="t-de">Team Resources · Teambasierte Planung</span><span class="t-en">Team Resources · Team-Based Planning</span></p>
     <h2 class="agenda-fullpage-title"><span class="t-de">Agenda</span><span class="t-en">Agenda</span></h2>
     <p class="agenda-fullpage-sub">
-      <span class="t-de">In der RM-Demo haben wir den BPA nur angeschnitten. Heute gehen wir tiefer: Modi, Views, Optionen, Heatmaps, Resource Requests im Grid, Resource Replace Advanced — und vor allem die kleinen, aber entscheidenden Optionen (<strong>Percent Allocated</strong>, <strong>Show Total Demand Planning</strong>, <strong>Net Availability</strong> im Grid).</span>
-      <span class="t-en">The goal of today's session is that afterwards you understand the BPAFG and know where to find the most important functions.</span>
+      <span class="t-de">In dieser Session lernen wir, wie man Teams als planbare Einheiten erstellt und nutzt — für Organisationen, die Agile, Waterfall oder gemischte Methoden verwenden.</span>
+      <span class="t-en">In this session we'll learn how to create and use teams as assignable units — for organizations using Agile, Waterfall, or mixed methodologies.</span>
     </p>
     <div class="agenda-fullpage-blocks">
       <div class="agenda-fullpage-block">
         <div class="agenda-fullpage-num">1</div>
         <div>
-          <h4><span class="t-de">Die 3 Modi: Default, Resource, Project</span><span class="t-en">The 3 Modes: Default, Resource, Project</span></h4>
+          <h4><span class="t-de">Was ist ein Team Resource?</span><span class="t-en">What is a Team Resource?</span></h4>
           <ul>
-            <li><span class="t-de">Verstehen, aus welcher Perspektive wir auf die Daten schauen und wie sich der Grid je nach Modus verändert.</span><span class="t-en">Understand from which perspective we view the data and how the grid changes depending on the mode.</span></li>
+            <li><span class="t-de">Konzept verstehen: Benannte Personen + definierte Anteile = planbares Team</span><span class="t-en">Understand the concept: Named people + defined percentages = assignable team</span></li>
           </ul>
         </div>
       </div>
       <div class="agenda-fullpage-block">
         <div class="agenda-fullpage-num">2</div>
         <div>
-          <h4><span class="t-de">Grid Features (Spalten, Group By, Add Assignment, Filter)</span><span class="t-en">Grid Features (Columns, Group By, Add Assignment, Filters)</span></h4>
+          <h4><span class="t-de">Ein Team erstellen</span><span class="t-en">Create a Team</span></h4>
           <ul>
-            <li><span class="t-de">Die Grundlage, um den Grid sinnvoll zu strukturieren und schnell die relevanten Informationen zu finden.</span><span class="t-en">The foundation for structuring the grid meaningfully and quickly finding the relevant information.</span></li>
+            <li><span class="t-de">Team anlegen, Teammitglieder hinzufügen, Anteile (% oder Story Points) definieren</span><span class="t-en">Create team, add team members, define percentages or story points</span></li>
           </ul>
         </div>
       </div>
       <div class="agenda-fullpage-block">
         <div class="agenda-fullpage-num">3</div>
         <div>
-          <h4><span class="t-de">Resource Requests direkt im Grid bearbeiten</span><span class="t-en">Working with Resource Requests directly in the Grid</span></h4>
+          <h4><span class="t-de">Team einem Projekt zuweisen</span><span class="t-en">Assign Team to a Project</span></h4>
           <ul>
-            <li><span class="t-de">Besonders wichtig, weil man dadurch nicht immer zwischen verschiedenen Modulen wechseln muss.</span><span class="t-en">Especially important because it means you don't always have to switch between different modules but can make many adjustments in one central place.</span></li>
+            <li><span class="t-de">FTE, Stunden oder Kosten definieren — Kostenkalkulation verstehen</span><span class="t-en">Define FTE, hours, or costs — understand cost calculation</span></li>
           </ul>
         </div>
       </div>
       <div class="agenda-fullpage-block">
         <div class="agenda-fullpage-num">4</div>
         <div>
-          <h4><span class="t-de">Resource Replace &amp; Resource Replace Advanced</span><span class="t-en">Resource Replace &amp; Resource Replace Advanced</span></h4>
+          <h4><span class="t-de">Team-Verfügbarkeit im BPAFG</span><span class="t-en">Team Availability in the BPAFG</span></h4>
           <ul>
-            <li><span class="t-de">Wie man Ressourcen ersetzen kann — einfach und erweitert.</span><span class="t-en">How to replace a resource when, for example, availabilities change or a better-suited resource needs to be found.</span></li>
+            <li><span class="t-de">Wie man die Auslastung und Verfügbarkeit von Teams im Bulk Grid sieht</span><span class="t-en">How to see team utilization and availability in the Bulk Grid</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="agenda-fullpage-block">
+        <div class="agenda-fullpage-num">5</div>
+        <div>
+          <h4><span class="t-de">Best Practices &amp; Tipps</span><span class="t-en">Best Practices &amp; Tips</span></h4>
+          <ul>
+            <li><span class="t-de">Wann Team Resource vs. Named Resource? Multi-Assignment (9.2)</span><span class="t-en">When to use Team Resource vs. Named Resource? Multi-Assignment (9.2)</span></li>
           </ul>
         </div>
       </div>
     </div>
     <div class="agenda-fullpage-footnote">
-      <span class="t-de"><strong>Deep Dive:</strong> 8 Blöcke · ⏱️ ca. 20+ Min. · 🔗 <code>trial5.tempus-resource.com/slot4</code> · Benutzer: <strong>Giacomo (RM)</strong>.</span>
-      <span class="t-en"><strong>Deep Dive:</strong> 8 blocks · ⏱️ approx. 20+ min · 🔗 <code>trial5.tempus-resource.com/slot4</code> · User: <strong>Giacomo (RM)</strong>.</span>
+      <span class="t-de"><strong>Team Resources:</strong> 5 Blöcke · ⏱️ ca. 15–20 Min. · 🔗 <code>trial5.tempus-resource.com/slot4</code></span>
+      <span class="t-en"><strong>Team Resources:</strong> 5 blocks · ⏱️ approx. 15–20 min · 🔗 <code>trial5.tempus-resource.com/slot4</code></span>
     </div>
   </div>
 </div>
 
-<div class="page" id="bpafg-scenes-page">
+<div class="page" id="team-resources-scenes-page">
 
 <!-- ══════════════════════════════════════════════
-     SCENE 1 – Why BPAFG? Navigation & Setup
+     SCENE 1 – What is a Team Resource?
 ══════════════════════════════════════════════ -->
-<div class="scene" id="bpafg-scene-01">
+<div class="scene" id="team-resources-scene-01">
   <div class="scene-header">
-    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--teal),var(--navy))"><div class="scene-num-big">01</div><div class="scene-num-label">Intro</div></div>
+    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--teal),var(--navy))"><div class="scene-num-big">01</div><div class="scene-num-label">Concept</div></div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Block 1 · Warum BPAFG?</span><span class="t-en">Block 1 · Why BPAFG?</span></div>
-      <div class="scene-title"><span class="t-de">Navigation &amp; Setup</span><span class="t-en">Navigation &amp; Setup</span></div>
-      <div class="scene-subtitle"><span class="t-de">Der zentrale Arbeitsbereich für Resource Manager</span><span class="t-en">The central workspace for Resource Managers</span></div>
+      <div class="scene-act"><span class="t-de">Block 1 · Konzept</span><span class="t-en">Block 1 · Concept</span></div>
+      <div class="scene-title"><span class="t-de">Was ist ein Team Resource?</span><span class="t-en">What is a Team Resource?</span></div>
+      <div class="scene-subtitle"><span class="t-de">Teams als planbare Einheit verstehen</span><span class="t-en">Understanding teams as assignable units</span></div>
     </div>
   </div>
-  <div class="scene-tags"><span class="tag tag-teal">BPAFG</span><span class="tag tag-blue">Setup</span></div>
+  <div class="scene-tags"><span class="tag tag-teal">Concept</span><span class="tag tag-blue">Teams</span></div>
   <div class="scene-body">
     <div class="box box-story">
       <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg</span><span class="t-en">Intro</span></div>
       <div class="box-body">
-        <span class="t-de">„Der BPA Flatgrid ist nicht ‚nur ein Screen' — er ist DAS zentrale Werkzeug für Resource Manager. Hier seht ihr mehrere Projekte UND mehrere Ressourcen gleichzeitig, ändert Allokationen, bestätigt Resource Requests, macht Ersetzungen — alles in einer Oberfläche."</span>
-        <span class="t-en">"The BPA Flatgrid is not 'just one screen among many' — it is THE central workspace for Resource Managers. Here you can see multiple projects AND multiple resources at the same time, change allocations, approve resource requests, do replacements — all in one interface. Nothing else saves so much time."</span>
-      </div>
-    </div>
-    <div class="box box-click">
-      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de">Kachel <span class="click-path">Bulk Project Allocation Flatgrid</span> auf der Homepage klicken</span><span class="t-en">Click tile <span class="click-path">Bulk Project Allocation Flatgrid</span> on the homepage</span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de">Setup-Screen — alles ist leer — das ist Absicht</span><span class="t-en">Setup screen — everything is empty — this is intentional</span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de"><span class="click-path">Date Range Picker</span> öffnen (Kalender-Icon)</span><span class="t-en">Open the <span class="click-path">Date Range Picker</span> (calendar icon)</span></div></li>
-        </ul>
+        <span class="t-de">„Bevor wir in die Technik einsteigen, lasst uns verstehen, was ein Team Resource eigentlich ist. Es ist nicht einfach ‚eine Gruppe von Leuten' — es ist eine planbare Einheit mit definierten Kapazitäten."</span>
+        <span class="t-en">"Before we dive into the technical side, let's understand what a Team Resource actually is. It's not just 'a group of people' — it's an assignable unit with defined capacities."</span>
       </div>
     </div>
     <div class="box box-say">
       <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
       <div class="box-body">
         <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
-          <li><span class="t-de">Bevor etwas im Grid erscheint, muss ich zwei Dinge setzen: Zeitraum und Modus. Das mag sich wie Setup-Overhead anfühlen — aber genau das macht den BPAFG so flexibel.</span><span class="t-en">Before anything appears in the grid, I have to set two things: time range and mode. This may feel like setup overhead — but it is exactly what makes the BPAFG so flexible.</span></li>
-          <li><span class="t-de">Der Zeitraum entscheidet, welche Projekte und Ressourcen überhaupt im Grid auftauchen.</span><span class="t-en">The time range decides which projects and resources show up in the grid at all.</span></li>
-          <li><span class="t-de">Dataset wählen: <strong>Allocation</strong> (bestätigt), <strong>Demand</strong> (offene Anfragen), oder <strong>Allocation and Demand</strong> (beides) — empfohlen für den RM-Alltag.</span><span class="t-en">Select dataset: <strong>Allocation</strong> (confirmed), <strong>Demand</strong> (open requests), or <strong>Allocation and Demand</strong> (both) — recommended for daily RM work.</span></li>
-        </ul>
-      </div>
-    </div>
-    <div class="box box-impact">
-      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
-      <div class="box-body">
-        <span class="t-de">„Der BPAFG ist euer Cockpit — hier laufen alle Fäden zusammen."</span>
-        <span class="t-en">"In my day-to-day I usually run with 'Allocation and Demand · Planned' — that way I see at a glance what is already committed and what is still open."</span>
-      </div>
-    </div>
-    <div class="transition">→ <span class="t-de">„Schauen wir uns die drei Modi an."</span><span class="t-en">"Now let's look at the three modes."</span></div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════
-     SCENE 2 – The 3 Modes
-══════════════════════════════════════════════ -->
-<div class="scene" id="bpafg-scene-02">
-  <div class="scene-header">
-    <div class="scene-num-badge"><div class="scene-num-big">02</div><div class="scene-num-label">Modes</div></div>
-    <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Block 2 · Die 3 Modi</span><span class="t-en">Block 2 · The 3 Modes</span></div>
-      <div class="scene-title"><span class="t-de">Default, Resource, Project</span><span class="t-en">Default, Resource, Project</span></div>
-      <div class="scene-subtitle"><span class="t-de">Der richtige Modus für die richtige Aufgabe</span><span class="t-en">The right mode for the right task</span></div>
-    </div>
-  </div>
-  <div class="scene-tags"><span class="tag tag-rm">Modes</span><span class="tag tag-teal">Resource Mode</span></div>
-  <div class="scene-body">
-    <div class="box box-story">
-      <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg</span><span class="t-en">Intro</span></div>
-      <div class="box-body">
-        <span class="t-de">„Jetzt wird es interessant. Tempus bietet drei Modi — und je nachdem, was ich tun will, ist ein anderer Modus der richtige."</span>
-        <span class="t-en">"Now it gets interesting. Tempus offers three modes — and depending on what I want to do, a different mode is the right one. This is not just 'nice to have' — it changes how the grid is built."</span>
-      </div>
-    </div>
-    <div class="box box-click">
-      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de">Auf Modus <span class="click-path">Resource</span> klicken</span><span class="t-en">Click on mode <span class="click-path">Resource</span></span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de">Links: Ressourcen-Fenster — hier wähle ich per Checkbox die Personen aus, die ich planen möchte</span><span class="t-en">On the left: resource window — here I pick via checkboxes the people I want to plan</span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de">Filter: <span class="click-path">belongs to any Resource Manager</span> → Giacomo</span><span class="t-en">Filter: <span class="click-path">belongs to any Resource Manager</span> → Giacomo</span></div></li>
-          <li><div class="click-step-num">4</div><div><span class="t-de"><span class="click-path">Group By</span> → Resource Name — damit habe ich mein ganzes Team im Blick</span><span class="t-en"><span class="click-path">Group By</span> → Resource Name — and just like that I have my whole team in view</span></div></li>
-        </ul>
-      </div>
-    </div>
-    <div class="box box-say">
-      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
-      <div class="box-body">
-        <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
-          <li><span class="t-de"><strong>Resource Mode</strong> ist DER Modus für 80% meiner Arbeit. Ich wähle ressourcenzentriert: Wen will ich anschauen? — und die zugehörigen Projekte werden automatisch angezeigt.</span><span class="t-en"><strong>Resource Mode</strong> is THE mode for 80% of my work. I pick resource-centric: who do I want to look at? — and the related projects are shown automatically.</span></li>
-          <li><span class="t-de"><strong>Group By</strong>: die 3-Level-Hierarchie — ich kann bis zu 3 Attribute kombinieren (Assignment, Resource, Project Attributes).</span><span class="t-en"><strong>Group By</strong>: the 3-level hierarchy — I can combine up to 3 attributes (assignment, resource and project attributes).</span></li>
-          <li><span class="t-de">Wenn Gruppierung aktiv ist, erscheinen zwei zusätzliche Optionen: <strong>Show Net Availability</strong> und <strong>Show Allocation %</strong></span><span class="t-en">When grouping is active, two additional options appear: <strong>Show Net Availability</strong> and <strong>Show Allocation %</strong></span></li>
+          <li><span class="t-de"><strong>Definition:</strong> Ein Team Resource besteht aus benannten Personen mit ihrem jeweiligen Anteil (Prozent oder Story Points) am Team.</span><span class="t-en"><strong>Definition:</strong> A Team Resource consists of named people with their respective contribution (percentage or story points) to the team.</span></li>
+          <li><span class="t-de"><strong>Zuweisung:</strong> Das Team kann als Einheit auf Projekte oder Epics zugewiesen werden — mit FTE, Stunden oder Kosten.</span><span class="t-en"><strong>Assignment:</strong> The team can be assigned as a unit to projects or epics — with FTE, hours, or costs.</span></li>
+          <li><span class="t-de"><strong>Flexibilität:</strong> Personen können sowohl Teil eines Teams sein UND individuell auf Projekte zugewiesen werden.</span><span class="t-en"><strong>Flexibility:</strong> People can be part of a team AND also be assigned individually to projects.</span></li>
+          <li><span class="t-de"><strong>Use Case:</strong> Ideal für Agile-Teams, Scrum-Teams, oder jede Arbeitsgruppe, die regelmässig zusammenarbeitet.</span><span class="t-en"><strong>Use Case:</strong> Ideal for Agile teams, Scrum teams, or any working group that regularly collaborates.</span></li>
         </ul>
       </div>
     </div>
     <div class="box box-context">
       <div class="box-header"><span class="box-icon">💡</span><span class="t-de">Hintergrund</span><span class="t-en">Background</span></div>
       <div class="box-body">
-        <span class="t-de">Beispiel: Group By „Primary Role" → Ich sehe alle Consultants gebündelt, alle Project Managers gebündelt. Wenn ich nach einem Resource-Attribut gruppiere, das die Ressource NICHT hat, erscheint sie in einer „uncategorized"-Gruppe.</span>
-        <span class="t-en">Example: Group by "Primary Role" → I see all consultants bundled, all project managers bundled. Important: If I group by a resource attribute that the resource does NOT have, it shows up in an "uncategorized" group.</span>
+        <span class="t-de">Beispiel: Ein „E-DOC Team" mit 5 Personen. Anna ist zu 100% im Team, Markus zu 50% (weil er auch andere Aufgaben hat). Wenn das Team einem Projekt zugewiesen wird, werden die Kapazitäten entsprechend verteilt.</span>
+        <span class="t-en">Example: An "E-DOC Team" with 5 people. Anna is 100% in the team, Markus is 50% (because he has other responsibilities). When the team is assigned to a project, capacities are distributed accordingly.</span>
       </div>
     </div>
-    <div class="transition">→ <span class="t-de">„Schauen wir uns die Grid-Features genauer an."</span><span class="t-en">"Let's look at the grid features in more detail."</span></div>
+    <div class="box box-impact">
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
+      <div class="box-body">
+        <span class="t-de">„Mit Team Resources plant ihr so, wie ihr tatsächlich arbeitet — als Team, nicht als lose Sammlung von Einzelpersonen."</span>
+        <span class="t-en">"With Team Resources, you plan the way you actually work — as a team, not as a loose collection of individuals."</span>
+      </div>
+    </div>
+    <div class="transition">→ <span class="t-de">„Lasst uns jetzt ein Team erstellen."</span><span class="t-en">"Now let's create a team."</span></div>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════════
-     SCENE 3 – View Management
+     SCENE 2 – Create a Team
 ══════════════════════════════════════════════ -->
-<div class="scene" id="bpafg-scene-03">
+<div class="scene" id="team-resources-scene-02">
   <div class="scene-header">
-    <div class="scene-num-badge"><div class="scene-num-big">03</div><div class="scene-num-label">Views</div></div>
+    <div class="scene-num-badge"><div class="scene-num-big">02</div><div class="scene-num-label">Create</div></div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Block 3 · View Management</span><span class="t-en">Block 3 · View Management in the BPAFG</span></div>
-      <div class="scene-title"><span class="t-de">Persönliche Views erstellen</span><span class="t-en">Create your own views</span></div>
-      <div class="scene-subtitle"><span class="t-de">Views sind persönlich — das ist ein Feature!</span><span class="t-en">Views are personal — that's a feature, not a bug!</span></div>
+      <div class="scene-act"><span class="t-de">Block 2 · Team erstellen</span><span class="t-en">Block 2 · Create a Team</span></div>
+      <div class="scene-title"><span class="t-de">Ein neues Team Resource anlegen</span><span class="t-en">Create a new Team Resource</span></div>
+      <div class="scene-subtitle"><span class="t-de">Teammitglieder und Anteile definieren</span><span class="t-en">Define team members and their contributions</span></div>
     </div>
   </div>
-  <div class="scene-tags"><span class="tag tag-rm">Views</span><span class="tag tag-green">Create</span></div>
+  <div class="scene-tags"><span class="tag tag-rm">Create</span><span class="tag tag-green">Members</span><span class="tag tag-orange">Percentage</span></div>
   <div class="scene-body">
     <div class="box box-story">
       <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg</span><span class="t-en">Intro</span></div>
       <div class="box-body">
-        <span class="t-de">„Wie in der Resource Request Demo: Views sind persönlich, nicht öffentlich. Public Views werden nur vom Admin konfiguriert. Was ihr hier baut, gehört euch — und ist EUER Werkzeug."</span>
-        <span class="t-en">"As in the Resource Request demo: views are personal, not public. Public Views are configured by the admin only. What you build here belongs to you — and is YOUR tool."</span>
+        <span class="t-de">„Giacomo möchte sein E-DOC Team als planbare Einheit anlegen. So kann Reto später das ganze Team für sein Projekt anfragen, statt jeden einzeln zu kontaktieren."</span>
+        <span class="t-en">"Giacomo wants to create his E-DOC Team as an assignable unit. This way, Reto can later request the whole team for his project instead of contacting each person individually."</span>
       </div>
     </div>
     <div class="box box-click">
       <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
       <div class="box-body">
         <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de"><span class="click-path">Create View</span> Button klicken</span><span class="t-en">Click <span class="click-path">Create View</span> button</span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de">Über Stift-Icon umbenennen — z.B. „My Team · Pending Requests" — mit grünem Haken bestätigen</span><span class="t-en">Rename via pencil icon — e.g. "My Team · Pending Requests" — confirm with green check mark</span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de"><strong>Favoriting</strong>: Stern-Icon → diese View öffnet sich automatisch beim Start des BPAFG</span><span class="t-en"><strong>Favoriting</strong>: star icon → this view opens automatically when I launch the BPAFG</span></div></li>
-          <li><div class="click-step-num">4</div><div><span class="t-de"><strong>Locking</strong>: Schloss-Icon → Layout-Änderungen werden NICHT mehr gespeichert</span><span class="t-en"><strong>Locking</strong>: lock icon → layout changes are NO LONGER saved. Protection against accidental view changes!</span></div></li>
+          <li><div class="click-step-num">1</div><div><span class="t-de">Navigiere zu <span class="click-path">Resource Management → Team Resources</span></span><span class="t-en">Navigate to <span class="click-path">Resource Management → Team Resources</span></span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Klicke auf <span class="click-path">+ Create Team</span></span><span class="t-en">Click <span class="click-path">+ Create Team</span></span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">Gib dem Team einen Namen: z.B. „E-DOC Team"</span><span class="t-en">Give the team a name: e.g. "E-DOC Team"</span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de">Füge Teammitglieder hinzu über <span class="click-path">Add Member</span></span><span class="t-en">Add team members via <span class="click-path">Add Member</span></span></div></li>
+          <li><div class="click-step-num">5</div><div><span class="t-de">Definiere für jedes Mitglied den <strong>Anteil</strong> (z.B. 100%, 50%, oder Story Points)</span><span class="t-en">Define each member's <strong>contribution</strong> (e.g. 100%, 50%, or story points)</span></div></li>
+          <li><div class="click-step-num">6</div><div><span class="t-de">Speichere das Team</span><span class="t-en">Save the team</span></div></li>
         </ul>
       </div>
     </div>
@@ -672,99 +634,56 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
       <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
       <div class="box-body">
         <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
-          <li><span class="t-de"><strong>Cloning</strong>: eine bestehende View duplizieren — perfekt als Startpunkt für eine ähnliche View</span><span class="t-en"><strong>Cloning</strong>: duplicate an existing view — perfect as a starting point for a similar view</span></li>
-          <li><span class="t-de"><strong>Reordering</strong>: über die drei Punkte neben dem Namen, drag-and-drop in die gewünschte Reihenfolge</span><span class="t-en"><strong>Reordering</strong>: via the three dots next to the name, drag-and-drop into the desired order</span></li>
-          <li><span class="t-de"><strong>Deleting</strong>: ⚠️ Kein Bestätigungs-Dialog — einmal weg, für immer weg</span><span class="t-en"><strong>Deleting</strong>: ⚠️ No confirmation dialog — once gone, gone for good</span></li>
+          <li><span class="t-de"><strong>Anteil in Prozent:</strong> Wie viel der Person-Kapazität dem Team gewidmet ist. 100% = Vollzeit im Team.</span><span class="t-en"><strong>Percentage contribution:</strong> How much of the person's capacity is dedicated to the team. 100% = full-time on the team.</span></li>
+          <li><span class="t-de"><strong>Story Points:</strong> Für Agile-Teams — definiert die Velocity-Contribution jedes Mitglieds.</span><span class="t-en"><strong>Story Points:</strong> For Agile teams — defines each member's velocity contribution.</span></li>
+          <li><span class="t-de"><strong>Zeitraum:</strong> Ein Mitglied kann für einen bestimmten Zeitraum dem Team zugeordnet sein.</span><span class="t-en"><strong>Duration:</strong> A member can be assigned to the team for a specific time period.</span></li>
+          <li><span class="t-de"><strong>Proportionale Zuweisung (9.2):</strong> Personen können proportional nach Prozent des Monats zugewiesen werden.</span><span class="t-en"><strong>Proportional assignment (9.2):</strong> People can be assigned proportionally by percentage of the month.</span></li>
         </ul>
       </div>
     </div>
     <div class="box box-tip">
       <div class="box-header"><span class="box-icon">💡</span><span class="t-de">Tipp</span><span class="t-en">Tip</span></div>
       <div class="box-body">
-        <span class="t-de">Baue dir 2–3 Standard-Views: „Daily Inbox" (Pending Requests), „Quarterly Planning" (Group by Project), „Allocation Check" (Heatmap + Net Availability).</span>
-        <span class="t-en">Build yourself 2–3 views: "Daily" (Pending Requests), "Quarterly Planning" (Group by Project), "Allocation Check" (Heatmap + Net Availability).</span>
+        <span class="t-de">Beginne mit den Kernmitgliedern (100%) und füge dann Teilzeit-Mitglieder hinzu. So behältst du den Überblick über die Gesamtkapazität des Teams.</span>
+        <span class="t-en">Start with core members (100%) and then add part-time members. This helps you keep track of the team's total capacity.</span>
       </div>
     </div>
-    <div class="transition">→ <span class="t-de">„Jetzt zu den Grid-Features."</span><span class="t-en">"Now let's look at the grid features."</span></div>
+    <div class="transition">→ <span class="t-de">„Jetzt weisen wir das Team einem Projekt zu."</span><span class="t-en">"Now let's assign the team to a project."</span></div>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════════
-     SCENE 4 – Grid Features
+     SCENE 3 – Assign Team to Project
 ══════════════════════════════════════════════ -->
-<div class="scene" id="bpafg-scene-04">
+<div class="scene" id="team-resources-scene-03">
   <div class="scene-header">
-    <div class="scene-num-badge"><div class="scene-num-big">04</div><div class="scene-num-label">Grid</div></div>
+    <div class="scene-num-badge"><div class="scene-num-big">03</div><div class="scene-num-label">Assign</div></div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Block 4 · Grid Features</span><span class="t-en">Block 4 · Grid Features — the Workbench</span></div>
-      <div class="scene-title"><span class="t-de">Insert Columns, Add Assignment, Filter</span><span class="t-en">Insert Columns, Add Assignment, Filter</span></div>
-      <div class="scene-subtitle"><span class="t-de">Die Werkbank des Resource Managers</span><span class="t-en">The RM's workbench</span></div>
+      <div class="scene-act"><span class="t-de">Block 3 · Team zuweisen</span><span class="t-en">Block 3 · Assign Team</span></div>
+      <div class="scene-title"><span class="t-de">Team einem Projekt zuweisen</span><span class="t-en">Assign Team to a Project</span></div>
+      <div class="scene-subtitle"><span class="t-de">FTE, Stunden, Kosten — alles auf einmal</span><span class="t-en">FTE, hours, costs — all at once</span></div>
     </div>
   </div>
-  <div class="scene-tags"><span class="tag tag-teal">Grid</span><span class="tag tag-blue">Columns</span><span class="tag tag-green">Add Assignment</span></div>
-  <div class="scene-body">
-    <div class="box box-click">
-      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de">Im <span class="click-path">Insert Columns</span> Dropdown „Assignment Total" aktivieren</span><span class="t-en">In the <span class="click-path">Insert Columns</span> dropdown, activate "Assignment Total"</span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de"><span class="click-path">Add Assignment</span> Button klicken</span><span class="t-en">Click <span class="click-path">Add Assignment</span> button</span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de">Projekt, Ressource, Task auswählen → „Add New Assignment" → neue Zeile im Grid</span><span class="t-en">Select project, resource, task → "Add New Assignment" → new row in the grid</span></div></li>
-          <li><div class="click-step-num">4</div><div><span class="t-de">Filter-Icon im Spalten-Header → Kriterium eingeben → Apply</span><span class="t-en">Filter icon in the column header → enter criterion → Apply</span></div></li>
-          <li><div class="click-step-num">5</div><div><span class="t-de">Sortierung: auf Header klicken — original, aufsteigend, absteigend</span><span class="t-en">Sorting: click on the header — original, ascending, descending</span></div></li>
-        </ul>
-      </div>
-    </div>
-    <div class="box box-say">
-      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
-      <div class="box-body">
-        <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
-          <li><span class="t-de"><strong>Assignment Total</strong>: zeigt die Zeilen-Summe pro Assignment — wie viel Aufwand insgesamt auf diesem Assignment liegt</span><span class="t-en"><strong>Assignment Total</strong>: shows the row total per assignment — how much effort in total sits on this assignment</span></li>
-          <li><span class="t-de"><strong>Drag &amp; Drop</strong>: Spalten neu ordnen (sehr nützlich vor dem CSV-Export)</span><span class="t-en"><strong>Drag &amp; Drop</strong>: reorder columns (very useful before the CSV export)</span></li>
-          <li><span class="t-de"><strong>Copy Row</strong>: über das Ellipsis links der Zeile → Copy Row → Daten werden in die Zwischenablage kopiert</span><span class="t-en"><strong>Copy Row</strong>: via the ellipsis on the left of the row → Copy Row → data is copied to the clipboard</span></li>
-        </ul>
-      </div>
-    </div>
-    <div class="box box-context">
-      <div class="box-header"><span class="box-icon">💡</span><span class="t-de">Hyperlink-Tipp</span><span class="t-en">Hyperlink tip</span></div>
-      <div class="box-body">
-        <span class="t-de">Über Projekt- oder Ressourcennamen hovern → kleines Pop-up. Klick auf Pop-up = neuer Tab. Direkter Klick auf Link = gleicher Tab. Das ist Gold beim Multitasking! Klick auf das kleine blaue Dreieck führt zu den Attributen.</span>
-        <span class="t-en">Hover over project or resource names → small pop-up. Click on the pop-up = new tab. Click directly on the link = same tab. This is gold when multitasking! Clicking on the small blue triangle takes you to the attributes.</span>
-      </div>
-    </div>
-    <div class="transition">→ <span class="t-de">„Jetzt zu den Optionen — den geheimen Waffen."</span><span class="t-en">"Now let's look at the options — the secret weapons."</span></div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════
-     SCENE 5 – Options Deep Dive
-══════════════════════════════════════════════ -->
-<div class="scene" id="bpafg-scene-05">
-  <div class="scene-header">
-    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--rm),var(--teal))"><div class="scene-num-big">05</div><div class="scene-num-label">Options</div></div>
-    <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Block 5 · Options Deep Dive</span><span class="t-en">Block 5 · Options Deep Dive — the Secret Weapons</span></div>
-      <div class="scene-title"><span class="t-de">Heatmaps, Show Total Row, Net Availability</span><span class="t-en">Heatmaps, Show Total Row, Net Availability</span></div>
-      <div class="scene-subtitle"><span class="t-de">90% aller RMs unterschätzen diese Optionen</span><span class="t-en">90% of all RMs underestimate these options</span></div>
-    </div>
-  </div>
-  <div class="scene-tags"><span class="tag tag-purple">Options</span><span class="tag tag-teal">Heatmap</span><span class="tag tag-rm">Net Availability</span></div>
+  <div class="scene-tags"><span class="tag tag-teal">Assign</span><span class="tag tag-purple">FTE</span><span class="tag tag-orange">Costs</span></div>
   <div class="scene-body">
     <div class="box box-story">
       <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg</span><span class="t-en">Intro</span></div>
       <div class="box-body">
-        <span class="t-de">„Jetzt kommen wir zu den Optionen — und ich sage euch: Das ist der Bereich, den 90% aller RMs unterschätzen. Es klingt nach ‚Haken an, Haken aus' — aber jede einzelne Option spart euch Klicks, Verwirrung und Fehler."</span>
-        <span class="t-en">"Now we come to the options — and I'll tell you: this is the area that 90% of all RMs underestimate. It sounds like 'check on, check off' — but every single option saves you clicks, confusion and mistakes."</span>
+        <span class="t-de">„Reto braucht das E-DOC Team für die nächsten 3 Monate auf seinem UKG-Implementierungsprojekt. Statt 5 einzelne Anfragen zu stellen, weist er das ganze Team zu."</span>
+        <span class="t-en">"Reto needs the E-DOC Team for the next 3 months on his UKG Implementation project. Instead of making 5 individual requests, he assigns the whole team."</span>
       </div>
     </div>
     <div class="box box-click">
       <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
       <div class="box-body">
         <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de"><span class="click-path">Options</span> Dropdown öffnen</span><span class="t-en">Open the <span class="click-path">Options</span> dropdown</span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de"><strong>Overlay Heatmap</strong> → Resource, Resource Request, oder Non Zero</span><span class="t-en"><strong>Overlay Heatmap</strong> → Resource, Resource Request, or Non Zero</span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de"><strong>Show Total Row</strong> aktivieren</span><span class="t-en">Activate <strong>Show Total Row</strong></span></div></li>
-          <li><div class="click-step-num">4</div><div><span class="t-de"><strong>Show Selection Calculations</strong> aktivieren</span><span class="t-en">Activate <strong>Show Selection Calculations</strong></span></div></li>
+          <li><div class="click-step-num">1</div><div><span class="t-de">Öffne das Projekt (z.B. UKG Implementation)</span><span class="t-en">Open the project (e.g. UKG Implementation)</span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Gehe zum <span class="click-path">Assignments</span> Tab</span><span class="t-en">Go to the <span class="click-path">Assignments</span> tab</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">Klicke auf <span class="click-path">+ Add Assignment</span></span><span class="t-en">Click <span class="click-path">+ Add Assignment</span></span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de">Wähle <strong>Team</strong> statt „Resource"</span><span class="t-en">Select <strong>Team</strong> instead of "Resource"</span></div></li>
+          <li><div class="click-step-num">5</div><div><span class="t-de">Wähle das „E-DOC Team" aus der Liste</span><span class="t-en">Select "E-DOC Team" from the list</span></div></li>
+          <li><div class="click-step-num">6</div><div><span class="t-de">Definiere FTE, Stunden oder Kosten für den Zeitraum</span><span class="t-en">Define FTE, hours, or costs for the period</span></div></li>
+          <li><div class="click-step-num">7</div><div><span class="t-de">Speichere die Zuweisung</span><span class="t-en">Save the assignment</span></div></li>
         </ul>
       </div>
     </div>
@@ -772,52 +691,55 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
       <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
       <div class="box-body">
         <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
-          <li><span class="t-de"><strong>Heatmap Resource</strong>: Farbcodierung basierend auf Allocation-Prozentsatz vs. Kapazität</span><span class="t-en"><strong>Heatmap Resource</strong>: colouring based on allocation percentage vs. capacity. Thresholds = General Settings → BPA Heatmap</span></li>
-          <li><span class="t-de"><strong>Heatmap Resource Request</strong>: Farbcodierung basierend auf RR-Status (Pending, Approved, Partially Approved, Rejected)</span><span class="t-en"><strong>Heatmap Resource Request</strong>: colouring based on RR status (Pending, Approved, Partially Approved, Rejected)</span></li>
-          <li><span class="t-de"><strong>Non Zero</strong>: markiert alle Nicht-Null-Werte in Blau — schnell sehen, wo überhaupt Allokation ist</span><span class="t-en"><strong>Non Zero</strong>: marks all non-zero values in blue. Quickly see where there is any allocation at all</span></li>
-          <li><span class="t-de"><strong>Show Selection Calculations</strong>: Mehrere Zellen auswählen → unten erscheint Average, Sum, Min, Max, Count. Wie in Excel!</span><span class="t-en"><strong>Show Selection Calculations</strong>: select multiple cells → at the bottom you see Average, Sum, Min, Max, Count. Just like in Excel!</span></li>
+          <li><span class="t-de"><strong>Einheiten:</strong> Teams können in FTE, Stunden oder Kosten zugewiesen werden — genau wie einzelne Ressourcen.</span><span class="t-en"><strong>Units:</strong> Teams can be assigned in FTE, hours, or costs — just like individual resources.</span></li>
+          <li><span class="t-de"><strong>Automatische Kostenberechnung:</strong> Tempus kann die Kosten automatisch basierend auf den Teammitgliedern und ihren Anteilen berechnen.</span><span class="t-en"><strong>Automatic cost calculation:</strong> Tempus can automatically calculate costs based on team members and their percentages.</span></li>
+          <li><span class="t-de"><strong>Override-Raten:</strong> Alternativ können manuelle Raten für das Team gesetzt werden.</span><span class="t-en"><strong>Override rates:</strong> Alternatively, manual rates can be set for the team.</span></li>
+          <li><span class="t-de"><strong>Multi-Assignment (9.2):</strong> Ein Team kann mehrfach auf dasselbe Projekt zugewiesen werden — z.B. für verschiedene Rollen oder Cost Center.</span><span class="t-en"><strong>Multi-Assignment (9.2):</strong> A team can be assigned multiple times to the same project — e.g. for different roles or cost centers.</span></li>
         </ul>
       </div>
     </div>
     <div class="box box-context">
-      <div class="box-header"><span class="box-icon">💡</span><span class="t-de">Graue Zellen</span><span class="t-en">Grey cells</span></div>
+      <div class="box-header"><span class="box-icon">💡</span><span class="t-de">Kosten-Beispiel</span><span class="t-en">Cost example</span></div>
       <div class="box-body">
-        <span class="t-de">Graue Zellen bedeuten meistens „keine Kapazität in diesem Zeitraum" oder „Projektperiode überschritten". Eingabe ist trotzdem möglich — aber es ist ein Warnzeichen!</span>
-        <span class="t-en">Grey cells usually mean "no capacity in that period" or "project period exceeded". Input is still possible (in the dominant unit) — but it is a warning sign!</span>
+        <span class="t-de">Wenn Anna (100%, CHF 150/h) und Markus (50%, CHF 120/h) im Team sind, berechnet Tempus die gewichteten Durchschnittskosten pro Stunde basierend auf ihren Anteilen.</span>
+        <span class="t-en">If Anna (100%, CHF 150/h) and Markus (50%, CHF 120/h) are on the team, Tempus calculates the weighted average cost per hour based on their percentages.</span>
       </div>
     </div>
-    <div class="transition">→ <span class="t-de">„Jetzt zu Resource Requests direkt im Grid."</span><span class="t-en">"Now let's look at handling resource requests directly in the grid."</span></div>
+    <div class="transition">→ <span class="t-de">„Schauen wir uns die Verfügbarkeit im BPAFG an."</span><span class="t-en">"Let's look at availability in the BPAFG."</span></div>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════════
-     SCENE 6 – Resource Requests in the Grid
+     SCENE 4 – Team Availability in BPAFG
 ══════════════════════════════════════════════ -->
-<div class="scene" id="bpafg-scene-06">
+<div class="scene" id="team-resources-scene-04">
   <div class="scene-header">
-    <div class="scene-num-badge"><div class="scene-num-big">06</div><div class="scene-num-label">RR</div></div>
+    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--rm),var(--teal))"><div class="scene-num-big">04</div><div class="scene-num-label">BPAFG</div></div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Block 6 · Resource Requests im Grid</span><span class="t-en">Block 6 · Handle Resource Requests directly in the Grid</span></div>
-      <div class="scene-title"><span class="t-de">Approve, Reject, Open Resource Request</span><span class="t-en">Approve, Reject, Open Resource Request</span></div>
-      <div class="scene-subtitle"><span class="t-de">Hier verschmelzen Resource Request Review und BPAFG</span><span class="t-en">Here the Resource Request Review and the BPAFG merge</span></div>
+      <div class="scene-act"><span class="t-de">Block 4 · BPAFG Integration</span><span class="t-en">Block 4 · BPAFG Integration</span></div>
+      <div class="scene-title"><span class="t-de">Team-Verfügbarkeit im Bulk Grid</span><span class="t-en">Team Availability in the Bulk Grid</span></div>
+      <div class="scene-subtitle"><span class="t-de">Das grosse Bild sehen</span><span class="t-en">See the big picture</span></div>
     </div>
   </div>
-  <div class="scene-tags"><span class="tag tag-rm">Resource Requests</span><span class="tag tag-orange">Actions</span></div>
+  <div class="scene-tags"><span class="tag tag-rm">BPAFG</span><span class="tag tag-teal">Availability</span><span class="tag tag-purple">Heatmap</span></div>
   <div class="scene-body">
     <div class="box box-story">
       <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg</span><span class="t-en">Intro</span></div>
       <div class="box-body">
-        <span class="t-de">„Hier verschmelzen Resource Request Review und BPAFG. Ihr müsst NICHT immer in die Resource Request Review wechseln — die wichtigsten Aktionen könnt ihr direkt vom Grid aus machen."</span>
-        <span class="t-en">"Here the Resource Request Review and the BPAFG merge. You do NOT always have to switch to the Resource Request Review — the most important actions can be done directly from the grid."</span>
+        <span class="t-de">„Der BPAFG zeigt nicht nur einzelne Ressourcen — er kann auch Teams als planbare Einheiten darstellen. So sieht Giacomo auf einen Blick, wie ausgelastet sein Team ist."</span>
+        <span class="t-en">"The BPAFG doesn't just show individual resources — it can also display teams as assignable units. This way, Giacomo can see at a glance how utilized his team is."</span>
       </div>
     </div>
     <div class="box box-click">
       <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
       <div class="box-body">
         <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de"><span class="click-path">Options → Overlay Heatmap → Resource Request</span></span><span class="t-en"><span class="click-path">Options → Overlay Heatmap → Resource Request</span></span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de">Auf eine Pending-Zelle klicken (orange/blau je nach Heatmap)</span><span class="t-en">Click on a pending cell (orange/blue depending on the heatmap)</span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de">Drei Optionen erscheinen: <strong>Approve Resource Request</strong>, <strong>Reject Resource Request</strong>, <strong>Open Resource Request</strong></span><span class="t-en">Three options appear: <strong>Approve Resource Request</strong>, <strong>Reject Resource Request</strong>, <strong>Open Resource Request</strong></span></div></li>
+          <li><div class="click-step-num">1</div><div><span class="t-de">Öffne den <span class="click-path">Bulk Project Allocation Flatgrid</span></span><span class="t-en">Open the <span class="click-path">Bulk Project Allocation Flatgrid</span></span></div></li>
+          <li><div class="click-step-num">2</div><div><span class="t-de">Setze den Zeitraum und Dataset</span><span class="t-en">Set the time range and dataset</span></div></li>
+          <li><div class="click-step-num">3</div><div><span class="t-de">Wähle den Modus <span class="click-path">Resource</span></span><span class="t-en">Select mode <span class="click-path">Resource</span></span></div></li>
+          <li><div class="click-step-num">4</div><div><span class="t-de">Filtere nach <strong>Resource Type = Team</strong></span><span class="t-en">Filter by <strong>Resource Type = Team</strong></span></div></li>
+          <li><div class="click-step-num">5</div><div><span class="t-de">Aktiviere <span class="click-path">Heatmap → Resource</span></span><span class="t-en">Enable <span class="click-path">Heatmap → Resource</span></span></div></li>
+          <li><div class="click-step-num">6</div><div><span class="t-de">Aktiviere <span class="click-path">Show Net Availability</span></span><span class="t-en">Enable <span class="click-path">Show Net Availability</span></span></div></li>
         </ul>
       </div>
     </div>
@@ -825,189 +747,102 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
       <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
       <div class="box-body">
         <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
-          <li><span class="t-de"><strong>Approve</strong>: bestätigt die GESAMTE Pending-Anfrage, auch wenn sie mehrere Ressourcen umfasst</span><span class="t-en"><strong>Approve Resource Request</strong>: confirms the ENTIRE pending request, even if it covers multiple resources</span></li>
-          <li><span class="t-de"><strong>Reject</strong>: lehnt die GESAMTE Pending-Anfrage ab — Vorsicht: alles oder nichts!</span><span class="t-en"><strong>Reject Resource Request</strong>: rejects the ENTIRE pending request — careful: all or nothing!</span></li>
-          <li><span class="t-de"><strong>Open Resource Request</strong>: springt zum RR-Detail-Screen in einem neuen Tab — dort kann ich Partial Approval machen, delegieren, ersetzen</span><span class="t-en"><strong>Open Resource Request</strong>: jumps to the RR detail screen in a new tab — there I can do partial approval, delegate, replace</span></li>
-        </ul>
-      </div>
-    </div>
-    <div class="box box-tip">
-      <div class="box-header"><span class="box-icon">💡</span><span class="t-de">Faustregel</span><span class="t-en">Rule of thumb</span></div>
-      <div class="box-body">
-        <span class="t-de">Approve/Reject direkt im Grid = der schnelle Fall. „Open Resource Request" = der komplexe Fall, wo ich Partial Approval brauche oder die Recommendation Engine sehen will.</span>
-        <span class="t-en">Approve/Reject directly in the grid = the fast case. "Open Resource Request" = the complex case where I need partial approval or want to see the recommendation engine.</span>
-      </div>
-    </div>
-    <div class="transition">→ <span class="t-de">„Jetzt zu Resource Replace Advanced."</span><span class="t-en">"Now let's look at Resource Replace Advanced."</span></div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════
-     SCENE 7 – Resource Replace & Advanced
-══════════════════════════════════════════════ -->
-<div class="scene" id="bpafg-scene-07">
-  <div class="scene-header">
-    <div class="scene-num-badge" style="background:linear-gradient(135deg,#0d5c7a,var(--teal))"><div class="scene-num-big">07</div><div class="scene-num-label">Replace</div></div>
-    <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Block 7 · Resource Replace</span><span class="t-en">Block 7 · Resource Replace &amp; Resource Replace Advanced</span></div>
-      <div class="scene-title"><span class="t-de">Standard vs. Advanced</span><span class="t-en">Standard vs. Advanced</span></div>
-      <div class="scene-subtitle"><span class="t-de">Ressourcen ersetzen — einfach und mächtig</span><span class="t-en">Replace resources — simple and powerful</span></div>
-    </div>
-  </div>
-  <div class="scene-tags"><span class="tag tag-teal">Replace</span><span class="tag tag-rm">Advanced</span><span class="tag tag-purple">Skill Match</span></div>
-  <div class="scene-body">
-    <div class="box box-click">
-      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad: Standard Replace</span><span class="t-en">Click path: Standard Replace</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de">Auf Ellipsis einer genehmigten Assignment-Zeile → <span class="click-path">Resource Replace</span></span><span class="t-en">On the ellipsis of an approved assignment row → <span class="click-path">Resource Replace</span></span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de">Modales Fenster mit Resource Pool. Suche + Filter (basierend auf Resource-Attributen)</span><span class="t-en">Modal window with the resource pool. Search + filter (based on resource attributes)</span></div></li>
-        </ul>
-      </div>
-    </div>
-    <div class="box box-say">
-      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Standard Replace</span><span class="t-en">Standard Replace</span></div>
-      <div class="box-body">
-        <span class="t-de">Voller Ersatz — die Original-Ressource wird komplett durch eine andere ersetzt. Funktioniert NUR, wenn KEINE Pending Resource Requests an das Assignment angehängt sind.</span>
-        <span class="t-en">Full replacement — the original resource is completely replaced by another. Works ONLY if NO pending resource requests are attached to the assignment.</span>
-      </div>
-    </div>
-    <div class="box box-click">
-      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad: Replace Advanced</span><span class="t-en">Click path: Replace Advanced</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de">Auf Ellipsis → <span class="click-path">Resource Replace Advanced</span></span><span class="t-en">On the ellipsis → <span class="click-path">Resource Replace Advanced</span></span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de">Im Replace Advanced Screen: Net Availability aller Kandidaten, Skill Match Score, Heatmap-View</span><span class="t-en">In the Replace Advanced screen: Net Availability of all candidates, Skill Match Score, Heatmap view</span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de">MEHRERE Ersatz-Ressourcen auswählen und die Allokation auf sie verteilen</span><span class="t-en">Choose MULTIPLE replacement resources and redistribute the allocation across them</span></div></li>
+          <li><span class="t-de"><strong>Team-Zeilen:</strong> Teams erscheinen als eigene Zeilen im Grid — wie Named Resources.</span><span class="t-en"><strong>Team rows:</strong> Teams appear as their own rows in the grid — like Named Resources.</span></li>
+          <li><span class="t-de"><strong>Heatmap:</strong> Zeigt die Auslastung des Teams basierend auf allen Zuweisungen.</span><span class="t-en"><strong>Heatmap:</strong> Shows team utilization based on all assignments.</span></li>
+          <li><span class="t-de"><strong>Net Availability:</strong> Zeigt die verbleibende Team-Kapazität für neue Zuweisungen.</span><span class="t-en"><strong>Net Availability:</strong> Shows remaining team capacity for new assignments.</span></li>
+          <li><span class="t-de"><strong>Drill-Down:</strong> Man kann ins Team klicken, um die einzelnen Mitglieder und ihre Auslastung zu sehen.</span><span class="t-en"><strong>Drill-Down:</strong> You can click into the team to see individual members and their utilization.</span></li>
         </ul>
       </div>
     </div>
     <div class="box box-impact">
       <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
       <div class="box-body">
-        <span class="t-de">„In Resource Replace Advanced — je nach Berechtigungen — kann der gesamte Resource Pool sichtbar sein, nicht nur ‚meine' Ressourcen. Perfekt, wenn ich über mein Team hinausschauen muss."</span>
-        <span class="t-en">"In Resource Replace Advanced — depending on permissions — the entire resource pool can be visible, not just 'my' resources. Perfect when I need to look beyond my team."</span>
+        <span class="t-de">„Das BPAFG gibt euch das komplette Bild — Teams UND Einzelpersonen, alles in einer Ansicht."</span>
+        <span class="t-en">"The BPAFG gives you the complete picture — teams AND individuals, all in one view."</span>
       </div>
     </div>
-    <div class="transition">→ <span class="t-de">„Zum Schluss: Save vs. Release."</span><span class="t-en">"Finally: Save vs. Release and concurrent usage."</span></div>
+    <div class="transition">→ <span class="t-de">„Zum Schluss: Best Practices."</span><span class="t-en">"Finally: Best Practices."</span></div>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════════
-     SCENE 8 – Save vs. Release
+     SCENE 5 – Best Practices
 ══════════════════════════════════════════════ -->
-<div class="scene" id="bpafg-scene-08">
+<div class="scene" id="team-resources-scene-05">
   <div class="scene-header">
-    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--rm),#059669)"><div class="scene-num-big">08</div><div class="scene-num-label">Save</div></div>
+    <div class="scene-num-badge" style="background:linear-gradient(135deg,#0d5c7a,var(--teal))"><div class="scene-num-big">05</div><div class="scene-num-label">Tips</div></div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Block 8 · Save vs. Release</span><span class="t-en">Block 8 · Save vs. Release + Concurrent Usage</span></div>
-      <div class="scene-title"><span class="t-de">Concurrent Usage — sicheres Multi-User-Editing</span><span class="t-en">Concurrent Usage — safe multi-user editing</span></div>
-      <div class="scene-subtitle"><span class="t-de">Mehrere RMs können gleichzeitig arbeiten</span><span class="t-en">Multiple RMs can work at the same time</span></div>
+      <div class="scene-act"><span class="t-de">Block 5 · Best Practices</span><span class="t-en">Block 5 · Best Practices</span></div>
+      <div class="scene-title"><span class="t-de">Wann Team vs. Named Resource?</span><span class="t-en">When Team vs. Named Resource?</span></div>
+      <div class="scene-subtitle"><span class="t-de">Praktische Entscheidungshilfen</span><span class="t-en">Practical decision guides</span></div>
     </div>
   </div>
-  <div class="scene-tags"><span class="tag tag-rm">Save</span><span class="tag tag-red">Release</span><span class="tag tag-blue">Concurrent</span></div>
+  <div class="scene-tags"><span class="tag tag-green">Best Practices</span><span class="tag tag-blue">Decision</span></div>
   <div class="scene-body">
-    <div class="box box-story">
-      <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg</span><span class="t-en">Intro</span></div>
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Wann Team Resource?</span><span class="t-en">When to use Team Resource?</span></div>
       <div class="box-body">
-        <span class="t-de">„Mehrere RMs können gleichzeitig im BPAFG arbeiten. Tempus zeigt in Echtzeit, welche Assignments gerade von wem ‚ausgecheckt' sind."</span>
-        <span class="t-en">"Multiple RMs can work in the BPAFG at the same time. Tempus shows in real time which assignments are currently 'checked out' by whom."</span>
-      </div>
-    </div>
-    <div class="box box-click">
-      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de">Grüner <span class="click-path">Save</span> Button → Persistiert ALLE meine Änderungen auf einmal. Erst dann sind sie für andere sichtbar.</span><span class="t-en">Green <span class="click-path">Save</span> button → Persists ALL my changes at once. Only then are they visible to others.</span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de">Roter <span class="click-path">Release</span> Button → Verwirft ALLE meine Änderungen seit dem letzten Speichern. Wichtiger Notausgang!</span><span class="t-en">Red <span class="click-path">Release</span> button → Discards ALL my changes since the last save. Important emergency exit!</span></div></li>
+        <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
+          <li><span class="t-de">Das Team arbeitet regelmässig zusammen (z.B. Scrum-Team, Support-Team)</span><span class="t-en">The team works together regularly (e.g. Scrum team, support team)</span></li>
+          <li><span class="t-de">Die Zusammensetzung ist relativ stabil</span><span class="t-en">The composition is relatively stable</span></li>
+          <li><span class="t-de">Projekte fragen typischerweise „das Team" an, nicht einzelne Personen</span><span class="t-en">Projects typically request "the team", not individual people</span></li>
+          <li><span class="t-de">Agile-Planung mit Story Points und Velocity</span><span class="t-en">Agile planning with story points and velocity</span></li>
         </ul>
       </div>
     </div>
     <div class="box box-say">
-      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Wann Named Resource?</span><span class="t-en">When to use Named Resource?</span></div>
       <div class="box-body">
         <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
-          <li><span class="t-de"><strong>Locked row</strong> = nicht editierbar für andere User. Visualisiert mit Schloss-Icon.</span><span class="t-en"><strong>Locked row</strong> = not editable for other users. Visualised with a lock icon.</span></li>
-          <li><span class="t-de">Wenn ein Assignment im BPAFG gelockt ist, ist es auch im Single Project Allocation Screen nicht editierbar.</span><span class="t-en">When an assignment is locked in the BPAFG, it is also not editable in the Single Project Allocation screen.</span></li>
+          <li><span class="t-de">Spezifische Skills werden benötigt (nicht austauschbar)</span><span class="t-en">Specific skills are needed (not interchangeable)</span></li>
+          <li><span class="t-de">Die Person arbeitet auf mehreren, wechselnden Projekten</span><span class="t-en">The person works on multiple, changing projects</span></li>
+          <li><span class="t-de">Individuelle Verfügbarkeit ist kritisch</span><span class="t-en">Individual availability is critical</span></li>
+          <li><span class="t-de">Waterfall-Planung mit detaillierter Ressourcenzuweisung</span><span class="t-en">Waterfall planning with detailed resource assignment</span></li>
         </ul>
       </div>
     </div>
-    <div class="box box-warn">
-      <div class="box-header"><span class="box-icon">⚠️</span><span class="t-de">Wichtig</span><span class="t-en">Important</span></div>
+    <div class="box box-context">
+      <div class="box-header"><span class="box-icon">💡</span><span class="t-de">Hybrid-Ansatz</span><span class="t-en">Hybrid approach</span></div>
       <div class="box-body">
-        <span class="t-de">NIEMALS wegnavigieren ohne entweder zu speichern oder freizugeben. Sonst bleiben die Assignments für andere gesperrt!</span>
-        <span class="t-en">NEVER navigate away without either saving or releasing. Otherwise the assignments stay locked for others!</span>
+        <span class="t-de">In der Realität ist oft beides nötig. Eine Person kann Teil eines Teams sein UND individuell auf andere Projekte zugewiesen werden. Tempus unterstützt diesen Hybrid-Ansatz vollständig.</span>
+        <span class="t-en">In reality, both are often needed. A person can be part of a team AND be assigned individually to other projects. Tempus fully supports this hybrid approach.</span>
+      </div>
+    </div>
+    <div class="box box-tip">
+      <div class="box-header"><span class="box-icon">✅</span><span class="t-de">Multi-Assignment (Version 9.2)</span><span class="t-en">Multi-Assignment (Version 9.2)</span></div>
+      <div class="box-body">
+        <span class="t-de">Seit Version 9.2 kann dieselbe Ressource (Named, Demand Planning oder Team) mehrfach auf einem Projekt zugewiesen werden — mit verschiedenen Rollen oder Cost Centern. Das macht die Planung noch flexibler.</span>
+        <span class="t-en">Since Version 9.2, the same resource (Named, Demand Planning, or Team) can be assigned multiple times to one project — with different roles or cost centers. This makes planning even more flexible.</span>
       </div>
     </div>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════════
-     CLOSING & RECAP
+     CLOSING & Q&A
 ══════════════════════════════════════════════ -->
 <div class="closing">
-  <h2><span class="t-de">Wrap-up &amp; Recap</span><span class="t-en">Wrap-up &amp; Recap</span></h2>
+  <h2><span class="t-de">Zusammenfassung — Team Resources</span><span class="t-en">Summary — Team Resources</span></h2>
   <div class="closing-grid">
-    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">⚙️</div><div><span class="t-de">Setup: Zeitraum + Dataset + Modus entscheiden, was im Grid landet</span><span class="t-en">Setup: date range + dataset + mode decide what lands in the grid</span></div></div>
-    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">🔄</div><div><span class="t-de">3 Modi: Resource (Standard), Project (projekt-orientiert), Default (volle Kontrolle)</span><span class="t-en">3 modes: Resource (default), Project (project-oriented), Default (full control)</span></div></div>
-    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">👁️</div><div><span class="t-de">View Management: persönliche Views erstellen, klonen, locken, sortieren</span><span class="t-en">View Management: create, clone, lock, sort personal views</span></div></div>
-    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">🔧</div><div><span class="t-de">Grid Features: Insert Columns, Group By (bis 3 Attribute), Add Assignment, Filter &amp; Sort</span><span class="t-en">Grid features: Insert Columns, Group By (up to 3 attributes), Add Assignment, filter &amp; sort</span></div></div>
-    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">🎨</div><div><span class="t-de">Options: Show Total Demand Planning, Show Unallocated Percent, Heatmaps — die Tools, die Stunden sparen</span><span class="t-en">Options: Show Total Demand Planning, Show Unallocated Percent, Capacity OOB, heatmaps — the tools that save you hours</span></div></div>
-    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">✅</div><div><span class="t-de">RR-Aktionen: Approve, Reject, Open Resource Request — direkt vom Grid</span><span class="t-en">RR actions: Approve, Reject, Open Resource Request — directly from the grid</span></div></div>
-    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">🔄</div><div><span class="t-de">Resource Replace Advanced: voller Überblick über Net Availability, Skill Match und Heatmap</span><span class="t-en">Resource Replace Advanced: full overview of Net Availability, Skill Match and Heatmap</span></div></div>
-    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">💾</div><div><span class="t-de">Save vs. Release &amp; Concurrent Usage: sicheres Multi-User-Editing</span><span class="t-en">Save vs. Release &amp; concurrent usage: safe multi-user editing</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">👥</div><div><span class="t-de">Teams als planbare Einheit — nicht nur eine Gruppe von Leuten</span><span class="t-en">Teams as assignable units — not just a group of people</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">📊</div><div><span class="t-de">Definierte Anteile (% oder Story Points) pro Teammitglied</span><span class="t-en">Defined contributions (% or story points) per team member</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">💰</div><div><span class="t-de">Automatische Kostenberechnung basierend auf Teammitgliedern</span><span class="t-en">Automatic cost calculation based on team members</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">🔍</div><div><span class="t-de">Volle Sichtbarkeit im BPAFG — Heatmap + Net Availability</span><span class="t-en">Full visibility in BPAFG — heatmap + net availability</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">🔄</div><div><span class="t-de">Hybrid-Ansatz: Team + individuelle Zuweisungen möglich</span><span class="t-en">Hybrid approach: Team + individual assignments possible</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">✨</div><div><span class="t-de">Multi-Assignment (9.2): Gleiche Ressource, verschiedene Rollen</span><span class="t-en">Multi-Assignment (9.2): Same resource, different roles</span></div></div>
   </div>
   <div class="closing-final">
-    <span class="t-de">„Der BPA Flatgrid ist wie ein gutes Cockpit: Am Anfang fühlt sich jeder Indikator verwirrend an. Aber wenn ihr ihn 10 Minuten am Tag nutzt, wird er euer wichtigstes Werkzeug. Versprochen."</span>
-    <span class="t-en">"The BPA Flatgrid is like a good cockpit: at first every indicator feels confusing. But if you use it for 10 minutes every day, it will become your most important tool. Promised."</span>
-  </div>
-</div>
-
-<!-- HOMEWORK -->
-<div class="qr-section">
-  <div class="qr-header">📝 <span class="t-de">Hausaufgabe bis nächste Woche</span><span class="t-en">Homework until next week</span></div>
-  <div class="qr-body">
-    <ul style="list-style:disc;padding-left:20px;font-size:14px;line-height:2;">
-      <li><span class="t-de">Baue dir 2 eigene Views: „Pending Inbox" und „Quarterly Planning"</span><span class="t-en">Build yourself 2 own views: "Pending Inbox" and "Quarterly Planning"</span></li>
-      <li><span class="t-de">Aktiviere in deiner Daily View: Show Total Demand Planning + Show Unallocated Percent</span><span class="t-en">Activate in your daily view: Show Total Demand Planning + Show Unallocated Percent</span></li>
-      <li><span class="t-de">Mache EINE Resource Replace Advanced — auch wenn es nur ein Test ist. Bekomme ein Gefühl für das Tool.</span><span class="t-en">Do ONE Resource Replace Advanced — even if it is only a test. Get a feel for the tool.</span></li>
-    </ul>
-  </div>
-</div>
-
-<!-- TIPS -->
-<div class="qr-section">
-  <div class="qr-header">💡 <span class="t-de">Tips von Aayushi &amp; Marc</span><span class="t-en">Tips from Aayushi &amp; Marc</span></div>
-  <div class="qr-body">
-    <div class="tip-box">
-      <div class="tip-box-header"><span class="t-de">💡 Tipp (Aayushi)</span><span class="t-en">💡 Tip (Aayushi)</span></div>
-      <p><span class="t-de">Erkläre die Logik der drei Modi BEVOR du klickst: Project Mode = Ich wähle Projekte und sehe automatisch die zugewiesenen Ressourcen. Resource Mode = umgekehrt. Default Mode = für neue Assignments.</span><span class="t-en">Explain the logic of the three modes BEFORE clicking in: Project Mode = I pick projects and automatically see the assigned resources. Resource Mode = the other way around. Default Mode = for new assignments.</span></p>
-    </div>
-    <div class="tip-box">
-      <div class="tip-box-header"><span class="t-de">💡 Tipp (Marc)</span><span class="t-en">💡 Tip (Marc)</span></div>
-      <p><span class="t-de">Nicht jeden Modus im Detail durchgehen — das Publikum verliert die Aufmerksamkeit. Fokussiere auf den Modus, der für das Publikum am relevantesten ist (PM → Project Mode, RM → Resource Mode).</span><span class="t-en">Don't go through every mode in detail — you'll lose the audience. Focus on the mode most relevant to the audience (PM → Project Mode, RM → Resource Mode).</span></p>
-    </div>
-    <div class="tip-box">
-      <div class="tip-box-header"><span class="t-de">💡 Tipp (Aayushi)</span><span class="t-en">💡 Tip (Aayushi)</span></div>
-      <p><span class="t-de">Views sind persönlich — das ist ein Feature, kein Bug. Betone: „Was ihr hier baut, gehört euch." Das gibt ein Gefühl von Ownership.</span><span class="t-en">Views are personal — that's a feature, not a bug. Emphasise: "What you build here is yours." That gives a sense of ownership.</span></p>
-    </div>
-    <div class="tip-box">
-      <div class="tip-box-header"><span class="t-de">💡 Tipp (Aayushi)</span><span class="t-en">💡 Tip (Aayushi)</span></div>
-      <p><span class="t-de">Heatmap FRÜH aktivieren — idealerweise bevor Ressourcen hinzugefügt werden. So ist der Grid von Anfang an farbig und aussagekräftig, nicht nur eine graue Tabelle.</span><span class="t-en">Enable the heatmap EARLY — ideally before resources are added. That way the grid is colourful and meaningful from the start, not just a grey table.</span></p>
-    </div>
-    <div class="tip-box">
-      <div class="tip-box-header"><span class="t-de">💡 Tipp (Marc)</span><span class="t-en">💡 Tip (Marc)</span></div>
-      <p><span class="t-de">FTE vs. Personentage/Stunden erklären: FTE ist KEINE Aufwandsmetrik, es ist eine Kapazitätsmetrik. Viele User verstehen das erst nach der Erklärung.</span><span class="t-en">Explain FTE vs. person days/hours: FTE is NOT an effort metric, it's a capacity metric. Many users only understand this after the explanation.</span></p>
-    </div>
+    <span class="t-de">„Mit Team Resources plant ihr so, wie ihr arbeitet —<br><strong>als Team, nicht als lose Sammlung von Einzelpersonen."</strong></span>
+    <span class="t-en">"With Team Resources you plan the way you work —<br><strong>as a team, not as a loose collection of individuals."</strong></span>
   </div>
 </div>
 
 </div><!-- /page -->
 
 <div class="doc-footer">
-  <strong>Tempus Resource · <span class="t-de">BPAFG Deep Dive · Folge-Session zum RM-Training</span><span class="t-en">BPAFG Deep Dive · Follow-up session to RM Training</span></strong><br>
-  <span class="t-de">Perspektive: Giacomo, Team Lead E-DOC bei HR Campus</span>
-  <span class="t-en">Perspective: Giacomo, Team Lead E-DOC at HR Campus</span><br>
+  <strong>Tempus Resource · <span class="t-de">Team Resources · Teambasierte Planung</span><span class="t-en">Team Resources · Team-Based Planning</span></strong><br>
+  <span class="t-de">Für Organisationen mit Agile, Waterfall oder gemischten Methoden</span>
+  <span class="t-en">For organizations using Agile, Waterfall, or mixed methodologies</span><br>
   <span style="font-size:12px;display:block;margin-top:4px;">trial5.tempus-resource.com/slot4</span>
 </div>
 
@@ -1016,7 +851,7 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
   <span class="t-en">✏️ Click to edit · ⠿ Drag scenes/blocks · ＋ Block in scene · ＋ New scene under each scene card (numbers update) · × Delete boxes · 💾 Save</span>
 </div>
 
-<template id="bpafg-empty-scene-template">
+<template id="team-resources-empty-scene-template">
 <div class="scene">
   <div class="scene-header">
     <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--rm),var(--teal))">
@@ -1059,7 +894,7 @@ function setLang(lang) {
 /* ═══════════════════════════════════════════════════
    EDIT MODE ENGINE
 ═══════════════════════════════════════════════════ */
-const STORAGE_KEY = 'tempus-demo-bpafg-v1';
+const STORAGE_KEY = 'tempus-demo-team-resources-v1';
 const RM_STATE_SCHEMA_VERSION = 1;
 let editMode = false;
 let dragSrc = null;
@@ -1320,7 +1155,7 @@ function initGlobalChromeRemovables() {
     }
   }
 
-  const rmIntro = document.getElementById('bpafg-editable-intro');
+  const rmIntro = document.getElementById('team-resources-editable-intro');
   if (rmIntro) {
     rmIntro.querySelectorAll('.guide-legend .guide-legend-title').forEach(el => attachEditChromeRemove(el, o));
     rmIntro.querySelectorAll('.guide-legend .legend-item').forEach(el => attachEditChromeRemove(el, o));
@@ -1330,14 +1165,14 @@ function initGlobalChromeRemovables() {
     rmIntro.querySelectorAll(':scope > .cast-section .cast-card').forEach(el => attachEditChromeRemove(el, o));
   }
 
-  if (document.getElementById('bpafg-editable-intro')) {
-    const tailPage = document.querySelector('.page:not(#bpafg-editable-intro)');
+  if (document.getElementById('team-resources-editable-intro')) {
+    const tailPage = document.querySelector('.page:not(#team-resources-editable-intro)');
     if (tailPage) {
       tailPage.querySelectorAll(':scope > .story-hook, :scope > .box').forEach(el => attachEditChromeRemove(el, o));
     }
   }
 
-  document.querySelectorAll('#bpafg-training-agenda .agenda-verbal-block').forEach(el => attachEditChromeRemove(el, o));
+  document.querySelectorAll('#team-resources-training-agenda .agenda-verbal-block').forEach(el => attachEditChromeRemove(el, o));
 
   document.querySelectorAll('.scene .scene-tags').forEach(el => attachEditChromeRemove(el, o));
   document.querySelectorAll('.scene .scene-body > .story-hook').forEach(el => attachEditChromeRemove(el, o));
@@ -1408,9 +1243,9 @@ function wireRmMacroBlockEditable(root) {
 function insertRmMacroFreeBlockBefore(beforeNode) {
   if (!beforeNode) return;
   const block = buildRmMacroFreeBlock();
-  const agenda = document.getElementById('bpafg-training-agenda');
+  const agenda = document.getElementById('team-resources-training-agenda');
   if (agenda && beforeNode === agenda) {
-    const intro = document.getElementById('bpafg-editable-intro');
+    const intro = document.getElementById('team-resources-editable-intro');
     if (intro) intro.appendChild(block);
     else if (beforeNode.parentNode) beforeNode.parentNode.insertBefore(block, beforeNode);
     else return;
@@ -1430,8 +1265,8 @@ function initMacroBlockSplitters() {
   if (!editMode) return;
   removeMacroBlockSplitters();
 
-  const intro = document.getElementById('bpafg-editable-intro');
-  const agenda = document.getElementById('bpafg-training-agenda');
+  const intro = document.getElementById('team-resources-editable-intro');
+  const agenda = document.getElementById('team-resources-training-agenda');
 
   if (intro) {
     const ch = Array.from(intro.querySelectorAll(':scope > *'));
@@ -1484,9 +1319,9 @@ function wireNewSceneForEdit(scene) {
 }
 
 function insertEmptyScene(beforeNode) {
-  const page = document.getElementById('bpafg-scenes-page');
+  const page = document.getElementById('team-resources-scenes-page');
   const closing = page && page.querySelector('.closing');
-  const tpl = document.getElementById('bpafg-empty-scene-template');
+  const tpl = document.getElementById('team-resources-empty-scene-template');
   if (!page || !tpl || !tpl.content.firstElementChild) return;
   const ref = (beforeNode && beforeNode.classList && beforeNode.classList.contains('scene')) ? beforeNode : closing;
   if (!ref) return;
@@ -1503,7 +1338,7 @@ function insertEmptyScene(beforeNode) {
 function initInlineEdit() {
   const lang = document.documentElement.classList.contains('lang-de') ? 'de' : 'en';
 
-  document.querySelectorAll(`.hero .t-${lang}, #bpafg-editable-intro .t-${lang}, .demo-macro-free-block .t-${lang}, #bpafg-training-agenda .t-${lang}, .scene .t-${lang}`).forEach(el => {
+  document.querySelectorAll(`.hero .t-${lang}, #team-resources-editable-intro .t-${lang}, .demo-macro-free-block .t-${lang}, #team-resources-training-agenda .t-${lang}, .scene .t-${lang}`).forEach(el => {
     el.contentEditable = 'true';
     el.spellcheck = false;
     el.setAttribute('data-lang', lang.toUpperCase());
@@ -1511,7 +1346,7 @@ function initInlineEdit() {
     el.addEventListener('keydown', preventEnterIfNotWanted);
   });
 
-  document.querySelectorAll('.scene .click-path, #bpafg-editable-intro .click-path, #bpafg-training-agenda .click-path').forEach(el => {
+  document.querySelectorAll('.scene .click-path, #team-resources-editable-intro .click-path, #team-resources-training-agenda .click-path').forEach(el => {
     el.contentEditable = 'true';
     el.spellcheck = false;
     el.addEventListener('input', markUnsaved);
@@ -1843,7 +1678,7 @@ let agendaBlockDragSrc = null;
 let agendaLiDragSrc = null;
 
 function renumberAgendaBlocks(wrap) {
-  const container = wrap || document.querySelector('#bpafg-training-agenda .agenda-fullpage-blocks');
+  const container = wrap || document.querySelector('#team-resources-training-agenda .agenda-fullpage-blocks');
   if (!container) return;
   container.querySelectorAll(':scope > .agenda-fullpage-block').forEach((block, i) => {
     const num = block.querySelector('.agenda-fullpage-num');
@@ -2049,7 +1884,7 @@ function addAgendaBlock(blocksWrap) {
 
 function initAgendaEditing() {
   removeAgendaEditing();
-  const root = document.getElementById('bpafg-training-agenda');
+  const root = document.getElementById('team-resources-training-agenda');
   if (!root) return;
   const blocksWrap = root.querySelector('.agenda-fullpage-blocks');
   if (!blocksWrap) return;
@@ -2072,10 +1907,10 @@ function removeAgendaEditing() {
   agendaBlockDragSrc = null;
   agendaLiDragSrc = null;
   document.querySelectorAll(
-    '#bpafg-training-agenda .agenda-block-delete-btn, #bpafg-training-agenda .agenda-add-block-btn, ' +
-    '#bpafg-training-agenda .agenda-li-delete-btn, #bpafg-training-agenda .agenda-li-add-btn, #bpafg-training-agenda .agenda-li-drag'
+    '#team-resources-training-agenda .agenda-block-delete-btn, #team-resources-training-agenda .agenda-add-block-btn, ' +
+    '#team-resources-training-agenda .agenda-li-delete-btn, #team-resources-training-agenda .agenda-li-add-btn, #team-resources-training-agenda .agenda-li-drag'
   ).forEach(el => el.remove());
-  document.querySelectorAll('#bpafg-training-agenda .agenda-fullpage-block, #bpafg-training-agenda .agenda-fullpage-block li').forEach(el => {
+  document.querySelectorAll('#team-resources-training-agenda .agenda-fullpage-block, #team-resources-training-agenda .agenda-fullpage-block li').forEach(el => {
     el.draggable = false;
     el.classList.remove('agenda-block-dragging', 'agenda-block-over-top', 'agenda-block-over-bottom',
       'agenda-li-dragging', 'agenda-li-over-top', 'agenda-li-over-bottom');
@@ -2084,19 +1919,19 @@ function removeAgendaEditing() {
 
 /* ═══════════════════════════════════════════════════
    AWS PERSISTENZ (wie PM-Demo)
-   Quelle API: infrastructure/cdk-outputs.json + /demo-script/bpafg — docs/DEMO_SCRIPT_API_EINHEITLICH_AWS.md
-   Speichern: POST …/v1/demo-script/bpafg, sonst Presigned PUT. Laden: S3 data/tempus-demo-bpafg-state.json.
+   Quelle API: infrastructure/cdk-outputs.json + /demo-script/team-resources — docs/DEMO_SCRIPT_API_EINHEITLICH_AWS.md
+   Speichern: POST …/v1/demo-script/team-resources, sonst Presigned PUT. Laden: S3 data/tempus-demo-team-resources-state.json.
 ═══════════════════════════════════════════════════ */
 
 const WEBSITE_API_BASE = 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
-const DEMO_SCRIPT_API_URL = `${WEBSITE_API_BASE}/demo-script/bpafg`;
+const DEMO_SCRIPT_API_URL = `${WEBSITE_API_BASE}/demo-script/team-resources`;
 const DEMO_SCRIPT_EDIT_PASSWORD = 'tempus-demo-edit-2024';
 
-const PRESIGNED_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-demo-bpafg-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3MG2WEBUJ%2F20260520%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260520T133435Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=9f31a9c1c9af01ca11f77fc047eb0fcb37372cde00f071fa1cd1c10090312d70';
+const PRESIGNED_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-demo-team-resources-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3MG2WEBUJ%2F20260520%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260520T133435Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=1a91ad4d0e766300af27d140aaaf776129b2d11509c9030a094e07084d8a6f93';
 
 /* Immer S3 direkt — nicht manuel-weiss.ch/data/… (CloudFront-Cache, nicht geräteübergreifend frisch). */
 const STATE_READ_URL =
-  'https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-demo-bpafg-state.json';
+  'https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-demo-team-resources-state.json';
 
 function rmLang() {
   return document.documentElement.classList.contains('lang-de') ? 'de' : 'en';
@@ -2369,8 +2204,8 @@ async function saveAll(opts = {}) {
   try {
     const scenes = serializeScenes();
     const heroHtml = serializeHeroOrIntro(document.querySelector('.hero'));
-    const introHtml = serializeHeroOrIntro(document.querySelector('#bpafg-editable-intro'));
-    const agendaHtml = serializeHeroOrIntro(document.querySelector('#bpafg-training-agenda'));
+    const introHtml = serializeHeroOrIntro(document.querySelector('#team-resources-editable-intro'));
+    const agendaHtml = serializeHeroOrIntro(document.querySelector('#team-resources-training-agenda'));
     const payloadObj = buildPayloadWithHistoryRm(__tempusRmLastPersisted, {
       scenes,
       heroHtml,
@@ -2528,7 +2363,7 @@ async function loadSaved() {
 
 function applyState(data) {
   try {
-    const page = document.getElementById('bpafg-scenes-page');
+    const page = document.getElementById('team-resources-scenes-page');
     const closing = page ? page.querySelector('.closing') : null;
     if (!closing) return;
 
@@ -2544,16 +2379,16 @@ function applyState(data) {
       const t = document.createElement('template');
       t.innerHTML = data.introHtml.trim();
       const node = t.content.firstElementChild;
-      const cur = document.querySelector('#bpafg-editable-intro');
-      if (node && cur && node.id === 'bpafg-editable-intro') cur.replaceWith(node);
+      const cur = document.querySelector('#team-resources-editable-intro');
+      if (node && cur && node.id === 'team-resources-editable-intro') cur.replaceWith(node);
     }
 
     if (data.agendaHtml) {
       const t = document.createElement('template');
       t.innerHTML = data.agendaHtml.trim();
       const node = t.content.firstElementChild;
-      const cur = document.querySelector('#bpafg-training-agenda');
-      if (node && cur && node.id === 'bpafg-training-agenda') cur.replaceWith(node);
+      const cur = document.querySelector('#team-resources-training-agenda');
+      if (node && cur && node.id === 'team-resources-training-agenda') cur.replaceWith(node);
     }
 
     page.querySelectorAll('.scene').forEach(s => s.remove());

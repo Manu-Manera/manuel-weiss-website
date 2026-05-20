@@ -19,6 +19,7 @@ const STORY_URL = '/onboarding/tempus-story.html';
 const PM_DEMO_URL = '/onboarding/tempus-demo-pm.html';
 const RM_DEMO_URL = '/onboarding/tempus-demo-rm.html';
 const BPAFG_DEMO_URL = '/onboarding/tempus-demo-bpafg.html';
+const TEAM_RESOURCES_DEMO_URL = '/onboarding/tempus-demo-team-resources.html';
 const RM_LIVE_URL = 'https://trial5.tempus-resource.com/slot4';
 
 const demoEnvironments = [
@@ -65,6 +66,21 @@ const demoEnvironments = [
       'View Management & Grid Features',
       'Optionen: Heatmaps, Net Availability',
       'Resource Replace Advanced',
+    ],
+  },
+  {
+    id: 'team-resources',
+    name: 'Team Resources',
+    description: 'Teams als planbare Einheit — für Agile, Waterfall oder gemischte Methoden',
+    url: TEAM_RESOURCES_DEMO_URL,
+    icon: Users,
+    color: 'from-emerald-500 to-teal-500',
+    badge: '5 Blöcke · DE/EN',
+    features: [
+      'Teams erstellen & Mitglieder zuweisen',
+      'Prozent oder Story Points definieren',
+      'Team-Verfügbarkeit im BPAFG',
+      'Multi-Assignment (Version 9.2)',
     ],
   },
   {
@@ -197,7 +213,8 @@ export default function TempusDemo() {
         {demoEnvironments.map((demo) => {
           const isPM = demo.id === 'pm';
           const isBPAFG = demo.id === 'bpafg';
-          const isHighlighted = isPM || isBPAFG;
+          const isTeamResources = demo.id === 'team-resources';
+          const isHighlighted = isPM || isBPAFG || isTeamResources;
           return (
             <div
               key={demo.id}
@@ -206,6 +223,8 @@ export default function TempusDemo() {
                   ? 'border-purple-400/30 bg-purple-500/5 hover:border-purple-400/50'
                   : isBPAFG
                   ? 'border-teal-400/30 bg-teal-500/5 hover:border-teal-400/50'
+                  : isTeamResources
+                  ? 'border-emerald-400/30 bg-emerald-500/5 hover:border-emerald-400/50'
                   : 'border-white/10 hover:border-white/20'
                 }`}
             >
@@ -218,6 +237,8 @@ export default function TempusDemo() {
                   <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
                     isBPAFG 
                       ? 'bg-teal-500/20 text-teal-300 border border-teal-400/20'
+                      : isTeamResources
+                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/20'
                       : 'bg-purple-500/20 text-purple-300 border border-purple-400/20'
                   }`}>
                     {demo.badge}
@@ -242,7 +263,7 @@ export default function TempusDemo() {
                 onClick={() => openInNewTab(demo.url)}
                 className={`w-full py-3 px-4 rounded-xl bg-gradient-to-r ${demo.color} text-white font-medium
                   hover:shadow-lg transition-all flex items-center justify-center gap-2
-                  ${isPM ? 'hover:shadow-purple-500/20' : isBPAFG ? 'hover:shadow-teal-500/20' : 'opacity-80'}`}
+                  ${isPM ? 'hover:shadow-purple-500/20' : isBPAFG ? 'hover:shadow-teal-500/20' : isTeamResources ? 'hover:shadow-emerald-500/20' : 'opacity-80'}`}
               >
                 {isHighlighted ? <Play className="w-4 h-4" /> : <ExternalLink className="w-4 h-4" />}
                 Demo öffnen
@@ -277,6 +298,12 @@ export default function TempusDemo() {
               label: 'BPAFG Deep Dive öffnen',
               sub: 'Giacomo · 8 Blöcke · DE/EN',
               color: 'teal',
+            },
+            {
+              href: TEAM_RESOURCES_DEMO_URL,
+              label: 'Team Resources Demo öffnen',
+              sub: 'Teams als planbare Einheit · 5 Blöcke · DE/EN',
+              color: 'emerald',
             },
             {
               href: RM_LIVE_URL,
