@@ -73,6 +73,7 @@ import {
   DEFAULT_TEMPUS_PASSWORD,
   TEMPUS_DEFAULT_BASE_URL,
   tempusIdentity,
+  tempusListAllRoles,
   tempusListGlobalRoles,
   tempusListResourceSecurityGroups,
   tempusResourceNameExists,
@@ -347,7 +348,8 @@ export default function MailerWizard() {
     catch { return TEMPUS_DEFAULT_BASE_URL; }
   });
   const [targetIdentityInfo, setTargetIdentityInfo] = useState(null);
-  const [targetRoles, setTargetRoles] = useState([]);
+  // Alle drei Rollen-Typen
+  const [targetRoles, setTargetRoles] = useState({ global: [], project: [], resource: [] });
   const [targetGroups, setTargetGroups] = useState([]);
   const [targetConnectError, setTargetConnectError] = useState('');
   const [targetConnecting, setTargetConnecting] = useState(false);
@@ -390,7 +392,8 @@ export default function MailerWizard() {
     catch { return TEMPUS_DEFAULT_BASE_URL; }
   });
   const [sourceConnected, setSourceConnected] = useState(false);
-  const [sourceRoles, setSourceRoles] = useState([]);
+  // Alle drei Rollen-Typen
+  const [sourceRoles, setSourceRoles] = useState({ global: [], project: [], resource: [] });
   const [sourceConnecting, setSourceConnecting] = useState(false);
   const [sourceError, setSourceError] = useState('');
   const [sourceIdentityInfo, setSourceIdentityInfo] = useState(null);
@@ -400,7 +403,7 @@ export default function MailerWizard() {
   }, [sourceBaseUrl]);
 
   // Backwards-Compat Aliase (für bestehenden Code der noch tempusRoles etc. nutzt)
-  const tempusRoles = targetRoles;
+  const tempusRoles = targetRoles.global;
   const tempusConnecting = targetConnecting;
 
   // --- ZIEL-PLATTFORM verbinden ---
@@ -410,20 +413,20 @@ export default function MailerWizard() {
     setTargetConnecting(true);
     setTargetConnectError('');
     try {
-      const [identity, roles, groups] = await Promise.all([
+      const [identity, allRoles, groups] = await Promise.all([
         tempusIdentity(key),
-        tempusListGlobalRoles(key).catch(() => []),
+        tempusListAllRoles(key).catch(() => ({ global: [], project: [], resource: [] })),
         tempusListResourceSecurityGroups(key).catch(() => []),
       ]);
       setTargetIdentityInfo(identity);
-      setTargetRoles(roles);
+      setTargetRoles(allRoles);
       setTargetGroups(groups);
       
-      // Defaults setzen, falls noch nichts gewählt
+      // Defaults setzen, falls noch nichts gewählt (basierend auf Global Roles)
       setTargetDefaultRoleId((curr) => {
-        if (curr != null && roles.some(r => r.id === curr)) return curr;
-        const nonAdmin = roles.find(r => r.systemKey !== 'Administrator');
-        return (nonAdmin || roles[0])?.id ?? null;
+        if (curr != null && allRoles.global.some(r => r.id === curr)) return curr;
+        const nonAdmin = allRoles.global.find(r => r.systemKey !== 'Administrator');
+        return (nonAdmin || allRoles.global[0])?.id ?? null;
       });
       setTargetSecurityGroupId((curr) => {
         if (curr != null && groups.some(g => g.id === curr)) return curr;
@@ -431,8 +434,8 @@ export default function MailerWizard() {
       });
       
       // Automatisches Rollen-Matching für Entries mit globalRole aus Excel
-      if (roles.length > 0 && entries.length > 0) {
-        const matchedEntries = matchAllGlobalRoles(entries, roles);
+      if (allRoles.global.length > 0 && entries.length > 0) {
+        const matchedEntries = matchAllGlobalRoles(entries, allRoles.global);
         const matchCount = matchedEntries.filter(e => e.globalRoleMatched).length;
         if (matchCount > 0) {
           setEntries(matchedEntries);
@@ -449,7 +452,7 @@ export default function MailerWizard() {
   const handleTargetDisconnect = () => {
     setTargetApiKey('');
     setTargetIdentityInfo(null);
-    setTargetRoles([]);
+    setTargetRoles({ global: [], project: [], resource: [] });
     setTargetGroups([]);
     setTargetConnectError('');
     setSyncRows([]);
@@ -462,12 +465,12 @@ export default function MailerWizard() {
     setSourceConnecting(true);
     setSourceError('');
     try {
-      const [identity, roles] = await Promise.all([
+      const [identity, allRoles] = await Promise.all([
         tempusIdentity(key).catch(() => null),
-        tempusListGlobalRoles(key),
+        tempusListAllRoles(key),
       ]);
       setSourceIdentityInfo(identity);
-      setSourceRoles(roles);
+      setSourceRoles(allRoles);
       setSourceConnected(true);
     } catch (err) {
       setSourceConnected(false);
@@ -481,7 +484,7 @@ export default function MailerWizard() {
   const handleSourceDisconnect = () => {
     setSourceApiKey('');
     setSourceConnected(false);
-    setSourceRoles([]);
+    setSourceRoles({ global: [], project: [], resource: [] });
     setSourceError('');
     setSourceIdentityInfo(null);
   };
@@ -516,8 +519,8 @@ export default function MailerWizard() {
     const withDefaultRole = targets.length - withIndividualRole;
     
     const roleInfo = withIndividualRole > 0
-      ? `${withIndividualRole} mit individueller Rolle aus Excel, ${withDefaultRole} mit Standard-Rolle "${targetRoles.find(r => r.id === targetDefaultRoleId)?.name || targetDefaultRoleId}"`
-      : `Rolle: ${(targetRoles.find(r => r.id === targetDefaultRoleId)?.name) || targetDefaultRoleId}`;
+      ? `${withIndividualRole} mit individueller Rolle aus Excel, ${withDefaultRole} mit Standard-Rolle "${targetRoles.global.find(r => r.id === targetDefaultRoleId)?.name || targetDefaultRoleId}"`
+      : `Rolle: ${(targetRoles.global.find(r => r.id === targetDefaultRoleId)?.name) || targetDefaultRoleId}`;
 
     const ok = confirm(
       `Es werden ${targets.length} Resources nacheinander auf der Ziel-Plattform angelegt.\n\n` +
@@ -553,8 +556,8 @@ export default function MailerWizard() {
           // Individuelle Rolle aus Excel verwenden falls vorhanden, sonst Standard
           const roleIdToUse = t.globalRoleId ?? targetDefaultRoleId;
           const roleName = t.globalRoleId 
-            ? (targetRoles.find(r => r.id === t.globalRoleId)?.name || t.globalRoleName)
-            : (targetRoles.find(r => r.id === targetDefaultRoleId)?.name);
+            ? (targetRoles.global.find(r => r.id === t.globalRoleId)?.name || t.globalRoleName)
+            : (targetRoles.global.find(r => r.id === targetDefaultRoleId)?.name);
           
           const newId = await tempusCreateResource(targetApiKey, {
             name: t.name,
@@ -1458,7 +1461,12 @@ export default function MailerWizard() {
                   <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />
                   <span>
                     <span className="font-semibold">Ziel:</span> Verbunden als <span className="font-semibold">{targetIdentityInfo.name}</span>
-                    {' '}(Id {targetIdentityInfo.id}) · {targetRoles.length} Rollen · {targetGroups.length} Security-Groups
+                    {' '}(Id {targetIdentityInfo.id}) · 
+                    <span className="font-semibold">{targetRoles.global.length} Global Roles</span> (für User-Anlegen)
+                    {(targetRoles.project.length > 0 || targetRoles.resource.length > 0) && (
+                      <span className="text-white/50"> · {targetRoles.project.length} Project / {targetRoles.resource.length} Resource</span>
+                    )}
+                    {' '}· {targetGroups.length} Security-Groups
                   </span>
                 </div>
 
@@ -1466,14 +1474,14 @@ export default function MailerWizard() {
                   <>
                     <div className="grid md:grid-cols-3 gap-3">
                       <div>
-                        <label className="block text-xs text-white/50 mb-1">Standard-Rolle (falls Excel leer)</label>
+                        <label className="block text-xs text-white/50 mb-1">Standard Global Role (falls Excel leer)</label>
                         <select
                           value={targetDefaultRoleId ?? ''}
                           onChange={(e) => setTargetDefaultRoleId(e.target.value ? Number(e.target.value) : null)}
                           className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm"
                         >
                           <option value="">– bitte wählen –</option>
-                          {targetRoles.map(r => (
+                          {targetRoles.global.map(r => (
                             <option key={r.id} value={r.id}>
                               {r.name}{r.systemKey === 'Administrator' ? ' ⚠︎' : ''}
                             </option>
@@ -1518,7 +1526,7 @@ export default function MailerWizard() {
                         </div>
                         <button
                           onClick={() => {
-                            const matched = matchAllGlobalRoles(entries, targetRoles);
+                            const matched = matchAllGlobalRoles(entries, targetRoles.global);
                             const newMatches = matched.filter(e => e.globalRoleMatched).length - entries.filter(e => e.globalRoleMatched).length;
                             setEntries(matched);
                             if (newMatches > 0) {
@@ -1677,70 +1685,41 @@ export default function MailerWizard() {
                   <span>
                     <span className="font-semibold">Quelle:</span>
                     {sourceIdentityInfo && <> Verbunden als <span className="font-semibold">{sourceIdentityInfo.name}</span> ·</>}
-                    {' '}{sourceRoles.length} Rollen geladen
+                    {' '}<span className="font-semibold">{sourceRoles.global.length} Global</span>
+                    {' '}/ {sourceRoles.project.length} Project / {sourceRoles.resource.length} Resource Roles
                   </span>
                 </div>
 
-                {/* Rollen-Vergleichstabelle */}
-                <div className="grid md:grid-cols-2 gap-4">
-                  {/* Quell-Rollen */}
-                  <div className="rounded-lg border border-white/10 overflow-hidden">
-                    <div className="px-3 py-2 bg-cyan-500/10 border-b border-white/10 text-sm font-semibold text-cyan-200">
-                      Quell-Rollen ({sourceRoles.length})
-                    </div>
-                    <div className="max-h-48 overflow-y-auto">
-                      <table className="w-full text-sm">
-                        <tbody>
-                          {sourceRoles.map(r => {
-                            const existsInTarget = targetRoles.some(tr => 
-                              tr.name.toLowerCase().replace(/\s+/g, '') === r.name.toLowerCase().replace(/\s+/g, '')
-                            );
-                            return (
-                              <tr key={r.id} className="border-t border-white/5">
-                                <td className="px-3 py-2">
-                                  <span className={existsInTarget ? 'text-white/70' : 'text-amber-300'}>{r.name}</span>
-                                  {r.systemKey && <span className="ml-2 text-xs text-white/30">({r.systemKey})</span>}
-                                </td>
-                                <td className="px-3 py-2 text-right text-xs">
-                                  {existsInTarget ? (
-                                    <span className="text-emerald-400">✓ in Ziel</span>
-                                  ) : (
-                                    <span className="text-amber-400">nicht in Ziel</span>
-                                  )}
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-
-                  {/* Ziel-Rollen */}
-                  <div className="rounded-lg border border-white/10 overflow-hidden">
-                    <div className="px-3 py-2 bg-emerald-500/10 border-b border-white/10 text-sm font-semibold text-emerald-200">
-                      Ziel-Rollen ({targetRoles.length})
-                      {!targetIdentityInfo && <span className="ml-2 text-xs text-white/40">(nicht verbunden)</span>}
-                    </div>
-                    <div className="max-h-48 overflow-y-auto">
-                      {targetRoles.length > 0 ? (
+                {/* Rollen-Vergleichstabelle - nur Global Roles (relevant für User-Anlegen) */}
+                <div className="space-y-3">
+                  <p className="text-xs text-white/60">
+                    <b>Global Roles</b> sind relevant für das User-Anlegen. Project/Resource Roles werden separat zugewiesen.
+                  </p>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {/* Quell Global Roles */}
+                    <div className="rounded-lg border border-white/10 overflow-hidden">
+                      <div className="px-3 py-2 bg-cyan-500/10 border-b border-white/10 text-sm font-semibold text-cyan-200">
+                        Quelle: Global Roles ({sourceRoles.global.length})
+                      </div>
+                      <div className="max-h-48 overflow-y-auto">
                         <table className="w-full text-sm">
                           <tbody>
-                            {targetRoles.map(r => {
-                              const existsInSource = sourceRoles.some(sr => 
-                                sr.name.toLowerCase().replace(/\s+/g, '') === r.name.toLowerCase().replace(/\s+/g, '')
+                            {sourceRoles.global.map(r => {
+                              const existsInTarget = targetRoles.global.some(tr => 
+                                tr.name.toLowerCase().replace(/\s+/g, '') === r.name.toLowerCase().replace(/\s+/g, '')
                               );
                               return (
                                 <tr key={r.id} className="border-t border-white/5">
                                   <td className="px-3 py-2">
-                                    <span className={existsInSource ? 'text-white/70' : 'text-cyan-300'}>{r.name}</span>
+                                    <span className={existsInTarget ? 'text-white/70' : 'text-amber-300'}>{r.name}</span>
                                     {r.systemKey && <span className="ml-2 text-xs text-white/30">({r.systemKey})</span>}
                                   </td>
                                   <td className="px-3 py-2 text-right text-xs">
-                                    {existsInSource ? (
-                                      <span className="text-emerald-400">✓ in Quelle</span>
+                                    {existsInTarget ? (
+                                      <span className="text-emerald-400">✓ in Ziel</span>
                                     ) : (
-                                      <span className="text-cyan-400">nur Ziel</span>
+                                      <span className="text-amber-400">nicht in Ziel</span>
                                     )}
                                   </td>
                                 </tr>
@@ -1748,18 +1727,85 @@ export default function MailerWizard() {
                             })}
                           </tbody>
                         </table>
-                      ) : (
-                        <div className="px-3 py-4 text-sm text-white/40 text-center">
-                          Verbinde oben mit der Ziel-Plattform um Rollen zu laden
-                        </div>
-                      )}
+                      </div>
+                    </div>
+
+                    {/* Ziel Global Roles */}
+                    <div className="rounded-lg border border-white/10 overflow-hidden">
+                      <div className="px-3 py-2 bg-emerald-500/10 border-b border-white/10 text-sm font-semibold text-emerald-200">
+                        Ziel: Global Roles ({targetRoles.global.length})
+                        {!targetIdentityInfo && <span className="ml-2 text-xs text-white/40">(nicht verbunden)</span>}
+                      </div>
+                      <div className="max-h-48 overflow-y-auto">
+                        {targetRoles.global.length > 0 ? (
+                          <table className="w-full text-sm">
+                            <tbody>
+                              {targetRoles.global.map(r => {
+                                const existsInSource = sourceRoles.global.some(sr => 
+                                  sr.name.toLowerCase().replace(/\s+/g, '') === r.name.toLowerCase().replace(/\s+/g, '')
+                                );
+                                return (
+                                  <tr key={r.id} className="border-t border-white/5">
+                                    <td className="px-3 py-2">
+                                      <span className={existsInSource ? 'text-white/70' : 'text-cyan-300'}>{r.name}</span>
+                                      {r.systemKey && <span className="ml-2 text-xs text-white/30">({r.systemKey})</span>}
+                                    </td>
+                                    <td className="px-3 py-2 text-right text-xs">
+                                      {existsInSource ? (
+                                        <span className="text-emerald-400">✓ in Quelle</span>
+                                      ) : (
+                                        <span className="text-cyan-400">nur Ziel</span>
+                                      )}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        ) : (
+                          <div className="px-3 py-4 text-sm text-white/40 text-center">
+                            Verbinde oben mit der Ziel-Plattform um Rollen zu laden
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
+
+                  {/* Optionale Anzeige der anderen Rollen-Typen */}
+                  {(sourceRoles.project.length > 0 || sourceRoles.resource.length > 0) && (
+                    <details className="rounded-lg bg-white/5 border border-white/10">
+                      <summary className="px-3 py-2 text-xs text-white/50 cursor-pointer hover:text-white/70">
+                        Weitere Rollen-Typen anzeigen (Project: {sourceRoles.project.length}, Resource: {sourceRoles.resource.length})
+                      </summary>
+                      <div className="px-3 pb-3 grid md:grid-cols-2 gap-3">
+                        {sourceRoles.project.length > 0 && (
+                          <div>
+                            <p className="text-xs text-white/40 mb-1">Project Roles (Quelle)</p>
+                            <div className="text-xs text-white/60 space-y-0.5">
+                              {sourceRoles.project.map(r => (
+                                <div key={r.id}>{r.name}</div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {sourceRoles.resource.length > 0 && (
+                          <div>
+                            <p className="text-xs text-white/40 mb-1">Resource Roles (Quelle)</p>
+                            <div className="text-xs text-white/60 space-y-0.5">
+                              {sourceRoles.resource.map(r => (
+                                <div key={r.id}>{r.name}</div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </details>
+                  )}
                 </div>
 
                 <p className="text-xs text-white/40">
-                  <b>Workflow:</b> Rollen der Quell-Plattform dienen als Referenz. Die Excel-Daten werden mit den Rollen
-                  der <b>Ziel-Plattform</b> gematcht, da dort die User angelegt werden.
+                  <b>Workflow:</b> Die Excel-Daten werden mit den <b>Global Roles der Ziel-Plattform</b> gematcht.
+                  Nur Global Roles sind für das User-Anlegen relevant.
                 </p>
               </>
             )}
