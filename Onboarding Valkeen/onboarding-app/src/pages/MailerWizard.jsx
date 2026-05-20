@@ -330,91 +330,102 @@ export default function MailerWizard() {
   };
 
   // ---------------------------------------------------------------------------
-  // Tempus-API-Sync: Resources nacheinander anlegen
+  // Tempus-Plattform-Verbindungen
   // ---------------------------------------------------------------------------
-  // Der API-Key wird bewusst nur im State gehalten (nicht in localStorage),
-  // damit er nach Reload weg ist. Die Auswahlparameter (Rolle, Security-Group,
-  // Timesheet-Flag, Base-URL) werden persistiert.
+  // Zwei separate Verbindungen:
+  // 1. ZIEL-Plattform: Hierhin werden User per POST angelegt
+  // 2. QUELL-Plattform: Von hier werden Rollen per GET als Referenz geladen
+  //
+  // WICHTIG: Aktuell geht der Proxy nur zu trial5.tempus-resource.com/slot4.
+  // Für weitere Instanzen müsste ein zusätzlicher Proxy angelegt werden.
+  // Die URL-Felder dienen vorerst als visuelle Referenz für den Benutzer.
 
-  const [tempusApiKey, setTempusApiKey] = useState('');
-  const [tempusBaseUrl, setTempusBaseUrl] = useState(() => {
-    try { return localStorage.getItem(TEMPUS_BASE_URL_KEY) || TEMPUS_DEFAULT_BASE_URL; }
+  // --- ZIEL-PLATTFORM (POST: User anlegen) ---
+  const [targetApiKey, setTargetApiKey] = useState('');
+  const [targetBaseUrl, setTargetBaseUrl] = useState(() => {
+    try { return localStorage.getItem('tempus_target_base_url') || TEMPUS_DEFAULT_BASE_URL; }
     catch { return TEMPUS_DEFAULT_BASE_URL; }
   });
+  const [targetIdentityInfo, setTargetIdentityInfo] = useState(null);
+  const [targetRoles, setTargetRoles] = useState([]);
+  const [targetGroups, setTargetGroups] = useState([]);
+  const [targetConnectError, setTargetConnectError] = useState('');
+  const [targetConnecting, setTargetConnecting] = useState(false);
+
   useEffect(() => {
-    try { localStorage.setItem(TEMPUS_BASE_URL_KEY, tempusBaseUrl || ''); } catch { /* ignore */ }
-  }, [tempusBaseUrl]);
+    try { localStorage.setItem('tempus_target_base_url', targetBaseUrl || ''); } catch { /* ignore */ }
+  }, [targetBaseUrl]);
 
-  const [tempusIdentityInfo, setTempusIdentityInfo]   = useState(null);
-  const [tempusRoles, setTempusRoles]                 = useState([]);
-  const [tempusGroups, setTempusGroups]               = useState([]);
-  const [tempusConnectError, setTempusConnectError]  = useState('');
-  const [tempusConnecting, setTempusConnecting]      = useState(false);
-
-  const [tempusRoleId, setTempusRoleId] = useState(() => {
+  // Standard-Einstellungen für neue User auf der Ziel-Plattform
+  const [targetDefaultRoleId, setTargetDefaultRoleId] = useState(() => {
     try { const v = localStorage.getItem(TEMPUS_ROLE_KEY); return v ? Number(v) : null; }
     catch { return null; }
   });
-  const [tempusSecurityGroupId, setTempusSecurityGroupId] = useState(() => {
+  const [targetSecurityGroupId, setTargetSecurityGroupId] = useState(() => {
     try { const v = localStorage.getItem(TEMPUS_SG_KEY); return v ? Number(v) : null; }
     catch { return null; }
   });
-  const [tempusIsTimesheetUser, setTempusIsTimesheetUser] = useState(() => {
+  const [targetIsTimesheetUser, setTargetIsTimesheetUser] = useState(() => {
     try { return localStorage.getItem(TEMPUS_TIMESHEET_KEY) === '1'; } catch { return false; }
   });
-  useEffect(() => {
-    try { tempusRoleId != null ? localStorage.setItem(TEMPUS_ROLE_KEY, String(tempusRoleId)) : localStorage.removeItem(TEMPUS_ROLE_KEY); } catch { /* ignore */ }
-  }, [tempusRoleId]);
-  useEffect(() => {
-    try { tempusSecurityGroupId != null ? localStorage.setItem(TEMPUS_SG_KEY, String(tempusSecurityGroupId)) : localStorage.removeItem(TEMPUS_SG_KEY); } catch { /* ignore */ }
-  }, [tempusSecurityGroupId]);
-  useEffect(() => {
-    try { localStorage.setItem(TEMPUS_TIMESHEET_KEY, tempusIsTimesheetUser ? '1' : '0'); } catch { /* ignore */ }
-  }, [tempusIsTimesheetUser]);
 
-  // Status pro Empfänger-Zeile beim Sync-Lauf.
-  // Jeder Eintrag: { status: 'pending'|'running'|'created'|'exists'|'error'|'skipped', message?, resourceId? }
-  const [tempusSyncRows, setTempusSyncRows] = useState([]);
-  const [tempusSyncRunning, setTempusSyncRunning] = useState(false);
+  useEffect(() => {
+    try { targetDefaultRoleId != null ? localStorage.setItem(TEMPUS_ROLE_KEY, String(targetDefaultRoleId)) : localStorage.removeItem(TEMPUS_ROLE_KEY); } catch { /* ignore */ }
+  }, [targetDefaultRoleId]);
+  useEffect(() => {
+    try { targetSecurityGroupId != null ? localStorage.setItem(TEMPUS_SG_KEY, String(targetSecurityGroupId)) : localStorage.removeItem(TEMPUS_SG_KEY); } catch { /* ignore */ }
+  }, [targetSecurityGroupId]);
+  useEffect(() => {
+    try { localStorage.setItem(TEMPUS_TIMESHEET_KEY, targetIsTimesheetUser ? '1' : '0'); } catch { /* ignore */ }
+  }, [targetIsTimesheetUser]);
 
-  // ---------------------------------------------------------------------------
-  // Sandbox-Umgebung: Zweiter API-Key zum Abrufen von Rollen
-  // ---------------------------------------------------------------------------
-  const [sandboxApiKey, setSandboxApiKey] = useState('');
-  const [sandboxBaseUrl, setSandboxBaseUrl] = useState(() => {
-    try { return localStorage.getItem('tempus_sandbox_base_url') || 'https://trial5.tempus-resource.com/slot4'; }
-    catch { return 'https://trial5.tempus-resource.com/slot4'; }
+  // Status pro Empfänger-Zeile beim Sync-Lauf
+  const [syncRows, setSyncRows] = useState([]);
+  const [syncRunning, setSyncRunning] = useState(false);
+
+  // --- QUELL-PLATTFORM (GET: Rollen als Referenz laden) ---
+  const [sourceApiKey, setSourceApiKey] = useState('');
+  const [sourceBaseUrl, setSourceBaseUrl] = useState(() => {
+    try { return localStorage.getItem('tempus_source_base_url') || TEMPUS_DEFAULT_BASE_URL; }
+    catch { return TEMPUS_DEFAULT_BASE_URL; }
   });
-  const [sandboxConnected, setSandboxConnected] = useState(false);
-  const [sandboxRoles, setSandboxRoles] = useState([]);
-  const [sandboxConnecting, setSandboxConnecting] = useState(false);
-  const [sandboxError, setSandboxError] = useState('');
+  const [sourceConnected, setSourceConnected] = useState(false);
+  const [sourceRoles, setSourceRoles] = useState([]);
+  const [sourceConnecting, setSourceConnecting] = useState(false);
+  const [sourceError, setSourceError] = useState('');
+  const [sourceIdentityInfo, setSourceIdentityInfo] = useState(null);
   
   useEffect(() => {
-    try { localStorage.setItem('tempus_sandbox_base_url', sandboxBaseUrl || ''); } catch { /* ignore */ }
-  }, [sandboxBaseUrl]);
+    try { localStorage.setItem('tempus_source_base_url', sourceBaseUrl || ''); } catch { /* ignore */ }
+  }, [sourceBaseUrl]);
 
-  const handleTempusConnect = async () => {
-    const key = tempusApiKey.trim();
-    if (!key) { setTempusConnectError('API-Key fehlt.'); return; }
-    setTempusConnecting(true);
-    setTempusConnectError('');
+  // Backwards-Compat Aliase (für bestehenden Code der noch tempusRoles etc. nutzt)
+  const tempusRoles = targetRoles;
+  const tempusConnecting = targetConnecting;
+
+  // --- ZIEL-PLATTFORM verbinden ---
+  const handleTargetConnect = async () => {
+    const key = targetApiKey.trim();
+    if (!key) { setTargetConnectError('API-Key fehlt.'); return; }
+    setTargetConnecting(true);
+    setTargetConnectError('');
     try {
       const [identity, roles, groups] = await Promise.all([
         tempusIdentity(key),
         tempusListGlobalRoles(key).catch(() => []),
         tempusListResourceSecurityGroups(key).catch(() => []),
       ]);
-      setTempusIdentityInfo(identity);
-      setTempusRoles(roles);
-      setTempusGroups(groups);
+      setTargetIdentityInfo(identity);
+      setTargetRoles(roles);
+      setTargetGroups(groups);
+      
       // Defaults setzen, falls noch nichts gewählt
-      setTempusRoleId((curr) => {
+      setTargetDefaultRoleId((curr) => {
         if (curr != null && roles.some(r => r.id === curr)) return curr;
         const nonAdmin = roles.find(r => r.systemKey !== 'Administrator');
         return (nonAdmin || roles[0])?.id ?? null;
       });
-      setTempusSecurityGroupId((curr) => {
+      setTargetSecurityGroupId((curr) => {
         if (curr != null && groups.some(g => g.id === curr)) return curr;
         return groups[0]?.id ?? null;
       });
@@ -428,51 +439,61 @@ export default function MailerWizard() {
         }
       }
     } catch (err) {
-      setTempusIdentityInfo(null);
-      setTempusConnectError(err?.message || String(err));
+      setTargetIdentityInfo(null);
+      setTargetConnectError(err?.message || String(err));
     } finally {
-      setTempusConnecting(false);
+      setTargetConnecting(false);
     }
-  };
-  
-  // Sandbox-Verbindung für Rollen-Abgleich
-  const handleSandboxConnect = async () => {
-    const key = sandboxApiKey.trim();
-    if (!key) { setSandboxError('API-Key fehlt.'); return; }
-    setSandboxConnecting(true);
-    setSandboxError('');
-    try {
-      const roles = await tempusListGlobalRoles(key);
-      setSandboxRoles(roles);
-      setSandboxConnected(true);
-    } catch (err) {
-      setSandboxConnected(false);
-      setSandboxError(err?.message || String(err));
-    } finally {
-      setSandboxConnecting(false);
-    }
-  };
-  
-  const handleSandboxDisconnect = () => {
-    setSandboxApiKey('');
-    setSandboxConnected(false);
-    setSandboxRoles([]);
-    setSandboxError('');
   };
 
-  const handleTempusDisconnect = () => {
-    setTempusApiKey('');
-    setTempusIdentityInfo(null);
-    setTempusRoles([]);
-    setTempusGroups([]);
-    setTempusConnectError('');
-    setTempusSyncRows([]);
+  const handleTargetDisconnect = () => {
+    setTargetApiKey('');
+    setTargetIdentityInfo(null);
+    setTargetRoles([]);
+    setTargetGroups([]);
+    setTargetConnectError('');
+    setSyncRows([]);
   };
+
+  // --- QUELL-PLATTFORM verbinden ---
+  const handleSourceConnect = async () => {
+    const key = sourceApiKey.trim();
+    if (!key) { setSourceError('API-Key fehlt.'); return; }
+    setSourceConnecting(true);
+    setSourceError('');
+    try {
+      const [identity, roles] = await Promise.all([
+        tempusIdentity(key).catch(() => null),
+        tempusListGlobalRoles(key),
+      ]);
+      setSourceIdentityInfo(identity);
+      setSourceRoles(roles);
+      setSourceConnected(true);
+    } catch (err) {
+      setSourceConnected(false);
+      setSourceIdentityInfo(null);
+      setSourceError(err?.message || String(err));
+    } finally {
+      setSourceConnecting(false);
+    }
+  };
+
+  const handleSourceDisconnect = () => {
+    setSourceApiKey('');
+    setSourceConnected(false);
+    setSourceRoles([]);
+    setSourceError('');
+    setSourceIdentityInfo(null);
+  };
+
+  // Backwards-Compat Handler-Aliase
+  const handleTempusConnect = handleTargetConnect;
+  const handleTempusDisconnect = handleTargetDisconnect;
 
   const handleTempusSync = async () => {
-    if (!tempusIdentityInfo) { alert('Bitte zuerst mit Tempus verbinden.'); return; }
-    if (tempusRoleId == null || tempusSecurityGroupId == null) {
-      alert('Bitte Globale Rolle (Standard) und Security-Group wählen.');
+    if (!targetIdentityInfo) { alert('Bitte zuerst mit der Ziel-Plattform verbinden.'); return; }
+    if (targetDefaultRoleId == null || targetSecurityGroupId == null) {
+      alert('Bitte Standard-Rolle und Security-Group für die Ziel-Plattform wählen.');
       return;
     }
     const targets = entries
@@ -495,20 +516,20 @@ export default function MailerWizard() {
     const withDefaultRole = targets.length - withIndividualRole;
     
     const roleInfo = withIndividualRole > 0
-      ? `${withIndividualRole} mit individueller Rolle aus Excel, ${withDefaultRole} mit Standard-Rolle "${tempusRoles.find(r => r.id === tempusRoleId)?.name || tempusRoleId}"`
-      : `Rolle: ${(tempusRoles.find(r => r.id === tempusRoleId)?.name) || tempusRoleId}`;
+      ? `${withIndividualRole} mit individueller Rolle aus Excel, ${withDefaultRole} mit Standard-Rolle "${targetRoles.find(r => r.id === targetDefaultRoleId)?.name || targetDefaultRoleId}"`
+      : `Rolle: ${(targetRoles.find(r => r.id === targetDefaultRoleId)?.name) || targetDefaultRoleId}`;
 
     const ok = confirm(
-      `Es werden ${targets.length} Resources nacheinander in Tempus angelegt.\n\n` +
-      `Ziel: ${tempusBaseUrl}\n` +
+      `Es werden ${targets.length} Resources nacheinander auf der Ziel-Plattform angelegt.\n\n` +
+      `Ziel: ${targetBaseUrl}\n` +
       `${roleInfo}\n` +
-      `Security-Group: ${(tempusGroups.find(g => g.id === tempusSecurityGroupId)?.name) || tempusSecurityGroupId}\n` +
-      `Timesheet-User: ${tempusIsTimesheetUser ? 'ja' : 'nein'}\n\n` +
+      `Security-Group: ${(targetGroups.find(g => g.id === targetSecurityGroupId)?.name) || targetSecurityGroupId}\n` +
+      `Timesheet-User: ${targetIsTimesheetUser ? 'ja' : 'nein'}\n\n` +
       `Fortfahren?`
     );
     if (!ok) return;
 
-    setTempusSyncRunning(true);
+    setSyncRunning(true);
     const initial = targets.map(t => ({ 
       idx: t.idx, 
       name: t.name, 
@@ -516,31 +537,31 @@ export default function MailerWizard() {
       globalRoleName: t.globalRoleName,
       status: 'pending' 
     }));
-    setTempusSyncRows(initial);
+    setSyncRows(initial);
 
     const updateRow = (idx, patch) => {
-      setTempusSyncRows(prev => prev.map(r => (r.idx === idx ? { ...r, ...patch } : r)));
+      setSyncRows(prev => prev.map(r => (r.idx === idx ? { ...r, ...patch } : r)));
     };
 
     for (const t of targets) {
       updateRow(t.idx, { status: 'running' });
       try {
-        const exists = await tempusResourceNameExists(tempusApiKey, t.name);
+        const exists = await tempusResourceNameExists(targetApiKey, t.name);
         if (exists) {
-          updateRow(t.idx, { status: 'exists', message: 'Name in Tempus bereits vergeben — übersprungen.' });
+          updateRow(t.idx, { status: 'exists', message: 'Name bereits vergeben — übersprungen.' });
         } else {
           // Individuelle Rolle aus Excel verwenden falls vorhanden, sonst Standard
-          const roleIdToUse = t.globalRoleId ?? tempusRoleId;
+          const roleIdToUse = t.globalRoleId ?? targetDefaultRoleId;
           const roleName = t.globalRoleId 
-            ? (tempusRoles.find(r => r.id === t.globalRoleId)?.name || t.globalRoleName)
-            : (tempusRoles.find(r => r.id === tempusRoleId)?.name);
+            ? (targetRoles.find(r => r.id === t.globalRoleId)?.name || t.globalRoleName)
+            : (targetRoles.find(r => r.id === targetDefaultRoleId)?.name);
           
-          const newId = await tempusCreateResource(tempusApiKey, {
+          const newId = await tempusCreateResource(targetApiKey, {
             name: t.name,
             globalRoleId: roleIdToUse,
-            securityGroupId: tempusSecurityGroupId,
+            securityGroupId: targetSecurityGroupId,
             isEnabled: true,
-            isTimesheetUser: tempusIsTimesheetUser,
+            isTimesheetUser: targetIsTimesheetUser,
           });
           updateRow(t.idx, { 
             status: 'created', 
@@ -551,11 +572,11 @@ export default function MailerWizard() {
       } catch (err) {
         updateRow(t.idx, { status: 'error', message: err?.message || String(err) });
       }
-      // Kurze Pause, damit die API nicht überlastet wird und der Fortschritt sichtbar ist.
+      // Kurze Pause, damit die API nicht überlastet wird
       await new Promise(res => setTimeout(res, 150));
     }
 
-    setTempusSyncRunning(false);
+    setSyncRunning(false);
   };
 
   // --- Templates ---
@@ -1352,258 +1373,70 @@ export default function MailerWizard() {
             </div>
           )}
 
-          {/* ── TEMPUS-API-SYNC ─────────────────────────────────────────── */}
-          {entries.length > 0 && (
-            <div className="mt-4 p-4 rounded-xl border border-indigo-400/30 bg-indigo-500/[0.06] space-y-4">
-              <div className="flex items-start gap-3">
-                <Zap className="w-6 h-6 text-indigo-300 shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold">User in Tempus anlegen (optional)</h3>
-                  <p className="text-xs text-white/60 mt-1">
-                    Legt pro Empfänger einen <span className="font-semibold text-white/80">Tempus-Resource-Eintrag</span> (Stammdatensatz) via API
-                    an. Bestehende Namen werden übersprungen, E-Mail/Username/Passwort werden NICHT über die API gesetzt —
-                    diese kommen weiterhin via Login-Mail. Ziel-Instanz ist aktuell fest:
-                    {' '}<span className="font-mono text-white/70">{TEMPUS_DEFAULT_BASE_URL}</span>.
-                  </p>
-                </div>
+          {/* ══════════════════════════════════════════════════════════════════
+              TEMPUS-PLATTFORM-VERBINDUNGEN
+              ══════════════════════════════════════════════════════════════════ */}
+          
+          {/* Info-Box: Aktueller Proxy-Hinweis */}
+          <div className="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-400/30 text-xs text-amber-200">
+            <div className="flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+              <div>
+                <b>Hinweis:</b> Der CORS-Proxy unterstützt aktuell nur <span className="font-mono">{TEMPUS_DEFAULT_BASE_URL}</span>.
+                Beide Plattformen müssen auf dieser Instanz liegen. Die URL-Felder dienen als Referenz.
+                Für weitere Instanzen wird ein zusätzlicher Proxy benötigt.
               </div>
-
-              <div className="grid md:grid-cols-[1fr_auto] gap-2 items-end">
-                <div>
-                  <label className="block text-xs text-white/50 mb-1">Tempus API-Key</label>
-                  <input
-                    type="password"
-                    autoComplete="off"
-                    value={tempusApiKey}
-                    onChange={(e) => setTempusApiKey(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' && !tempusConnecting) handleTempusConnect(); }}
-                    placeholder="z. B. 373-79b17597-9bc4-4912-9ecb-bcbfcb223050"
-                    className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm font-mono"
-                  />
-                  <p className="text-xs text-white/40 mt-1">
-                    Profil → <span className="text-white/60">API Token</span> in Tempus. Wird nicht gespeichert; nach Reload erneut eingeben.
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  {!tempusIdentityInfo ? (
-                    <button
-                      onClick={handleTempusConnect}
-                      disabled={tempusConnecting || !tempusApiKey.trim()}
-                      className="px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-400 disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium text-sm flex items-center gap-2"
-                    >
-                      {tempusConnecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plug className="w-4 h-4" />}
-                      Verbinden
-                    </button>
-                  ) : (
-                    <button
-                      onClick={handleTempusDisconnect}
-                      className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm flex items-center gap-2"
-                    >
-                      <X className="w-4 h-4" /> Trennen
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {tempusConnectError && (
-                <div className="p-3 rounded-lg bg-red-500/10 border border-red-400/30 text-sm text-red-200 flex items-start gap-2">
-                  <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
-                  <span className="break-words">{tempusConnectError}</span>
-                </div>
-              )}
-
-              {tempusIdentityInfo && (
-                <>
-                  <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-400/30 text-sm text-emerald-200 flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />
-                    <span>
-                      Verbunden als <span className="font-semibold">{tempusIdentityInfo.name}</span>
-                      {' '}(Id {tempusIdentityInfo.id})
-                      {tempusIdentityInfo.globalRoleId && <span className="text-white/60"> · globalRoleId {tempusIdentityInfo.globalRoleId}</span>}
-                    </span>
-                  </div>
-
-                  <div className="grid md:grid-cols-3 gap-3">
-                    <div>
-                      <label className="block text-xs text-white/50 mb-1">Globale Rolle für neue User</label>
-                      <select
-                        value={tempusRoleId ?? ''}
-                        onChange={(e) => setTempusRoleId(e.target.value ? Number(e.target.value) : null)}
-                        className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm"
-                      >
-                        <option value="">– bitte wählen –</option>
-                        {tempusRoles.map(r => (
-                          <option key={r.id} value={r.id}>
-                            {r.name}{r.systemKey === 'Administrator' ? ' ⚠︎' : ''}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs text-white/50 mb-1">Security-Group</label>
-                      <select
-                        value={tempusSecurityGroupId ?? ''}
-                        onChange={(e) => setTempusSecurityGroupId(e.target.value ? Number(e.target.value) : null)}
-                        className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm"
-                      >
-                        <option value="">– bitte wählen –</option>
-                        {tempusGroups.map(g => (
-                          <option key={g.id} value={g.id}>{g.name}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs text-white/50 mb-1">Timesheets</label>
-                      <label className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/20 text-sm cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={tempusIsTimesheetUser}
-                          onChange={(e) => setTempusIsTimesheetUser(e.target.checked)}
-                        />
-                        isTimesheetUser = true
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* Hinweis wenn Entries mit Global Role aus Excel vorhanden sind */}
-                  {entries.some(e => e.globalRole && !e.globalRoleMatched) && (
-                    <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-400/30 text-sm text-amber-200 flex items-center justify-between gap-3">
-                      <div className="flex items-start gap-2">
-                        <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
-                        <span>
-                          {entries.filter(e => e.globalRole && !e.globalRoleMatched).length} Empfänger haben eine Global Role aus Excel, 
-                          die noch nicht mit einer Tempus-Rolle gematcht wurde.
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => {
-                          const matched = matchAllGlobalRoles(entries, tempusRoles);
-                          const newMatches = matched.filter(e => e.globalRoleMatched).length - entries.filter(e => e.globalRoleMatched).length;
-                          setEntries(matched);
-                          if (newMatches > 0) {
-                            alert(`${newMatches} neue Rollen-Matches gefunden.`);
-                          } else {
-                            alert('Keine neuen Matches gefunden. Prüfe die Schreibweise der Rollen in der Excel-Datei.');
-                          }
-                        }}
-                        className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-900 text-xs font-semibold whitespace-nowrap"
-                      >
-                        Erneut matchen
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Stats: Wie viele haben individuelle Rolle */}
-                  {entries.some(e => e.globalRoleId) && (
-                    <div className="p-3 rounded-lg bg-indigo-500/10 border border-indigo-400/30 text-sm text-indigo-200 flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />
-                      <span>
-                        <span className="font-semibold">{entries.filter(e => e.globalRoleId).length}</span> von {entries.length} Empfängern 
-                        haben eine individuelle Global Role zugewiesen (aus Excel oder manuell gewählt).
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/10">
-                    <p className="text-xs text-white/60">
-                      {entries.filter(e => (e.name || '').trim()).length} von {entries.length} Empfängern haben einen Namen und werden versucht anzulegen.
-                    </p>
-                    <button
-                      onClick={handleTempusSync}
-                      disabled={tempusSyncRunning || !entries.length || tempusRoleId == null || tempusSecurityGroupId == null}
-                      className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed text-slate-900 font-semibold text-sm flex items-center gap-2"
-                    >
-                      {tempusSyncRunning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Users className="w-4 h-4" />}
-                      {tempusSyncRunning ? 'Lege an …' : `Alle ${entries.filter(e => (e.name || '').trim()).length} in Tempus anlegen`}
-                    </button>
-                  </div>
-                </>
-              )}
-
-              {tempusSyncRows.length > 0 && (
-                <div className="mt-3 rounded-xl border border-white/10 overflow-hidden">
-                  <div className="flex items-center justify-between px-3 py-2 bg-white/5 text-xs text-white/60">
-                    <span>
-                      Fortschritt:
-                      {' '}<span className="text-emerald-300">{tempusSyncRows.filter(r => r.status === 'created').length} angelegt</span>
-                      {' · '}<span className="text-amber-300">{tempusSyncRows.filter(r => r.status === 'exists').length} existieren</span>
-                      {' · '}<span className="text-red-300">{tempusSyncRows.filter(r => r.status === 'error').length} Fehler</span>
-                      {' · '}<span className="text-white/50">{tempusSyncRows.filter(r => r.status === 'pending' || r.status === 'running').length} offen</span>
-                    </span>
-                  </div>
-                  <div className="max-h-72 overflow-y-auto">
-                    <table className="w-full text-sm">
-                      <tbody>
-                        {tempusSyncRows.map((r) => {
-                          const iconMap = {
-                            pending:  <MinusCircle className="w-4 h-4 text-white/30" />,
-                            running:  <Loader2 className="w-4 h-4 animate-spin text-indigo-300" />,
-                            created:  <CheckCircle2 className="w-4 h-4 text-emerald-400" />,
-                            exists:   <AlertTriangle className="w-4 h-4 text-amber-300" />,
-                            error:    <XCircle className="w-4 h-4 text-red-400" />,
-                            skipped:  <MinusCircle className="w-4 h-4 text-white/30" />,
-                          };
-                          return (
-                            <tr key={r.idx} className="border-t border-white/5">
-                              <td className="px-3 py-2 w-8">{iconMap[r.status] || null}</td>
-                              <td className="px-2 py-2">
-                                <div className="font-medium text-white/90">{r.name || <span className="text-white/40">(kein Name)</span>}</div>
-                                {r.email && <div className="text-xs text-white/40 font-mono">{r.email}</div>}
-                                {r.globalRoleName && <div className="text-xs text-indigo-300">Rolle: {r.globalRoleName}</div>}
-                              </td>
-                              <td className="px-2 py-2 text-xs text-white/60">
-                                {r.message || (r.status === 'running' ? 'läuft …' : r.status === 'pending' ? 'warte …' : '')}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
             </div>
-          )}
+          </div>
 
-          {/* ── SANDBOX ROLLEN-ABGLEICH ─────────────────────────────────────── */}
-          <div className="mt-4 p-4 rounded-xl border border-cyan-400/30 bg-cyan-500/[0.06] space-y-4">
+          {/* ── 1. ZIEL-PLATTFORM (POST: User anlegen) ─────────────────────── */}
+          <div className="mt-4 p-4 rounded-xl border border-emerald-400/30 bg-emerald-500/[0.06] space-y-4">
             <div className="flex items-start gap-3">
-              <RefreshCw className="w-6 h-6 text-cyan-300 shrink-0 mt-0.5" />
+              <Zap className="w-6 h-6 text-emerald-300 shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h3 className="text-lg font-semibold">Rollen von Sandbox laden (optional)</h3>
+                <h3 className="text-lg font-semibold">1. Ziel-Plattform verbinden</h3>
                 <p className="text-xs text-white/60 mt-1">
-                  Verbinde mit einer Sandbox-Umgebung um verfügbare <span className="font-semibold text-white/80">Global Roles</span> abzurufen.
-                  Die Rollen werden in einer Tabelle angezeigt und können mit den Prod-Rollen verglichen werden.
+                  Hier werden die User per <span className="font-semibold text-white/80">POST</span> angelegt.
+                  Die Rollen dieser Plattform werden für das Excel-Matching verwendet.
                 </p>
               </div>
             </div>
 
-            <div className="grid md:grid-cols-[1fr_auto] gap-2 items-end">
+            <div className="grid md:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs text-white/50 mb-1">Sandbox API-Key</label>
+                <label className="block text-xs text-white/50 mb-1">Ziel-URL (Referenz)</label>
                 <input
-                  type="password"
-                  autoComplete="off"
-                  value={sandboxApiKey}
-                  onChange={(e) => setSandboxApiKey(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter' && !sandboxConnecting) handleSandboxConnect(); }}
-                  placeholder="API-Key der Sandbox-Instanz"
+                  value={targetBaseUrl}
+                  onChange={(e) => setTargetBaseUrl(e.target.value)}
+                  placeholder="https://prod.tempus-resource.com/slot1"
                   className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm font-mono"
                 />
               </div>
-              <div className="flex gap-2">
-                {!sandboxConnected ? (
+              <div className="grid grid-cols-[1fr_auto] gap-2 items-end">
+                <div>
+                  <label className="block text-xs text-white/50 mb-1">Ziel API-Key</label>
+                  <input
+                    type="password"
+                    autoComplete="off"
+                    value={targetApiKey}
+                    onChange={(e) => setTargetApiKey(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && !targetConnecting) handleTargetConnect(); }}
+                    placeholder="API-Key der Ziel-Plattform"
+                    className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm font-mono"
+                  />
+                </div>
+                {!targetIdentityInfo ? (
                   <button
-                    onClick={handleSandboxConnect}
-                    disabled={sandboxConnecting || !sandboxApiKey.trim()}
-                    className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium text-sm flex items-center gap-2"
+                    onClick={handleTargetConnect}
+                    disabled={targetConnecting || !targetApiKey.trim()}
+                    className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed text-slate-900 font-semibold text-sm flex items-center gap-2"
                   >
-                    {sandboxConnecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plug className="w-4 h-4" />}
+                    {targetConnecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plug className="w-4 h-4" />}
                     Verbinden
                   </button>
                 ) : (
                   <button
-                    onClick={handleSandboxDisconnect}
+                    onClick={handleTargetDisconnect}
                     className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm flex items-center gap-2"
                   >
                     <X className="w-4 h-4" /> Trennen
@@ -1612,44 +1445,267 @@ export default function MailerWizard() {
               </div>
             </div>
 
-            {sandboxError && (
+            {targetConnectError && (
               <div className="p-3 rounded-lg bg-red-500/10 border border-red-400/30 text-sm text-red-200 flex items-start gap-2">
                 <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
-                <span className="break-words">{sandboxError}</span>
+                <span className="break-words">{targetConnectError}</span>
               </div>
             )}
 
-            {sandboxConnected && sandboxRoles.length > 0 && (
-              <div className="space-y-3">
+            {targetIdentityInfo && (
+              <>
                 <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-400/30 text-sm text-emerald-200 flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />
-                  <span>{sandboxRoles.length} Rollen von Sandbox geladen</span>
+                  <span>
+                    <span className="font-semibold">Ziel:</span> Verbunden als <span className="font-semibold">{targetIdentityInfo.name}</span>
+                    {' '}(Id {targetIdentityInfo.id}) · {targetRoles.length} Rollen · {targetGroups.length} Security-Groups
+                  </span>
                 </div>
 
+                {entries.length > 0 && (
+                  <>
+                    <div className="grid md:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-xs text-white/50 mb-1">Standard-Rolle (falls Excel leer)</label>
+                        <select
+                          value={targetDefaultRoleId ?? ''}
+                          onChange={(e) => setTargetDefaultRoleId(e.target.value ? Number(e.target.value) : null)}
+                          className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm"
+                        >
+                          <option value="">– bitte wählen –</option>
+                          {targetRoles.map(r => (
+                            <option key={r.id} value={r.id}>
+                              {r.name}{r.systemKey === 'Administrator' ? ' ⚠︎' : ''}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs text-white/50 mb-1">Security-Group</label>
+                        <select
+                          value={targetSecurityGroupId ?? ''}
+                          onChange={(e) => setTargetSecurityGroupId(e.target.value ? Number(e.target.value) : null)}
+                          className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm"
+                        >
+                          <option value="">– bitte wählen –</option>
+                          {targetGroups.map(g => (
+                            <option key={g.id} value={g.id}>{g.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs text-white/50 mb-1">Timesheets</label>
+                        <label className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/20 text-sm cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={targetIsTimesheetUser}
+                            onChange={(e) => setTargetIsTimesheetUser(e.target.checked)}
+                          />
+                          isTimesheetUser = true
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Hinweis wenn Entries mit Global Role aus Excel vorhanden sind */}
+                    {entries.some(e => e.globalRole && !e.globalRoleMatched) && (
+                      <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-400/30 text-sm text-amber-200 flex items-center justify-between gap-3">
+                        <div className="flex items-start gap-2">
+                          <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+                          <span>
+                            {entries.filter(e => e.globalRole && !e.globalRoleMatched).length} Empfänger haben eine Global Role aus Excel, 
+                            die noch nicht mit einer Ziel-Rolle gematcht wurde.
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => {
+                            const matched = matchAllGlobalRoles(entries, targetRoles);
+                            const newMatches = matched.filter(e => e.globalRoleMatched).length - entries.filter(e => e.globalRoleMatched).length;
+                            setEntries(matched);
+                            if (newMatches > 0) {
+                              alert(`${newMatches} neue Rollen-Matches gefunden.`);
+                            } else {
+                              alert('Keine neuen Matches gefunden. Prüfe die Schreibweise der Rollen in der Excel-Datei.');
+                            }
+                          }}
+                          className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-900 text-xs font-semibold whitespace-nowrap"
+                        >
+                          Erneut matchen
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Stats: Wie viele haben individuelle Rolle */}
+                    {entries.some(e => e.globalRoleId) && (
+                      <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-400/30 text-sm text-emerald-200 flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />
+                        <span>
+                          <span className="font-semibold">{entries.filter(e => e.globalRoleId).length}</span> von {entries.length} Empfängern 
+                          haben eine individuelle Global Role (aus Excel gematcht oder manuell gewählt).
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/10">
+                      <p className="text-xs text-white/60">
+                        {entries.filter(e => (e.name || '').trim()).length} von {entries.length} Empfängern werden auf der Ziel-Plattform angelegt.
+                      </p>
+                      <button
+                        onClick={handleTempusSync}
+                        disabled={syncRunning || !entries.length || targetDefaultRoleId == null || targetSecurityGroupId == null}
+                        className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed text-slate-900 font-semibold text-sm flex items-center gap-2"
+                      >
+                        {syncRunning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Users className="w-4 h-4" />}
+                        {syncRunning ? 'Lege an …' : `Alle ${entries.filter(e => (e.name || '').trim()).length} auf Ziel anlegen`}
+                      </button>
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+
+            {syncRows.length > 0 && (
+              <div className="mt-3 rounded-xl border border-white/10 overflow-hidden">
+                <div className="flex items-center justify-between px-3 py-2 bg-white/5 text-xs text-white/60">
+                  <span>
+                    Fortschritt:
+                    {' '}<span className="text-emerald-300">{syncRows.filter(r => r.status === 'created').length} angelegt</span>
+                    {' · '}<span className="text-amber-300">{syncRows.filter(r => r.status === 'exists').length} existieren</span>
+                    {' · '}<span className="text-red-300">{syncRows.filter(r => r.status === 'error').length} Fehler</span>
+                    {' · '}<span className="text-white/50">{syncRows.filter(r => r.status === 'pending' || r.status === 'running').length} offen</span>
+                  </span>
+                </div>
+                <div className="max-h-72 overflow-y-auto">
+                  <table className="w-full text-sm">
+                    <tbody>
+                      {syncRows.map((r) => {
+                        const iconMap = {
+                          pending:  <MinusCircle className="w-4 h-4 text-white/30" />,
+                          running:  <Loader2 className="w-4 h-4 animate-spin text-emerald-300" />,
+                          created:  <CheckCircle2 className="w-4 h-4 text-emerald-400" />,
+                          exists:   <AlertTriangle className="w-4 h-4 text-amber-300" />,
+                          error:    <XCircle className="w-4 h-4 text-red-400" />,
+                          skipped:  <MinusCircle className="w-4 h-4 text-white/30" />,
+                        };
+                        return (
+                          <tr key={r.idx} className="border-t border-white/5">
+                            <td className="px-3 py-2 w-8">{iconMap[r.status] || null}</td>
+                            <td className="px-2 py-2">
+                              <div className="font-medium text-white/90">{r.name || <span className="text-white/40">(kein Name)</span>}</div>
+                              {r.email && <div className="text-xs text-white/40 font-mono">{r.email}</div>}
+                              {r.globalRoleName && <div className="text-xs text-emerald-300">Rolle: {r.globalRoleName}</div>}
+                            </td>
+                            <td className="px-2 py-2 text-xs text-white/60">
+                              {r.message || (r.status === 'running' ? 'läuft …' : r.status === 'pending' ? 'warte …' : '')}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ── 2. QUELL-PLATTFORM (GET: Rollen als Referenz) ──────────────── */}
+          <div className="mt-4 p-4 rounded-xl border border-cyan-400/30 bg-cyan-500/[0.06] space-y-4">
+            <div className="flex items-start gap-3">
+              <RefreshCw className="w-6 h-6 text-cyan-300 shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold">2. Quell-Plattform verbinden (optional)</h3>
+                <p className="text-xs text-white/60 mt-1">
+                  Von hier werden Rollen per <span className="font-semibold text-white/80">GET</span> als Referenz geladen.
+                  Nützlich um zu sehen, welche Rollen in der Quelle existieren und mit der Ziel-Plattform zu vergleichen.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs text-white/50 mb-1">Quell-URL (Referenz)</label>
+                <input
+                  value={sourceBaseUrl}
+                  onChange={(e) => setSourceBaseUrl(e.target.value)}
+                  placeholder="https://sandbox.tempus-resource.com/slot4"
+                  className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm font-mono"
+                />
+              </div>
+              <div className="grid grid-cols-[1fr_auto] gap-2 items-end">
+                <div>
+                  <label className="block text-xs text-white/50 mb-1">Quell API-Key</label>
+                  <input
+                    type="password"
+                    autoComplete="off"
+                    value={sourceApiKey}
+                    onChange={(e) => setSourceApiKey(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && !sourceConnecting) handleSourceConnect(); }}
+                    placeholder="API-Key der Quell-Plattform"
+                    className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm font-mono"
+                  />
+                </div>
+                {!sourceConnected ? (
+                  <button
+                    onClick={handleSourceConnect}
+                    disabled={sourceConnecting || !sourceApiKey.trim()}
+                    className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium text-sm flex items-center gap-2"
+                  >
+                    {sourceConnecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plug className="w-4 h-4" />}
+                    Verbinden
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleSourceDisconnect}
+                    className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm flex items-center gap-2"
+                  >
+                    <X className="w-4 h-4" /> Trennen
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {sourceError && (
+              <div className="p-3 rounded-lg bg-red-500/10 border border-red-400/30 text-sm text-red-200 flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+                <span className="break-words">{sourceError}</span>
+              </div>
+            )}
+
+            {sourceConnected && (
+              <>
+                <div className="p-3 rounded-lg bg-cyan-500/10 border border-cyan-400/30 text-sm text-cyan-200 flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />
+                  <span>
+                    <span className="font-semibold">Quelle:</span>
+                    {sourceIdentityInfo && <> Verbunden als <span className="font-semibold">{sourceIdentityInfo.name}</span> ·</>}
+                    {' '}{sourceRoles.length} Rollen geladen
+                  </span>
+                </div>
+
+                {/* Rollen-Vergleichstabelle */}
                 <div className="grid md:grid-cols-2 gap-4">
-                  {/* Sandbox-Rollen */}
+                  {/* Quell-Rollen */}
                   <div className="rounded-lg border border-white/10 overflow-hidden">
                     <div className="px-3 py-2 bg-cyan-500/10 border-b border-white/10 text-sm font-semibold text-cyan-200">
-                      Sandbox-Rollen ({sandboxRoles.length})
+                      Quell-Rollen ({sourceRoles.length})
                     </div>
                     <div className="max-h-48 overflow-y-auto">
                       <table className="w-full text-sm">
                         <tbody>
-                          {sandboxRoles.map(r => {
-                            const existsInProd = tempusRoles.some(pr => 
-                              pr.name.toLowerCase().replace(/\s+/g, '') === r.name.toLowerCase().replace(/\s+/g, '')
+                          {sourceRoles.map(r => {
+                            const existsInTarget = targetRoles.some(tr => 
+                              tr.name.toLowerCase().replace(/\s+/g, '') === r.name.toLowerCase().replace(/\s+/g, '')
                             );
                             return (
                               <tr key={r.id} className="border-t border-white/5">
                                 <td className="px-3 py-2">
-                                  <span className={existsInProd ? 'text-white/70' : 'text-amber-300'}>{r.name}</span>
+                                  <span className={existsInTarget ? 'text-white/70' : 'text-amber-300'}>{r.name}</span>
                                   {r.systemKey && <span className="ml-2 text-xs text-white/30">({r.systemKey})</span>}
                                 </td>
                                 <td className="px-3 py-2 text-right text-xs">
-                                  {existsInProd ? (
-                                    <span className="text-emerald-400">✓ in Prod</span>
+                                  {existsInTarget ? (
+                                    <span className="text-emerald-400">✓ in Ziel</span>
                                   ) : (
-                                    <span className="text-amber-400">nicht in Prod</span>
+                                    <span className="text-amber-400">nicht in Ziel</span>
                                   )}
                                 </td>
                               </tr>
@@ -1660,31 +1716,31 @@ export default function MailerWizard() {
                     </div>
                   </div>
 
-                  {/* Prod-Rollen */}
+                  {/* Ziel-Rollen */}
                   <div className="rounded-lg border border-white/10 overflow-hidden">
-                    <div className="px-3 py-2 bg-indigo-500/10 border-b border-white/10 text-sm font-semibold text-indigo-200">
-                      Prod-Rollen ({tempusRoles.length})
-                      {!tempusIdentityInfo && <span className="ml-2 text-xs text-white/40">(nicht verbunden)</span>}
+                    <div className="px-3 py-2 bg-emerald-500/10 border-b border-white/10 text-sm font-semibold text-emerald-200">
+                      Ziel-Rollen ({targetRoles.length})
+                      {!targetIdentityInfo && <span className="ml-2 text-xs text-white/40">(nicht verbunden)</span>}
                     </div>
                     <div className="max-h-48 overflow-y-auto">
-                      {tempusRoles.length > 0 ? (
+                      {targetRoles.length > 0 ? (
                         <table className="w-full text-sm">
                           <tbody>
-                            {tempusRoles.map(r => {
-                              const existsInSandbox = sandboxRoles.some(sr => 
+                            {targetRoles.map(r => {
+                              const existsInSource = sourceRoles.some(sr => 
                                 sr.name.toLowerCase().replace(/\s+/g, '') === r.name.toLowerCase().replace(/\s+/g, '')
                               );
                               return (
                                 <tr key={r.id} className="border-t border-white/5">
                                   <td className="px-3 py-2">
-                                    <span className={existsInSandbox ? 'text-white/70' : 'text-cyan-300'}>{r.name}</span>
+                                    <span className={existsInSource ? 'text-white/70' : 'text-cyan-300'}>{r.name}</span>
                                     {r.systemKey && <span className="ml-2 text-xs text-white/30">({r.systemKey})</span>}
                                   </td>
                                   <td className="px-3 py-2 text-right text-xs">
-                                    {existsInSandbox ? (
-                                      <span className="text-emerald-400">✓ in Sandbox</span>
+                                    {existsInSource ? (
+                                      <span className="text-emerald-400">✓ in Quelle</span>
                                     ) : (
-                                      <span className="text-cyan-400">nur Prod</span>
+                                      <span className="text-cyan-400">nur Ziel</span>
                                     )}
                                   </td>
                                 </tr>
@@ -1694,7 +1750,7 @@ export default function MailerWizard() {
                         </table>
                       ) : (
                         <div className="px-3 py-4 text-sm text-white/40 text-center">
-                          Verbinde oben mit Tempus Prod um Rollen zu laden
+                          Verbinde oben mit der Ziel-Plattform um Rollen zu laden
                         </div>
                       )}
                     </div>
@@ -1702,10 +1758,10 @@ export default function MailerWizard() {
                 </div>
 
                 <p className="text-xs text-white/40">
-                  <b>Hinweis:</b> Das Anlegen neuer Rollen in Prod ist ein Admin-Feature und erfordert entsprechende Berechtigungen. 
-                  Die Rollen-Tabelle dient primär dem Vergleich und der Dokumentation.
+                  <b>Workflow:</b> Rollen der Quell-Plattform dienen als Referenz. Die Excel-Daten werden mit den Rollen
+                  der <b>Ziel-Plattform</b> gematcht, da dort die User angelegt werden.
                 </p>
-              </div>
+              </>
             )}
           </div>
 
