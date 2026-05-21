@@ -75,12 +75,12 @@ const demoEnvironments = [
     url: TEAM_RESOURCES_DEMO_URL,
     icon: Users,
     color: 'from-emerald-500 to-teal-500',
-    badge: '5 Blöcke · DE/EN',
+    badge: '9 Blöcke · DE/EN',
     features: [
-      'Teams erstellen & Mitglieder zuweisen',
-      'Prozent oder Story Points definieren',
-      'Team-Verfügbarkeit im BPAFG',
-      'Multi-Assignment (Version 9.2)',
+      'Team Capacity & Inclusion %',
+      'Story Points für agile Teams',
+      'Net Availability & BPAFG',
+      'Resource Requests & Replace',
     ],
   },
   {
@@ -302,7 +302,7 @@ export default function TempusDemo() {
             {
               href: TEAM_RESOURCES_DEMO_URL,
               label: 'Team Resources Demo öffnen',
-              sub: 'Teams als planbare Einheit · 5 Blöcke · DE/EN',
+              sub: 'Teams als planbare Einheit · 9 Blöcke · DE/EN',
               color: 'emerald',
             },
             {
