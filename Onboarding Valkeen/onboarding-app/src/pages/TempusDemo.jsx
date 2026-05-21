@@ -75,7 +75,7 @@ const demoEnvironments = [
     url: TEAM_RESOURCES_DEMO_URL,
     icon: Users,
     color: 'from-emerald-500 to-teal-500',
-    badge: '9 Blöcke · DE/EN',
+    badge: '4 Blocks · DE/EN',
     features: [
       'Team Capacity & Inclusion %',
       'Story Points für agile Teams',
@@ -302,7 +302,7 @@ export default function TempusDemo() {
             {
               href: TEAM_RESOURCES_DEMO_URL,
               label: 'Team Resources Demo öffnen',
-              sub: 'Teams als planbare Einheit · 9 Blöcke · DE/EN',
+              sub: 'Teams as assignable units · 4 Blocks · DE/EN',
               color: 'emerald',
             },
             {
