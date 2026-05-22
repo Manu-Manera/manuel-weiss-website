@@ -17,6 +17,7 @@ Folgende Dokumente wurden für dein Onboarding erstellt:
 | **Demo_Scripts.md** | Strukturierte Anleitungen für die 3 Demos | Demo-Vorbereitung |
 | **Wochenplaner_Template.md** | Vorlage für wöchentliche Planung | Jede Woche kopieren und ausfüllen |
 | **Alle_Lernressourcen.md** | Zentrale Linksammlung | Schneller Zugriff auf alle Materialien |
+| **docs/Support_Knowledge_Base.md** | FAQ & Lösungen aus Kundensupport | Nachschlagen bei Kundenanfragen |
 
 ---
 
