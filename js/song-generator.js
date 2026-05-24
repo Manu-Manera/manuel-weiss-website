@@ -21,65 +21,55 @@
     song: 'sg_song_v1'
   };
 
+  const API_BASE = 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
+
   // ────────────────────────────────────────────────────────────
-  // API-Key-Quellen (zentral, identisch zur Bewerbungsapp / hr-selbsttest)
-  // Reihenfolge:
-  //  1. awsAPISettings.getFullApiKey('openai')   – AWS Cloud (eingeloggt → user-spezifisch,
-  //                                                 sonst global) inkl. localStorage-Fallback
-  //  2. openaiService.getApiKeyAsync()            – zusätzlicher Multi-Source-Loader
-  //  3. localStorage 'global_api_keys'            – manuell im Admin gespeichert
-  //  4. localStorage 'admin_state'                – Admin-Panel UI-State
+  // API-Key-Pfad – IDENTISCH zur Onboarding-App
+  // (Onboarding Valkeen/onboarding-app/src/services/awsService.js)
+  //
+  //   1. GET /api-settings?action=key&provider=openai&global=true  (kein Login nötig)
+  //   2. Fallback: localStorage 'openai-api-key'
+  //
+  // Kein „Anmelden", kein User-Pool, keine Cognito-Tokens.
+  // Der globale Key ist im Admin-Panel hinterlegt.
   // ────────────────────────────────────────────────────────────
   function _isValid(k) { return typeof k === 'string' && k.startsWith('sk-') && k.length > 20; }
 
-  function _getKeyFromLocalStorage() {
-    try {
-      const g = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
-      const cand = g.openai && (g.openai.key || g.openai.apiKey);
-      if (_isValid(cand)) return cand;
-    } catch (_e) {}
-    try {
-      const a = JSON.parse(localStorage.getItem('admin_state') || '{}');
-      const cand = a.apiKeys && a.apiKeys.openai && (a.apiKeys.openai.apiKey || a.apiKeys.openai.key);
-      if (_isValid(cand)) return cand;
-    } catch (_e) {}
-    return null;
-  }
-
-  // Cache für API-Key (5 Min) – verhindert AWS-Roundtrip bei jedem callApi
+  // Cache (5 Min)
   const _keyCache = { value: null, expiresAt: 0 };
   function invalidateApiKeyCache() { _keyCache.value = null; _keyCache.expiresAt = 0; }
 
   async function getApiKey() {
     if (_keyCache.value && _keyCache.expiresAt > Date.now()) return _keyCache.value;
 
-    let key = null;
-    if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
-      try {
-        const k = await window.awsAPISettings.getFullApiKey('openai');
-        if (_isValid(k)) key = k;
-      } catch (_e) { /* fällt durch zu nächster Quelle */ }
-    }
-    if (!key && window.openaiService && typeof window.openaiService.getApiKeyAsync === 'function') {
-      try {
-        const k = await window.openaiService.getApiKeyAsync();
-        if (_isValid(k)) key = k;
-      } catch (_e) { /* noop */ }
-    }
-    if (!key) {
-      const ls = _getKeyFromLocalStorage();
-      if (_isValid(ls)) key = ls;
-    }
+    // 1) AWS API Settings – global, ohne Auth
+    try {
+      const res = await fetch(API_BASE + '/api-settings?action=key&provider=openai&global=true', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (res.ok) {
+        const data = await res.json().catch(() => null);
+        const k = data && data.apiKey;
+        if (_isValid(k)) {
+          _keyCache.value = k;
+          _keyCache.expiresAt = Date.now() + 5 * 60 * 1000;
+          return k;
+        }
+      }
+    } catch (_e) { /* fall through */ }
 
-    if (key) {
-      _keyCache.value = key;
-      _keyCache.expiresAt = Date.now() + 5 * 60 * 1000;
-    }
-    return key;
-  }
+    // 2) Fallback: localStorage (gleicher Key-Name wie Onboarding-App)
+    try {
+      const lk = localStorage.getItem('openai-api-key');
+      if (_isValid(lk)) {
+        _keyCache.value = lk;
+        _keyCache.expiresAt = Date.now() + 5 * 60 * 1000;
+        return lk;
+      }
+    } catch (_e) {}
 
-  function isLoggedIn() {
-    return !!(window.awsAuth && typeof window.awsAuth.isLoggedIn === 'function' && window.awsAuth.isLoggedIn());
+    return null;
   }
 
   function apiUrl() {
@@ -272,10 +262,10 @@
   async function callApi(action, payload, opts) {
     const apiKey = await getApiKey();
     if (!apiKey) {
-      const msg = isLoggedIn()
-        ? 'Es ist noch kein OpenAI API-Key in deinem Profil hinterlegt. Bitte einmalig im Admin-Panel unter „API-Keys" eintragen.'
-        : 'Bitte zuerst anmelden, damit dein hinterlegter OpenAI API-Key automatisch geladen werden kann.';
-      const err = new Error(msg);
+      const err = new Error(
+        'Es ist kein globaler OpenAI API-Key hinterlegt. Bitte im Admin-Panel unter „API-Keys" einen Key als „global" eintragen ' +
+        '(gleicher Speicherort wie bei der Onboarding-App).'
+      );
       err.code = 'no_api_key';
       throw err;
     }
@@ -351,15 +341,6 @@
         this.state.answers = savedTest.answers || {};
       }
 
-      // Auf Auth-Änderungen reagieren – Cache leeren und Status-Box neu zeichnen
-      const onAuthChange = () => {
-        invalidateApiKeyCache();
-        if (this.state.step === 0) this.render();
-      };
-      window.addEventListener('songGenerator:authChanged', onAuthChange);
-      window.addEventListener('userLoggedIn', onAuthChange);
-      window.addEventListener('authStateChanged', onAuthChange);
-
       this.render();
     }
 
@@ -407,22 +388,18 @@
       const wrap = el('div', 'sg-card sg-welcome');
       wrap.append(el('h2', null, 'Dein Persönlichkeits-Song'));
       wrap.append(el('p', 'sg-lead',
-        'In wenigen Schritten entsteht ein Song, der zu dir passt. ' +
-        'Zuerst ein wissenschaftlich fundierter Test (Big Five, HEXACO, Werte, Stärken), ' +
-        'dann optional Inputs aus anderen Tests, Chats oder Social Media – ' +
-        'am Ende ein vollständiger Songtext mit Akkorden und Produktions-Spezifikation, den du Zeile für Zeile editieren kannst.'
+        'Ein wissenschaftlich validierter Test (24 Items aus Mini-IPIP, HEXACO und Schwartz-Werten) – ' +
+        'die Antworten bestimmen Tonart, Tempo und Instrumentierung deines Songs. ' +
+        'Externe Inputs aus anderen Tests, KI-Chats oder Social Media sind optional. ' +
+        'Am Ende ein vollständiger Songtext mit Akkorden, den du Zeile für Zeile editieren kannst.'
       ));
 
-      // Nur Status-Box (Login + automatisch geladener API-Key) –
-      // KEINE Eingabefelder. Personalisierung passiert später, wo sie Sinn macht.
-      wrap.append(this.renderAuthStatus());
-
-      // 3 kompakte Schritt-Erklärungen, damit der Nutzer sofort weiß was passiert
+      // 3 kompakte Schritt-Erklärungen
       const steps = el('div', 'sg-steps');
       [
-        { n: '1', t: 'Test', d: '24 Fragen zu deiner Persönlichkeit (~5 Min)' },
-        { n: '2', t: 'Profil', d: 'KI fasst Archetyp, Werte und Klang-DNA zusammen' },
-        { n: '3', t: 'Song', d: 'Editierbarer Songtext mit Akkorden & Suno-Prompt' }
+        { n: '1', t: 'Test', d: '24 Fragen, ~5 Minuten – startet sofort, ohne Anmeldung' },
+        { n: '2', t: 'Profil', d: 'Big-Five-Skalen, Archetyp und Klang-DNA werden berechnet' },
+        { n: '3', t: 'Song', d: 'KI komponiert Text + Akkorde, jede Zeile editierbar' }
       ].forEach(s => {
         const it = el('div', 'sg-step-item');
         it.append(el('span', 'sg-step-num', s.n));
@@ -447,124 +424,21 @@
       return wrap;
     }
 
-    /**
-     * Status-Karte: zeigt Login-Zustand und ob ein OpenAI-Key gefunden wurde.
-     * Kein Eingabefeld mehr – Keys werden ausschließlich über das Admin-Panel
-     * gepflegt (DynamoDB / mawps-api-settings, gleicher Pfad wie Bewerbungsapp).
-     * Inklusive Diagnose-Button: 1-Token-Health-Check gegen OpenAI.
-     */
-    renderAuthStatus() {
-      const box = el('div', 'sg-auth-box');
-      const loggedIn = isLoggedIn();
-      const checkingId = 'sg-auth-checking-' + Math.random().toString(36).slice(2, 8);
-
-      if (loggedIn) {
-        box.classList.add('sg-auth-ok');
-        box.append(el('div', 'sg-auth-icon', '✓'));
-        const txt = el('div', 'sg-auth-text');
-        txt.append(el('strong', null, 'Du bist angemeldet'));
-        const sub = el('p', 'sg-auth-sub');
-        sub.id = checkingId;
-        sub.textContent = 'Lade deinen OpenAI API-Key aus dem Profil …';
-        txt.append(sub);
-        box.append(txt);
-
-        // Asynchron prüfen, ob ein Key vorhanden ist + Diagnose-Button
-        getApiKey().then((k) => {
-          const el2 = document.getElementById(checkingId);
-          if (!el2) return;
-          if (k) {
-            el2.textContent = 'OpenAI API-Key gefunden (' + k.slice(0, 7) + '…' + k.slice(-4) + '). Du kannst sofort starten.';
-            box.classList.add('sg-auth-key-ok');
-
-            // Diagnose-Button für Power-User
-            const diagBtn = el('button', 'sg-btn-tiny', '🔍 API-Key testen');
-            diagBtn.style.marginTop = '0.5rem';
-            diagBtn.onclick = async () => {
-              diagBtn.disabled = true;
-              diagBtn.textContent = '… teste';
-              try {
-                const result = await healthCheckOpenAI(k);
-                diagBtn.textContent = '✓ ' + result.model + ' funktioniert';
-                diagBtn.style.color = '#16a34a';
-              } catch (err) {
-                diagBtn.textContent = '✗ Test fehlgeschlagen – Details unten';
-                diagBtn.style.color = '#b91c1c';
-                const errBox = el('p', 'sg-auth-sub sg-status-error');
-                errBox.style.marginTop = '0.5rem';
-                errBox.textContent = err.message || String(err);
-                el2.parentNode.appendChild(errBox);
-              } finally {
-                diagBtn.disabled = false;
-              }
-            };
-            el2.parentNode.appendChild(diagBtn);
-          } else {
-            el2.innerHTML = 'Es ist noch kein OpenAI API-Key in deinem Profil hinterlegt. ' +
-              '<a href="admin.html#api-keys" class="sg-link">Im Admin-Panel eintragen →</a>';
-            box.classList.remove('sg-auth-ok');
-            box.classList.add('sg-auth-warn');
-          }
-        }).catch((err) => {
-          const el2 = document.getElementById(checkingId);
-          if (el2) {
-            el2.innerHTML = 'Konnte API-Key nicht laden: ' + (err.message || err) + ' · ' +
-              '<a href="admin.html#api-keys" class="sg-link">Im Admin-Panel prüfen →</a>';
-            box.classList.remove('sg-auth-ok');
-            box.classList.add('sg-auth-warn');
-          }
-        });
-
-      } else {
-        box.classList.add('sg-auth-warn');
-        box.append(el('div', 'sg-auth-icon', '!'));
-        const txt = el('div', 'sg-auth-text');
-        txt.append(el('strong', null, 'Bitte zuerst anmelden'));
-        txt.append(el('p', 'sg-auth-sub',
-          'Dein OpenAI API-Key wird automatisch aus deinem Profil geladen – wie bei der Bewerbungsapp. ' +
-          'Du musst keinen Key manuell eingeben.'
-        ));
-        const loginBtn = el('button', 'sg-btn sg-btn-primary sg-btn-small', 'Jetzt anmelden');
-        loginBtn.onclick = () => {
-          if (typeof this.openLoginModal === 'function') return this.openLoginModal();
-          if (window.authModals && window.authModals.showLogin) return window.authModals.showLogin();
-          if (window.awsAuth && window.awsAuth.showLoginModal) return window.awsAuth.showLoginModal();
-          window.location.href = 'user-profile.html';
-        };
-        txt.append(loginBtn);
-        box.append(txt);
-      }
-      return box;
-    }
-
     // ── Step 1: Test ────────────────────────────────────────────
-    async startTest() {
-      // Pre-check: ohne Key zurück auf Welcome – Status-Box weist dort auf Login/Admin hin
-      const key = await getApiKey();
-      if (!key) {
-        this.setStep(0);
-        const wrap0 = this.root.querySelector('.sg-card') || this.root;
-        const s = this.showStatus(
-          isLoggedIn()
-            ? 'Es ist noch kein OpenAI API-Key in deinem Profil hinterlegt. Bitte einmalig im Admin-Panel unter „API-Keys" eintragen.'
-            : 'Bitte zuerst anmelden – dein hinterlegter API-Key wird dann automatisch geladen.',
-          wrap0
-        );
-        s.classList.add('sg-status-error');
-        return;
+    startTest() {
+      // Test ist STATISCH und braucht KEINEN API-Key.
+      // Wissenschaftlich validierte Items aus Mini-IPIP + HEXACO + Schwartz.
+      if (!this.state.questions) {
+        if (!window.SongTestData) {
+          const wrap0 = this.root.querySelector('.sg-card') || this.root;
+          const s = this.showStatus('Test-Daten konnten nicht geladen werden. Bitte Seite neu laden.', wrap0);
+          s.classList.add('sg-status-error');
+          return;
+        }
+        this.state.questions = window.SongTestData.getStaticTest();
+        this.persistTest();
       }
       this.setStep(1);
-      if (this.state.questions) return;
-      const status = this.showStatus('Erstelle Test (24 tiefgehende Fragen) …');
-      try {
-        const data = await callApi('test_questions');
-        this.state.questions = data;
-        this.persistTest();
-        this.setStep(1);
-      } catch (err) {
-        status.textContent = '⚠️ ' + err.message;
-        status.classList.add('sg-status-error');
-      }
     }
 
     renderTest() {
@@ -759,13 +633,42 @@
     async runSynthesis() {
       this.setStep(3);
       const wrap = this.root.querySelector('.sg-card') || this.root;
-      // Test-Ergebnisse zu rohem Score-Bündel fusionieren (clientseitig grob)
-      const test_results = this.computeRawTestResults();
+
+      // 1. Clientseitige Skoring + DNA – funktioniert IMMER, auch ohne API-Key
+      const T = window.SongTestData;
+      const scales = T ? T.computeScores(this.state.answers) : {};
+      const baseDNA = T ? T.computeMusicDNA(scales) : null;
+      const baseArchetype = T ? T.computeArchetype(scales) : 'Nordstern';
+
+      // Direkt-Persona als Fallback (falls KI nicht verfügbar)
+      const directPersona = {
+        archetype: baseArchetype,
+        scales_final: Object.assign({}, scales, { VIA_TOP: this._topVIAFromScales(scales) }),
+        tensions: [],
+        core_narrative: this._buildNarrative(baseArchetype, scales),
+        motifs: this._buildMotifs(scales),
+        music_dna: baseDNA,
+        rationale: 'Profil aus statischem Test berechnet (Mini-IPIP + HEXACO + Schwartz).'
+      };
+
+      // 2. Wenn externe Inputs vorhanden ODER User mehr Tiefe will → KI-Synthese
+      // Ohne externe Inputs reicht das deterministische Profil oft schon.
+      const hasExt = (this.state.externalInputs || []).length > 0;
+      if (!hasExt) {
+        // Direkter Pfad – kein API-Call nötig
+        this.state.persona = directPersona;
+        saveState(STORAGE_KEYS.persona, directPersona);
+        this.render();
+        return;
+      }
+
       try {
         const persona = await callApi('synthesize', {
-          test_results,
+          test_results: this._asConfidenceMap(scales),
           external_signals: this.state.externalInputs || [],
-          user_meta: this.state.userMeta
+          user_meta: this.state.userMeta,
+          base_dna: baseDNA,
+          base_archetype: baseArchetype
         });
         this.state.persona = persona;
         saveState(STORAGE_KEYS.persona, persona);
@@ -777,47 +680,58 @@
       }
     }
 
-    /**
-     * Sehr einfache clientseitige Vor-Aggregation: pro Skala
-     * weighted average aus Item-Antworten. Die Lambda macht den
-     * eigentlichen psychometrischen Schritt; das hier ist nur das
-     * unbearbeitete Roh-Bündel.
-     */
-    computeRawTestResults() {
+    // Skalen → Confidence-Map für die Synthese-Lambda
+    _asConfidenceMap(scales) {
       const out = {};
-      if (!this.state.questions) return out;
-      const items = [];
-      (this.state.questions.phases || []).forEach(p => (p.items || []).forEach(i => items.push(i)));
-      const acc = {};
-      items.forEach((it) => {
-        const ans = this.state.answers[it.id];
-        if (ans === undefined) return;
-        let normalized;
-        if (it.format === 'slider') normalized = ans / 100;
-        else if (it.format === 'likert7') normalized = ans / 6;
-        else {
-          const opts = it.options || [];
-          if (!opts.length) return;
-          normalized = ans / Math.max(1, opts.length - 1);
-        }
-        if (it.reverse) normalized = 1 - normalized;
-        const constructs = [];
-        if (it.constructs && it.constructs.primary) constructs.push(it.constructs.primary);
-        if (it.constructs && Array.isArray(it.constructs.secondary)) constructs.push(...it.constructs.secondary);
-        constructs.forEach(c => {
-          const k = c && c.scale;
-          if (!k) return;
-          const w = typeof c.weight === 'number' ? c.weight : 1;
-          if (!acc[k]) acc[k] = { sum: 0, w: 0 };
-          acc[k].sum += normalized * w;
-          acc[k].w += w;
-        });
-      });
-      Object.keys(acc).forEach((k) => {
-        const v = acc[k].w > 0 ? Math.round((acc[k].sum / acc[k].w) * 100) : 50;
-        out[k] = { value: v, confidence: 0.8 };
+      Object.keys(scales || {}).forEach(k => {
+        out[k] = { value: scales[k], confidence: 0.85 };
       });
       return out;
+    }
+
+    // Top-3 VIA-Stärken aus Skalenwerten ableiten (deterministisch)
+    _topVIAFromScales(s) {
+      const candidates = [
+        { name: 'Mut', score: s.VIA + (100 - s.BIG5_N) * 0.2 },
+        { name: 'Liebe', score: s.BIG5_A * 0.6 + s.ATT_SEC * 0.4 },
+        { name: 'Neugier', score: s.BIG5_O },
+        { name: 'Zielstrebigkeit', score: s.BIG5_C },
+        { name: 'Ehrlichkeit', score: s.HEX_H },
+        { name: 'Selbstbestimmung', score: s.VAL_SD },
+        { name: 'Großzügigkeit', score: s.VAL_BE },
+        { name: 'Begeisterung', score: s.BIG5_E }
+      ].filter(x => typeof x.score === 'number');
+      candidates.sort((a, b) => b.score - a.score);
+      return candidates.slice(0, 3).map(c => c.name);
+    }
+
+    // Kurze Persona-Erzählung (3 Sätze, deterministisch aus Top-Skalen)
+    _buildNarrative(archetype, s) {
+      const E = s.BIG5_E, O = s.BIG5_O, A = s.BIG5_A, C = s.BIG5_C, N = s.BIG5_N, H = s.HEX_H;
+      const energy = E >= 65 ? 'Du gibst Räumen Energie' : E <= 35 ? 'Deine Stärke liegt im Stillen' : 'Du bewegst dich zwischen Bühne und Rückzug';
+      const tiefe = O >= 65 ? 'liebst Bilder und Bedeutungen' : O <= 35 ? 'magst Klarheit und das Greifbare' : 'verbindest Konkretes mit Bedeutung';
+      const halt = N >= 65 ? 'auch wenn manches in dir wogt' : N <= 35 ? 'mit ruhigem inneren Boden' : 'manchmal ruhig, manchmal aufgewühlt';
+      const wert = H >= 60 ? 'Aufrichtigkeit ist dein Kompass' : A >= 65 ? 'andere Menschen sind dein Maßstab' : C >= 65 ? 'Disziplin trägt deine Vision' : 'du gehst eigene Wege';
+      return `Du bist ein ${archetype}: ${energy} und ${tiefe}. ${wert.charAt(0).toUpperCase() + wert.slice(1)} – ${halt}.`;
+    }
+
+    // Bilder/Motive für den Songtext (deterministisch)
+    _buildMotifs(s) {
+      const pool = [];
+      if (s.BIG5_O >= 60) pool.push('Sterne', 'Karten', 'Brücken');
+      if (s.BIG5_O < 50) pool.push('Heimweg', 'Küche', 'Werkbank');
+      if (s.BIG5_E >= 60) pool.push('Stimmen', 'Tanzfläche');
+      if (s.BIG5_E < 50) pool.push('Stille', 'Fenster');
+      if (s.BIG5_A >= 60) pool.push('Hände', 'Wärme');
+      if (s.BIG5_N >= 60) pool.push('Wasser', 'Schatten');
+      if (s.BIG5_N < 50) pool.push('Licht', 'Atem');
+      if (s.HEX_H >= 60) pool.push('Wurzeln');
+      if (s.ATT_SEC >= 60) pool.push('Hafen');
+      if (s.ATT_SEC < 50) pool.push('Weite');
+      // Bis auf 5 ergänzen, ohne Duplikate
+      const unique = Array.from(new Set(pool));
+      while (unique.length < 5) unique.push(['Anker', 'Spur', 'Funken', 'Wege', 'Echo'][unique.length % 5]);
+      return unique.slice(0, 5);
     }
 
     renderSynthesis() {
@@ -933,6 +847,25 @@
     async runCompose() {
       this.setStep(4);
       const wrap = this.root.querySelector('.sg-card') || this.root;
+
+      // Pre-check: Compose braucht zwingend einen API-Key (Songtext-Generierung)
+      const key = await getApiKey();
+      if (!key) {
+        const s = this.showStatus(
+          'Für die Songtext-Komposition wird der globale OpenAI API-Key benötigt. ' +
+          'Bitte einmalig im Admin-Panel unter „API-Keys" einen Key als „global" eintragen ' +
+          '(gleicher Speicherort wie bei der Onboarding-App).', wrap);
+        s.classList.add('sg-status-error');
+        const back = el('button', 'sg-btn sg-btn-ghost', '← Zurück zum Profil');
+        back.onclick = () => this.setStep(3);
+        const link = el('a', 'sg-btn sg-btn-primary', 'Admin-Panel öffnen');
+        link.href = 'admin.html#api-keys';
+        const actions = el('div', 'sg-actions');
+        actions.append(back, link);
+        wrap.append(actions);
+        return;
+      }
+
       try {
         const song = await callApi('compose', {
           persona: this.state.persona,
@@ -945,6 +878,13 @@
         const s = wrap.querySelector('.sg-status') || this.showStatus('', wrap);
         s.textContent = '⚠️ ' + err.message;
         s.classList.add('sg-status-error');
+        const back = el('button', 'sg-btn sg-btn-ghost', '← Zurück');
+        back.onclick = () => this.setStep(3);
+        const retry = el('button', 'sg-btn sg-btn-primary', 'Erneut versuchen');
+        retry.onclick = () => this.runCompose();
+        const actions = el('div', 'sg-actions');
+        actions.append(back, retry);
+        wrap.append(actions);
       }
     }
 
