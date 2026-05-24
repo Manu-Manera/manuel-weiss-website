@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="css/persoenlichkeitsentwicklung-uebersicht.css?v=20260524">
     <link rel="stylesheet" href="css/unified-auth-system.css">
-    <link rel="stylesheet" href="css/song-generator.css?v=20260524f">
+    <link rel="stylesheet" href="css/song-generator.css?v=20260524g">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -111,10 +111,10 @@
     <script src="js/aws-app-config.js"></script>
 
     <!-- Statischer Test + Datenimport + Generator -->
-    <script src="js/song-generator-test-data.js?v=20260524f"></script>
-    <script src="js/song-generator-data-import.js?v=20260524f"></script>
-    <script src="js/song-generator-prompts.js?v=20260524f"></script>
-    <script src="js/song-generator.js?v=20260524f"></script>
+    <script src="js/song-generator-test-data.js?v=20260524g"></script>
+    <script src="js/song-generator-data-import.js?v=20260524g"></script>
+    <script src="js/song-generator-prompts.js?v=20260524g"></script>
+    <script src="js/song-generator.js?v=20260524g"></script>
 
     <script>
       document.addEventListener('DOMContentLoaded', function () {
@@ -142,36 +142,72 @@
           if (window.awsAuth?.showLoginModal) return window.awsAuth.showLoginModal();
         }
 
+        // Click-Handler werden NUR EINMAL gebunden (nicht in updateAuthUI),
+        // damit das Dropdown nicht durch erneute Renders ungewollt getoggelt wird.
+        let dropdownOpen = false;
+        function setDropdown(open) {
+          dropdownOpen = !!open;
+          if (userDropdown) userDropdown.style.display = dropdownOpen ? 'block' : 'none';
+        }
+        authButton?.addEventListener('click', (e) => {
+          if (!e.isTrusted) return;
+          e.preventDefault();
+          e.stopPropagation();
+          if (authButton.classList.contains('logged-in')) {
+            setDropdown(!dropdownOpen);
+          } else {
+            showLoginModal();
+          }
+        });
+        mobileAuthButton?.addEventListener('click', () => {
+          if (mobileAuthButton.classList.contains('logged-in')) return;
+          toggle();
+          showLoginModal();
+        });
+        document.addEventListener('click', (e) => {
+          if (!e.isTrusted) return;
+          if (!dropdownOpen) return;
+          if (authButton?.contains(e.target) || userDropdown?.contains(e.target)) return;
+          setDropdown(false);
+        });
+        // Escape schließt Dropdown
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && dropdownOpen) setDropdown(false);
+        });
+
+        // updateAuthUI ändert NUR Text/Klassen, keine Handler mehr.
+        // Vermeidet Endlosschleife: KEIN dispatchEvent('userLoggedIn') mehr von hier.
+        let lastLoggedIn = null;
         function updateAuthUI() {
           const isLoggedIn = (window.realUserAuth?.isLoggedIn?.() || window.awsAuth?.isLoggedIn?.()) || false;
           if (isLoggedIn) {
             const u = window.realUserAuth?.getCurrentUser?.() || window.awsAuth?.getCurrentUser?.() || {};
-            const name = (u.name && u.name !== 'Test User') || (u.email ? u.email.split('@')[0] : 'Profil');
+            const name = (u.name && u.name !== 'Test User') ? u.name
+              : (u.email ? String(u.email).split('@')[0] : 'Profil');
             if (authButton) {
               authButton.classList.add('logged-in');
               authButton.innerHTML = '<i class="fas fa-user-check"></i> <span>' + name + '</span>';
-              authButton.onclick = (e) => {
-                if (!e.isTrusted) return;
-                e.stopPropagation();
-                if (userDropdown) userDropdown.style.display = userDropdown.style.display === 'block' ? 'none' : 'block';
-              };
             }
             if (mobileAuthButton) {
+              mobileAuthButton.classList.add('logged-in');
               mobileAuthButton.innerHTML = '<i class="fas fa-user-check"></i> <span>' + name + '</span>';
             }
-            window.dispatchEvent(new CustomEvent('userLoggedIn'));
           } else {
             if (authButton) {
               authButton.classList.remove('logged-in');
               authButton.innerHTML = '<i class="fas fa-user"></i> <span>Anmelden</span>';
-              authButton.onclick = () => showLoginModal();
             }
             if (mobileAuthButton) {
+              mobileAuthButton.classList.remove('logged-in');
               mobileAuthButton.innerHTML = '<i class="fas fa-user"></i> <span>Anmelden</span>';
-              mobileAuthButton.onclick = () => { toggle(); showLoginModal(); };
             }
-            if (userDropdown) userDropdown.style.display = 'none';
+            setDropdown(false);
           }
+          // Nur dann andere Module benachrichtigen, wenn sich der State WIRKLICH geändert hat
+          if (lastLoggedIn !== null && lastLoggedIn !== isLoggedIn) {
+            window.dispatchEvent(new CustomEvent('songGenerator:authChanged', { detail: { loggedIn: isLoggedIn } }));
+          }
+          lastLoggedIn = isLoggedIn;
         }
 
         logoutBtn?.addEventListener('click', async () => {
@@ -182,15 +218,11 @@
           window.location.reload();
         });
 
-        document.addEventListener('click', (e) => {
-          if (!e.isTrusted) return;
-          if (userDropdown && !authButton?.contains(e.target)) userDropdown.style.display = 'none';
-        });
-
-        setTimeout(updateAuthUI, 200);
+        // Initial-Update + ein einziger nachträglicher Check (für asynchrone Auth-Init)
+        updateAuthUI();
         setTimeout(updateAuthUI, 1200);
-        window.addEventListener('authStateChanged', updateAuthUI);
-        window.addEventListener('userLoggedIn', updateAuthUI);
+        // KEIN Listener auf 'userLoggedIn' / 'authStateChanged' der updateAuthUI ruft –
+        // sonst Endlosschleife. updateAuthUI dispatcht stattdessen 'songGenerator:authChanged'.
 
         // Generator initialisieren
         try {

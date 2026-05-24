@@ -83,10 +83,11 @@
   // ────────────────────────────────────────────────────────────
   // Direct OpenAI (Browser → OpenAI) – Fallback wenn die Lambda
   // (noch) nicht deployed ist. Identische Prompts wie die Lambda.
-  // gpt-5.2 ist projektintern und mit User-API-Keys nicht erreichbar,
-  // deshalb hier gpt-4o-mini als Default (günstig, schnell, json_object support).
+  // Modell-Reihenfolge identisch zur Onboarding-App (AICoach.jsx,
+  // JourneyPublicShell.jsx, ChangeJourney.jsx, StakeholderAnalysis.jsx) –
+  // gpt-4.1 ist das einzige Modell, das der globale Project-Key freigeschaltet hat.
   // ────────────────────────────────────────────────────────────
-  const MODEL_FALLBACKS = ['gpt-4o-mini', 'gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo'];
+  const MODEL_FALLBACKS = ['gpt-4.1', 'gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo'];
 
   function safeJsonParse(text) {
     if (!text || typeof text !== 'string') return null;
@@ -253,7 +254,7 @@
       return callOpenAIDirect({
         apiKey, system: P.SYSTEM_CORE,
         user: P.buildSongComposerUserPrompt({ persona, mode: mode || 'regenerate_lines', edit_targets, previous_song, creativity: typeof creativity === 'number' ? creativity : 0.95 }),
-        temperature: 0.95, top_p: 0.98, maxTokens: 2500, model: 'gpt-4o-mini'
+        temperature: 0.95, top_p: 0.98, maxTokens: 2500, model: 'gpt-4.1'
       });
     }
     throw new Error('Unbekannte action: ' + action);
@@ -361,10 +362,12 @@
         this.state.answers = savedTest.answers || {};
       }
 
-      // Auf Login-Events reagieren – dann Import starten
-      const onAuth = () => { this.refreshAuthAndImport(); };
-      window.addEventListener('userLoggedIn', onAuth);
-      window.addEventListener('authStateChanged', onAuth);
+      // Auf Login-State-Änderungen reagieren – einzige saubere Quelle ist
+      // 'songGenerator:authChanged' (vom HTML-Code dispatched).
+      // KEIN Listener auf 'userLoggedIn'/'authStateChanged', sonst Schleife.
+      window.addEventListener('songGenerator:authChanged', () => {
+        this.refreshAuthAndImport();
+      });
 
       // Bei Init bereits eingeloggt? → Import sofort triggern
       if (isLoggedIn()) {
