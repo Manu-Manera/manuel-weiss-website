@@ -93,8 +93,10 @@
   // ────────────────────────────────────────────────────────────
   // Direct OpenAI (Browser → OpenAI) – Fallback wenn die Lambda
   // (noch) nicht deployed ist. Identische Prompts wie die Lambda.
+  // gpt-5.2 ist projektintern und mit User-API-Keys nicht erreichbar,
+  // deshalb hier gpt-4o-mini als Default (günstig, schnell, json_object support).
   // ────────────────────────────────────────────────────────────
-  const MODEL_FALLBACKS = ['gpt-5.2', 'gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo'];
+  const MODEL_FALLBACKS = ['gpt-4o-mini', 'gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo'];
 
   function safeJsonParse(text) {
     if (!text || typeof text !== 'string') return null;
@@ -124,6 +126,19 @@
     return null;
   }
 
+  function _parseOpenAIError(errText) {
+    if (!errText) return '';
+    try {
+      const j = JSON.parse(errText);
+      if (j && j.error) {
+        const code = j.error.code || j.error.type || '';
+        const msg = j.error.message || '';
+        return code ? `[${code}] ${msg}` : msg;
+      }
+    } catch (_e) {}
+    return errText.slice(0, 240);
+  }
+
   async function callOpenAIDirect(opts) {
     const apiKey = opts.apiKey;
     const candidates = [];
@@ -151,21 +166,71 @@
             response_format: { type: 'json_object' }
           })
         });
-      } catch (err) { errors.push({ model, msg: err.message }); continue; }
+      } catch (err) {
+        errors.push({ model, msg: 'Netzwerk: ' + err.message });
+        continue;
+      }
       if (res.ok) {
         const data = await res.json().catch(() => null);
         const text = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
         const parsed = safeJsonParse(text);
         if (parsed) return parsed;
-        errors.push({ model, msg: 'parse failed' });
+        errors.push({ model, msg: 'KI-Antwort war kein gültiges JSON' });
         continue;
       }
       let errText = '';
       try { errText = await res.text(); } catch (_e) {}
-      errors.push({ model, status: res.status, msg: errText.slice(0, 300) });
-      if (res.status === 401 || res.status === 403) break;
+      const human = _parseOpenAIError(errText);
+      errors.push({ model, status: res.status, msg: human });
+      // Bei diesen Status macht es keinen Sinn, weitere Modelle zu probieren
+      if (res.status === 401 || res.status === 403 || res.status === 429) break;
     }
-    const e = new Error('OpenAI-Aufruf fehlgeschlagen');
+
+    // Aussagekräftige Fehlermeldung bauen
+    const first = errors[0] || {};
+    let userMsg;
+    if (first.status === 401) {
+      userMsg = 'Dein OpenAI API-Key ist ungültig oder abgelaufen. Bitte im Admin-Panel unter „API-Keys" einen neuen eintragen. Detail: ' + (first.msg || '');
+    } else if (first.status === 429) {
+      userMsg = 'OpenAI-Limit erreicht (Quota oder Rate-Limit). Bitte Guthaben prüfen oder kurz warten. Detail: ' + (first.msg || '');
+    } else if (first.status === 403) {
+      userMsg = 'Zugriff verweigert. Vermutlich hat dein API-Key keinen Zugang zu dem Modell. Detail: ' + (first.msg || '');
+    } else if (first.msg && first.msg.includes('Netzwerk')) {
+      userMsg = 'Verbindung zu OpenAI fehlgeschlagen. Bitte Internetverbindung prüfen.';
+    } else {
+      const summary = errors.map(e => `${e.model}${e.status ? ' (' + e.status + ')' : ''}: ${e.msg || ''}`).join(' | ');
+      userMsg = 'OpenAI-Aufruf fehlgeschlagen. ' + summary;
+    }
+    const e = new Error(userMsg);
+    e.details = errors;
+    throw e;
+  }
+
+  /**
+   * Health-Check: minimal-Call (1 Token), um API-Key + Modell zu validieren.
+   * Liefert { ok: true, model } oder wirft mit user-readbarer Message.
+   */
+  async function healthCheckOpenAI(apiKey) {
+    const errors = [];
+    for (const model of MODEL_FALLBACKS) {
+      try {
+        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+          body: JSON.stringify({
+            model, messages: [{ role: 'user', content: 'ping' }], max_tokens: 1
+          })
+        });
+        if (res.ok) return { ok: true, model };
+        const txt = await res.text().catch(() => '');
+        const human = _parseOpenAIError(txt);
+        errors.push({ model, status: res.status, msg: human });
+        if (res.status === 401 || res.status === 403 || res.status === 429) break;
+      } catch (err) {
+        errors.push({ model, msg: 'Netzwerk: ' + err.message });
+      }
+    }
+    const e = new Error('Health-Check fehlgeschlagen: ' + errors.map(x => `${x.model}${x.status ? ' (' + x.status + ')' : ''}: ${x.msg}`).join(' | '));
     e.details = errors;
     throw e;
   }
@@ -386,6 +451,7 @@
      * Status-Karte: zeigt Login-Zustand und ob ein OpenAI-Key gefunden wurde.
      * Kein Eingabefeld mehr – Keys werden ausschließlich über das Admin-Panel
      * gepflegt (DynamoDB / mawps-api-settings, gleicher Pfad wie Bewerbungsapp).
+     * Inklusive Diagnose-Button: 1-Token-Health-Check gegen OpenAI.
      */
     renderAuthStatus() {
       const box = el('div', 'sg-auth-box');
@@ -403,20 +469,51 @@
         txt.append(sub);
         box.append(txt);
 
-        // Asynchron prüfen, ob ein Key vorhanden ist
+        // Asynchron prüfen, ob ein Key vorhanden ist + Diagnose-Button
         getApiKey().then((k) => {
           const el2 = document.getElementById(checkingId);
           if (!el2) return;
           if (k) {
-            el2.textContent = 'OpenAI API-Key gefunden – du kannst sofort starten.';
+            el2.textContent = 'OpenAI API-Key gefunden (' + k.slice(0, 7) + '…' + k.slice(-4) + '). Du kannst sofort starten.';
             box.classList.add('sg-auth-key-ok');
+
+            // Diagnose-Button für Power-User
+            const diagBtn = el('button', 'sg-btn-tiny', '🔍 API-Key testen');
+            diagBtn.style.marginTop = '0.5rem';
+            diagBtn.onclick = async () => {
+              diagBtn.disabled = true;
+              diagBtn.textContent = '… teste';
+              try {
+                const result = await healthCheckOpenAI(k);
+                diagBtn.textContent = '✓ ' + result.model + ' funktioniert';
+                diagBtn.style.color = '#16a34a';
+              } catch (err) {
+                diagBtn.textContent = '✗ Test fehlgeschlagen – Details unten';
+                diagBtn.style.color = '#b91c1c';
+                const errBox = el('p', 'sg-auth-sub sg-status-error');
+                errBox.style.marginTop = '0.5rem';
+                errBox.textContent = err.message || String(err);
+                el2.parentNode.appendChild(errBox);
+              } finally {
+                diagBtn.disabled = false;
+              }
+            };
+            el2.parentNode.appendChild(diagBtn);
           } else {
             el2.innerHTML = 'Es ist noch kein OpenAI API-Key in deinem Profil hinterlegt. ' +
               '<a href="admin.html#api-keys" class="sg-link">Im Admin-Panel eintragen →</a>';
             box.classList.remove('sg-auth-ok');
             box.classList.add('sg-auth-warn');
           }
-        }).catch(() => { /* leise; UI bleibt im Lade-Zustand */ });
+        }).catch((err) => {
+          const el2 = document.getElementById(checkingId);
+          if (el2) {
+            el2.innerHTML = 'Konnte API-Key nicht laden: ' + (err.message || err) + ' · ' +
+              '<a href="admin.html#api-keys" class="sg-link">Im Admin-Panel prüfen →</a>';
+            box.classList.remove('sg-auth-ok');
+            box.classList.add('sg-auth-warn');
+          }
+        });
 
       } else {
         box.classList.add('sg-auth-warn');
