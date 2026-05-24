@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weiterleitung…</title>
+  <meta http-equiv="refresh" content="0;url=dev-login.html" />
+</head>
+<body style="font-family:system-ui,sans-serif;background:#0f172a;color:#e2e8f0;padding:2rem;">
+  <p>Lokaler Dev-Login liegt unter <strong>dev-login</strong>...</p>
+  <p><a href="dev-login.html" style="color:#818cf8;">Weiter zum Login</a></p>
+  <script>
+    var q = window.location.search || '';
+    window.location.replace('dev-login.html' + q);
+  </script>
+</body>
+</html>

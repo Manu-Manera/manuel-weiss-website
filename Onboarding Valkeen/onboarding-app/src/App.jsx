@@ -1,31 +1,45 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
-import Tracker from './pages/Tracker';
-import Quiz from './pages/Quiz';
-import AICoach from './pages/AICoach';
-import Calendar from './pages/Calendar';
-import Resources from './pages/Resources';
-import Report from './pages/Report';
-import Training from './pages/Training';
-import TrainingAdmin from './pages/TrainingAdmin';
-import Flashcards from './pages/Flashcards';
-import SSOSetup from './pages/SSOSetup';
-import TempusDemo from './pages/TempusDemo';
-import LoginMailer from './pages/LoginMailer';
-import ChangeWorkflow from './pages/ChangeWorkflow';
-import KotterTilePage from './pages/KotterTilePage';
-import WorkshopTools from './pages/WorkshopTools';
-import ChangeJourney from './pages/ChangeJourney';
-import PhaseTilePage from './pages/PhaseTilePage';
-import StakeholderAnalysis from './pages/StakeholderAnalysis';
-import CommunicationPlan from './pages/CommunicationPlan';
-import ChangeDashboard from './pages/ChangeDashboard';
-import JourneyPublicShell from './pages/JourneyPublicShell';
-import KotterPublicShareShell from './pages/KotterPublicShareShell';
-import WorkshopPrepPublicShell from './pages/WorkshopPrepPublicShell';
-import LegacyChangeWorkflowRedirect from './pages/LegacyChangeWorkflowRedirect';
 import { ProgressProvider } from './hooks/useLocalStorage';
+
+const Tracker = lazy(() => import('./pages/Tracker'));
+const Tagesvertrag = lazy(() => import('./pages/Tagesvertrag'));
+const Quiz = lazy(() => import('./pages/Quiz'));
+const AICoach = lazy(() => import('./pages/AICoach'));
+const Calendar = lazy(() => import('./pages/Calendar'));
+const Resources = lazy(() => import('./pages/Resources'));
+const Report = lazy(() => import('./pages/Report'));
+const Training = lazy(() => import('./pages/Training'));
+const TrainingAdmin = lazy(() => import('./pages/TrainingAdmin'));
+const TempusTrainerAdmin = lazy(() => import('./pages/TempusTrainerAdmin'));
+const TempusTrainerHub = lazy(() => import('./pages/TempusTrainerHub'));
+const Flashcards = lazy(() => import('./pages/Flashcards'));
+const SSOSetup = lazy(() => import('./pages/SSOSetup'));
+const TempusDemo = lazy(() => import('./pages/TempusDemo'));
+const LoginMailer = lazy(() => import('./pages/LoginMailer'));
+const QrgBuilder = lazy(() => import('./pages/QrgBuilder'));
+const ChangeWorkflow = lazy(() => import('./pages/ChangeWorkflow'));
+const KotterTilePage = lazy(() => import('./pages/KotterTilePage'));
+const WorkshopTools = lazy(() => import('./pages/WorkshopTools'));
+const ChangeJourney = lazy(() => import('./pages/ChangeJourney'));
+const PhaseTilePage = lazy(() => import('./pages/PhaseTilePage'));
+const StakeholderAnalysis = lazy(() => import('./pages/StakeholderAnalysis'));
+const CommunicationPlan = lazy(() => import('./pages/CommunicationPlan'));
+const ChangeDashboard = lazy(() => import('./pages/ChangeDashboard'));
+const JourneyPublicShell = lazy(() => import('./pages/JourneyPublicShell'));
+const KotterPublicShareShell = lazy(() => import('./pages/KotterPublicShareShell'));
+const WorkshopPrepPublicShell = lazy(() => import('./pages/WorkshopPrepPublicShell'));
+const LegacyChangeWorkflowRedirect = lazy(() => import('./pages/LegacyChangeWorkflowRedirect'));
+
+function PageLoader() {
+  return (
+    <div className="min-h-[40vh] flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+}
 
 function checkAdminSession() {
   try {
@@ -62,33 +76,40 @@ function AdminProgressRoutes() {
 
   return (
     <ProgressProvider>
-      <Routes>
-        <Route path="change-workflow/kotter/:slug" element={<KotterTilePage />} />
-        <Route path="change-workflow/tools" element={<WorkshopTools />} />
-        <Route path="change-workflow/journey" element={<ChangeJourney />} />
-        <Route path="change-workflow/phase/:phaseId" element={<PhaseTilePage />} />
-        <Route path="change-workflow/stakeholders" element={<StakeholderAnalysis />} />
-        <Route path="change-workflow/comms-plan" element={<CommunicationPlan />} />
-        <Route path="change-workflow/dashboard" element={<ChangeDashboard />} />
-        <Route path="change-workflow/teilnehmer" element={<ChangeWorkflow />} />
-        <Route path="change-workflow" element={<ChangeWorkflow />} />
-        <Route path="login-mailer/change-workflow" element={<LegacyChangeWorkflowRedirect />} />
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="tracker" element={<Tracker />} />
-          <Route path="flashcards" element={<Flashcards />} />
-          <Route path="quiz" element={<Quiz />} />
-          <Route path="ai-coach" element={<AICoach />} />
-          <Route path="calendar" element={<Calendar />} />
-          <Route path="resources" element={<Resources />} />
-          <Route path="report" element={<Report />} />
-          <Route path="training" element={<Training />} />
-          <Route path="training-admin" element={<TrainingAdmin />} />
-          <Route path="sso-setup" element={<SSOSetup />} />
-          <Route path="tempus-demo" element={<TempusDemo />} />
-          <Route path="login-mailer" element={<LoginMailer />} />
-        </Route>
-      </Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="change-workflow/kotter/:slug" element={<KotterTilePage />} />
+          <Route path="change-workflow/tools" element={<WorkshopTools />} />
+          <Route path="change-workflow/journey" element={<ChangeJourney />} />
+          <Route path="change-workflow/phase/:phaseId" element={<PhaseTilePage />} />
+          <Route path="change-workflow/stakeholders" element={<StakeholderAnalysis />} />
+          <Route path="change-workflow/comms-plan" element={<CommunicationPlan />} />
+          <Route path="change-workflow/dashboard" element={<ChangeDashboard />} />
+          <Route path="change-workflow/teilnehmer" element={<ChangeWorkflow />} />
+          <Route path="change-workflow" element={<ChangeWorkflow />} />
+          <Route path="login-mailer/change-workflow" element={<LegacyChangeWorkflowRedirect />} />
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="tracker" element={<Tracker />} />
+            <Route path="tagesvertrag" element={<Tagesvertrag />} />
+            <Route path="flashcards" element={<Flashcards />} />
+            <Route path="quiz" element={<Quiz />} />
+            <Route path="ai-coach" element={<AICoach />} />
+            <Route path="calendar" element={<Calendar />} />
+            <Route path="resources" element={<Resources />} />
+            <Route path="report" element={<Report />} />
+            <Route path="training" element={<Training />} />
+            <Route path="training-admin" element={<TrainingAdmin />} />
+            <Route path="tempus-trainer" element={<TempusTrainerHub />} />
+            <Route path="tempus-trainer-admin" element={<TempusTrainerAdmin />} />
+            <Route path="sso-setup" element={<SSOSetup />} />
+            <Route path="tempus-demo" element={<TempusDemo />} />
+            <Route path="login-mailer" element={<LoginMailer />} />
+            <Route path="qrg-builder" element={<QrgBuilder />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </ProgressProvider>
   );
 }
@@ -96,12 +117,14 @@ function AdminProgressRoutes() {
 function App() {
   return (
     <BrowserRouter basename="/onboarding">
-      <Routes>
-        <Route path="kotter-share/:shareId/*" element={<KotterPublicShareShell />} />
-        <Route path="workshop-prep/:shareId" element={<WorkshopPrepPublicShell />} />
-        <Route path="journey-share/:shareId" element={<JourneyPublicShell />} />
-        <Route path="*" element={<AdminProgressRoutes />} />
-      </Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="kotter-share/:shareId/*" element={<KotterPublicShareShell />} />
+          <Route path="workshop-prep/:shareId" element={<WorkshopPrepPublicShell />} />
+          <Route path="journey-share/:shareId" element={<JourneyPublicShell />} />
+          <Route path="*" element={<AdminProgressRoutes />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

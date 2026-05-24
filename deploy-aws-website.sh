@@ -201,13 +201,13 @@ if [ -n "$QUICK" ] && [ -z "$DRY_RUN" ]; then
   echo "$CHANGED" | xargs -I{} -P "$PARALLEL_UPLOADS" bash -c 'upload_one "$@"' _ {}
   echo "   ✓ Upload fertig ($(( $(date +%s) - UPLOAD_START ))s)"
 
-  # Cache invalidieren: Bei Onboarding-Build alles unter /onboarding/, sonst nur HTML
+  # Cache invalidieren: HTML + JS (JS hat oft Cache-Buster, aber sicherheitshalber)
   if [ -n "$DID_BUILD" ]; then
     aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
-      --paths "/onboarding/*" "/*.html" --region "${AWS_REGION}" >/dev/null 2>&1
+      --paths "/onboarding/*" "/*.html" "/js/*" "/css/*" --region "${AWS_REGION}" >/dev/null 2>&1
   else
     aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
-      --paths "/*.html" --region "${AWS_REGION}" >/dev/null 2>&1
+      --paths "/*.html" "/js/*" "/css/*" --region "${AWS_REGION}" >/dev/null 2>&1
   fi
   echo "✅ Schnell-Deploy fertig in $(( $(date +%s) - START_TS ))s. In 2–5 Min live: ${SITE_URL}"
   exit 0

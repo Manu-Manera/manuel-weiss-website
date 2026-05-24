@@ -1,0 +1,9 @@
+{
+  "_comment": "Map each customer-specific image inside the SHS DOCX (key = filename inside word/media/) to a Knauf screenshot relative to the script folder. Images not listed here keep their original SHS content. Run `python adapt_shs.py --list-images` to print the inventory; visually verify each candidate before mapping.",
+  "replacements": {
+    "image12.png": "screenshots/login_knauf.png",
+    "image13.png": "screenshots/homescreen_tiles.png",
+    "image37.png": "screenshots/pm_grid.png",
+    "image41.png": "screenshots/spa_manday.png"
+  }
+}

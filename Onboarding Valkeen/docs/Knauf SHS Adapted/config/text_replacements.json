@@ -1,0 +1,8 @@
+{
+  "_comment": "List of customer-specific strings to replace. Applied across body, tables, headers and footers. Add new entries as needed; the script runs idempotent so re-running just no-ops.",
+  "replacements": [
+    {"from": "Siemens Healthineers", "to": "Knauf"},
+    {"from": "Healthineers-ID Login", "to": "Knauf SSO Login"},
+    {"from": "Healthineers-ID", "to": "Knauf SSO"}
+  ]
+}

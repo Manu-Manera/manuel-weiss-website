@@ -12,6 +12,6 @@ export default function LoginMailer() {
         </p>
       </header>
       <MailerWizard />
-    </div>
+      </div>
   );
 }

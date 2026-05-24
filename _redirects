@@ -1,5 +1,6 @@
-# Netlify Redirects - Manuel Weiss Website
-# =========================================
+# URL-Rewrites (_redirects-Format)
+# Wird nur ausgewertet, wenn der Host dieses Format unterstützt (nicht bei reinem S3).
+# Hauptdeploy: S3 + CloudFront (siehe deploy-aws-website.sh).
 
 # Admin & Management Routes
 /admin              /admin.html           200
@@ -45,8 +46,7 @@
 /healthz            /health.html           200
 /readyz             /health.html           200
 
-# Netlify Functions API Proxy (für /api/* Aufrufe)
-# Diese werden auf die Netlify Functions umgeleitet
+# API: Proxy-Pfade (Legacy-Pfade; Ziel ggf. auf Lambda/API Gateway umgestellt)
 /api/user-data/*    /.netlify/functions/user-data/:splat  200
 /api/cv-general     /.netlify/functions/cv-general        200
 /api/cv-target      /.netlify/functions/cv-target         200

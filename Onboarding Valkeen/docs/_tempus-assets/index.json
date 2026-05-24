@@ -1,0 +1,112 @@
+{
+  "$schema": "./schema.json",
+  "version": "1.0.0",
+  "description": "Zentrale Tempus-Resource Asset-Bibliothek für User Guides, QRGs und Trainings. Generische Icons/Buttons/Chrome sind kundenneutral; 'customer'-Einträge sind sandbox-spezifisch.",
+  "conventions": {
+    "icons": "Kleine UI-Icons (16-32px Höhe). Default-Inline-Höhe in DOCX: 14pt (~5mm).",
+    "buttons": "Buttons/Toolbar-Elemente (24-48px Höhe). Default-Inline-Höhe: 18pt (~6mm).",
+    "chrome": "Größere UI-Chrome-Crops (Top-Bar, Tab-Strip). Default-Inline-Höhe: 28pt.",
+    "screens": "Vollbild-Screenshots. Werden als Block-Bild gerendert (Standardbreite).",
+    "highlights": "Screenshots mit überlagertem gelben/roten Highlight-Rahmen für Step-by-Step-Anleitungen."
+  },
+  "assets": {
+    "chrome_create_view_dropdown": {
+      "file": "chrome/chrome_create_view_dropdown.png",
+      "scope": "generic",
+      "source": "knaufdev.tempus-resource.com – View Manager (RM dummy)",
+      "description": "Full View Manager dropdown showing the 'Default' row icons and two public views below.",
+      "default_inline_height_pt": 120
+    },
+    "icon_clone": {
+      "file": "icons/icon_clone.png",
+      "scope": "generic",
+      "source": "knaufdev.tempus-resource.com – View Manager (RM dummy)",
+      "description": "Copy / clone icon to duplicate a view (or any cloneable item).",
+      "default_inline_height_pt": 12
+    },
+    "icon_default_star_filled": {
+      "file": "icons/icon_default_star_filled.png",
+      "scope": "generic",
+      "source": "knaufdev.tempus-resource.com – View Manager (RM dummy)",
+      "description": "Filled star: the currently selected default view for the screen.",
+      "default_inline_height_pt": 12
+    },
+    "icon_default_star_outline": {
+      "file": "icons/icon_default_star_outline.png",
+      "scope": "generic",
+      "source": "knaufdev.tempus-resource.com – View Manager (RM dummy)",
+      "description": "Outline star: click to make this view the default for this screen.",
+      "default_inline_height_pt": 12
+    },
+    "icon_delete_trash": {
+      "file": "icons/icon_delete_trash.png",
+      "scope": "generic",
+      "source": "knaufdev.tempus-resource.com – View Manager (RM dummy)",
+      "description": "Trashcan icon to delete the view (private only — public views cannot be deleted).",
+      "default_inline_height_pt": 12
+    },
+    "icon_drag_handle": {
+      "file": "icons/icon_drag_handle.png",
+      "scope": "generic",
+      "source": "knaufdev.tempus-resource.com – View Manager (RM dummy)",
+      "description": "Drag handle (8 dots) to reorder rows by drag-and-drop.",
+      "default_inline_height_pt": 12
+    },
+    "icon_edit_pencil": {
+      "file": "icons/icon_edit_pencil.png",
+      "scope": "generic",
+      "source": "knaufdev.tempus-resource.com – View Manager (RM dummy)",
+      "description": "Pencil icon to rename / edit the active view.",
+      "default_inline_height_pt": 12
+    },
+    "icon_lock": {
+      "file": "icons/icon_lock.png",
+      "scope": "generic",
+      "source": "knaufdev.tempus-resource.com – View Manager (RM dummy)",
+      "description": "Lock icon used to freeze a private view (changes do not persist).",
+      "default_inline_height_pt": 12
+    },
+    "icon_public_eye": {
+      "file": "icons/icon_public_eye.png",
+      "scope": "generic",
+      "source": "knaufdev.tempus-resource.com – View Manager (RM dummy)",
+      "description": "Blue eye icon: marks a public (administratively shared) view. Always clone it before editing.",
+      "default_inline_height_pt": 12
+    },
+    "icon_tile_plus": {
+      "file": "icons/icon_tile_plus.png",
+      "scope": "generic",
+      "source": "knaufdev.tempus-resource.com – Homescreen (RM dummy)",
+      "description": "Plus icon on a tile: quick-add (e.g. Create Project from the Project tile).",
+      "default_inline_height_pt": 12
+    },
+    "icon_topbar_bell": {
+      "file": "icons/icon_topbar_bell.png",
+      "scope": "generic",
+      "source": "knaufdev.tempus-resource.com – Top bar",
+      "description": "Bell icon: in-app notifications.",
+      "default_inline_height_pt": 12
+    },
+    "icon_topbar_help": {
+      "file": "icons/icon_topbar_help.png",
+      "scope": "generic",
+      "source": "knaufdev.tempus-resource.com – Top bar",
+      "description": "Help icon: opens the Tempus Help Center in a new tab.",
+      "default_inline_height_pt": 12
+    },
+    "icon_topbar_menu": {
+      "file": "icons/icon_topbar_menu.png",
+      "scope": "generic",
+      "source": "knaufdev.tempus-resource.com – Top bar",
+      "description": "Hamburger / app menu icon.",
+      "default_inline_height_pt": 12
+    },
+    "icon_topbar_search": {
+      "file": "icons/icon_topbar_search.png",
+      "scope": "generic",
+      "source": "knaufdev.tempus-resource.com – Top bar",
+      "description": "Global search icon (top bar).",
+      "default_inline_height_pt": 12
+    }
+  }
+}

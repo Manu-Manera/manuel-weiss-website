@@ -6,7 +6,7 @@
 node_modules/*
 infrastructure/*
 lambda/*
-# netlify/ entfernt – nur noch AWS
+# zweiter Static-Host-Ordner (falls vorhanden) nicht mitsyncen
 .github/*
 docs/archive/*
 scripts/archive/*
@@ -59,6 +59,6 @@ Thumbs.db
 tmp/*
 temp/*
 *.tmp
-# .netlify/ nicht mehr verwendet
+# ggf. alter lokaler CLI-Ordner
 .cursor/*
 backup-*

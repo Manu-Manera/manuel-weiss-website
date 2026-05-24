@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dev-Login (lokal)</title>
+  <style>
+    body { font-family: -apple-system, system-ui, sans-serif; background: #0f172a; color: #e2e8f0;
+           display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+    .card { max-width: 480px; padding: 32px; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; }
+    h1 { margin: 0 0 12px; font-size: 22px; }
+    p { color: #94a3b8; line-height: 1.5; }
+    .warn { color: #fbbf24; font-size: 13px; margin-bottom: 16px;
+            background: rgba(251,191,36,0.1); padding: 10px; border-radius: 8px; }
+    button { background: #6366f1; color: white; border: 0; padding: 12px 20px;
+             border-radius: 8px; font-size: 15px; cursor: pointer; margin-right: 8px; }
+    button.secondary { background: rgba(255,255,255,0.1); }
+    button:hover { opacity: 0.9; }
+    code { background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Lokaler Dev-Login</h1>
+    <div class="warn">
+      Dieser Login funktioniert nur lokal (<code>localhost</code>) und legt eine Fake-Admin-Session
+      im Browser an. Niemals in der Produktion verwenden – Cognito wird umgangen.
+    </div>
+    <p>
+      Klicke auf <strong>"Als Admin einloggen"</strong>, um in die Onboarding-App zu gelangen.
+      Die Session ist 24 Stunden gültig.
+    </p>
+    <div>
+      <button onclick="login()">Als Admin einloggen</button>
+      <button class="secondary" onclick="logout()">Logout</button>
+    </div>
+    <p id="status" style="margin-top: 20px; font-size: 13px;"></p>
+  </div>
+  <script>
+    function login() {
+      if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+        document.getElementById('status').innerHTML =
+          '<span style="color:#f87171">Fehler: Nur auf localhost erlaubt.</span>';
+        return;
+      }
+      const exp = Math.floor(Date.now() / 1000) + 86400;
+      const payload = btoa(JSON.stringify({
+        sub: 'local-admin',
+        email: 'admin@local.test',
+        'cognito:groups': ['admin'],
+        exp
+      }));
+      const idToken = 'eyJhbGciOiJIUzI1NiJ9.' + payload + '.local-dev-signature';
+      const session = {
+        user: { idToken, email: 'admin@local.test', sub: 'local-admin' },
+        idToken,
+        expiresAt: new Date(Date.now() + 86400 * 1000).toISOString()
+      };
+      localStorage.setItem('admin_auth_session', JSON.stringify(session));
+      const params = new URLSearchParams(location.search);
+      const redirect = params.get('redirect') || '/onboarding/training-admin';
+      document.getElementById('status').innerHTML =
+        '<span style="color:#34d399">Eingeloggt – leite weiter…</span>';
+      setTimeout(() => { location.href = redirect; }, 400);
+    }
+    function logout() {
+      localStorage.removeItem('admin_auth_session');
+      document.getElementById('status').innerHTML =
+        '<span style="color:#94a3b8">Session entfernt.</span>';
+    }
+  </script>
+</body>
+</html>

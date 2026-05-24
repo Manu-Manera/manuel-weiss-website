@@ -1062,12 +1062,32 @@ export function tempusIdentity(apiKey) {
   return callTempus({ apiKey, path: 'api/sg/v1/Resources/Identity' });
 }
 
+/**
+ * Lädt alle Rollen von Tempus und gruppiert sie nach Typ.
+ * @returns {{ global: Role[], project: Role[], resource: Role[] }}
+ */
+export async function tempusListAllRoles(apiKey) {
+  const data = await callTempus({ apiKey, path: 'api/sg/v1/Roles' });
+  const roles = Array.isArray(data) ? data : [];
+  
+  const mapRole = (r) => ({ 
+    id: r.id, 
+    name: r.name, 
+    roleType: r.roleType,
+    systemKey: r.systemGlobalRoleKey || r.systemProjectRoleKey || r.systemResourceRoleKey || null 
+  });
+  
+  return {
+    global: roles.filter(r => String(r.roleType || '').toLowerCase() === 'global').map(mapRole),
+    project: roles.filter(r => String(r.roleType || '').toLowerCase() === 'project').map(mapRole),
+    resource: roles.filter(r => String(r.roleType || '').toLowerCase() === 'resource').map(mapRole),
+  };
+}
+
 /** Alle globalen Rollen (Admin/normale Nutzer/Team-Leader …). */
 export async function tempusListGlobalRoles(apiKey) {
-  const data = await callTempus({ apiKey, path: 'api/sg/v1/Roles' });
-  return (Array.isArray(data) ? data : [])
-    .filter(r => String(r.roleType || '').toLowerCase() === 'global')
-    .map(r => ({ id: r.id, name: r.name, systemKey: r.systemGlobalRoleKey || null }));
+  const all = await tempusListAllRoles(apiKey);
+  return all.global;
 }
 
 /** Security-Groups vom Typ Resource (für Zuordnung neuer User). */

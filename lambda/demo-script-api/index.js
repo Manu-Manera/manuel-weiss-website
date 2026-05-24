@@ -1,8 +1,9 @@
 /**
  * Lambda: Demo Script State API
  *
- * PM: s3://…/data/tempus-demo-pm-state.json  — GET/POST /v1/demo-script
- * RM: s3://…/data/tempus-demo-rm-state.json  — GET/POST /v1/demo-script/rm
+ * PM:    s3://…/data/tempus-demo-pm-state.json    — GET/POST /v1/demo-script
+ * RM:    s3://…/data/tempus-demo-rm-state.json    — GET/POST /v1/demo-script/rm
+ * BPAFG: s3://…/data/tempus-demo-bpafg-state.json — GET/POST /v1/demo-script/bpafg
  */
 
 const { S3Client, GetObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3');
@@ -14,6 +15,7 @@ const EDIT_PW = process.env.EDIT_PASSWORD || 'tempus-demo-edit-2024';
 
 const STATE_KEY_PM = 'data/tempus-demo-pm-state.json';
 const STATE_KEY_RM = 'data/tempus-demo-rm-state.json';
+const STATE_KEY_BPAFG = 'data/tempus-demo-bpafg-state.json';
 
 const ALLOWED_ORIGINS = [
   'https://manuel-weiss.ch',
@@ -31,6 +33,7 @@ const ALLOWED_ORIGINS = [
 
 function stateKeyFromEvent(event) {
   const p = event.path || event.requestContext?.path || '';
+  if (p.includes('/demo-script/bpafg')) return STATE_KEY_BPAFG;
   if (p.includes('/demo-script/rm')) return STATE_KEY_RM;
   return STATE_KEY_PM;
 }

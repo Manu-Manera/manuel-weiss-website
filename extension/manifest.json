@@ -1,0 +1,63 @@
+{
+  "manifest_version": 3,
+  "name": "Valkeen Tempus Trainer",
+  "version": "0.1.0",
+  "description": "Interaktives Training direkt in Tempus Resource – mit Live-Tipps, Highlights und Theorie-Folien.",
+  "minimum_chrome_version": "114",
+  "action": {
+    "default_title": "Valkeen Tempus Trainer",
+    "default_popup": "src/popup/index.html"
+  },
+  "side_panel": {
+    "default_path": "src/sidepanel/index.html"
+  },
+  "background": {
+    "service_worker": "src/background.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.prosymmetry.com/*"],
+      "js": ["src/content/index.ts"],
+      "run_at": "document_idle",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "http://localhost:*/*",
+        "http://127.0.0.1:*/*",
+        "https://manuel-weiss.ch/*",
+        "https://www.manuel-weiss.ch/*"
+      ],
+      "js": ["src/content/hub-bridge.ts"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+  "permissions": [
+    "activeTab",
+    "sidePanel",
+    "storage",
+    "scripting",
+    "tabs",
+    "webNavigation"
+  ],
+  "host_permissions": [
+    "https://*.prosymmetry.com/*",
+    "https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/*",
+    "https://manuel-weiss.ch/*"
+  ],
+  "externally_connectable": {
+    "matches": [
+      "https://manuel-weiss.ch/*",
+      "https://www.manuel-weiss.ch/*",
+      "http://localhost:*/*"
+    ]
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["src/assets/*"],
+      "matches": ["https://*.prosymmetry.com/*"]
+    }
+  ]
+}

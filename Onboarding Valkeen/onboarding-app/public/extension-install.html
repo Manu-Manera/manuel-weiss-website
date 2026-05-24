@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tempus Trainer – Extension installieren</title>
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      line-height: 1.55;
+      padding: 2rem 1.25rem 4rem;
+      max-width: 42rem;
+      margin-inline: auto;
+    }
+    h1 { font-size: 1.35rem; margin-top: 0; color: #c7d2fe; }
+    h2 { font-size: 1.05rem; margin-top: 1.75rem; color: #a5b4fc; }
+    ol { padding-left: 1.25rem; }
+    li { margin: 0.5rem 0; }
+    code, .mono {
+      background: rgba(255,255,255,0.08);
+      padding: 0.15rem 0.45rem;
+      border-radius: 6px;
+      font-size: 0.88em;
+    }
+    .hint {
+      border-left: 3px solid #fbbf24;
+      padding: 0.75rem 1rem;
+      margin-top: 1.25rem;
+      background: rgba(251, 191, 36, 0.08);
+      border-radius: 0 8px 8px 0;
+      font-size: 0.92rem;
+    }
+    a { color: #818cf8; }
+  </style>
+</head>
+<body>
+  <h1>Valkeen Tempus Trainer – Browser-Extension</h1>
+  <p>
+    Die Extension zeigt Live-Tipps und Theorie-Folien direkt in der echten
+    Tempus-Resource-Oberfläche (<span class="mono">*.prosymmetry.com</span>).
+  </p>
+
+  <div class="hint" style="border-color:#818cf8;background:rgba(129,140,248,0.1);">
+    <strong>Wo installiere ich das?</strong> Nicht im App Store – in <strong>Google Chrome</strong> (oder Edge)
+    unter der internen Seite <span class="mono">chrome://extensions</span>. Dort erscheint nach dem
+    Einschalten des <strong>Entwicklermodus</strong> der Button <strong>„Entpackte Erweiterung laden“</strong>.
+    Den klickst du und wählst dann den Ordner <span class="mono">dist</span> aus dem Projekt (siehe unten).
+  </div>
+
+  <h2>Nach einem Update (Hub-Bridge / neue Version)</h2>
+  <ol>
+    <li>Terminal: im Ordner <span class="mono">extension/</span> erneut <span class="mono">npm run build</span>.</li>
+    <li>Chrome: <span class="mono">chrome://extensions</span> → bei „Valkeen Tempus Trainer“ auf das <strong>Neu-laden-Symbol</strong> (Kreis-Pfeil).</li>
+    <li>Onboarding-Tab <strong>neu laden</strong> und im Training-Bereich nochmal <strong>Einloggen</strong> – erst dann wird „Eingeloggt“ in der Extension angezeigt.</li>
+  </ol>
+
+  <h2>Schritt für Schritt (Chrome)</h2>
+  <ol>
+    <li>Chrome öffnen.</li>
+    <li>In die Adresszeile tippen: <span class="mono">chrome://extensions</span> und <kbd>Enter</kbd>.</li>
+    <li>Oben rechts den Schalter <strong>Entwicklermodus</strong> einschalten (blau / „An“).</li>
+    <li>Oben links auf <strong>Entpackte Erweiterung laden</strong> klicken.</li>
+    <li>Im Dateidialog den Ordner wählen, der die Datei <span class="mono">manifest.json</span> enthält.<br />
+      Das ist bei dir in der Regel:<br />
+      <span class="mono" style="display:inline-block;margin-top:0.35rem;">
+        …/Persönliche Website/extension/dist
+      </span><br />
+      <em>Wichtig:</em> den Ordner <strong>dist</strong> auswählen, nicht <span class="mono">extension</span> darüber und keine ZIP.
+    </li>
+    <li>In der Liste sollte <strong>Valkeen Tempus Trainer</strong> erscheinen. Klicke auf das <strong>Puzzle-Symbol</strong> rechts in der Chrome-Adressleiste → bei der Extension <strong>Anheften</strong> wählen.
+  </ol>
+
+  <h2>Vorher einmal bauen (Terminal)</h2>
+  <p>Falls <span class="mono">dist</span> noch fehlt, im Projekt-Root im Ordner <span class="mono">extension/</span>:</p>
+  <pre style="background:#1e293b;padding:1rem;border-radius:10px;overflow:auto;font-size:0.85rem;">cd extension
+npm install
+npm run build</pre>
+  <p>Danach existiert <span class="mono">extension/dist/</span> mit <span class="mono">manifest.json</span>.</p>
+
+  <h2>Edge</h2>
+  <p>Analog unter <span class="mono">edge://extensions/</span> mit Entwicklermodus.</p>
+
+  <div class="hint">
+    <strong>Vorschau im Cursor-IDE-Browser:</strong> Dort ist keine echte Chrome-Extension nutzbar und Links können blockiert sein.
+    Diese Seite am besten in <strong>normalem Chrome</strong> über dieselbe URL öffnen
+    (<span class="mono">http://localhost:3000/onboarding/extension-install.html</span>).
+  </div>
+
+  <h2>Nach der Installation</h2>
+  <ol>
+    <li>Onboarding-Hub → Training → Kunde wählen → einloggen → Tour starten.</li>
+    <li>Tempus öffnet sich im zweiten Tab; Side Panel der Extension öffnen.</li>
+  </ol>
+
+  <p style="margin-top:2rem;font-size:0.9rem;color:#94a3b8;">
+    Vollständige Doku im Repo: <span class="mono">Onboarding Valkeen/docs/EXTENSION_INSTALL.md</span>
+  </p>
+</body>
+</html>

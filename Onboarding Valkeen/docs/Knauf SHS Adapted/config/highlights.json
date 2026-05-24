@@ -1,0 +1,15 @@
+{
+  "_comment": "Word-native rectangle highlights overlaid on paragraphs. 'paragraph_index' is the 0-based index returned by python-docx (see README on how to find it for a target image). Offsets x_cm/y_cm are measured from the top-left of the anchor paragraph; w_cm/h_cm define the rectangle size; color is a 6-digit hex string without '#'. line_width_pt = border thickness. Demo entries below show two highlights overlaid on the Knauf SSO login screen (paragraph after image12.png).",
+  "highlights": [
+    {
+      "paragraph_index": 62,
+      "x_cm": 3.0,
+      "y_cm": 1.4,
+      "w_cm": 7.3,
+      "h_cm": 1.6,
+      "color": "F2B807",
+      "line_width_pt": 2.25,
+      "label": "Knauf SSO button"
+    }
+  ]
+}
