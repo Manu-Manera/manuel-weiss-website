@@ -9,6 +9,10 @@ keys/
 .env.local
 .env.*.local
 
+# Local credentials (never commit)
+.credentials/
+*.local.json
+
 # Node modules
 node_modules/
 
@@ -17,6 +21,9 @@ dist/
 build/
 onboarding/
 *.log
+
+# Deploy-Cache (Smart-Build-Detection)
+.deploy-cache/
 
 # IDE
 .vscode/
@@ -33,7 +40,6 @@ Thumbs.db
 tmp/
 temp/
 *.tmp
-.netlify/
 
 # CDK Output
 infrastructure/cdk.out/

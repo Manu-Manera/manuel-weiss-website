@@ -1,14 +1,57 @@
 ---
-description: Nach Änderungen an der Website automatisch deployen und zu GitHub pushen
+description: Verbindlicher Deploy- und Push-Workflow für manuel-weiss.ch. Vollständige Doku in docs/DEPLOY.md.
 alwaysApply: true
 ---
 
-# Deploy und Push automatisch ausführen
+# Deploy- und Push-Workflow (verbindlich)
 
-- **Nach jeder Änderung** an Inhalten, die live gehen sollen (HTML, CSS, JS, Bilder, Konfiguration der Website):
-  1. **Deployen**: `./deploy-aws-website.sh --quick` (im Projektroot)
-  2. **Committen und Pushen**: `git add` (relevante Dateien), `git commit -m "..."`, `git push origin main`
-- **Immer beides**: Deploy und Push gehören zusammen – nach Änderungen nie nur eines davon vergessen.
-- Bei Lambda/Infrastruktur-Änderungen: `cd infrastructure && npx cdk deploy manuel-weiss-website-api --require-approval never` vor dem Website-Deploy.
-- Optional: Nach dem Deploy kurz bestätigen (z. B. „Deploy durchgeführt, gepusht, in 2–5 Min live unter https://manuel-weiss.ch“).
-- Wenn der Nutzer explizit sagt „nicht deployen“, „nicht pushen“ oder „noch nicht deployen“, dann nicht ausführen.
+**Vollständige Referenz:** `docs/DEPLOY.md` – immer dort nachschauen, wenn etwas unklar ist.
+
+## Goldene Regel
+
+Nach jeder Änderung an Live-Inhalten (HTML, CSS, JS, Bilder, Konfiguration der Website):
+
+1. **Richtiger Deploy-Modus** (siehe Tabelle unten) – nicht blind `--quick`.
+2. **Direkt danach committen + pushen** – Deploy und Push gehören zusammen, nie nur eines.
+3. **Kurz bestätigen** mit Live-URL und Dauer (z. B. „Deploy in 8s, in 2–5 Min live unter https://manuel-weiss.ch").
+
+## Welcher Modus wann?
+
+| Geänderte Dateien | Befehl | Dauer |
+|---|---|---|
+| Nur Root-Website (`*.html`, `js/`, `css/`, `images/` ausserhalb `Onboarding Valkeen/`) | `./deploy-aws-website.sh --skip-build` | ~5–15s |
+| Onboarding-App-Quellcode (`Onboarding Valkeen/onboarding-app/src/...`) | `./deploy-aws-website.sh` (Smart-Build erkennt es selbst) | ~30–90s |
+| Build wirkt veraltet / unsicher | `./deploy-aws-website.sh --force-build` | ~30–90s |
+| S3 driftet ab (Notnagel) | `./deploy-aws-website.sh --full` | 2–5 min |
+
+**Default-Wahl:** Wenn ich nur an Root-Website-Dateien gearbeitet habe (was 95 % der Fälle abdeckt), nutze ich `--skip-build`. Das war früher der „schnelle Deploy in Sekunden" – nutze ich nicht ohne Grund einen langsameren Modus.
+
+## Lambda/Infrastruktur
+
+Bei Änderungen in `lambda/` oder `infrastructure/` **vorher**:
+
+```bash
+cd infrastructure && npx cdk deploy manuel-weiss-website-api --require-approval never
+```
+
+Erst danach Website-Deploy.
+
+## Push (immer)
+
+```bash
+git add <relevante Dateien>
+git commit -m "<aussagekräftige Message>"
+git push origin main
+```
+
+## Wann NICHT deployen / pushen
+
+- Nutzer sagt explizit „nicht deployen", „nicht pushen", „noch nicht deployen".
+- Änderungen sind reine Doku (`*.md`, `docs/`) ohne Live-Auswirkung → Deploy überspringbar, Push trotzdem.
+- Nur lokale Experimente / unfertige WIP-Stände.
+
+## Niemals
+
+- **Niemals** den Deploy zwischendrin abbrechen, wenn er am Hochladen ist (S3 könnte halb-aktualisiert sein).
+- **Niemals** `--full` ohne Grund nutzen (langsam und teuer).
+- **Niemals** Onboarding-Build mit `--force-build` starten, wenn nichts in der App geändert wurde.

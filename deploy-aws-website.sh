@@ -1,7 +1,20 @@
 #!/bin/bash
 # Deploy: Static Website zu AWS (S3 + CloudFront).
 # Nutzt zentrale Config: config/deploy-aws-website.env und config/deploy-aws-exclude.txt
-# Neue Excludes einfach in deploy-aws-exclude.txt eintragen – gilt für alle zukünftigen Deploys.
+#
+# Modi (siehe auch docs/DEPLOY.md):
+#   ./deploy-aws-website.sh                   → Schnell-Deploy (default)
+#                                                Lädt nur per Git geänderte Website-Dateien hoch.
+#                                                Onboarding-App wird NUR neu gebaut, wenn sich
+#                                                der Quellcode geändert hat (Smart-Build-Detection).
+#   ./deploy-aws-website.sh --skip-build      → Wie oben, aber Onboarding-Build IMMER überspringen.
+#                                                (Maximal schnell für reine Website-Änderungen.)
+#   ./deploy-aws-website.sh --force-build     → Onboarding-App neu bauen, auch ohne Quelländerungen.
+#   ./deploy-aws-website.sh --full            → Kompletter S3-Sync (alle Dateien vergleichen).
+#   ./deploy-aws-website.sh --cleanup         → S3 von lokal nicht mehr existierenden Dateien säubern.
+#   ./deploy-aws-website.sh --dry-run         → Nichts hochladen, nur anzeigen, was geschehen würde.
+
+set -o pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
@@ -15,12 +28,13 @@ if [ -f "$CONFIG_FILE" ]; then
   # shellcheck source=config/deploy-aws-website.env
   source "$CONFIG_FILE"
   set +a
-else
-  S3_BUCKET="${S3_BUCKET:-manuel-weiss-website}"
-  CLOUDFRONT_DISTRIBUTION_ID="${CLOUDFRONT_DISTRIBUTION_ID:-E305V0ATIXMNNG}"
-  AWS_REGION="${AWS_REGION:-eu-central-1}"
-  SITE_URL="${SITE_URL:-https://manuel-weiss.ch}"
 fi
+
+S3_BUCKET="${S3_BUCKET:-manuel-weiss-website}"
+CLOUDFRONT_DISTRIBUTION_ID="${CLOUDFRONT_DISTRIBUTION_ID:-E305V0ATIXMNNG}"
+AWS_REGION="${AWS_REGION:-eu-central-1}"
+SITE_URL="${SITE_URL:-https://manuel-weiss.ch}"
+PARALLEL_UPLOADS="${PARALLEL_UPLOADS:-16}"
 
 if ! command -v aws &>/dev/null; then
   echo "❌ AWS CLI nicht gefunden."
@@ -41,85 +55,174 @@ if [ -f "$EXCLUDE_FILE" ]; then
     EXCLUDE_ARGS+=(--exclude "$line")
   done < "$EXCLUDE_FILE"
 else
-  # Fallback wenn keine Exclude-Datei
   EXCLUDE_ARGS=(
     --exclude "*.git/*"
     --exclude "node_modules/*"
     --exclude "infrastructure/*"
     --exclude "lambda/*"
-    --exclude "netlify/*"
     --exclude ".github/*"
     --exclude "docs/archive/*"
     --exclude "scripts/archive/*"
   )
 fi
 
+# Argumente parsen
 DRY_RUN=""
 DELETE_FLAG=""
-QUICK=""
+QUICK="1"
+FULL=""
+SKIP_BUILD=""
+FORCE_BUILD=""
 for arg in "$@"; do
-  [ "$arg" = "--dry-run" ] && DRY_RUN="--dryrun"
-  [ "$arg" = "--cleanup" ] && DELETE_FLAG="--delete"
-  [ "$arg" = "--quick" ] && QUICK="1"
+  case "$arg" in
+    --dry-run)     DRY_RUN="--dryrun" ;;
+    --cleanup)     DELETE_FLAG="--delete" ;;
+    --quick)       QUICK="1" ;;
+    --full)        FULL="1"; QUICK="" ;;
+    --skip-build)  SKIP_BUILD="1" ;;
+    --force-build) FORCE_BUILD="1" ;;
+    --help|-h)
+      grep -E '^# (\./deploy|  )' "$0" | sed 's/^# //'
+      exit 0
+      ;;
+  esac
 done
 
+START_TS=$(date +%s)
 echo "🚀 Deployen zu ${SITE_URL} (S3: ${S3_BUCKET}, CloudFront: ${CLOUDFRONT_DISTRIBUTION_ID})"
 [ -n "$DRY_RUN" ] && echo "   (Dry-Run – es wird nichts hochgeladen)"
 
-# Onboarding-App bauen und nach onboarding/ kopieren (wird deployed, dist/* ist excluded)
-if [ -z "$DRY_RUN" ]; then
-  if [ -d "Onboarding Valkeen/onboarding-app" ]; then
-    echo "📦 Baue Onboarding-App …"
-    (cd "Onboarding Valkeen/onboarding-app" && npm run build 2>/dev/null) || true
-    if [ -d "Onboarding Valkeen/onboarding-app/dist" ]; then
-      rm -rf onboarding
-      mkdir -p onboarding
-      cp -r "Onboarding Valkeen/onboarding-app/dist/"* onboarding/
-      echo "   → onboarding/ aktualisiert"
+# ─────────────────────────────────────────────────────────────
+# Smart-Build-Detection: Onboarding-App nur bauen wenn nötig
+# ─────────────────────────────────────────────────────────────
+ONBOARDING_SRC="Onboarding Valkeen/onboarding-app"
+ONBOARDING_DIST="onboarding"
+BUILD_HASH_FILE=".deploy-cache/onboarding-build.hash"
+
+needs_onboarding_build() {
+  [ ! -d "$ONBOARDING_SRC" ] && return 1            # keine App vorhanden
+  [ ! -d "$ONBOARDING_DIST" ] && return 0           # noch nie gebaut
+  [ ! -f "$BUILD_HASH_FILE" ] && return 0           # kein Cache-Eintrag
+  local current
+  current=$(find "$ONBOARDING_SRC/src" "$ONBOARDING_SRC/index.html" "$ONBOARDING_SRC/package.json" "$ONBOARDING_SRC/vite.config.js" "$ONBOARDING_SRC/vite.config.ts" 2>/dev/null \
+    -type f \( -name '*.js' -o -name '*.jsx' -o -name '*.ts' -o -name '*.tsx' -o -name '*.css' -o -name '*.html' -o -name '*.json' \) \
+    -exec shasum -a 1 {} + 2>/dev/null | shasum -a 1 | awk '{print $1}')
+  local cached
+  cached=$(cat "$BUILD_HASH_FILE" 2>/dev/null)
+  [ "$current" != "$cached" ]
+}
+
+write_build_hash() {
+  mkdir -p "$(dirname "$BUILD_HASH_FILE")"
+  find "$ONBOARDING_SRC/src" "$ONBOARDING_SRC/index.html" "$ONBOARDING_SRC/package.json" "$ONBOARDING_SRC/vite.config.js" "$ONBOARDING_SRC/vite.config.ts" 2>/dev/null \
+    -type f \( -name '*.js' -o -name '*.jsx' -o -name '*.ts' -o -name '*.tsx' -o -name '*.css' -o -name '*.html' -o -name '*.json' \) \
+    -exec shasum -a 1 {} + 2>/dev/null | shasum -a 1 | awk '{print $1}' > "$BUILD_HASH_FILE"
+}
+
+DID_BUILD=""
+if [ -z "$DRY_RUN" ] && [ -z "$SKIP_BUILD" ]; then
+  if [ -n "$FORCE_BUILD" ] || needs_onboarding_build; then
+    if [ -d "$ONBOARDING_SRC" ]; then
+      echo "📦 Baue Onboarding-App …"
+      BUILD_START=$(date +%s)
+      (cd "$ONBOARDING_SRC" && npm run build 2>/dev/null) || true
+      if [ -d "$ONBOARDING_SRC/dist" ]; then
+        rm -rf "$ONBOARDING_DIST"
+        mkdir -p "$ONBOARDING_DIST"
+        cp -r "$ONBOARDING_SRC/dist/"* "$ONBOARDING_DIST/"
+        write_build_hash
+        DID_BUILD="1"
+        echo "   → onboarding/ aktualisiert ($(( $(date +%s) - BUILD_START ))s)"
+      fi
     fi
+  else
+    echo "⏭️ Onboarding-App: Quellcode unverändert → Build übersprungen"
   fi
+elif [ -n "$SKIP_BUILD" ]; then
+  echo "⏭️ Onboarding-Build übersprungen (--skip-build)"
 fi
+
 [ -n "$DELETE_FLAG" ] && echo "   (Mit --cleanup: entfernt in S3, was lokal fehlt – kann Minuten dauern)"
 [ -n "$QUICK" ] && echo "   (Schnellmodus: nur geänderte Dateien)"
+[ -n "$FULL" ] && echo "   (Vollsync: alle Dateien vergleichen – kann 2-5 Min dauern)"
 
-# Schnellmodus: nur per Git geänderte/neue Dateien hochladen (typisch Sekunden)
+# ─────────────────────────────────────────────────────────────
+# Schnellmodus: nur geänderte Dateien hochladen, parallel
+# ─────────────────────────────────────────────────────────────
+upload_one() {
+  local f="$1"
+  if [[ "$f" == *.html ]]; then
+    aws s3 cp "$f" "s3://${S3_BUCKET}/$f" --region "${AWS_REGION}" --cache-control "max-age=60" --only-show-errors
+  elif [[ "$f" == onboarding/assets/* ]]; then
+    aws s3 cp "$f" "s3://${S3_BUCKET}/$f" --region "${AWS_REGION}" --cache-control "max-age=31536000, immutable" --only-show-errors
+  else
+    aws s3 cp "$f" "s3://${S3_BUCKET}/$f" --region "${AWS_REGION}" --only-show-errors
+  fi
+}
+export -f upload_one
+export S3_BUCKET AWS_REGION
+
 if [ -n "$QUICK" ] && [ -z "$DRY_RUN" ]; then
   CHANGED=$(git diff --name-only HEAD 2>/dev/null; git ls-files --others --exclude-standard 2>/dev/null) || true
   CHANGED=$(echo "$CHANGED" | grep -v '^$' | while read -r f; do
     [[ -z "$f" || ! -f "$f" ]] && continue
+    # Doku/Skripte – nicht für die Website
     [[ "$f" == *.md || "$f" == *.sh || "$f" == *.yml || "$f" == *.yaml ]] && continue
-    [[ "$f" == .* || "$f" == */.git/* || "$f" == *node_modules* || "$f" == *netlify/* ]] && continue
+    [[ "$f" == *.docx || "$f" == *.pdf || "$f" == *.xlsx || "$f" == *.pptx ]] && continue
+    [[ "$f" == *.py ]] && continue
+    # Hidden/Build/Lock
+    [[ "$f" == .* || "$f" == */.git/* || "$f" == *node_modules* ]] && continue
+    [[ "$f" == */dist/* || "$f" == */build/* ]] && continue
+    [[ "$f" == package-lock.json || "$f" == */package-lock.json ]] && continue
+    # Backend-/Infra-/Quellcode (gehört nicht ins S3)
     [[ "$f" == infrastructure/* || "$f" == lambda/* || "$f" == backend/* || "$f" == packages/* ]] && continue
     [[ "$f" == postman/* || "$f" == improvements/* || "$f" == amplify/* || "$f" == api/* ]] && continue
+    [[ "$f" == "Onboarding Valkeen/docs/"* ]] && continue
+    [[ "$f" == "Onboarding Valkeen/onboarding-app/"* ]] && continue
     [[ "$f" == *.env* || "$f" == config/deploy-aws* ]] && continue
     echo "$f"
   done)
-  COUNT=$(echo "$CHANGED" | grep -c . 2>/dev/null || echo 0)
-  # onboarding/ immer mit hochladen (Build-Output, in .gitignore)
-  if [ -d "onboarding" ]; then
+
+  # Onboarding-Dateien nur mitnehmen wenn frisch gebaut wurde
+  if [ -n "$DID_BUILD" ] && [ -d "onboarding" ]; then
     ONBOARDING_FILES=$(find onboarding -type f 2>/dev/null)
-    CHANGED=$(echo -e "${CHANGED}\n${ONBOARDING_FILES}" | grep -v '^$' | sort -u)
+    CHANGED=$(printf "%s\n%s\n" "$CHANGED" "$ONBOARDING_FILES" | grep -v '^$' | sort -u)
   fi
+
   COUNT=$(echo "$CHANGED" | grep -c . 2>/dev/null || echo 0)
   if [ "$COUNT" -eq 0 ]; then
-    echo "ℹ️ Keine geänderten Website-Dateien (oder nicht in einem Git-Repo). Nutze normalen Sync ohne --quick."
-  else
-    echo "📤 Lade $COUNT Datei(en) hoch …"
-    echo "$CHANGED" | while read -r f; do [ -n "$f" ] && echo "$f"; done | xargs -P 8 -I {} aws s3 cp "{}" "s3://${S3_BUCKET}/{}" --region "${AWS_REGION}" --only-show-errors
-    aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" --paths "/*" --region "${AWS_REGION}" >/dev/null 2>&1
-    echo "✅ Schnell-Deploy fertig. In 2–5 Min live: ${SITE_URL}"
+    echo "ℹ️ Keine geänderten Dateien zum Hochladen."
+    echo "✅ Fertig in $(( $(date +%s) - START_TS ))s."
     exit 0
   fi
+
+  echo "📤 Lade $COUNT Datei(en) parallel hoch (${PARALLEL_UPLOADS} gleichzeitig) …"
+  UPLOAD_START=$(date +%s)
+  echo "$CHANGED" | xargs -I{} -P "$PARALLEL_UPLOADS" bash -c 'upload_one "$@"' _ {}
+  echo "   ✓ Upload fertig ($(( $(date +%s) - UPLOAD_START ))s)"
+
+  # Cache invalidieren: Bei Onboarding-Build alles unter /onboarding/, sonst nur HTML
+  if [ -n "$DID_BUILD" ]; then
+    aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
+      --paths "/onboarding/*" "/*.html" --region "${AWS_REGION}" >/dev/null 2>&1
+  else
+    aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
+      --paths "/*.html" --region "${AWS_REGION}" >/dev/null 2>&1
+  fi
+  echo "✅ Schnell-Deploy fertig in $(( $(date +%s) - START_TS ))s. In 2–5 Min live: ${SITE_URL}"
+  exit 0
 fi
 
+# ─────────────────────────────────────────────────────────────
+# Vollsync (--full)
+# ─────────────────────────────────────────────────────────────
 SYNC_LOG=$(mktemp)
 trap 'rm -f "$SYNC_LOG"' EXIT
 
-# Ohne --delete: nur Hochladen/Updates. Mit --cleanup: auch Löschen in S3 (langsam).
+echo "📤 S3 Sync läuft …"
 aws s3 sync . "s3://${S3_BUCKET}" \
   "${EXCLUDE_ARGS[@]}" \
   --region "${AWS_REGION}" \
-  --only-show-errors \
   $DRY_RUN \
   $DELETE_FLAG 2>&1 | tee "$SYNC_LOG"
 SYNC_EXIT=${PIPESTATUS[0]}
@@ -131,12 +234,12 @@ if [ -z "$DRY_RUN" ]; then
   if grep -qE '^(upload|delete):' "$SYNC_LOG"; then
     aws cloudfront create-invalidation \
       --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
-      --paths "/*" \
-      --region "${AWS_REGION}"
-    echo "✅ Deploy abgeschlossen. In 2–5 Min live: ${SITE_URL}"
+      --paths "/onboarding/*" "/*.html" "/index.html" \
+      --region "${AWS_REGION}" >/dev/null 2>&1
+    echo "✅ Deploy abgeschlossen in $(( $(date +%s) - START_TS ))s. In 2–5 Min live: ${SITE_URL}"
   else
-    echo "✅ Sync fertig – keine Änderungen, CloudFront-Invalidierung übersprungen."
+    echo "✅ Sync fertig – keine Änderungen, CloudFront-Invalidierung übersprungen ($(( $(date +%s) - START_TS ))s)."
   fi
 else
-  echo "✅ Dry-Run beendet. Ohne --dry-run wird hochgeladen und invalidiert."
+  echo "✅ Dry-Run beendet."
 fi
