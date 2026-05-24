@@ -218,11 +218,18 @@
           window.location.reload();
         });
 
-        // Initial-Update + ein einziger nachträglicher Check (für asynchrone Auth-Init)
+        // Initial-Update + nachträgliche Checks
         updateAuthUI();
         setTimeout(updateAuthUI, 1200);
-        // KEIN Listener auf 'userLoggedIn' / 'authStateChanged' der updateAuthUI ruft –
-        // sonst Endlosschleife. updateAuthUI dispatcht stattdessen 'songGenerator:authChanged'.
+        
+        // Nach erfolgreichem Login die UI aktualisieren
+        // (userLoggedIn kommt vom Auth-System NACH Login, keine Schleife da updateAuthUI
+        // nur songGenerator:authChanged dispatcht wenn sich der State ändert)
+        window.addEventListener('userLoggedIn', () => {
+          updateAuthUI();
+          // Seite neu laden um Generator mit neuen Auth-Daten zu starten
+          window.location.reload();
+        });
 
         // Generator initialisieren
         try {
