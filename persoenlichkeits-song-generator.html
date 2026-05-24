@@ -25,7 +25,8 @@
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="css/persoenlichkeitsentwicklung-uebersicht.css?v=20260524">
-    <link rel="stylesheet" href="css/song-generator.css?v=20260524">
+    <link rel="stylesheet" href="css/unified-auth-system.css">
+    <link rel="stylesheet" href="css/song-generator.css?v=20260524b">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -47,6 +48,36 @@
                     <i class="fas fa-user"></i>
                     <span id="authButtonText">Anmelden</span>
                 </button>
+                <!-- User-Dropdown (versteckt bis eingeloggt) -->
+                <div class="user-dropdown" id="userDropdown" style="display: none;">
+                    <a href="user-profile.html" class="dropdown-item"><i class="fas fa-user-circle"></i> Mein Profil</a>
+                    <a href="admin.html#api-keys" class="dropdown-item"><i class="fas fa-key"></i> API-Keys verwalten</a>
+                    <a href="applications/dashboard.html" class="dropdown-item"><i class="fas fa-th-large"></i> Dashboard</a>
+                    <hr class="dropdown-divider">
+                    <button class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Abmelden</button>
+                </div>
+            </div>
+
+            <!-- Mobile Hamburger -->
+            <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <!-- Mobile Fullscreen Menu -->
+        <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+        <div class="mobile-menu-fullscreen" id="mobileMenuFullscreen">
+            <div class="mobile-menu-content">
+                <a href="index.html" class="mobile-menu-link">Start</a>
+                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="mobile-menu-link">Persönlichkeitsentwicklung</a>
+                <a href="applications/index.html" class="mobile-menu-link">Bewerbungsmanager</a>
+                <a href="applications/coaching.html" class="mobile-menu-link">Coaching</a>
+                <button id="mobileAuthButton" class="mobile-auth-btn">
+                    <i class="fas fa-user"></i>
+                    <span id="mobileAuthButtonText">Anmelden</span>
+                </button>
             </div>
         </div>
     </nav>
@@ -56,27 +87,126 @@
             <h1>Dein Persönlichkeits-Song</h1>
             <p>
                 Ein wissenschaftlich fundierter Test (Big Five, HEXACO, Werte, Bindung, VIA-Stärken)
-                plus optional Inputs aus anderen Tests, KI-Chats oder Social Media – am Ende
-                ein einzigartiger Songtext mit Akkorden, Production-Spec und fertigen Suno/Udio-Prompts.
-                Jede Zeile ist editierbar; die KI liefert auf Wunsch Alternativen, ohne dass die
-                klangliche Tonart-/Tempo-Konsistenz verloren geht.
+                plus optional Inputs aus anderen Tests, KI-Chats oder Social Media – daraus entsteht
+                ein Songtext mit Akkorden, Produktions-Spezifikation und fertigen Suno-/Udio-Prompts.
+                Jede Zeile ist editierbar; die KI schlägt auf Wunsch Alternativen vor, ohne dass die
+                klangliche Tonart- und Tempo-Konsistenz verloren geht.
             </p>
         </header>
 
         <div id="songGeneratorRoot" class="sg-app"></div>
     </main>
 
-    <!-- Globale App-Konfiguration (API_BASE etc.) -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!-- AWS Auth System (identisch zur Bewerbungsapp / Übersichtsseite) -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="js/success-checkmark.js?v=20260112"></script>
+    <script src="js/unified-aws-auth.js?v=20260112"></script>
+    <script src="js/unified-auth-modals.js?v=20260112"></script>
+    <script src="js/unified-profile-service.js?v=20260115"></script>
+    <script src="js/aws-api-settings.js?v=20260113fix"></script>
+
+    <!-- App-Konfiguration & OpenAI Service -->
     <script src="js/aws-app-config.js"></script>
-    <!-- Optional: zentraler OpenAI-Service für API-Key-Auflösung über User-Profil -->
-    <script src="js/openai-service.js" defer></script>
+    <script src="js/openai-service.js"></script>
+
     <!-- Generator -->
-    <script src="js/song-generator-prompts.js?v=20260524" defer></script>
-    <script src="js/song-generator.js?v=20260524" defer></script>
-    <script defer>
-      window.addEventListener('DOMContentLoaded', () => {
+    <script src="js/song-generator-prompts.js?v=20260524b"></script>
+    <script src="js/song-generator.js?v=20260524b"></script>
+
+    <script>
+      // ────────────────────────────────────────────────────────────
+      // Auth-Button & Mobile-Menü (identisches Pattern wie applications/index.html)
+      // ────────────────────────────────────────────────────────────
+      document.addEventListener('DOMContentLoaded', function () {
+        const mobileHamburger = document.getElementById('mobileHamburger');
+        const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+        const mobileMenuFullscreen = document.getElementById('mobileMenuFullscreen');
+        const authButton = document.getElementById('authButton');
+        const authButtonText = document.getElementById('authButtonText');
+        const mobileAuthButton = document.getElementById('mobileAuthButton');
+        const mobileAuthButtonText = document.getElementById('mobileAuthButtonText');
+        const userDropdown = document.getElementById('userDropdown');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        function toggleMobileMenu() {
+          mobileMenuOverlay?.classList.toggle('active');
+          mobileMenuFullscreen?.classList.toggle('active');
+          document.body.style.overflow = mobileMenuFullscreen?.classList.contains('active') ? 'hidden' : '';
+        }
+        mobileHamburger?.addEventListener('click', toggleMobileMenu);
+        mobileMenuOverlay?.addEventListener('click', toggleMobileMenu);
+        mobileMenuFullscreen?.querySelectorAll('.mobile-menu-link').forEach(l => l.addEventListener('click', toggleMobileMenu));
+
+        function showLoginModal() {
+          if (window.authModals?.showLogin) return window.authModals.showLogin();
+          if (window.awsAuth?.showLoginModal) return window.awsAuth.showLoginModal();
+          alert('Login-System wird geladen, bitte einen Moment warten und erneut klicken.');
+        }
+
+        function updateAuthUI() {
+          const isLoggedIn = window.awsAuth?.isLoggedIn?.() || false;
+          if (isLoggedIn) {
+            const user = window.awsAuth.getCurrentUser?.() || window.awsAuth.getUserDataFromToken?.() || {};
+            const name = (user.name && user.name !== 'Test User' ? user.name : null)
+              || (user.email ? user.email.split('@')[0] : null)
+              || 'Profil';
+            if (authButton) {
+              authButton.classList.add('logged-in');
+              authButton.innerHTML = '<i class="fas fa-user-check"></i> <span id="authButtonText">' + name + '</span>';
+              authButton.onclick = (e) => {
+                if (!e.isTrusted) return;
+                e.stopPropagation();
+                if (userDropdown) userDropdown.style.display = userDropdown.style.display === 'block' ? 'none' : 'block';
+              };
+            }
+            if (mobileAuthButton) {
+              mobileAuthButton.innerHTML = '<i class="fas fa-user-check"></i> <span>' + name + '</span>';
+            }
+            // Generator über Login informieren, damit er den API-Key automatisch lädt und neu rendert
+            window.dispatchEvent(new CustomEvent('songGenerator:authChanged', { detail: { loggedIn: true } }));
+          } else {
+            if (authButton) {
+              authButton.classList.remove('logged-in');
+              authButton.innerHTML = '<i class="fas fa-user"></i> <span id="authButtonText">Anmelden</span>';
+              authButton.onclick = (e) => { if (!e.isTrusted) return; showLoginModal(); };
+            }
+            if (mobileAuthButton) {
+              mobileAuthButton.innerHTML = '<i class="fas fa-user"></i> <span>Anmelden</span>';
+              mobileAuthButton.onclick = () => { toggleMobileMenu(); showLoginModal(); };
+            }
+            if (userDropdown) userDropdown.style.display = 'none';
+            window.dispatchEvent(new CustomEvent('songGenerator:authChanged', { detail: { loggedIn: false } }));
+          }
+        }
+
+        // Logout
+        logoutBtn?.addEventListener('click', async () => {
+          try { await window.awsAuth?.logout?.(); } catch (_e) {}
+          localStorage.removeItem('awsUserSession');
+          localStorage.removeItem('awsAuthTokens');
+          window.location.reload();
+        });
+
+        // Dropdown schließen wenn außerhalb geklickt
+        document.addEventListener('click', (e) => {
+          if (!e.isTrusted) return;
+          if (userDropdown && !authButton?.contains(e.target)) userDropdown.style.display = 'none';
+        });
+
+        // Erstaufruf + bei Auth-State-Änderungen
+        setTimeout(updateAuthUI, 200);
+        setTimeout(updateAuthUI, 1200);
+        window.addEventListener('authStateChanged', updateAuthUI);
+        window.addEventListener('userLoggedIn', updateAuthUI);
+
+        // ──────────────────────────────────────────────────────────
+        // Generator initialisieren (immer, egal ob eingeloggt)
+        // ──────────────────────────────────────────────────────────
         try {
           window.songGenerator = new SongGenerator('songGeneratorRoot');
+          window.songGenerator.openLoginModal = showLoginModal;
         } catch (err) {
           console.error('SongGenerator init failed:', err);
           const root = document.getElementById('songGeneratorRoot');

@@ -15,7 +15,6 @@
   'use strict';
 
   const STORAGE_KEYS = {
-    apiKey: 'openai_api_key',
     test: 'sg_test_state_v1',
     externalInputs: 'sg_external_inputs_v1',
     persona: 'sg_persona_v1',
@@ -23,24 +22,64 @@
   };
 
   // ────────────────────────────────────────────────────────────
-  // API
+  // API-Key-Quellen (zentral, identisch zur Bewerbungsapp / hr-selbsttest)
+  // Reihenfolge:
+  //  1. awsAPISettings.getFullApiKey('openai')   – AWS Cloud (eingeloggt → user-spezifisch,
+  //                                                 sonst global) inkl. localStorage-Fallback
+  //  2. openaiService.getApiKeyAsync()            – zusätzlicher Multi-Source-Loader
+  //  3. localStorage 'global_api_keys'            – manuell im Admin gespeichert
+  //  4. localStorage 'admin_state'                – Admin-Panel UI-State
   // ────────────────────────────────────────────────────────────
+  function _isValid(k) { return typeof k === 'string' && k.startsWith('sk-') && k.length > 20; }
+
+  function _getKeyFromLocalStorage() {
+    try {
+      const g = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
+      const cand = g.openai && (g.openai.key || g.openai.apiKey);
+      if (_isValid(cand)) return cand;
+    } catch (_e) {}
+    try {
+      const a = JSON.parse(localStorage.getItem('admin_state') || '{}');
+      const cand = a.apiKeys && a.apiKeys.openai && (a.apiKeys.openai.apiKey || a.apiKeys.openai.key);
+      if (_isValid(cand)) return cand;
+    } catch (_e) {}
+    return null;
+  }
+
+  // Cache für API-Key (5 Min) – verhindert AWS-Roundtrip bei jedem callApi
+  const _keyCache = { value: null, expiresAt: 0 };
+  function invalidateApiKeyCache() { _keyCache.value = null; _keyCache.expiresAt = 0; }
+
   async function getApiKey() {
-    if (window.openaiService && typeof window.openaiService.getApiKeyAsync === 'function') {
-      try {
-        const k = await window.openaiService.getApiKeyAsync();
-        if (k && k.startsWith('sk-')) return k;
-      } catch (_e) { /* noop */ }
-    }
+    if (_keyCache.value && _keyCache.expiresAt > Date.now()) return _keyCache.value;
+
+    let key = null;
     if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
       try {
         const k = await window.awsAPISettings.getFullApiKey('openai');
-        if (k && k.startsWith('sk-')) return k;
+        if (_isValid(k)) key = k;
+      } catch (_e) { /* fällt durch zu nächster Quelle */ }
+    }
+    if (!key && window.openaiService && typeof window.openaiService.getApiKeyAsync === 'function') {
+      try {
+        const k = await window.openaiService.getApiKeyAsync();
+        if (_isValid(k)) key = k;
       } catch (_e) { /* noop */ }
     }
-    const ls = (typeof localStorage !== 'undefined' && localStorage.getItem(STORAGE_KEYS.apiKey)) || '';
-    if (ls && ls.startsWith('sk-')) return ls;
-    return null;
+    if (!key) {
+      const ls = _getKeyFromLocalStorage();
+      if (_isValid(ls)) key = ls;
+    }
+
+    if (key) {
+      _keyCache.value = key;
+      _keyCache.expiresAt = Date.now() + 5 * 60 * 1000;
+    }
+    return key;
+  }
+
+  function isLoggedIn() {
+    return !!(window.awsAuth && typeof window.awsAuth.isLoggedIn === 'function' && window.awsAuth.isLoggedIn());
   }
 
   function apiUrl() {
@@ -168,7 +207,10 @@
   async function callApi(action, payload, opts) {
     const apiKey = await getApiKey();
     if (!apiKey) {
-      const err = new Error('Es ist kein OpenAI API-Key hinterlegt. Bitte oben einen Key eingeben oder im Admin-Panel speichern.');
+      const msg = isLoggedIn()
+        ? 'Es ist noch kein OpenAI API-Key in deinem Profil hinterlegt. Bitte einmalig im Admin-Panel unter „API-Keys" eintragen.'
+        : 'Bitte zuerst anmelden, damit dein hinterlegter OpenAI API-Key automatisch geladen werden kann.';
+      const err = new Error(msg);
       err.code = 'no_api_key';
       throw err;
     }
@@ -243,6 +285,16 @@
         this.state.questions = savedTest.questions;
         this.state.answers = savedTest.answers || {};
       }
+
+      // Auf Auth-Änderungen reagieren – Cache leeren und Status-Box neu zeichnen
+      const onAuthChange = () => {
+        invalidateApiKeyCache();
+        if (this.state.step === 0) this.render();
+      };
+      window.addEventListener('songGenerator:authChanged', onAuthChange);
+      window.addEventListener('userLoggedIn', onAuthChange);
+      window.addEventListener('authStateChanged', onAuthChange);
+
       this.render();
     }
 
@@ -290,34 +342,24 @@
       const wrap = el('div', 'sg-card sg-welcome');
       wrap.append(el('h2', null, 'Dein Persönlichkeits-Song'));
       wrap.append(el('p', 'sg-lead',
-        'In wenigen Schritten entsteht ein Song, der dich klingt. ' +
-        'Erst ein wissenschaftlich fundierter Test (Big Five / HEXACO / Werte / Stärken), ' +
+        'In wenigen Schritten entsteht ein Song, der zu dir passt. ' +
+        'Zuerst ein wissenschaftlich fundierter Test (Big Five, HEXACO, Werte, Stärken), ' +
         'dann optional Inputs aus anderen Tests, Chats oder Social Media – ' +
-        'und am Ende ein vollständiger Songtext mit Production-Spec, den du Zeile für Zeile editieren kannst.'
+        'am Ende ein vollständiger Songtext mit Akkorden und Produktions-Spezifikation, den du Zeile für Zeile editieren kannst.'
       ));
+
+      // Auth- & Key-Status-Box (kein lokales Eingabefeld mehr)
+      wrap.append(this.renderAuthStatus());
 
       const meta = el('div', 'sg-meta-grid');
       meta.append(this.field('Alias / Name (optional)', 'name', this.state.userMeta.name_or_alias, (v) => { this.state.userMeta.name_or_alias = v; }));
-      meta.append(this.field('Pflicht-Wörter (komma)', 'must_include', (this.state.userMeta.must_include_keywords || []).join(', '), (v) => {
+      meta.append(this.field('Pflicht-Wörter (Komma-getrennt)', 'must_include', (this.state.userMeta.must_include_keywords || []).join(', '), (v) => {
         this.state.userMeta.must_include_keywords = v.split(',').map(s => s.trim()).filter(Boolean);
       }));
-      meta.append(this.field('Tabu-Wörter (komma)', 'must_avoid', (this.state.userMeta.must_avoid_keywords || []).join(', '), (v) => {
+      meta.append(this.field('Tabu-Wörter (Komma-getrennt)', 'must_avoid', (this.state.userMeta.must_avoid_keywords || []).join(', '), (v) => {
         this.state.userMeta.must_avoid_keywords = v.split(',').map(s => s.trim()).filter(Boolean);
       }));
       wrap.append(meta);
-
-      const apiBox = el('div', 'sg-api-box');
-      apiBox.append(el('label', null, 'OpenAI API-Key (sk-…)'));
-      const inp = el('input', 'sg-input');
-      inp.type = 'password';
-      inp.placeholder = 'sk-...';
-      inp.value = (typeof localStorage !== 'undefined' && localStorage.getItem(STORAGE_KEYS.apiKey)) || '';
-      inp.oninput = () => {
-        if (inp.value && inp.value.startsWith('sk-')) localStorage.setItem(STORAGE_KEYS.apiKey, inp.value.trim());
-      };
-      apiBox.append(inp);
-      apiBox.append(el('p', 'sg-hint', 'Wird nur lokal gespeichert. Bist du eingeloggt, wird der Key automatisch aus deinem Profil geladen.'));
-      wrap.append(apiBox);
 
       const actions = el('div', 'sg-actions');
       const startBtn = el('button', 'sg-btn sg-btn-primary', 'Test starten');
@@ -338,6 +380,64 @@
       return wrap;
     }
 
+    /**
+     * Status-Karte: zeigt Login-Zustand und ob ein OpenAI-Key gefunden wurde.
+     * Kein Eingabefeld mehr – Keys werden ausschließlich über das Admin-Panel
+     * gepflegt (DynamoDB / mawps-api-settings, gleicher Pfad wie Bewerbungsapp).
+     */
+    renderAuthStatus() {
+      const box = el('div', 'sg-auth-box');
+      const loggedIn = isLoggedIn();
+      const checkingId = 'sg-auth-checking-' + Math.random().toString(36).slice(2, 8);
+
+      if (loggedIn) {
+        box.classList.add('sg-auth-ok');
+        box.append(el('div', 'sg-auth-icon', '✓'));
+        const txt = el('div', 'sg-auth-text');
+        txt.append(el('strong', null, 'Du bist angemeldet'));
+        const sub = el('p', 'sg-auth-sub');
+        sub.id = checkingId;
+        sub.textContent = 'Lade deinen OpenAI API-Key aus dem Profil …';
+        txt.append(sub);
+        box.append(txt);
+
+        // Asynchron prüfen, ob ein Key vorhanden ist
+        getApiKey().then((k) => {
+          const el2 = document.getElementById(checkingId);
+          if (!el2) return;
+          if (k) {
+            el2.textContent = 'OpenAI API-Key gefunden – du kannst sofort starten.';
+            box.classList.add('sg-auth-key-ok');
+          } else {
+            el2.innerHTML = 'Es ist noch kein OpenAI API-Key in deinem Profil hinterlegt. ' +
+              '<a href="admin.html#api-keys" class="sg-link">Im Admin-Panel eintragen →</a>';
+            box.classList.remove('sg-auth-ok');
+            box.classList.add('sg-auth-warn');
+          }
+        }).catch(() => { /* leise; UI bleibt im Lade-Zustand */ });
+
+      } else {
+        box.classList.add('sg-auth-warn');
+        box.append(el('div', 'sg-auth-icon', '!'));
+        const txt = el('div', 'sg-auth-text');
+        txt.append(el('strong', null, 'Bitte zuerst anmelden'));
+        txt.append(el('p', 'sg-auth-sub',
+          'Dein OpenAI API-Key wird automatisch aus deinem Profil geladen – wie bei der Bewerbungsapp. ' +
+          'Du musst keinen Key manuell eingeben.'
+        ));
+        const loginBtn = el('button', 'sg-btn sg-btn-primary sg-btn-small', 'Jetzt anmelden');
+        loginBtn.onclick = () => {
+          if (typeof this.openLoginModal === 'function') return this.openLoginModal();
+          if (window.authModals && window.authModals.showLogin) return window.authModals.showLogin();
+          if (window.awsAuth && window.awsAuth.showLoginModal) return window.awsAuth.showLoginModal();
+          window.location.href = 'user-profile.html';
+        };
+        txt.append(loginBtn);
+        box.append(txt);
+      }
+      return box;
+    }
+
     field(label, name, value, onInput) {
       const w = el('div', 'sg-field');
       w.append(el('label', null, label));
@@ -352,10 +452,23 @@
 
     // ── Step 1: Test ────────────────────────────────────────────
     async startTest() {
+      // Pre-check: ohne Key zurück auf Welcome – Status-Box weist dort auf Login/Admin hin
+      const key = await getApiKey();
+      if (!key) {
+        this.setStep(0);
+        const wrap0 = this.root.querySelector('.sg-card') || this.root;
+        const s = this.showStatus(
+          isLoggedIn()
+            ? 'Es ist noch kein OpenAI API-Key in deinem Profil hinterlegt. Bitte einmalig im Admin-Panel unter „API-Keys" eintragen.'
+            : 'Bitte zuerst anmelden – dein hinterlegter API-Key wird dann automatisch geladen.',
+          wrap0
+        );
+        s.classList.add('sg-status-error');
+        return;
+      }
       this.setStep(1);
       if (this.state.questions) return;
-      const wrap = this.root.querySelector('.sg-card') || this.root;
-      const status = this.showStatus('Erstelle Test (24 tiefgehende Fragen) ...');
+      const status = this.showStatus('Erstelle Test (24 tiefgehende Fragen) …');
       try {
         const data = await callApi('test_questions');
         this.state.questions = data;
@@ -384,7 +497,7 @@
 
       const head = el('div', 'sg-test-head');
       head.append(el('h2', null, 'Persönlichkeitstest'));
-      head.append(el('p', 'sg-lead', `${answered} von ${total} beantwortet · in jeder Antwort steckt ein Klangfaktor`));
+      head.append(el('p', 'sg-lead', `${answered} von ${total} beantwortet · jede Antwort beeinflusst Tonart, Tempo und Instrumentierung`));
       wrap.append(head);
 
       (q.phases || []).forEach((phase) => {
@@ -479,6 +592,7 @@
           }
           const del = el('button', 'sg-btn-icon', '✕');
           del.title = 'Entfernen';
+          del.setAttribute('aria-label', 'Input ' + (sig.source_type || '') + ' entfernen');
           del.onclick = () => {
             this.state.externalInputs.splice(idx, 1);
             saveState(STORAGE_KEYS.externalInputs, this.state.externalInputs);
@@ -624,7 +738,7 @@
       if (!this.state.persona) {
         wrap.append(el('h2', null, 'Synthese läuft …'));
         wrap.append(this.showSpinner());
-        wrap.append(this.showStatus('Fusioniere Test- und externe Signale, leite Archetyp und music_dna ab …', null));
+        wrap.append(this.showStatus('Test-Antworten und externe Signale werden fusioniert; daraus entstehen Archetyp und Klang-DNA.', null));
         return wrap;
       }
       const p = this.state.persona;
@@ -674,17 +788,17 @@
         wrap.append(m);
       }
 
-      // Music-DNA Chip
+      // Klang-DNA
       if (p.music_dna) {
         const dna = el('div', 'sg-dna');
-        dna.append(el('h3', null, 'Music DNA'));
+        dna.append(el('h3', null, 'Klang-DNA'));
         const grid = el('div', 'sg-dna-grid');
         grid.append(this.dnaCell('Tonart', (p.music_dna.key || '?') + ' ' + (p.music_dna.mode || '')));
         grid.append(this.dnaCell('Tempo', (p.music_dna.tempo_bpm || '?') + ' BPM'));
         grid.append(this.dnaCell('Takt', p.music_dna.time_signature || '?'));
-        grid.append(this.dnaCell('Energy', this.fmtBar(p.music_dna.energy)));
-        grid.append(this.dnaCell('Brightness', this.fmtBar(p.music_dna.brightness)));
-        grid.append(this.dnaCell('Warmth', this.fmtBar(p.music_dna.warmth)));
+        grid.append(this.dnaCell('Energie', this.fmtBar(p.music_dna.energy)));
+        grid.append(this.dnaCell('Helligkeit', this.fmtBar(p.music_dna.brightness)));
+        grid.append(this.dnaCell('Wärme', this.fmtBar(p.music_dna.warmth)));
         if (p.music_dna.instrumentation) {
           const inst = [].concat(p.music_dna.instrumentation.core || [], p.music_dna.instrumentation.color || [], p.music_dna.instrumentation.rhythm || []);
           grid.append(this.dnaCell('Instrumente', inst.slice(0, 6).join(' · ')));
@@ -749,9 +863,9 @@
 
     renderCompose() {
       const wrap = el('div', 'sg-card sg-compose');
-      wrap.append(el('h2', null, 'Komponiere Song …'));
+      wrap.append(el('h2', null, 'Song wird komponiert …'));
       wrap.append(this.showSpinner());
-      wrap.append(el('p', 'sg-lead', 'Ich schreibe Songtext, Akkorde und Production-Spec. Das dauert 15–25 Sekunden.'));
+      wrap.append(el('p', 'sg-lead', 'Songtext, Akkorde und Produktions-Spezifikation werden geschrieben. Das dauert ungefähr 15–25 Sekunden.'));
       return wrap;
     }
 
@@ -774,10 +888,10 @@
       // Sections
       (s.sections || []).forEach(section => wrap.append(this.renderSongSection(section)));
 
-      // Production Spec
+      // Produktions-Spezifikation
       if (s.production_spec) {
         const ps = el('details', 'sg-production');
-        ps.append(el('summary', null, 'Production Spec & Engine-Prompts'));
+        ps.append(el('summary', null, 'Produktions-Spezifikation & Engine-Prompts'));
         const pre = el('pre', null, JSON.stringify({
           production_spec: s.production_spec,
           ai_music_engine_prompts: s.ai_music_engine_prompts
@@ -819,6 +933,7 @@
       }
       const rwBtn = el('button', 'sg-btn-icon', '↻');
       rwBtn.title = 'Sektion umschreiben';
+      rwBtn.setAttribute('aria-label', 'Sektion ' + (section.label || section.id) + ' umschreiben');
       rwBtn.onclick = () => this.openRewriteSection(section);
       h.append(rwBtn);
       w.append(h);
@@ -877,7 +992,7 @@
     }
 
     async rerollLine(section, line, btnEl) {
-      if (btnEl) { btnEl.disabled = true; btnEl.textContent = '… denkt nach'; }
+      if (btnEl) { btnEl.disabled = true; btnEl.textContent = '… einen Moment'; }
       try {
         const data = await callApi('reroll', {
           persona: this.state.persona,
