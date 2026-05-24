@@ -348,31 +348,33 @@
         'am Ende ein vollständiger Songtext mit Akkorden und Produktions-Spezifikation, den du Zeile für Zeile editieren kannst.'
       ));
 
-      // Auth- & Key-Status-Box (kein lokales Eingabefeld mehr)
+      // Nur Status-Box (Login + automatisch geladener API-Key) –
+      // KEINE Eingabefelder. Personalisierung passiert später, wo sie Sinn macht.
       wrap.append(this.renderAuthStatus());
 
-      const meta = el('div', 'sg-meta-grid');
-      meta.append(this.field('Alias / Name (optional)', 'name', this.state.userMeta.name_or_alias, (v) => { this.state.userMeta.name_or_alias = v; }));
-      meta.append(this.field('Pflicht-Wörter (Komma-getrennt)', 'must_include', (this.state.userMeta.must_include_keywords || []).join(', '), (v) => {
-        this.state.userMeta.must_include_keywords = v.split(',').map(s => s.trim()).filter(Boolean);
-      }));
-      meta.append(this.field('Tabu-Wörter (Komma-getrennt)', 'must_avoid', (this.state.userMeta.must_avoid_keywords || []).join(', '), (v) => {
-        this.state.userMeta.must_avoid_keywords = v.split(',').map(s => s.trim()).filter(Boolean);
-      }));
-      wrap.append(meta);
+      // 3 kompakte Schritt-Erklärungen, damit der Nutzer sofort weiß was passiert
+      const steps = el('div', 'sg-steps');
+      [
+        { n: '1', t: 'Test', d: '24 Fragen zu deiner Persönlichkeit (~5 Min)' },
+        { n: '2', t: 'Profil', d: 'KI fasst Archetyp, Werte und Klang-DNA zusammen' },
+        { n: '3', t: 'Song', d: 'Editierbarer Songtext mit Akkorden & Suno-Prompt' }
+      ].forEach(s => {
+        const it = el('div', 'sg-step-item');
+        it.append(el('span', 'sg-step-num', s.n));
+        const tx = el('div');
+        tx.append(el('strong', null, s.t));
+        tx.append(el('span', 'sg-step-desc', s.d));
+        it.append(tx);
+        steps.append(it);
+      });
+      wrap.append(steps);
 
       const actions = el('div', 'sg-actions');
-      const startBtn = el('button', 'sg-btn sg-btn-primary', 'Test starten');
+      const startBtn = el('button', 'sg-btn sg-btn-primary', this.state.questions ? 'Test fortsetzen' : 'Test starten');
       startBtn.onclick = () => this.startTest();
       actions.append(startBtn);
 
-      if (this.state.questions) {
-        const resumeBtn = el('button', 'sg-btn sg-btn-ghost', 'Test fortsetzen');
-        resumeBtn.onclick = () => this.setStep(1);
-        actions.append(resumeBtn);
-      }
-
-      const skipBtn = el('button', 'sg-btn sg-btn-ghost', 'Direkt externe Inputs nutzen');
+      const skipBtn = el('button', 'sg-btn sg-btn-ghost', 'Test überspringen – nur eigene Daten nutzen');
       skipBtn.onclick = () => this.setStep(2);
       actions.append(skipBtn);
 
@@ -436,18 +438,6 @@
         box.append(txt);
       }
       return box;
-    }
-
-    field(label, name, value, onInput) {
-      const w = el('div', 'sg-field');
-      w.append(el('label', null, label));
-      const i = el('input', 'sg-input');
-      i.type = 'text';
-      i.value = value || '';
-      i.placeholder = label;
-      i.oninput = (e) => onInput(e.target.value);
-      w.append(i);
-      return w;
     }
 
     // ── Step 1: Test ────────────────────────────────────────────
