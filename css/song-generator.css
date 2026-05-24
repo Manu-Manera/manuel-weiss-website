@@ -209,6 +209,104 @@
   margin-bottom: 1.5rem;
 }
 
+/* Login-Wall */
+.sg-login-wall { text-align: center; padding: 3rem 2rem; }
+.sg-login-icon {
+  width: 84px;
+  height: 84px;
+  margin: 0 auto 1.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--sg-accent), var(--sg-accent-2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 2rem;
+  box-shadow: 0 12px 36px rgba(79, 70, 229, 0.35);
+}
+.sg-login-wall h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.75rem;
+}
+.sg-login-wall .sg-actions {
+  justify-content: center;
+}
+
+/* Import-Box: bereits bearbeitete Methoden */
+.sg-import-box {
+  background: linear-gradient(180deg, rgba(79,70,229,0.04), rgba(139,92,246,0.04));
+  border: 1px solid rgba(79, 70, 229, 0.2);
+  border-radius: 14px;
+  padding: 1.25rem 1.4rem;
+  margin: 1.5rem 0;
+}
+.sg-import-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.sg-import-head h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--sg-accent);
+}
+.sg-import-status {
+  margin: 0 0 0.85rem;
+  color: var(--sg-text);
+  font-size: 0.92rem;
+}
+.sg-import-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.sg-import-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  background: #fff;
+  border: 1px solid rgba(79, 70, 229, 0.2);
+  border-radius: 999px;
+  font-size: 0.83rem;
+  cursor: help;
+}
+.sg-import-chip strong { color: var(--sg-text); font-weight: 600; }
+.sg-import-pct {
+  color: var(--sg-accent);
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+.sg-import-count {
+  color: var(--sg-muted);
+  font-size: 0.78rem;
+}
+.sg-import-details {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed rgba(79, 70, 229, 0.2);
+}
+.sg-import-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--sg-accent);
+  font-size: 0.9rem;
+  list-style: none;
+  padding: 0.3rem 0;
+}
+.sg-import-details summary::before { content: '▸ '; }
+.sg-import-details[open] summary::before { content: '▾ '; }
+.sg-import-textarea {
+  margin-top: 0.6rem;
+  font-family: 'JetBrains Mono', 'SFMono-Regular', monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
 /* Schritt-Erklärung auf Welcome-Karte (statt unverständlicher Eingabefelder) */
 .sg-steps {
   display: grid;

@@ -314,6 +314,24 @@
   function clearState(key) { try { localStorage.removeItem(key); } catch (_e) {} }
 
   // ────────────────────────────────────────────────────────────
+  // Auth-Helfer
+  // ────────────────────────────────────────────────────────────
+  function isLoggedIn() {
+    if (window.SongGeneratorImport && window.SongGeneratorImport.isLoggedIn) {
+      return window.SongGeneratorImport.isLoggedIn();
+    }
+    if (window.realUserAuth && window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn()) return true;
+    if (window.awsAuth && window.awsAuth.isLoggedIn && window.awsAuth.isLoggedIn()) return true;
+    return false;
+  }
+
+  function openLoginModal() {
+    if (window.authModals && window.authModals.showLogin) return window.authModals.showLogin();
+    if (window.awsAuth && window.awsAuth.showLoginModal) return window.awsAuth.showLoginModal();
+    alert('Login-System wird geladen, bitte einen Moment warten und erneut klicken.');
+  }
+
+  // ────────────────────────────────────────────────────────────
   // SongGenerator (Hauptklasse)
   // ────────────────────────────────────────────────────────────
   class SongGenerator {
@@ -322,11 +340,13 @@
       if (!this.root) throw new Error('Root-Element nicht gefunden: ' + rootId);
       this.state = {
         step: 0,                  // 0=Welcome, 1=Test, 2=Inputs, 3=Synthese, 4=Compose, 5=Editor
-        questions: null,          // PROMPT_TEST_QUESTIONS Output
-        answers: {},              // itemId → option index oder slider value
+        questions: null,
+        answers: {},
         externalInputs: loadState(STORAGE_KEYS.externalInputs, []),
         persona: loadState(STORAGE_KEYS.persona),
         song: loadState(STORAGE_KEYS.song),
+        importedMethods: null,    // Ergebnis von SongGeneratorImport.importAllMethodData
+        importedNarrative: '',
         userMeta: {
           name_or_alias: '',
           lang: 'de',
@@ -341,7 +361,31 @@
         this.state.answers = savedTest.answers || {};
       }
 
+      // Auf Login-Events reagieren – dann Import starten
+      const onAuth = () => { this.refreshAuthAndImport(); };
+      window.addEventListener('userLoggedIn', onAuth);
+      window.addEventListener('authStateChanged', onAuth);
+
+      // Bei Init bereits eingeloggt? → Import sofort triggern
+      if (isLoggedIn()) {
+        // Kleiner Timeout, damit awsProfileAPI initialisiert ist
+        setTimeout(() => this.refreshAuthAndImport(), 250);
+      }
+
       this.render();
+    }
+
+    async refreshAuthAndImport() {
+      if (!isLoggedIn()) { this.state.importedMethods = null; this.render(); return; }
+      if (!window.SongGeneratorImport) return;
+      try {
+        const result = await window.SongGeneratorImport.importAllMethodData();
+        this.state.importedMethods = result.methods;
+        this.state.importedNarrative = result.narrative;
+        if (this.state.step === 0) this.render();
+      } catch (err) {
+        console.warn('[SongGenerator] Datenimport fehlgeschlagen:', err && err.message);
+      }
     }
 
     setStep(n) { this.state.step = n; this.render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
@@ -385,19 +429,26 @@
 
     // ── Step 0: Welcome ─────────────────────────────────────────
     renderWelcome() {
+      // Login-Wall: ohne Anmeldung kein Zugriff (User-Anforderung)
+      if (!isLoggedIn()) {
+        return this.renderLoginWall();
+      }
+
       const wrap = el('div', 'sg-card sg-welcome');
       wrap.append(el('h2', null, 'Dein Persönlichkeits-Song'));
       wrap.append(el('p', 'sg-lead',
-        'Ein wissenschaftlich validierter Test (24 Items aus Mini-IPIP, HEXACO und Schwartz-Werten) – ' +
-        'die Antworten bestimmen Tonart, Tempo und Instrumentierung deines Songs. ' +
-        'Externe Inputs aus anderen Tests, KI-Chats oder Social Media sind optional. ' +
-        'Am Ende ein vollständiger Songtext mit Akkorden, den du Zeile für Zeile editieren kannst.'
+        'Wissenschaftlich validierter Test (Mini-IPIP, HEXACO, Schwartz-Werte) und – noch wichtiger – ' +
+        'eine automatische Auswertung aller Persönlichkeitsentwicklungs-Methoden, die du auf manuel-weiss.ch ' +
+        'bereits bearbeitet hast. Daraus entsteht ein Song, der wirklich nach dir klingt.'
       ));
+
+      // Importierte Methoden-Daten anzeigen
+      wrap.append(this.renderImportedDataBox());
 
       // 3 kompakte Schritt-Erklärungen
       const steps = el('div', 'sg-steps');
       [
-        { n: '1', t: 'Test', d: '24 Fragen, ~5 Minuten – startet sofort, ohne Anmeldung' },
+        { n: '1', t: 'Test', d: '24 Fragen, ~5 Minuten – kombiniert mit deinen importierten Daten' },
         { n: '2', t: 'Profil', d: 'Big-Five-Skalen, Archetyp und Klang-DNA werden berechnet' },
         { n: '3', t: 'Song', d: 'KI komponiert Text + Akkorde, jede Zeile editierbar' }
       ].forEach(s => {
@@ -416,7 +467,7 @@
       startBtn.onclick = () => this.startTest();
       actions.append(startBtn);
 
-      const skipBtn = el('button', 'sg-btn sg-btn-ghost', 'Test überspringen – nur eigene Daten nutzen');
+      const skipBtn = el('button', 'sg-btn sg-btn-ghost', 'Test überspringen – nur importierte Daten nutzen');
       skipBtn.onclick = () => this.setStep(2);
       actions.append(skipBtn);
 
@@ -424,10 +475,93 @@
       return wrap;
     }
 
+    renderLoginWall() {
+      const wrap = el('div', 'sg-card sg-login-wall');
+      const icon = el('div', 'sg-login-icon');
+      icon.innerHTML = '<i class="fas fa-lock"></i>';
+      wrap.append(icon);
+      wrap.append(el('h2', null, 'Bitte zuerst anmelden'));
+      wrap.append(el('p', 'sg-lead',
+        'Der Persönlichkeits-Song wird aus deinen Daten der Persönlichkeitsentwicklungs-Methoden auf ' +
+        'manuel-weiss.ch komponiert (Ikigai, RAISEC, Werte-Klärung, Lebensrad und mehr). ' +
+        'Damit wir auf dein Profil zugreifen können, melde dich bitte mit deinem Konto an.'
+      ));
+      wrap.append(el('p', 'sg-hint',
+        'Noch kein Konto? Beim Klick auf „Anmelden" kannst du dich auch kostenlos registrieren.'
+      ));
+      const actions = el('div', 'sg-actions');
+      const loginBtn = el('button', 'sg-btn sg-btn-primary', 'Anmelden / Registrieren');
+      loginBtn.onclick = () => openLoginModal();
+      actions.append(loginBtn);
+      wrap.append(actions);
+      return wrap;
+    }
+
+    renderImportedDataBox() {
+      const box = el('div', 'sg-import-box');
+      const head = el('div', 'sg-import-head');
+      head.append(el('h3', null, 'Deine Persönlichkeitsentwicklungs-Daten'));
+      const refresh = el('button', 'sg-btn-tiny', '↻ Aktualisieren');
+      refresh.onclick = async () => {
+        refresh.disabled = true;
+        refresh.textContent = '… lade';
+        await this.refreshAuthAndImport();
+        refresh.disabled = false;
+        refresh.textContent = '↻ Aktualisieren';
+      };
+      head.append(refresh);
+      box.append(head);
+
+      const methods = this.state.importedMethods;
+      if (!methods) {
+        box.append(el('p', 'sg-import-status', 'Daten werden geladen …'));
+        return box;
+      }
+      if (methods.length === 0) {
+        box.append(el('p', 'sg-import-status',
+          'Noch keine Methoden-Daten in deinem Profil gefunden. ' +
+          'Du kannst trotzdem starten – der Test alleine reicht. ' +
+          'Mehr Tiefe bekommst du, wenn du z.B. Ikigai oder die Werte-Klärung vorher ausfüllst.'));
+        const link = el('a', 'sg-link', 'Zu den Methoden →');
+        link.href = 'persoenlichkeitsentwicklung-uebersicht.html';
+        box.append(link);
+        return box;
+      }
+
+      box.append(el('p', 'sg-import-status',
+        methods.length + ' Methode' + (methods.length === 1 ? '' : 'n') +
+        ' aus deinem Profil importiert – die Erkenntnisse fließen direkt in deinen Song ein.'));
+
+      const list = el('div', 'sg-import-list');
+      methods.forEach(m => {
+        const chip = el('div', 'sg-import-chip');
+        chip.append(el('strong', null, m.name));
+        if (m.completion !== null) chip.append(el('span', 'sg-import-pct', m.completion + '%'));
+        chip.append(el('span', 'sg-import-count', m.findings.length + ' Inhalte'));
+        chip.title = m.findings.join(' · ');
+        list.append(chip);
+      });
+      box.append(list);
+
+      // Ausklappbare ausformulierte Zusammenfassung – editierbar
+      if (this.state.importedNarrative) {
+        const details = el('details', 'sg-import-details');
+        details.append(el('summary', null, 'Zusammenfassung anzeigen / vor dem Komponieren bearbeiten'));
+        const ta = el('textarea', 'sg-textarea sg-import-textarea');
+        ta.rows = 12;
+        ta.value = this.state.importedNarrative;
+        ta.onchange = () => { this.state.importedNarrative = ta.value; };
+        details.append(ta);
+        details.append(el('p', 'sg-hint',
+          'Du kannst diesen Text manuell anpassen – die KI nutzt genau diesen Inhalt für die Persona-Synthese und Songkomposition.'));
+        box.append(details);
+      }
+      return box;
+    }
+
     // ── Step 1: Test ────────────────────────────────────────────
     startTest() {
-      // Test ist STATISCH und braucht KEINEN API-Key.
-      // Wissenschaftlich validierte Items aus Mini-IPIP + HEXACO + Schwartz.
+      if (!isLoggedIn()) { this.setStep(0); return; }
       if (!this.state.questions) {
         if (!window.SongTestData) {
           const wrap0 = this.root.querySelector('.sg-card') || this.root;
@@ -630,6 +764,30 @@
     }
 
     // ── Step 3: Synthesis ───────────────────────────────────────
+    /**
+     * Sammelt alle externen Signale für die Synthese. Inkludiert die
+     * automatisch importierten Persönlichkeitsentwicklungs-Daten als
+     * pseudo-PERSONA_SIGNAL_SCHEMA-Eintrag.
+     */
+    _collectExternalSignals() {
+      const sigs = (this.state.externalInputs || []).slice();
+      // Importierte Methoden-Daten als zusätzliches Signal
+      if (this.state.importedNarrative && this.state.importedMethods && this.state.importedMethods.length) {
+        sigs.unshift({
+          source_type: 'personality_methods_history',
+          lang: 'de',
+          scrubbed_excerpt: this.state.importedNarrative.slice(0, 500),
+          full_text: this.state.importedNarrative,
+          method_summary: this.state.importedMethods.map(m => ({
+            name: m.name, completion: m.completion, findings: m.findings
+          })),
+          confidence_overall: 0.9,
+          notes: 'Automatischer Import aus AWS-Profil + localStorage'
+        });
+      }
+      return sigs;
+    }
+
     async runSynthesis() {
       this.setStep(3);
       const wrap = this.root.querySelector('.sg-card') || this.root;
@@ -640,6 +798,8 @@
       const baseDNA = T ? T.computeMusicDNA(scales) : null;
       const baseArchetype = T ? T.computeArchetype(scales) : 'Nordstern';
 
+      const externalSignals = this._collectExternalSignals();
+
       // Direkt-Persona als Fallback (falls KI nicht verfügbar)
       const directPersona = {
         archetype: baseArchetype,
@@ -648,12 +808,13 @@
         core_narrative: this._buildNarrative(baseArchetype, scales),
         motifs: this._buildMotifs(scales),
         music_dna: baseDNA,
-        rationale: 'Profil aus statischem Test berechnet (Mini-IPIP + HEXACO + Schwartz).'
+        imported_narrative: this.state.importedNarrative || null,
+        rationale: 'Profil aus statischem Test berechnet (Mini-IPIP + HEXACO + Schwartz).' +
+          (externalSignals.length ? ' Plus ' + externalSignals.length + ' externe(r) Signal(e) inkl. Persönlichkeitsentwicklungs-Daten.' : '')
       };
 
-      // 2. Wenn externe Inputs vorhanden ODER User mehr Tiefe will → KI-Synthese
-      // Ohne externe Inputs reicht das deterministische Profil oft schon.
-      const hasExt = (this.state.externalInputs || []).length > 0;
+      // 2. Mit Methoden-Daten ODER manuellen externen Inputs → KI-Synthese
+      const hasExt = externalSignals.length > 0;
       if (!hasExt) {
         // Direkter Pfad – kein API-Call nötig
         this.state.persona = directPersona;
@@ -665,17 +826,24 @@
       try {
         const persona = await callApi('synthesize', {
           test_results: this._asConfidenceMap(scales),
-          external_signals: this.state.externalInputs || [],
+          external_signals: externalSignals,
           user_meta: this.state.userMeta,
           base_dna: baseDNA,
-          base_archetype: baseArchetype
+          base_archetype: baseArchetype,
+          imported_narrative: this.state.importedNarrative || null
         });
+        // Importierte Narrative ans Persona-Objekt anhängen, damit der Composer es im Compose-Step nutzen kann
+        if (this.state.importedNarrative) persona.imported_narrative = this.state.importedNarrative;
         this.state.persona = persona;
         saveState(STORAGE_KEYS.persona, persona);
         this.render();
       } catch (err) {
-        const s = wrap.querySelector('.sg-status') || this.showStatus('', wrap);
-        s.textContent = '⚠️ ' + err.message;
+        // Fallback: Direct-Persona verwenden, damit der User trotzdem einen Song bekommt
+        console.warn('[SongGenerator] KI-Synthese fehlgeschlagen, nutze Direct-Persona:', err && err.message);
+        this.state.persona = directPersona;
+        saveState(STORAGE_KEYS.persona, directPersona);
+        this.render();
+        const s = this.showStatus('Hinweis: KI-Synthese war nicht verfügbar. Profil basiert nur auf Test + Methoden-Daten ohne KI-Verfeinerung.', this.root.querySelector('.sg-card') || this.root);
         s.classList.add('sg-status-error');
       }
     }

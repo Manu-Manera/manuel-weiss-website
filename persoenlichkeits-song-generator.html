@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Persönlichkeits-Song Generator | Manuel Weiss</title>
-    <meta name="description" content="Wissenschaftlich fundierter Persönlichkeitstest plus KI-Songkomposition. Big Five, HEXACO, Werte und Stärken werden in einen einzigartigen, editierbaren Song übersetzt.">
-    <meta name="keywords" content="Persönlichkeitstest, Big Five, HEXACO, KI Songgenerator, Suno Prompt, Personalisierter Song">
+    <meta name="description" content="Wissenschaftlich fundierter Persönlichkeitstest plus automatische Auswertung deiner Persönlichkeitsentwicklungs-Methoden – die KI komponiert daraus deinen einzigartigen Song.">
+    <meta name="keywords" content="Persönlichkeitstest, Big Five, HEXACO, Ikigai, RAISEC, KI Songgenerator, Suno Prompt">
     <meta name="author" content="Manuel Weiss">
 
     <!-- Open Graph -->
     <meta property="og:title" content="Persönlichkeits-Song Generator">
-    <meta property="og:description" content="Aus deiner Persönlichkeit wird ein Song – wissenschaftlich, klanglich, editierbar.">
+    <meta property="og:description" content="Aus deinen Persönlichkeitsentwicklungs-Daten wird ein Song – wissenschaftlich, klanglich, editierbar.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://manuel-weiss.ch/persoenlichkeits-song-generator.html">
 
@@ -25,7 +25,8 @@
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="css/persoenlichkeitsentwicklung-uebersicht.css?v=20260524">
-    <link rel="stylesheet" href="css/song-generator.css?v=20260524e">
+    <link rel="stylesheet" href="css/unified-auth-system.css">
+    <link rel="stylesheet" href="css/song-generator.css?v=20260524f">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -40,6 +41,16 @@
                 <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
                 <a href="applications/index.html" class="nav-link">Bewerbungsmanager</a>
                 <a href="applications/coaching.html" class="nav-link">Coaching</a>
+                <button id="authButton" class="nav-auth-btn">
+                    <i class="fas fa-user"></i>
+                    <span id="authButtonText">Anmelden</span>
+                </button>
+                <div class="user-dropdown" id="userDropdown" style="display: none;">
+                    <a href="user-profile.html" class="dropdown-item"><i class="fas fa-user-circle"></i> Mein Profil</a>
+                    <a href="persoenlichkeitsentwicklung-uebersicht.html" class="dropdown-item"><i class="fas fa-th-large"></i> Methoden</a>
+                    <hr class="dropdown-divider">
+                    <button class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Abmelden</button>
+                </div>
             </div>
 
             <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
@@ -56,6 +67,10 @@
                 <a href="persoenlichkeitsentwicklung-uebersicht.html" class="mobile-menu-link">Persönlichkeitsentwicklung</a>
                 <a href="applications/index.html" class="mobile-menu-link">Bewerbungsmanager</a>
                 <a href="applications/coaching.html" class="mobile-menu-link">Coaching</a>
+                <button id="mobileAuthButton" class="mobile-auth-btn">
+                    <i class="fas fa-user"></i>
+                    <span id="mobileAuthButtonText">Anmelden</span>
+                </button>
             </div>
         </div>
     </nav>
@@ -64,20 +79,42 @@
         <header class="sg-app sg-hero" style="padding-bottom: 0;">
             <h1>Dein Persönlichkeits-Song</h1>
             <p>
-                Ein wissenschaftlich validierter Test (24 Items aus Mini-IPIP, HEXACO und Schwartz-Werten),
-                eine deterministisch berechnete Klang-DNA und eine KI-Komposition mit Akkorden,
-                Produktions-Spezifikation sowie fertigen Suno- und Udio-Prompts. Jede Zeile ist editierbar.
+                Ein Login, dann automatischer Import aller bisher bearbeiteten Persönlichkeitsentwicklungs-Methoden
+                (Ikigai, RAISEC, Werte-Klärung, Lebensrad, Johari, Stärken …) plus ein wissenschaftlich validierter
+                Big-Five/HEXACO-Test. Die KI fasst alles zu einem Profil zusammen und komponiert daraus einen
+                vollständigen Songtext mit Akkorden – jede Zeile editierbar.
             </p>
         </header>
 
         <div id="songGeneratorRoot" class="sg-app"></div>
     </main>
 
-    <!-- Statischer Test (Mini-IPIP + HEXACO + Schwartz) -->
-    <script src="js/song-generator-test-data.js?v=20260524e"></script>
-    <!-- Generator + Prompts -->
-    <script src="js/song-generator-prompts.js?v=20260524e"></script>
-    <script src="js/song-generator.js?v=20260524e"></script>
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <!-- AWS Auth + Profile (identisch zur Übersichtsseite)             -->
+    <!-- ════════════════════════════════════════════════════════════ -->
+    <script>
+      // Cognito Config (inline, weil andere Seiten das auch so machen)
+      window.AWS_CONFIG = {
+        userPoolId: 'eu-central-1_8gP4gLK9r',
+        clientId: '7kc5tt6a23fgh53d60vkefm812',
+        region: 'eu-central-1',
+        apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod'
+      };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="js/success-checkmark.js?v=20260112"></script>
+    <script src="js/unified-aws-auth.js?v=20260112"></script>
+    <script src="js/unified-auth-modals.js?v=20260112"></script>
+    <script src="js/unified-profile-service.js?v=20260115"></script>
+    <script src="js/aws-profile-api.js?v=20260524"></script>
+    <script src="js/real-user-auth-system.js?v=20260110"></script>
+    <script src="js/aws-app-config.js"></script>
+
+    <!-- Statischer Test + Datenimport + Generator -->
+    <script src="js/song-generator-test-data.js?v=20260524f"></script>
+    <script src="js/song-generator-data-import.js?v=20260524f"></script>
+    <script src="js/song-generator-prompts.js?v=20260524f"></script>
+    <script src="js/song-generator.js?v=20260524f"></script>
 
     <script>
       document.addEventListener('DOMContentLoaded', function () {
@@ -93,6 +130,67 @@
         mh?.addEventListener('click', toggle);
         mo?.addEventListener('click', toggle);
         mf?.querySelectorAll('.mobile-menu-link').forEach(l => l.addEventListener('click', toggle));
+
+        // Auth-Button
+        const authButton = document.getElementById('authButton');
+        const mobileAuthButton = document.getElementById('mobileAuthButton');
+        const userDropdown = document.getElementById('userDropdown');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        function showLoginModal() {
+          if (window.authModals?.showLogin) return window.authModals.showLogin();
+          if (window.awsAuth?.showLoginModal) return window.awsAuth.showLoginModal();
+        }
+
+        function updateAuthUI() {
+          const isLoggedIn = (window.realUserAuth?.isLoggedIn?.() || window.awsAuth?.isLoggedIn?.()) || false;
+          if (isLoggedIn) {
+            const u = window.realUserAuth?.getCurrentUser?.() || window.awsAuth?.getCurrentUser?.() || {};
+            const name = (u.name && u.name !== 'Test User') || (u.email ? u.email.split('@')[0] : 'Profil');
+            if (authButton) {
+              authButton.classList.add('logged-in');
+              authButton.innerHTML = '<i class="fas fa-user-check"></i> <span>' + name + '</span>';
+              authButton.onclick = (e) => {
+                if (!e.isTrusted) return;
+                e.stopPropagation();
+                if (userDropdown) userDropdown.style.display = userDropdown.style.display === 'block' ? 'none' : 'block';
+              };
+            }
+            if (mobileAuthButton) {
+              mobileAuthButton.innerHTML = '<i class="fas fa-user-check"></i> <span>' + name + '</span>';
+            }
+            window.dispatchEvent(new CustomEvent('userLoggedIn'));
+          } else {
+            if (authButton) {
+              authButton.classList.remove('logged-in');
+              authButton.innerHTML = '<i class="fas fa-user"></i> <span>Anmelden</span>';
+              authButton.onclick = () => showLoginModal();
+            }
+            if (mobileAuthButton) {
+              mobileAuthButton.innerHTML = '<i class="fas fa-user"></i> <span>Anmelden</span>';
+              mobileAuthButton.onclick = () => { toggle(); showLoginModal(); };
+            }
+            if (userDropdown) userDropdown.style.display = 'none';
+          }
+        }
+
+        logoutBtn?.addEventListener('click', async () => {
+          try { await (window.realUserAuth?.logout?.() || window.awsAuth?.logout?.()); } catch (_e) {}
+          localStorage.removeItem('aws_auth_session');
+          localStorage.removeItem('awsUserSession');
+          localStorage.removeItem('awsAuthTokens');
+          window.location.reload();
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!e.isTrusted) return;
+          if (userDropdown && !authButton?.contains(e.target)) userDropdown.style.display = 'none';
+        });
+
+        setTimeout(updateAuthUI, 200);
+        setTimeout(updateAuthUI, 1200);
+        window.addEventListener('authStateChanged', updateAuthUI);
+        window.addEventListener('userLoggedIn', updateAuthUI);
 
         // Generator initialisieren
         try {
