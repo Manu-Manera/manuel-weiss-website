@@ -200,6 +200,22 @@ export class WebsiteApiStack extends cdk.Stack {
       memorySize: 256
     });
 
+    // ────────────────────────────────────────────────────────────
+    // SONG GENERATOR (Persoenlichkeits-Song-Generator)
+    // 5 Actions in einer Lambda: test_questions / interpret_input /
+    // synthesize / compose / reroll
+    // ────────────────────────────────────────────────────────────
+    const songGeneratorLambda = new lambda.Function(this, 'SongGeneratorFunction', {
+      functionName: 'website-song-generator',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('../lambda/song-generator'),
+      role: lambdaRole,
+      // Composer-Calls können bei gpt-5.2 + 4500 max_tokens 20-25s dauern
+      timeout: cdk.Duration.seconds(60),
+      memorySize: 512
+    });
+
     // Job Parser Lambda
     const jobParserLambda = new lambda.Function(this, 'JobParserFunction', {
       functionName: 'website-job-parser',
@@ -541,6 +557,10 @@ export class WebsiteApiStack extends cdk.Stack {
     const openaiResource = this.api.root.addResource('openai-proxy');
     openaiResource.addMethod('POST', new apigateway.LambdaIntegration(openaiProxyLambda));
 
+    // /song-generator (Persoenlichkeits-Song-Generator)
+    const songGeneratorResource = this.api.root.addResource('song-generator');
+    songGeneratorResource.addMethod('POST', new apigateway.LambdaIntegration(songGeneratorLambda));
+
     // /job-parser
     const jobParserResource = this.api.root.addResource('job-parser');
     jobParserResource.addMethod('POST', new apigateway.LambdaIntegration(jobParserLambda));
@@ -816,7 +836,8 @@ export class WebsiteApiStack extends cdk.Stack {
       actions: ['s3:GetObject', 's3:PutObject'],
       resources: [
         'arn:aws:s3:::manuel-weiss-website/data/tempus-demo-pm-state.json',
-        'arn:aws:s3:::manuel-weiss-website/data/tempus-demo-rm-state.json'
+        'arn:aws:s3:::manuel-weiss-website/data/tempus-demo-rm-state.json',
+        'arn:aws:s3:::manuel-weiss-website/data/tempus-demo-bpafg-state.json'
       ]
     }));
 
@@ -827,6 +848,9 @@ export class WebsiteApiStack extends cdk.Stack {
     const demoScriptRmResource = demoScriptResource.addResource('rm');
     demoScriptRmResource.addMethod('GET',  demoScriptIntegration);
     demoScriptRmResource.addMethod('POST', demoScriptIntegration);
+    const demoScriptBpafgResource = demoScriptResource.addResource('bpafg');
+    demoScriptBpafgResource.addMethod('GET',  demoScriptIntegration);
+    demoScriptBpafgResource.addMethod('POST', demoScriptIntegration);
 
     // ========================================
     // TEMPUS LOGIN MAILER
@@ -949,13 +973,12 @@ export class WebsiteApiStack extends cdk.Stack {
     // FOKUS-TAGEBUCH (Tagesvertrag / 20-Min-Training, Cognito JWT)
     // ========================================
 
-    const fokusTagebuchTable = new dynamodb.Table(this, 'FokusTagebuchTable', {
-      tableName: 'mawps-fokus-tagebuch',
-      partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
-      sortKey: { name: 'entryKey', type: dynamodb.AttributeType.STRING },
-      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-      removalPolicy: cdk.RemovalPolicy.RETAIN
-    });
+    // Tabelle kann bereits in AWS existieren (Create vor fehlgeschlagenem Deploy); Referenz vermeidet ResourceExistenceCheck
+    const fokusTagebuchTable = dynamodb.Table.fromTableName(
+      this,
+      'FokusTagebuchTable',
+      'mawps-fokus-tagebuch'
+    );
 
     const fokusTagebuchLambda = new lambda.Function(this, 'FokusTagebuchFunction', {
       functionName: 'website-fokus-tagebuch-api',

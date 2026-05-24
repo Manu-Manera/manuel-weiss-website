@@ -43,7 +43,8 @@ function startMethod(methodId) {
         'target-coaching': 'methods/target-coaching/target-coaching.html',
         'therapy-form-finder': 'methods/therapy-form-finder.html',
         'therapy-form-finder-test': 'methods/therapy-form-finder.html',  // Fallback für Tests
-        'raisec': 'raisec-persoenlichkeitsentwicklung.html'
+        'raisec': 'raisec-persoenlichkeitsentwicklung.html',
+        'personality-song': 'persoenlichkeits-song-generator.html'
     };
     
     // Debug: Log all available methods

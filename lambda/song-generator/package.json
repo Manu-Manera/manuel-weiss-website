@@ -1,0 +1,7 @@
+{
+  "name": "song-generator-lambda",
+  "version": "1.0.0",
+  "description": "Personality Song Generator Lambda - 5 actions in one function (test/interpret/synthesis/compose/reroll)",
+  "main": "index.js",
+  "dependencies": {}
+}

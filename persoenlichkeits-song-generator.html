@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Persönlichkeits-Song Generator | Manuel Weiss</title>
+    <meta name="description" content="Wissenschaftlich fundierter Persönlichkeitstest plus KI-Songkomposition. Big Five, HEXACO, Werte und Stärken werden in einen einzigartigen, editierbaren Song übersetzt.">
+    <meta name="keywords" content="Persönlichkeitstest, Big Five, HEXACO, KI Songgenerator, Suno Prompt, Personalisierter Song">
+    <meta name="author" content="Manuel Weiss">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Persönlichkeits-Song Generator">
+    <meta property="og:description" content="Aus deiner Persönlichkeit wird ein Song – wissenschaftlich, klanglich, editierbar.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://manuel-weiss.ch/persoenlichkeits-song-generator.html">
+
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="manuel-weiss-photo.svg">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/persoenlichkeitsentwicklung-uebersicht.css?v=20260524">
+    <link rel="stylesheet" href="css/song-generator.css?v=20260524">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation (kompatibel mit Übersichtsseite) -->
+    <nav class="navbar navbar-slim">
+        <div class="nav-container">
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Start</a>
+                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
+                <a href="applications/index.html" class="nav-link">Bewerbungsmanager</a>
+                <a href="applications/coaching.html" class="nav-link">Coaching</a>
+                <div class="nav-divider"></div>
+                <button class="lang-link-compact" data-lang="de" title="Deutsch">DE</button>
+                <button class="lang-link-compact" data-lang="en" title="English">EN</button>
+                <button id="authButton" class="nav-auth-btn">
+                    <i class="fas fa-user"></i>
+                    <span id="authButtonText">Anmelden</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <header class="sg-app sg-hero" style="padding-bottom: 0;">
+            <h1>Dein Persönlichkeits-Song</h1>
+            <p>
+                Ein wissenschaftlich fundierter Test (Big Five, HEXACO, Werte, Bindung, VIA-Stärken)
+                plus optional Inputs aus anderen Tests, KI-Chats oder Social Media – am Ende
+                ein einzigartiger Songtext mit Akkorden, Production-Spec und fertigen Suno/Udio-Prompts.
+                Jede Zeile ist editierbar; die KI liefert auf Wunsch Alternativen, ohne dass die
+                klangliche Tonart-/Tempo-Konsistenz verloren geht.
+            </p>
+        </header>
+
+        <div id="songGeneratorRoot" class="sg-app"></div>
+    </main>
+
+    <!-- Globale App-Konfiguration (API_BASE etc.) -->
+    <script src="js/aws-app-config.js"></script>
+    <!-- Optional: zentraler OpenAI-Service für API-Key-Auflösung über User-Profil -->
+    <script src="js/openai-service.js" defer></script>
+    <!-- Generator -->
+    <script src="js/song-generator-prompts.js?v=20260524" defer></script>
+    <script src="js/song-generator.js?v=20260524" defer></script>
+    <script defer>
+      window.addEventListener('DOMContentLoaded', () => {
+        try {
+          window.songGenerator = new SongGenerator('songGeneratorRoot');
+        } catch (err) {
+          console.error('SongGenerator init failed:', err);
+          const root = document.getElementById('songGeneratorRoot');
+          if (root) {
+            root.innerHTML = '<div class="sg-card"><h2>Fehler beim Laden</h2><p>' + (err.message || err) + '</p></div>';
+          }
+        }
+      });
+    </script>
+</body>
+</html>

@@ -47,6 +47,9 @@ window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
     
     // OpenAI Proxy
     OPENAI_PROXY: '/openai-proxy',
+
+    // Personality Song Generator
+    SONG_GENERATOR: '/song-generator',
     
     // API Settings
     API_SETTINGS: '/api-settings',
