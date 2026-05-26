@@ -508,9 +508,13 @@
     async loadCloudState() {
       if (!window.SongGeneratorCloud || !window.SongGeneratorCloud.isLoggedIn()) return;
       try {
+        const localMerge = {
+          playlist: loadState(STORAGE_KEYS.playlist, null),
+          audio: loadState(STORAGE_KEYS.audio, null)
+        };
         const loaded = await window.SongGeneratorCloud.loadLatest();
         if (loaded && loaded.snapshot) {
-          window.SongGeneratorCloud.applySnapshotToState(this.state, loaded.snapshot);
+          window.SongGeneratorCloud.applySnapshotToState(this.state, loaded.snapshot, localMerge);
           this.syncLocalCache();
         }
         if (window.SongGeneratorCloud.syncAudioIdentity) {
@@ -555,21 +559,28 @@
     }
 
     async _persistAudioToProfile(type, meta) {
+      this.syncLocalCache();
       if (!window.SongGeneratorCloud || !window.SongGeneratorCloud.isLoggedIn()) return;
       try {
         const result = await window.SongGeneratorCloud.saveAudioToLibrary(this.state, type, meta || {});
-        if (result && result.identity) {
-          this.state.audioIdentity = result.identity;
-          this.state.audioLibrary = result.library;
-          if (result.library && Array.isArray(result.library.favorites)) {
-            this.state.favorites = result.library.favorites;
-            saveState(STORAGE_KEYS.favorites, this.state.favorites);
+        if (result) {
+          if (result.identity) this.state.audioIdentity = result.identity;
+          if (result.library) {
+            this.state.audioLibrary = result.library;
+            if (Array.isArray(result.library.favorites)) {
+              this.state.favorites = result.library.favorites;
+              saveState(STORAGE_KEYS.favorites, this.state.favorites);
+            }
           }
           if (this.state.persona) saveState(STORAGE_KEYS.persona, this.state.persona);
         }
-        this._cloudSave('audio', { updateCurrent: true });
+        // Sofort in Cloud-Snapshot schreiben – debounced Save kann Playlist sonst verlieren
+        await window.SongGeneratorCloud.saveSnapshot(this.state, 'audio', { updateCurrent: true });
       } catch (err) {
         console.warn('[SongGenerator] Profil-Audio-Speichern:', err && err.message);
+        try {
+          await window.SongGeneratorCloud.saveSnapshot(this.state, 'audio', { updateCurrent: true });
+        } catch (_e2) {}
       }
     }
 
@@ -2625,6 +2636,13 @@
       const labels = playlist.tracks.filter(function (t) { return t.status === 'ok'; })
         .map(function (t) { return (t.emoji || '') + ' ' + t.label; }).join(' → ');
       box.append(el('p', 'sg-playlist-player-sub', okCount + ' Songs · ' + (labels || '—')));
+      if (window.SongGeneratorCloud && window.SongGeneratorCloud.isLoggedIn()) {
+        box.append(el('p', 'sg-playlist-saved-hint',
+          '☁️ Playlist gespeichert – im Profil unter Fortschritt → Persönlichkeits-Songs.'));
+      } else {
+        box.append(el('p', 'sg-hint',
+          'Nur in diesem Browser gespeichert – anmelden für Cloud-Speicher im Profil.'));
+      }
       box.append(this._renderBluetoothHint());
 
       const playable = playlist.tracks.filter(function (t) {
@@ -3043,6 +3061,7 @@
         partial: cancelled || playlistTracks.filter(function (t) { return t.status === 'ok'; }).length < order.length
       };
       saveState(STORAGE_KEYS.playlist, this.state.playlist);
+      this.syncLocalCache();
       await this._persistAudioToProfile('playlist', { title: pack.label || 'Persönlichkeits-Playlist' });
 
       if (!playlistTracks.some(function (t) { return t.status === 'ok'; })) {

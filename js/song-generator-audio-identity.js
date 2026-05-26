@@ -207,7 +207,9 @@
           emoji: t.emoji
         };
       });
-      title = 'Persönlichkeits-Playlist · ' + (persona.archetype || 'Profil');
+      title = meta.title
+        ? (meta.title + ' · ' + (persona.archetype || 'Profil'))
+        : ('Persönlichkeits-Playlist · ' + (persona.archetype || 'Profil'));
     } else if (state.audio && state.audio.tracks) {
       tracks = state.audio.tracks.map(function (t) {
         return {

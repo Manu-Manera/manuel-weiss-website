@@ -125,7 +125,28 @@
     };
   }
 
-  function applySnapshotToState(state, snap) {
+  function hasPlayableTracks(media) {
+    if (!media || !Array.isArray(media.tracks)) return false;
+    return media.tracks.some(function (t) {
+      return t && (t.status === 'ok' || t.url || t.audio_url || t.audioUrl ||
+        t.stream_audio_url || t.streamAudioUrl);
+    });
+  }
+
+  /** Beim Cloud-Laden: neuere/lokalere Playlist/Audio nicht mit leerem Snapshot überschreiben */
+  function pickNewerMedia(cloudVal, localVal) {
+    if (!localVal || !hasPlayableTracks(localVal)) return cloudVal;
+    if (!cloudVal || !hasPlayableTracks(cloudVal)) return localVal;
+    const localAt = localVal.generatedAt || '';
+    const cloudAt = cloudVal.generatedAt || '';
+    if (localAt && cloudAt) return localAt >= cloudAt ? localVal : cloudVal;
+    const localOk = localVal.tracks.filter(function (t) { return t && t.status === 'ok'; }).length;
+    const cloudOk = cloudVal.tracks.filter(function (t) { return t && t.status === 'ok'; }).length;
+    if (localOk > cloudOk) return localVal;
+    return cloudVal;
+  }
+
+  function applySnapshotToState(state, snap, localMerge) {
     if (!snap || !state) return false;
     if (snap.testVariant) state.testVariant = snap.testVariant;
     if (snap.test) {
@@ -136,8 +157,16 @@
     if (snap.externalInputs) state.externalInputs = snap.externalInputs;
     if (snap.persona) state.persona = snap.persona;
     if (snap.song) state.song = snap.song;
-    if (snap.audio !== undefined) state.audio = snap.audio;
-    if (snap.playlist !== undefined) state.playlist = snap.playlist;
+    if (snap.audio !== undefined) {
+      state.audio = (localMerge && localMerge.audio != null)
+        ? pickNewerMedia(snap.audio, localMerge.audio)
+        : snap.audio;
+    }
+    if (snap.playlist !== undefined) {
+      state.playlist = (localMerge && localMerge.playlist != null)
+        ? pickNewerMedia(snap.playlist, localMerge.playlist)
+        : snap.playlist;
+    }
     if (snap.facets) state.facets = snap.facets;
     if (snap.astrology) state.astrology = snap.astrology;
     if (snap.userMeta) state.userMeta = Object.assign({}, state.userMeta || {}, snap.userMeta);
