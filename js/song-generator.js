@@ -588,10 +588,14 @@
           if (result.identity) this.state.audioIdentity = result.identity;
           if (result.library) {
             this.state.audioLibrary = result.library;
-            if (Array.isArray(result.library.favorites)) {
+            if (window.SongFavorites) {
+              this.state.favorites = window.SongFavorites.mergeLists(
+                result.library.favorites, this.state.favorites
+              );
+            } else if (Array.isArray(result.library.favorites)) {
               this.state.favorites = result.library.favorites;
-              saveState(STORAGE_KEYS.favorites, this.state.favorites);
             }
+            saveState(STORAGE_KEYS.favorites, this.state.favorites);
           }
           if (this.state.persona) saveState(STORAGE_KEYS.persona, this.state.persona);
         }
@@ -635,23 +639,34 @@
     }
 
     async _toggleFavorite(meta) {
-      if (!meta || !meta.url) return;
       const norm = this._buildFavoriteMeta(meta);
-      if (!norm) return;
-      if (window.SongGeneratorCloud && window.SongGeneratorCloud.toggleFavorite) {
-        const result = await window.SongGeneratorCloud.toggleFavorite(this.state, norm);
-        if (result) {
-          this.state.favorites = result.favorites;
-          saveState(STORAGE_KEYS.favorites, this.state.favorites);
-          this.render();
-        }
-        return;
+      if (!norm || !norm.url) return;
+      if (!window.SongFavorites) return;
+
+      const result = window.SongFavorites.toggle(this.state.favorites || [], norm);
+      const self = this;
+      this.state.favorites = result.favorites;
+      saveState(STORAGE_KEYS.favorites, this.state.favorites);
+      this.render();
+
+      if (result.added && this._favoritesPanelEl) {
+        this._favoritesPanelEl.classList.add('sg-favorites-flash');
+        this._favoritesPanelEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        setTimeout(function () {
+          if (self._favoritesPanelEl) self._favoritesPanelEl.classList.remove('sg-favorites-flash');
+        }, 1200);
       }
-      if (window.SongFavorites) {
-        const result = window.SongFavorites.toggle(this.state.favorites || [], norm);
-        this.state.favorites = result.favorites;
-        saveState(STORAGE_KEYS.favorites, this.state.favorites);
-        this.render();
+
+      if (window.SongGeneratorCloud && window.SongGeneratorCloud.isLoggedIn()) {
+        try {
+          if (window.SongGeneratorCloud.persistFavoritesList) {
+            await window.SongGeneratorCloud.persistFavoritesList(this.state.favorites);
+          } else if (window.SongGeneratorCloud.toggleFavorite) {
+            await window.SongGeneratorCloud.toggleFavorite(this.state, norm);
+          }
+        } catch (err) {
+          console.warn('[SongGenerator] Favoriten-Cloud-Sync:', err && err.message);
+        }
       }
     }
 
@@ -2488,7 +2503,8 @@
       const self = this;
       const favs = this.state.favorites || [];
       const panel = el('div', 'sg-favorites-panel');
-      panel.append(el('h4', null, '♥ Meine Favoriten-Playlist'));
+      this._favoritesPanelEl = panel;
+      panel.append(el('h4', null, '♥ Meine Favoriten-Playlist (' + favs.length + ')'));
       panel.append(el('p', 'sg-favorites-lead',
         'Lieblingssongs mit ♡ markieren – sie bleiben dauerhaft hier, auch wenn du neue Varianten produzierst. Reihenfolge per Ziehen oder ↑/↓.'));
 

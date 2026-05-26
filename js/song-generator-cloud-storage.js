@@ -281,28 +281,21 @@
     if (!window.SongFavorites) return null;
     const norm = window.SongFavorites.normalize(trackMeta);
     if (!norm) return null;
-    if (!isLoggedIn()) {
-      const local = window.SongFavorites.toggle(state.favorites || [], norm);
-      if (state) state.favorites = local.favorites;
-      return local;
-    }
+    const result = window.SongFavorites.toggle(state && state.favorites ? state.favorites : [], norm);
+    if (state) state.favorites = result.favorites;
+    if (!isLoggedIn()) return result;
     try {
       const token = await getAuthToken();
       let library = await loadAudioLibrary();
       if (!library.entries) library.entries = [];
-      const current = window.SongFavorites.mergeLists(library.favorites, state.favorites || []);
-      const result = window.SongFavorites.toggle(current, norm);
       library.favorites = result.favorites;
       library.updatedAt = new Date().toISOString();
       await writeWorkflowStep('audioLibrary', library, token);
-      if (state) {
-        state.favorites = result.favorites;
-        state.audioLibrary = library;
-      }
+      if (state) state.audioLibrary = library;
       return result;
     } catch (err) {
       console.warn('[SongGeneratorCloud] toggleFavorite:', err.message);
-      return null;
+      return result;
     }
   }
 
@@ -373,6 +366,11 @@
       library.entries.unshift(entry);
       while (library.entries.length > MAX_LIBRARY_ENTRIES) {
         library.entries.pop();
+      }
+      if (state.favorites && state.favorites.length && window.SongFavorites) {
+        library.favorites = window.SongFavorites.mergeLists(library.favorites, state.favorites);
+      } else if (!Array.isArray(library.favorites)) {
+        library.favorites = [];
       }
       library.identity = identity;
       library.updatedAt = new Date().toISOString();
