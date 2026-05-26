@@ -378,32 +378,78 @@
         this.refreshAuthAndImport();
       });
 
-      // Bei Init bereits eingeloggt? → Import sofort triggern
+      // Bei Init bereits eingeloggt? → Cloud + Import
       if (isLoggedIn()) {
-        // Kleiner Timeout, damit awsProfileAPI initialisiert ist
-        setTimeout(() => this.refreshAuthAndImport(), 250);
+        setTimeout(() => this.refreshAuthAndImport(), 300);
       }
 
       this.render();
     }
 
-    async refreshAuthAndImport() {
-      if (!isLoggedIn()) { this.state.importedMethods = null; this.render(); return; }
-      if (!window.SongGeneratorImport) return;
-      try {
-        const result = await window.SongGeneratorImport.importAllMethodData();
-        this.state.importedMethods = result.methods;
-        this.state.importedNarrative = result.narrative;
-        if (this.state.step === 0) this.render();
-      } catch (err) {
-        console.warn('[SongGenerator] Datenimport fehlgeschlagen:', err && err.message);
+    syncLocalCache() {
+      if (this.state.questions) {
+        saveState(STORAGE_KEYS.test, { questions: this.state.questions, answers: this.state.answers });
       }
+      saveState(STORAGE_KEYS.variant, this.state.testVariant);
+      saveState(STORAGE_KEYS.externalInputs, this.state.externalInputs);
+      saveState(STORAGE_KEYS.persona, this.state.persona);
+      saveState(STORAGE_KEYS.song, this.state.song);
+      saveState(STORAGE_KEYS.birth, this.state.birthData);
+      saveState(STORAGE_KEYS.audio, this.state.audio);
+    }
+
+    _cloudSave(milestone, opts) {
+      if (!window.SongGeneratorCloud || !window.SongGeneratorCloud.isLoggedIn()) return;
+      this.syncLocalCache();
+      window.SongGeneratorCloud.scheduleSave(this.state, milestone, opts);
+    }
+
+    async loadCloudState() {
+      if (!window.SongGeneratorCloud || !window.SongGeneratorCloud.isLoggedIn()) return;
+      try {
+        const loaded = await window.SongGeneratorCloud.loadLatest();
+        if (!loaded || !loaded.snapshot) return;
+        window.SongGeneratorCloud.applySnapshotToState(this.state, loaded.snapshot);
+        this.syncLocalCache();
+        if (window.SongMusicEngine && window.SongMusicEngine.invalidateSunoKeyCache) {
+          window.SongMusicEngine.invalidateSunoKeyCache();
+        }
+        console.log('[SongGenerator] Cloud-Snapshot geladen:', loaded.version && loaded.version.label);
+      } catch (err) {
+        console.warn('[SongGenerator] Cloud-Laden fehlgeschlagen:', err && err.message);
+      }
+    }
+
+    async refreshAuthAndImport() {
+      if (!isLoggedIn()) {
+        this.state.importedMethods = null;
+        this.render();
+        return;
+      }
+      await this.loadCloudState();
+      if (window.SongMusicEngine && window.SongMusicEngine.invalidateSunoKeyCache) {
+        window.SongMusicEngine.invalidateSunoKeyCache();
+      }
+      if (window.SongMusicEngine && window.SongMusicEngine.getSunoApiKey) {
+        window.SongMusicEngine.getSunoApiKey().catch(function () {});
+      }
+      if (window.SongGeneratorImport) {
+        try {
+          const result = await window.SongGeneratorImport.importAllMethodData();
+          this.state.importedMethods = result.methods;
+          this.state.importedNarrative = result.narrative;
+        } catch (err) {
+          console.warn('[SongGenerator] Datenimport fehlgeschlagen:', err && err.message);
+        }
+      }
+      this.render();
     }
 
     setStep(n) { this.state.step = n; this.render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
     persistTest() {
       saveState(STORAGE_KEYS.test, { questions: this.state.questions, answers: this.state.answers });
+      this._cloudSave('draft', { updateCurrent: true });
     }
 
     // ────────────────────────────────────────────────────────────
@@ -1033,6 +1079,7 @@
       if (!hasExt) {
         this.state.persona = directPersona;
         saveState(STORAGE_KEYS.persona, directPersona);
+        this._cloudSave('persona', { forceNewVersion: true });
         this.render();
         return;
       }
@@ -1056,11 +1103,13 @@
         persona.imported_methods_count = importedCount;
         this.state.persona = persona;
         saveState(STORAGE_KEYS.persona, persona);
+        this._cloudSave('persona', { forceNewVersion: true });
         this.render();
       } catch (err) {
         console.warn('[SongGenerator] KI-Synthese fehlgeschlagen, nutze Direct-Persona:', err && err.message);
         this.state.persona = directPersona;
         saveState(STORAGE_KEYS.persona, directPersona);
+        this._cloudSave('persona', { forceNewVersion: true });
         this.render();
         const s = this.showStatus('Hinweis: KI-Synthese war nicht verfügbar. Profil basiert auf clientseitiger Berechnung ohne KI-Verfeinerung.', this.root.querySelector('.sg-card') || this.root);
         s.classList.add('sg-status-error');
@@ -1372,6 +1421,7 @@
         });
         this.state.song = song;
         saveState(STORAGE_KEYS.song, song);
+        this._cloudSave('song', { forceNewVersion: true });
         this.setStep(6);
       } catch (err) {
         const s = wrap.querySelector('.sg-status') || this.showStatus('', wrap);
@@ -1408,6 +1458,10 @@
       meta.append(el('span', null, s.time_signature || ''));
       head.append(meta);
       wrap.append(head);
+
+      if (window.SongGeneratorCloud && window.SongGeneratorCloud.isLoggedIn()) {
+        wrap.append(el('p', 'sg-lead', '☁️ Test, Profil und Song werden automatisch in deinem AWS-Profil versioniert gespeichert.'));
+      }
 
       if (s.rationale) wrap.append(el('p', 'sg-rationale', s.rationale));
 
@@ -1854,6 +1908,7 @@
           model: opts.model
         };
         saveState(STORAGE_KEYS.audio, this.state.audio);
+        this._cloudSave('audio', { forceNewVersion: true });
         this.state.audioState = { phase: 'success' };
         this.render();
       } catch (err) {

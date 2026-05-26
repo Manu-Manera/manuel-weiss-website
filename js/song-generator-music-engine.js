@@ -31,6 +31,58 @@
   // ────────────────────────────────────────────────────────────
   const _keyCache = { value: null, expiresAt: 0 };
   function isValidSunoKey(k) { return typeof k === 'string' && k.length > 16; }
+  function getAuthTokenFromSession() {
+    try {
+      if (window.awsAuth && window.awsAuth.isLoggedIn && window.awsAuth.isLoggedIn()) {
+        const u = window.awsAuth.getCurrentUser();
+        if (u && u.idToken) return u.idToken;
+      }
+      if (window.realUserAuth && window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn()) {
+        const u = window.realUserAuth.getCurrentUser();
+        if (u && u.idToken) return u.idToken;
+      }
+      const session = localStorage.getItem('aws_auth_session');
+      if (session) {
+        const p = JSON.parse(session);
+        if (p.idToken) return p.idToken;
+      }
+    } catch (_e) {}
+    return null;
+  }
+
+  function persistSunoKeyLocally(k) {
+    if (!isValidSunoKey(k)) return;
+    try {
+      localStorage.setItem('suno-api-key', k);
+      const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
+      globalKeys.suno = Object.assign({}, globalKeys.suno || {}, {
+        key: k,
+        apiKey: k,
+        enabled: true
+      });
+      localStorage.setItem('global_api_keys', JSON.stringify(globalKeys));
+    } catch (_e) {}
+  }
+
+  async function fetchSunoKeyFromApiSettings(useGlobal) {
+    const headers = { 'Content-Type': 'application/json' };
+    if (!useGlobal) {
+      const token = getAuthTokenFromSession();
+      if (!token) return null;
+      headers.Authorization = 'Bearer ' + token;
+    }
+    const url = API_BASE + '/api-settings?action=key&provider=suno' + (useGlobal ? '&global=true' : '');
+    try {
+      const res = await fetch(url, { method: 'GET', headers: headers });
+      if (!res.ok) return null;
+      const data = await res.json().catch(function () { return null; });
+      const k = data && data.apiKey;
+      return isValidSunoKey(k) ? k : null;
+    } catch (_e) {
+      return null;
+    }
+  }
+
   function readSunoKeyFromStorage() {
     const candidates = [];
     try {
@@ -77,19 +129,28 @@
       return k;
     }
 
-    // 1) AWS global (Admin-Panel → api-settings#global)
-    try {
-      const res = await fetch(API_BASE + '/api-settings?action=key&provider=suno&global=true', {
-        method: 'GET', headers: { 'Content-Type': 'application/json' }
-      });
-      if (res.ok) {
-        const data = await res.json().catch(() => null);
-        const cached = rememberKey(data && data.apiKey);
-        if (cached) return cached;
-      }
-    } catch (_e) { /* fall through */ }
+    // 1) localStorage (Admin „Speichern“ im gleichen Browser)
+    const stored = readSunoKeyFromStorage();
+    const cachedStored = rememberKey(stored);
+    if (cachedStored) return cachedStored;
 
-    // 2) awsAPISettings – eingeloggt (User-Key) oder global
+    // 2) AWS User-Key (Admin-Panel → DynamoDB, JWT des eingeloggten Users)
+    const userKey = await fetchSunoKeyFromApiSettings(false);
+    const cachedUser = rememberKey(userKey);
+    if (cachedUser) {
+      persistSunoKeyLocally(cachedUser);
+      return cachedUser;
+    }
+
+    // 3) AWS global (api-settings#global)
+    const globalKey = await fetchSunoKeyFromApiSettings(true);
+    const cachedGlobal = rememberKey(globalKey);
+    if (cachedGlobal) {
+      persistSunoKeyLocally(cachedGlobal);
+      return cachedGlobal;
+    }
+
+    // 4) awsAPISettings-Fallback
     try {
       if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
         let k = null;
@@ -98,16 +159,19 @@
         }
         if (!k) k = await window.awsAPISettings.getFullApiKey('suno', true);
         const cached = rememberKey(k);
-        if (cached) return cached;
+        if (cached) {
+          persistSunoKeyLocally(cached);
+          return cached;
+        }
       }
     } catch (_e) { /* fall through */ }
 
-    // 3) localStorage / GlobalAPIManager / admin_state (nach Admin-Speichern)
-    const stored = readSunoKeyFromStorage();
-    const cachedStored = rememberKey(stored);
-    if (cachedStored) return cachedStored;
-
     return null;
+  }
+
+  function invalidateSunoKeyCache() {
+    _keyCache.value = null;
+    _keyCache.expiresAt = 0;
   }
 
   // ────────────────────────────────────────────────────────────
@@ -528,6 +592,7 @@
     buildLyricsFromSong,
     generateAudio,
     getSunoApiKey,
+    invalidateSunoKeyCache,
     PROVIDERS,
     ELEMENT_MODIFIERS,
     ASC_VIBES
