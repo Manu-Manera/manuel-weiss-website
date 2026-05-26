@@ -231,8 +231,12 @@
     return blueprint.tracks.find(function (t) { return t.intentId === intentId; }) || null;
   }
 
+  /** Reihenfolge für Auto-Playlist-Queue (4 Suno-Generierungen) */
+  const PLAYLIST_INTENT_ORDER = ['personality', 'soul', 'workout', 'focus'];
+
   window.SongPlaylistEngine = {
     INTENTS: INTENTS,
+    PLAYLIST_INTENT_ORDER: PLAYLIST_INTENT_ORDER,
     computeIntentModifiers: computeIntentModifiers,
     computePlaylistBlueprint: computePlaylistBlueprint,
     getIntent: getIntent,

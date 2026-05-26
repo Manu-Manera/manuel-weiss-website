@@ -1202,6 +1202,109 @@
 }
 .sg-btn-bt { flex: 1 1 auto; min-width: 140px; }
 
+.sg-actions-split {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+.sg-btn-secondary {
+  background: #fff;
+  color: #6366f1;
+  border: 2px solid #c4b5fd;
+}
+.sg-btn-secondary:hover {
+  background: #f5f3ff;
+}
+.sg-btn-queue { flex: 1 1 200px; }
+
+/* Playlist-Queue Fortschritt */
+.sg-queue-progress {
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid #ddd6fe;
+  border-radius: 12px;
+}
+.sg-queue-progress h4 { margin: 0 0 0.5rem; color: #4c1d95; }
+.sg-queue-bar {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 0.75rem 0;
+}
+.sg-queue-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #a78bfa);
+  transition: width 0.4s ease;
+}
+.sg-queue-done {
+  margin: 0.5rem 0;
+  padding-left: 1.1rem;
+  font-size: 0.82rem;
+  color: #475569;
+}
+.sg-queue-done li.fail { color: #dc2626; }
+
+/* Playlist-Player */
+.sg-playlist-player {
+  margin-top: 1rem;
+  padding: 1rem 1.1rem;
+  background: linear-gradient(135deg, #faf5ff, #eff6ff);
+  border: 1px solid #ddd6fe;
+  border-radius: 14px;
+}
+.sg-playlist-player h4 { margin: 0 0 0.25rem; color: #4c1d95; }
+.sg-playlist-player-sub {
+  margin: 0 0 0.75rem;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+.sg-playlist-main { margin-bottom: 0.75rem; }
+.sg-playlist-now {
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6366f1;
+}
+.sg-playlist-controls { margin-bottom: 0.75rem; }
+.sg-playlist-tracklist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.sg-playlist-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+}
+.sg-playlist-track:hover { border-color: #c4b5fd; background: #faf5ff; }
+.sg-playlist-track.active {
+  border-color: #6366f1;
+  background: #eef2ff;
+  box-shadow: 0 0 0 1px #6366f1;
+}
+.sg-playlist-track-left {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.sg-playlist-track-num {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 700;
+  min-width: 1.2rem;
+}
+.sg-playlist-track-name { font-size: 0.88rem; color: #1e293b; font-weight: 600; }
+.sg-playlist-track-dur { font-size: 0.78rem; color: #64748b; font-variant-numeric: tabular-nums; }
+
 .sg-facet-list {
   margin-top: 0.75rem;
   display: grid; grid-template-columns: 1fr; gap: 0.35rem;

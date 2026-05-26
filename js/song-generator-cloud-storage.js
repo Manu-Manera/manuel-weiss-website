@@ -84,6 +84,26 @@
       weights: audio.weights
     } : null;
 
+    const playlist = state.playlist;
+    const slimPlaylist = playlist && Array.isArray(playlist.tracks) ? {
+      tracks: playlist.tracks.map(function (t) {
+        return {
+          intentId: t.intentId,
+          label: t.label,
+          emoji: t.emoji,
+          title: t.title,
+          url: t.url,
+          cover: t.cover,
+          duration: t.duration,
+          status: t.status,
+          error: t.error
+        };
+      }),
+      generatedAt: playlist.generatedAt,
+      model: playlist.model,
+      partial: playlist.partial
+    } : null;
+
     return {
       step: state.step,
       testVariant: state.testVariant,
@@ -96,6 +116,7 @@
       persona: state.persona,
       song: state.song,
       audio: slimAudio,
+      playlist: slimPlaylist,
       facets: state.facets,
       astrology: state.astrology,
       userMeta: state.userMeta,
@@ -115,6 +136,7 @@
     if (snap.persona) state.persona = snap.persona;
     if (snap.song) state.song = snap.song;
     if (snap.audio !== undefined) state.audio = snap.audio;
+    if (snap.playlist !== undefined) state.playlist = snap.playlist;
     if (snap.facets) state.facets = snap.facets;
     if (snap.astrology) state.astrology = snap.astrology;
     if (snap.userMeta) state.userMeta = Object.assign({}, state.userMeta || {}, snap.userMeta);

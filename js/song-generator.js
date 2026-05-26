@@ -21,7 +21,8 @@
     song: 'sg_song_v1',
     birth: 'sg_birth_data_v1',
     variant: 'sg_test_variant_v1',
-    audio: 'sg_audio_v1'
+    audio: 'sg_audio_v1',
+    playlist: 'sg_playlist_v1'
   };
 
   const API_BASE = 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
@@ -403,7 +404,9 @@
         astrology: null,
         facets: null,
         audio: loadState(STORAGE_KEYS.audio, null),
+        playlist: loadState(STORAGE_KEYS.playlist, null),
         audioState: { phase: 'idle' },
+        _playlistAutoplay: false,
         importedMethods: null,
         importedNarrative: '',
         analysisUi: { mode: 'integrated', length: 'medium' },
@@ -449,6 +452,7 @@
       saveState(STORAGE_KEYS.song, this.state.song);
       saveState(STORAGE_KEYS.birth, this.state.birthData);
       saveState(STORAGE_KEYS.audio, this.state.audio);
+      saveState(STORAGE_KEYS.playlist, this.state.playlist);
     }
 
     _cloudSave(milestone, opts) {
@@ -1951,7 +1955,7 @@
 
     _buildProductionOpts(base) {
       base = base || {};
-      const intentId = this.state.audioIntent || 'personality';
+      const intentId = base.intentId || this.state.audioIntent || 'personality';
       const ui = this.state.analysisUi || { mode: 'integrated', length: 'medium' };
       const opts = Object.assign({ intentId: intentId }, base);
       if (!window.SongPlaylistEngine || !this.state.persona) return opts;
@@ -2032,8 +2036,8 @@
       }
 
       const hint = el('p', 'sg-hint',
-        'Eine volle Playlist mit allen 4 Kontexten = 4 Suno-Generierungen (je ~$0.05–0.10). ' +
-        'Wähle den Kontext für diese Produktion – abspielen geht danach auf Handy, Kopfhörer oder Bluetooth-Box.');
+        'Volle Playlist: alle 4 Kontexte nacheinander als Auto-Queue (~4–8 Min). ' +
+        'Einzeln: einen Kontext oben wählen und „Einzel-Song produzieren".');
       wrap.append(hint);
       return wrap;
     }
@@ -2104,9 +2108,9 @@
       const stateBox = el('div', 'sg-prod-state');
       const phase = (this.state.audioState && this.state.audioState.phase) || 'idle';
 
-      if (phase === 'idle' && !this.state.audio) {
-        const act = el('div', 'sg-actions');
-        const startBtn = el('button', 'sg-btn sg-btn-primary', '🎵 Audio jetzt produzieren');
+      if (phase === 'idle' && !this.state.audio && !this.state.playlist) {
+        const act = el('div', 'sg-actions sg-actions-split');
+        const startBtn = el('button', 'sg-btn sg-btn-primary', '🎵 Einzel-Song produzieren');
         startBtn.onclick = () => {
           const o = this._buildProductionOpts({
             model: mSel.value,
@@ -2115,10 +2119,22 @@
           this.runProduction(o);
         };
         act.append(startBtn);
+
+        const queueBtn = el('button', 'sg-btn sg-btn-secondary sg-btn-queue', '🎧 Volle Playlist (4 Songs)');
+        queueBtn.onclick = () => {
+          this.runPlaylistQueue({
+            model: mSel.value,
+            vocalGender: vgSel.value === 'auto' ? undefined : vgSel.value
+          });
+        };
+        act.append(queueBtn);
+
         const hint = el('p', 'sg-hint',
-          'Generierung dauert ca. 30–90 Sekunden. Es entstehen 2 Varianten zur Auswahl. ' +
-          'Danach auf dem Handy über Bluetooth, AirPlay oder Kopfhörer abspielbar.');
+          'Einzel-Song: ~30–90 s, 2 Varianten. Volle Playlist: 4 Kontexte nacheinander (~4–8 Min, ca. $0.20–0.40). ' +
+          'Abspielen auf Handy, Bluetooth-Box oder AirPlay.');
         stateBox.append(act, hint);
+      } else if (phase === 'queue_running') {
+        stateBox.append(this._renderPlaylistQueueProgress());
       } else if (phase === 'submitting' || phase === 'polling') {
         stateBox.append(this.showSpinner());
         const st = (this.state.audioState && this.state.audioState.status) || 'PENDING';
@@ -2147,12 +2163,175 @@
         stateBox.append(retry);
       }
 
-      // Audio-Player wenn Tracks vorhanden
-      if (this.state.audio && Array.isArray(this.state.audio.tracks) && this.state.audio.tracks.length) {
+      // Audio-Player: Einzel-Song oder volle Playlist
+      if (this.state.playlist && Array.isArray(this.state.playlist.tracks) && this.state.playlist.tracks.length) {
+        stateBox.append(this._renderPlaylistPlayer(this.state.playlist));
+      } else if (this.state.audio && Array.isArray(this.state.audio.tracks) && this.state.audio.tracks.length) {
         stateBox.append(this._renderAudioPlayer(this.state.audio));
       }
       box.append(stateBox);
       return box;
+    }
+
+    _renderPlaylistQueueProgress() {
+      const st = this.state.audioState || {};
+      const idx = (st.queueIndex || 0) + 1;
+      const total = st.queueTotal || 4;
+      const pct = Math.round(((st.queueIndex || 0) / total) * 100);
+      const wrap = el('div', 'sg-queue-progress');
+      wrap.append(el('h4', null, 'Playlist wird produziert …'));
+      wrap.append(el('p', 'sg-prod-status',
+        'Song ' + idx + ' von ' + total + ': ' + (st.queueLabel || '…') +
+        (st.queueStatus ? ' · ' + st.queueStatus : '')));
+      const bar = el('div', 'sg-queue-bar');
+      const fill = el('div', 'sg-queue-bar-fill');
+      fill.style.width = pct + '%';
+      bar.append(fill);
+      wrap.append(bar);
+      wrap.append(this.showSpinner());
+
+      if (Array.isArray(st.queueDone) && st.queueDone.length) {
+        const done = el('ul', 'sg-queue-done');
+        st.queueDone.forEach(function (item) {
+          const li = el('li', item.status === 'ok' ? 'ok' : 'fail',
+            (item.status === 'ok' ? '✓ ' : '✗ ') + item.label);
+          done.append(li);
+        });
+        wrap.append(done);
+      }
+
+      const self = this;
+      const cancel = el('button', 'sg-btn sg-btn-ghost', 'Queue abbrechen');
+      cancel.onclick = function () {
+        self.state.audioState.cancelQueue = true;
+        self.render();
+      };
+      wrap.append(cancel);
+      return wrap;
+    }
+
+    _trackUrl(t) {
+      return t && (t.audio_url || t.audioUrl || t.source_audio_url || t.sourceAudioUrl ||
+        t.stream_audio_url || t.streamAudioUrl);
+    }
+
+    _renderPlaylistPlayer(playlist) {
+      const box = el('div', 'sg-playlist-player');
+      box.append(el('h4', null, '🎧 Deine Persönlichkeits-Playlist'));
+      box.append(el('p', 'sg-playlist-player-sub',
+        (playlist.tracks.filter(function (t) { return t.status === 'ok'; }).length) + ' Songs · ' +
+        'Kompositions-Song → Persönlichkeitssong → Workout → Konzentration'));
+      box.append(this._renderBluetoothHint());
+
+      const playable = playlist.tracks.filter(function (t) {
+        return t.status === 'ok' && t.url;
+      });
+      if (!playable.length) {
+        box.append(el('p', 'sg-hint', 'Keine abspielbaren Tracks in der Playlist.'));
+        return box;
+      }
+
+      const mainWrap = el('div', 'sg-playlist-main');
+      const mainAudio = document.createElement('audio');
+      mainAudio.className = 'sg-audio-player sg-playlist-main-audio';
+      mainAudio.controls = true;
+      mainAudio.style.width = '100%';
+      const first = playable[0];
+      mainAudio.src = first.url;
+      this._setupAudioForPlayback(mainAudio, {
+        title: first.title || first.label,
+        artist: 'Persönlichkeits-Playlist',
+        artwork: first.cover
+      });
+      mainWrap.append(mainAudio);
+
+      const nowPlaying = el('div', 'sg-playlist-now', '▶ ' + (first.emoji || '') + ' ' + first.label);
+      mainWrap.append(nowPlaying);
+      box.append(mainWrap);
+
+      const self = this;
+      this._playlistPlayable = playable;
+      this._playlistMainAudio = mainAudio;
+      this._playlistNowEl = nowPlaying;
+
+      const controls = el('div', 'sg-playlist-controls');
+      const playAll = el('button', 'sg-btn sg-btn-primary', '▶ Alle abspielen');
+      playAll.type = 'button';
+      playAll.onclick = function () {
+        self._playlistAutoplay = true;
+        self._playlistPlayIndex = 0;
+        self._playPlaylistTrack(0);
+      };
+      controls.append(playAll);
+      box.append(controls);
+
+      const list = el('div', 'sg-playlist-tracklist');
+      playable.forEach(function (track, i) {
+        const row = el('button', 'sg-playlist-track' + (i === 0 ? ' active' : ''));
+        row.type = 'button';
+        const left = el('span', 'sg-playlist-track-left');
+        left.append(el('span', 'sg-playlist-track-num', String(i + 1)));
+        left.append(el('span', 'sg-playlist-track-emoji', track.emoji || '🎵'));
+        left.append(el('span', 'sg-playlist-track-name', track.label));
+        row.append(left);
+        if (track.duration) {
+          row.append(el('span', 'sg-playlist-track-dur', self._formatDuration(track.duration)));
+        }
+        row.onclick = function () {
+          self._playlistAutoplay = false;
+          self._playPlaylistTrack(i);
+          list.querySelectorAll('.sg-playlist-track').forEach(function (el, j) {
+            el.classList.toggle('active', j === i);
+          });
+        };
+        list.append(row);
+      });
+      box.append(list);
+
+      mainAudio.addEventListener('ended', function () {
+        if (!self._playlistAutoplay) return;
+        const next = (self._playlistPlayIndex || 0) + 1;
+        if (next < playable.length) {
+          self._playPlaylistTrack(next);
+          list.querySelectorAll('.sg-playlist-track').forEach(function (el, j) {
+            el.classList.toggle('active', j === next);
+          });
+        } else {
+          self._playlistAutoplay = false;
+        }
+      });
+
+      const actions = el('div', 'sg-audio-actions');
+      const regen = el('button', 'sg-btn sg-btn-ghost', '↻ Playlist neu generieren');
+      regen.onclick = function () {
+        if (!confirm('Playlist verwerfen und neu produzieren? (4 Suno-Generierungen)')) return;
+        self.state.playlist = null;
+        clearState(STORAGE_KEYS.playlist);
+        self.state.audioState = { phase: 'idle' };
+        self.render();
+      };
+      actions.append(regen);
+      box.append(actions);
+
+      return box;
+    }
+
+    _playPlaylistTrack(index) {
+      const playable = this._playlistPlayable;
+      const audio = this._playlistMainAudio;
+      if (!playable || !audio || index < 0 || index >= playable.length) return;
+      const track = playable[index];
+      this._playlistPlayIndex = index;
+      audio.src = track.url;
+      this._setupAudioForPlayback(audio, {
+        title: track.title || track.label,
+        artist: 'Persönlichkeits-Playlist',
+        artwork: track.cover
+      });
+      if (this._playlistNowEl) {
+        this._playlistNowEl.textContent = '▶ ' + (track.emoji || '') + ' ' + track.label;
+      }
+      audio.play().catch(function () {});
     }
 
     _renderMixMatrix(preview) {
@@ -2331,6 +2510,121 @@
       return m + ':' + String(r).padStart(2, '0');
     }
 
+    async runPlaylistQueue(baseOpts) {
+      if (!window.SongMusicEngine || !window.SongPlaylistEngine) {
+        alert('Music-Engine oder Playlist-Modul nicht geladen.');
+        return;
+      }
+      baseOpts = baseOpts || {};
+      const order = window.SongPlaylistEngine.PLAYLIST_INTENT_ORDER ||
+        Object.keys(window.SongPlaylistEngine.INTENTS);
+      const queueDone = [];
+      const playlistTracks = [];
+
+      this.state.audio = null;
+      clearState(STORAGE_KEYS.audio);
+      this.state.playlist = null;
+
+      this.state.audioState = {
+        phase: 'queue_running',
+        queueIndex: 0,
+        queueTotal: order.length,
+        queueLabel: '',
+        queueStatus: '',
+        queueDone: queueDone,
+        cancelQueue: false,
+        model: baseOpts.model,
+        vocalGender: baseOpts.vocalGender
+      };
+      this.render();
+
+      for (let i = 0; i < order.length; i += 1) {
+        if (this.state.audioState.cancelQueue) break;
+
+        const intentId = order[i];
+        const intent = window.SongPlaylistEngine.getIntent(intentId);
+        this.state.audioState.queueIndex = i;
+        this.state.audioState.queueLabel = intent.label;
+        this.state.audioState.queueStatus = 'Start …';
+        this.state.audioState.queueDone = queueDone.slice();
+        this.render();
+
+        const opts = this._buildProductionOpts(Object.assign({}, baseOpts, { intentId: intentId }));
+
+        try {
+          const result = await window.SongMusicEngine.generateAudio(
+            this.state.persona,
+            this.state.song,
+            opts,
+            (evt) => {
+              if (evt.phase === 'polling' || evt.phase === 'first_ready') {
+                this.state.audioState.queueStatus = evt.status || 'Generiert …';
+                this.render();
+              }
+            }
+          );
+          const raw = (result.tracks && result.tracks[0]) || null;
+          const url = raw ? this._trackUrl(raw) : null;
+          if (url) {
+            const entry = {
+              intentId: intentId,
+              label: intent.label,
+              emoji: intent.emoji,
+              title: raw.title || intent.label,
+              url: url,
+              cover: raw.image_url || raw.imageUrl,
+              duration: raw.duration,
+              status: 'ok'
+            };
+            queueDone.push({ label: intent.label, status: 'ok' });
+            playlistTracks.push(entry);
+          } else {
+            queueDone.push({ label: intent.label, status: 'fail' });
+            playlistTracks.push({
+              intentId: intentId,
+              label: intent.label,
+              emoji: intent.emoji,
+              status: 'failed',
+              error: 'Keine Audio-URL'
+            });
+          }
+        } catch (err) {
+          console.warn('[SongGenerator] Playlist-Track fehlgeschlagen:', intentId, err);
+          queueDone.push({ label: intent.label, status: 'fail' });
+          playlistTracks.push({
+            intentId: intentId,
+            label: intent.label,
+            emoji: intent.emoji,
+            status: 'failed',
+            error: err.message || String(err)
+          });
+        }
+        this.state.audioState.queueDone = queueDone.slice();
+      }
+
+      const cancelled = this.state.audioState.cancelQueue;
+      this.state.playlist = {
+        tracks: playlistTracks,
+        generatedAt: new Date().toISOString(),
+        model: baseOpts.model || 'V5_5',
+        partial: cancelled || playlistTracks.filter(function (t) { return t.status === 'ok'; }).length < order.length
+      };
+      saveState(STORAGE_KEYS.playlist, this.state.playlist);
+      this._cloudSave('audio', { forceNewVersion: true });
+
+      if (!playlistTracks.some(function (t) { return t.status === 'ok'; })) {
+        this.state.audioState = {
+          phase: 'error',
+          error: cancelled
+            ? 'Playlist-Queue abgebrochen – kein Track fertig.'
+            : 'Playlist konnte nicht erzeugt werden. Suno-Key und Guthaben prüfen.'
+        };
+      } else {
+        this.state.audioState = { phase: 'idle' };
+      }
+      this.render();
+    }
+
     async runProduction(opts) {
       if (!window.SongMusicEngine) {
         alert('Music-Engine-Modul wurde nicht geladen.');
@@ -2389,6 +2683,7 @@
         persona: this.state.persona,
         song: this.state.song,
         audio: this.state.audio,
+        playlist: this.state.playlist,
         externalInputs: this.state.externalInputs
       }, null, 2)], { type: 'application/json' });
       const a = document.createElement('a');
