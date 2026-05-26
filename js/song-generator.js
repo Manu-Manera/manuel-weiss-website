@@ -26,7 +26,8 @@
     favorites: 'sg_favorites_v1',
     voiceProfile: 'sg_voice_profile_v1',
     voiceWizard: 'sg_voice_wizard_v1',
-    useCustomVoice: 'sg_use_custom_voice_v1'
+    useCustomVoice: 'sg_use_custom_voice_v1',
+    audioStylePrefs: 'sg_audio_style_prefs_v1'
   };
 
   const API_BASE = 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
@@ -462,6 +463,9 @@
         analysisLoading: false,
         analysisError: null,
         audioIntent: 'personality',
+        audioStylePrefs: loadState(STORAGE_KEYS.audioStylePrefs,
+          (window.SongPlaylistEngine && window.SongPlaylistEngine.STYLE_PREFS_DEFAULTS) ||
+          { genreAccent: 'auto', vocalMode: 'auto' }),
         userMeta: {
           name_or_alias: '',
           lang: 'de',
@@ -513,6 +517,7 @@
       saveState(STORAGE_KEYS.voiceProfile, this.state.voiceProfile);
       saveState(STORAGE_KEYS.voiceWizard, this.state.voiceWizard);
       saveState(STORAGE_KEYS.useCustomVoice, this.state.useCustomVoice);
+      saveState(STORAGE_KEYS.audioStylePrefs, this.state.audioStylePrefs);
     }
 
     _cloudSave(milestone, opts) {
@@ -2376,13 +2381,25 @@
       opts.intentModifiers = mods;
       opts.trackSpec = track;
       opts.analysisKeywords = mods.analysisKeywords;
-      opts.instrumental = mods.instrumental;
+      const prefs = window.SongPlaylistEngine.normalizeStylePrefs
+        ? window.SongPlaylistEngine.normalizeStylePrefs(this.state.audioStylePrefs)
+        : (this.state.audioStylePrefs || { genreAccent: 'auto', vocalMode: 'auto' });
+      if (window.SongPlaylistEngine.applyStylePrefs) {
+        mods = window.SongPlaylistEngine.applyStylePrefs(mods, prefs, intentId);
+        opts.intentModifiers = mods;
+      }
+      opts.stylePrefs = prefs;
+      opts.instrumental = window.SongPlaylistEngine.resolveInstrumental
+        ? window.SongPlaylistEngine.resolveInstrumental(mods, prefs, intentId)
+        : mods.instrumental;
       opts._persona = persona;
       const wantsCustomVoice = (base.vocalGender === 'custom' || this.state.useCustomVoice) &&
         this.state.voiceProfile && this.state.voiceProfile.voiceId;
-      if (wantsCustomVoice &&
-          !mods.instrumental && intentId !== 'focus' && intentId !== 'workout' &&
-          intentId !== 'chill' && intentId !== 'healing' && intentId !== 'sleep') {
+      const canUseCustomVoice = window.SongPlaylistEngine.allowsCustomVoice
+        ? window.SongPlaylistEngine.allowsCustomVoice(intentId, prefs, opts.instrumental)
+        : (!opts.instrumental && intentId !== 'focus' && intentId !== 'workout' &&
+           intentId !== 'chill' && intentId !== 'healing' && intentId !== 'sleep');
+      if (wantsCustomVoice && canUseCustomVoice) {
         opts.useCustomVoice = true;
         opts.voiceId = this.state.voiceProfile.voiceId;
         opts.personaId = this.state.voiceProfile.voiceId;
@@ -2399,7 +2416,9 @@
       const wrap = el('div', 'sg-playlist-panel');
       wrap.append(el('h4', null, 'Sound-Kontext & Playlist-Konzept'));
       wrap.append(el('p', 'sg-playlist-lead',
-        '7 Modi aus Test, Astro, Methoden und KI-Analyse – Tempo, Energie und Kontext-DNA fliessen in die Suno-Produktion.'));
+        '21 Kontexte aus Test, Astro und KI-Analyse – plus Genre- und Vocal-Einstellungen für deinen Sound.'));
+
+      wrap.append(this.renderStylePrefsPanel());
 
       const ui = this.state.analysisUi || { mode: 'integrated', length: 'medium' };
       const blueprint = window.SongPlaylistEngine.computePlaylistBlueprint(this.state.persona, {
@@ -2495,6 +2514,74 @@
         'Auto-Queue „' + (activePack.label || 'Kern') + '": ' + (activePack.order || []).length +
         ' Kontexte nacheinander. Einzeln: Modus wählen und „Einzel-Song produzieren".'));
       return wrap;
+    }
+
+    renderStylePrefsPanel() {
+      const self = this;
+      const box = el('div', 'sg-style-prefs');
+      box.append(el('p', 'sg-style-prefs-title', '🎚 Eigene Klang-Einstellungen'));
+      box.append(el('p', 'sg-style-prefs-lead',
+        'Electro, Hip-Hop oder Reggae mit Persönlichkeit: Dein Profil liefert Texte, Motive und Stimmung – das Genre ist die Klanghülle. ' +
+        'Für Electro: „Sinnlich-minimal“ oder „Nur Instrumental“.'));
+
+      const prefs = window.SongPlaylistEngine.normalizeStylePrefs
+        ? window.SongPlaylistEngine.normalizeStylePrefs(this.state.audioStylePrefs)
+        : (this.state.audioStylePrefs || { genreAccent: 'auto', vocalMode: 'auto' });
+
+      const row = el('div', 'sg-style-prefs-row');
+
+      const genreWrap = el('div', 'sg-field sg-field-inline');
+      genreWrap.append(el('label', null, 'Genre-Akzent'));
+      const genreSel = el('select');
+      const accents = window.SongPlaylistEngine.GENRE_ACCENTS || {};
+      Object.keys(accents).forEach(function (key) {
+        const o = el('option', null, accents[key].label);
+        o.value = key;
+        genreSel.append(o);
+      });
+      genreSel.value = prefs.genreAccent || 'auto';
+      genreSel.onchange = function () {
+        self.state.audioStylePrefs = Object.assign({}, self.state.audioStylePrefs || {}, {
+          genreAccent: genreSel.value
+        });
+        saveState(STORAGE_KEYS.audioStylePrefs, self.state.audioStylePrefs);
+        self.render();
+      };
+      genreWrap.append(genreSel);
+      row.append(genreWrap);
+
+      const vocalWrap = el('div', 'sg-field sg-field-inline');
+      vocalWrap.append(el('label', null, 'Gesang'));
+      const vocalSel = el('select');
+      const modes = window.SongPlaylistEngine.VOCAL_MODES || {};
+      Object.keys(modes).forEach(function (key) {
+        const o = el('option', null, modes[key].label);
+        o.value = key;
+        vocalSel.append(o);
+      });
+      vocalSel.value = prefs.vocalMode || 'auto';
+      vocalSel.onchange = function () {
+        self.state.audioStylePrefs = Object.assign({}, self.state.audioStylePrefs || {}, {
+          vocalMode: vocalSel.value
+        });
+        saveState(STORAGE_KEYS.audioStylePrefs, self.state.audioStylePrefs);
+        self.render();
+      };
+      vocalWrap.append(vocalSel);
+      row.append(vocalWrap);
+
+      box.append(row);
+
+      const hints = el('div', 'sg-style-prefs-hints');
+      [
+        '🎛 Electro: Deep House / Minimal – oft ohne Gesang oder mit wenigen sinnlichen Fragmenten',
+        '🎤 Hip-Hop & 🌴 Reggae: Persönliche Lyrics aus deinem Profil, kein generisches Klischee',
+        '✏️ Kreative Session & 📝 Kompositions-Song: am besten für volle Persönlichkeits-Texte'
+      ].forEach(function (t) {
+        hints.append(el('p', 'sg-hint sg-style-hint', t));
+      });
+      box.append(hints);
+      return box;
     }
 
     renderVoicePanel() {

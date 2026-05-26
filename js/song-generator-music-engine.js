@@ -288,6 +288,7 @@
     const methods = (persona && persona.imported_methods_count) || opts.methodsCount || 0;
     const intentMods = opts.intentModifiers || null;
     const trackSpec = opts.trackSpec || null;
+    const stylePrefs = opts.stylePrefs || null;
     const analysisKeywords = opts.analysisKeywords || (intentMods && intentMods.analysisKeywords) || [];
 
     // ── PERSÖNLICHKEIT (50%) ─────────────────────────────────
@@ -364,8 +365,27 @@
       .map(humanizeInstrument);
     if (allInstr.length) persParts.push(allInstr.join(', '));
 
+    if (intentMods && intentMods.personalGenreNote) {
+      persParts.push(intentMods.personalGenreNote);
+    }
+    if (stylePrefs && window.SongPlaylistEngine) {
+      var norm = window.SongPlaylistEngine.normalizeStylePrefs(stylePrefs);
+      var vocalDef = window.SongPlaylistEngine.VOCAL_MODES[norm.vocalMode];
+      var accentDef = window.SongPlaylistEngine.GENRE_ACCENTS[norm.genreAccent];
+      if (accentDef && accentDef.tags && accentDef.tags.length && norm.genreAccent !== 'auto') {
+        persParts.unshift(accentDef.tags[0]);
+      }
+      if (vocalDef && vocalDef.tags && vocalDef.tags.length && norm.vocalMode !== 'auto') {
+        persParts.push(vocalDef.tags.join(', '));
+      }
+    }
+
     // Vocal
-    if (dna.vocal) {
+    const forceInstr = stylePrefs && window.SongPlaylistEngine &&
+      window.SongPlaylistEngine.resolveInstrumental(intentMods || {}, stylePrefs, opts.intentId);
+    if (forceInstr) {
+      persParts.push('instrumental no vocals');
+    } else if (dna.vocal) {
       const reg = dna.vocal.register || 'mid';
       const deli = (intentMods && intentMods.vocalDelivery) || dna.vocal.delivery || 'sung';
       persParts.push(reg + ' register ' + deli + ' vocals');
@@ -456,7 +476,8 @@
       identity_text:    (persona && persona.music_dna && persona.music_dna.evolution_narrative) ||
                         (persona && persona.audio_identity && persona.audio_identity.evolutionNarrative) || '',
       tempo_bpm:        tempoBpm,
-      instrumental:     intentMods ? !!intentMods.instrumental : false
+      instrumental:     forceInstr != null ? forceInstr :
+                          (intentMods ? !!intentMods.instrumental : false)
     };
   }
 

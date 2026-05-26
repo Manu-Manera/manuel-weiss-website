@@ -139,7 +139,8 @@
         : [],
       voiceProfile: state.voiceProfile || null,
       voiceWizard: state.voiceWizard || null,
-      useCustomVoice: !!state.useCustomVoice
+      useCustomVoice: !!state.useCustomVoice,
+      audioStylePrefs: state.audioStylePrefs || null
     };
   }
 
@@ -285,6 +286,9 @@
     }
     if (typeof snap.useCustomVoice === 'boolean') {
       state.useCustomVoice = snap.useCustomVoice;
+    }
+    if (snap.audioStylePrefs && typeof snap.audioStylePrefs === 'object') {
+      state.audioStylePrefs = Object.assign({}, state.audioStylePrefs || {}, snap.audioStylePrefs);
     }
     return true;
   }
