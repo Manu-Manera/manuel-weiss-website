@@ -30,7 +30,12 @@
   // API-Key-Laden (analog OpenAI)
   // ────────────────────────────────────────────────────────────
   const _keyCache = { value: null, expiresAt: 0 };
-  function isValidSunoKey(k) { return typeof k === 'string' && k.length > 16; }
+  function isValidSunoKey(k) {
+    return typeof k === 'string'
+      && k.length >= 16
+      && !k.includes('...')
+      && !k.includes('••••');
+  }
   function getAuthTokenFromSession() {
     try {
       if (window.awsAuth && window.awsAuth.isLoggedIn && window.awsAuth.isLoggedIn()) {
@@ -41,7 +46,14 @@
         const u = window.realUserAuth.getCurrentUser();
         if (u && u.idToken) return u.idToken;
       }
-      const session = localStorage.getItem('aws_auth_session');
+      const adminSession = localStorage.getItem('admin_auth_session');
+      if (adminSession) {
+        const s = JSON.parse(adminSession);
+        if (s.user && s.user.idToken) return s.user.idToken;
+        if (s.user && s.user.accessToken) return s.user.accessToken;
+      }
+      const storageKey = (window.AWS_AUTH_CONFIG && window.AWS_AUTH_CONFIG.token && window.AWS_AUTH_CONFIG.token.storageKey) || 'aws_auth_session';
+      const session = localStorage.getItem(storageKey) || localStorage.getItem('aws_auth_session');
       if (session) {
         const p = JSON.parse(session);
         if (p.idToken) return p.idToken;
@@ -134,7 +146,19 @@
     const cachedStored = rememberKey(stored);
     if (cachedStored) return cachedStored;
 
-    // 2) AWS User-Key (Admin-Panel → DynamoDB, JWT des eingeloggten Users)
+    // 2) user-data Workflow (zuverlässig für eingeloggte User, unabhängig von api-settings-Lambda)
+    try {
+      if (window.awsAPISettings && typeof window.awsAPISettings.loadSunoKeyFromUserWorkflow === 'function') {
+        const wfKey = await window.awsAPISettings.loadSunoKeyFromUserWorkflow();
+        const cachedWf = rememberKey(wfKey);
+        if (cachedWf) {
+          persistSunoKeyLocally(cachedWf);
+          return cachedWf;
+        }
+      }
+    } catch (_e) { /* fall through */ }
+
+    // 3) AWS User-Key (Admin-Panel → DynamoDB, JWT des eingeloggten Users)
     const userKey = await fetchSunoKeyFromApiSettings(false);
     const cachedUser = rememberKey(userKey);
     if (cachedUser) {
@@ -142,7 +166,7 @@
       return cachedUser;
     }
 
-    // 3) AWS global (api-settings#global)
+    // 4) AWS global (api-settings#global)
     const globalKey = await fetchSunoKeyFromApiSettings(true);
     const cachedGlobal = rememberKey(globalKey);
     if (cachedGlobal) {
@@ -150,7 +174,7 @@
       return cachedGlobal;
     }
 
-    // 4) awsAPISettings-Fallback
+    // 5) awsAPISettings-Fallback
     try {
       if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
         let k = null;

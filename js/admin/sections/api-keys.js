@@ -145,6 +145,9 @@ class ApiKeysSection {
                         }
                     });
                     
+                    // Suno: vorhandenen Key für Song-Generator in user-data Workflow spiegeln
+                    this.syncSunoKeyForSongGenerator().catch(function () {});
+                    
                     // Auch in StateManager aktualisieren
                     if (this.stateManager) {
                         const currentSettings = this.stateManager.getState('apiKeys') || {};
@@ -461,6 +464,32 @@ class ApiKeysSection {
     }
     
     /**
+     * Suno-Key für Song-Generator: localStorage + user-data Workflow (funktioniert unabhängig von api-settings)
+     */
+    async syncSunoKeyForSongGenerator(apiKey, model) {
+        if (!window.awsAPISettings) return;
+        let key = apiKey;
+        if (!key || key.includes('••••') || key.includes('...')) {
+            if (this.cachedApiKeys && this.cachedApiKeys.suno && this.cachedApiKeys.suno !== 'MASKED') {
+                key = this.cachedApiKeys.suno;
+            } else if (window.awsAPISettings.isUserLoggedIn()) {
+                try {
+                    key = await window.awsAPISettings.getFullApiKey('suno', false);
+                    if (!key) key = await window.awsAPISettings.getFullApiKey('suno', true);
+                } catch (_e) {
+                    key = null;
+                }
+            }
+        }
+        if (!key || key.includes('••••') || key.includes('...')) return;
+        const m = model || document.getElementById('suno-model')?.value || 'V5_5';
+        window.awsAPISettings.persistSunoKeyLocally(key, { model: m });
+        await window.awsAPISettings.saveSunoKeyToUserWorkflow(key, { model: m });
+        if (!this.cachedApiKeys) this.cachedApiKeys = {};
+        this.cachedApiKeys.suno = key;
+    }
+    
+    /**
      * Service speichern
      */
     async saveService(service) {
@@ -576,6 +605,7 @@ class ApiKeysSection {
                         localStorage.setItem('suno-api-key', serviceData.apiKey);
                         console.log('✅ Suno-Key zusätzlich in localStorage als Sofort-Fallback gespeichert');
                     } catch (_e) {}
+                    await this.syncSunoKeyForSongGenerator(serviceData.apiKey, serviceData.model);
                 }
                 
                 console.log('✅ API-Key in AWS Cloud gespeichert für Service:', service);
@@ -682,7 +712,8 @@ class ApiKeysSection {
                     console.log(`📦 Gecachten Key für ${service} verwendet`);
                 } else if (window.awsAPISettings && window.awsAPISettings.isUserLoggedIn()) {
                     try {
-                        const fullKey = await window.awsAPISettings.getFullApiKey(service, service === 'suno');
+                        let fullKey = await window.awsAPISettings.getFullApiKey(service, false);
+                        if (!fullKey) fullKey = await window.awsAPISettings.getFullApiKey(service, true);
                         if (fullKey) {
                             apiKey = fullKey;
                             console.log(`✅ Echter Key aus AWS geladen für ${service}`);
@@ -716,6 +747,9 @@ class ApiKeysSection {
                     ? `Verbindung erfolgreich! ${result.credits} Credits verfügbar.`
                     : 'Verbindung erfolgreich!';
                 this.showMessage(service, okMsg, 'success');
+                if (service === 'suno') {
+                    await this.syncSunoKeyForSongGenerator(apiKey);
+                }
             } else {
                 this.showMessage(service, `Fehler: ${result.error}`, 'error');
             }

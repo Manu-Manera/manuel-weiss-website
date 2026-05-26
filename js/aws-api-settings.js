@@ -593,6 +593,114 @@ class AWSAPISettingsService {
         localStorage.removeItem('ki_settings');
         // global_api_keys lassen wir als Fallback
     }
+
+    _getUserDataBase() {
+        try {
+            if (window.getApiUrl && window.AWS_APP_CONFIG?.ENDPOINTS?.USER_DATA) {
+                return window.getApiUrl('USER_DATA');
+            }
+        } catch (_e) {}
+        let base = this.apiEndpoint || window.AWS_APP_CONFIG?.API_BASE || null;
+        if (!base) return null;
+        base = base.replace(/\/api-settings$/, '').replace(/\/$/, '');
+        return base + '/user-data';
+    }
+
+    _isValidSunoKey(key) {
+        return typeof key === 'string'
+            && key.length >= 16
+            && !key.includes('...')
+            && !key.includes('••••');
+    }
+
+    /**
+     * Suno-Key lokal persistieren (gleicher Browser, Sofort-Fallback)
+     */
+    persistSunoKeyLocally(apiKey, options = {}) {
+        if (!this._isValidSunoKey(apiKey)) return false;
+        try {
+            localStorage.setItem('suno-api-key', apiKey);
+            const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
+            globalKeys.suno = {
+                key: apiKey,
+                apiKey: apiKey,
+                model: options.model || globalKeys.suno?.model || 'V5_5',
+                enabled: true
+            };
+            localStorage.setItem('global_api_keys', JSON.stringify(globalKeys));
+            if (window.GlobalAPIManager && typeof window.GlobalAPIManager.setAPIKey === 'function') {
+                window.GlobalAPIManager.setAPIKey('suno', apiKey, {
+                    model: globalKeys.suno.model,
+                    maxTokens: options.maxTokens || 4500,
+                    temperature: options.temperature ?? 0.45
+                });
+            }
+            return true;
+        } catch (e) {
+            console.warn('⚠️ Suno-Key lokal speichern fehlgeschlagen:', e);
+            return false;
+        }
+    }
+
+    /**
+     * Suno-Key im user-data Workflow (personalitySongGenerator) – funktioniert auch wenn api-settings-Lambda veraltet ist
+     */
+    async saveSunoKeyToUserWorkflow(apiKey, options = {}) {
+        if (!this.isUserLoggedIn() || !this._isValidSunoKey(apiKey)) return false;
+        const base = this._getUserDataBase();
+        if (!base) return false;
+        try {
+            const token = await this.getAuthToken();
+            const url = `${base}/workflows/personalitySongGenerator/steps/apiSecrets`;
+            const res = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    suno: {
+                        apiKey,
+                        model: options.model || 'V5_5',
+                        updatedAt: new Date().toISOString()
+                    }
+                })
+            });
+            if (!res.ok) {
+                console.warn('⚠️ Suno-Key Workflow-Sync fehlgeschlagen:', res.status);
+                return false;
+            }
+            console.log('✅ Suno-Key im user-data Workflow gespeichert');
+            return true;
+        } catch (err) {
+            console.warn('⚠️ Suno-Key Workflow-Sync:', err.message);
+            return false;
+        }
+    }
+
+    /**
+     * Suno-Key aus user-data Workflow laden (Song-Generator, eingeloggt)
+     */
+    async loadSunoKeyFromUserWorkflow() {
+        if (!this.isUserLoggedIn()) return null;
+        const base = this._getUserDataBase();
+        if (!base) return null;
+        try {
+            const token = await this.getAuthToken();
+            const url = `${base}/workflows/personalitySongGenerator/steps/apiSecrets`;
+            const res = await fetch(url, {
+                method: 'GET',
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (!res.ok) return null;
+            const data = await res.json().catch(() => null);
+            const key = data && data.suno && data.suno.apiKey;
+            return this._isValidSunoKey(key) ? key : null;
+        } catch (err) {
+            console.warn('⚠️ Suno-Key aus Workflow laden:', err.message);
+            return null;
+        }
+    }
 }
 
 // Globale Instanz erstellen
