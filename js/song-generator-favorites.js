@@ -24,11 +24,13 @@
     var url = item.url || item.audio_url || item.audioUrl ||
       item.stream_audio_url || item.streamAudioUrl || '';
     if (!url) return null;
+    var display = item.customName || item.userTitle || item.label || item.title || 'Favorit';
     return {
       id: item.id || trackKey({ url: url }),
       url: url,
-      title: item.title || item.label || 'Favorit',
-      label: item.label || item.title || '',
+      title: item.title || display,
+      label: display,
+      customName: item.customName || null,
       emoji: item.emoji || '🎵',
       intentId: item.intentId || null,
       cover: item.cover || item.image_url || item.imageUrl || null,
@@ -108,10 +110,27 @@
     return ordered;
   }
 
+  function getDisplayName(item) {
+    if (!item) return 'Favorit';
+    return item.customName || item.userTitle || item.label || item.title || 'Favorit';
+  }
+
+  function updateName(favorites, id, name) {
+    if (!Array.isArray(favorites) || !id) return favorites;
+    var trimmed = String(name || '').trim();
+    if (!trimmed) return favorites;
+    return favorites.map(function (f) {
+      if (!f || f.id !== id) return f;
+      return Object.assign({}, f, { customName: trimmed, label: trimmed, title: trimmed });
+    });
+  }
+
   window.SongFavorites = {
     MAX_FAVORITES: MAX_FAVORITES,
     trackKey: trackKey,
     normalize: normalize,
+    getDisplayName: getDisplayName,
+    updateName: updateName,
     isFavorite: isFavorite,
     toggle: toggle,
     reorder: reorder,

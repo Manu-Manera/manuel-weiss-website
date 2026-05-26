@@ -624,10 +624,12 @@
       opts = opts || {};
       const url = opts.url || this._trackUrl(opts.raw || opts);
       if (!url) return null;
+      const display = opts.customName || opts.userTitle || opts.label || opts.title || 'Track';
       const meta = {
         url: url,
-        title: opts.title || opts.label || 'Track',
-        label: opts.label || opts.title || '',
+        title: opts.title || display,
+        label: display,
+        customName: opts.customName || opts.userTitle || null,
         emoji: opts.emoji || '🎵',
         intentId: opts.intentId || null,
         cover: opts.cover || null,
@@ -636,6 +638,33 @@
       if (window.SongFavorites) return window.SongFavorites.normalize(meta);
       meta.id = url.slice(-32);
       return meta;
+    }
+
+    _getDisplayName(item) {
+      return window.SongFavorites && window.SongFavorites.getDisplayName
+        ? window.SongFavorites.getDisplayName(item)
+        : (item && (item.customName || item.label || item.title)) || 'Favorit';
+    }
+
+    _persistFavorites() {
+      saveState(STORAGE_KEYS.favorites, this.state.favorites);
+      if (window.SongGeneratorCloud && window.SongGeneratorCloud.isLoggedIn() &&
+          window.SongGeneratorCloud.persistFavoritesList) {
+        window.SongGeneratorCloud.persistFavoritesList(this.state.favorites).catch(function (err) {
+          console.warn('[SongGenerator] Favoriten-Cloud:', err && err.message);
+        });
+      }
+    }
+
+    _renameFavorite(id, name) {
+      if (!id || !window.SongFavorites) return;
+      var trimmed = String(name || '').trim();
+      if (!trimmed) return;
+      var existing = (this.state.favorites || []).find(function (f) { return f.id === id; });
+      if (existing && this._getDisplayName(existing) === trimmed) return;
+      this.state.favorites = window.SongFavorites.updateName(this.state.favorites || [], id, trimmed);
+      this._persistFavorites();
+      this.render();
     }
 
     async _toggleFavorite(meta) {
@@ -658,15 +687,7 @@
       }
 
       if (window.SongGeneratorCloud && window.SongGeneratorCloud.isLoggedIn()) {
-        try {
-          if (window.SongGeneratorCloud.persistFavoritesList) {
-            await window.SongGeneratorCloud.persistFavoritesList(this.state.favorites);
-          } else if (window.SongGeneratorCloud.toggleFavorite) {
-            await window.SongGeneratorCloud.toggleFavorite(this.state, norm);
-          }
-        } catch (err) {
-          console.warn('[SongGenerator] Favoriten-Cloud-Sync:', err && err.message);
-        }
+        this._persistFavorites();
       }
     }
 
@@ -692,14 +713,14 @@
       if (!window.SongFavorites) return;
       if (!window.SongGeneratorCloud || !window.SongGeneratorCloud.isLoggedIn()) {
         this.state.favorites = window.SongFavorites.reorder(this.state.favorites || [], fromIndex, toIndex);
-        saveState(STORAGE_KEYS.favorites, this.state.favorites);
+        this._persistFavorites();
         this.render();
         return;
       }
       const result = await window.SongGeneratorCloud.reorderFavorites(this.state, fromIndex, toIndex);
       if (result) {
         this.state.favorites = result.favorites;
-        saveState(STORAGE_KEYS.favorites, this.state.favorites);
+        this._persistFavorites();
         this.render();
       }
     }
@@ -2340,8 +2361,15 @@
       const panel = el('div', 'sg-voice-panel');
       panel.append(el('h4', null, '🎤 Meine Stimme (Optional)'));
       panel.append(el('p', 'sg-voice-lead',
-        'Eigene Stimme via Suno Voice: Stimmprobe hochladen → Validierungssatz singen → bei Produktion „Meine Stimme" aktivieren. ' +
-        'Funktioniert nur bei Songs mit Gesang (nicht bei instrumentalen Kontexten).'));
+        'Eigene Stimme via Suno Voice: Stimmprobe aufnehmen oder hochladen → Validierungssatz singen → bei Produktion aktivieren.'));
+
+      const trainRow = el('div', 'sg-voice-train-row');
+      const trainLink = el('a', 'sg-voice-train-link', '🎵 Gesangstraining mit Pitch-Feedback');
+      trainLink.href = 'singing-trainer.html';
+      trainLink.title = 'ADHS-optimiertes Gesangstraining auf manuel-weiss.ch';
+      trainRow.append(trainLink);
+      trainRow.append(el('span', 'sg-voice-train-hint', ' – Stimme warm machen vor der Aufnahme'));
+      panel.append(trainRow);
 
       const vp = this.state.voiceProfile;
       const wiz = this.state.voiceWizard || { phase: 'idle' };
@@ -2366,18 +2394,34 @@
 
       if (wiz.phase === 'need_verification' && wiz.validateInfo) {
         const box = el('div', 'sg-voice-verify-box');
-        box.append(el('p', 'sg-voice-phrase-label', 'Sing oder sprich diesen Satz auf (besser: singend):'));
+        box.append(el('p', 'sg-voice-phrase-label', 'Sing diesen Satz auf (besser: singend):'));
         box.append(el('blockquote', 'sg-voice-phrase', wiz.validateInfo));
+
+        const recWrap = el('div', 'sg-voice-rec-block');
+        box.append(el('p', 'sg-hint', 'Validierung aufnehmen (empfohlen) oder Datei hochladen:'));
+        box.append(recWrap);
+        if (window.SongVoiceEngine && window.SongVoiceEngine.mountVoiceRecorder) {
+          self._voiceVerifyRecorder = window.SongVoiceEngine.mountVoiceRecorder(recWrap, {
+            label: 'Validierung',
+            maxSeconds: 25,
+            onRecorded: function () {}
+          });
+        }
+
         const vFile = el('input');
         vFile.type = 'file';
         vFile.accept = 'audio/*';
         vFile.className = 'sg-voice-file';
+        box.append(el('label', null, 'Oder Audiodatei wählen'));
         box.append(vFile);
+
         const btn = el('button', 'sg-btn sg-btn-primary', 'Verifikation senden & Stimme erstellen');
         btn.type = 'button';
         btn.onclick = async function () {
-          if (!vFile.files || !vFile.files[0]) {
-            alert('Bitte Aufnahme der Validierungsphrase wählen.');
+          var verifyFile = (vFile.files && vFile.files[0]) ||
+            (self._voiceVerifyRecorder && self._voiceVerifyRecorder.getFile('validierung.webm'));
+          if (!verifyFile) {
+            alert('Bitte Validierung aufnehmen oder Audiodatei wählen.');
             return;
           }
           btn.disabled = true;
@@ -2385,7 +2429,7 @@
           try {
             const result = await window.SongVoiceEngine.registerVoice({
               validateTaskId: wiz.validateTaskId,
-              verifyFile: vFile.files[0],
+              verifyFile: verifyFile,
               meta: { voiceName: 'Meine Stimme' },
               onPhase: function (p) {
                 self.state.voiceWizard = Object.assign({}, wiz, p);
@@ -2420,11 +2464,23 @@
       }
 
       const form = el('div', 'sg-voice-form');
+      form.append(el('p', 'sg-hint', 'Stimmprobe: direkt aufnehmen (5–30 s) oder Datei hochladen.'));
+
+      const sampleRecWrap = el('div', 'sg-voice-rec-block');
+      form.append(sampleRecWrap);
+      if (window.SongVoiceEngine && window.SongVoiceEngine.mountVoiceRecorder) {
+        self._voiceSampleRecorder = window.SongVoiceEngine.mountVoiceRecorder(sampleRecWrap, {
+          label: 'Stimmprobe',
+          maxSeconds: 30,
+          onRecorded: function () {}
+        });
+      }
+
       const fileIn = el('input');
       fileIn.type = 'file';
       fileIn.accept = 'audio/*';
       fileIn.className = 'sg-voice-file';
-      form.append(el('label', null, 'Stimmprobe (5–30 s, klar, wenig Hintergrund)'));
+      form.append(el('label', null, 'Alternativ: Audiodatei hochladen'));
       form.append(fileIn);
 
       const segRow = el('div', 'sg-voice-seg-row');
@@ -2447,15 +2503,16 @@
       const startBtn = el('button', 'sg-btn sg-btn-secondary', 'Stimme registrieren starten');
       startBtn.type = 'button';
       startBtn.onclick = async function () {
-        if (!fileIn.files || !fileIn.files[0]) {
-          alert('Bitte eine Stimmprobe wählen.');
+        var file = (fileIn.files && fileIn.files[0]) ||
+          (self._voiceSampleRecorder && self._voiceSampleRecorder.getFile('stimmprobe.webm'));
+        if (!file) {
+          alert('Bitte Stimmprobe aufnehmen oder Audiodatei wählen.');
           return;
         }
         startBtn.disabled = true;
         self.state.voiceWizard = { phase: 'upload', label: 'Stimmprobe wird hochgeladen' };
         self.render();
         try {
-          const file = fileIn.files[0];
           let duration = parseInt(endIn.value, 10) || 10;
           const result = await window.SongVoiceEngine.registerVoice({
             file: file,
@@ -2506,7 +2563,7 @@
       this._favoritesPanelEl = panel;
       panel.append(el('h4', null, '♥ Meine Favoriten-Playlist (' + favs.length + ')'));
       panel.append(el('p', 'sg-favorites-lead',
-        'Lieblingssongs mit ♡ markieren – sie bleiben dauerhaft hier, auch wenn du neue Varianten produzierst. Reihenfolge per Ziehen oder ↑/↓.'));
+        'Lieblingssongs mit ♡ markieren und benennen – sie bleiben dauerhaft hier. Reihenfolge per Ziehen oder ↑/↓.'));
 
       if (!window.SongGeneratorCloud || !window.SongGeneratorCloud.isLoggedIn()) {
         panel.append(el('p', 'sg-hint', 'Favoriten werden lokal gespeichert. Anmelden für Cloud-Sync auf allen Geräten.'));
@@ -2535,7 +2592,7 @@
         artwork: playable[0].cover
       });
       mainWrap.append(mainAudio);
-      const nowPlaying = el('div', 'sg-favorites-now', '▶ ' + (playable[0].emoji || '♥') + ' ' + (playable[0].label || playable[0].title));
+      const nowPlaying = el('div', 'sg-favorites-now', '▶ ' + (playable[0].emoji || '♥') + ' ' + self._getDisplayName(playable[0]));
       mainWrap.append(nowPlaying);
       panel.append(mainWrap);
 
@@ -2603,7 +2660,14 @@
 
         const info = el('span', 'sg-favorites-info');
         info.append(el('span', 'sg-favorites-emoji', track.emoji || '♥'));
-        info.append(el('span', 'sg-favorites-name', track.label || track.title || 'Favorit'));
+        const nameIn = el('input', 'sg-fav-name-input');
+        nameIn.type = 'text';
+        nameIn.value = self._getDisplayName(track);
+        nameIn.placeholder = 'Song benennen …';
+        nameIn.title = 'Name bearbeiten';
+        nameIn.onchange = function () { self._renameFavorite(track.id, nameIn.value); };
+        nameIn.onblur = function () { self._renameFavorite(track.id, nameIn.value); };
+        info.append(nameIn);
         row.append(info);
 
         if (track.duration) {
@@ -2664,7 +2728,7 @@
         artwork: track.cover
       });
       if (this._favoritesNowEl) {
-        this._favoritesNowEl.textContent = '▶ ' + (track.emoji || '♥') + ' ' + (track.label || track.title);
+        this._favoritesNowEl.textContent = '▶ ' + (track.emoji || '♥') + ' ' + this._getDisplayName(track);
       }
       audio.play().catch(function () {});
     }
@@ -2934,7 +2998,18 @@
         const leftInner = el('span', 'sg-playlist-track-left');
         leftInner.append(el('span', 'sg-playlist-track-num', String(i + 1)));
         leftInner.append(el('span', 'sg-playlist-track-emoji', track.emoji || '🎵'));
-        leftInner.append(el('span', 'sg-playlist-track-name', track.label));
+        const plName = el('input', 'sg-track-name-input sg-playlist-track-name-input');
+        plName.type = 'text';
+        plName.value = track.customName || track.label || track.title || ('Track ' + (i + 1));
+        plName.placeholder = 'Benennen …';
+        plName.onclick = function (e) { e.stopPropagation(); };
+        plName.onchange = function () {
+          track.customName = plName.value.trim();
+          saveState(STORAGE_KEYS.playlist, self.state.playlist);
+          var fid = window.SongFavorites ? window.SongFavorites.trackKey({ url: track.url }) : '';
+          if (fid && self._isFavorite(fid)) self._renameFavorite(fid, plName.value);
+        };
+        leftInner.append(plName);
         left.append(leftInner);
         if (track.duration) {
           left.append(el('span', 'sg-playlist-track-dur', self._formatDuration(track.duration)));
@@ -2943,7 +3018,8 @@
         row.append(self._renderFavoriteBtn({
           url: track.url,
           title: track.title,
-          label: track.label,
+          userTitle: track.customName,
+          label: track.customName || track.label,
           emoji: track.emoji,
           intentId: track.intentId,
           cover: track.cover,
@@ -3092,6 +3168,7 @@
     }
 
     _renderAudioPlayer(audio) {
+      const self = this;
       const box = el('div', 'sg-audio-results');
       box.append(el('h4', null, 'Deine Songs (' + (audio.tracks || []).length + ' Varianten)'));
       box.append(this._renderBluetoothHint());
@@ -3108,12 +3185,23 @@
         const cover = t.image_url || t.imageUrl;
         const card = el('div', 'sg-audio-card');
         const title = el('div', 'sg-audio-card-head');
-        title.append(el('strong', null, 'Variante ' + (i + 1) + (t.title ? ' – ' + t.title : '')));
+        const nameIn = el('input', 'sg-track-name-input');
+        nameIn.type = 'text';
+        nameIn.placeholder = 'Song benennen …';
+        nameIn.value = t.userTitle || t.title || ('Variante ' + (i + 1));
+        nameIn.onchange = function () {
+          t.userTitle = nameIn.value.trim();
+          saveState(STORAGE_KEYS.audio, self.state.audio);
+          var fid = window.SongFavorites ? window.SongFavorites.trackKey({ url: url }) : '';
+          if (fid && self._isFavorite(fid)) self._renameFavorite(fid, nameIn.value);
+        };
+        title.append(nameIn);
         if (t.duration) title.append(el('span', 'sg-audio-duration', this._formatDuration(t.duration)));
         title.append(this._renderFavoriteBtn({
           url: url,
           title: t.title,
-          label: intentLabel || ('Variante ' + (i + 1)),
+          userTitle: t.userTitle,
+          label: t.userTitle || intentLabel || ('Variante ' + (i + 1)),
           emoji: audio.intentId && window.SongPlaylistEngine
             ? (window.SongPlaylistEngine.getIntent(audio.intentId).emoji || '🎵') : '🎵',
           intentId: audio.intentId,

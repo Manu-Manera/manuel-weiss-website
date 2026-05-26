@@ -222,8 +222,126 @@
     };
   }
 
+  function mountVoiceRecorder(container, opts) {
+    opts = opts || {};
+    var maxSec = opts.maxSeconds || 30;
+    var label = opts.label || 'Aufnahme';
+    var wrap = document.createElement('div');
+    wrap.className = 'sg-voice-recorder';
+
+    var status = document.createElement('span');
+    status.className = 'sg-voice-rec-status';
+    status.textContent = 'Bereit';
+
+    var btnRow = document.createElement('div');
+    btnRow.className = 'sg-voice-rec-btns';
+
+    var startBtn = document.createElement('button');
+    startBtn.type = 'button';
+    startBtn.className = 'sg-btn sg-btn-secondary';
+    startBtn.textContent = '🎙 ' + label + ' starten';
+
+    var stopBtn = document.createElement('button');
+    stopBtn.type = 'button';
+    stopBtn.className = 'sg-btn sg-btn-ghost';
+    stopBtn.textContent = '■ Stopp';
+    stopBtn.disabled = true;
+
+    var preview = document.createElement('audio');
+    preview.className = 'sg-voice-rec-preview';
+    preview.controls = true;
+    preview.style.width = '100%';
+    preview.style.display = 'none';
+
+    var blob = null;
+    var stream = null;
+    var recorder = null;
+    var chunks = [];
+    var timer = null;
+
+    function cleanupStream() {
+      if (stream) {
+        stream.getTracks().forEach(function (t) { t.stop(); });
+        stream = null;
+      }
+    }
+
+    startBtn.onclick = async function () {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('Mikrofon-Aufnahme wird in diesem Browser nicht unterstützt.');
+        return;
+      }
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        chunks = [];
+        blob = null;
+        preview.style.display = 'none';
+        preview.removeAttribute('src');
+        var mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+          ? 'audio/webm;codecs=opus' : 'audio/webm';
+        recorder = new MediaRecorder(stream, { mimeType: mime });
+        recorder.ondataavailable = function (e) {
+          if (e.data && e.data.size) chunks.push(e.data);
+        };
+        recorder.onstop = function () {
+          cleanupStream();
+          blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
+          preview.src = URL.createObjectURL(blob);
+          preview.style.display = 'block';
+          status.textContent = 'Aufnahme fertig (' + Math.round(blob.size / 1024) + ' KB)';
+          startBtn.disabled = false;
+          stopBtn.disabled = true;
+          if (opts.onRecorded) opts.onRecorded(getFile());
+        };
+        recorder.start();
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        status.textContent = 'Aufnahme läuft … (max. ' + maxSec + ' s)';
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(function () {
+          if (recorder && recorder.state === 'recording') stopBtn.click();
+        }, maxSec * 1000);
+      } catch (err) {
+        cleanupStream();
+        alert('Mikrofon-Zugriff fehlgeschlagen: ' + (err.message || 'Bitte Berechtigung erlauben.'));
+      }
+    };
+
+    stopBtn.onclick = function () {
+      if (timer) clearTimeout(timer);
+      if (recorder && recorder.state === 'recording') recorder.stop();
+    };
+
+    btnRow.append(startBtn, stopBtn);
+    wrap.append(status, btnRow, preview);
+    if (container) container.appendChild(wrap);
+
+    function getFile(filename) {
+      if (!blob) return null;
+      var ext = (blob.type && blob.type.indexOf('webm') >= 0) ? '.webm' : '.m4a';
+      return new File([blob], filename || ('voice-' + Date.now() + ext), { type: blob.type || 'audio/webm' });
+    }
+
+    return {
+      element: wrap,
+      getFile: getFile,
+      hasRecording: function () { return !!blob; },
+      reset: function () {
+        blob = null;
+        chunks = [];
+        cleanupStream();
+        preview.style.display = 'none';
+        preview.removeAttribute('src');
+        status.textContent = 'Bereit';
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+      }
+    };
+  }
+
   window.SongVoiceEngine = {
     uploadAudioFile: uploadAudioFile,
+    mountVoiceRecorder: mountVoiceRecorder,
     startValidation: startValidation,
     pollValidatePhrase: pollValidatePhrase,
     generateCustomVoice: generateCustomVoice,
