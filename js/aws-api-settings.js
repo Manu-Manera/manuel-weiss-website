@@ -287,53 +287,58 @@ class AWSAPISettingsService {
                 }
             }
             
-            // Extrahiere den Key-String aus dem Response-Objekt
-            // PRIORITÄT 1: Direkter apiKey im Response (Standard-Format von getFullApiKey)
-            if (data.apiKey && typeof data.apiKey === 'string' && data.apiKey.startsWith('sk-') && data.apiKey.length > 20 && !data.apiKey.includes('...')) {
-                console.log(`✅ API Key extrahiert (direkt): ${data.apiKey.substring(0, 10)}...`);
+            // Provider-spezifische Format-Validierung
+            const validForProvider = (k) => {
+                if (typeof k !== 'string' || k.includes('...')) return false;
+                if (provider === 'openai')     return k.startsWith('sk-') && k.length > 20;
+                if (provider === 'anthropic')  return k.startsWith('sk-ant-') && k.length > 20;
+                if (provider === 'google')     return k.length > 20;
+                if (provider === 'suno')       return k.length >= 16;
+                // Generischer Fallback für neue Provider
+                return k.length >= 16;
+            };
+
+            // PRIORITÄT 1: Direkter apiKey im Response
+            if (data.apiKey && validForProvider(data.apiKey)) {
+                console.log(`✅ API Key extrahiert (direkt): ${String(data.apiKey).substring(0, 10)}...`);
                 return data.apiKey;
             }
-            
-            // PRIORITÄT 2: data.settings[provider].apiKey (falls Settings-Objekt zurückgegeben wurde)
-            // WICHTIG: Dieses Format kommt von getApiSettings, nicht von getFullApiKey
-            // Die Keys sind hier maskiert, also können wir sie nicht verwenden
+
+            // PRIORITÄT 2: data.settings[provider].apiKey
             if (data.settings && data.settings[provider]) {
                 const providerData = data.settings[provider];
-                // Prüfe ob apiKey vorhanden ist
                 if (providerData && providerData.apiKey) {
-                    // Wenn der Key maskiert ist (enthält '...'), können wir ihn nicht verwenden
                     if (typeof providerData.apiKey === 'string' && providerData.apiKey.includes('...')) {
                         console.warn('⚠️ Key ist maskiert, kann nicht verwendet werden');
-                        return null; // Wird im catch-Block behandelt
+                        return null;
                     }
-                    // Falls der Key nicht maskiert ist, verwende ihn
-                    if (typeof providerData.apiKey === 'string' && providerData.apiKey.startsWith('sk-') && providerData.apiKey.length > 20 && !providerData.apiKey.includes('...')) {
+                    if (validForProvider(providerData.apiKey)) {
                         console.log(`✅ API Key extrahiert (settings): ${providerData.apiKey.substring(0, 10)}...`);
                         return providerData.apiKey;
                     }
                 }
             }
-            
+
             // PRIORITÄT 3: data.key
-            if (data.key && typeof data.key === 'string' && data.key.startsWith('sk-') && data.key.length > 20) {
+            if (data.key && validForProvider(data.key)) {
                 console.log(`✅ API Key extrahiert (key): ${data.key.substring(0, 10)}...`);
                 return data.key;
             }
-            
-            // PRIORITÄT 4: data[provider] (z.B. data.openai)
-            if (data[provider] && typeof data[provider] === 'string' && data[provider].startsWith('sk-') && data[provider].length > 20) {
+
+            // PRIORITÄT 4: data[provider]
+            if (data[provider] && typeof data[provider] === 'string' && validForProvider(data[provider])) {
                 console.log(`✅ API Key extrahiert (provider): ${data[provider].substring(0, 10)}...`);
                 return data[provider];
             }
-            
-            // PRIORITÄT 5: data[provider].apiKey (z.B. data.openai.apiKey)
-            if (data[provider] && data[provider].apiKey && typeof data[provider].apiKey === 'string' && data[provider].apiKey.startsWith('sk-') && data[provider].apiKey.length > 20) {
+
+            // PRIORITÄT 5: data[provider].apiKey
+            if (data[provider] && data[provider].apiKey && validForProvider(data[provider].apiKey)) {
                 console.log(`✅ API Key extrahiert (provider.apiKey): ${data[provider].apiKey.substring(0, 10)}...`);
                 return data[provider].apiKey;
             }
-            
-            // PRIORITÄT 6: Falls data selbst ein String ist (direkter Key)
-            if (typeof data === 'string' && data.startsWith('sk-') && data.length > 20) {
+
+            // PRIORITÄT 6: Falls data selbst ein String ist
+            if (typeof data === 'string' && validForProvider(data)) {
                 console.log(`✅ API Key extrahiert (string): ${data.substring(0, 10)}...`);
                 return data;
             }
@@ -444,6 +449,20 @@ class AWSAPISettingsService {
                 temperature: options.temperature ?? 0.7
             },
             preferredProvider: 'google'
+        });
+    }
+
+    /**
+     * Suno API-Key speichern (KI-Musik-Generierung über sunoapi.org)
+     */
+    async saveSunoKey(apiKey, options = {}) {
+        return await this.saveSettings({
+            suno: {
+                apiKey,
+                model: options.model || 'V5_5',
+                maxTokens: options.maxTokens || 4500,
+                temperature: options.temperature ?? 0.45
+            }
         });
     }
 

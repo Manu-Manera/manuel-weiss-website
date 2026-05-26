@@ -314,6 +314,7 @@ async function getApiSettings(userId) {
                         openai: maskProviderKey(parseProviderData(settings.openai)),
                         anthropic: maskProviderKey(parseProviderData(settings.anthropic)),
                         google: maskProviderKey(parseProviderData(settings.google)),
+                        suno: maskProviderKey(parseProviderData(settings.suno)),
                         preferredProvider: settings.preferredProvider || 'openai',
                         updatedAt: settings.updatedAt
                     },
@@ -366,6 +367,7 @@ async function getApiSettings(userId) {
                 openai: decryptAndMask(settings.openai),
                 anthropic: decryptAndMask(settings.anthropic),
                 google: decryptAndMask(settings.google),
+                suno: decryptAndMask(settings.suno),
                 preferredProvider: settings.preferredProvider || 'openai',
                 updatedAt: settings.updatedAt
             },
@@ -403,6 +405,9 @@ async function saveApiSettings(userId, data) {
         }
         if (data.google?.apiKey && !isValidApiKey(data.google.apiKey, 'google')) {
             return response(400, { error: 'Ungültiger Google API-Key Format' });
+        }
+        if (data.suno?.apiKey && !isValidApiKey(data.suno.apiKey, 'suno')) {
+            return response(400, { error: 'Ungültiger Suno API-Key Format' });
         }
         
         // Hole bestehende Einstellungen um Keys zu erhalten falls nicht neu gesetzt
@@ -474,6 +479,18 @@ async function saveApiSettings(userId, data) {
                 temperature: data.google.temperature ?? existingSettings.google?.temperature ?? 0.7
             };
             console.log('🔐 Google Key verschlüsselt gespeichert');
+        }
+        if (data.suno) {
+            // Suno: Bearer-Token von Drittanbieter, keine Verschlüsselung nötig wie bei OpenAI
+            // (wird als globaler Key über provider='suno' abgerufen)
+            const encryptedKey = encryptNewKey(data.suno.apiKey, existingSettings.suno?.apiKey);
+            settingsItem.suno = {
+                apiKey: encryptedKey,
+                model: data.suno.model || existingSettings.suno?.model || 'V5_5',
+                maxTokens: data.suno.maxTokens || existingSettings.suno?.maxTokens || 4500,
+                temperature: data.suno.temperature ?? existingSettings.suno?.temperature ?? 0.45
+            };
+            console.log('🎵 Suno Key verschlüsselt gespeichert');
         } else if (existingSettings.google) {
             settingsItem.google = existingSettings.google;
         }
@@ -711,6 +728,9 @@ function isValidApiKey(key, provider) {
             return key.startsWith('sk-ant-') && key.length > 20;
         case 'google':
             return key.length > 20;
+        case 'suno':
+            // Suno-Wrapper haben unterschiedliche Formate; mind. 16 Zeichen
+            return key.length >= 16;
         default:
             return key.length > 10;
     }

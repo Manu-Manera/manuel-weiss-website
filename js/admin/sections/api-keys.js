@@ -81,7 +81,7 @@ class ApiKeysSection {
                     }
                     
                     // Fülle Formulare und GlobalAPIManager
-                    const services = ['openai', 'anthropic', 'google'];
+                    const services = ['openai', 'anthropic', 'google', 'suno'];
                     services.forEach(service => {
                         const serviceData = settings[service];
                         console.log(`🔍 Prüfe ${service}:`, serviceData);
@@ -226,7 +226,7 @@ class ApiKeysSection {
             const awsSettings = await window.awsAPISettings.getSettings(true);
             
             if (awsSettings && awsSettings.hasSettings && awsSettings.settings) {
-                const services = ['openai', 'anthropic', 'google'];
+                const services = ['openai', 'anthropic', 'google', 'suno'];
                 services.forEach(service => {
                     const serviceData = awsSettings.settings[service];
                     if (serviceData && (serviceData.apiKey || serviceData.configured)) {
@@ -253,7 +253,7 @@ class ApiKeysSection {
      */
     attachEventListeners() {
         // Temperature Sliders
-        const sliders = ['openai', 'anthropic', 'google'];
+        const sliders = ['openai', 'anthropic', 'google', 'suno'];
         sliders.forEach(service => {
             const slider = document.getElementById(`${service}-temperature`);
             if (slider) {
@@ -267,7 +267,7 @@ class ApiKeysSection {
         });
         
         // Form Inputs
-        const services = ['openai', 'anthropic', 'google'];
+        const services = ['openai', 'anthropic', 'google', 'suno'];
         services.forEach(service => {
             const inputs = document.querySelectorAll(`#${service}-key, #${service}-model, #${service}-tokens, #${service}-temperature`);
             inputs.forEach(input => {
@@ -292,7 +292,7 @@ class ApiKeysSection {
      * Temperature Sliders einrichten
      */
     setupTemperatureSliders() {
-        const sliders = ['openai', 'anthropic', 'google'];
+        const sliders = ['openai', 'anthropic', 'google', 'suno'];
         sliders.forEach(service => {
             const slider = document.getElementById(`${service}-temperature`);
             const valueSpan = document.getElementById(`${service}-temp-value`);
@@ -313,7 +313,7 @@ class ApiKeysSection {
      * API Settings laden (aus GlobalAPIManager, StateManager, localStorage)
      */
     loadApiSettings() {
-        const services = ['openai', 'anthropic', 'google'];
+        const services = ['openai', 'anthropic', 'google', 'suno'];
         
         services.forEach(service => {
             let serviceSettings = null;
@@ -392,11 +392,11 @@ class ApiKeysSection {
      */
     getDefaultModel(service) {
         // Modelle werden automatisch je nach Funktion gewählt
-        // gpt-3.5-turbo ist das am weitesten verfügbare Modell
         const defaults = {
             'openai': 'gpt-5.2',
             'anthropic': 'claude-3-sonnet-20240229',
-            'google': 'gemini-pro'
+            'google': 'gemini-pro',
+            'suno': 'V5_5'
         };
         return defaults[service] || '';
     }
@@ -556,6 +556,25 @@ class ApiKeysSection {
                         maxTokens: serviceData.maxTokens,
                         temperature: serviceData.temperature
                     });
+                } else if (service === 'suno') {
+                    if (typeof window.awsAPISettings.saveSunoKey === 'function') {
+                        await window.awsAPISettings.saveSunoKey(serviceData.apiKey, {
+                            model: serviceData.model,
+                            maxTokens: serviceData.maxTokens,
+                            temperature: serviceData.temperature
+                        });
+                    } else {
+                        console.warn('⚠️ awsAPISettings.saveSunoKey nicht verfügbar – Suno-Key nur lokal');
+                    }
+                }
+                // Zusätzlich (immer): Suno-Key in localStorage 'suno-api-key' als Sofort-Fallback,
+                // damit der Music-Engine-Frontend den Key auch dann findet, wenn das Backend
+                // den 'suno'-Provider noch nicht akzeptiert (z.B. Lambda noch nicht deployed).
+                if (service === 'suno') {
+                    try {
+                        localStorage.setItem('suno-api-key', serviceData.apiKey);
+                        console.log('✅ Suno-Key zusätzlich in localStorage als Sofort-Fallback gespeichert');
+                    } catch (_e) {}
                 }
                 
                 console.log('✅ API-Key in AWS Cloud gespeichert für Service:', service);
@@ -706,11 +725,28 @@ class ApiKeysSection {
             openai: /^sk-[A-Za-z0-9_\-]{20,}$/,
             anthropic: /^sk-ant-[A-Za-z0-9_\-]{20,}$/,
             google: /^AIza[0-9A-Za-z_\-]{20,}$/
+            // suno: kein festes Pattern – Drittanbieter-Wrapper haben unterschiedliche Formate
         };
         
         const pattern = patterns[service];
         if (pattern && !pattern.test(apiKey)) {
             return { success: false, error: 'Ungültiges API Key Format' };
+        }
+
+        // Live-Test für Suno: Credits-Endpoint anpingen (validiert Key + Auth)
+        if (service === 'suno') {
+            try {
+                const res = await fetch('https://api.sunoapi.org/api/v1/credits', {
+                    headers: { 'Authorization': 'Bearer ' + apiKey }
+                });
+                if (res.ok) {
+                    const data = await res.json().catch(() => null);
+                    if (data && data.code === 200) return { success: true };
+                }
+                return { success: false, error: 'Suno-Provider lehnte Key ab (HTTP ' + res.status + ')' };
+            } catch (err) {
+                return { success: false, error: 'Netzwerk-Fehler: ' + err.message };
+            }
         }
         
         return { success: true };
@@ -720,7 +756,7 @@ class ApiKeysSection {
      * Alle Services testen
      */
     async testAllServices() {
-        const services = ['openai', 'anthropic', 'google'];
+        const services = ['openai', 'anthropic', 'google', 'suno'];
         
         for (const service of services) {
             const apiKey = document.getElementById(`${service}-key`).value;

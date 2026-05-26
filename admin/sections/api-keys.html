@@ -170,6 +170,65 @@
             
             <div id="google-message"></div>
         </div>
+
+        <!-- Suno (KI-Musik-Generierung) -->
+        <div class="service-card" id="suno-card" style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 16px; padding: 2rem; transition: all 0.3s ease; position: relative;">
+            <div class="status-badge status-inactive" id="suno-status" style="position: absolute; top: 1rem; right: 1rem; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; background: #fee2e2; color: #991b1b;">Inaktiv</div>
+            <div class="service-header" style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="service-icon suno-icon" style="width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);">
+                    <i class="fas fa-music"></i>
+                </div>
+                <div class="service-info">
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 0.25rem;">Suno (KI-Musik)</h3>
+                    <p style="color: #64748b; font-size: 0.9rem; margin: 0;">Audio-Produktion für den Persönlichkeits-Song. Provider: sunoapi.org (Drittanbieter).</p>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="suno-key" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">API Key</label>
+                <div class="api-key-container" style="position: relative;">
+                    <input type="password" id="suno-key" placeholder="API-Key von sunoapi.org" style="width: 100%; padding: 0.75rem 3rem 0.75rem 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; transition: border-color 0.2s; font-family: monospace;">
+                    <button type="button" class="toggle-visibility" onclick="toggleVisibility('suno-key')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #6b7280; padding: 0.5rem;">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.4rem;">
+                    Key holen unter <a href="https://sunoapi.org" target="_blank" rel="noopener" style="color: #6366f1;">sunoapi.org</a> (Drittanbieter-Wrapper für Suno V5.5). Pay-as-you-go, ~$0.05–0.10 pro Song.
+                </p>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="suno-model" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Standard-Modell</label>
+                <select id="suno-model" style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; transition: border-color 0.2s;">
+                    <option value="V5_5">Suno V5.5 (neueste, Voice-Cloning-fähig)</option>
+                    <option value="V5">Suno V5 (höchste Qualität)</option>
+                    <option value="V4_5PLUS">Suno V4.5 Plus (schneller, bis 8 Min)</option>
+                    <option value="V4_5">Suno V4.5</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="suno-tokens" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Max Lyrics-Länge (Zeichen)</label>
+                <input type="number" id="suno-tokens" value="4500" min="500" max="5000" style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; transition: border-color 0.2s;">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="suno-temperature" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Kreativität (weirdness)</label>
+                <input type="range" id="suno-temperature" min="0" max="1" step="0.05" value="0.45" style="width: 100%;">
+                <span id="suno-temp-value" style="color: #64748b; font-size: 0.9rem;">0.45</span>
+            </div>
+
+            <div class="actions" style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button class="btn btn-success" onclick="saveService('suno')" style="background: #10b981; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: background-color 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-save"></i> Speichern
+                </button>
+                <button class="btn btn-secondary" onclick="testService('suno')" style="background: #6b7280; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: background-color 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-flask"></i> Testen
+                </button>
+            </div>
+
+            <div id="suno-message"></div>
+        </div>
     </div>
     
     <div class="global-actions" style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 2px solid #e2e8f0;">
