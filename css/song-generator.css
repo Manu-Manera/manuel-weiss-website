@@ -1431,9 +1431,26 @@
 }
 .sg-pitch-guide-head strong { font-size: 0.9rem; color: #f8fafc; }
 .sg-pitch-guide-sub { font-size: 0.78rem; color: #94a3b8; }
+.sg-pitch-guide-status {
+  margin: 0.35rem 0 0.5rem;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  line-height: 1.45;
+}
+.sg-pitch-transpose-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+.sg-pitch-transpose-btn { font-size: 0.78rem; padding: 0.25rem 0.5rem; }
+.sg-pitch-cents { font-weight: 700; font-size: 0.85rem; }
+.sg-pitch-cents.hit { color: #22c55e; }
+.sg-pitch-cents.close { color: #eab308; }
+.sg-pitch-cents.miss { color: #ef4444; }
 .sg-pitch-guide-canvas {
   width: 100%;
-  height: 140px;
+  height: 160px;
   border-radius: 8px;
   display: block;
   background: #0f172a;

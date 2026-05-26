@@ -13,20 +13,35 @@ class PitchDetector {
         this.sampleRate = 44100;
         this.bufferSize = 2048;
         this.threshold = 0.15;
+        this.minClarity = 0.5;
+        this.rmsThreshold = 0.01;
         this.minFreq = 60;
         this.maxFreq = 1500;
         this._rafId = null;
     }
 
-    async init() {
+    async init(options) {
+        options = options || {};
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         this.sampleRate = this.audioContext.sampleRate;
         this.analyser = this.audioContext.createAnalyser();
         this.analyser.fftSize = this.bufferSize * 2;
         this.buffer = new Float32Array(this.bufferSize);
 
+        if (options.threshold != null) this.threshold = options.threshold;
+        if (options.minClarity != null) this.minClarity = options.minClarity;
+        if (options.rmsThreshold != null) this.rmsThreshold = options.rmsThreshold;
+        if (options.minFreq != null) this.minFreq = options.minFreq;
+        if (options.maxFreq != null) this.maxFreq = options.maxFreq;
+
+        var voiceMode = !!options.forVoice;
         this.mediaStream = await navigator.mediaDevices.getUserMedia({
-            audio: {
+            audio: voiceMode ? {
+                echoCancellation: false,
+                noiseSuppression: false,
+                autoGainControl: false,
+                channelCount: 1
+            } : {
                 echoCancellation: true,
                 noiseSuppression: true,
                 autoGainControl: true
@@ -35,6 +50,9 @@ class PitchDetector {
 
         this.source = this.audioContext.createMediaStreamSource(this.mediaStream);
         this.source.connect(this.analyser);
+        if (this.audioContext.state === 'suspended') {
+            await this.audioContext.resume();
+        }
     }
 
     start(callback) {
@@ -69,8 +87,8 @@ class PitchDetector {
         const rms = Math.sqrt(this.buffer.reduce((s, v) => s + v * v, 0) / this.buffer.length);
         const volume = rms;
 
-        if (rms < 0.01) {
-            if (this.onPitch) this.onPitch({ frequency: null, clarity: 0, volume, midi: null, noteName: null, cents: 0 });
+        if (rms < this.rmsThreshold) {
+            if (this.onPitch) this.onPitch({ frequency: null, clarity: 0, volume, midi: null, noteName: null, cents: 0, tooQuiet: true });
             this._rafId = requestAnimationFrame(() => this._detect());
             return;
         }
@@ -159,7 +177,7 @@ class PitchDetector {
         const clarity = 1 - yinBuf[tau];
 
         if (frequency < this.minFreq || frequency > this.maxFreq) return null;
-        if (clarity < 0.5) return null;
+        if (clarity < this.minClarity) return null;
 
         return { frequency, clarity };
     }
