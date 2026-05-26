@@ -789,9 +789,6 @@
     // RENDER
     // ────────────────────────────────────────────────────────────
     render() {
-      if (window.SongPersistentPlayer && window.SongPersistentPlayer.resetSlot) {
-        window.SongPersistentPlayer.resetSlot();
-      }
       this.root.innerHTML = '';
       this.root.appendChild(this.renderProgressBar());
       switch (this.state.step) {
@@ -3455,7 +3452,13 @@
             (evt) => {
               if (evt.phase === 'polling' || evt.phase === 'first_ready') {
                 this.state.audioState.queueStatus = evt.status || 'Generiert …';
-                this.render();
+                if (!this._pollRenderTimer) {
+                  var self = this;
+                  this._pollRenderTimer = setTimeout(function () {
+                    self._pollRenderTimer = null;
+                    self.render();
+                  }, 400);
+                }
               }
             }
           );
@@ -3537,7 +3540,6 @@
           this.state.song,
           opts,
           (evt) => {
-            // UI-Update bei Status-Wechseln
             if (evt.phase === 'submitting') {
               this.state.audioState = Object.assign({}, this.state.audioState, { phase: 'submitting' });
             } else if (evt.phase === 'polling') {
@@ -3548,13 +3550,19 @@
                 weights: evt.weights || this.state.audioState.weights
               });
             } else if (evt.phase === 'first_ready') {
-              // Erste Variante schon verfügbar: zeige sie schonmal
               this.state.audio = { tracks: evt.tracks || [], partial: true };
               saveState(STORAGE_KEYS.audio, this.state.audio);
-              this.state.audioState = Object.assign({}, this.state.audioState, { phase: 'polling', status: evt.status });
+              this.state.audioState = Object.assign({}, this.state.audioState, {
+                phase: 'polling', status: evt.status
+              });
             }
-            // Throttled re-render: nur wenn wir gerade nicht gerade gerendert haben
-            this.render();
+            if (!this._pollRenderTimer) {
+              var self = this;
+              this._pollRenderTimer = setTimeout(function () {
+                self._pollRenderTimer = null;
+                self.render();
+              }, 400);
+            }
           }
         );
         this.state.audio = {
