@@ -7,6 +7,7 @@
 
   const WF_NAME = 'personalitySongGenerator';
   const MAX_VERSIONS = 25;
+  const MAX_LIBRARY_ENTRIES = 40;
   const DEBOUNCE_MS = 1800;
 
   function getUserDataBase() {
@@ -188,6 +189,139 @@
     }).catch(function () {});
   }
 
+  async function fetchWorkflowStep(stepName, token) {
+    const base = getUserDataBase();
+    if (!base) return null;
+    const url = base + '/workflows/' + WF_NAME + '/steps/' + stepName;
+    const res = await fetch(url, { headers: { Authorization: 'Bearer ' + token } });
+    if (res.status === 401) throw new Error('auth');
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data && typeof data === 'object' ? data : null;
+  }
+
+  async function writeWorkflowStep(stepName, body, token) {
+    const base = getUserDataBase();
+    if (!base) throw new Error('Kein API-Endpunkt');
+    const url = base + '/workflows/' + WF_NAME + '/steps/' + stepName;
+    const res = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    if (res.status === 401) throw new Error('auth');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+  }
+
+  async function loadAudioLibrary() {
+    if (!isLoggedIn()) return { entries: [], identity: null, updatedAt: null };
+    try {
+      const token = await getAuthToken();
+      const data = await fetchWorkflowStep('audioLibrary', token);
+      if (!data || !Array.isArray(data.entries)) {
+        return { entries: [], identity: data && data.identity || null, updatedAt: null };
+      }
+      return data;
+    } catch (err) {
+      console.warn('[SongGeneratorCloud] loadAudioLibrary:', err.message);
+      return { entries: [], identity: null, updatedAt: null };
+    }
+  }
+
+  async function recomputeAudioIdentity(state, store, library) {
+    if (!window.SongAudioIdentity) return null;
+    store = store || await (async function () {
+      if (!isLoggedIn()) return { versions: [] };
+      const token = await getAuthToken();
+      return (await fetchStore(token)) || { versions: [] };
+    })();
+    library = library || await loadAudioLibrary();
+    return window.SongAudioIdentity.computeAudioIdentity({
+      versions: store.versions || [],
+      audioLibrary: library,
+      currentPersona: state && state.persona
+    });
+  }
+
+  async function persistAudioLibrary(state, identity) {
+    if (!isLoggedIn()) return null;
+    const token = await getAuthToken();
+    let library = await loadAudioLibrary();
+    if (!library.entries) library.entries = [];
+    library.identity = identity;
+    library.updatedAt = new Date().toISOString();
+    await writeWorkflowStep('audioLibrary', library, token);
+    return library;
+  }
+
+  async function saveAudioToLibrary(state, type, meta) {
+    meta = meta || {};
+    if (!isLoggedIn() || !window.SongAudioIdentity) return null;
+    try {
+      const token = await getAuthToken();
+      const store = (await fetchStore(token)) || { versions: [] };
+      let library = await loadAudioLibrary();
+      if (!library.entries) library.entries = [];
+
+      const identity = window.SongAudioIdentity.computeAudioIdentity({
+        versions: store.versions || [],
+        audioLibrary: library,
+        currentPersona: state.persona
+      });
+
+      const entry = window.SongAudioIdentity.buildLibraryEntry(state, type, identity, meta);
+      if (!entry.tracks || !entry.tracks.length) return null;
+
+      library.entries.unshift(entry);
+      while (library.entries.length > MAX_LIBRARY_ENTRIES) {
+        library.entries.pop();
+      }
+      library.identity = identity;
+      library.updatedAt = new Date().toISOString();
+      await writeWorkflowStep('audioLibrary', library, token);
+
+      if (state.persona && window.SongAudioIdentity.enrichPersona) {
+        state.persona = window.SongAudioIdentity.enrichPersona(state.persona, identity);
+        state.audioIdentity = identity;
+      }
+
+      return { library: library, entry: entry, identity: identity };
+    } catch (err) {
+      console.warn('[SongGeneratorCloud] saveAudioToLibrary:', err.message);
+      return null;
+    }
+  }
+
+  async function syncAudioIdentity(state) {
+    if (!isLoggedIn() || !window.SongAudioIdentity) return null;
+    try {
+      const token = await getAuthToken();
+      const store = (await fetchStore(token)) || { versions: [] };
+      const library = await loadAudioLibrary();
+      const identity = window.SongAudioIdentity.computeAudioIdentity({
+        versions: store.versions || [],
+        audioLibrary: library,
+        currentPersona: state.persona
+      });
+      state.audioLibrary = library;
+      state.audioIdentity = identity;
+      if (state.persona) {
+        state.persona = window.SongAudioIdentity.enrichPersona(state.persona, identity);
+      }
+      if (library.identity && JSON.stringify(library.identity) !== JSON.stringify(identity)) {
+        library.identity = identity;
+        await writeWorkflowStep('audioLibrary', library, token);
+      }
+      return identity;
+    } catch (err) {
+      console.warn('[SongGeneratorCloud] syncAudioIdentity:', err.message);
+      return null;
+    }
+  }
+
   const Cloud = {
     _debounce: null,
     _pendingMilestone: 'draft',
@@ -296,7 +430,11 @@
       }, DEBOUNCE_MS);
     },
 
-    applySnapshotToState: applySnapshotToState
+    applySnapshotToState: applySnapshotToState,
+    loadAudioLibrary: loadAudioLibrary,
+    saveAudioToLibrary: saveAudioToLibrary,
+    syncAudioIdentity: syncAudioIdentity,
+    recomputeAudioIdentity: recomputeAudioIdentity
   };
 
   window.SongGeneratorCloud = Cloud;

@@ -655,6 +655,125 @@ input:checked + .toggle-slider:before {
     color: var(--text-secondary);
 }
 
+/* Persönlichkeits-Songs (Fortschritt-Tab) */
+.ps-songs-section {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.ps-songs-header h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.ps-songs-header p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.ps-audio-identity-summary {
+    margin-bottom: 1rem;
+}
+
+.ps-identity-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.ps-badge {
+    display: inline-block;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    background: #eef2ff;
+    color: #4338ca;
+    border: 1px solid #c7d2fe;
+}
+
+.ps-badge-evolve {
+    background: #ecfdf5;
+    color: #059669;
+    border-color: #a7f3d0;
+}
+
+.ps-identity-narr {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.ps-songs-hint,
+.ps-songs-empty {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.ps-songs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.ps-song-card {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+}
+
+.ps-song-card-head h5 {
+    margin: 0 0 0.25rem;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.ps-song-meta {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.ps-song-depth {
+    display: inline-block;
+    font-size: 0.75rem;
+    color: #6366f1;
+    margin-bottom: 0.5rem;
+}
+
+.ps-track-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-top: 0.65rem;
+}
+
+.ps-track-label {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
+.ps-track-row audio {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.ps-songs-actions {
+    display: flex;
+    justify-content: flex-start;
+}
+
 /* Activity Section */
 .activity-section {
     background: var(--bg-secondary);

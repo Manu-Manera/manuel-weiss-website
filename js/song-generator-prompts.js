@@ -207,6 +207,12 @@ Falls nein: korrigiere INTERN und gib erst dann das finale JSON aus.`;
     const creativity = typeof args.creativity === 'number' ? args.creativity : 0.7;
     return 'AUFTRAG: Erzeuge einen tief persönlichen Song basierend auf PERSONA_PROFILE.\n\n' +
       'INPUT:\n' + JSON.stringify({ persona, mode, edit_targets, previous_song, creativity }, null, 2) + '\n\n' +
+      (persona.audio_identity
+        ? 'AUDIO-IDENTITÄT (verbindlich für Arrangement-Tiefe):\n' +
+          persona.audio_identity.composeHints + '\n' +
+          'evolutionNarrative: ' + persona.audio_identity.evolutionNarrative + '\n' +
+          'depthLevel: ' + persona.audio_identity.depthLevel + ', richness: ' + persona.audio_identity.richness + '\n\n'
+        : '') +
       'HINWEIS:\n' +
       'persona kann optional ein astrology-Feld enthalten (Geburtskarte). Wenn\n' +
       'vorhanden, NUTZE die Bildersprache (Element/Modus, Sonne/Mond/Aszendent,\n' +

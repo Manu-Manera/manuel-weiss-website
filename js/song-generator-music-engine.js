@@ -321,6 +321,15 @@
     if (intentMods && intentMods.moodWords && intentMods.moodWords.length) {
       persParts.push(intentMods.moodWords.slice(0, 3).join(' '));
     }
+    const ident = persona && persona.audio_identity;
+    if (ident) {
+      if (ident.productionTags && ident.productionTags.length) {
+        persParts.push(ident.productionTags.slice(0, 4).join(', '));
+      }
+      if (ident.richness >= 0.5) persParts.push('evolved sonic identity');
+      if (ident.depthLevel >= 6) persParts.push('harmonic depth', 'textural layers');
+      if (ident.evolutionScore >= 5) persParts.push('growth arc in dynamics');
+    }
     if (analysisKeywords.length) {
       persParts.push('emotional palette: ' + analysisKeywords.slice(0, 3).join(', '));
     }
@@ -422,6 +431,7 @@
       astrology_text:   astroText,
       methods_text:     methodsText,
       intent_text:      trackSpec ? (trackSpec.rationale || trackSpec.label) : '',
+      identity_text:    (persona && persona.audio_identity && persona.audio_identity.evolutionNarrative) || '',
       tempo_bpm:        tempoBpm,
       instrumental:     intentMods ? !!intentMods.instrumental : false
     };

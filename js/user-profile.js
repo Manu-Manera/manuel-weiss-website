@@ -422,6 +422,7 @@ class UserProfile {
             // Update progress display if switching to progress tab
             if (tabName === 'progress') {
                 this.updateProgressDisplay();
+                this.loadPersonalitySongLibrary();
             }
             
             // Initialize journal if switching to journal tab
@@ -1049,6 +1050,117 @@ class UserProfile {
 
         // Update recent activity
         this.updateRecentActivity();
+
+        // Persönlichkeits-Songs (async, blockiert UI nicht)
+        this.loadPersonalitySongLibrary();
+    }
+
+    _getUserDataBase() {
+        if (window.getApiUrl && window.AWS_APP_CONFIG?.ENDPOINTS?.USER_DATA) {
+            return window.getApiUrl('USER_DATA');
+        }
+        const b = window.AWS_APP_CONFIG?.API_BASE || window.AWS_CONFIG?.apiBaseUrl;
+        if (!b) return null;
+        return (b.endsWith('/') ? b.slice(0, -1) : b) + '/user-data';
+    }
+
+    async loadPersonalitySongLibrary() {
+        const identityEl = document.getElementById('personalitySongsIdentity');
+        const listEl = document.getElementById('personalitySongsList');
+        if (!identityEl || !listEl) return;
+
+        const isLoggedIn = window.realUserAuth?.isLoggedIn?.() || window.awsAuth?.isLoggedIn?.();
+        if (!isLoggedIn) {
+            identityEl.innerHTML = '<p class="ps-songs-hint">Melde dich an, um gespeicherte Songs und deine wachsende Audio-Identität zu sehen.</p>';
+            listEl.innerHTML = '';
+            return;
+        }
+
+        identityEl.innerHTML = '<p class="ps-songs-hint"><i class="fas fa-spinner fa-spin"></i> Lade gespeicherte Songs…</p>';
+        listEl.innerHTML = '';
+
+        try {
+            const base = this._getUserDataBase();
+            if (!base) throw new Error('Kein API-Endpunkt');
+
+            const token = await this.getAuthToken();
+            const res = await fetch(base + '/workflows/personalitySongGenerator/steps/audioLibrary', {
+                headers: { Authorization: 'Bearer ' + token }
+            });
+
+            let library = { entries: [], identity: null };
+            if (res.ok) {
+                const data = await res.json();
+                if (data && Array.isArray(data.entries)) library = data;
+                else if (data && data.stepData && Array.isArray(data.stepData.entries)) library = data.stepData;
+            }
+
+            const ident = library.identity;
+            if (ident) {
+                identityEl.innerHTML =
+                    '<div class="ps-identity-badges">' +
+                    '<span class="ps-badge">Tiefe ' + ident.depthLevel + ' / 10</span>' +
+                    '<span class="ps-badge">Reichtum ' + Math.round((ident.richness || 0) * 100) + '%</span>' +
+                    (ident.evolutionScore >= 4 ? '<span class="ps-badge ps-badge-evolve">↗ Entwicklung</span>' : '') +
+                    '</div>' +
+                    '<p class="ps-identity-narr">' + (ident.evolutionNarrative || '') + '</p>';
+            } else {
+                identityEl.innerHTML =
+                    '<p class="ps-songs-hint">Noch keine gespeicherten Produktionen – produziere einen Song im Generator, er landet automatisch hier.</p>';
+            }
+
+            const entries = library.entries || [];
+            if (!entries.length) {
+                listEl.innerHTML = '<p class="ps-songs-empty">Noch keine Songs gespeichert.</p>';
+                return;
+            }
+
+            listEl.innerHTML = '';
+            entries.slice(0, 12).forEach(function (entry) {
+                const card = document.createElement('div');
+                card.className = 'ps-song-card';
+
+                const head = document.createElement('div');
+                head.className = 'ps-song-card-head';
+                head.innerHTML =
+                    '<h5>' + (entry.title || 'Persönlichkeitssong') + '</h5>' +
+                    '<span class="ps-song-meta">' +
+                    (entry.type === 'playlist' ? 'Playlist · ' : '') +
+                    (entry.archetype || 'Profil') +
+                    (entry.createdAt ? ' · ' + new Date(entry.createdAt).toLocaleDateString('de-CH') : '') +
+                    '</span>';
+                card.appendChild(head);
+
+                if (entry.depthLevel != null) {
+                    const depth = document.createElement('span');
+                    depth.className = 'ps-song-depth';
+                    depth.textContent = 'Audio-Tiefe ' + entry.depthLevel + '/10';
+                    card.appendChild(depth);
+                }
+
+                (entry.tracks || []).forEach(function (track, idx) {
+                    if (!track.url) return;
+                    const row = document.createElement('div');
+                    row.className = 'ps-track-row';
+                    const label = document.createElement('span');
+                    label.className = 'ps-track-label';
+                    label.textContent = track.label || track.title || ('Track ' + (idx + 1));
+                    const audio = document.createElement('audio');
+                    audio.controls = true;
+                    audio.preload = 'none';
+                    audio.src = track.url;
+                    row.appendChild(label);
+                    row.appendChild(audio);
+                    card.appendChild(row);
+                });
+
+                listEl.appendChild(card);
+            });
+        } catch (err) {
+            console.warn('Persönlichkeits-Songs laden fehlgeschlagen:', err);
+            identityEl.innerHTML = '<p class="ps-songs-hint">Songs konnten nicht geladen werden. Bitte später erneut versuchen.</p>';
+            listEl.innerHTML = '';
+        }
     }
 
     updateProgressRing(percentage) {

@@ -1568,3 +1568,52 @@
 .sg-audio-actions {
   display: flex; gap: 0.5rem; flex-wrap: wrap;
 }
+
+/* Audio-Identität (Profil-Karte) */
+.sg-audio-identity-panel {
+  margin: 1.25rem 0 1.5rem;
+  padding: 1.25rem 1.35rem;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #f5f3ff 0%, #eef2ff 100%);
+  border: 1px solid #ddd6fe;
+}
+.sg-audio-identity-panel h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+  color: #312e81;
+}
+.sg-audio-identity-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+}
+.sg-audio-identity-depth,
+.sg-audio-identity-rich {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: #fff;
+  color: #4338ca;
+  border: 1px solid #c7d2fe;
+}
+.sg-audio-identity-narr {
+  margin: 0 0 0.65rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: #334155;
+}
+.sg-audio-identity-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.82rem;
+  color: #64748b;
+  margin-bottom: 0.35rem;
+}
+.sg-evolution-tag {
+  color: #059669;
+  font-weight: 600;
+}
