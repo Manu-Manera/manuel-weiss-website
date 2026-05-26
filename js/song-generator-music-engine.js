@@ -342,6 +342,19 @@
     if (analysisKeywords.length) {
       persParts.push('emotional palette: ' + analysisKeywords.slice(0, 3).join(', '));
     }
+    if (intentMods && intentMods.contextDNA) {
+      const cd = intentMods.contextDNA;
+      if (cd.reverb_space >= 0.75) persParts.push('long reverb wash');
+      else if (cd.reverb_space >= 0.55) persParts.push('spacious mix');
+      if (cd.arousal <= 0.12) persParts.push('minimal stimulation sleep-safe');
+      else if (cd.arousal <= 0.25) persParts.push('very calm low arousal');
+      if (cd.movement <= 0.15) persParts.push('static harmonic bed');
+      else if (cd.movement <= 0.35) persParts.push('slow gentle motion');
+      if (cd.vocal_presence <= 0.08) persParts.push('instrumental no vocals');
+      if (cd.harmonic_motion <= 0.2) persParts.push('minimal harmonic change');
+      if (cd.circadian_band === 'night') persParts.push('nighttime drift');
+      else if (cd.circadian_band === 'rest') persParts.push('restorative calm');
+    }
 
     // Instrumente (Whitelist)
     const allInstr = []

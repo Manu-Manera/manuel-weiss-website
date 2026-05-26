@@ -217,17 +217,78 @@
   }
 
   async function loadAudioLibrary() {
-    if (!isLoggedIn()) return { entries: [], identity: null, updatedAt: null };
+    if (!isLoggedIn()) return { entries: [], identity: null, favorites: [], updatedAt: null };
     try {
       const token = await getAuthToken();
       const data = await fetchWorkflowStep('audioLibrary', token);
       if (!data || !Array.isArray(data.entries)) {
-        return { entries: [], identity: data && data.identity || null, updatedAt: null };
+        return {
+          entries: [],
+          identity: data && data.identity || null,
+          favorites: (data && data.favorites) || [],
+          updatedAt: null
+        };
       }
+      if (!Array.isArray(data.favorites)) data.favorites = [];
       return data;
     } catch (err) {
       console.warn('[SongGeneratorCloud] loadAudioLibrary:', err.message);
-      return { entries: [], identity: null, updatedAt: null };
+      return { entries: [], identity: null, favorites: [], updatedAt: null };
+    }
+  }
+
+  async function persistFavoritesList(favorites) {
+    if (!isLoggedIn()) return null;
+    const token = await getAuthToken();
+    let library = await loadAudioLibrary();
+    if (!library.entries) library.entries = [];
+    library.favorites = Array.isArray(favorites) ? favorites : [];
+    library.updatedAt = new Date().toISOString();
+    await writeWorkflowStep('audioLibrary', library, token);
+    return library;
+  }
+
+  async function toggleFavorite(state, trackMeta) {
+    if (!isLoggedIn() || !window.SongFavorites) return null;
+    try {
+      const norm = window.SongFavorites.normalize(trackMeta);
+      if (!norm) return null;
+      const token = await getAuthToken();
+      let library = await loadAudioLibrary();
+      if (!library.entries) library.entries = [];
+      const current = library.favorites || [];
+      const result = window.SongFavorites.toggle(current, norm);
+      library.favorites = result.favorites;
+      library.updatedAt = new Date().toISOString();
+      await writeWorkflowStep('audioLibrary', library, token);
+      if (state) {
+        state.favorites = result.favorites;
+        state.audioLibrary = library;
+      }
+      return result;
+    } catch (err) {
+      console.warn('[SongGeneratorCloud] toggleFavorite:', err.message);
+      return null;
+    }
+  }
+
+  async function reorderFavorites(state, fromIndex, toIndex) {
+    if (!isLoggedIn() || !window.SongFavorites) return null;
+    try {
+      let library = await loadAudioLibrary();
+      const next = window.SongFavorites.reorder(library.favorites || [], fromIndex, toIndex);
+      library.favorites = next;
+      library.updatedAt = new Date().toISOString();
+      const token = await getAuthToken();
+      await writeWorkflowStep('audioLibrary', library, token);
+      if (state) {
+        state.favorites = next;
+        state.audioLibrary = library;
+      }
+      return { favorites: next, library: library };
+    } catch (err) {
+      console.warn('[SongGeneratorCloud] reorderFavorites:', err.message);
+      return null;
     }
   }
 
@@ -308,6 +369,9 @@
       });
       state.audioLibrary = library;
       state.audioIdentity = identity;
+      if (Array.isArray(library.favorites)) {
+        state.favorites = library.favorites;
+      }
       if (state.persona) {
         state.persona = window.SongAudioIdentity.enrichPersona(state.persona, identity);
       }
@@ -434,7 +498,10 @@
     loadAudioLibrary: loadAudioLibrary,
     saveAudioToLibrary: saveAudioToLibrary,
     syncAudioIdentity: syncAudioIdentity,
-    recomputeAudioIdentity: recomputeAudioIdentity
+    recomputeAudioIdentity: recomputeAudioIdentity,
+    toggleFavorite: toggleFavorite,
+    reorderFavorites: reorderFavorites,
+    persistFavoritesList: persistFavoritesList
   };
 
   window.SongGeneratorCloud = Cloud;

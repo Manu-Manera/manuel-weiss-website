@@ -22,7 +22,8 @@
     birth: 'sg_birth_data_v1',
     variant: 'sg_test_variant_v1',
     audio: 'sg_audio_v1',
-    playlist: 'sg_playlist_v1'
+    playlist: 'sg_playlist_v1',
+    favorites: 'sg_favorites_v1'
   };
 
   const API_BASE = 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
@@ -442,10 +443,13 @@
         facets: null,
         audio: loadState(STORAGE_KEYS.audio, null),
         playlist: loadState(STORAGE_KEYS.playlist, null),
+        favorites: loadState(STORAGE_KEYS.favorites, []),
         audioLibrary: null,
         audioIdentity: null,
         audioState: { phase: 'idle' },
         _playlistAutoplay: false,
+        _favoritesAutoplay: false,
+        playlistPack: 'core',
         importedMethods: null,
         importedNarrative: '',
         analysisUi: { mode: 'integrated', length: 'medium' },
@@ -492,6 +496,7 @@
       saveState(STORAGE_KEYS.birth, this.state.birthData);
       saveState(STORAGE_KEYS.audio, this.state.audio);
       saveState(STORAGE_KEYS.playlist, this.state.playlist);
+      saveState(STORAGE_KEYS.favorites, this.state.favorites);
     }
 
     _cloudSave(milestone, opts) {
@@ -556,11 +561,86 @@
         if (result && result.identity) {
           this.state.audioIdentity = result.identity;
           this.state.audioLibrary = result.library;
+          if (result.library && Array.isArray(result.library.favorites)) {
+            this.state.favorites = result.library.favorites;
+            saveState(STORAGE_KEYS.favorites, this.state.favorites);
+          }
           if (this.state.persona) saveState(STORAGE_KEYS.persona, this.state.persona);
         }
         this._cloudSave('audio', { updateCurrent: true });
       } catch (err) {
         console.warn('[SongGenerator] Profil-Audio-Speichern:', err && err.message);
+      }
+    }
+
+    _favoriteId(meta) {
+      if (!meta) return '';
+      if (meta.id) return meta.id;
+      return window.SongFavorites ? window.SongFavorites.trackKey(meta) : '';
+    }
+
+    _isFavorite(id) {
+      if (!id || !Array.isArray(this.state.favorites)) return false;
+      return this.state.favorites.some(function (f) { return f.id === id; });
+    }
+
+    _buildFavoriteMeta(opts) {
+      opts = opts || {};
+      const url = opts.url || this._trackUrl(opts.raw || opts);
+      if (!url) return null;
+      const meta = {
+        url: url,
+        title: opts.title || opts.label || 'Track',
+        label: opts.label || opts.title || '',
+        emoji: opts.emoji || '🎵',
+        intentId: opts.intentId || null,
+        cover: opts.cover || null,
+        duration: opts.duration || null
+      };
+      if (window.SongFavorites) return window.SongFavorites.normalize(meta);
+      meta.id = url.slice(-32);
+      return meta;
+    }
+
+    async _toggleFavorite(meta) {
+      if (!meta || !meta.url) return;
+      if (!window.SongGeneratorCloud || !window.SongGeneratorCloud.isLoggedIn()) {
+        alert('Bitte anmelden, um Favoriten zu speichern.');
+        return;
+      }
+      const result = await window.SongGeneratorCloud.toggleFavorite(this.state, meta);
+      if (result) {
+        this.state.favorites = result.favorites;
+        saveState(STORAGE_KEYS.favorites, this.state.favorites);
+        this.render();
+      }
+    }
+
+    _renderFavoriteBtn(meta) {
+      const self = this;
+      const norm = this._buildFavoriteMeta(meta);
+      if (!norm) return el('span', null, '');
+      const isFav = this._isFavorite(norm.id);
+      const btn = el('button', 'sg-fav-btn' + (isFav ? ' active' : ''), isFav ? '♥' : '♡');
+      btn.type = 'button';
+      btn.title = isFav ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen';
+      btn.setAttribute('aria-label', btn.title);
+      btn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
+      btn.onclick = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        self._toggleFavorite(norm);
+      };
+      return btn;
+    }
+
+    async _reorderFavorite(fromIndex, toIndex) {
+      if (!window.SongGeneratorCloud || !window.SongGeneratorCloud.reorderFavorites) return;
+      const result = await window.SongGeneratorCloud.reorderFavorites(this.state, fromIndex, toIndex);
+      if (result) {
+        this.state.favorites = result.favorites;
+        saveState(STORAGE_KEYS.favorites, this.state.favorites);
+        this.render();
       }
     }
 
@@ -2088,7 +2168,7 @@
       const wrap = el('div', 'sg-playlist-panel');
       wrap.append(el('h4', null, 'Sound-Kontext & Playlist-Konzept'));
       wrap.append(el('p', 'sg-playlist-lead',
-        'Jeder Modus wird aus Test, Astro, Methoden und deiner KI-Analyse neu berechnet – Tempo, Energie und Stil fliessen in die Suno-Produktion.'));
+        '7 Modi aus Test, Astro, Methoden und KI-Analyse – Tempo, Energie und Kontext-DNA fliessen in die Suno-Produktion.'));
 
       const ui = this.state.analysisUi || { mode: 'integrated', length: 'medium' };
       const blueprint = window.SongPlaylistEngine.computePlaylistBlueprint(this.state.persona, {
@@ -2097,20 +2177,28 @@
       });
       const self = this;
       const intentId = this.state.audioIntent || 'personality';
+      const groups = window.SongPlaylistEngine.INTENT_GROUPS || [];
 
-      const tabs = el('div', 'sg-playlist-intents');
-      blueprint.tracks.forEach(function (track) {
-        const b = el('button', 'sg-playlist-intent' + (intentId === track.intentId ? ' active' : ''));
-        b.type = 'button';
-        b.append(el('span', 'sg-playlist-emoji', track.emoji));
-        b.append(el('span', 'sg-playlist-label', track.label));
-        b.onclick = function () {
-          self.state.audioIntent = track.intentId;
-          self.render();
-        };
-        tabs.append(b);
+      groups.forEach(function (group) {
+        const groupWrap = el('div', 'sg-playlist-intent-group');
+        groupWrap.append(el('span', 'sg-playlist-group-label', group.label));
+        const tabs = el('div', 'sg-playlist-intents');
+        (group.intents || []).forEach(function (key) {
+          const track = blueprint.tracks.find(function (t) { return t.intentId === key; });
+          if (!track) return;
+          const b = el('button', 'sg-playlist-intent' + (intentId === track.intentId ? ' active' : ''));
+          b.type = 'button';
+          b.append(el('span', 'sg-playlist-emoji', track.emoji));
+          b.append(el('span', 'sg-playlist-label', track.label));
+          b.onclick = function () {
+            self.state.audioIntent = track.intentId;
+            self.render();
+          };
+          tabs.append(b);
+        });
+        groupWrap.append(tabs);
+        wrap.append(groupWrap);
       });
-      wrap.append(tabs);
 
       const active = blueprint.tracks.find(function (t) { return t.intentId === intentId; }) || blueprint.tracks[0];
       if (active) {
@@ -2129,6 +2217,22 @@
           metrics.append(m);
         });
         spec.append(metrics);
+
+        if (active.contextDNA) {
+          const dnaTitle = el('p', 'sg-context-dna-title', 'Kontext-DNA');
+          spec.append(dnaTitle);
+          const dnaGrid = el('div', 'sg-context-dna-grid');
+          const labels = window.SongPlaylistEngine.CONTEXT_DNA_LABELS || {};
+          const fmt = window.SongPlaylistEngine.formatContextDNAValue || function (_k, v) { return String(v); };
+          Object.keys(active.contextDNA).forEach(function (key) {
+            const cell = el('div', 'sg-context-dna-cell');
+            cell.append(el('span', 'sg-context-dna-k', labels[key] || key));
+            cell.append(el('span', 'sg-context-dna-v', fmt(key, active.contextDNA[key])));
+            dnaGrid.append(cell);
+          });
+          spec.append(dnaGrid);
+        }
+
         if (active.rationale) spec.append(el('p', 'sg-playlist-rationale', active.rationale));
         if (active.styleTags && active.styleTags.length) {
           const tags = el('div', 'sg-playlist-tags');
@@ -2138,11 +2242,198 @@
         wrap.append(spec);
       }
 
-      const hint = el('p', 'sg-hint',
-        'Volle Playlist: alle 4 Kontexte nacheinander als Auto-Queue (~4–8 Min). ' +
-        'Einzeln: einen Kontext oben wählen und „Einzel-Song produzieren".');
-      wrap.append(hint);
+      const packs = window.SongPlaylistEngine.PLAYLIST_PACKS || {};
+      const packRow = el('div', 'sg-playlist-pack-row');
+      packRow.append(el('span', 'sg-playlist-pack-label', 'Auto-Queue:'));
+      Object.keys(packs).forEach(function (packId) {
+        const pack = packs[packId];
+        const pb = el('button', 'sg-playlist-pack-btn' + (self.state.playlistPack === packId ? ' active' : ''));
+        pb.type = 'button';
+        pb.textContent = (pack.emoji || '') + ' ' + pack.label;
+        pb.title = pack.description || '';
+        pb.onclick = function () {
+          self.state.playlistPack = packId;
+          self.render();
+        };
+        packRow.append(pb);
+      });
+      wrap.append(packRow);
+
+      const activePack = window.SongPlaylistEngine.getPlaylistPack(this.state.playlistPack);
+      wrap.append(el('p', 'sg-hint',
+        'Auto-Queue „' + (activePack.label || 'Kern') + '": ' + (activePack.order || []).length +
+        ' Kontexte nacheinander. Einzeln: Modus wählen und „Einzel-Song produzieren".'));
       return wrap;
+    }
+
+    renderFavoritesPlaylist() {
+      const self = this;
+      const favs = this.state.favorites || [];
+      const panel = el('div', 'sg-favorites-panel');
+      panel.append(el('h4', null, '♥ Meine Favoriten-Playlist'));
+      panel.append(el('p', 'sg-favorites-lead',
+        'Songs mit ♡ markieren – sie landen hier. Reihenfolge per Ziehen oder Pfeiltasten ändern, dann abspielen.'));
+
+      if (!window.SongGeneratorCloud || !window.SongGeneratorCloud.isLoggedIn()) {
+        panel.append(el('p', 'sg-hint', 'Anmelden, um Favoriten cloud-synchron zu speichern.'));
+        return panel;
+      }
+
+      if (!favs.length) {
+        panel.append(el('p', 'sg-hint', 'Noch keine Favoriten – tippe ♡ bei einem Song.'));
+        return panel;
+      }
+
+      const playable = favs.filter(function (f) { return f && f.url; });
+      if (!playable.length) {
+        panel.append(el('p', 'sg-hint', 'Keine abspielbaren Favoriten.'));
+        return panel;
+      }
+
+      const mainWrap = el('div', 'sg-favorites-main');
+      const mainAudio = document.createElement('audio');
+      mainAudio.className = 'sg-audio-player sg-favorites-main-audio';
+      mainAudio.controls = true;
+      mainAudio.style.width = '100%';
+      mainAudio.src = playable[0].url;
+      this._setupAudioForPlayback(mainAudio, {
+        title: playable[0].title || playable[0].label,
+        artist: 'Meine Favoriten',
+        artwork: playable[0].cover
+      });
+      mainWrap.append(mainAudio);
+      const nowPlaying = el('div', 'sg-favorites-now', '▶ ' + (playable[0].emoji || '♥') + ' ' + (playable[0].label || playable[0].title));
+      mainWrap.append(nowPlaying);
+      panel.append(mainWrap);
+
+      this._favoritesPlayable = playable;
+      this._favoritesMainAudio = mainAudio;
+      this._favoritesNowEl = nowPlaying;
+
+      const controls = el('div', 'sg-favorites-controls');
+      const playAll = el('button', 'sg-btn sg-btn-primary', '▶ Favoriten abspielen');
+      playAll.type = 'button';
+      playAll.onclick = function () {
+        self._favoritesAutoplay = true;
+        self._favoritesPlayIndex = 0;
+        self._playFavoriteTrack(0);
+      };
+      controls.append(playAll);
+      panel.append(controls);
+
+      const list = el('div', 'sg-favorites-list');
+      let dragFrom = null;
+
+      playable.forEach(function (track, i) {
+        const row = el('div', 'sg-favorites-row' + (i === 0 ? ' active' : ''));
+        row.draggable = true;
+        row.dataset.index = String(i);
+
+        row.addEventListener('dragstart', function (e) {
+          dragFrom = i;
+          row.classList.add('dragging');
+          if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
+        });
+        row.addEventListener('dragend', function () {
+          row.classList.remove('dragging');
+          dragFrom = null;
+        });
+        row.addEventListener('dragover', function (e) {
+          e.preventDefault();
+          row.classList.add('drag-over');
+        });
+        row.addEventListener('dragleave', function () {
+          row.classList.remove('drag-over');
+        });
+        row.addEventListener('drop', function (e) {
+          e.preventDefault();
+          row.classList.remove('drag-over');
+          if (dragFrom == null || dragFrom === i) return;
+          self._reorderFavorite(dragFrom, i);
+        });
+
+        const handle = el('span', 'sg-favorites-handle', '⋮⋮');
+        handle.title = 'Ziehen zum Sortieren';
+        row.append(handle);
+
+        const playBtn = el('button', 'sg-favorites-play', String(i + 1));
+        playBtn.type = 'button';
+        playBtn.title = 'Abspielen';
+        playBtn.onclick = function () {
+          self._favoritesAutoplay = false;
+          self._playFavoriteTrack(i);
+          list.querySelectorAll('.sg-favorites-row').forEach(function (el, j) {
+            el.classList.toggle('active', j === i);
+          });
+        };
+        row.append(playBtn);
+
+        const info = el('span', 'sg-favorites-info');
+        info.append(el('span', 'sg-favorites-emoji', track.emoji || '♥'));
+        info.append(el('span', 'sg-favorites-name', track.label || track.title || 'Favorit'));
+        row.append(info);
+
+        if (track.duration) {
+          row.append(el('span', 'sg-favorites-dur', self._formatDuration(track.duration)));
+        }
+
+        const orderBtns = el('span', 'sg-favorites-order');
+        const up = el('button', 'sg-btn-icon', '↑');
+        up.type = 'button';
+        up.title = 'Nach oben';
+        up.disabled = i === 0;
+        up.onclick = function (e) {
+          e.stopPropagation();
+          self._reorderFavorite(i, i - 1);
+        };
+        const down = el('button', 'sg-btn-icon', '↓');
+        down.type = 'button';
+        down.title = 'Nach unten';
+        down.disabled = i === playable.length - 1;
+        down.onclick = function (e) {
+          e.stopPropagation();
+          self._reorderFavorite(i, i + 1);
+        };
+        orderBtns.append(up, down);
+        row.append(orderBtns);
+
+        row.append(self._renderFavoriteBtn(track));
+        list.append(row);
+      });
+
+      mainAudio.addEventListener('ended', function () {
+        if (!self._favoritesAutoplay) return;
+        const next = (self._favoritesPlayIndex || 0) + 1;
+        if (next < playable.length) {
+          self._playFavoriteTrack(next);
+          list.querySelectorAll('.sg-favorites-row').forEach(function (el, j) {
+            el.classList.toggle('active', j === next);
+          });
+        } else {
+          self._favoritesAutoplay = false;
+        }
+      });
+
+      panel.append(list);
+      return panel;
+    }
+
+    _playFavoriteTrack(index) {
+      const playable = this._favoritesPlayable;
+      const audio = this._favoritesMainAudio;
+      if (!playable || !audio || index < 0 || index >= playable.length) return;
+      const track = playable[index];
+      this._favoritesPlayIndex = index;
+      audio.src = track.url;
+      this._setupAudioForPlayback(audio, {
+        title: track.title || track.label,
+        artist: 'Meine Favoriten',
+        artwork: track.cover
+      });
+      if (this._favoritesNowEl) {
+        this._favoritesNowEl.textContent = '▶ ' + (track.emoji || '♥') + ' ' + (track.label || track.title);
+      }
+      audio.play().catch(function () {});
     }
 
     renderProduction() {
@@ -2215,7 +2506,7 @@
       const phase = (this.state.audioState && this.state.audioState.phase) || 'idle';
 
       if (phase === 'idle' && !this.state.audio && !this.state.playlist) {
-        const act = el('div', 'sg-actions sg-actions-split');
+        const act = el('div', 'sg-actions sg-actions-split sg-actions-queue');
         const startBtn = el('button', 'sg-btn sg-btn-primary', '🎵 Einzel-Song produzieren');
         startBtn.onclick = () => {
           const o = this._buildProductionOpts({
@@ -2226,17 +2517,22 @@
         };
         act.append(startBtn);
 
-        const queueBtn = el('button', 'sg-btn sg-btn-secondary sg-btn-queue', '🎧 Volle Playlist (4 Songs)');
+        const pack = window.SongPlaylistEngine
+          ? window.SongPlaylistEngine.getPlaylistPack(this.state.playlistPack || 'core')
+          : { label: 'Kern-Playlist', order: ['personality', 'soul', 'workout', 'focus'], emoji: '🎧' };
+        const queueBtn = el('button', 'sg-btn sg-btn-secondary sg-btn-queue',
+          (pack.emoji || '🎧') + ' ' + pack.label + ' (' + (pack.order || []).length + ' Songs)');
         queueBtn.onclick = () => {
           this.runPlaylistQueue({
             model: mSel.value,
-            vocalGender: vgSel.value === 'auto' ? undefined : vgSel.value
+            vocalGender: vgSel.value === 'auto' ? undefined : vgSel.value,
+            pack: this.state.playlistPack || 'core'
           });
         };
         act.append(queueBtn);
 
         const hint = el('p', 'sg-hint',
-          'Einzel-Song: ~30–90 s, 2 Varianten. Volle Playlist: 4 Kontexte nacheinander (~4–8 Min, ca. $0.20–0.40). ' +
+          'Einzel-Song: ~30–90 s, 2 Varianten. Auto-Queue: gewähltes Paket oben im Kontext-Panel (~30–90 s pro Song). ' +
           'Abspielen auf Handy, Bluetooth-Box oder AirPlay.');
         stateBox.append(act, hint);
       } else if (phase === 'queue_running') {
@@ -2276,6 +2572,7 @@
         stateBox.append(this._renderAudioPlayer(this.state.audio));
       }
       box.append(stateBox);
+      box.append(this.renderFavoritesPlaylist());
       return box;
     }
 
@@ -2324,9 +2621,10 @@
     _renderPlaylistPlayer(playlist) {
       const box = el('div', 'sg-playlist-player');
       box.append(el('h4', null, '🎧 Deine Persönlichkeits-Playlist'));
-      box.append(el('p', 'sg-playlist-player-sub',
-        (playlist.tracks.filter(function (t) { return t.status === 'ok'; }).length) + ' Songs · ' +
-        'Kompositions-Song → Persönlichkeitssong → Workout → Konzentration'));
+      const okCount = playlist.tracks.filter(function (t) { return t.status === 'ok'; }).length;
+      const labels = playlist.tracks.filter(function (t) { return t.status === 'ok'; })
+        .map(function (t) { return (t.emoji || '') + ' ' + t.label; }).join(' → ');
+      box.append(el('p', 'sg-playlist-player-sub', okCount + ' Songs · ' + (labels || '—')));
       box.append(this._renderBluetoothHint());
 
       const playable = playlist.tracks.filter(function (t) {
@@ -2373,17 +2671,28 @@
 
       const list = el('div', 'sg-playlist-tracklist');
       playable.forEach(function (track, i) {
-        const row = el('button', 'sg-playlist-track' + (i === 0 ? ' active' : ''));
-        row.type = 'button';
-        const left = el('span', 'sg-playlist-track-left');
-        left.append(el('span', 'sg-playlist-track-num', String(i + 1)));
-        left.append(el('span', 'sg-playlist-track-emoji', track.emoji || '🎵'));
-        left.append(el('span', 'sg-playlist-track-name', track.label));
-        row.append(left);
+        const row = el('div', 'sg-playlist-track' + (i === 0 ? ' active' : ''));
+        const left = el('button', 'sg-playlist-track-play');
+        left.type = 'button';
+        const leftInner = el('span', 'sg-playlist-track-left');
+        leftInner.append(el('span', 'sg-playlist-track-num', String(i + 1)));
+        leftInner.append(el('span', 'sg-playlist-track-emoji', track.emoji || '🎵'));
+        leftInner.append(el('span', 'sg-playlist-track-name', track.label));
+        left.append(leftInner);
         if (track.duration) {
-          row.append(el('span', 'sg-playlist-track-dur', self._formatDuration(track.duration)));
+          left.append(el('span', 'sg-playlist-track-dur', self._formatDuration(track.duration)));
         }
-        row.onclick = function () {
+        row.append(left);
+        row.append(self._renderFavoriteBtn({
+          url: track.url,
+          title: track.title,
+          label: track.label,
+          emoji: track.emoji,
+          intentId: track.intentId,
+          cover: track.cover,
+          duration: track.duration
+        }));
+        left.onclick = function () {
           self._playlistAutoplay = false;
           self._playPlaylistTrack(i);
           list.querySelectorAll('.sg-playlist-track').forEach(function (el, j) {
@@ -2410,7 +2719,11 @@
       const actions = el('div', 'sg-audio-actions');
       const regen = el('button', 'sg-btn sg-btn-ghost', '↻ Playlist neu generieren');
       regen.onclick = function () {
-        if (!confirm('Playlist verwerfen und neu produzieren? (4 Suno-Generierungen)')) return;
+        const pack = window.SongPlaylistEngine
+          ? window.SongPlaylistEngine.getPlaylistPack(self.state.playlistPack || 'core')
+          : { order: [] };
+        const n = (pack.order || []).length || 4;
+        if (!confirm('Playlist verwerfen und neu produzieren? (' + n + ' Suno-Generierungen)')) return;
         self.state.playlist = null;
         clearState(STORAGE_KEYS.playlist);
         self.state.audioState = { phase: 'idle' };
@@ -2534,13 +2847,23 @@
       }
 
       (audio.tracks || []).forEach((t, i) => {
+        const url = t.audio_url || t.audioUrl || t.source_audio_url || t.sourceAudioUrl || t.stream_audio_url || t.streamAudioUrl;
+        const cover = t.image_url || t.imageUrl;
         const card = el('div', 'sg-audio-card');
         const title = el('div', 'sg-audio-card-head');
         title.append(el('strong', null, 'Variante ' + (i + 1) + (t.title ? ' – ' + t.title : '')));
         if (t.duration) title.append(el('span', 'sg-audio-duration', this._formatDuration(t.duration)));
+        title.append(this._renderFavoriteBtn({
+          url: url,
+          title: t.title,
+          label: intentLabel || ('Variante ' + (i + 1)),
+          emoji: audio.intentId && window.SongPlaylistEngine
+            ? (window.SongPlaylistEngine.getIntent(audio.intentId).emoji || '🎵') : '🎵',
+          intentId: audio.intentId,
+          cover: cover,
+          duration: t.duration
+        }));
         card.append(title);
-        const url = t.audio_url || t.audioUrl || t.source_audio_url || t.sourceAudioUrl || t.stream_audio_url || t.streamAudioUrl;
-        const cover = t.image_url || t.imageUrl;
         if (cover) {
           const img = document.createElement('img');
           img.src = cover;
@@ -2622,7 +2945,9 @@
         return;
       }
       baseOpts = baseOpts || {};
-      const order = window.SongPlaylistEngine.PLAYLIST_INTENT_ORDER ||
+      const packId = baseOpts.pack || this.state.playlistPack || 'core';
+      const pack = window.SongPlaylistEngine.getPlaylistPack(packId);
+      const order = pack.order || window.SongPlaylistEngine.PLAYLIST_INTENT_ORDER ||
         Object.keys(window.SongPlaylistEngine.INTENTS);
       const queueDone = [];
       const playlistTracks = [];
@@ -2635,6 +2960,7 @@
         phase: 'queue_running',
         queueIndex: 0,
         queueTotal: order.length,
+        queuePack: packId,
         queueLabel: '',
         queueStatus: '',
         queueDone: queueDone,
@@ -2713,10 +3039,11 @@
         tracks: playlistTracks,
         generatedAt: new Date().toISOString(),
         model: baseOpts.model || 'V5_5',
+        pack: packId,
         partial: cancelled || playlistTracks.filter(function (t) { return t.status === 'ok'; }).length < order.length
       };
       saveState(STORAGE_KEYS.playlist, this.state.playlist);
-      await this._persistAudioToProfile('playlist', { title: 'Persönlichkeits-Playlist' });
+      await this._persistAudioToProfile('playlist', { title: pack.label || 'Persönlichkeits-Playlist' });
 
       if (!playlistTracks.some(function (t) { return t.status === 'ok'; })) {
         this.state.audioState = {
