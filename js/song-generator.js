@@ -531,7 +531,11 @@
         if (loaded && loaded.snapshot) {
           window.SongGeneratorCloud.applySnapshotToState(this.state, loaded.snapshot, localMerge);
         }
-        if (window.SongFavorites) {
+        if (window.SongGeneratorCloud.loadAndMergeFavorites) {
+          this.state.favorites = await window.SongGeneratorCloud.loadAndMergeFavorites(
+            this.state.favorites, localMerge.favorites
+          );
+        } else if (window.SongFavorites) {
           this.state.favorites = window.SongFavorites.mergeLists(
             this.state.favorites, localMerge.favorites
           );
@@ -539,8 +543,8 @@
         if (window.SongGeneratorCloud.syncAudioIdentity) {
           await window.SongGeneratorCloud.syncAudioIdentity(this.state);
           if (this.state.persona) saveState(STORAGE_KEYS.persona, this.state.persona);
-          saveState(STORAGE_KEYS.favorites, this.state.favorites);
         }
+        saveState(STORAGE_KEYS.favorites, this.state.favorites);
         if (window.SongGeneratorCloud.loadVoiceProfile) {
           const vp = await window.SongGeneratorCloud.loadVoiceProfile();
           if (vp && vp.voiceId) {
@@ -552,7 +556,7 @@
         if (window.SongMusicEngine && window.SongMusicEngine.invalidateSunoKeyCache) {
           window.SongMusicEngine.invalidateSunoKeyCache();
         }
-        console.log('[SongGenerator] Cloud-Snapshot geladen:', loaded && loaded.version && loaded.version.label);
+        console.log('[SongGenerator] Cloud geladen, Favoriten:', (this.state.favorites || []).length);
       } catch (err) {
         console.warn('[SongGenerator] Cloud-Laden fehlgeschlagen:', err && err.message);
       }
@@ -674,11 +678,30 @@
         : (item && (item.customName || item.label || item.title)) || 'Favorit';
     }
 
-    _persistFavorites() {
+    _syncFavoritesFromLocalStorage() {
+      const local = loadState(STORAGE_KEYS.favorites, []);
+      if (!local || !local.length) return;
+      if (window.SongFavorites) {
+        this.state.favorites = window.SongFavorites.mergeLists(this.state.favorites || [], local);
+      } else if (!this.state.favorites || !this.state.favorites.length) {
+        this.state.favorites = local.slice();
+      }
+    }
+
+    _persistFavoritesLocal() {
       saveState(STORAGE_KEYS.favorites, this.state.favorites);
-      if (window.SongGeneratorCloud && window.SongGeneratorCloud.isLoggedIn() &&
-          window.SongGeneratorCloud.persistFavoritesList) {
-        window.SongGeneratorCloud.persistFavoritesList(this.state.favorites).catch(function (err) {
+    }
+
+    async _persistFavoritesCloud() {
+      if (!window.SongGeneratorCloud || !window.SongGeneratorCloud.isLoggedIn()) return;
+      await window.SongGeneratorCloud.persistFavoritesList(this.state.favorites);
+      this._cloudSave('draft', { updateCurrent: true });
+    }
+
+    _persistFavorites() {
+      this._persistFavoritesLocal();
+      if (window.SongGeneratorCloud && window.SongGeneratorCloud.isLoggedIn()) {
+        this._persistFavoritesCloud().catch(function (err) {
           console.warn('[SongGenerator] Favoriten-Cloud:', err && err.message);
         });
       }
@@ -703,7 +726,7 @@
       const result = window.SongFavorites.toggle(this.state.favorites || [], norm);
       const self = this;
       this.state.favorites = result.favorites;
-      saveState(STORAGE_KEYS.favorites, this.state.favorites);
+      this._persistFavoritesLocal();
       this.render();
 
       if (result.added && this._favoritesPanelEl) {
@@ -715,7 +738,19 @@
       }
 
       if (window.SongGeneratorCloud && window.SongGeneratorCloud.isLoggedIn()) {
-        this._persistFavorites();
+        try {
+          await this._persistFavoritesCloud();
+        } catch (err) {
+          console.warn('[SongGenerator] Favoriten-Cloud:', err && err.message);
+          if (this._favoritesPanelEl) {
+            var warn = this._favoritesPanelEl.querySelector('.sg-favorites-cloud-warn');
+            if (!warn) {
+              warn = el('p', 'sg-hint sg-favorites-cloud-warn',
+                'Lokal gespeichert – Cloud-Sync fehlgeschlagen. Seite neu laden oder erneut ♡ tippen.');
+              this._favoritesPanelEl.insertBefore(warn, this._favoritesPanelEl.children[1] || null);
+            }
+          }
+        }
       }
     }
 
@@ -2622,6 +2657,7 @@
 
     renderFavoritesPlaylist() {
       const self = this;
+      this._syncFavoritesFromLocalStorage();
       const favs = this.state.favorites || [];
       const panel = el('div', 'sg-favorites-panel');
       this._favoritesPanelEl = panel;

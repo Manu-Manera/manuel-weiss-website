@@ -6,9 +6,19 @@
   'use strict';
 
   const WF_NAME = 'personalitySongGenerator';
+  const FAVORITES_STEP = 'favoritesPlaylist';
   const MAX_VERSIONS = 25;
   const MAX_LIBRARY_ENTRIES = 40;
   const DEBOUNCE_MS = 1800;
+
+  function unwrapStepData(raw) {
+    if (!raw || typeof raw !== 'object') return null;
+    if (raw.data && typeof raw.data === 'object' && !Array.isArray(raw.data) &&
+        !raw.items && !raw.favorites && !raw.entries) {
+      return raw.data;
+    }
+    return raw;
+  }
 
   function getUserDataBase() {
     try {
@@ -248,8 +258,57 @@
     const res = await fetch(url, { headers: { Authorization: 'Bearer ' + token } });
     if (res.status === 401) throw new Error('auth');
     if (!res.ok) return null;
-    const data = await res.json();
+    const data = unwrapStepData(await res.json());
     return data && typeof data === 'object' ? data : null;
+  }
+
+  function favoritesFromStepData(data) {
+    if (!data || typeof data !== 'object') return [];
+    if (Array.isArray(data.items)) return data.items;
+    if (Array.isArray(data.favorites)) return data.favorites;
+    return [];
+  }
+
+  async function loadFavoritesStep() {
+    if (!isLoggedIn()) return [];
+    try {
+      const token = await getAuthToken();
+      const data = await fetchWorkflowStep(FAVORITES_STEP, token);
+      return favoritesFromStepData(data);
+    } catch (err) {
+      console.warn('[SongGeneratorCloud] loadFavoritesStep:', err.message);
+      return [];
+    }
+  }
+
+  async function saveFavoritesStep(favorites) {
+    if (!isLoggedIn()) return null;
+    const token = await getAuthToken();
+    const items = Array.isArray(favorites) ? favorites : [];
+    const body = {
+      items: items,
+      updatedAt: new Date().toISOString()
+    };
+    await writeWorkflowStep(FAVORITES_STEP, body, token);
+    return body;
+  }
+
+  async function loadAndMergeFavorites(stateFavorites, localFavorites) {
+    var merged = Array.isArray(stateFavorites) ? stateFavorites : [];
+    if (window.SongFavorites) {
+      merged = window.SongFavorites.mergeLists(merged, localFavorites || []);
+    } else if (Array.isArray(localFavorites) && localFavorites.length) {
+      merged = localFavorites.slice();
+    }
+    if (!isLoggedIn() || !window.SongFavorites) return merged;
+    try {
+      merged = window.SongFavorites.mergeLists(await loadFavoritesStep(), merged);
+    } catch (_e) {}
+    try {
+      const library = await loadAudioLibrary();
+      merged = window.SongFavorites.mergeLists(library.favorites, merged);
+    } catch (_e) {}
+    return merged;
   }
 
   async function writeWorkflowStep(stepName, body, token) {
@@ -291,12 +350,14 @@
 
   async function persistFavoritesList(favorites) {
     if (!isLoggedIn()) return null;
+    const items = Array.isArray(favorites) ? favorites : [];
+    await saveFavoritesStep(items);
     const token = await getAuthToken();
     let library = await loadAudioLibrary();
-    library = mergeFavoritesIntoLibrary(library, favorites);
+    library = mergeFavoritesIntoLibrary(library, items);
     library.updatedAt = new Date().toISOString();
     await writeWorkflowStep('audioLibrary', library, token);
-    return library;
+    return { items: items, library: library };
   }
 
   async function toggleFavorite(state, trackMeta) {
@@ -308,6 +369,7 @@
     if (!isLoggedIn()) return result;
     try {
       const token = await getAuthToken();
+      await saveFavoritesStep(result.favorites);
       let library = await loadAudioLibrary();
       library = mergeFavoritesIntoLibrary(library, result.favorites);
       library.updatedAt = new Date().toISOString();
@@ -328,6 +390,7 @@
       library.favorites = next;
       library.updatedAt = new Date().toISOString();
       const token = await getAuthToken();
+      await saveFavoritesStep(next);
       await writeWorkflowStep('audioLibrary', library, token);
       if (state) {
         state.favorites = next;
@@ -360,6 +423,7 @@
     const token = await getAuthToken();
     let library = await loadAudioLibrary();
     if (!library.entries) library.entries = [];
+    library = mergeFavoritesIntoLibrary(library, state && state.favorites || []);
     library.identity = identity;
     library.updatedAt = new Date().toISOString();
     await writeWorkflowStep('audioLibrary', library, token);
@@ -419,12 +483,19 @@
       state.audioLibrary = library;
       state.audioIdentity = identity;
       if (window.SongFavorites) {
-        var mergedFav = window.SongFavorites.mergeLists(library.favorites, state.favorites || []);
+        var stepFav = await loadFavoritesStep();
+        var mergedFav = window.SongFavorites.mergeLists(
+          window.SongFavorites.mergeLists(library.favorites, stepFav),
+          state.favorites || []
+        );
         state.favorites = mergedFav;
         if (JSON.stringify(mergedFav) !== JSON.stringify(library.favorites || [])) {
           library.favorites = mergedFav;
           library.updatedAt = new Date().toISOString();
           await writeWorkflowStep('audioLibrary', library, token);
+        }
+        if (mergedFav.length) {
+          await saveFavoritesStep(mergedFav);
         }
       } else if (Array.isArray(library.favorites) && library.favorites.length) {
         state.favorites = library.favorites;
@@ -585,6 +656,9 @@
     toggleFavorite: toggleFavorite,
     reorderFavorites: reorderFavorites,
     persistFavoritesList: persistFavoritesList,
+    loadFavoritesStep: loadFavoritesStep,
+    saveFavoritesStep: saveFavoritesStep,
+    loadAndMergeFavorites: loadAndMergeFavorites,
     loadVoiceProfile: loadVoiceProfile,
     saveVoiceProfile: saveVoiceProfile
   };
