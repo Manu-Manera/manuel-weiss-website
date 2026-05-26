@@ -512,6 +512,7 @@ class ApiKeysSection {
             const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
             globalKeys[service] = {
                 key: serviceData.apiKey,
+                apiKey: serviceData.apiKey,
                 model: serviceData.model,
                 maxTokens: serviceData.maxTokens,
                 temperature: serviceData.temperature,

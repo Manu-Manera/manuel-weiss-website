@@ -31,6 +31,42 @@
   // ────────────────────────────────────────────────────────────
   const _keyCache = { value: null, expiresAt: 0 };
   function isValidSunoKey(k) { return typeof k === 'string' && k.length > 16; }
+  function readSunoKeyFromStorage() {
+    const candidates = [];
+    try {
+      const direct = localStorage.getItem('suno-api-key');
+      if (direct) candidates.push(direct);
+    } catch (_e) {}
+    try {
+      const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
+      const g = globalKeys.suno;
+      if (g) {
+        if (typeof g === 'string') candidates.push(g);
+        if (g.key) candidates.push(g.key);
+        if (g.apiKey) candidates.push(g.apiKey);
+      }
+    } catch (_e) {}
+    try {
+      const gm = window.globalAPIManager || window.GlobalAPIManager;
+      if (gm && typeof gm.getAPIKey === 'function') {
+        const k = gm.getAPIKey('suno');
+        if (k) candidates.push(k);
+      }
+    } catch (_e) {}
+    try {
+      const state = JSON.parse(localStorage.getItem('admin_state') || 'null');
+      const s = state && state.apiKeys && state.apiKeys.suno;
+      if (s) {
+        if (s.key) candidates.push(s.key);
+        if (s.apiKey) candidates.push(s.apiKey);
+      }
+    } catch (_e) {}
+    for (let i = 0; i < candidates.length; i += 1) {
+      if (isValidSunoKey(candidates[i])) return candidates[i];
+    }
+    return null;
+  }
+
   async function getSunoApiKey() {
     if (_keyCache.value && _keyCache.expiresAt > Date.now()) return _keyCache.value;
 
@@ -41,40 +77,35 @@
       return k;
     }
 
-    // 1) AWS global (wie OpenAI/HR-Coach)
+    // 1) AWS global (Admin-Panel → api-settings#global)
     try {
       const res = await fetch(API_BASE + '/api-settings?action=key&provider=suno&global=true', {
         method: 'GET', headers: { 'Content-Type': 'application/json' }
       });
       if (res.ok) {
         const data = await res.json().catch(() => null);
-        const k = data && data.apiKey;
-        const cached = rememberKey(k);
+        const cached = rememberKey(data && data.apiKey);
         if (cached) return cached;
       }
     } catch (_e) { /* fall through */ }
 
-    // 2) awsAPISettings (eingeloggt oder global)
+    // 2) awsAPISettings – eingeloggt (User-Key) oder global
     try {
       if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
-        const k = await window.awsAPISettings.getFullApiKey('suno', true);
+        let k = null;
+        if (window.awsAPISettings.isUserLoggedIn && window.awsAPISettings.isUserLoggedIn()) {
+          k = await window.awsAPISettings.getFullApiKey('suno', false);
+        }
+        if (!k) k = await window.awsAPISettings.getFullApiKey('suno', true);
         const cached = rememberKey(k);
         if (cached) return cached;
       }
     } catch (_e) { /* fall through */ }
 
-    // 3) Admin-Panel global_api_keys
-    try {
-      const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
-      const cached = rememberKey(globalKeys.suno && globalKeys.suno.apiKey);
-      if (cached) return cached;
-    } catch (_e) { /* fall through */ }
-
-    // 4) Direkter Sofort-Fallback nach Admin-Speichern
-    try {
-      const cached = rememberKey(localStorage.getItem('suno-api-key'));
-      if (cached) return cached;
-    } catch (_e) {}
+    // 3) localStorage / GlobalAPIManager / admin_state (nach Admin-Speichern)
+    const stored = readSunoKeyFromStorage();
+    const cachedStored = rememberKey(stored);
+    if (cachedStored) return cachedStored;
 
     return null;
   }
@@ -432,7 +463,7 @@
 
     const apiKey = await getSunoApiKey();
     if (!apiKey) {
-      throw new Error('Kein Suno-API-Key gefunden. Bitte im Admin-Panel unter „API-Keys" einen Key als „global" für Provider „suno" eintragen.');
+      throw new Error('Kein Suno-API-Key gefunden. Bitte im Admin-Panel unter „API Keys → Suno" speichern (gleicher Browser) – oder warte auf AWS-Sync, falls der Key nur in der Cloud liegt.');
     }
 
     const provider = PROVIDERS[opts.provider || 'sunoapi_org'];
