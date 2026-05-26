@@ -387,6 +387,28 @@
   function normalizeTracks(tracks) {
     return (tracks || []).map(normalizeTrack);
   }
+
+  function suno_errorMsg(code, msg) {
+    const map = {
+      400: 'Ungültige Parameter',
+      401: 'Suno-API-Key ungültig oder nicht autorisiert',
+      404: 'Endpunkt nicht gefunden',
+      405: 'Rate-Limit überschritten – kurz warten',
+      413: 'Prompt zu lang',
+      429: 'Suno-Credits aufgebraucht – im Provider-Dashboard aufladen',
+      430: 'Anfrage-Frequenz zu hoch – bitte einen Moment warten',
+      455: 'Suno-System wartet, bitte später erneut'
+    };
+    return (map[code] || 'Suno-Fehler') + (msg ? ' – ' + msg : '') + ' (Code ' + code + ')';
+  }
+
+  // ────────────────────────────────────────────────────────────
+  // Provider-Adapter: sunoapi.org (docs: https://docs.sunoapi.org)
+  // ────────────────────────────────────────────────────────────
+  const PROVIDERS = {
+    sunoapi_org: {
+      label: 'Suno (via sunoapi.org)',
+      base: SUNO_API_BASE,
       async createTask(apiKey, payload) {
         const body = {
           model: payload.model,
@@ -395,10 +417,10 @@
           style: payload.style,
           customMode: payload.customMode,
           instrumental: payload.instrumental,
-          callBackUrl: 'https://manuel-weiss.ch/api/suno-noop' // pflichtig, wird ignoriert
+          callBackUrl: 'https://manuel-weiss.ch/api/suno-noop'
         };
-        if (payload.vocalGender)       body.vocalGender = payload.vocalGender;
-        if (payload.negativeTags)      body.negativeTags = payload.negativeTags;
+        if (payload.vocalGender) body.vocalGender = payload.vocalGender;
+        if (payload.negativeTags) body.negativeTags = payload.negativeTags;
         if (typeof payload.styleWeight === 'number') body.styleWeight = payload.styleWeight;
         if (typeof payload.weirdnessConstraint === 'number') body.weirdnessConstraint = payload.weirdnessConstraint;
         const res = await fetch(this.base + '/generate', {
@@ -429,27 +451,12 @@
         if (!res.ok || !data) throw new Error('Suno-Status nicht abrufbar: HTTP ' + res.status);
         if (data.code !== 200) throw new Error(suno_errorMsg(data.code, data.msg));
         const d = data.data || {};
-        // Status: PENDING | TEXT_SUCCESS | FIRST_SUCCESS | SUCCESS | CREATE_TASK_FAILED | GENERATE_AUDIO_FAILED | SENSITIVE_WORD_ERROR
         const status = d.status || 'PENDING';
         const tracks = normalizeTracks((d.response && d.response.sunoData) || (d.response && d.response.data) || []);
         return { status, tracks, raw: d };
       }
     }
   };
-
-  function suno_errorMsg(code, msg) {
-    const map = {
-      400: 'Ungültige Parameter',
-      401: 'Suno-API-Key ungültig oder nicht autorisiert',
-      404: 'Endpunkt nicht gefunden',
-      405: 'Rate-Limit überschritten – kurz warten',
-      413: 'Prompt zu lang',
-      429: 'Suno-Credits aufgebraucht – im Provider-Dashboard aufladen',
-      430: 'Anfrage-Frequenz zu hoch – bitte einen Moment warten',
-      455: 'Suno-System wartet, bitte später erneut'
-    };
-    return (map[code] || 'Suno-Fehler') + (msg ? ' – ' + msg : '') + ' (Code ' + code + ')';
-  }
 
   /**
    * Hochlevel-Funktion: Generiert einen Song und liefert per onUpdate Status-Events.
