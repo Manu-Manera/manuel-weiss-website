@@ -1413,6 +1413,72 @@
   font-size: 0.82rem;
   color: #64748b;
 }
+
+/* Pitch-Guide (Melodielinie + Treffer-Feedback) */
+.sg-voice-pitch-wrap { margin: 0 0 1rem; }
+.sg-pitch-guide {
+  padding: 0.75rem;
+  border: 1px solid #c7d2fe;
+  border-radius: 12px;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+.sg-pitch-guide-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-bottom: 0.5rem;
+}
+.sg-pitch-guide-head strong { font-size: 0.9rem; color: #f8fafc; }
+.sg-pitch-guide-sub { font-size: 0.78rem; color: #94a3b8; }
+.sg-pitch-guide-canvas {
+  width: 100%;
+  height: 140px;
+  border-radius: 8px;
+  display: block;
+  background: #0f172a;
+}
+.sg-pitch-guide-info {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem 0.75rem;
+  margin: 0.5rem 0;
+  font-size: 0.78rem;
+}
+.sg-pitch-label { display: block; color: #64748b; font-size: 0.7rem; }
+.sg-pitch-target { font-weight: 700; color: #22c55e; }
+.sg-pitch-current { font-weight: 700; }
+.sg-pitch-current.hit { color: #22c55e; }
+.sg-pitch-current.close { color: #eab308; }
+.sg-pitch-current.miss { color: #ef4444; }
+.sg-pitch-syllable { font-weight: 600; color: #a5b4fc; font-size: 1rem; }
+.sg-pitch-score { font-weight: 700; }
+.sg-pitch-score.good { color: #22c55e; }
+.sg-pitch-score.ok { color: #eab308; }
+.sg-pitch-syllable-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+.sg-pitch-syl {
+  padding: 0.2rem 0.45rem;
+  border-radius: 6px;
+  background: rgba(99, 102, 241, 0.2);
+  font-size: 0.82rem;
+  color: #c7d2fe;
+}
+.sg-pitch-syl.active {
+  background: rgba(34, 197, 94, 0.35);
+  color: #bbf7d0;
+  font-weight: 700;
+}
+.sg-pitch-guide-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
 .sg-prod-status-lead {
   margin: 0 0 0.5rem;
   font-weight: 600;

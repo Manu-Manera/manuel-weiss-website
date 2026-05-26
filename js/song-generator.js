@@ -2369,6 +2369,10 @@
 
     renderVoicePanel() {
       const self = this;
+      if (self._voicePitchGuide && self._voicePitchGuide.destroy) {
+        self._voicePitchGuide.destroy();
+        self._voicePitchGuide = null;
+      }
       const panel = el('div', 'sg-voice-panel');
       panel.append(el('h4', null, '🎤 Meine Stimme (Optional)'));
       panel.append(el('p', 'sg-voice-lead',
@@ -2482,15 +2486,21 @@
       guide.append(el('p', 'sg-voice-guide-title', 'Was soll ich aufnehmen?'));
       const guideList = el('ul', 'sg-voice-guide-list');
       [
-        'Sing 10–20 Sekunden in deiner normalen Stimme – z. B. «La la la» oder: «Ich nehme meine Stimmprobe auf, klar und deutlich.»',
+        'Sing die Melodie unten mit (grüne Linie) – «La la la …» in deiner normalen Tonhöhe.',
         'Tonhöhe: weder absichtlich tief noch hoch – so, wie du normal sprichst oder singst.',
-        'Ruhiger Raum, kein Hintergrundgeräusch. Kurz im Gesangstraining warm machen hilft.',
+        'Ruhiger Raum, kein Hintergrundgeräusch. Optional vorher kurz üben, dann Stimmprobe aufnehmen.',
         'Segment Start/Ende: Standard 0–10 s reicht, wenn du direkt am Anfang der Aufnahme singst.'
       ].forEach(function (t) { guideList.append(el('li', null, t)); });
       guide.append(guideList);
       form.append(guide);
 
-      form.append(el('p', 'sg-hint', 'Stimmprobe: direkt aufnehmen (5–30 s) oder MP3/WAV hochladen.'));
+      const pitchWrap = el('div', 'sg-voice-pitch-wrap');
+      form.append(pitchWrap);
+      if (window.SongPitchGuide && window.SongPitchGuide.mount) {
+        self._voicePitchGuide = window.SongPitchGuide.mount(pitchWrap);
+      }
+
+      form.append(el('p', 'sg-hint', 'Stimmprobe aufnehmen (5–30 s) – am besten dieselbe Melodie singen – oder MP3/WAV hochladen.'));
 
       const sampleRecWrap = el('div', 'sg-voice-rec-block');
       form.append(sampleRecWrap);
