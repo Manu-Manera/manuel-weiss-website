@@ -293,6 +293,7 @@
       if (!opts.verifyFile && !opts.verifyUrl) {
         return {
           phase: 'need_verification',
+          status: 'need_verification',
           validateTaskId: validateTaskId,
           validateInfo: phraseInfo.validateInfo,
           voiceUrl: voiceUrl,
@@ -318,12 +319,18 @@
 
     return {
       phase: 'ready',
+      status: 'ready',
       voiceId: record.voiceId,
       validateTaskId: validateTaskId,
       voiceName: (opts.meta && opts.meta.voiceName) || 'Meine Stimme',
       createdAt: new Date().toISOString(),
-      voiceUrl: voiceUrl,
-      validateInfo: phraseInfo && phraseInfo.validateInfo
+      voiceUrl: voiceUrl || opts.voiceUrl || null,
+      verifyUrl: verifyUrl,
+      validateInfo: phraseInfo && phraseInfo.validateInfo,
+      vocalStartS: opts.vocalStartS != null ? opts.vocalStartS : 0,
+      vocalEndS: opts.vocalEndS != null ? opts.vocalEndS : 10,
+      personaId: record.voiceId,
+      personaModel: 'voice_persona'
     };
   }
 

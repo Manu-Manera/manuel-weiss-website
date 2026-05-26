@@ -25,6 +25,7 @@
     playlist: 'sg_playlist_v1',
     favorites: 'sg_favorites_v1',
     voiceProfile: 'sg_voice_profile_v1',
+    voiceWizard: 'sg_voice_wizard_v1',
     useCustomVoice: 'sg_use_custom_voice_v1'
   };
 
@@ -448,7 +449,7 @@
         favorites: loadState(STORAGE_KEYS.favorites, []),
         voiceProfile: loadState(STORAGE_KEYS.voiceProfile, null),
         useCustomVoice: !!loadState(STORAGE_KEYS.useCustomVoice, false),
-        voiceWizard: { phase: 'idle' },
+        voiceWizard: loadState(STORAGE_KEYS.voiceWizard, null) || { phase: 'idle' },
         audioLibrary: null,
         audioIdentity: null,
         audioState: { phase: 'idle' },
@@ -510,6 +511,7 @@
       saveState(STORAGE_KEYS.playlist, this.state.playlist);
       saveState(STORAGE_KEYS.favorites, this.state.favorites);
       saveState(STORAGE_KEYS.voiceProfile, this.state.voiceProfile);
+      saveState(STORAGE_KEYS.voiceWizard, this.state.voiceWizard);
       saveState(STORAGE_KEYS.useCustomVoice, this.state.useCustomVoice);
     }
 
@@ -545,18 +547,41 @@
           if (this.state.persona) saveState(STORAGE_KEYS.persona, this.state.persona);
         }
         saveState(STORAGE_KEYS.favorites, this.state.favorites);
-        if (window.SongGeneratorCloud.loadVoiceProfile) {
+        if (window.SongGeneratorCloud.loadAndMergeVoiceState) {
+          const voiceMerged = await window.SongGeneratorCloud.loadAndMergeVoiceState(
+            this.state.voiceProfile,
+            this.state.voiceWizard,
+            loadState(STORAGE_KEYS.voiceProfile, null),
+            loadState(STORAGE_KEYS.voiceWizard, null)
+          );
+          if (voiceMerged.profile && voiceMerged.profile.voiceId) {
+            this.state.voiceProfile = voiceMerged.profile;
+            this.state.voiceWizard = { phase: 'idle' };
+            if (voiceMerged.profile.voiceId) this.state.useCustomVoice = true;
+          } else {
+            if (voiceMerged.profile) this.state.voiceProfile = voiceMerged.profile;
+            if (voiceMerged.wizard) this.state.voiceWizard = voiceMerged.wizard;
+          }
+          saveState(STORAGE_KEYS.voiceProfile, this.state.voiceProfile);
+          saveState(STORAGE_KEYS.voiceWizard, this.state.voiceWizard);
+          saveState(STORAGE_KEYS.useCustomVoice, this.state.useCustomVoice);
+        } else if (window.SongGeneratorCloud.loadVoiceProfile) {
           const vp = await window.SongGeneratorCloud.loadVoiceProfile();
           if (vp && vp.voiceId) {
             this.state.voiceProfile = vp;
+            this.state.voiceWizard = { phase: 'idle' };
+            this.state.useCustomVoice = true;
             saveState(STORAGE_KEYS.voiceProfile, vp);
+            saveState(STORAGE_KEYS.useCustomVoice, true);
           }
         }
         this.syncLocalCache();
         if (window.SongMusicEngine && window.SongMusicEngine.invalidateSunoKeyCache) {
           window.SongMusicEngine.invalidateSunoKeyCache();
         }
-        console.log('[SongGenerator] Cloud geladen, Favoriten:', (this.state.favorites || []).length);
+        console.log('[SongGenerator] Cloud geladen, Favoriten:', (this.state.favorites || []).length,
+          'Stimme:', this.state.voiceProfile && this.state.voiceProfile.voiceId ? 'registriert' :
+          (this.state.voiceWizard && this.state.voiceWizard.phase !== 'idle' ? this.state.voiceWizard.phase : 'keine'));
       } catch (err) {
         console.warn('[SongGenerator] Cloud-Laden fehlgeschlagen:', err && err.message);
       }
@@ -670,6 +695,55 @@
       if (window.SongFavorites) return window.SongFavorites.normalize(meta);
       meta.id = url.slice(-32);
       return meta;
+    }
+
+    _persistVoiceLocal() {
+      saveState(STORAGE_KEYS.voiceProfile, this.state.voiceProfile);
+      saveState(STORAGE_KEYS.voiceWizard, this.state.voiceWizard);
+      saveState(STORAGE_KEYS.useCustomVoice, this.state.useCustomVoice);
+    }
+
+    async _persistVoiceCloud(opts) {
+      opts = opts || {};
+      if (!window.SongGeneratorCloud || !window.SongGeneratorCloud.isLoggedIn()) return;
+      if (window.SongGeneratorCloud.persistVoiceState) {
+        await window.SongGeneratorCloud.persistVoiceState(this.state, {
+          profile: opts.profile !== undefined ? opts.profile : this.state.voiceProfile,
+          wizard: opts.clearWizard ? { phase: 'idle' } :
+            (opts.wizard !== undefined ? opts.wizard : this.state.voiceWizard)
+        });
+      } else if (opts.profile && window.SongGeneratorCloud.saveVoiceProfile) {
+        await window.SongGeneratorCloud.saveVoiceProfile(this.state, opts.profile);
+      }
+      this._cloudSave('draft', { updateCurrent: true });
+    }
+
+    async _applyVoiceRegistration(result) {
+      if (!result || !result.voiceId) return;
+      this.state.voiceProfile = result;
+      this.state.useCustomVoice = true;
+      this.state.voiceWizard = { phase: 'idle' };
+      this.state.audioState = Object.assign({}, this.state.audioState || {}, { vocalGender: 'custom' });
+      this._persistVoiceLocal();
+      try {
+        await this._persistVoiceCloud({ profile: result, clearWizard: true });
+      } catch (err) {
+        console.warn('[SongGenerator] Stimme-Cloud:', err && err.message);
+      }
+    }
+
+    async _applyVoiceVerificationPending(result) {
+      if (!result || result.phase !== 'need_verification') return;
+      this.state.voiceWizard = Object.assign({}, result, {
+        phase: 'need_verification',
+        updatedAt: new Date().toISOString()
+      });
+      this._persistVoiceLocal();
+      try {
+        await this._persistVoiceCloud({ wizard: this.state.voiceWizard });
+      } catch (err) {
+        console.warn('[SongGenerator] Stimmen-Wizard-Cloud:', err && err.message);
+      }
     }
 
     _getDisplayName(item) {
@@ -2449,6 +2523,9 @@
         const ready = el('div', 'sg-voice-ready');
         ready.append(el('p', 'sg-voice-status ok',
           '✓ Stimme registriert: ' + (vp.voiceName || 'Meine Stimme')));
+        if (window.SongGeneratorCloud && window.SongGeneratorCloud.isLoggedIn()) {
+          ready.append(el('p', 'sg-hint', '☁️ Stimme und Proben in deinem AWS-Profil gespeichert – für Suno-Produktion bereit.'));
+        }
         const steps = el('div', 'sg-voice-next-steps');
         steps.append(el('p', 'sg-voice-next-title', 'So geht es weiter:'));
         const ol = document.createElement('ol');
@@ -2470,6 +2547,9 @@
 
       if (wiz.phase === 'need_verification' && wiz.validateInfo) {
         const box = el('div', 'sg-voice-verify-box');
+        if (wiz.voiceUrl) {
+          box.append(el('p', 'sg-hint', '☁️ Stimmprobe gespeichert – du kannst die Seite neu laden und die Validierung fortsetzen.'));
+        }
         box.append(el('p', 'sg-voice-phrase-label', 'Sing jetzt genau diesen Satz (singend, in deiner normalen Tonhöhe):'));
         box.append(el('blockquote', 'sg-voice-phrase', wiz.validateInfo));
         box.append(el('p', 'sg-voice-guide-tip',
@@ -2514,15 +2594,7 @@
               }
             });
             if (result.voiceId) {
-              self.state.voiceProfile = result;
-              self.state.useCustomVoice = true;
-              self.state.voiceWizard = { phase: 'idle' };
-              self.state.audioState = Object.assign({}, self.state.audioState || {}, { vocalGender: 'custom' });
-              saveState(STORAGE_KEYS.voiceProfile, result);
-              saveState(STORAGE_KEYS.useCustomVoice, true);
-              if (window.SongGeneratorCloud && window.SongGeneratorCloud.saveVoiceProfile) {
-                await window.SongGeneratorCloud.saveVoiceProfile(self.state, result);
-              }
+              await self._applyVoiceRegistration(result);
             }
             self.render();
           } catch (err) {
@@ -2625,22 +2697,18 @@
                 voice_generate: 'Stimme wird erstellt',
                 voice_poll: 'Stimme wird fertiggestellt'
               };
-              self.state.voiceWizard = Object.assign({}, p, { label: labels[p.phase] || p.phase });
+              self.state.voiceWizard = Object.assign({}, p, {
+                label: labels[p.phase] || p.phase,
+                updatedAt: new Date().toISOString()
+              });
+              self._persistVoiceLocal();
               self.render();
             }
           });
           if (result.phase === 'need_verification') {
-            self.state.voiceWizard = Object.assign({}, result, { phase: 'need_verification' });
+            await self._applyVoiceVerificationPending(result);
           } else if (result.voiceId) {
-            self.state.voiceProfile = result;
-            self.state.useCustomVoice = true;
-            self.state.voiceWizard = { phase: 'idle' };
-            self.state.audioState = Object.assign({}, self.state.audioState || {}, { vocalGender: 'custom' });
-            saveState(STORAGE_KEYS.voiceProfile, result);
-            saveState(STORAGE_KEYS.useCustomVoice, true);
-            if (window.SongGeneratorCloud && window.SongGeneratorCloud.saveVoiceProfile) {
-              await window.SongGeneratorCloud.saveVoiceProfile(self.state, result);
-            }
+            await self._applyVoiceRegistration(result);
           }
           self.render();
         } catch (err) {

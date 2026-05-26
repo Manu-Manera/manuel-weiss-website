@@ -7,6 +7,8 @@
 
   const WF_NAME = 'personalitySongGenerator';
   const FAVORITES_STEP = 'favoritesPlaylist';
+  const VOICE_PROFILE_STEP = 'voiceProfile';
+  const VOICE_WIZARD_STEP = 'voiceWizard';
   const MAX_VERSIONS = 25;
   const MAX_LIBRARY_ENTRIES = 40;
   const DEBOUNCE_MS = 1800;
@@ -134,8 +136,78 @@
       importedNarrative: state.importedNarrative || '',
       favorites: Array.isArray(state.favorites)
         ? state.favorites.slice(0, window.SongFavorites ? window.SongFavorites.MAX_FAVORITES : 50)
-        : []
+        : [],
+      voiceProfile: state.voiceProfile || null,
+      voiceWizard: state.voiceWizard || null,
+      useCustomVoice: !!state.useCustomVoice
     };
+  }
+
+  function normalizeVoiceProfile(profile) {
+    if (!profile || typeof profile !== 'object') return null;
+    var voiceId = profile.voiceId || profile.personaId || null;
+    return {
+      voiceId: voiceId,
+      voiceName: profile.voiceName || 'Meine Stimme',
+      validateTaskId: profile.validateTaskId || null,
+      voiceUrl: profile.voiceUrl || null,
+      verifyUrl: profile.verifyUrl || null,
+      validateInfo: profile.validateInfo || null,
+      vocalStartS: profile.vocalStartS != null ? profile.vocalStartS : 0,
+      vocalEndS: profile.vocalEndS != null ? profile.vocalEndS : 10,
+      personaId: profile.personaId || voiceId || null,
+      personaModel: profile.personaModel || (voiceId ? 'voice_persona' : null),
+      status: profile.status || (voiceId ? 'ready' : null),
+      createdAt: profile.createdAt || null,
+      updatedAt: profile.updatedAt || null
+    };
+  }
+
+  function normalizeVoiceWizard(wizard) {
+    if (!wizard || typeof wizard !== 'object') return { phase: 'idle' };
+    return {
+      phase: wizard.phase || 'idle',
+      label: wizard.label || null,
+      validateTaskId: wizard.validateTaskId || null,
+      validateInfo: wizard.validateInfo || null,
+      voiceUrl: wizard.voiceUrl || null,
+      vocalStartS: wizard.vocalStartS != null ? wizard.vocalStartS : 0,
+      vocalEndS: wizard.vocalEndS != null ? wizard.vocalEndS : 10,
+      updatedAt: wizard.updatedAt || null
+    };
+  }
+
+  function profileTimestamp(profile) {
+    if (!profile) return '';
+    return String(profile.updatedAt || profile.createdAt || '');
+  }
+
+  function mergeVoiceProfiles(primary, secondary) {
+    var a = normalizeVoiceProfile(primary);
+    var b = normalizeVoiceProfile(secondary);
+    if (!a && !b) return null;
+    if (!a) return b;
+    if (!b) return a;
+    if (a.voiceId && !b.voiceId) return a;
+    if (b.voiceId && !a.voiceId) return b;
+    if (a.voiceId && b.voiceId) {
+      return profileTimestamp(b) >= profileTimestamp(a)
+        ? Object.assign({}, a, b)
+        : Object.assign({}, b, a);
+    }
+    return Object.assign({}, a, b);
+  }
+
+  function mergeVoiceWizard(primary, secondary) {
+    var a = normalizeVoiceWizard(primary);
+    var b = normalizeVoiceWizard(secondary);
+    if (a.phase === 'idle' && b.phase !== 'idle') return b;
+    if (b.phase === 'idle' && a.phase !== 'idle') return a;
+    if (a.phase === 'need_verification' || b.phase === 'need_verification') {
+      var pick = profileTimestamp(b) >= profileTimestamp(a) ? b : a;
+      if (pick.phase === 'need_verification') return pick;
+    }
+    return profileTimestamp(b) >= profileTimestamp(a) ? b : a;
   }
 
   function mergeFavoritesIntoLibrary(library, favorites) {
@@ -204,6 +276,15 @@
       } else {
         state.favorites = snap.favorites.slice();
       }
+    }
+    if (snap.voiceProfile) {
+      state.voiceProfile = mergeVoiceProfiles(state.voiceProfile, snap.voiceProfile);
+    }
+    if (snap.voiceWizard) {
+      state.voiceWizard = mergeVoiceWizard(state.voiceWizard, snap.voiceWizard);
+    }
+    if (typeof snap.useCustomVoice === 'boolean') {
+      state.useCustomVoice = snap.useCustomVoice;
     }
     return true;
   }
@@ -518,26 +599,92 @@
     if (!isLoggedIn()) return null;
     try {
       const token = await getAuthToken();
-      return await fetchWorkflowStep('voiceProfile', token);
+      const data = await fetchWorkflowStep(VOICE_PROFILE_STEP, token);
+      return normalizeVoiceProfile(data);
     } catch (err) {
       console.warn('[SongGeneratorCloud] loadVoiceProfile:', err.message);
       return null;
     }
   }
 
+  async function loadVoiceWizard() {
+    if (!isLoggedIn()) return { phase: 'idle' };
+    try {
+      const token = await getAuthToken();
+      const data = await fetchWorkflowStep(VOICE_WIZARD_STEP, token);
+      return normalizeVoiceWizard(data);
+    } catch (err) {
+      console.warn('[SongGeneratorCloud] loadVoiceWizard:', err.message);
+      return { phase: 'idle' };
+    }
+  }
+
+  async function saveVoiceWizard(wizard) {
+    if (!isLoggedIn()) return null;
+    const token = await getAuthToken();
+    wizard = normalizeVoiceWizard(wizard || { phase: 'idle' });
+    wizard.updatedAt = new Date().toISOString();
+    await writeWorkflowStep(VOICE_WIZARD_STEP, wizard, token);
+    return wizard;
+  }
+
   async function saveVoiceProfile(state, profile) {
     if (!isLoggedIn()) return null;
     try {
       const token = await getAuthToken();
-      profile = profile || {};
+      profile = normalizeVoiceProfile(profile || {});
+      if (!profile) return null;
       profile.updatedAt = new Date().toISOString();
-      await writeWorkflowStep('voiceProfile', profile, token);
+      if (!profile.createdAt) profile.createdAt = profile.updatedAt;
+      if (profile.voiceId) {
+        profile.status = 'ready';
+        profile.personaId = profile.voiceId;
+        profile.personaModel = 'voice_persona';
+      }
+      await writeWorkflowStep(VOICE_PROFILE_STEP, profile, token);
       if (state) state.voiceProfile = profile;
+      if (profile.voiceId) {
+        await saveVoiceWizard({ phase: 'idle', updatedAt: profile.updatedAt });
+      }
       return profile;
     } catch (err) {
       console.warn('[SongGeneratorCloud] saveVoiceProfile:', err.message);
       return null;
     }
+  }
+
+  async function loadAndMergeVoiceState(stateProfile, stateWizard, localProfile, localWizard) {
+    var profile = mergeVoiceProfiles(stateProfile, localProfile);
+    var wizard = mergeVoiceWizard(stateWizard, localWizard);
+    if (!isLoggedIn()) {
+      return { profile: profile, wizard: wizard };
+    }
+    try {
+      profile = mergeVoiceProfiles(await loadVoiceProfile(), profile);
+    } catch (_e) {}
+    try {
+      wizard = mergeVoiceWizard(await loadVoiceWizard(), wizard);
+    } catch (_e) {}
+    if (profile && profile.voiceId) {
+      wizard = { phase: 'idle' };
+    } else if (wizard.phase === 'need_verification' && !wizard.validateTaskId) {
+      wizard = { phase: 'idle' };
+    }
+    return { profile: profile, wizard: wizard };
+  }
+
+  async function persistVoiceState(state, opts) {
+    opts = opts || {};
+    if (!isLoggedIn()) return null;
+    var result = {};
+    if (opts.wizard !== undefined) {
+      result.wizard = await saveVoiceWizard(opts.wizard);
+      if (state) state.voiceWizard = result.wizard;
+    }
+    if (opts.profile) {
+      result.profile = await saveVoiceProfile(state, opts.profile);
+    }
+    return result;
   }
 
   const Cloud = {
@@ -660,7 +807,11 @@
     saveFavoritesStep: saveFavoritesStep,
     loadAndMergeFavorites: loadAndMergeFavorites,
     loadVoiceProfile: loadVoiceProfile,
-    saveVoiceProfile: saveVoiceProfile
+    loadVoiceWizard: loadVoiceWizard,
+    saveVoiceProfile: saveVoiceProfile,
+    saveVoiceWizard: saveVoiceWizard,
+    loadAndMergeVoiceState: loadAndMergeVoiceState,
+    persistVoiceState: persistVoiceState
   };
 
   window.SongGeneratorCloud = Cloud;
