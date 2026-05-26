@@ -673,15 +673,17 @@ class ApiKeysSection {
         
         try {
             // Wenn der Key maskiert ist (enthält "..."), hole den echten Key aus AWS
-            if (apiKey.includes('...')) {
+            if (apiKey.includes('...') || apiKey.includes('••••')) {
                 console.log(`🔑 Key ist maskiert, hole echten Key aus AWS für ${service}...`);
-                
-                // Versuche den echten Key vom Backend zu holen
-                if (window.awsAPISettings && window.awsAPISettings.isUserLoggedIn()) {
+
+                if (this.cachedApiKeys && this.cachedApiKeys[service] && this.cachedApiKeys[service] !== 'MASKED') {
+                    apiKey = this.cachedApiKeys[service];
+                    console.log(`📦 Gecachten Key für ${service} verwendet`);
+                } else if (window.awsAPISettings && window.awsAPISettings.isUserLoggedIn()) {
                     try {
-                        const fullKeyResponse = await window.awsAPISettings.getFullApiKey(service);
-                        if (fullKeyResponse && fullKeyResponse.apiKey) {
-                            apiKey = fullKeyResponse.apiKey;
+                        const fullKey = await window.awsAPISettings.getFullApiKey(service, service === 'suno');
+                        if (fullKey) {
+                            apiKey = fullKey;
                             console.log(`✅ Echter Key aus AWS geladen für ${service}`);
                         } else {
                             this.showMessage(service, 'Fehler: Konnte echten API Key nicht laden', 'error');
@@ -700,17 +702,19 @@ class ApiKeysSection {
             
             let result;
             
-            if (this.globalApiManager) {
-                // Global API Manager verwenden
-                result = await this.globalApiManager.testService(service, apiKey);
-            } else {
-                // Fallback Test
+            // Suno: immer direkt gegen sunoapi.org testen (GlobalAPIManager kennt Suno nicht)
+            if (service === 'suno' || !this.globalApiManager || typeof this.globalApiManager.testService !== 'function') {
                 result = await this.performFallbackTest(service, apiKey);
+            } else {
+                result = await this.globalApiManager.testService(service, apiKey);
             }
             
             if (result.success) {
                 this.updateServiceStatus(service);
-                this.showMessage(service, 'Verbindung erfolgreich!', 'success');
+                const okMsg = (service === 'suno' && result.credits != null)
+                    ? `Verbindung erfolgreich! ${result.credits} Credits verfügbar.`
+                    : 'Verbindung erfolgreich!';
+                this.showMessage(service, okMsg, 'success');
             } else {
                 this.showMessage(service, `Fehler: ${result.error}`, 'error');
             }
@@ -738,17 +742,24 @@ class ApiKeysSection {
             return { success: false, error: 'Ungültiges API Key Format' };
         }
 
-        // Live-Test für Suno: Credits-Endpoint anpingen (validiert Key + Auth)
+        // Live-Test für Suno: Credits-Endpoint laut docs.sunoapi.org
         if (service === 'suno') {
             try {
-                const res = await fetch('https://api.sunoapi.org/api/v1/credits', {
+                const res = await fetch('https://api.sunoapi.org/api/v1/generate/credit', {
                     headers: { 'Authorization': 'Bearer ' + apiKey }
                 });
-                if (res.ok) {
-                    const data = await res.json().catch(() => null);
-                    if (data && data.code === 200) return { success: true };
+                const data = await res.json().catch(() => null);
+                if (data && data.code === 200) {
+                    return { success: true, credits: data.data };
                 }
-                return { success: false, error: 'Suno-Provider lehnte Key ab (HTTP ' + res.status + ')' };
+                if (data && data.code === 401) {
+                    return { success: false, error: 'Suno-API-Key ungültig oder abgelaufen (401)' };
+                }
+                if (data && data.code === 429) {
+                    return { success: false, error: 'Keine Suno-Credits mehr – bitte im Dashboard aufladen' };
+                }
+                const detail = data && data.msg ? data.msg : ('HTTP ' + res.status);
+                return { success: false, error: 'Suno-Test fehlgeschlagen: ' + detail + (data && data.code ? ' (Code ' + data.code + ')' : '') };
             } catch (err) {
                 return { success: false, error: 'Netzwerk-Fehler: ' + err.message };
             }

@@ -342,13 +342,20 @@
     };
   }
 
-  // ────────────────────────────────────────────────────────────
-  // Provider-Adapter: sunoapi.org
-  // ────────────────────────────────────────────────────────────
-  const PROVIDERS = {
-    sunoapi_org: {
-      label: 'Suno (via sunoapi.org)',
-      base: 'https://api.sunoapi.org/api/v1',
+  const SUNO_API_BASE = 'https://api.sunoapi.org/api/v1';
+
+  function normalizeTrack(track) {
+    if (!track || typeof track !== 'object') return track;
+    return Object.assign({}, track, {
+      audio_url: track.audio_url || track.audioUrl || track.source_audio_url || track.sourceAudioUrl,
+      stream_audio_url: track.stream_audio_url || track.streamAudioUrl || track.source_stream_audio_url || track.sourceStreamAudioUrl,
+      image_url: track.image_url || track.imageUrl || track.source_image_url || track.sourceImageUrl
+    });
+  }
+
+  function normalizeTracks(tracks) {
+    return (tracks || []).map(normalizeTrack);
+  }
       async createTask(apiKey, payload) {
         const body = {
           model: payload.model,
@@ -393,7 +400,7 @@
         const d = data.data || {};
         // Status: PENDING | TEXT_SUCCESS | FIRST_SUCCESS | SUCCESS | CREATE_TASK_FAILED | GENERATE_AUDIO_FAILED | SENSITIVE_WORD_ERROR
         const status = d.status || 'PENDING';
-        const tracks = (d.response && d.response.sunoData) || (d.response && d.response.data) || [];
+        const tracks = normalizeTracks((d.response && d.response.sunoData) || (d.response && d.response.data) || []);
         return { status, tracks, raw: d };
       }
     }

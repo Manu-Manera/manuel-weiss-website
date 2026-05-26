@@ -1770,7 +1770,7 @@
         title.append(el('strong', null, 'Variante ' + (i + 1) + (t.title ? ' – ' + t.title : '')));
         if (t.duration) title.append(el('span', 'sg-audio-duration', this._formatDuration(t.duration)));
         card.append(title);
-        const url = t.audio_url || t.source_audio_url || t.stream_audio_url;
+        const url = t.audio_url || t.audioUrl || t.source_audio_url || t.sourceAudioUrl || t.stream_audio_url || t.streamAudioUrl;
         if (url) {
           const audioEl = document.createElement('audio');
           audioEl.controls = true;
@@ -1785,9 +1785,9 @@
           actions.append(dl);
           card.append(actions);
         }
-        if (t.image_url) {
+        if (t.image_url || t.imageUrl) {
           const img = document.createElement('img');
-          img.src = t.image_url;
+          img.src = t.image_url || t.imageUrl;
           img.alt = t.title || 'Cover';
           img.className = 'sg-audio-cover';
           card.prepend(img);
