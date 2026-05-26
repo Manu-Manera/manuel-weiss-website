@@ -808,3 +808,248 @@
   .sg-scale-fill { transition: none; }
   * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   v2.0 — Test-Varianten, Geburtsdaten, Profil & Karte
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Test-Varianten-Auswahl (Welcome-Karte) ─────────────────────────── */
+.sg-variants {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.9rem;
+  margin: 1.25rem 0;
+}
+.sg-variant {
+  display: flex; flex-direction: column; gap: 0.4rem;
+  padding: 1rem 1.1rem;
+  border: 2px solid var(--sg-border);
+  border-radius: 14px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+.sg-variant:hover { border-color: #c4b5fd; transform: translateY(-1px); }
+.sg-variant.selected {
+  border-color: var(--sg-primary);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+}
+.sg-variant-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+}
+.sg-variant-title { font-weight: 700; font-size: 1.05rem; color: #1e293b; }
+.sg-variant-min { font-size: 0.78rem; color: #64748b; }
+.sg-variant-count { font-size: 0.85rem; color: var(--sg-primary); font-weight: 600; }
+.sg-variant-desc { font-size: 0.82rem; color: #475569; line-height: 1.45; }
+
+/* ── Geburtsdaten-Step ──────────────────────────────────────────────── */
+.sg-birth-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem 1.1rem;
+  margin: 1.1rem 0;
+}
+.sg-birth-form .sg-field { display: flex; flex-direction: column; gap: 0.35rem; }
+.sg-birth-form label { font-size: 0.82rem; font-weight: 600; color: #334155; }
+.sg-birth-form input,
+.sg-birth-form select {
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--sg-border);
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: #fff;
+}
+.sg-birth-form input:focus,
+.sg-birth-form select:focus {
+  outline: none;
+  border-color: var(--sg-primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.16);
+}
+.sg-birth-hint {
+  grid-column: 1 / -1;
+  font-size: 0.82rem;
+  color: #64748b;
+  background: #f8fafc;
+  border: 1px solid var(--sg-border);
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  line-height: 1.5;
+}
+.sg-birth-suggestions {
+  border: 1px solid var(--sg-border);
+  border-radius: 10px;
+  background: #fff;
+  max-height: 220px;
+  overflow-y: auto;
+  margin-top: 0.3rem;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+.sg-birth-suggestions button {
+  display: block; width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: none; border-bottom: 1px solid #f1f5f9;
+  background: transparent;
+  text-align: left;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+.sg-birth-suggestions button:hover { background: #f5f3ff; }
+.sg-birth-suggestions button:last-child { border-bottom: none; }
+.sg-birth-tz {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  background: #f8fafc; border: 1px solid var(--sg-border);
+  border-radius: 10px;
+  font-size: 0.85rem; color: #334155;
+}
+.sg-birth-tz strong { color: #6366f1; }
+.sg-birth-skip {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.85rem; color: #64748b;
+}
+
+/* ── Profil & Karte (großes Diagramm) ───────────────────────────────── */
+.sg-profile-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%);
+  border: 1px solid var(--sg-border);
+  border-radius: 18px;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.06);
+}
+.sg-profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 1.2rem 0;
+}
+.sg-profile-panel {
+  background: #fff;
+  border: 1px solid var(--sg-border);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+}
+.sg-profile-panel h3 {
+  margin: 0 0 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.sg-profile-panel .sg-tag {
+  font-size: 0.7rem; padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: #ede9fe;
+  color: #6d28d9;
+  font-weight: 600;
+}
+.sg-radar { display: block; margin: 0 auto; }
+.sg-wheel { display: block; margin: 0 auto; }
+.sg-radar-label { font-family: inherit; }
+.sg-radar-value { font-family: inherit; }
+
+.sg-facet-list {
+  margin-top: 0.75rem;
+  display: grid; grid-template-columns: 1fr; gap: 0.35rem;
+  font-size: 0.78rem;
+}
+.sg-facet-row {
+  display: grid; grid-template-columns: 110px 1fr 30px;
+  align-items: center; gap: 0.5rem;
+}
+.sg-facet-label { color: #334155; }
+.sg-facet-bar {
+  height: 6px; background: #f1f5f9; border-radius: 999px; overflow: hidden;
+}
+.sg-facet-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #a78bfa, #6366f1);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sg-facet-val { color: #475569; text-align: right; font-weight: 600; }
+
+.sg-astro-meta {
+  display: flex; flex-wrap: wrap; gap: 0.4rem 0.8rem;
+  font-size: 0.8rem; color: #475569;
+  margin-bottom: 0.5rem;
+}
+.sg-astro-meta strong { color: #1e293b; }
+.sg-astro-chip {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.2rem 0.65rem;
+  background: #ede9fe; color: #6d28d9;
+  border-radius: 999px; font-weight: 600; font-size: 0.75rem;
+}
+
+.sg-astro-placements {
+  margin-top: 0.75rem;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 0.4rem;
+  font-size: 0.78rem;
+}
+.sg-astro-pl {
+  display: flex; flex-direction: column;
+  padding: 0.4rem 0.55rem;
+  background: #fafaff; border: 1px solid #e2e8f0; border-radius: 8px;
+}
+.sg-astro-pl-head {
+  display: flex; align-items: center; gap: 0.35rem;
+  font-weight: 600; color: #1e293b;
+}
+.sg-astro-pl-sym { font-size: 1rem; }
+.sg-astro-pl-sub { font-size: 0.72rem; color: #64748b; }
+
+.sg-balance {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0.5rem; margin-top: 0.6rem;
+}
+.sg-balance-row {
+  display: flex; align-items: center; gap: 0.4rem;
+  font-size: 0.78rem; color: #475569;
+}
+.sg-balance-key { width: 70px; font-weight: 600; color: #1e293b; }
+.sg-balance-bar {
+  flex: 1; height: 6px; background: #f1f5f9; border-radius: 999px; overflow: hidden;
+}
+.sg-balance-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24, #f97316);
+  transition: width 0.6s ease;
+}
+.sg-balance-row.air .sg-balance-bar-fill { background: linear-gradient(90deg, #38bdf8, #6366f1); }
+.sg-balance-row.water .sg-balance-bar-fill { background: linear-gradient(90deg, #2dd4bf, #0ea5e9); }
+.sg-balance-row.earth .sg-balance-bar-fill { background: linear-gradient(90deg, #84cc16, #15803d); }
+
+.sg-dna-bar-wrap {
+  display: flex; align-items: center; gap: 0.5rem;
+  width: 100%;
+}
+.sg-dna-bar {
+  flex: 1; height: 7px; background: #f1f5f9; border-radius: 999px; overflow: hidden;
+}
+.sg-dna-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #a78bfa, #ec4899);
+  transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sg-profile-sources {
+  margin-top: 1rem;
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.55;
+  padding: 0.75rem 0.9rem;
+  background: #f8fafc;
+  border: 1px dashed var(--sg-border);
+  border-radius: 10px;
+}
+.sg-profile-sources strong { color: #475569; }
+
+/* Mobile */
+@media (max-width: 860px) {
+  .sg-profile-grid { grid-template-columns: 1fr; }
+  .sg-variants { grid-template-columns: 1fr; }
+}

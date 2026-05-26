@@ -15,10 +15,12 @@
   'use strict';
 
   const STORAGE_KEYS = {
-    test: 'sg_test_state_v1',
+    test: 'sg_test_state_v2',
     externalInputs: 'sg_external_inputs_v1',
-    persona: 'sg_persona_v1',
-    song: 'sg_song_v1'
+    persona: 'sg_persona_v2',
+    song: 'sg_song_v1',
+    birth: 'sg_birth_data_v1',
+    variant: 'sg_test_variant_v1'
   };
 
   const API_BASE = 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
@@ -340,13 +342,17 @@
       this.root = document.getElementById(rootId);
       if (!this.root) throw new Error('Root-Element nicht gefunden: ' + rootId);
       this.state = {
-        step: 0,                  // 0=Welcome, 1=Test, 2=Inputs, 3=Synthese, 4=Compose, 5=Editor
+        step: 0,                  // 0=Welcome, 1=Test, 2=Geburtsdaten, 3=Inputs, 4=Profil&Karte, 5=Compose, 6=Editor
         questions: null,
         answers: {},
+        testVariant: loadState(STORAGE_KEYS.variant, 'medium'),
         externalInputs: loadState(STORAGE_KEYS.externalInputs, []),
         persona: loadState(STORAGE_KEYS.persona),
         song: loadState(STORAGE_KEYS.song),
-        importedMethods: null,    // Ergebnis von SongGeneratorImport.importAllMethodData
+        birthData: loadState(STORAGE_KEYS.birth, null),
+        astrology: null,          // wird in runSynthesis berechnet
+        facets: null,
+        importedMethods: null,
         importedNarrative: '',
         userMeta: {
           name_or_alias: '',
@@ -406,21 +412,22 @@
       switch (this.state.step) {
         case 0: this.root.appendChild(this.renderWelcome()); break;
         case 1: this.root.appendChild(this.renderTest()); break;
-        case 2: this.root.appendChild(this.renderInputs()); break;
-        case 3: this.root.appendChild(this.renderSynthesis()); break;
-        case 4: this.root.appendChild(this.renderCompose()); break;
-        case 5: this.root.appendChild(this.renderEditor()); break;
+        case 2: this.root.appendChild(this.renderBirthForm()); break;
+        case 3: this.root.appendChild(this.renderInputs()); break;
+        case 4: this.root.appendChild(this.renderProfileMap()); break;
+        case 5: this.root.appendChild(this.renderCompose()); break;
+        case 6: this.root.appendChild(this.renderEditor()); break;
       }
     }
 
     renderProgressBar() {
       const wrap = el('div', 'sg-progress');
-      const labels = ['Start', 'Test', 'Inputs', 'Persona', 'Song', 'Editor'];
+      const labels = ['Start', 'Test', 'Geburt', 'Inputs', 'Karte', 'Song', 'Editor'];
       labels.forEach((label, idx) => {
         const dot = el('div', 'sg-progress-step' + (idx === this.state.step ? ' active' : (idx < this.state.step ? ' done' : '')));
         dot.append(el('span', 'sg-progress-dot', String(idx + 1)));
         dot.append(el('span', 'sg-progress-label', label));
-        if (idx < this.state.step + 1 && (idx <= this.state.step || (idx === 5 && this.state.song))) {
+        if (idx < this.state.step + 1 && (idx <= this.state.step || (idx === 6 && this.state.song))) {
           dot.style.cursor = 'pointer';
           dot.onclick = () => this.setStep(idx);
         }
@@ -440,20 +447,52 @@
       const wrap = el('div', 'sg-card sg-welcome');
       wrap.append(el('h2', null, 'Dein Persönlichkeits-Song'));
       wrap.append(el('p', 'sg-lead',
-        'Wissenschaftlich validierter Test (Mini-IPIP, HEXACO, Schwartz-Werte) und – noch wichtiger – ' +
-        'eine automatische Auswertung aller Persönlichkeitsentwicklungs-Methoden, die du auf manuel-weiss.ch ' +
-        'bereits bearbeitet hast. Daraus entsteht ein Song, der wirklich nach dir klingt.'
+        'Wissenschaftlich validierter Test (IPIP-NEO mit 30 Facetten, HEXACO, Schwartz-Werte, Bindungsstile) ' +
+        'plus automatische Auswertung aller bearbeiteten Persönlichkeitsentwicklungs-Methoden auf manuel-weiss.ch. ' +
+        'Optional ergänzt durch eine astrologische Karte als poetische Bilder-Schicht.'
       ));
 
-      // Importierte Methoden-Daten anzeigen
       wrap.append(this.renderImportedDataBox());
 
-      // 3 kompakte Schritt-Erklärungen
+      // Test-Varianten-Auswahl
+      const variantHead = el('h3', null, 'Test-Tiefe wählen');
+      variantHead.style.marginTop = '1rem';
+      wrap.append(variantHead);
+      const variantsWrap = el('div', 'sg-variants');
+      const VAR = (window.SongTestData && window.SongTestData.VARIANTS) || {};
+      const variantKeys = ['short', 'medium', 'long'];
+      variantKeys.forEach(vk => {
+        const v = VAR[vk];
+        if (!v) return;
+        const card = el('button', 'sg-variant' + (this.state.testVariant === vk ? ' selected' : ''));
+        const head = el('div', 'sg-variant-head');
+        head.append(el('span', 'sg-variant-title', v.label));
+        head.append(el('span', 'sg-variant-min', v.minutes));
+        card.append(head);
+        card.append(el('div', 'sg-variant-count', v.itemCount + ' Fragen'));
+        card.append(el('div', 'sg-variant-desc', v.description));
+        card.onclick = () => {
+          this.state.testVariant = vk;
+          saveState(STORAGE_KEYS.variant, vk);
+          // Wenn schon angefangen: warnen + zurücksetzen, falls Antworten den neuen Set sprengen
+          if (this.state.questions && this.state.questions.variant !== vk) {
+            this.state.questions = null;
+            this.state.answers = {};
+            this.persistTest();
+          }
+          this.render();
+        };
+        variantsWrap.append(card);
+      });
+      wrap.append(variantsWrap);
+
+      // Schrittweise Erklärung
       const steps = el('div', 'sg-steps');
       [
-        { n: '1', t: 'Test', d: '24 Fragen, ~5 Minuten – kombiniert mit deinen importierten Daten' },
-        { n: '2', t: 'Profil', d: 'Big-Five-Skalen, Archetyp und Klang-DNA werden berechnet' },
-        { n: '3', t: 'Song', d: 'KI komponiert Text + Akkorde, jede Zeile editierbar' }
+        { n: '1', t: 'Test', d: 'IPIP-NEO-Items, HEXACO, Schwartz-Werte – wissenschaftlich validiert' },
+        { n: '2', t: 'Geburtsdaten', d: 'Optional: Datum + Zeit + Ort für die astrologische Karte' },
+        { n: '3', t: 'Profil & Karte', d: 'Big-Five-Radar + Natal-Wheel + Klang-DNA in einer großen Darstellung' },
+        { n: '4', t: 'Song', d: 'KI komponiert Text + Akkorde aus allem zusammen, jede Zeile editierbar' }
       ].forEach(s => {
         const it = el('div', 'sg-step-item');
         it.append(el('span', 'sg-step-num', s.n));
@@ -471,7 +510,7 @@
       actions.append(startBtn);
 
       const skipBtn = el('button', 'sg-btn sg-btn-ghost', 'Test überspringen – nur importierte Daten nutzen');
-      skipBtn.onclick = () => this.setStep(2);
+      skipBtn.onclick = () => this.setStep(3);
       actions.append(skipBtn);
 
       wrap.append(actions);
@@ -565,14 +604,15 @@
     // ── Step 1: Test ────────────────────────────────────────────
     startTest() {
       if (!isLoggedIn()) { this.setStep(0); return; }
-      if (!this.state.questions) {
+      if (!this.state.questions || this.state.questions.variant !== this.state.testVariant) {
         if (!window.SongTestData) {
           const wrap0 = this.root.querySelector('.sg-card') || this.root;
           const s = this.showStatus('Test-Daten konnten nicht geladen werden. Bitte Seite neu laden.', wrap0);
           s.classList.add('sg-status-error');
           return;
         }
-        this.state.questions = window.SongTestData.getStaticTest();
+        this.state.questions = window.SongTestData.getStaticTest(this.state.testVariant);
+        // Antworten zurücksetzen, wenn Variante gewechselt wurde und neue IDs nicht passen
         this.persistTest();
       }
       this.setStep(1);
@@ -617,7 +657,7 @@
       back.onclick = () => this.setStep(0);
       actions.append(back);
 
-      const continueBtn = el('button', 'sg-btn sg-btn-primary', 'Weiter zu externen Inputs →');
+      const continueBtn = el('button', 'sg-btn sg-btn-primary', 'Weiter zu Geburtsdaten →');
       continueBtn.disabled = answered < total;
       if (answered < total) continueBtn.title = 'Bitte alle ' + total + ' Fragen beantworten';
       continueBtn.onclick = () => this.setStep(2);
@@ -667,7 +707,152 @@
       return w;
     }
 
-    // ── Step 2: External Inputs ─────────────────────────────────
+    // ── Step 2: Geburtsdaten (optional, für astrologische Karte) ─
+    renderBirthForm() {
+      const wrap = el('div', 'sg-card sg-birth');
+      wrap.append(el('h2', null, 'Geburtsdaten (optional)'));
+      wrap.append(el('p', 'sg-lead',
+        'Wenn du Datum, Zeit und Ort deiner Geburt angibst, berechnen wir eine astrologische Karte ' +
+        '(Sonne, Mond, Aszendent, Planeten in Zeichen und Häusern). Diese fließt rein als ' +
+        'poetische Bildsprache in deinen Songtext ein – wissenschaftlich ist sie nicht. ' +
+        'Wenn du das überspringst, läuft alles ohne Astro-Schicht weiter.'
+      ));
+
+      const bd = this.state.birthData || {};
+      const form = el('div', 'sg-birth-form');
+
+      // Datum
+      const fDate = el('div', 'sg-field');
+      fDate.append(el('label', null, 'Geburtsdatum'));
+      const date = el('input');
+      date.type = 'date';
+      if (bd.date) date.value = bd.date;
+      fDate.append(date);
+      form.append(fDate);
+
+      // Zeit
+      const fTime = el('div', 'sg-field');
+      fTime.append(el('label', null, 'Geburtszeit (sofern bekannt)'));
+      const time = el('input');
+      time.type = 'time';
+      if (bd.time && bd.timeKnown !== false) time.value = bd.time;
+      fTime.append(time);
+      const timeKnownWrap = el('label', 'sg-birth-skip');
+      const tk = el('input'); tk.type = 'checkbox'; tk.id = 'sg-time-unknown';
+      tk.checked = bd.timeKnown === false;
+      timeKnownWrap.append(tk);
+      timeKnownWrap.append(document.createTextNode('Zeit unbekannt (Aszendent dann nicht berechenbar)'));
+      tk.onchange = () => { time.disabled = tk.checked; };
+      time.disabled = tk.checked;
+      fTime.append(timeKnownWrap);
+      form.append(fTime);
+
+      // Ort (mit Geocoding)
+      const fPlace = el('div', 'sg-field');
+      fPlace.append(el('label', null, 'Geburtsort'));
+      const place = el('input');
+      place.type = 'text';
+      place.placeholder = 'z. B. Zürich, Schweiz';
+      if (bd.place) place.value = bd.place;
+      fPlace.append(place);
+      const suggestions = el('div', 'sg-birth-suggestions');
+      suggestions.style.display = 'none';
+      fPlace.append(suggestions);
+      form.append(fPlace);
+
+      // Versteckte Felder
+      const meta = { lat: bd.lat || null, lon: bd.lon || null, place: bd.place || null, tzOffsetMinutes: bd.tzOffsetMinutes || null };
+
+      // TZ-Info-Zeile
+      const tzInfo = el('div', 'sg-birth-tz');
+      function refreshTz() {
+        if (typeof meta.lat === 'number' && typeof meta.lon === 'number') {
+          const offsetMin = window.SongGeocoding
+            ? window.SongGeocoding.estimateTimezoneOffsetMinutes(meta.lat, meta.lon, date.value)
+            : 0;
+          meta.tzOffsetMinutes = offsetMin;
+          tzInfo.innerHTML = '🌍 Koordinaten: <strong>' + meta.lat.toFixed(2) + '°, ' + meta.lon.toFixed(2) +
+            '°</strong> · Zeitzone geschätzt: <strong>' + window.SongGeocoding.formatOffset(offsetMin) + '</strong>';
+        } else {
+          tzInfo.textContent = 'Noch keine Koordinaten gewählt.';
+        }
+      }
+      refreshTz();
+      form.append(tzInfo);
+
+      // Geocoding live
+      let debounce = null;
+      place.oninput = () => {
+        const q = place.value.trim();
+        clearTimeout(debounce);
+        if (q.length < 2 || !window.SongGeocoding) {
+          suggestions.style.display = 'none';
+          return;
+        }
+        debounce = setTimeout(async () => {
+          const results = await window.SongGeocoding.searchPlace(q);
+          suggestions.innerHTML = '';
+          if (!results.length) { suggestions.style.display = 'none'; return; }
+          results.slice(0, 6).forEach(r => {
+            const b = el('button', null, r.label);
+            b.onclick = (e) => {
+              e.preventDefault();
+              place.value = r.label;
+              meta.lat = r.lat; meta.lon = r.lon; meta.place = r.label;
+              suggestions.style.display = 'none';
+              refreshTz();
+            };
+            suggestions.append(b);
+          });
+          suggestions.style.display = 'block';
+        }, 350);
+      };
+      date.onchange = refreshTz;
+
+      const hint = el('div', 'sg-birth-hint',
+        'Hinweis: Die Astrologie nutzt OpenStreetMap zur Ortssuche (kostenlos, kein Tracking) und ' +
+        'astronomy-engine für die Berechnung. Für eine vollständige Karte brauchen wir Datum + Zeit + Ort. ' +
+        'Wenn die Zeit unbekannt ist, berechnen wir Sonne/Mond/Planeten in Zeichen (kein Aszendent).'
+      );
+      form.append(hint);
+
+      wrap.append(form);
+
+      const actions = el('div', 'sg-actions');
+      const back = el('button', 'sg-btn sg-btn-ghost', '← Zurück zum Test');
+      back.onclick = () => this.setStep(1);
+      actions.append(back);
+
+      const skip = el('button', 'sg-btn sg-btn-ghost', 'Überspringen');
+      skip.onclick = () => {
+        this.state.birthData = null;
+        clearState(STORAGE_KEYS.birth);
+        this.setStep(3);
+      };
+      actions.append(skip);
+
+      const save = el('button', 'sg-btn sg-btn-primary', 'Weiter zu externen Inputs →');
+      save.onclick = () => {
+        if (!date.value) { alert('Bitte mindestens das Geburtsdatum angeben oder „Überspringen" klicken.'); return; }
+        const bd = {
+          date: date.value,
+          time: time.value || null,
+          timeKnown: !tk.checked && !!time.value,
+          place: meta.place,
+          lat: meta.lat,
+          lon: meta.lon,
+          tzOffsetMinutes: meta.tzOffsetMinutes
+        };
+        this.state.birthData = bd;
+        saveState(STORAGE_KEYS.birth, bd);
+        this.setStep(3);
+      };
+      actions.append(save);
+      wrap.append(actions);
+      return wrap;
+    }
+
+    // ── Step 3: External Inputs ─────────────────────────────────
     renderInputs() {
       const wrap = el('div', 'sg-card sg-inputs');
       wrap.append(el('h2', null, 'Externe Inputs (optional, aber stark empfohlen)'));
@@ -751,11 +936,11 @@
 
       // Navigation
       const actions = el('div', 'sg-actions');
-      const back = el('button', 'sg-btn sg-btn-ghost', '← Zurück zum Test');
-      back.onclick = () => this.setStep(1);
+      const back = el('button', 'sg-btn sg-btn-ghost', '← Zurück zu Geburtsdaten');
+      back.onclick = () => this.setStep(2);
       actions.append(back);
 
-      const next = el('button', 'sg-btn sg-btn-primary', 'Weiter zur Synthese →');
+      const next = el('button', 'sg-btn sg-btn-primary', 'Profil berechnen →');
       const hasTest = this.state.questions && Object.keys(this.state.answers).length > 0;
       const hasExt = (this.state.externalInputs || []).length > 0;
       next.disabled = !hasTest && !hasExt;
@@ -792,34 +977,54 @@
     }
 
     async runSynthesis() {
-      this.setStep(3);
-      const wrap = this.root.querySelector('.sg-card') || this.root;
+      this.setStep(4);
 
-      // 1. Clientseitige Skoring + DNA – funktioniert IMMER, auch ohne API-Key
+      // 1. Skoring + Facetten + DNA (clientseitig, deterministisch)
       const T = window.SongTestData;
-      const scales = T ? T.computeScores(this.state.answers) : {};
-      const baseDNA = T ? T.computeMusicDNA(scales) : null;
-      const baseArchetype = T ? T.computeArchetype(scales) : 'Nordstern';
+      const variant = this.state.testVariant || 'medium';
+      const scoring = T ? T.computeScores(this.state.answers, variant) : { scales: {}, facets: {} };
+      const scales = scoring.scales || {};
+      const facets = scoring.facets || {};
+      this.state.facets = facets;
+      const baseDNA = T ? T.computeMusicDNA(scales, facets) : null;
+      const baseArchetype = T ? T.computeArchetype(scales, facets) : 'Nordstern';
+
+      // 2. Astrologische Karte (optional, nur wenn Geburtsdaten + astronomy-engine vorhanden)
+      let astroChart = null;
+      const bd = this.state.birthData;
+      if (bd && bd.date && window.SongAstrology && window.Astronomy) {
+        try {
+          astroChart = window.SongAstrology.computeChart(bd);
+          this.state.astrology = astroChart;
+        } catch (err) {
+          console.warn('[SongGenerator] Astrologie-Berechnung fehlgeschlagen:', err && err.message);
+          this.state.astrology = null;
+        }
+      } else {
+        this.state.astrology = null;
+      }
 
       const externalSignals = this._collectExternalSignals();
 
-      // Direkt-Persona als Fallback (falls KI nicht verfügbar)
+      // Direct-Persona als Fallback
       const directPersona = {
         archetype: baseArchetype,
         scales_final: Object.assign({}, scales, { VIA_TOP: this._topVIAFromScales(scales) }),
+        facets_final: facets,
         tensions: [],
         core_narrative: this._buildNarrative(baseArchetype, scales),
-        motifs: this._buildMotifs(scales),
+        motifs: this._buildMotifs(scales, astroChart),
         music_dna: baseDNA,
+        astrology: astroChart || null,
+        test_variant: variant,
         imported_narrative: this.state.importedNarrative || null,
-        rationale: 'Profil aus statischem Test berechnet (Mini-IPIP + HEXACO + Schwartz).' +
-          (externalSignals.length ? ' Plus ' + externalSignals.length + ' externe(r) Signal(e) inkl. Persönlichkeitsentwicklungs-Daten.' : '')
+        rationale: 'Profil aus IPIP-NEO-Items (' + variant + '), HEXACO-H, Schwartz-Werten und Bindung berechnet.' +
+          (astroChart ? ' Astrologische Bildsprache als Zusatz-Schicht.' : '') +
+          (externalSignals.length ? ' Plus ' + externalSignals.length + ' externe(r) Signal(e).' : '')
       };
 
-      // 2. Mit Methoden-Daten ODER manuellen externen Inputs → KI-Synthese
       const hasExt = externalSignals.length > 0;
       if (!hasExt) {
-        // Direkter Pfad – kein API-Call nötig
         this.state.persona = directPersona;
         saveState(STORAGE_KEYS.persona, directPersona);
         this.render();
@@ -829,26 +1034,46 @@
       try {
         const persona = await callApi('synthesize', {
           test_results: this._asConfidenceMap(scales),
+          facets: facets,
+          astrology: astroChart ? this._compactAstro(astroChart) : null,
           external_signals: externalSignals,
           user_meta: this.state.userMeta,
           base_dna: baseDNA,
           base_archetype: baseArchetype,
           imported_narrative: this.state.importedNarrative || null
         });
-        // Importierte Narrative ans Persona-Objekt anhängen, damit der Composer es im Compose-Step nutzen kann
         if (this.state.importedNarrative) persona.imported_narrative = this.state.importedNarrative;
+        persona.astrology = astroChart || null;
+        persona.facets_final = persona.facets_final || facets;
+        persona.test_variant = variant;
         this.state.persona = persona;
         saveState(STORAGE_KEYS.persona, persona);
         this.render();
       } catch (err) {
-        // Fallback: Direct-Persona verwenden, damit der User trotzdem einen Song bekommt
         console.warn('[SongGenerator] KI-Synthese fehlgeschlagen, nutze Direct-Persona:', err && err.message);
         this.state.persona = directPersona;
         saveState(STORAGE_KEYS.persona, directPersona);
         this.render();
-        const s = this.showStatus('Hinweis: KI-Synthese war nicht verfügbar. Profil basiert nur auf Test + Methoden-Daten ohne KI-Verfeinerung.', this.root.querySelector('.sg-card') || this.root);
+        const s = this.showStatus('Hinweis: KI-Synthese war nicht verfügbar. Profil basiert auf clientseitiger Berechnung ohne KI-Verfeinerung.', this.root.querySelector('.sg-card') || this.root);
         s.classList.add('sg-status-error');
       }
+    }
+
+    // Kompakte Astro-Darstellung für den Prompt (Token-sparsam)
+    _compactAstro(chart) {
+      if (!chart) return null;
+      return {
+        ascSign: chart.ascSign, mcSign: chart.mcSign,
+        placements: (chart.placements || []).map(p => ({
+          planet: p.planet, sign: p.sign, house: p.house, deg: p.degInSign
+        })),
+        aspects: (chart.aspects || []).slice(0, 8).map(a => ({
+          a: a.a, b: a.b, type: a.type, meaning: a.meaning
+        })),
+        elementBalance: chart.elementBalance,
+        modalityBalance: chart.modalityBalance,
+        hints: chart.hints
+      };
     }
 
     // Skalen → Confidence-Map für die Synthese-Lambda
@@ -886,8 +1111,8 @@
       return `Du bist ein ${archetype}: ${energy} und ${tiefe}. ${wert.charAt(0).toUpperCase() + wert.slice(1)} – ${halt}.`;
     }
 
-    // Bilder/Motive für den Songtext (deterministisch)
-    _buildMotifs(s) {
+    // Bilder/Motive für den Songtext (deterministisch, mit optionaler Astro-Schicht)
+    _buildMotifs(s, astro) {
       const pool = [];
       if (s.BIG5_O >= 60) pool.push('Sterne', 'Karten', 'Brücken');
       if (s.BIG5_O < 50) pool.push('Heimweg', 'Küche', 'Werkbank');
@@ -899,87 +1124,165 @@
       if (s.HEX_H >= 60) pool.push('Wurzeln');
       if (s.ATT_SEC >= 60) pool.push('Hafen');
       if (s.ATT_SEC < 50) pool.push('Weite');
-      // Bis auf 5 ergänzen, ohne Duplikate
+
+      // Astro-Motive (symbolisch, bewusst als Bild markiert)
+      if (astro && Array.isArray(astro.motifs)) {
+        astro.motifs.slice(0, 2).forEach(m => pool.push(m));
+      }
+
       const unique = Array.from(new Set(pool));
       while (unique.length < 5) unique.push(['Anker', 'Spur', 'Funken', 'Wege', 'Echo'][unique.length % 5]);
-      return unique.slice(0, 5);
+      return unique.slice(0, 6);
     }
 
-    renderSynthesis() {
-      const wrap = el('div', 'sg-card sg-synthesis');
+    renderProfileMap() {
+      const wrap = el('div', 'sg-profile-card');
       if (!this.state.persona) {
-        wrap.append(el('h2', null, 'Synthese läuft …'));
+        wrap.append(el('h2', null, 'Profil & Karte werden berechnet …'));
         wrap.append(this.showSpinner());
-        wrap.append(this.showStatus('Test-Antworten und externe Signale werden fusioniert; daraus entstehen Archetyp und Klang-DNA.', null));
+        wrap.append(this.showStatus('Test-Antworten, importierte Methoden und – falls vorhanden – die astrologische Karte werden zusammengeführt.', null));
         return wrap;
       }
       const p = this.state.persona;
-      wrap.append(el('h2', null, 'Dein Profil'));
+      wrap.append(el('h2', null, 'Profil & Karte'));
+
+      // Archetyp + Kernsatz
       const arche = el('div', 'sg-archetype');
       arche.append(el('span', 'sg-arche-label', 'Archetyp'));
       arche.append(el('span', 'sg-arche-name', p.archetype || '—'));
       wrap.append(arche);
+      if (p.core_narrative) wrap.append(el('p', 'sg-narrative', p.core_narrative));
 
-      if (p.core_narrative) {
-        wrap.append(el('p', 'sg-narrative', p.core_narrative));
-      }
+      // ── Zwei-Spalten-Bereich: Radar + Wheel ────────────────────
+      const grid = el('div', 'sg-profile-grid');
 
-      // Skalen
-      const scales = el('div', 'sg-scales');
+      // Big-Five-Radar
+      const radarPanel = el('div', 'sg-profile-panel');
+      const radarHead = el('h3', null, 'Big-Five-Profil');
+      radarHead.append(el('span', 'sg-tag', 'wissenschaftlich'));
+      radarPanel.append(radarHead);
       const sf = p.scales_final || {};
-      const scaleLabels = {
-        BIG5_O: 'Offenheit', BIG5_C: 'Gewissenhaftigkeit', BIG5_E: 'Extraversion',
-        BIG5_A: 'Verträglichkeit', BIG5_N: 'Neurotizismus', HEX_H: 'Ehrlichkeit-Demut',
-        VAL_SD: 'Selbstbestimmung', VAL_BE: 'Wohlwollen', ATT_SEC: 'Bindungssicherheit'
-      };
-      Object.keys(scaleLabels).forEach(k => {
-        if (typeof sf[k] !== 'number') return;
-        const row = el('div', 'sg-scale');
-        row.append(el('span', 'sg-scale-label', scaleLabels[k]));
-        const bar = el('div', 'sg-scale-bar');
-        const fill = el('div', 'sg-scale-fill');
-        fill.style.width = Math.max(0, Math.min(100, sf[k])) + '%';
-        bar.append(fill);
-        row.append(bar);
-        row.append(el('span', 'sg-scale-val', String(Math.round(sf[k]))));
-        scales.append(row);
-      });
+      if (window.SongChartRenderer && window.SongChartRenderer.renderBigFiveRadar) {
+        const radarSvg = window.SongChartRenderer.renderBigFiveRadar(sf, p.facets_final || {});
+        radarPanel.append(radarSvg);
+      }
+      // Top-Facetten
+      if (p.facets_final && Object.keys(p.facets_final).length) {
+        const T = window.SongTestData;
+        const top = T && T.topFacets ? T.topFacets(p.facets_final, 6) : [];
+        if (top.length) {
+          const flist = el('div', 'sg-facet-list');
+          flist.append(el('div', null, 'Top-Facetten'));
+          top.forEach(f => {
+            const row = el('div', 'sg-facet-row');
+            row.append(el('span', 'sg-facet-label', f.label));
+            const bg = el('div', 'sg-facet-bar');
+            const fg = el('div', 'sg-facet-bar-fill');
+            fg.style.width = Math.max(0, Math.min(100, f.value)) + '%';
+            bg.append(fg);
+            row.append(bg);
+            row.append(el('span', 'sg-facet-val', String(Math.round(f.value))));
+            flist.append(row);
+          });
+          radarPanel.append(flist);
+        }
+      }
+      // VIA-Stärken
       if (Array.isArray(sf.VIA_TOP) && sf.VIA_TOP.length) {
         const via = el('div', 'sg-via');
-        via.append(el('span', 'sg-via-label', 'Top-Stärken'));
+        via.append(el('span', 'sg-via-label', 'Top-Stärken: '));
         sf.VIA_TOP.forEach(s => via.append(el('span', 'sg-via-tag', s)));
-        scales.append(via);
+        radarPanel.append(via);
       }
-      wrap.append(scales);
+      grid.append(radarPanel);
 
-      // Motive
+      // Natal-Wheel (nur wenn Astro-Karte vorhanden)
+      const wheelPanel = el('div', 'sg-profile-panel');
+      const wheelHead = el('h3', null, 'Astrologische Karte');
+      wheelHead.append(el('span', 'sg-tag', 'symbolisch'));
+      wheelPanel.append(wheelHead);
+      if (p.astrology) {
+        // Meta-Zeile
+        const meta = el('div', 'sg-astro-meta');
+        if (p.astrology.input && p.astrology.input.date) {
+          meta.append(el('span', null, 'Datum: '));
+          meta.append(el('strong', null, p.astrology.input.date + (p.astrology.input.time ? ' · ' + p.astrology.input.time : '')));
+        }
+        if (p.astrology.input && p.astrology.input.place) {
+          meta.append(el('span', null, ' · '));
+          meta.append(el('strong', null, p.astrology.input.place));
+        }
+        if (p.astrology.ascSign) {
+          meta.append(el('span', 'sg-astro-chip', 'AC: ' + p.astrology.ascSign));
+        }
+        if (p.astrology.mcSign) {
+          meta.append(el('span', 'sg-astro-chip', 'MC: ' + p.astrology.mcSign));
+        }
+        wheelPanel.append(meta);
+        if (window.SongChartRenderer && window.SongChartRenderer.renderNatalWheel) {
+          wheelPanel.append(window.SongChartRenderer.renderNatalWheel(p.astrology));
+        }
+        // Planeten kompakt
+        const placements = el('div', 'sg-astro-placements');
+        (p.astrology.placements || []).forEach(pl => {
+          const c = el('div', 'sg-astro-pl');
+          const head = el('div', 'sg-astro-pl-head');
+          head.append(el('span', 'sg-astro-pl-sym', pl.symbol));
+          head.append(document.createTextNode(' ' + pl.de));
+          c.append(head);
+          c.append(el('span', 'sg-astro-pl-sub', pl.sign + (pl.house ? ' · H' + pl.house : '')));
+          placements.append(c);
+        });
+        wheelPanel.append(placements);
+        // Element-Balance
+        if (p.astrology.elementBalance) {
+          const eb = p.astrology.elementBalance;
+          const total = (eb.fire || 0) + (eb.earth || 0) + (eb.air || 0) + (eb.water || 0);
+          if (total > 0) {
+            const bal = el('div', 'sg-balance');
+            [['fire','Feuer'], ['earth','Erde'], ['air','Luft'], ['water','Wasser']].forEach(([k, lbl]) => {
+              const row = el('div', 'sg-balance-row ' + k);
+              row.append(el('span', 'sg-balance-key', lbl));
+              const bg = el('div', 'sg-balance-bar');
+              const fg = el('div', 'sg-balance-bar-fill');
+              fg.style.width = Math.round((eb[k] || 0) / total * 100) + '%';
+              bg.append(fg);
+              row.append(bg);
+              bal.append(row);
+            });
+            wheelPanel.append(bal);
+          }
+        }
+      } else {
+        wheelPanel.append(el('p', 'sg-hint',
+          'Keine Geburtsdaten angegeben. Wenn du in Schritt 2 Datum + Ort einträgst, ' +
+          'erscheint hier deine astrologische Karte als poetische Zusatz-Schicht.'));
+      }
+      grid.append(wheelPanel);
+
+      wrap.append(grid);
+
+      // ── Klang-DNA ────────────────────────────────────────────
+      if (p.music_dna) {
+        const dnaPanel = el('div', 'sg-profile-panel');
+        const dh = el('h3', null, 'Klang-DNA');
+        dh.append(el('span', 'sg-tag', 'aus Profil abgeleitet'));
+        dnaPanel.append(dh);
+        if (window.SongChartRenderer && window.SongChartRenderer.renderMusicDNAcard) {
+          dnaPanel.append(window.SongChartRenderer.renderMusicDNAcard(p.music_dna));
+        }
+        wrap.append(dnaPanel);
+      }
+
+      // ── Motive (Bilder für den Songtext) ─────────────────────
       if (Array.isArray(p.motifs) && p.motifs.length) {
         const m = el('div', 'sg-motifs');
-        m.append(el('h3', null, 'Bilder, die im Song auftauchen'));
+        m.append(el('h3', null, 'Bilder, die im Songtext auftauchen werden'));
         p.motifs.forEach(x => m.append(el('span', 'sg-motif-chip', x)));
         wrap.append(m);
       }
 
-      // Klang-DNA
-      if (p.music_dna) {
-        const dna = el('div', 'sg-dna');
-        dna.append(el('h3', null, 'Klang-DNA'));
-        const grid = el('div', 'sg-dna-grid');
-        grid.append(this.dnaCell('Tonart', (p.music_dna.key || '?') + ' ' + (p.music_dna.mode || '')));
-        grid.append(this.dnaCell('Tempo', (p.music_dna.tempo_bpm || '?') + ' BPM'));
-        grid.append(this.dnaCell('Takt', p.music_dna.time_signature || '?'));
-        grid.append(this.dnaCell('Energie', this.fmtBar(p.music_dna.energy)));
-        grid.append(this.dnaCell('Helligkeit', this.fmtBar(p.music_dna.brightness)));
-        grid.append(this.dnaCell('Wärme', this.fmtBar(p.music_dna.warmth)));
-        if (p.music_dna.instrumentation) {
-          const inst = [].concat(p.music_dna.instrumentation.core || [], p.music_dna.instrumentation.color || [], p.music_dna.instrumentation.rhythm || []);
-          grid.append(this.dnaCell('Instrumente', inst.slice(0, 6).join(' · ')));
-        }
-        dna.append(grid);
-        wrap.append(dna);
-      }
-
-      // Tensions
+      // ── Spannungsfelder ──────────────────────────────────────
       if (Array.isArray(p.tensions) && p.tensions.length) {
         const tw = el('div', 'sg-tensions');
         tw.append(el('h3', null, 'Spannungsfelder'));
@@ -989,11 +1292,21 @@
         wrap.append(tw);
       }
 
+      // ── Quellen-Hinweis ──────────────────────────────────────
+      const sources = el('div', 'sg-profile-sources');
+      sources.innerHTML = '<strong>Quellen:</strong> Big-Five & 30 Facetten nach IPIP-NEO (Johnson 2014, Maples-Keller 2019), ' +
+        'HEXACO-Honesty-Humility (Ashton & Lee 2009), Schwartz-Werte (Schwartz 2012), Bindung (ECR-S, Wei et al. 2007), ' +
+        'VIA-Stärken (Peterson & Seligman 2004). ' +
+        (p.astrology
+          ? 'Astrologische Karte berechnet mit astronomy-engine; Häuser im Whole-Sign-System. <em>Astrologie ist wissenschaftlich nicht validiert und fließt nur als poetische Bildersprache in den Song ein.</em>'
+          : '');
+      wrap.append(sources);
+
       const actions = el('div', 'sg-actions');
       const back = el('button', 'sg-btn sg-btn-ghost', '← Zurück');
-      back.onclick = () => this.setStep(2);
+      back.onclick = () => this.setStep(3);
       actions.append(back);
-      const redo = el('button', 'sg-btn sg-btn-ghost', 'Synthese neu rechnen');
+      const redo = el('button', 'sg-btn sg-btn-ghost', 'Neu berechnen');
       redo.onclick = () => { this.state.persona = null; this.runSynthesis(); };
       actions.append(redo);
       const next = el('button', 'sg-btn sg-btn-primary', 'Song komponieren →');
@@ -1002,6 +1315,9 @@
       wrap.append(actions);
       return wrap;
     }
+
+    // Alias für Rückwärtskompatibilität (falls irgendwo noch renderSynthesis erwartet wird)
+    renderSynthesis() { return this.renderProfileMap(); }
 
     dnaCell(label, value) {
       const c = el('div', 'sg-dna-cell');
@@ -1014,12 +1330,11 @@
       return n + '%';
     }
 
-    // ── Step 4: Compose ─────────────────────────────────────────
+    // ── Step 5: Compose ─────────────────────────────────────────
     async runCompose() {
-      this.setStep(4);
+      this.setStep(5);
       const wrap = this.root.querySelector('.sg-card') || this.root;
 
-      // Pre-check: Compose braucht zwingend einen API-Key (Songtext-Generierung)
       const key = await getApiKey();
       if (!key) {
         const s = this.showStatus(
@@ -1028,7 +1343,7 @@
           '(gleicher Speicherort wie bei der Onboarding-App).', wrap);
         s.classList.add('sg-status-error');
         const back = el('button', 'sg-btn sg-btn-ghost', '← Zurück zum Profil');
-        back.onclick = () => this.setStep(3);
+        back.onclick = () => this.setStep(4);
         const link = el('a', 'sg-btn sg-btn-primary', 'Admin-Panel öffnen');
         link.href = 'admin.html#api-keys';
         const actions = el('div', 'sg-actions');
@@ -1038,19 +1353,24 @@
       }
 
       try {
+        // Persona für Compose: Astrologie ggf. kompakt mitschicken
+        const personaForCompose = Object.assign({}, this.state.persona);
+        if (personaForCompose.astrology) {
+          personaForCompose.astrology = this._compactAstro(personaForCompose.astrology);
+        }
         const song = await callApi('compose', {
-          persona: this.state.persona,
+          persona: personaForCompose,
           creativity: 0.78
         });
         this.state.song = song;
         saveState(STORAGE_KEYS.song, song);
-        this.setStep(5);
+        this.setStep(6);
       } catch (err) {
         const s = wrap.querySelector('.sg-status') || this.showStatus('', wrap);
         s.textContent = '⚠️ ' + err.message;
         s.classList.add('sg-status-error');
         const back = el('button', 'sg-btn sg-btn-ghost', '← Zurück');
-        back.onclick = () => this.setStep(3);
+        back.onclick = () => this.setStep(4);
         const retry = el('button', 'sg-btn sg-btn-primary', 'Erneut versuchen');
         retry.onclick = () => this.runCompose();
         const actions = el('div', 'sg-actions');
@@ -1108,8 +1428,8 @@
       }
 
       const actions = el('div', 'sg-actions');
-      const back = el('button', 'sg-btn sg-btn-ghost', '← Persona ändern');
-      back.onclick = () => this.setStep(3);
+      const back = el('button', 'sg-btn sg-btn-ghost', '← Profil ändern');
+      back.onclick = () => this.setStep(4);
       actions.append(back);
       const newSong = el('button', 'sg-btn sg-btn-ghost', 'Komplett neu komponieren');
       newSong.onclick = () => this.runCompose();

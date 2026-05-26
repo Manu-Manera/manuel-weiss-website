@@ -160,15 +160,31 @@ Falls nein: korrigiere INTERN und gib erst dann das finale JSON aus.`;
     return 'AUFTRAG: Fusioniere folgende Quellen zu EINEM kohärenten Persona-Profil.\n\n' +
       'INPUT:\n' + JSON.stringify({
         test_results: args.test_results || {},
+        facets: args.facets || {},
         external_signals: args.external_signals || [],
+        astrology: args.astrology || null,
         user_meta: args.user_meta || {}
       }, null, 2) + '\n\n' +
-      'FUSIONS-REGELN:\n1. Pro Skala: gewichteter Mittelwert über alle Quellen, Gewicht = confidence².\n   Test-Quelle bekommt zusätzlich Faktor 1.5.\n' +
+      'PRIMÄRQUELLEN (wissenschaftlich):\n' +
+      ' - test_results: Big-Five-Domänen + HEXACO-H + Schwartz (SD, BE, AC, ST) +\n' +
+      '   Bindung (SEC/ANX/AVO) + VIA-Stärken-Marker. 0..100.\n' +
+      ' - facets: 30 NEO-PI-R-Facetten (O1..O6, C1..C6, E1..E6, A1..A6, N1..N6),\n' +
+      '   wenn vorhanden – höchste diagnostische Auflösung. Nutze zur Schärfung\n' +
+      '   der Narrative und Motive.\n' +
+      ' - external_signals: optionale Zusatzhinweise (Tests, Tagebücher etc.).\n\n' +
+      'SEKUNDÄRQUELLE (symbolisch, OPTIONAL):\n' +
+      ' - astrology: enthält Aszendent, MC, Planetenstände mit Zeichen und\n' +
+      '   Whole-Sign-Häusern sowie auffällige Aspekte. Wenn vorhanden, nutze sie\n' +
+      '   ausschließlich als BILDERSPRACHE und MOTIV-RESERVOIR für den Songtext\n' +
+      '   (z. B. „Mond im Krebs" → Bild „Wasser, Erinnerung, Heim"). NIEMALS als\n' +
+      '   Persönlichkeitsaussage formulieren („du bist…"), sondern als poetisches\n' +
+      '   Bild verwenden. Behalte Big-Five/HEXACO als primäre Wahrheit.\n\n' +
+      'FUSIONS-REGELN:\n1. Pro Skala: gewichteter Mittelwert über alle wissenschaftlichen Quellen,\n   Gewicht = confidence². Test-Quelle bekommt zusätzlich Faktor 1.5.\n' +
       '2. Bei Widersprüchen >25 Punkte: notiere in tensions[], wähle Wert mit höherer\n   aggregierter Konfidenz, dokumentiere in rationale.\n' +
       '3. Leite Archetyp ab (NICHT MBTI-Buchstaben verwenden) – wähle 1 aus 12:\n' +
       '   ["Pilger","Kartograph","Funke","Hüter","Alchemist","Wanderer","Architekt",\n    "Echo","Leuchtturm","Sturmreiter","Gärtner","Nordstern"]\n' +
-      '4. Erzeuge core_narrative (3 Sätze, Du-Form, poetisch-präzise).\n' +
-      '5. Erzeuge 5 motifs (semantische Bilder) für den Songtext.\n' +
+      '4. Erzeuge core_narrative (3–4 Sätze, Du-Form, poetisch-präzise).\n' +
+      '5. Erzeuge 5 motifs (semantische Bilder) für den Songtext. Wenn astrology\n   vorhanden, dürfen 1–2 Motive astrologische Bildersprache aufnehmen (z. B.\n   „Aszendent: erste Hülle, mit der du den Raum betrittst").\n' +
       '6. Erzeuge eine music_dna als kompakten Steuervektor.\n' +
       '7. Setze harte Locks (tonality_lock, tempo_lock).\n\n' +
       'OUTPUT (JSON, PERSONA_PROFILE):\n' +
@@ -191,6 +207,13 @@ Falls nein: korrigiere INTERN und gib erst dann das finale JSON aus.`;
     const creativity = typeof args.creativity === 'number' ? args.creativity : 0.7;
     return 'AUFTRAG: Erzeuge einen tief persönlichen Song basierend auf PERSONA_PROFILE.\n\n' +
       'INPUT:\n' + JSON.stringify({ persona, mode, edit_targets, previous_song, creativity }, null, 2) + '\n\n' +
+      'HINWEIS:\n' +
+      'persona kann optional ein astrology-Feld enthalten (Geburtskarte). Wenn\n' +
+      'vorhanden, NUTZE die Bildersprache (Element/Modus, Sonne/Mond/Aszendent,\n' +
+      'auffällige Aspekte) als poetisches Reservoir für Metaphern und Bilder im\n' +
+      'Songtext. Schreibe NIE Aussagen wie „du bist Skorpion" oder „weil dein\n' +
+      'Aszendent…". Astrologie ist symbolisches Material, keine Diagnose.\n' +
+      'Wenn nicht vorhanden, ignoriere die Schicht vollständig.\n\n' +
       'MUSIK-LOCK-MATRIX (nicht verhandelbar):\n' +
       '- Tonart bleibt innerhalb music_dna.key ± relative Moll/Dur-Variante.\n' +
       '- Akkorde nur aus tonality_lock-Familien (Standard: I, ii, IV, V, vi, iiø, VImaj7).\n' +
