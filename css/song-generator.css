@@ -1379,6 +1379,17 @@
 .sg-voice-phrase-label { font-weight: 600; font-size: 0.85rem; color: #334155; }
 .sg-voice-status { font-size: 0.85rem; color: #64748b; margin: 0.35rem 0; }
 .sg-voice-status.ok { color: #059669; font-weight: 600; }
+.sg-voice-next-steps { margin-top: 0.65rem; }
+.sg-voice-next-title { font-weight: 600; font-size: 0.85rem; color: #334155; margin: 0 0 0.35rem; }
+.sg-voice-next-list {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.82rem;
+  color: #475569;
+  line-height: 1.45;
+}
+.sg-voice-next-list li { margin-bottom: 0.35rem; }
+.sg-voice-prod-hint { margin: 0.35rem 0 0; font-size: 0.78rem; }
 .sg-voice-use-label {
   display: inline-flex;
   align-items: center;

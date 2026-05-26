@@ -121,8 +121,24 @@
       facets: state.facets,
       astrology: state.astrology,
       userMeta: state.userMeta,
-      importedNarrative: state.importedNarrative || ''
+      importedNarrative: state.importedNarrative || '',
+      favorites: Array.isArray(state.favorites)
+        ? state.favorites.slice(0, window.SongFavorites ? window.SongFavorites.MAX_FAVORITES : 50)
+        : []
     };
+  }
+
+  function mergeFavoritesIntoLibrary(library, favorites) {
+    library = library || { entries: [] };
+    if (!Array.isArray(library.entries)) library.entries = [];
+    if (window.SongFavorites) {
+      library.favorites = window.SongFavorites.mergeLists(library.favorites, favorites || []);
+    } else if (Array.isArray(favorites) && favorites.length) {
+      library.favorites = favorites.slice();
+    } else if (!Array.isArray(library.favorites)) {
+      library.favorites = [];
+    }
+    return library;
   }
 
   function hasPlayableTracks(media) {
@@ -172,6 +188,13 @@
     if (snap.userMeta) state.userMeta = Object.assign({}, state.userMeta || {}, snap.userMeta);
     if (typeof snap.importedNarrative === 'string') state.importedNarrative = snap.importedNarrative;
     if (typeof snap.step === 'number') state.step = snap.step;
+    if (Array.isArray(snap.favorites)) {
+      if (window.SongFavorites) {
+        state.favorites = window.SongFavorites.mergeLists(state.favorites, snap.favorites);
+      } else {
+        state.favorites = snap.favorites.slice();
+      }
+    }
     return true;
   }
 
@@ -270,8 +293,7 @@
     if (!isLoggedIn()) return null;
     const token = await getAuthToken();
     let library = await loadAudioLibrary();
-    if (!library.entries) library.entries = [];
-    library.favorites = Array.isArray(favorites) ? favorites : [];
+    library = mergeFavoritesIntoLibrary(library, favorites);
     library.updatedAt = new Date().toISOString();
     await writeWorkflowStep('audioLibrary', library, token);
     return library;
@@ -287,8 +309,7 @@
     try {
       const token = await getAuthToken();
       let library = await loadAudioLibrary();
-      if (!library.entries) library.entries = [];
-      library.favorites = result.favorites;
+      library = mergeFavoritesIntoLibrary(library, result.favorites);
       library.updatedAt = new Date().toISOString();
       await writeWorkflowStep('audioLibrary', library, token);
       if (state) state.audioLibrary = library;
@@ -367,11 +388,7 @@
       while (library.entries.length > MAX_LIBRARY_ENTRIES) {
         library.entries.pop();
       }
-      if (state.favorites && state.favorites.length && window.SongFavorites) {
-        library.favorites = window.SongFavorites.mergeLists(library.favorites, state.favorites);
-      } else if (!Array.isArray(library.favorites)) {
-        library.favorites = [];
-      }
+      library = mergeFavoritesIntoLibrary(library, state.favorites || []);
       library.identity = identity;
       library.updatedAt = new Date().toISOString();
       await writeWorkflowStep('audioLibrary', library, token);
@@ -404,11 +421,12 @@
       if (window.SongFavorites) {
         var mergedFav = window.SongFavorites.mergeLists(library.favorites, state.favorites || []);
         state.favorites = mergedFav;
-        if (mergedFav.length && JSON.stringify(mergedFav) !== JSON.stringify(library.favorites || [])) {
+        if (JSON.stringify(mergedFav) !== JSON.stringify(library.favorites || [])) {
           library.favorites = mergedFav;
+          library.updatedAt = new Date().toISOString();
           await writeWorkflowStep('audioLibrary', library, token);
         }
-      } else if (Array.isArray(library.favorites)) {
+      } else if (Array.isArray(library.favorites) && library.favorites.length) {
         state.favorites = library.favorites;
       }
       if (state.persona) {

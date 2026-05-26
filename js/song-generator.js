@@ -530,12 +530,11 @@
         const loaded = await window.SongGeneratorCloud.loadLatest();
         if (loaded && loaded.snapshot) {
           window.SongGeneratorCloud.applySnapshotToState(this.state, loaded.snapshot, localMerge);
-          if (window.SongFavorites && localMerge.favorites && localMerge.favorites.length) {
-            this.state.favorites = window.SongFavorites.mergeLists(
-              this.state.favorites, localMerge.favorites
-            );
-          }
-          this.syncLocalCache();
+        }
+        if (window.SongFavorites) {
+          this.state.favorites = window.SongFavorites.mergeLists(
+            this.state.favorites, localMerge.favorites
+          );
         }
         if (window.SongGeneratorCloud.syncAudioIdentity) {
           await window.SongGeneratorCloud.syncAudioIdentity(this.state);
@@ -549,6 +548,7 @@
             saveState(STORAGE_KEYS.voiceProfile, vp);
           }
         }
+        this.syncLocalCache();
         if (window.SongMusicEngine && window.SongMusicEngine.invalidateSunoKeyCache) {
           window.SongMusicEngine.invalidateSunoKeyCache();
         }
@@ -556,6 +556,27 @@
       } catch (err) {
         console.warn('[SongGenerator] Cloud-Laden fehlgeschlagen:', err && err.message);
       }
+    }
+
+    _hasRegisteredVoice() {
+      return !!(this.state.voiceProfile && this.state.voiceProfile.voiceId);
+    }
+
+    _getVocalSelectValue() {
+      if (this.state.useCustomVoice && this._hasRegisteredVoice()) return 'custom';
+      const vg = this.state.audioState && this.state.audioState.vocalGender;
+      return vg || 'auto';
+    }
+
+    _onVocalGenderChange(selectValue) {
+      if (selectValue === 'custom') {
+        this.state.useCustomVoice = true;
+        saveState(STORAGE_KEYS.useCustomVoice, true);
+      } else {
+        this.state.useCustomVoice = false;
+        saveState(STORAGE_KEYS.useCustomVoice, false);
+      }
+      this.state.audioState = Object.assign({}, this.state.audioState, { vocalGender: selectValue });
     }
 
     getEnrichedPersona() {
@@ -2251,13 +2272,16 @@
       opts.analysisKeywords = mods.analysisKeywords;
       opts.instrumental = mods.instrumental;
       opts._persona = persona;
-      if (this.state.useCustomVoice && this.state.voiceProfile && this.state.voiceProfile.voiceId &&
+      const wantsCustomVoice = (base.vocalGender === 'custom' || this.state.useCustomVoice) &&
+        this.state.voiceProfile && this.state.voiceProfile.voiceId;
+      if (wantsCustomVoice &&
           !mods.instrumental && intentId !== 'focus' && intentId !== 'workout' &&
           intentId !== 'chill' && intentId !== 'healing' && intentId !== 'sleep') {
         opts.useCustomVoice = true;
         opts.voiceId = this.state.voiceProfile.voiceId;
         opts.personaId = this.state.voiceProfile.voiceId;
         opts.personaModel = 'voice_persona';
+        opts.vocalGender = 'custom';
       }
       if (track && track.titleSuggestion && intentId !== 'personality') {
         opts.titleOverride = track.titleSuggestion.slice(0, 95);
@@ -2391,18 +2415,23 @@
 
       if (vp && vp.voiceId) {
         const ready = el('div', 'sg-voice-ready');
-        ready.append(el('p', 'sg-voice-status ok', '✓ Stimme registriert: ' + (vp.voiceName || 'Meine Stimme')));
-        const useWrap = el('label', 'sg-voice-use-label');
-        const useCb = document.createElement('input');
-        useCb.type = 'checkbox';
-        useCb.checked = !!this.state.useCustomVoice;
-        useCb.onchange = function () {
-          self.state.useCustomVoice = useCb.checked;
-          saveState(STORAGE_KEYS.useCustomVoice, self.state.useCustomVoice);
-        };
-        useWrap.append(useCb);
-        useWrap.append(document.createTextNode(' Bei Produktion meine Stimme verwenden'));
-        ready.append(useWrap);
+        ready.append(el('p', 'sg-voice-status ok',
+          '✓ Stimme registriert: ' + (vp.voiceName || 'Meine Stimme')));
+        const steps = el('div', 'sg-voice-next-steps');
+        steps.append(el('p', 'sg-voice-next-title', 'So geht es weiter:'));
+        const ol = document.createElement('ol');
+        ol.className = 'sg-voice-next-list';
+        [
+          'Scrolle zu „Audio produzieren“ und wähle beim Feld Stimme → „Meine Stimme (registriert)“.',
+          'Produziere einen Einzel-Song oder eine Playlist – Suno nutzt dann deine Voice-Persona.',
+          'Instrumental- oder Fokus-Modi (z. B. Workout, Schlaf) verwenden keine Gesangsstimme.'
+        ].forEach(function (txt) {
+          const li = document.createElement('li');
+          li.textContent = txt;
+          ol.appendChild(li);
+        });
+        steps.append(ol);
+        ready.append(steps);
         panel.append(ready);
         return panel;
       }
@@ -2456,6 +2485,7 @@
               self.state.voiceProfile = result;
               self.state.useCustomVoice = true;
               self.state.voiceWizard = { phase: 'idle' };
+              self.state.audioState = Object.assign({}, self.state.audioState || {}, { vocalGender: 'custom' });
               saveState(STORAGE_KEYS.voiceProfile, result);
               saveState(STORAGE_KEYS.useCustomVoice, true);
               if (window.SongGeneratorCloud && window.SongGeneratorCloud.saveVoiceProfile) {
@@ -2573,6 +2603,7 @@
             self.state.voiceProfile = result;
             self.state.useCustomVoice = true;
             self.state.voiceWizard = { phase: 'idle' };
+            self.state.audioState = Object.assign({}, self.state.audioState || {}, { vocalGender: 'custom' });
             saveState(STORAGE_KEYS.voiceProfile, result);
             saveState(STORAGE_KEYS.useCustomVoice, true);
             if (window.SongGeneratorCloud && window.SongGeneratorCloud.saveVoiceProfile) {
@@ -2793,14 +2824,29 @@
       const vgWrap = el('div', 'sg-field');
       vgWrap.append(el('label', null, 'Stimme'));
       const vgSel = el('select');
-      [['auto', 'Automatisch aus Profil'], ['f', 'Weiblich'], ['m', 'Männlich']].forEach(([v, l]) => {
-        const o = el('option', null, l); o.value = v; vgSel.append(o);
+      const vocalOptions = [
+        ['auto', 'Automatisch aus Profil'],
+        ['f', 'Weiblich'],
+        ['m', 'Männlich']
+      ];
+      if (this._hasRegisteredVoice()) {
+        const voiceName = this.state.voiceProfile.voiceName || 'Meine Stimme';
+        vocalOptions.push(['custom', voiceName + ' (registriert)']);
+      }
+      vocalOptions.forEach(function (pair) {
+        const o = el('option', null, pair[1]);
+        o.value = pair[0];
+        vgSel.append(o);
       });
-      vgSel.value = (this.state.audioState && this.state.audioState.vocalGender) || 'auto';
+      vgSel.value = this._getVocalSelectValue();
       vgSel.onchange = () => {
-        this.state.audioState = Object.assign({}, this.state.audioState, { vocalGender: vgSel.value });
+        this._onVocalGenderChange(vgSel.value);
       };
       vgWrap.append(vgSel);
+      if (this._hasRegisteredVoice()) {
+        vgWrap.append(el('p', 'sg-hint sg-voice-prod-hint',
+          '„Meine Stimme“ nutzt deine Suno Voice-Persona (personaId) – nicht bei Instrumental/Fokus-Modi.'));
+      }
       opts.append(vgWrap);
 
       // Modell-Wahl
@@ -2817,22 +2863,6 @@
       mWrap.append(mSel);
       opts.append(mWrap);
 
-      if (this.state.voiceProfile && this.state.voiceProfile.voiceId) {
-        const voiceWrap = el('div', 'sg-field sg-field-voice');
-        const voiceLabel = el('label', 'sg-voice-use-label');
-        const voiceCb = document.createElement('input');
-        voiceCb.type = 'checkbox';
-        voiceCb.checked = !!this.state.useCustomVoice;
-        voiceCb.onchange = () => {
-          this.state.useCustomVoice = voiceCb.checked;
-          saveState(STORAGE_KEYS.useCustomVoice, this.state.useCustomVoice);
-        };
-        voiceLabel.append(voiceCb);
-        voiceLabel.append(document.createTextNode(' Meine registrierte Stimme verwenden'));
-        voiceWrap.append(voiceLabel);
-        opts.append(voiceWrap);
-      }
-
       box.append(opts);
 
       // Status / Actions / Player
@@ -2845,7 +2875,7 @@
         startBtn.onclick = () => {
           const o = this._buildProductionOpts({
             model: mSel.value,
-            vocalGender: vgSel.value === 'auto' ? undefined : vgSel.value
+            vocalGender: vgSel.value
           });
           this.runProduction(o);
         };
@@ -2859,7 +2889,7 @@
         queueBtn.onclick = () => {
           this.runPlaylistQueue({
             model: mSel.value,
-            vocalGender: vgSel.value === 'auto' ? undefined : vgSel.value,
+            vocalGender: vgSel.value,
             pack: this.state.playlistPack || 'core'
           });
         };

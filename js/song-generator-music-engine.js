@@ -493,8 +493,14 @@
     const title = (song && song.title) ? String(song.title).slice(0, 95) : 'Persönlichkeits-Song';
     const style = buildStylePrompt(persona, opts);
     const lyrics = buildLyricsFromSong(song);
-    let vocalGender = opts.vocalGender || vocalGenderFromPersona(persona);
-    if (vocalGender !== 'm' && vocalGender !== 'f') vocalGender = undefined;
+    const useVoicePersona = !!(opts.personaId && opts.personaModel === 'voice_persona');
+    let vocalGender;
+    if (useVoicePersona || opts.vocalGender === 'custom') {
+      vocalGender = undefined;
+    } else {
+      vocalGender = opts.vocalGender || vocalGenderFromPersona(persona);
+      if (vocalGender !== 'm' && vocalGender !== 'f') vocalGender = undefined;
+    }
     const useInstrumental = opts.instrumental != null ? opts.instrumental : style.instrumental;
     const hasLyrics = lyrics && lyrics.length >= 30;
 
