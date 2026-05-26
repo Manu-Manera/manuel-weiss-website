@@ -2590,7 +2590,8 @@
               verifyFile: verifyFile,
               meta: { voiceName: 'Meine Stimme' },
               onPhase: function (p) {
-                self.state.voiceWizard = Object.assign({}, wiz, p);
+                self.state.voiceWizard = Object.assign({}, wiz, p, { updatedAt: new Date().toISOString() });
+                self._persistVoiceLocal();
               }
             });
             if (result.voiceId) {
