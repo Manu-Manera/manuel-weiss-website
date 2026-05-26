@@ -78,6 +78,7 @@
     var rafId = null;
     var lastPitch = null;
     var statusEl = null;
+    var calSamples = [];
 
     function recalcDuration() {
       totalDuration = melody.reduce(function (s, n) { return s + n.durationMs; }, 0);
@@ -390,7 +391,7 @@
       calibrating = true;
       stats = { hits: 0, total: 0 };
       pitchHistory = [];
-      var samples = [];
+      calSamples = [];
       var start = Date.now();
       statusEl.textContent = 'Sing einen bequemen «La»-Ton – 3 Sekunden …';
 
@@ -405,8 +406,8 @@
         setTimeout(function () {
           clearInterval(iv);
           calibrating = false;
-          if (samples.length >= 5) {
-            var med = median(samples);
+          if (calSamples.length >= 5) {
+            var med = median(calSamples);
             var shift = Math.round(med - melody[0].midi);
             if (Math.abs(shift) >= 1) {
               transpose += shift;
@@ -422,12 +423,6 @@
           }
           resolve();
         }, 3200);
-
-        var calHandler = function (data) {
-          lastPitch = data;
-          if (data.midi != null && !data.tooQuiet) samples.push(data.midi);
-        };
-        tick._calHandler = calHandler;
       });
     }
 
@@ -459,7 +454,10 @@
 
         detector.start(function (data) {
           lastPitch = data;
-          if (calibrating) return;
+          if (calibrating) {
+            if (data.midi != null && !data.tooQuiet) calSamples.push(data.midi);
+            return;
+          }
           var elapsed = Date.now() - practiceStart;
           var state = getMelodyState(elapsed);
           if (data.midi != null && state && state.note) scorePitch(data, state.note.midi);
