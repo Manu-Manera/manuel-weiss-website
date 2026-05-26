@@ -23,7 +23,9 @@
     variant: 'sg_test_variant_v1',
     audio: 'sg_audio_v1',
     playlist: 'sg_playlist_v1',
-    favorites: 'sg_favorites_v1'
+    favorites: 'sg_favorites_v1',
+    voiceProfile: 'sg_voice_profile_v1',
+    useCustomVoice: 'sg_use_custom_voice_v1'
   };
 
   const API_BASE = 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
@@ -444,6 +446,9 @@
         audio: loadState(STORAGE_KEYS.audio, null),
         playlist: loadState(STORAGE_KEYS.playlist, null),
         favorites: loadState(STORAGE_KEYS.favorites, []),
+        voiceProfile: loadState(STORAGE_KEYS.voiceProfile, null),
+        useCustomVoice: !!loadState(STORAGE_KEYS.useCustomVoice, false),
+        voiceWizard: { phase: 'idle' },
         audioLibrary: null,
         audioIdentity: null,
         audioState: { phase: 'idle' },
@@ -497,6 +502,8 @@
       saveState(STORAGE_KEYS.audio, this.state.audio);
       saveState(STORAGE_KEYS.playlist, this.state.playlist);
       saveState(STORAGE_KEYS.favorites, this.state.favorites);
+      saveState(STORAGE_KEYS.voiceProfile, this.state.voiceProfile);
+      saveState(STORAGE_KEYS.useCustomVoice, this.state.useCustomVoice);
     }
 
     _cloudSave(milestone, opts) {
@@ -510,16 +517,30 @@
       try {
         const localMerge = {
           playlist: loadState(STORAGE_KEYS.playlist, null),
-          audio: loadState(STORAGE_KEYS.audio, null)
+          audio: loadState(STORAGE_KEYS.audio, null),
+          favorites: loadState(STORAGE_KEYS.favorites, [])
         };
         const loaded = await window.SongGeneratorCloud.loadLatest();
         if (loaded && loaded.snapshot) {
           window.SongGeneratorCloud.applySnapshotToState(this.state, loaded.snapshot, localMerge);
+          if (window.SongFavorites && localMerge.favorites && localMerge.favorites.length) {
+            this.state.favorites = window.SongFavorites.mergeLists(
+              this.state.favorites, localMerge.favorites
+            );
+          }
           this.syncLocalCache();
         }
         if (window.SongGeneratorCloud.syncAudioIdentity) {
           await window.SongGeneratorCloud.syncAudioIdentity(this.state);
           if (this.state.persona) saveState(STORAGE_KEYS.persona, this.state.persona);
+          saveState(STORAGE_KEYS.favorites, this.state.favorites);
+        }
+        if (window.SongGeneratorCloud.loadVoiceProfile) {
+          const vp = await window.SongGeneratorCloud.loadVoiceProfile();
+          if (vp && vp.voiceId) {
+            this.state.voiceProfile = vp;
+            saveState(STORAGE_KEYS.voiceProfile, vp);
+          }
         }
         if (window.SongMusicEngine && window.SongMusicEngine.invalidateSunoKeyCache) {
           window.SongMusicEngine.invalidateSunoKeyCache();
@@ -615,12 +636,19 @@
 
     async _toggleFavorite(meta) {
       if (!meta || !meta.url) return;
-      if (!window.SongGeneratorCloud || !window.SongGeneratorCloud.isLoggedIn()) {
-        alert('Bitte anmelden, um Favoriten zu speichern.');
+      const norm = this._buildFavoriteMeta(meta);
+      if (!norm) return;
+      if (window.SongGeneratorCloud && window.SongGeneratorCloud.toggleFavorite) {
+        const result = await window.SongGeneratorCloud.toggleFavorite(this.state, norm);
+        if (result) {
+          this.state.favorites = result.favorites;
+          saveState(STORAGE_KEYS.favorites, this.state.favorites);
+          this.render();
+        }
         return;
       }
-      const result = await window.SongGeneratorCloud.toggleFavorite(this.state, meta);
-      if (result) {
+      if (window.SongFavorites) {
+        const result = window.SongFavorites.toggle(this.state.favorites || [], norm);
         this.state.favorites = result.favorites;
         saveState(STORAGE_KEYS.favorites, this.state.favorites);
         this.render();
@@ -646,7 +674,13 @@
     }
 
     async _reorderFavorite(fromIndex, toIndex) {
-      if (!window.SongGeneratorCloud || !window.SongGeneratorCloud.reorderFavorites) return;
+      if (!window.SongFavorites) return;
+      if (!window.SongGeneratorCloud || !window.SongGeneratorCloud.isLoggedIn()) {
+        this.state.favorites = window.SongFavorites.reorder(this.state.favorites || [], fromIndex, toIndex);
+        saveState(STORAGE_KEYS.favorites, this.state.favorites);
+        this.render();
+        return;
+      }
       const result = await window.SongGeneratorCloud.reorderFavorites(this.state, fromIndex, toIndex);
       if (result) {
         this.state.favorites = result.favorites;
@@ -1981,6 +2015,7 @@
       // ════════════════════════════════════════════════════════
       // AUDIO-PRODUKTION (KI komponiert echtes Musikstück mit Stimme)
       // ════════════════════════════════════════════════════════
+      wrap.append(this.renderVoicePanel());
       wrap.append(this.renderProduction());
 
       // Produktions-Spezifikation (Roh-Daten, ausklappbar)
@@ -2169,6 +2204,14 @@
       opts.analysisKeywords = mods.analysisKeywords;
       opts.instrumental = mods.instrumental;
       opts._persona = persona;
+      if (this.state.useCustomVoice && this.state.voiceProfile && this.state.voiceProfile.voiceId &&
+          !mods.instrumental && intentId !== 'focus' && intentId !== 'workout' &&
+          intentId !== 'chill' && intentId !== 'healing' && intentId !== 'sleep') {
+        opts.useCustomVoice = true;
+        opts.voiceId = this.state.voiceProfile.voiceId;
+        opts.personaId = this.state.voiceProfile.voiceId;
+        opts.personaModel = 'voice_persona';
+      }
       if (track && track.titleSuggestion && intentId !== 'personality') {
         opts.titleOverride = track.titleSuggestion.slice(0, 95);
       }
@@ -2277,17 +2320,180 @@
       return wrap;
     }
 
+    renderVoicePanel() {
+      const self = this;
+      const panel = el('div', 'sg-voice-panel');
+      panel.append(el('h4', null, '🎤 Meine Stimme (Optional)'));
+      panel.append(el('p', 'sg-voice-lead',
+        'Eigene Stimme via Suno Voice: Stimmprobe hochladen → Validierungssatz singen → bei Produktion „Meine Stimme" aktivieren. ' +
+        'Funktioniert nur bei Songs mit Gesang (nicht bei instrumentalen Kontexten).'));
+
+      const vp = this.state.voiceProfile;
+      const wiz = this.state.voiceWizard || { phase: 'idle' };
+
+      if (vp && vp.voiceId) {
+        const ready = el('div', 'sg-voice-ready');
+        ready.append(el('p', 'sg-voice-status ok', '✓ Stimme registriert: ' + (vp.voiceName || 'Meine Stimme')));
+        const useWrap = el('label', 'sg-voice-use-label');
+        const useCb = document.createElement('input');
+        useCb.type = 'checkbox';
+        useCb.checked = !!this.state.useCustomVoice;
+        useCb.onchange = function () {
+          self.state.useCustomVoice = useCb.checked;
+          saveState(STORAGE_KEYS.useCustomVoice, self.state.useCustomVoice);
+        };
+        useWrap.append(useCb);
+        useWrap.append(document.createTextNode(' Bei Produktion meine Stimme verwenden'));
+        ready.append(useWrap);
+        panel.append(ready);
+        return panel;
+      }
+
+      if (wiz.phase === 'need_verification' && wiz.validateInfo) {
+        const box = el('div', 'sg-voice-verify-box');
+        box.append(el('p', 'sg-voice-phrase-label', 'Sing oder sprich diesen Satz auf (besser: singend):'));
+        box.append(el('blockquote', 'sg-voice-phrase', wiz.validateInfo));
+        const vFile = el('input');
+        vFile.type = 'file';
+        vFile.accept = 'audio/*';
+        vFile.className = 'sg-voice-file';
+        box.append(vFile);
+        const btn = el('button', 'sg-btn sg-btn-primary', 'Verifikation senden & Stimme erstellen');
+        btn.type = 'button';
+        btn.onclick = async function () {
+          if (!vFile.files || !vFile.files[0]) {
+            alert('Bitte Aufnahme der Validierungsphrase wählen.');
+            return;
+          }
+          btn.disabled = true;
+          btn.textContent = 'Stimme wird erstellt …';
+          try {
+            const result = await window.SongVoiceEngine.registerVoice({
+              validateTaskId: wiz.validateTaskId,
+              verifyFile: vFile.files[0],
+              meta: { voiceName: 'Meine Stimme' },
+              onPhase: function (p) {
+                self.state.voiceWizard = Object.assign({}, wiz, p);
+              }
+            });
+            if (result.voiceId) {
+              self.state.voiceProfile = result;
+              self.state.useCustomVoice = true;
+              self.state.voiceWizard = { phase: 'idle' };
+              saveState(STORAGE_KEYS.voiceProfile, result);
+              saveState(STORAGE_KEYS.useCustomVoice, true);
+              if (window.SongGeneratorCloud && window.SongGeneratorCloud.saveVoiceProfile) {
+                await window.SongGeneratorCloud.saveVoiceProfile(self.state, result);
+              }
+            }
+            self.render();
+          } catch (err) {
+            alert(err.message || String(err));
+            btn.disabled = false;
+            btn.textContent = 'Verifikation senden & Stimme erstellen';
+          }
+        };
+        box.append(btn);
+        panel.append(box);
+        return panel;
+      }
+
+      if (wiz.phase && wiz.phase !== 'idle') {
+        panel.append(el('p', 'sg-voice-status', '⏳ ' + (wiz.label || wiz.phase) + ' …'));
+        panel.append(this.showSpinner());
+        return panel;
+      }
+
+      const form = el('div', 'sg-voice-form');
+      const fileIn = el('input');
+      fileIn.type = 'file';
+      fileIn.accept = 'audio/*';
+      fileIn.className = 'sg-voice-file';
+      form.append(el('label', null, 'Stimmprobe (5–30 s, klar, wenig Hintergrund)'));
+      form.append(fileIn);
+
+      const segRow = el('div', 'sg-voice-seg-row');
+      const startIn = el('input');
+      startIn.type = 'number';
+      startIn.min = '0';
+      startIn.value = '0';
+      startIn.className = 'sg-voice-seg-input';
+      const endIn = el('input');
+      endIn.type = 'number';
+      endIn.min = '1';
+      endIn.value = '10';
+      endIn.className = 'sg-voice-seg-input';
+      segRow.append(el('label', null, 'Segment Start (s)'));
+      segRow.append(startIn);
+      segRow.append(el('label', null, 'Ende (s)'));
+      segRow.append(endIn);
+      form.append(segRow);
+
+      const startBtn = el('button', 'sg-btn sg-btn-secondary', 'Stimme registrieren starten');
+      startBtn.type = 'button';
+      startBtn.onclick = async function () {
+        if (!fileIn.files || !fileIn.files[0]) {
+          alert('Bitte eine Stimmprobe wählen.');
+          return;
+        }
+        startBtn.disabled = true;
+        self.state.voiceWizard = { phase: 'upload', label: 'Stimmprobe wird hochgeladen' };
+        self.render();
+        try {
+          const file = fileIn.files[0];
+          let duration = parseInt(endIn.value, 10) || 10;
+          const result = await window.SongVoiceEngine.registerVoice({
+            file: file,
+            vocalStartS: parseInt(startIn.value, 10) || 0,
+            vocalEndS: parseInt(endIn.value, 10) || 10,
+            duration: duration,
+            meta: { voiceName: 'Meine Stimme' },
+            onPhase: function (p) {
+              var labels = {
+                validate_start: 'Analyse gestartet',
+                validate_poll: 'Validierungssatz wird erzeugt',
+                voice_generate: 'Stimme wird erstellt',
+                voice_poll: 'Stimme wird fertiggestellt'
+              };
+              self.state.voiceWizard = Object.assign({}, p, { label: labels[p.phase] || p.phase });
+              self.render();
+            }
+          });
+          if (result.phase === 'need_verification') {
+            self.state.voiceWizard = Object.assign({}, result, { phase: 'need_verification' });
+          } else if (result.voiceId) {
+            self.state.voiceProfile = result;
+            self.state.useCustomVoice = true;
+            self.state.voiceWizard = { phase: 'idle' };
+            saveState(STORAGE_KEYS.voiceProfile, result);
+            saveState(STORAGE_KEYS.useCustomVoice, true);
+            if (window.SongGeneratorCloud && window.SongGeneratorCloud.saveVoiceProfile) {
+              await window.SongGeneratorCloud.saveVoiceProfile(self.state, result);
+            }
+          }
+          self.render();
+        } catch (err) {
+          self.state.voiceWizard = { phase: 'idle' };
+          alert(err.message || String(err));
+          self.render();
+        }
+      };
+      form.append(startBtn);
+      form.append(el('p', 'sg-hint', 'Datenschutz: Stimmproben werden für Suno Voice verarbeitet. Nur deine eigene Stimme hochladen.'));
+      panel.append(form);
+      return panel;
+    }
+
     renderFavoritesPlaylist() {
       const self = this;
       const favs = this.state.favorites || [];
       const panel = el('div', 'sg-favorites-panel');
       panel.append(el('h4', null, '♥ Meine Favoriten-Playlist'));
       panel.append(el('p', 'sg-favorites-lead',
-        'Songs mit ♡ markieren – sie landen hier. Reihenfolge per Ziehen oder Pfeiltasten ändern, dann abspielen.'));
+        'Lieblingssongs mit ♡ markieren – sie bleiben dauerhaft hier, auch wenn du neue Varianten produzierst. Reihenfolge per Ziehen oder ↑/↓.'));
 
       if (!window.SongGeneratorCloud || !window.SongGeneratorCloud.isLoggedIn()) {
-        panel.append(el('p', 'sg-hint', 'Anmelden, um Favoriten cloud-synchron zu speichern.'));
-        return panel;
+        panel.append(el('p', 'sg-hint', 'Favoriten werden lokal gespeichert. Anmelden für Cloud-Sync auf allen Geräten.'));
       }
 
       if (!favs.length) {
@@ -2460,6 +2666,8 @@
       head.append(subtitle);
       box.append(head);
 
+      box.append(this.renderFavoritesPlaylist());
+
       // Playlist-Intent & berechnetes Konzept
       if (this.state.persona && window.SongPlaylistEngine) {
         box.append(this.renderPlaylistIntentPanel());
@@ -2509,6 +2717,22 @@
       };
       mWrap.append(mSel);
       opts.append(mWrap);
+
+      if (this.state.voiceProfile && this.state.voiceProfile.voiceId) {
+        const voiceWrap = el('div', 'sg-field sg-field-voice');
+        const voiceLabel = el('label', 'sg-voice-use-label');
+        const voiceCb = document.createElement('input');
+        voiceCb.type = 'checkbox';
+        voiceCb.checked = !!this.state.useCustomVoice;
+        voiceCb.onchange = () => {
+          this.state.useCustomVoice = voiceCb.checked;
+          saveState(STORAGE_KEYS.useCustomVoice, this.state.useCustomVoice);
+        };
+        voiceLabel.append(voiceCb);
+        voiceLabel.append(document.createTextNode(' Meine registrierte Stimme verwenden'));
+        voiceWrap.append(voiceLabel);
+        opts.append(voiceWrap);
+      }
 
       box.append(opts);
 
@@ -2583,7 +2807,6 @@
         stateBox.append(this._renderAudioPlayer(this.state.audio));
       }
       box.append(stateBox);
-      box.append(this.renderFavoritesPlaylist());
       return box;
     }
 
@@ -2941,6 +3164,21 @@
       });
       const reroll = el('button', 'sg-btn sg-btn-ghost', '↻ Neue Variation generieren');
       reroll.onclick = () => {
+        const self = this;
+        const tracks = (this.state.audio && this.state.audio.tracks) || [];
+        const unfav = tracks.filter(function (t) {
+          const url = t.audio_url || t.audioUrl || t.stream_audio_url || t.streamAudioUrl;
+          if (!url) return false;
+          const id = window.SongFavorites ? window.SongFavorites.trackKey({ url: url }) : '';
+          return id && !self._isFavorite(id);
+        });
+        if (unfav.length) {
+          const ok = confirm(
+            unfav.length + ' Variante(n) sind nicht in deiner Favoriten-Playlist (♡). ' +
+            'Die verschwinden nach „Neue Variation". Lieblingssongs bleiben gespeichert. Fortfahren?'
+          );
+          if (!ok) return;
+        }
         this.state.audio = null;
         clearState(STORAGE_KEYS.audio);
         this.state.audioState = { phase: 'idle' };

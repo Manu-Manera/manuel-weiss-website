@@ -515,7 +515,9 @@
       _methods_text:     style.methods_text,
       _intent_text:      style.intent_text,
       _tempo_bpm:        style.tempo_bpm,
-      _intentId:         opts.intentId || null
+      _intentId:         opts.intentId || null,
+      personaId:         opts.personaId || null,
+      personaModel:      opts.personaModel || null
     };
   }
 
@@ -566,6 +568,10 @@
           callBackUrl: 'https://manuel-weiss.ch/api/suno-noop'
         };
         if (payload.vocalGender) body.vocalGender = payload.vocalGender;
+        if (payload.personaId && payload.personaModel) {
+          body.personaId = payload.personaId;
+          body.personaModel = payload.personaModel;
+        }
         if (payload.negativeTags) body.negativeTags = payload.negativeTags;
         if (typeof payload.styleWeight === 'number') body.styleWeight = payload.styleWeight;
         if (typeof payload.weirdnessConstraint === 'number') body.weirdnessConstraint = payload.weirdnessConstraint;

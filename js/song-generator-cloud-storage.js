@@ -278,14 +278,19 @@
   }
 
   async function toggleFavorite(state, trackMeta) {
-    if (!isLoggedIn() || !window.SongFavorites) return null;
+    if (!window.SongFavorites) return null;
+    const norm = window.SongFavorites.normalize(trackMeta);
+    if (!norm) return null;
+    if (!isLoggedIn()) {
+      const local = window.SongFavorites.toggle(state.favorites || [], norm);
+      if (state) state.favorites = local.favorites;
+      return local;
+    }
     try {
-      const norm = window.SongFavorites.normalize(trackMeta);
-      if (!norm) return null;
       const token = await getAuthToken();
       let library = await loadAudioLibrary();
       if (!library.entries) library.entries = [];
-      const current = library.favorites || [];
+      const current = window.SongFavorites.mergeLists(library.favorites, state.favorites || []);
       const result = window.SongFavorites.toggle(current, norm);
       library.favorites = result.favorites;
       library.updatedAt = new Date().toISOString();
@@ -398,7 +403,14 @@
       });
       state.audioLibrary = library;
       state.audioIdentity = identity;
-      if (Array.isArray(library.favorites)) {
+      if (window.SongFavorites) {
+        var mergedFav = window.SongFavorites.mergeLists(library.favorites, state.favorites || []);
+        state.favorites = mergedFav;
+        if (mergedFav.length && JSON.stringify(mergedFav) !== JSON.stringify(library.favorites || [])) {
+          library.favorites = mergedFav;
+          await writeWorkflowStep('audioLibrary', library, token);
+        }
+      } else if (Array.isArray(library.favorites)) {
         state.favorites = library.favorites;
       }
       if (state.persona) {
@@ -411,6 +423,32 @@
       return identity;
     } catch (err) {
       console.warn('[SongGeneratorCloud] syncAudioIdentity:', err.message);
+      return null;
+    }
+  }
+
+  async function loadVoiceProfile() {
+    if (!isLoggedIn()) return null;
+    try {
+      const token = await getAuthToken();
+      return await fetchWorkflowStep('voiceProfile', token);
+    } catch (err) {
+      console.warn('[SongGeneratorCloud] loadVoiceProfile:', err.message);
+      return null;
+    }
+  }
+
+  async function saveVoiceProfile(state, profile) {
+    if (!isLoggedIn()) return null;
+    try {
+      const token = await getAuthToken();
+      profile = profile || {};
+      profile.updatedAt = new Date().toISOString();
+      await writeWorkflowStep('voiceProfile', profile, token);
+      if (state) state.voiceProfile = profile;
+      return profile;
+    } catch (err) {
+      console.warn('[SongGeneratorCloud] saveVoiceProfile:', err.message);
       return null;
     }
   }
@@ -530,7 +568,9 @@
     recomputeAudioIdentity: recomputeAudioIdentity,
     toggleFavorite: toggleFavorite,
     reorderFavorites: reorderFavorites,
-    persistFavoritesList: persistFavoritesList
+    persistFavoritesList: persistFavoritesList,
+    loadVoiceProfile: loadVoiceProfile,
+    saveVoiceProfile: saveVoiceProfile
   };
 
   window.SongGeneratorCloud = Cloud;

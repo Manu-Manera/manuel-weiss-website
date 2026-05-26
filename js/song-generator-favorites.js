@@ -77,6 +77,37 @@
     return reorder(favorites, index, index + 1);
   }
 
+  /** Cloud + local zusammenführen – nie leere Cloud-Liste überschreibt lokale Favoriten */
+  function mergeLists(cloudList, localList) {
+    var byId = {};
+    (cloudList || []).forEach(function (f) {
+      if (f && f.id) byId[f.id] = f;
+    });
+    (localList || []).forEach(function (f) {
+      if (!f || !f.id) return;
+      var ex = byId[f.id];
+      if (!ex || (f.addedAt && (!ex.addedAt || f.addedAt >= ex.addedAt))) {
+        byId[f.id] = f;
+      }
+    });
+    var ordered = [];
+    var seen = {};
+    (localList || []).forEach(function (f) {
+      if (f && f.id && byId[f.id] && !seen[f.id]) {
+        ordered.push(byId[f.id]);
+        seen[f.id] = true;
+      }
+    });
+    (cloudList || []).forEach(function (f) {
+      if (f && f.id && !seen[f.id]) {
+        ordered.push(byId[f.id]);
+        seen[f.id] = true;
+      }
+    });
+    while (ordered.length > MAX_FAVORITES) ordered.pop();
+    return ordered;
+  }
+
   window.SongFavorites = {
     MAX_FAVORITES: MAX_FAVORITES,
     trackKey: trackKey,
@@ -85,6 +116,7 @@
     toggle: toggle,
     reorder: reorder,
     moveUp: moveUp,
-    moveDown: moveDown
+    moveDown: moveDown,
+    mergeLists: mergeLists
   };
 })();

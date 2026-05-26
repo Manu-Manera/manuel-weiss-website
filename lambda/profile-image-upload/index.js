@@ -24,14 +24,16 @@ const CORS_HEADERS = {
 const ALLOWED_TYPES = {
     profile: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
     document: ['application/pdf', 'image/jpeg', 'image/png'],
-    resume: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+    resume: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+    voice: ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/mp4', 'audio/x-m4a', 'audio/webm', 'audio/ogg', 'audio/aac']
 };
 
 // Maximale Dateigrößen (in Bytes)
 const MAX_SIZES = {
     profile: 5 * 1024 * 1024,    // 5 MB
     document: 10 * 1024 * 1024,  // 10 MB
-    resume: 10 * 1024 * 1024     // 10 MB
+    resume: 10 * 1024 * 1024,     // 10 MB
+    voice: 15 * 1024 * 1024       // 15 MB
 };
 
 exports.handler = async (event) => {
