@@ -1165,6 +1165,43 @@
 .sg-playlist-rationale { margin: 0.5rem 0 0; font-size: 0.78rem; color: #64748b; line-height: 1.45; }
 .sg-playlist-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
 
+/* Bluetooth / Wiedergabe */
+.sg-bt-hint {
+  margin: 0 0 1rem;
+  padding: 0.75rem 0.9rem;
+  background: linear-gradient(135deg, #ecfdf5, #eff6ff);
+  border: 1px solid #a7f3d0;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  color: #334155;
+}
+.sg-bt-hint strong { display: block; margin-bottom: 0.4rem; color: #047857; }
+.sg-bt-steps {
+  margin: 0;
+  padding-left: 1.1rem;
+  line-height: 1.55;
+}
+.sg-bt-steps li { margin-bottom: 0.25rem; }
+.sg-audio-player {
+  width: 100%;
+  min-height: 48px;
+  margin: 0.5rem 0;
+  border-radius: 8px;
+}
+.sg-audio-intent-tag {
+  font-size: 0.8rem;
+  color: #6366f1;
+  font-weight: 600;
+  margin: -0.35rem 0 0.75rem;
+}
+.sg-audio-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.sg-btn-bt { flex: 1 1 auto; min-width: 140px; }
+
 .sg-facet-list {
   margin-top: 0.75rem;
   display: grid; grid-template-columns: 1fr; gap: 0.35rem;

@@ -11,9 +11,9 @@
   const INTENTS = {
     personality: {
       id: 'personality',
-      label: 'Persönlichkeits-Song',
-      emoji: '✨',
-      description: 'Dein Signature-Sound – Balance aus Profil, Astro und Songtext.',
+      label: 'Kompositions-Song',
+      emoji: '📝',
+      description: 'Dein komponierter Song mit Text – volle Balance aus Profil, Astro und Lyrics.',
       tempoBias: 0,
       energyTarget: null,
       brightnessTarget: null,
@@ -26,9 +26,9 @@
     },
     soul: {
       id: 'soul',
-      label: 'Seelensong',
-      emoji: '🌙',
-      description: 'Intim, nach innen gerichtet – für Reflexion und emotionale Tiefe.',
+      label: 'Persönlichkeitssong',
+      emoji: '🎵',
+      description: 'Dein Klang aus dem Persönlichkeitsprofil – warm, persönlich, zum Nachdenken und Träumen.',
       tempoBias: -12,
       energyTarget: 0.32,
       brightnessTarget: 0.42,

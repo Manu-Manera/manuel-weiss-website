@@ -2033,7 +2033,7 @@
 
       const hint = el('p', 'sg-hint',
         'Eine volle Playlist mit allen 4 Kontexten = 4 Suno-Generierungen (je ~$0.05–0.10). ' +
-        'Wähle hier den Kontext für diese Produktion.');
+        'Wähle den Kontext für diese Produktion – abspielen geht danach auf Handy, Kopfhörer oder Bluetooth-Box.');
       wrap.append(hint);
       return wrap;
     }
@@ -2117,7 +2117,7 @@
         act.append(startBtn);
         const hint = el('p', 'sg-hint',
           'Generierung dauert ca. 30–90 Sekunden. Es entstehen 2 Varianten zur Auswahl. ' +
-          'Kosten pro Generation ca. $0.05–0.10 (über deinen API-Key bei sunoapi.org).');
+          'Danach auf dem Handy über Bluetooth, AirPlay oder Kopfhörer abspielbar.');
         stateBox.append(act, hint);
       } else if (phase === 'submitting' || phase === 'polling') {
         stateBox.append(this.showSpinner());
@@ -2166,7 +2166,7 @@
         { key: 'methods', label: 'Methoden-Bonus', color: '#34d399',
           text: preview.methods_text || '—' },
         { key: 'intent', label: 'Playlist-Kontext', color: '#f59e0b',
-          text: preview.intent_text || 'Persönlichkeits-Song (Standard)' }
+          text: preview.intent_text || 'Kompositions-Song (Standard)' }
       ];
       rows.forEach(r => {
         const w = preview.weights[r.key] || 0;
@@ -2190,9 +2190,64 @@
       return box;
     }
 
+    _setupAudioForPlayback(audioEl, meta) {
+      if (!audioEl) return;
+      meta = meta || {};
+      audioEl.setAttribute('playsinline', '');
+      audioEl.setAttribute('webkit-playsinline', '');
+      audioEl.preload = 'metadata';
+      audioEl.controls = true;
+      audioEl.className = 'sg-audio-player';
+      if (meta.title) audioEl.setAttribute('title', meta.title);
+      if ('mediaSession' in navigator) {
+        const applyMeta = function () {
+          try {
+            navigator.mediaSession.metadata = new MediaMetadata({
+              title: meta.title || 'Persönlichkeitssong',
+              artist: meta.artist || 'Persönlichkeits-Song Generator',
+              album: meta.album || 'Manuel Weiss',
+              artwork: meta.artwork ? [{ src: meta.artwork, sizes: '512x512', type: 'image/jpeg' }] : []
+            });
+            navigator.mediaSession.setActionHandler('play', function () { audioEl.play(); });
+            navigator.mediaSession.setActionHandler('pause', function () { audioEl.pause(); });
+            navigator.mediaSession.setActionHandler('seekbackward', function () {
+              audioEl.currentTime = Math.max(0, audioEl.currentTime - 10);
+            });
+            navigator.mediaSession.setActionHandler('seekforward', function () {
+              audioEl.currentTime = Math.min(audioEl.duration || 0, audioEl.currentTime + 10);
+            });
+          } catch (_e) {}
+        };
+        audioEl.addEventListener('play', applyMeta);
+      }
+    }
+
+    _renderBluetoothHint() {
+      const box = el('div', 'sg-bt-hint');
+      box.append(el('strong', null, '🔊 Auf Bluetooth-Box, AirPlay oder TV'));
+      const ul = el('ul', 'sg-bt-steps');
+      [
+        'Play antippen – Ton läuft über das aktuell gewählte Ausgabegerät.',
+        'iPhone/iPad: Kontrollzentrum → AirPlay → deine Box wählen.',
+        'Android: Lautstärke → Ausgabe → Bluetooth-Gerät.',
+        'Alternativ: MP3 laden und in Apple Music / Dateien abspielen – dort Bluetooth wählen.'
+      ].forEach(function (t) { ul.append(el('li', null, t)); });
+      box.append(ul);
+      return box;
+    }
+
     _renderAudioPlayer(audio) {
       const box = el('div', 'sg-audio-results');
       box.append(el('h4', null, 'Deine Songs (' + (audio.tracks || []).length + ' Varianten)'));
+      box.append(this._renderBluetoothHint());
+
+      const intentLabel = (window.SongPlaylistEngine && audio.intentId)
+        ? (window.SongPlaylistEngine.getIntent(audio.intentId).label || '')
+        : '';
+      if (intentLabel) {
+        box.append(el('p', 'sg-audio-intent-tag', 'Kontext: ' + intentLabel));
+      }
+
       (audio.tracks || []).forEach((t, i) => {
         const card = el('div', 'sg-audio-card');
         const title = el('div', 'sg-audio-card-head');
@@ -2200,26 +2255,61 @@
         if (t.duration) title.append(el('span', 'sg-audio-duration', this._formatDuration(t.duration)));
         card.append(title);
         const url = t.audio_url || t.audioUrl || t.source_audio_url || t.sourceAudioUrl || t.stream_audio_url || t.streamAudioUrl;
-        if (url) {
-          const audioEl = document.createElement('audio');
-          audioEl.controls = true;
-          audioEl.preload = 'none';
-          audioEl.src = url;
-          audioEl.style.width = '100%';
-          card.append(audioEl);
-          const actions = el('div', 'sg-audio-actions');
-          const dl = document.createElement('a');
-          dl.href = url; dl.download = (t.title || 'song-' + (i+1)) + '.mp3';
-          dl.className = 'sg-btn sg-btn-ghost'; dl.textContent = '⬇ MP3 herunterladen';
-          actions.append(dl);
-          card.append(actions);
-        }
-        if (t.image_url || t.imageUrl) {
+        const cover = t.image_url || t.imageUrl;
+        if (cover) {
           const img = document.createElement('img');
-          img.src = t.image_url || t.imageUrl;
+          img.src = cover;
           img.alt = t.title || 'Cover';
           img.className = 'sg-audio-cover';
           card.prepend(img);
+        }
+        if (url) {
+          const audioEl = document.createElement('audio');
+          audioEl.src = url;
+          audioEl.style.width = '100%';
+          this._setupAudioForPlayback(audioEl, {
+            title: t.title || ('Persönlichkeitssong ' + (i + 1)),
+            artist: 'Persönlichkeits-Song Generator',
+            artwork: cover || undefined
+          });
+          card.append(audioEl);
+
+          const actions = el('div', 'sg-audio-actions');
+          const playBt = el('button', 'sg-btn sg-btn-primary sg-btn-bt', '▶ Abspielen');
+          playBt.type = 'button';
+          playBt.onclick = function () {
+            audioEl.play().catch(function () {
+              alert('Wiedergabe blockiert – bitte Play am Player oder erneut tippen.');
+            });
+          };
+          actions.append(playBt);
+
+          const slug = (t.title || 'persoenlichkeitssong-' + (i + 1))
+            .toLowerCase().replace(/[^a-z0-9äöüß]+/gi, '-').replace(/^-|-$/g, '');
+          const dl = document.createElement('a');
+          dl.href = url;
+          dl.download = slug + '.mp3';
+          dl.className = 'sg-btn sg-btn-ghost';
+          dl.textContent = '⬇ MP3 (offline / andere App)';
+          dl.setAttribute('target', '_blank');
+          dl.setAttribute('rel', 'noopener');
+          actions.append(dl);
+
+          if (navigator.share) {
+            const shareBtn = el('button', 'sg-btn sg-btn-ghost', 'Teilen');
+            shareBtn.type = 'button';
+            shareBtn.onclick = async function () {
+              try {
+                await navigator.share({
+                  title: t.title || 'Mein Persönlichkeitssong',
+                  text: 'Mein Persönlichkeitssong – aus meinem Persönlichkeitsprofil.',
+                  url: url
+                });
+              } catch (_e) {}
+            };
+            actions.append(shareBtn);
+          }
+          card.append(actions);
         }
         box.append(card);
       });
