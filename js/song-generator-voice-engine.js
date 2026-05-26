@@ -111,7 +111,8 @@
 
   async function convertToWavFile(file) {
     var baseType = normalizeContentType(file.type);
-    if (/^audio\/(mpeg|wav|x-wav|mp4|x-m4a|aac)$/.test(baseType)) return file;
+    // Nur WAV/MP3 direkt – MP4/WebM/OGG (Browser-Aufnahmen) immer zu WAV für Upload + Suno
+    if (/^audio\/(wav|x-wav|mpeg|mp3)$/.test(baseType)) return file;
     var AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) {
       throw new Error('Browser-Audio nicht verfügbar – bitte MP3 oder WAV hochladen.');
@@ -123,6 +124,9 @@
       var wavBlob = audioBufferToWav(decoded);
       var baseName = (file.name || 'stimmprobe').replace(/\.[^.]+$/, '');
       return new File([wavBlob], baseName + '.wav', { type: 'audio/wav' });
+    } catch (err) {
+      throw new Error('Audio konnte nicht konvertiert werden – bitte MP3 oder WAV hochladen.' +
+        (err && err.message ? ' (' + err.message + ')' : ''));
     } finally {
       try { await ctx.close(); } catch (_e) {}
     }
