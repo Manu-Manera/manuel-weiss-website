@@ -91,7 +91,26 @@
   // JourneyPublicShell.jsx, ChangeJourney.jsx, StakeholderAnalysis.jsx) –
   // gpt-4.1 ist das einzige Modell, das der globale Project-Key freigeschaltet hat.
   // ────────────────────────────────────────────────────────────
-  const MODEL_FALLBACKS = ['gpt-4.1', 'gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo'];
+  const MODEL_FALLBACKS = ['gpt-4.1'];
+
+  function mergeRerollIntoSong(song, partial) {
+    if (!partial || !partial.sections || !song) return partial || song;
+    const sectionMap = {};
+    partial.sections.forEach(function (s) { sectionMap[s.id] = s; });
+    return Object.assign({}, song, {
+      sections: (song.sections || []).map(function (sec) {
+        const upd = sectionMap[sec.id];
+        if (!upd || !upd.lines) return sec;
+        const lineMap = {};
+        upd.lines.forEach(function (l) { lineMap[l.id] = l; });
+        return Object.assign({}, sec, {
+          lines: (sec.lines || []).map(function (line) {
+            return lineMap[line.id] ? Object.assign({}, line, lineMap[line.id]) : line;
+          })
+        });
+      })
+    });
+  }
 
   function safeJsonParse(text) {
     if (!text || typeof text !== 'string') return null;
@@ -170,6 +189,14 @@
         const text = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
         const parsed = safeJsonParse(text);
         if (parsed) return parsed;
+        if (!opts._jsonRetried) {
+          errors.push({ model, msg: 'KI-Antwort war kein gültiges JSON – Retry' });
+          return callOpenAIDirect(Object.assign({}, opts, {
+            _jsonRetried: true,
+            temperature: Math.min(typeof opts.temperature === 'number' ? opts.temperature : 0.7, 0.55),
+            user: (opts.user || '') + '\n\nWICHTIG: Antworte ausschließlich mit kompaktem gültigem JSON nach dem Schema. Kein Markdown.'
+          }));
+        }
         errors.push({ model, msg: 'KI-Antwort war kein gültiges JSON' });
         continue;
       }
@@ -177,8 +204,9 @@
       try { errText = await res.text(); } catch (_e) {}
       const human = _parseOpenAIError(errText);
       errors.push({ model, status: res.status, msg: human });
-      // Bei diesen Status macht es keinen Sinn, weitere Modelle zu probieren
-      if (res.status === 401 || res.status === 403 || res.status === 429) break;
+      if (res.status === 401 || res.status === 429) break;
+      if (res.status === 403 && /model|access|not have access/i.test(human)) continue;
+      if (res.status === 403) break;
     }
 
     // Aussagekräftige Fehlermeldung bauen
@@ -244,7 +272,9 @@
       let errText = '';
       try { errText = await res.text(); } catch (_e) {}
       errors.push({ model: model, status: res.status, msg: _parseOpenAIError(errText) });
-      if (res.status === 401 || res.status === 403 || res.status === 429) break;
+      if (res.status === 401 || res.status === 429) break;
+      if (res.status === 403 && /model|access|not have access/i.test(human)) continue;
+      if (res.status === 403) break;
     }
     const first = errors[0] || {};
     throw new Error(first.msg || 'OpenAI-Aufruf fehlgeschlagen');
@@ -304,10 +334,17 @@
     if (action === 'reroll') {
       const { persona, previous_song, edit_targets, mode, creativity } = payload || {};
       if (!persona || !previous_song || !Array.isArray(edit_targets) || !edit_targets.length) throw new Error('persona + previous_song + edit_targets nötig');
+      const rerollMode = mode || 'regenerate_lines';
+      const userPrompt = P.buildSongRerollUserPrompt
+        ? P.buildSongRerollUserPrompt({ persona, previous_song, edit_targets, mode: rerollMode, creativity })
+        : P.buildSongComposerUserPrompt({ persona, mode: rerollMode, edit_targets, previous_song, creativity: typeof creativity === 'number' ? creativity : 0.95 });
       return callOpenAIDirect({
         apiKey, system: P.SYSTEM_CORE,
-        user: P.buildSongComposerUserPrompt({ persona, mode: mode || 'regenerate_lines', edit_targets, previous_song, creativity: typeof creativity === 'number' ? creativity : 0.95 }),
-        temperature: 0.95, top_p: 0.98, maxTokens: 2500, model: 'gpt-4.1'
+        user: userPrompt,
+        temperature: rerollMode === 'rewrite_section' ? 0.82 : 0.78,
+        top_p: 0.92,
+        maxTokens: 1400,
+        model: 'gpt-4.1'
       });
     }
     throw new Error('Unbekannte action: ' + action);
@@ -1962,33 +1999,18 @@
       if (btnEl) { btnEl.disabled = true; btnEl.textContent = '… einen Moment'; }
       try {
         const data = await callApi('reroll', {
-          persona: this.state.persona,
+          persona: this.getEnrichedPersona() || this.state.persona,
           previous_song: this.state.song,
           edit_targets: [{ section_id: section.id, line_ids: [line.id], instruction: '' }],
           mode: 'regenerate_lines'
         });
-        // Lambda gibt ein vollständiges (oder geändertes) SONG_OBJECT zurück.
-        const updatedSection = (data.sections || []).find(s => s.id === section.id);
-        if (updatedSection) {
-          const updatedLine = (updatedSection.lines || []).find(l => l.id === line.id);
-          if (updatedLine) {
-            line.text = updatedLine.text;
-            line.alt_versions = updatedLine.alt_versions || [];
-            line.syllables = updatedLine.syllables;
-            line.singability = updatedLine.singability;
-            line.imagery_tags = updatedLine.imagery_tags;
-            saveState(STORAGE_KEYS.song, this.state.song);
-            this.render();
-            return;
-          }
-        }
-        // Fallback: ganzes Song-Objekt ersetzen
-        this.state.song = data;
-        saveState(STORAGE_KEYS.song, data);
+        this.state.song = mergeRerollIntoSong(this.state.song, data);
+        saveState(STORAGE_KEYS.song, this.state.song);
         this.render();
       } catch (err) {
-        if (btnEl) { btnEl.disabled = false; btnEl.textContent = '↻ Neu vorschlagen'; }
         alert('Re-Roll fehlgeschlagen: ' + err.message);
+      } finally {
+        if (btnEl) { btnEl.disabled = false; btnEl.textContent = '↻ Neu vorschlagen'; }
       }
     }
 
@@ -1997,23 +2019,13 @@
       if (!instr) return;
       try {
         const data = await callApi('reroll', {
-          persona: this.state.persona,
+          persona: this.getEnrichedPersona() || this.state.persona,
           previous_song: this.state.song,
           edit_targets: [{ section_id: section.id, line_ids: [line.id], instruction: instr }],
           mode: 'regenerate_lines'
         });
-        const updatedSection = (data.sections || []).find(s => s.id === section.id);
-        if (updatedSection) {
-          const updatedLine = (updatedSection.lines || []).find(l => l.id === line.id);
-          if (updatedLine) {
-            Object.assign(line, updatedLine);
-            saveState(STORAGE_KEYS.song, this.state.song);
-            this.render();
-            return;
-          }
-        }
-        this.state.song = data;
-        saveState(STORAGE_KEYS.song, data);
+        this.state.song = mergeRerollIntoSong(this.state.song, data);
+        saveState(STORAGE_KEYS.song, this.state.song);
         this.render();
       } catch (err) {
         alert('Umschreiben fehlgeschlagen: ' + err.message);
@@ -2025,22 +2037,13 @@
       if (!instr) return;
       try {
         const data = await callApi('reroll', {
-          persona: this.state.persona,
+          persona: this.getEnrichedPersona() || this.state.persona,
           previous_song: this.state.song,
           edit_targets: [{ section_id: section.id, line_ids: (section.lines || []).map(l => l.id), instruction: instr }],
           mode: 'rewrite_section'
         });
-        const updatedSection = (data.sections || []).find(s => s.id === section.id);
-        if (updatedSection) {
-          // Sektion ersetzen
-          const idx = (this.state.song.sections || []).findIndex(s => s.id === section.id);
-          if (idx >= 0) this.state.song.sections[idx] = updatedSection;
-          saveState(STORAGE_KEYS.song, this.state.song);
-          this.render();
-          return;
-        }
-        this.state.song = data;
-        saveState(STORAGE_KEYS.song, data);
+        this.state.song = mergeRerollIntoSong(this.state.song, data);
+        saveState(STORAGE_KEYS.song, this.state.song);
         this.render();
       } catch (err) {
         alert('Sektion umschreiben fehlgeschlagen: ' + err.message);

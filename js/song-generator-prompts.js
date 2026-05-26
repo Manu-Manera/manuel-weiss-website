@@ -264,6 +264,64 @@ Falls nein: korrigiere INTERN und gib erst dann das finale JSON aus.`;
       '- instruction aus edit_targets ist verbindlich.';
   }
 
+  /**
+   * Kompakter Re-Roll-Prompt – nur betroffene Zeilen/Sektion, kleines JSON-Output.
+   * Vermeidet trunciertes Voll-SONG_OBJECT (Hauptursache für „kein gültiges JSON").
+   */
+  function buildSongRerollUserPrompt(args) {
+    const persona = args.persona || {};
+    const previous_song = args.previous_song || {};
+    const edit_targets = args.edit_targets || [];
+    const mode = args.mode || 'regenerate_lines';
+
+    const targets = edit_targets.map(function (et) {
+      const sec = (previous_song.sections || []).find(function (s) { return s.id === et.section_id; });
+      const lineIds = et.line_ids || [];
+      const lines = (sec && sec.lines || []).filter(function (l) {
+        return lineIds.length === 0 || lineIds.indexOf(l.id) !== -1;
+      });
+      return {
+        section_id: et.section_id,
+        section_label: sec && sec.label,
+        chords: sec && sec.chords,
+        performance_note: sec && sec.performance_note,
+        instruction: et.instruction || '',
+        lines: lines.map(function (l) {
+          return {
+            id: l.id,
+            text: l.text,
+            syllables: l.syllables,
+            singability: l.singability,
+            imagery_tags: l.imagery_tags
+          };
+        })
+      };
+    });
+
+    const personaBrief = {
+      archetype: persona.archetype,
+      motifs: persona.motifs,
+      core_narrative: persona.core_narrative,
+      music_dna: persona.music_dna
+        ? { key: persona.music_dna.key, mode: persona.music_dna.mode, tempo_bpm: persona.music_dna.tempo_bpm }
+        : null
+    };
+
+    return 'AUFTRAG: Songzeilen neu formulieren (mode=' + mode + ').\n\n' +
+      'PERSONA (Kurz):\n' + JSON.stringify(personaBrief, null, 2) + '\n\n' +
+      'ZIELE (nur diese Zeilen/Sektionen ändern):\n' + JSON.stringify(targets, null, 2) + '\n\n' +
+      'REGELN:\n' +
+      '- Nur die genannten line_ids ändern' + (mode === 'rewrite_section' ? ' (ganze Sektion)' : '') + '.\n' +
+      '- Silbenzahl pro Zeile ±1 beibehalten.\n' +
+      '- imagery_tags-Familie beibehalten.\n' +
+      '- Bei regenerate_lines: pro Zeile neuer text + genau 3 alt_versions (delta_note: zarter, direkter, bildhafter).\n' +
+      '- instruction aus edit_targets ist verbindlich.\n' +
+      '- Sprache: Deutsch, gleiche Perspektive (Du/Ich) wie im Original.\n\n' +
+      'OUTPUT: NUR gültiges JSON, kein Markdown, keine Codefences.\n' +
+      'Schema:\n' +
+      '{\n  "sections": [\n    {\n      "id": "<section_id>",\n      "lines": [\n        {\n          "id": "<line_id>",\n          "text": "<neuer Text>",\n          "syllables": 9,\n          "singability": 0.86,\n          "imagery_tags": ["tag1","tag2"],\n          "alt_versions": [\n            { "text": "...", "delta_note": "zarter" },\n            { "text": "...", "delta_note": "direkter" },\n            { "text": "...", "delta_note": "bildhafter" }\n          ]\n        }\n      ]\n    }\n  ]\n}';
+  }
+
   const ANALYSIS_LENGTH = {
     short:  { label: 'Kurz',  words: '140–200',  paragraphs: '3–4' },
     medium: { label: 'Mittel', words: '320–420', paragraphs: '5–7' },
@@ -342,6 +400,7 @@ Antworte NUR mit gültigem JSON nach dem geforderten Schema – kein Markdown, k
     buildInputInterpreterUserPrompt,
     buildPersonaSynthesisUserPrompt,
     buildSongComposerUserPrompt,
+    buildSongRerollUserPrompt,
     buildPersonalityAnalysisUserPrompt,
     ANALYSIS_LENGTH,
     ANALYSIS_SYSTEM
