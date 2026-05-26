@@ -103,7 +103,8 @@
     </script>
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
     <script src="js/success-checkmark.js?v=20260112"></script>
-    <script src="js/unified-aws-auth.js?v=20260112"></script>
+    <script src="js/user-dropdown-controller.js?v=20260527g"></script>
+    <script src="js/unified-aws-auth.js?v=20260527g"></script>
     <script src="js/unified-auth-modals.js?v=20260112"></script>
     <script src="js/unified-profile-service.js?v=20260115"></script>
     <script src="js/aws-profile-api.js?v=20260524"></script>
@@ -143,10 +144,9 @@
         mo?.addEventListener('click', toggle);
         mf?.querySelectorAll('.mobile-menu-link').forEach(l => l.addEventListener('click', toggle));
 
-        // Auth-Button
+        // Auth-Button (Dropdown: UserDropdownController – nur Klick)
         const authButton = document.getElementById('authButton');
         const mobileAuthButton = document.getElementById('mobileAuthButton');
-        const userDropdown = document.getElementById('userDropdown');
         const logoutBtn = document.getElementById('logoutBtn');
 
         function showLoginModal() {
@@ -154,41 +154,20 @@
           if (window.awsAuth?.showLoginModal) return window.awsAuth.showLoginModal();
         }
 
-        // Click-Handler werden NUR EINMAL gebunden (nicht in updateAuthUI),
-        // damit das Dropdown nicht durch erneute Renders ungewollt getoggelt wird.
-        let dropdownOpen = false;
-        function setDropdown(open) {
-          dropdownOpen = !!open;
-          if (userDropdown) userDropdown.style.display = dropdownOpen ? 'block' : 'none';
-        }
         authButton?.addEventListener('click', (e) => {
           if (!e.isTrusted) return;
+          if (authButton.classList.contains('logged-in')) return;
           e.preventDefault();
           e.stopPropagation();
-          if (authButton.classList.contains('logged-in')) {
-            setDropdown(!dropdownOpen);
-          } else {
-            showLoginModal();
-          }
+          showLoginModal();
         });
         mobileAuthButton?.addEventListener('click', () => {
           if (mobileAuthButton.classList.contains('logged-in')) return;
           toggle();
           showLoginModal();
         });
-        document.addEventListener('click', (e) => {
-          if (!e.isTrusted) return;
-          if (!dropdownOpen) return;
-          if (authButton?.contains(e.target) || userDropdown?.contains(e.target)) return;
-          setDropdown(false);
-        });
-        // Escape schließt Dropdown
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && dropdownOpen) setDropdown(false);
-        });
 
-        // updateAuthUI ändert NUR Text/Klassen, keine Handler mehr.
-        // Vermeidet Endlosschleife: KEIN dispatchEvent('userLoggedIn') mehr von hier.
+        // updateAuthUI ändert NUR Text/Klassen – Dropdown bleibt geschlossen bis Klick
         let lastLoggedIn = null;
         function updateAuthUI() {
           const isLoggedIn = (window.realUserAuth?.isLoggedIn?.() || window.awsAuth?.isLoggedIn?.()) || false;
@@ -213,9 +192,8 @@
               mobileAuthButton.classList.remove('logged-in');
               mobileAuthButton.innerHTML = '<i class="fas fa-user"></i> <span>Anmelden</span>';
             }
-            setDropdown(false);
+            if (window.UserDropdownController) window.UserDropdownController.closeAll();
           }
-          // Nur dann andere Module benachrichtigen, wenn sich der State WIRKLICH geändert hat
           if (lastLoggedIn !== null && lastLoggedIn !== isLoggedIn) {
             window.dispatchEvent(new CustomEvent('songGenerator:authChanged', { detail: { loggedIn: isLoggedIn } }));
           }
@@ -227,6 +205,7 @@
           localStorage.removeItem('aws_auth_session');
           localStorage.removeItem('awsUserSession');
           localStorage.removeItem('awsAuthTokens');
+          if (window.UserDropdownController) window.UserDropdownController.closeAll();
           window.location.reload();
         });
 

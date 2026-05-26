@@ -405,11 +405,7 @@ class RealAWSAuth {
                 loginBtn.innerHTML = '<i class="fas fa-user"></i> Profil';
                 loginBtn.style.display = 'none';
                 
-                // Show user dropdown
-                if (userDropdown) {
-                    userDropdown.style.display = 'block';
-                }
-                
+                // Dropdown-Sichtbarkeit steuert die Seite (Klick) – nicht auto-öffnen
                 // Update user info in dropdown
                 if (userData) {
                     if (userNameSmall) {

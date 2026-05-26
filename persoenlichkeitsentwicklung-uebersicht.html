@@ -2366,7 +2366,8 @@
     <script src="js/success-checkmark.js?v=20260112"></script>
     
     <!-- Unified Auth System -->
-    <script src="js/unified-aws-auth.js?v=20260112"></script>
+    <script src="js/user-dropdown-controller.js?v=20260527g"></script>
+    <script src="js/unified-aws-auth.js?v=20260527g"></script>
     <script src="js/unified-auth-modals.js?v=20260112"></script>
     <script src="js/unified-profile-service.js?v=20260115"></script>
     <!-- Legacy Auth - Fallback -->
@@ -2434,16 +2435,7 @@
                     if (icon) icon.className = 'fas fa-user-check';
                 }
                 
-                // Show dropdown on click - nur bei echten Klicks
-                if (authButton) {
-                    authButton.onclick = (e) => {
-                        if (!e.isTrusted) return;
-                        e.stopPropagation();
-                        if (userDropdown) {
-                            userDropdown.style.display = userDropdown.style.display === 'none' ? 'block' : 'none';
-                        }
-                    };
-                }
+                // Dropdown: UserDropdownController (nur Klick auf authButton)
                 
                 // Logout handler
                 if (logoutBtn) {
@@ -2482,18 +2474,11 @@
                 if (userDropdown) {
                     userDropdown.style.display = 'none';
                 }
+                if (window.UserDropdownController) window.UserDropdownController.closeAll();
             }
         }
         
-        // Close dropdown when clicking outside - nur bei echten Klicks
-        document.addEventListener('click', (e) => {
-            if (!e.isTrusted) return;
-            const userDropdown = document.getElementById('userDropdown');
-            const authButton = document.getElementById('authButton');
-            if (userDropdown && !authButton?.contains(e.target)) {
-                userDropdown.style.display = 'none';
-            }
-        });
+        // Dropdown schliesst per UserDropdownController (Klick ausserhalb / Escape)
         
         // UnifiedProfileService Listener für Updates
         if (window.unifiedProfileService) {

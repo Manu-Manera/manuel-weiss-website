@@ -276,7 +276,10 @@ class GlobalAuthSystem {
         const userEmailSmall = document.querySelector('.user-email-small');
         
         if (userDropdown) {
-            userDropdown.style.display = isLoggedIn ? 'block' : 'none';
+            if (!isLoggedIn) {
+                userDropdown.style.display = 'none';
+                userDropdown.setAttribute('aria-hidden', 'true');
+            }
         }
         
         if (userAvatarSmall) {

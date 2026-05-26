@@ -989,7 +989,7 @@ class UnifiedAWSAuth {
             }
         });
         
-        // User Dropdown/Menu aktualisieren
+        // User Dropdown/Menu aktualisieren (Inhalt ja – Sichtbarkeit nur per Klick auf der Seite)
         allUserMenus.forEach(menu => {
             if (isLoggedIn && this.currentUser) {
                 const userData = this.getUserDataFromToken();
@@ -1007,10 +1007,9 @@ class UnifiedAWSAuth {
                         console.log('✅ Updated user email:', userData.email || this.currentUser.email);
                     }
                 }
-                
-                menu.style.display = 'block';
             } else {
                 menu.style.display = 'none';
+                menu.setAttribute('aria-hidden', 'true');
             }
         });
         
@@ -1029,7 +1028,13 @@ class UnifiedAWSAuth {
         }
         
         if (userDropdown) {
-            userDropdown.style.display = isLoggedIn && this.currentUser ? 'block' : 'none';
+            if (!isLoggedIn || !this.currentUser) {
+                userDropdown.style.display = 'none';
+                userDropdown.setAttribute('aria-hidden', 'true');
+                if (window.UserDropdownController && window.UserDropdownController.closeAll) {
+                    window.UserDropdownController.closeAll();
+                }
+            }
         }
         
         if (userAvatarSmall) {
