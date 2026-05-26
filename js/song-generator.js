@@ -200,6 +200,55 @@
     throw e;
   }
 
+  /** OpenAI-Aufruf für Fliesstext (kein JSON) – z. B. Persönlichkeitsanalyse */
+  async function callOpenAIText(opts) {
+    const apiKey = opts.apiKey;
+    const candidates = [];
+    if (opts.model) candidates.push(opts.model);
+    MODEL_FALLBACKS.forEach(function (m) { if (candidates.indexOf(m) === -1) candidates.push(m); });
+    const errors = [];
+    for (let i = 0; i < candidates.length; i += 1) {
+      const model = candidates[i];
+      let res;
+      try {
+        const body = {
+          model: model,
+          messages: [
+            { role: 'system', content: opts.system },
+            { role: 'user', content: opts.user }
+          ],
+          temperature: typeof opts.temperature === 'number' ? opts.temperature : 0.72,
+          top_p: typeof opts.top_p === 'number' ? opts.top_p : 0.92,
+          max_tokens: typeof opts.maxTokens === 'number' ? opts.maxTokens : 1200
+        };
+        res = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + apiKey
+          },
+          body: JSON.stringify(body)
+        });
+      } catch (err) {
+        errors.push({ model: model, msg: 'Netzwerk: ' + err.message });
+        continue;
+      }
+      if (res.ok) {
+        const data = await res.json().catch(function () { return null; });
+        const text = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+        if (text && String(text).trim()) return String(text).trim();
+        errors.push({ model: model, msg: 'Leere KI-Antwort' });
+        continue;
+      }
+      let errText = '';
+      try { errText = await res.text(); } catch (_e) {}
+      errors.push({ model: model, status: res.status, msg: _parseOpenAIError(errText) });
+      if (res.status === 401 || res.status === 403 || res.status === 429) break;
+    }
+    const first = errors[0] || {};
+    throw new Error(first.msg || 'OpenAI-Aufruf fehlgeschlagen');
+  }
+
   /**
    * Health-Check: minimal-Call (1 Token), um API-Key + Modell zu validieren.
    * Liefert { ok: true, model } oder wirft mit user-readbarer Message.
@@ -357,6 +406,9 @@
         audioState: { phase: 'idle' },
         importedMethods: null,
         importedNarrative: '',
+        analysisUi: { mode: 'integrated', length: 'medium' },
+        analysisLoading: false,
+        analysisError: null,
         userMeta: {
           name_or_alias: '',
           lang: 'de',
@@ -680,6 +732,14 @@
         (phase.items || []).forEach((it) => allItems.push({ phase, item: it }));
       });
       const total = allItems.length;
+      const self = this;
+      allItems.forEach(function (row) {
+        const item = row.item;
+        if (self.state.answers[item.id] !== undefined) return;
+        if (item.format === 'slider') self.state.answers[item.id] = 50;
+        else if (item.format === 'forced_choice' || item.format === 'scenario_mc') self.state.answers[item.id] = 0;
+        else self.state.answers[item.id] = 3;
+      });
       const answered = Object.keys(this.state.answers).length;
 
       const head = el('div', 'sg-test-head');
@@ -722,38 +782,67 @@
       const stem = el('div', 'sg-item-stem', item.stem || '');
       w.append(flavor);
       w.append(stem);
+
       if (item.format === 'slider') {
-        const sw = el('div', 'sg-slider-wrap');
-        const slider = el('input', 'sg-slider');
-        slider.type = 'range';
-        slider.min = '0';
-        slider.max = '100';
-        slider.value = this.state.answers[item.id] !== undefined ? this.state.answers[item.id] : 50;
-        const valEl = el('div', 'sg-slider-value', slider.value);
-        slider.oninput = () => { valEl.textContent = slider.value; };
-        slider.onchange = () => { this.state.answers[item.id] = Number(slider.value); this.persistTest(); this.render(); };
-        sw.append(slider);
-        sw.append(valEl);
-        w.append(sw);
-      } else if (item.format === 'likert7') {
-        const opts = el('div', 'sg-options sg-likert');
-        const labels = ['Stimmt gar nicht', '–', '–', 'Neutral', '+', '+', 'Stimmt voll'];
-        for (let i = 0; i < 7; i += 1) {
-          const o = el('button', 'sg-option' + (this.state.answers[item.id] === i ? ' selected' : ''), labels[i]);
-          o.onclick = () => { this.state.answers[item.id] = i; this.persistTest(); this.render(); };
-          opts.append(o);
-        }
-        w.append(opts);
+        this.renderAnswerSlider(w, item, 0, 100, function (v) { return String(v); }, '', 'Trifft gar nicht zu', 'Trifft voll zu');
+      } else if (item.format === 'forced_choice' || item.format === 'scenario_mc') {
+        const opts = item.options || [];
+        const max = Math.max(0, opts.length - 1);
+        const self = this;
+        this.renderAnswerSlider(w, item, 0, max, function (v) { return String(v + 1); }, '/' + (max + 1),
+          opts[0] && opts[0].label ? opts[0].label.slice(0, 28) : 'Option A',
+          opts[max] && opts[max].label ? opts[max].label.slice(0, 28) : 'Option B');
       } else {
-        const opts = el('div', 'sg-options');
-        (item.options || []).forEach((opt, idx) => {
-          const b = el('button', 'sg-option' + (this.state.answers[item.id] === idx ? ' selected' : ''), opt.label || ('Option ' + (idx + 1)));
-          b.onclick = () => { this.state.answers[item.id] = idx; this.persistTest(); this.render(); };
-          opts.append(b);
-        });
-        w.append(opts);
+        // likert7 (Standard): Regler 0–6, Anzeige 1–7
+        this.renderAnswerSlider(w, item, 0, 6, function (v) { return String(v + 1); }, '/7', 'Stimmt gar nicht', 'Stimmt voll');
       }
       return w;
+    }
+
+    renderAnswerSlider(wrap, item, min, max, displayFn, unitSuffix, labelLow, labelHigh) {
+      const step = 1;
+      const defaultVal = Math.round((min + max) / 2);
+      const raw = this.state.answers[item.id];
+      const val = typeof raw === 'number' ? raw : defaultVal;
+
+      const sw = el('div', 'sg-slider-wrap');
+      const labels = el('div', 'sg-slider-endpoints');
+      labels.append(el('span', 'sg-slider-end low', labelLow || ''));
+      labels.append(el('span', 'sg-slider-end high', labelHigh || ''));
+      sw.append(labels);
+
+      const row = el('div', 'sg-slider-row');
+      const slider = el('input', 'sg-slider');
+      slider.type = 'range';
+      slider.min = String(min);
+      slider.max = String(max);
+      slider.step = String(step);
+      slider.value = String(val);
+      slider.setAttribute('aria-valuemin', String(min));
+      slider.setAttribute('aria-valuemax', String(max));
+      slider.setAttribute('aria-valuenow', String(val));
+
+      const valEl = el('div', 'sg-slider-value');
+      const numEl = el('span', 'sg-slider-num', displayFn(val));
+      valEl.append(numEl);
+      if (unitSuffix) valEl.append(el('span', 'sg-slider-unit', unitSuffix));
+
+      const self = this;
+      slider.oninput = function () {
+        const n = Number(slider.value);
+        numEl.textContent = displayFn(n);
+        slider.setAttribute('aria-valuenow', String(n));
+      };
+      slider.onchange = function () {
+        self.state.answers[item.id] = Number(slider.value);
+        self.persistTest();
+        wrap.classList.add('answered');
+      };
+
+      row.append(slider);
+      row.append(valEl);
+      sw.append(row);
+      wrap.append(sw);
     }
 
     // ── Step 2: Geburtsdaten (optional, für astrologische Karte) ─
@@ -1219,10 +1308,19 @@
       radarHead.append(el('span', 'sg-tag', 'wissenschaftlich'));
       radarPanel.append(radarHead);
       const sf = p.scales_final || {};
-      if (window.SongChartRenderer && window.SongChartRenderer.renderBigFiveRadar) {
-        const radarSvg = window.SongChartRenderer.renderBigFiveRadar(sf, p.facets_final || {});
-        radarPanel.append(radarSvg);
+      const chartSize = window.SongChartRenderer && window.SongChartRenderer.getResponsiveChartSize
+        ? window.SongChartRenderer.getResponsiveChartSize(360, 260)
+        : 320;
+      const radarFrame = el('div', 'sg-chart-frame sg-chart-radar');
+      if (window.SongChartRenderer && window.SongChartRenderer.renderBigFiveBars) {
+        radarFrame.append(window.SongChartRenderer.renderBigFiveBars(sf));
       }
+      if (window.SongChartRenderer && window.SongChartRenderer.renderBigFiveRadar) {
+        const radarWrap = el('div', 'sg-chart-radar-svg');
+        radarWrap.append(window.SongChartRenderer.renderBigFiveRadar(sf, p.facets_final || {}, { size: chartSize }));
+        radarFrame.append(radarWrap);
+      }
+      radarPanel.append(radarFrame);
       // Top-Facetten
       if (p.facets_final && Object.keys(p.facets_final).length) {
         const T = window.SongTestData;
@@ -1276,9 +1374,14 @@
           meta.append(el('span', 'sg-astro-chip', 'MC: ' + p.astrology.mcSign));
         }
         wheelPanel.append(meta);
+        const wheelFrame = el('div', 'sg-chart-frame sg-chart-wheel');
         if (window.SongChartRenderer && window.SongChartRenderer.renderNatalWheel) {
-          wheelPanel.append(window.SongChartRenderer.renderNatalWheel(p.astrology));
+          const wheelSize = window.SongChartRenderer.getResponsiveChartSize
+            ? window.SongChartRenderer.getResponsiveChartSize(440, 280)
+            : 320;
+          wheelFrame.append(window.SongChartRenderer.renderNatalWheel(p.astrology, { size: wheelSize }));
         }
+        wheelPanel.append(wheelFrame);
         // Planeten kompakt
         const placements = el('div', 'sg-astro-placements');
         (p.astrology.placements || []).forEach(pl => {
@@ -1359,6 +1462,8 @@
           : '');
       wrap.append(sources);
 
+      wrap.append(this.renderPersonalityAnalysisPanel(p));
+
       const actions = el('div', 'sg-actions');
       const back = el('button', 'sg-btn sg-btn-ghost', '← Zurück');
       back.onclick = () => this.setStep(3);
@@ -1385,6 +1490,143 @@
     fmtBar(v) {
       const n = Math.round((typeof v === 'number' ? v : 0) * 100);
       return n + '%';
+    }
+
+    renderPersonalityAnalysisPanel(persona) {
+      const panel = el('div', 'sg-analysis-panel');
+      panel.append(el('h3', null, 'KI-Persönlichkeitsanalyse'));
+      panel.append(el('p', 'sg-analysis-lead',
+        'Generiere eine textliche Auswertung – aus deinen Testantworten, aus der Astrologie oder beides kombiniert. ' +
+        'Jede Variante enthält einen Abschnitt zu Sexualität & Intimität (respektvoll, nicht explizit).'));
+
+      const ui = this.state.analysisUi || { mode: 'integrated', length: 'medium' };
+      const modes = [
+        { key: 'psychometric', label: 'Aus Fragen', hint: 'Big Five, Bindung, Werte' },
+        { key: 'astrology', label: 'Aus Astrologie', hint: 'Symbolische Geburtskarte' },
+        { key: 'integrated', label: 'Kombiniert', hint: 'Test + Astro' }
+      ];
+      const lengths = [
+        { key: 'short', label: 'Kurz' },
+        { key: 'medium', label: 'Mittel' },
+        { key: 'long', label: 'Lang' }
+      ];
+
+      const modeRow = el('div', 'sg-analysis-modes');
+      const self = this;
+      modes.forEach(function (m) {
+        const b = el('button', 'sg-analysis-mode' + (ui.mode === m.key ? ' active' : ''), m.label);
+        b.type = 'button';
+        b.title = m.hint;
+        b.onclick = function () {
+          self.state.analysisUi.mode = m.key;
+          self.render();
+        };
+        modeRow.append(b);
+      });
+      panel.append(modeRow);
+
+      const lenRow = el('div', 'sg-analysis-lengths');
+      lengths.forEach(function (l) {
+        const b = el('button', 'sg-analysis-len' + (ui.length === l.key ? ' active' : ''), l.label);
+        b.type = 'button';
+        b.onclick = function () {
+          self.state.analysisUi.length = l.key;
+          self.render();
+        };
+        lenRow.append(b);
+      });
+      panel.append(lenRow);
+
+      const genBtn = el('button', 'sg-btn sg-btn-primary sg-analysis-generate', 'Analyse generieren');
+      genBtn.type = 'button';
+      genBtn.disabled = !!this.state.analysisLoading;
+      if (ui.mode === 'astrology' && !persona.astrology) {
+        genBtn.disabled = true;
+        genBtn.title = 'Geburtsdaten in Schritt 2 erforderlich';
+      }
+      genBtn.onclick = function () { self.runPersonalityAnalysis(); };
+      panel.append(genBtn);
+
+      if (this.state.analysisLoading) {
+        panel.append(this.showSpinner());
+        panel.append(el('p', 'sg-hint', 'Analyse wird erstellt …'));
+      } else if (this.state.analysisError) {
+        panel.append(el('div', 'sg-error', this.state.analysisError));
+      }
+
+      const stored = persona.ai_analyses && persona.ai_analyses[ui.mode] && persona.ai_analyses[ui.mode][ui.length];
+      if (stored) {
+        const out = el('div', 'sg-analysis-output');
+        stored.split(/\n\n+/).forEach(function (para) {
+          if (para.trim()) out.append(el('p', null, para.trim()));
+        });
+        panel.append(out);
+      } else if (!this.state.analysisLoading && !this.state.analysisError) {
+        panel.append(el('p', 'sg-hint', 'Noch keine Analyse für diese Kombination. Wähle Modus und Länge, dann „Analyse generieren".'));
+      }
+
+      if (ui.mode === 'astrology' && !persona.astrology) {
+        panel.append(el('p', 'sg-hint', 'Astrologie-Modus: Bitte Geburtsdatum und Ort in Schritt 2 angeben.'));
+      }
+
+      return panel;
+    }
+
+    async runPersonalityAnalysis() {
+      const P = window.SONG_PROMPTS;
+      if (!P || !P.buildPersonalityAnalysisUserPrompt) {
+        this.state.analysisError = 'Prompt-Modul nicht geladen.';
+        this.render();
+        return;
+      }
+      const ui = this.state.analysisUi || { mode: 'integrated', length: 'medium' };
+      if (ui.mode === 'astrology' && !(this.state.persona && this.state.persona.astrology)) {
+        this.state.analysisError = 'Für die astrologische Analyse werden Geburtsdaten benötigt.';
+        this.render();
+        return;
+      }
+
+      this.state.analysisLoading = true;
+      this.state.analysisError = null;
+      this.render();
+
+      try {
+        const apiKey = await getApiKey();
+        if (!apiKey) throw new Error('Kein OpenAI API-Key. Bitte im Admin-Panel unter API Keys speichern.');
+
+        const variant = this.state.testVariant || 'medium';
+        const scored = window.SongTestData && window.SongTestData.computeScores
+          ? window.SongTestData.computeScores(this.state.answers, variant)
+          : { scales: {}, facets: {} };
+
+        const maxTokens = ui.length === 'short' ? 550 : (ui.length === 'long' ? 1600 : 1000);
+        const text = await callOpenAIText({
+          apiKey: apiKey,
+          system: P.SYSTEM_CORE + '\n\nDu schreibst Fliesstext-Analysen (kein JSON). Halte dich exakt an Länge und Struktur.',
+          user: P.buildPersonalityAnalysisUserPrompt({
+            mode: ui.mode,
+            length: ui.length,
+            test_results: scored.scales || this.state.persona.scales_final || {},
+            facets: scored.facets || this.state.persona.facets_final || {},
+            astrology: this.state.persona.astrology ? this._compactAstro(this.state.persona.astrology) : null,
+            persona: this.state.persona,
+            answers_count: Object.keys(this.state.answers || {}).length
+          }),
+          temperature: 0.74,
+          maxTokens: maxTokens
+        });
+
+        if (!this.state.persona.ai_analyses) this.state.persona.ai_analyses = {};
+        if (!this.state.persona.ai_analyses[ui.mode]) this.state.persona.ai_analyses[ui.mode] = {};
+        this.state.persona.ai_analyses[ui.mode][ui.length] = text;
+        saveState(STORAGE_KEYS.persona, this.state.persona);
+        this._cloudSave('persona', { updateCurrent: true });
+      } catch (err) {
+        this.state.analysisError = (err && err.message) || 'Analyse fehlgeschlagen';
+      } finally {
+        this.state.analysisLoading = false;
+        this.render();
+      }
     }
 
     // ── Step 5: Compose ─────────────────────────────────────────

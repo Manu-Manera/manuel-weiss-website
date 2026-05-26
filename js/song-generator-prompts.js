@@ -253,11 +253,63 @@ Falls nein: korrigiere INTERN und gib erst dann das finale JSON aus.`;
       '- instruction aus edit_targets ist verbindlich.';
   }
 
+  const ANALYSIS_LENGTH = {
+    short:  { label: 'Kurz',  words: '120–180',  paragraphs: '2–3' },
+    medium: { label: 'Mittel', words: '280–380', paragraphs: '4–6' },
+    long:   { label: 'Lang',  words: '520–700', paragraphs: '7–9' }
+  };
+
+  function buildPersonalityAnalysisUserPrompt(args) {
+    const mode = args.mode || 'integrated';
+    const length = args.length || 'medium';
+    const lenSpec = ANALYSIS_LENGTH[length] || ANALYSIS_LENGTH.medium;
+    const testResults = args.test_results || {};
+    const facets = args.facets || {};
+    const astrology = args.astrology || null;
+    const persona = args.persona || {};
+    const answersCount = args.answers_count || 0;
+
+    const modeIntro = mode === 'psychometric'
+      ? 'Erstelle eine Persönlichkeitsanalyse AUSSCHLIESSLICH auf Basis der psychometrischen Testdaten (Big Five, Facetten, HEXACO-H, Schwartz-Werte, Bindung, VIA). Keine Astrologie.'
+      : mode === 'astrology'
+        ? 'Erstelle eine Persönlichkeits-DEUTUNG AUSSCHLIESSLICH auf Basis der astrologischen Geburtskarte (Planeten, Häuser, Aspekte, Elemente). Keine psychometrischen Skalen als Begründung – formuliere symbolisch-poetisch, aber klar als astrologische Bildsprache, nicht als Wissenschaft.'
+        : 'Erstelle eine integrierte Analyse: psychometrische Testdaten sind die wissenschaftliche Grundlage; Astrologie liefert ergänzende Bildsprache und Motive. Trenne im Text klar, was aus dem Test kommt und was astrologische Metaphorik ist.';
+
+    return 'AUFTRAG: ' + modeIntro + '\n\n' +
+      'LÄNGE: ' + lenSpec.label + ' (' + lenSpec.words + ' Wörter, ' + lenSpec.paragraphs + ' Absätze).\n\n' +
+      'SPRACHE: Deutsch, Du-Form, warm und präzise. Kein Markdown, keine Überschriften mit #.\n' +
+      'Struktur: Fliesstext-Absätze. Optional kurze Zwischenüberschriften in ALL CAPS (max. 4 Wörter).\n\n' +
+      'PFLICHTABSCHNITT – SEXUALITÄT & INTIMITÄT:\n' +
+      'Integriere einen eigenen Abschnitt (Überschrift: „Sexualität & Intimität"). ' +
+      'Behandle respektvoll und nicht-pornografisch: Nähe/Distanz, sinnlicher Ausdruck, Sehnsucht, ' +
+      'Bindungsstil, Selbstbewusstsein in Intimität, Spannungsfelder. ' +
+      (mode === 'astrology'
+        ? 'Nutze symbolisch Venus, Mars, Mond, Pluto und relevante Häuser (5, 7, 8) – ohne deterministische Aussagen.'
+        : mode === 'psychometric'
+          ? 'Leite aus Extraversion, Neurotizismus, Offenheit, Bindung (SEC/ANX/AVO) und Werten ab – keine Diagnosen.'
+          : 'Verknüpfe Test-Signale mit astrologischer Bildsprache (z. B. Venus/Mars/Mond), kennzeichne Metaphern als solche.') +
+      '\n\n' +
+      'SICHERHEIT: Keine klinischen Diagnosen, keine expliziten sexuellen Handlungen beschreiben.\n\n' +
+      'INPUT-DATEN:\n' + JSON.stringify({
+        mode,
+        length,
+        answers_count: answersCount,
+        test_results: testResults,
+        facets,
+        persona_archetype: persona.archetype || null,
+        persona_core_narrative: persona.core_narrative || null,
+        astrology: astrology
+      }, null, 2) + '\n\n' +
+      'OUTPUT: Nur der Analyse-Fliesstext (kein JSON, kein Code).';
+  }
+
   window.SONG_PROMPTS = {
     SYSTEM_CORE,
     PROMPT_TEST_QUESTIONS,
     buildInputInterpreterUserPrompt,
     buildPersonaSynthesisUserPrompt,
-    buildSongComposerUserPrompt
+    buildSongComposerUserPrompt,
+    buildPersonalityAnalysisUserPrompt,
+    ANALYSIS_LENGTH
   };
 })();

@@ -24,12 +24,71 @@
 
   function deg2rad(d) { return d * Math.PI / 180; }
 
+  function getResponsiveChartSize(maxSize, minSize) {
+    maxSize = maxSize || 380;
+    minSize = minSize || 260;
+    if (typeof window === 'undefined' || !window.innerWidth) return maxSize;
+    const pad = window.innerWidth < 480 ? 32 : 56;
+    return Math.max(minSize, Math.min(maxSize, window.innerWidth - pad));
+  }
+
+  function applyResponsiveSvg(svgEl, size) {
+    svgEl.setAttribute('width', '100%');
+    svgEl.setAttribute('height', 'auto');
+    svgEl.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    svgEl.style.maxWidth = size + 'px';
+    svgEl.style.display = 'block';
+    svgEl.style.margin = '0 auto';
+    return svgEl;
+  }
+
+  // Kompakte Big-Five-Balken (Mobile / schmale Screens)
+  function renderBigFiveBars(scales) {
+    const labels = [
+      { key: 'BIG5_O', label: 'Offenheit', color: '#a78bfa' },
+      { key: 'BIG5_C', label: 'Gewissenhaftigkeit', color: '#34d399' },
+      { key: 'BIG5_E', label: 'Extraversion', color: '#fbbf24' },
+      { key: 'BIG5_A', label: 'Verträglichkeit', color: '#f472b6' },
+      { key: 'BIG5_N', label: 'Neurotizismus', color: '#60a5fa' }
+    ];
+    const wrap = document.createElement('div');
+    wrap.className = 'sg-big5-bars';
+    wrap.setAttribute('role', 'img');
+    wrap.setAttribute('aria-label', 'Big-Five Persönlichkeitsprofil als Balken');
+    labels.forEach(function (l) {
+      const val = Math.max(0, Math.min(100, scales[l.key] || 0));
+      const row = document.createElement('div');
+      row.className = 'sg-big5-bar-row';
+      const head = document.createElement('div');
+      head.className = 'sg-big5-bar-head';
+      const lbl = document.createElement('span');
+      lbl.className = 'sg-big5-bar-label';
+      lbl.textContent = l.label;
+      const num = document.createElement('span');
+      num.className = 'sg-big5-bar-val';
+      num.textContent = String(Math.round(val));
+      head.appendChild(lbl);
+      head.appendChild(num);
+      const track = document.createElement('div');
+      track.className = 'sg-big5-bar-track';
+      const fill = document.createElement('div');
+      fill.className = 'sg-big5-bar-fill';
+      fill.style.width = val + '%';
+      fill.style.background = l.color;
+      track.appendChild(fill);
+      row.appendChild(head);
+      row.appendChild(track);
+      wrap.appendChild(row);
+    });
+    return wrap;
+  }
+
   // ────────────────────────────────────────────────────────────
   // 1) Big-Five-Radar
   // ────────────────────────────────────────────────────────────
   function renderBigFiveRadar(scales, facets, opts) {
     opts = opts || {};
-    const size = opts.size || 380;
+    const size = opts.size || getResponsiveChartSize(380, 260);
     const cx = size / 2, cy = size / 2;
     const radius = size * 0.38;
     const labels = [
@@ -109,7 +168,7 @@
       v.textContent = Math.round(scales[l.key] || 0);
     });
 
-    return root;
+    return applyResponsiveSvg(root, size);
   }
 
   // ────────────────────────────────────────────────────────────
@@ -117,7 +176,7 @@
   // ────────────────────────────────────────────────────────────
   function renderNatalWheel(chart, opts) {
     opts = opts || {};
-    const size = opts.size || 460;
+    const size = opts.size || getResponsiveChartSize(460, 280);
     const cx = size / 2, cy = size / 2;
     const rOuter = size * 0.46;
     const rSign = size * 0.40;
@@ -242,7 +301,7 @@
                           (pl.house ? ' (H' + pl.house + ')' : '');
     });
 
-    return root;
+    return applyResponsiveSvg(root, size);
   }
 
   // ────────────────────────────────────────────────────────────
@@ -292,7 +351,9 @@
 
   window.SongChartRenderer = {
     renderBigFiveRadar,
+    renderBigFiveBars,
     renderNatalWheel,
-    renderMusicDNAcard
+    renderMusicDNAcard,
+    getResponsiveChartSize
   };
 })();
