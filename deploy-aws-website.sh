@@ -163,7 +163,22 @@ export -f upload_one
 export S3_BUCKET AWS_REGION
 
 if [ -n "$QUICK" ] && [ -z "$DRY_RUN" ]; then
-  CHANGED=$(git diff --name-only HEAD 2>/dev/null; git ls-files --others --exclude-standard 2>/dev/null) || true
+  LAST_DEPLOY_FILE=".deploy-cache/last-deploy-commit"
+  LAST_DEPLOY_COMMIT=""
+  if [ -f "$LAST_DEPLOY_FILE" ]; then
+    LAST_DEPLOY_COMMIT="$(tr -d '[:space:]' < "$LAST_DEPLOY_FILE")"
+  fi
+
+  # Uncommittete Änderungen (Working Tree + Staging)
+  UNCOMMITTED=$(git diff --name-only HEAD 2>/dev/null; git diff --name-only --cached HEAD 2>/dev/null; git ls-files --others --exclude-standard 2>/dev/null) || true
+
+  # Committete Änderungen seit letztem erfolgreichen Deploy (wichtig nach git commit + push!)
+  SINCE_LAST=""
+  if [ -n "$LAST_DEPLOY_COMMIT" ] && git cat-file -e "${LAST_DEPLOY_COMMIT}^{commit}" 2>/dev/null; then
+    SINCE_LAST=$(git diff --name-only "${LAST_DEPLOY_COMMIT}" HEAD 2>/dev/null) || true
+  fi
+
+  CHANGED=$(printf "%s\n%s\n" "$UNCOMMITTED" "$SINCE_LAST" | grep -v '^$' | sort -u)
   CHANGED=$(echo "$CHANGED" | grep -v '^$' | while read -r f; do
     [[ -z "$f" || ! -f "$f" ]] && continue
     # Doku/Skripte – nicht für die Website
@@ -201,14 +216,18 @@ if [ -n "$QUICK" ] && [ -z "$DRY_RUN" ]; then
   echo "$CHANGED" | xargs -I{} -P "$PARALLEL_UPLOADS" bash -c 'upload_one "$@"' _ {}
   echo "   ✓ Upload fertig ($(( $(date +%s) - UPLOAD_START ))s)"
 
-  # Cache invalidieren: HTML + JS (JS hat oft Cache-Buster, aber sicherheitshalber)
+  # Cache invalidieren: HTML + Admin-Sections + JS/CSS
   if [ -n "$DID_BUILD" ]; then
     aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
-      --paths "/onboarding/*" "/*.html" "/js/*" "/css/*" --region "${AWS_REGION}" >/dev/null 2>&1
+      --paths "/onboarding/*" "/*.html" "/admin/*" "/js/*" "/css/*" --region "${AWS_REGION}" >/dev/null 2>&1
   else
     aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
-      --paths "/*.html" "/js/*" "/css/*" --region "${AWS_REGION}" >/dev/null 2>&1
+      --paths "/*.html" "/admin/*" "/js/*" "/css/*" --region "${AWS_REGION}" >/dev/null 2>&1
   fi
+
+  # Deploy-Marker setzen (für „committed but not deployed“-Erkennung beim nächsten Lauf)
+  mkdir -p "$(dirname "$LAST_DEPLOY_FILE")"
+  git rev-parse HEAD > "$LAST_DEPLOY_FILE"
   echo "✅ Schnell-Deploy fertig in $(( $(date +%s) - START_TS ))s. In 2–5 Min live: ${SITE_URL}"
   exit 0
 fi

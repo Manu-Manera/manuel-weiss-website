@@ -67,7 +67,9 @@ class AdminSectionLoader {
      */
     async fetchTemplate(templatePath) {
         try {
-            const response = await fetch(templatePath, {
+            const version = (typeof window !== 'undefined' && window.ADMIN_ASSET_VERSION) || '20260526u';
+            const bustPath = templatePath + (templatePath.includes('?') ? '&' : '?') + 'v=' + encodeURIComponent(version);
+            const response = await fetch(bustPath, {
                 method: 'GET',
                 headers: {
                     'Accept': 'text/html',

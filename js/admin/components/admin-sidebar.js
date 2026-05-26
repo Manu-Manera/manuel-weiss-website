@@ -521,7 +521,7 @@ class AdminSidebar extends HTMLElement {
             console.log('Loading section manually:', sectionId);
             
             // Template laden
-            const response = await fetch(`admin/sections/${sectionId}.html`);
+            const response = await fetch(`admin/sections/${sectionId}.html?v=${encodeURIComponent((window.ADMIN_ASSET_VERSION || '20260526u'))}`);
             if (!response.ok) {
                 throw new Error(`Template not found: ${sectionId}`);
             }
