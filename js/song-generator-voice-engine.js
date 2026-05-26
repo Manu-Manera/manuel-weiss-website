@@ -62,9 +62,76 @@
     return 'anonymous';
   }
 
+  function normalizeContentType(ct) {
+    if (!ct) return 'audio/wav';
+    var base = String(ct).split(';')[0].trim().toLowerCase();
+    if (base === 'audio/mp3') return 'audio/mpeg';
+    return base;
+  }
+
+  function audioBufferToWav(buffer) {
+    var numChannels = buffer.numberOfChannels;
+    var sampleRate = buffer.sampleRate;
+    var format = 1;
+    var bitDepth = 16;
+    var samples = buffer.length * numChannels;
+    var blockAlign = numChannels * bitDepth / 8;
+    var byteRate = sampleRate * blockAlign;
+    var dataSize = samples * bitDepth / 8;
+    var ab = new ArrayBuffer(44 + dataSize);
+    var view = new DataView(ab);
+    function writeStr(off, str) {
+      for (var i = 0; i < str.length; i++) view.setUint8(off + i, str.charCodeAt(i));
+    }
+    writeStr(0, 'RIFF');
+    view.setUint32(4, 36 + dataSize, true);
+    writeStr(8, 'WAVE');
+    writeStr(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, format, true);
+    view.setUint16(22, numChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, byteRate, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, bitDepth, true);
+    writeStr(36, 'data');
+    view.setUint32(40, dataSize, true);
+    var offset = 44;
+    var chData = [];
+    for (var c = 0; c < numChannels; c++) chData.push(buffer.getChannelData(c));
+    for (var i = 0; i < buffer.length; i++) {
+      for (var ch = 0; ch < numChannels; ch++) {
+        var s = Math.max(-1, Math.min(1, chData[ch][i]));
+        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+        offset += 2;
+      }
+    }
+    return new Blob([ab], { type: 'audio/wav' });
+  }
+
+  async function convertToWavFile(file) {
+    var baseType = normalizeContentType(file.type);
+    if (/^audio\/(mpeg|wav|x-wav|mp4|x-m4a|aac)$/.test(baseType)) return file;
+    var AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) {
+      throw new Error('Browser-Audio nicht verfügbar – bitte MP3 oder WAV hochladen.');
+    }
+    var ctx = new AudioCtx();
+    try {
+      var ab = await file.arrayBuffer();
+      var decoded = await ctx.decodeAudioData(ab.slice(0));
+      var wavBlob = audioBufferToWav(decoded);
+      var baseName = (file.name || 'stimmprobe').replace(/\.[^.]+$/, '');
+      return new File([wavBlob], baseName + '.wav', { type: 'audio/wav' });
+    } finally {
+      try { await ctx.close(); } catch (_e) {}
+    }
+  }
+
   async function uploadAudioFile(file) {
     if (!file) throw new Error('Keine Datei gewählt');
-    var ct = file.type || 'audio/mpeg';
+    file = await convertToWavFile(file);
+    var ct = normalizeContentType(file.type || 'audio/wav');
     var endpoint = getApiBase() + '/profile-image/upload-url';
     var presignRes = await fetch(endpoint, {
       method: 'POST',
@@ -73,7 +140,7 @@
         contentType: ct,
         userId: getUserId(),
         fileType: 'voice',
-        fileName: (file.name || 'voice-sample').replace(/[^a-zA-Z0-9.-]/g, '_')
+        fileName: (file.name || 'voice-sample.wav').replace(/[^a-zA-Z0-9.-]/g, '_')
       })
     });
     var presign = await presignRes.json().catch(function () { return null; });
@@ -277,9 +344,20 @@
         blob = null;
         preview.style.display = 'none';
         preview.removeAttribute('src');
-        var mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-          ? 'audio/webm;codecs=opus' : 'audio/webm';
-        recorder = new MediaRecorder(stream, { mimeType: mime });
+        var mime = null;
+        var candidates = [
+          'audio/mp4',
+          'audio/webm;codecs=opus',
+          'audio/webm',
+          'audio/ogg;codecs=opus'
+        ];
+        for (var ci = 0; ci < candidates.length; ci++) {
+          if (MediaRecorder.isTypeSupported(candidates[ci])) {
+            mime = candidates[ci];
+            break;
+          }
+        }
+        recorder = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
         recorder.ondataavailable = function (e) {
           if (e.data && e.data.size) chunks.push(e.data);
         };
@@ -288,7 +366,7 @@
           blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
           preview.src = URL.createObjectURL(blob);
           preview.style.display = 'block';
-          status.textContent = 'Aufnahme fertig (' + Math.round(blob.size / 1024) + ' KB)';
+          status.textContent = 'Aufnahme fertig (' + Math.round(blob.size / 1024) + ' KB) – wird als WAV hochgeladen';
           startBtn.disabled = false;
           stopBtn.disabled = true;
           if (opts.onRecorded) opts.onRecorded(getFile());

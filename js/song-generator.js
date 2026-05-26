@@ -2405,11 +2405,13 @@
 
       if (wiz.phase === 'need_verification' && wiz.validateInfo) {
         const box = el('div', 'sg-voice-verify-box');
-        box.append(el('p', 'sg-voice-phrase-label', 'Sing diesen Satz auf (besser: singend):'));
+        box.append(el('p', 'sg-voice-phrase-label', 'Sing jetzt genau diesen Satz (singend, in deiner normalen Tonhöhe):'));
         box.append(el('blockquote', 'sg-voice-phrase', wiz.validateInfo));
+        box.append(el('p', 'sg-voice-guide-tip',
+          'Nicht absichtlich tief oder hoch – singe so natürlich wie im Alltag. Ruhiger Raum, kein Flüstern.'));
 
         const recWrap = el('div', 'sg-voice-rec-block');
-        box.append(el('p', 'sg-hint', 'Validierung aufnehmen (empfohlen) oder Datei hochladen:'));
+        box.append(el('p', 'sg-hint', 'Validierung aufnehmen (empfohlen) oder Datei hochladen (MP3/WAV):'));
         box.append(recWrap);
         if (window.SongVoiceEngine && window.SongVoiceEngine.mountVoiceRecorder) {
           self._voiceVerifyRecorder = window.SongVoiceEngine.mountVoiceRecorder(recWrap, {
@@ -2421,7 +2423,7 @@
 
         const vFile = el('input');
         vFile.type = 'file';
-        vFile.accept = 'audio/*';
+        vFile.accept = 'audio/mpeg,audio/wav,audio/mp3,audio/x-wav,audio/mp4,audio/*';
         vFile.className = 'sg-voice-file';
         box.append(el('label', null, 'Oder Audiodatei wählen'));
         box.append(vFile);
@@ -2475,7 +2477,20 @@
       }
 
       const form = el('div', 'sg-voice-form');
-      form.append(el('p', 'sg-hint', 'Stimmprobe: direkt aufnehmen (5–30 s) oder Datei hochladen.'));
+
+      const guide = el('div', 'sg-voice-guide');
+      guide.append(el('p', 'sg-voice-guide-title', 'Was soll ich aufnehmen?'));
+      const guideList = el('ul', 'sg-voice-guide-list');
+      [
+        'Sing 10–20 Sekunden in deiner normalen Stimme – z. B. «La la la» oder: «Ich nehme meine Stimmprobe auf, klar und deutlich.»',
+        'Tonhöhe: weder absichtlich tief noch hoch – so, wie du normal sprichst oder singst.',
+        'Ruhiger Raum, kein Hintergrundgeräusch. Kurz im Gesangstraining warm machen hilft.',
+        'Segment Start/Ende: Standard 0–10 s reicht, wenn du direkt am Anfang der Aufnahme singst.'
+      ].forEach(function (t) { guideList.append(el('li', null, t)); });
+      guide.append(guideList);
+      form.append(guide);
+
+      form.append(el('p', 'sg-hint', 'Stimmprobe: direkt aufnehmen (5–30 s) oder MP3/WAV hochladen.'));
 
       const sampleRecWrap = el('div', 'sg-voice-rec-block');
       form.append(sampleRecWrap);
@@ -2489,7 +2504,7 @@
 
       const fileIn = el('input');
       fileIn.type = 'file';
-      fileIn.accept = 'audio/*';
+      fileIn.accept = 'audio/mpeg,audio/wav,audio/mp3,audio/x-wav,audio/mp4,audio/*';
       fileIn.className = 'sg-voice-file';
       form.append(el('label', null, 'Alternativ: Audiodatei hochladen'));
       form.append(fileIn);
@@ -2847,15 +2862,12 @@
       } else if (phase === 'queue_running') {
         stateBox.append(this._renderPlaylistQueueProgress());
       } else if (phase === 'submitting' || phase === 'polling') {
+        stateBox.append(el('p', 'sg-prod-status-lead', 'Song wird produziert …'));
+        stateBox.append(this._renderProductionProgressBar(true));
         stateBox.append(this.showSpinner());
-        const st = (this.state.audioState && this.state.audioState.status) || 'PENDING';
-        const phaseLabel = {
-          PENDING: 'In Warteschlange …',
-          TEXT_SUCCESS: 'Lyrics-Layer fertig, Audio wird gerendert …',
-          FIRST_SUCCESS: 'Erste Variante fertig! Zweite läuft …',
-          GENERATING: 'KI generiert Audio …'
-        }[st] || ('Status: ' + st);
-        stateBox.append(el('p', 'sg-prod-status', phaseLabel));
+        const st = (this.state.audioState && this.state.audioState.status) || '';
+        const friendly = this._humanProductionStatus(st);
+        if (friendly) stateBox.append(el('p', 'sg-prod-status', friendly));
         const cancel = el('button', 'sg-btn sg-btn-ghost', 'Abbrechen');
         cancel.onclick = () => {
           this.state.audioState = { phase: 'idle' };
@@ -2891,9 +2903,14 @@
       const pct = Math.round(((st.queueIndex || 0) / total) * 100);
       const wrap = el('div', 'sg-queue-progress');
       wrap.append(el('h4', null, 'Playlist wird produziert …'));
-      wrap.append(el('p', 'sg-prod-status',
-        'Song ' + idx + ' von ' + total + ': ' + (st.queueLabel || '…') +
-        (st.queueStatus ? ' · ' + st.queueStatus : '')));
+      const friendly = this._humanProductionStatus(st.queueStatus, {
+        songIndex: idx,
+        songTotal: total,
+        songLabel: st.queueLabel || 'Song'
+      });
+      wrap.append(el('p', 'sg-prod-status-lead',
+        'Song ' + idx + ' von ' + total + (st.queueLabel ? ': ' + st.queueLabel : '')));
+      if (friendly) wrap.append(el('p', 'sg-prod-status', friendly));
       const bar = el('div', 'sg-queue-bar');
       const fill = el('div', 'sg-queue-bar-fill');
       fill.style.width = pct + '%';
@@ -3312,6 +3329,38 @@
       const m = Math.floor(s / 60);
       const r = s % 60;
       return m + ':' + String(r).padStart(2, '0');
+    }
+
+    _humanProductionStatus(rawStatus, opts) {
+      opts = opts || {};
+      if (!rawStatus) return null;
+      var st = String(rawStatus).trim();
+      var map = {
+        PENDING: 'In Warteschlange',
+        TEXT_SUCCESS: 'Text fertig, Audio wird erstellt',
+        FIRST_SUCCESS: 'Erste Variante fertig',
+        GENERATING: 'Audio wird generiert',
+        SUCCESS: 'Fertig',
+        Start: 'Start',
+        'Start …': 'Start',
+        'Generiert …': 'Wird generiert'
+      };
+      var label = map[st];
+      if (!label) {
+        if (/^[A-Z][A-Z0-9_]+$/.test(st)) return null;
+        label = st;
+      }
+      if (opts.songIndex != null && opts.songTotal != null && opts.songLabel) {
+        return 'Song ' + opts.songIndex + ' von ' + opts.songTotal + ' (' + opts.songLabel + ') – ' + label;
+      }
+      if (opts.songLabel) return opts.songLabel + ' – ' + label;
+      return label;
+    }
+
+    _renderProductionProgressBar(indeterminate) {
+      const bar = el('div', 'sg-prod-progress-bar' + (indeterminate ? ' indeterminate' : ''));
+      bar.append(el('div', 'sg-prod-progress-fill'));
+      return bar;
     }
 
     async runPlaylistQueue(baseOpts) {

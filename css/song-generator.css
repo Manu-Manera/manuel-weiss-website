@@ -1387,6 +1387,59 @@
   cursor: pointer;
 }
 .sg-voice-verify-box { margin-top: 0.5rem; }
+.sg-voice-guide {
+  margin: 0 0 1rem;
+  padding: 0.75rem 0.9rem;
+  background: linear-gradient(135deg, #eef2ff, #f0fdf4);
+  border: 1px solid #c7d2fe;
+  border-radius: 12px;
+}
+.sg-voice-guide-title {
+  margin: 0 0 0.45rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #312e81;
+}
+.sg-voice-guide-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.84rem;
+  color: #334155;
+  line-height: 1.55;
+}
+.sg-voice-guide-list li { margin-bottom: 0.35rem; }
+.sg-voice-guide-tip {
+  margin: 0.35rem 0 0.75rem;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+.sg-prod-status-lead {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+  color: #334155;
+}
+.sg-prod-progress-bar {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 0.5rem 0 0.75rem;
+}
+.sg-prod-progress-bar .sg-prod-progress-fill {
+  height: 100%;
+  width: 35%;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  border-radius: 999px;
+}
+.sg-prod-progress-bar.indeterminate .sg-prod-progress-fill {
+  animation: sg-prod-indeterminate 1.2s ease-in-out infinite;
+}
+@keyframes sg-prod-indeterminate {
+  0% { transform: translateX(-100%); width: 35%; }
+  50% { width: 55%; }
+  100% { transform: translateX(320%); width: 35%; }
+}
+
 .sg-voice-train-row {
   margin: 0 0 0.75rem;
   font-size: 0.85rem;

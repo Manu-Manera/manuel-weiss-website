@@ -103,9 +103,10 @@ async function generateUploadUrl(event) {
         || event.headers?.['X-User-Id']
         || 'anonymous';
 
-    // Prüfe erlaubten MIME-Type
+    // Prüfe erlaubten MIME-Type (Codec-Suffix z. B. audio/webm;codecs=opus → audio/webm)
+    const normalizedType = contentType.split(';')[0].trim().toLowerCase();
     const allowedTypes = ALLOWED_TYPES[fileType] || ALLOWED_TYPES.profile;
-    if (!allowedTypes.includes(contentType)) {
+    if (!allowedTypes.includes(normalizedType)) {
         return {
             statusCode: 400,
             headers: CORS_HEADERS,
@@ -118,7 +119,7 @@ async function generateUploadUrl(event) {
 
     // Generiere eindeutigen Key
     const timestamp = Date.now();
-    const extension = getExtension(contentType);
+    const extension = getExtension(normalizedType);
     const sanitizedName = fileName 
         ? fileName.replace(/[^a-zA-Z0-9.-]/g, '_').substring(0, 50)
         : `file_${timestamp}`;
@@ -137,7 +138,7 @@ async function generateUploadUrl(event) {
     const command = new PutObjectCommand({
         Bucket: BUCKET_NAME,
         Key: key,
-        ContentType: contentType
+        ContentType: normalizedType
     });
 
     const uploadUrl = await getSignedUrl(s3, command, { expiresIn: URL_EXPIRY });
@@ -243,6 +244,7 @@ async function deleteFile(event) {
  * Gibt die Dateierweiterung basierend auf dem MIME-Type zurück
  */
 function getExtension(contentType) {
+    const base = (contentType || '').split(';')[0].trim().toLowerCase();
     const map = {
         'image/jpeg': '.jpg',
         'image/png': '.png',
@@ -250,7 +252,16 @@ function getExtension(contentType) {
         'image/webp': '.webp',
         'application/pdf': '.pdf',
         'application/msword': '.doc',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx'
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
+        'audio/mpeg': '.mp3',
+        'audio/mp3': '.mp3',
+        'audio/wav': '.wav',
+        'audio/x-wav': '.wav',
+        'audio/mp4': '.m4a',
+        'audio/x-m4a': '.m4a',
+        'audio/webm': '.webm',
+        'audio/ogg': '.ogg',
+        'audio/aac': '.aac'
     };
-    return map[contentType] || '';
+    return map[base] || '';
 }
