@@ -254,10 +254,16 @@ Falls nein: korrigiere INTERN und gib erst dann das finale JSON aus.`;
   }
 
   const ANALYSIS_LENGTH = {
-    short:  { label: 'Kurz',  words: '120–180',  paragraphs: '2–3' },
-    medium: { label: 'Mittel', words: '280–380', paragraphs: '4–6' },
-    long:   { label: 'Lang',  words: '520–700', paragraphs: '7–9' }
+    short:  { label: 'Kurz',  words: '140–200',  paragraphs: '3–4' },
+    medium: { label: 'Mittel', words: '320–420', paragraphs: '5–7' },
+    long:   { label: 'Lang',  words: '580–780', paragraphs: '8–10' }
   };
+
+  const ANALYSIS_SYSTEM = `Du bist eine erfahrene Persönlichkeits-Coachin und Narrativ-Autorin.
+Du schreibst flüssige, zusammenhängende Deutsch-Texte in Du-Form – warm, präzise, bildhaft.
+Keine Stichwortlisten, keine nüchternen Skalen-Aufzählungen. Verwebe Zahlen und Konstrukte
+organisch in erzählende Sätze („Deine hohe Offenheit zeigt sich darin, dass …").
+Antworte NUR mit gültigem JSON nach dem geforderten Schema – kein Markdown, keine Codefences.`;
 
   function buildPersonalityAnalysisUserPrompt(args) {
     const mode = args.mode || 'integrated';
@@ -268,39 +274,55 @@ Falls nein: korrigiere INTERN und gib erst dann das finale JSON aus.`;
     const astrology = args.astrology || null;
     const persona = args.persona || {};
     const answersCount = args.answers_count || 0;
+    const topFacets = args.top_facets || [];
+    const motifs = persona.motifs || [];
+    const tensions = persona.tensions || [];
+    const importedNarrative = args.imported_narrative || '';
 
     const modeIntro = mode === 'psychometric'
-      ? 'Erstelle eine Persönlichkeitsanalyse AUSSCHLIESSLICH auf Basis der psychometrischen Testdaten (Big Five, Facetten, HEXACO-H, Schwartz-Werte, Bindung, VIA). Keine Astrologie.'
+      ? 'Grundlage: ausschließlich psychometrische Testdaten (Big Five, Facetten, HEXACO-H, Schwartz, Bindung, VIA). Keine Astrologie erwähnen.'
       : mode === 'astrology'
-        ? 'Erstelle eine Persönlichkeits-DEUTUNG AUSSCHLIESSLICH auf Basis der astrologischen Geburtskarte (Planeten, Häuser, Aspekte, Elemente). Keine psychometrischen Skalen als Begründung – formuliere symbolisch-poetisch, aber klar als astrologische Bildsprache, nicht als Wissenschaft.'
-        : 'Erstelle eine integrierte Analyse: psychometrische Testdaten sind die wissenschaftliche Grundlage; Astrologie liefert ergänzende Bildsprache und Motive. Trenne im Text klar, was aus dem Test kommt und was astrologische Metaphorik ist.';
+        ? 'Grundlage: ausschließlich astrologische Geburtskarte als symbolische Bildsprache – klar als Metapher kennzeichnen, nicht als Wissenschaft verkaufen.'
+        : 'Grundlage: Testdaten = wissenschaftliche Wahrheit; Astrologie = poetische Ergänzung. Verknüpfe beides in einem roten Faden, ohne zu vermischen was Fakt und was Bild ist.';
 
     return 'AUFTRAG: ' + modeIntro + '\n\n' +
-      'LÄNGE: ' + lenSpec.label + ' (' + lenSpec.words + ' Wörter, ' + lenSpec.paragraphs + ' Absätze).\n\n' +
-      'SPRACHE: Deutsch, Du-Form, warm und präzise. Kein Markdown, keine Überschriften mit #.\n' +
-      'Struktur: Fliesstext-Absätze. Optional kurze Zwischenüberschriften in ALL CAPS (max. 4 Wörter).\n\n' +
-      'PFLICHTABSCHNITT – SEXUALITÄT & INTIMITÄT:\n' +
-      'Integriere einen eigenen Abschnitt (Überschrift: „Sexualität & Intimität"). ' +
-      'Behandle respektvoll und nicht-pornografisch: Nähe/Distanz, sinnlicher Ausdruck, Sehnsucht, ' +
-      'Bindungsstil, Selbstbewusstsein in Intimität, Spannungsfelder. ' +
-      (mode === 'astrology'
-        ? 'Nutze symbolisch Venus, Mars, Mond, Pluto und relevante Häuser (5, 7, 8) – ohne deterministische Aussagen.'
-        : mode === 'psychometric'
-          ? 'Leite aus Extraversion, Neurotizismus, Offenheit, Bindung (SEC/ANX/AVO) und Werten ab – keine Diagnosen.'
-          : 'Verknüpfe Test-Signale mit astrologischer Bildsprache (z. B. Venus/Mars/Mond), kennzeichne Metaphern als solche.') +
-      '\n\n' +
-      'SICHERHEIT: Keine klinischen Diagnosen, keine expliziten sexuellen Handlungen beschreiben.\n\n' +
+      'LÄNGE: ' + lenSpec.label + ' (' + lenSpec.words + ' Wörter gesamt).\n\n' +
+      'STIL:\n' +
+      '- Fliesstext mit Übergängen zwischen Abschnitten („Gleichzeitig …", „Darunter liegt …").\n' +
+      '- Archetyp und core_narrative als emotionaler Anker nutzen.\n' +
+      '- Top-Facetten und Motive konkret einweben, nicht nur benennen.\n' +
+      '- Spannungsfelder (tensions) als lebendige Widersprüche beschreiben.\n' +
+      '- Schluss: ein Satz, der nach vorne blickt (Song, Alltag, Beziehung).\n\n' +
+      'OUTPUT-SCHEMA (JSON):\n' +
+      '{\n' +
+      '  "headline": "<prägnant, max 8 Wörter, emotional>",\n' +
+      '  "lead": "<2–3 Sätze: Kernbotschaft, roter Faden>",\n' +
+      '  "sections": [\n' +
+      '    { "id": "kern", "title": "Dein Kern", "body": "<Fliesstext>" },\n' +
+      '    { "id": "staerken", "title": "Stärken & Ressourcen", "body": "..." },\n' +
+      '    { "id": "schatten", "title": "Schatten & Spannungen", "body": "..." },\n' +
+      '    { "id": "beziehung", "title": "Nähe & Beziehung", "body": "..." },\n' +
+      '    { "id": "sexualitaet", "title": "Sexualität & Intimität", "body": "respektvoll, nicht explizit; Bindung, Sehnsucht, Nähe/Distanz" },\n' +
+      '    { "id": "klang", "title": "Dein inneres Klangbild", "body": "wie Persönlichkeit in Musik klingen könnte – ohne Technik-Jargon" }\n' +
+      '  ],\n' +
+      '  "closing": "<1 inspirierender Abschluss-Satz>",\n' +
+      '  "music_hints": ["<tag1>", "<tag2>", "<tag3>"]\n' +
+      '}\n\n' +
+      (mode === 'integrated' ? 'Bei „klang": verbinde Test-Signale mit Astro-Metaphern.\n' : '') +
+      (importedNarrative ? 'ZUSATZ-KONTEXT (Methoden): ' + importedNarrative.slice(0, 400) + '\n' : '') +
+      'SICHERHEIT: Keine klinischen Diagnosen, keine expliziten sexuellen Handlungen.\n\n' +
       'INPUT-DATEN:\n' + JSON.stringify({
-        mode,
-        length,
-        answers_count: answersCount,
+        mode, length, answers_count: answersCount,
         test_results: testResults,
-        facets,
+        facets: facets,
+        top_facets: topFacets,
         persona_archetype: persona.archetype || null,
         persona_core_narrative: persona.core_narrative || null,
+        motifs: motifs,
+        tensions: tensions,
+        music_dna: persona.music_dna || null,
         astrology: astrology
-      }, null, 2) + '\n\n' +
-      'OUTPUT: Nur der Analyse-Fliesstext (kein JSON, kein Code).';
+      }, null, 2);
   }
 
   window.SONG_PROMPTS = {
@@ -310,6 +332,7 @@ Falls nein: korrigiere INTERN und gib erst dann das finale JSON aus.`;
     buildPersonaSynthesisUserPrompt,
     buildSongComposerUserPrompt,
     buildPersonalityAnalysisUserPrompt,
-    ANALYSIS_LENGTH
+    ANALYSIS_LENGTH,
+    ANALYSIS_SYSTEM
   };
 })();

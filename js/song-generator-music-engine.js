@@ -286,6 +286,9 @@
     const facets = (persona && persona.facets_final) || {};
     const astro = persona && persona.astrology;
     const methods = (persona && persona.imported_methods_count) || opts.methodsCount || 0;
+    const intentMods = opts.intentModifiers || null;
+    const trackSpec = opts.trackSpec || null;
+    const analysisKeywords = opts.analysisKeywords || (intentMods && intentMods.analysisKeywords) || [];
 
     // ── PERSÖNLICHKEIT (50%) ─────────────────────────────────
     const O = sf.BIG5_O || 50, E = sf.BIG5_E || 50, A = sf.BIG5_A || 50,
@@ -306,10 +309,21 @@
     else if (N <= 40) persParts.push('grounded');
     if (O >= 70) persParts.push('with unusual harmonic colors');
 
-    // Music-DNA Hard-Locks
-    persParts.push((dna.tempo_bpm || 90) + ' BPM');
+    // Music-DNA Hard-Locks (Intent kann Tempo/Energy überschreiben)
+    const tempoBpm = (intentMods && intentMods.tempo) || dna.tempo_bpm || 90;
+    persParts.push(tempoBpm + ' BPM');
     persParts.push((dna.key || 'C') + ' ' + (dna.mode || 'ionian'));
     if (dna.time_signature && dna.time_signature !== '4/4') persParts.push(dna.time_signature + ' time signature');
+
+    if (intentMods && intentMods.genreHints && intentMods.genreHints.length) {
+      persParts.unshift(intentMods.genreHints[0]);
+    }
+    if (intentMods && intentMods.moodWords && intentMods.moodWords.length) {
+      persParts.push(intentMods.moodWords.slice(0, 3).join(' '));
+    }
+    if (analysisKeywords.length) {
+      persParts.push('emotional palette: ' + analysisKeywords.slice(0, 3).join(', '));
+    }
 
     // Instrumente (Whitelist)
     const allInstr = []
@@ -322,7 +336,7 @@
     // Vocal
     if (dna.vocal) {
       const reg = dna.vocal.register || 'mid';
-      const deli = dna.vocal.delivery || 'sung';
+      const deli = (intentMods && intentMods.vocalDelivery) || dna.vocal.delivery || 'sung';
       persParts.push(reg + ' register ' + deli + ' vocals');
     }
 
@@ -381,6 +395,9 @@
     const parts = [personalityText];
     if (astroText) parts.push(astroText);
     if (methodsText) parts.push(methodsText);
+    if (trackSpec && trackSpec.label) {
+      parts.unshift('context: ' + trackSpec.label + ' playlist intent');
+    }
     let style = parts.join(' | ').replace(/\s+/g, ' ').trim();
     if (style.length > 950) style = style.slice(0, 947) + '...';
 
@@ -393,7 +410,8 @@
       personality: 0.50,
       astrology:   astro ? 0.50 : 0.00,
       methods:     bonus,
-      methodsCount: methods
+      methodsCount: methods,
+      intent:      trackSpec ? (trackSpec.weights && trackSpec.weights.intent) || 0.35 : 0
     };
     // Wenn keine Astrologie: Persönlichkeit nimmt deren 50% mit (transparent)
     if (!astro) weights.personality = 1.0 - weights.methods;
@@ -402,7 +420,10 @@
       style, negativeTags, weights,
       personality_text: personalityText,
       astrology_text:   astroText,
-      methods_text:     methodsText
+      methods_text:     methodsText,
+      intent_text:      trackSpec ? (trackSpec.rationale || trackSpec.label) : '',
+      tempo_bpm:        tempoBpm,
+      instrumental:     intentMods ? !!intentMods.instrumental : false
     };
   }
 
@@ -441,23 +462,27 @@
     const lyrics = buildLyricsFromSong(song);
     let vocalGender = opts.vocalGender || vocalGenderFromPersona(persona);
     if (vocalGender !== 'm' && vocalGender !== 'f') vocalGender = undefined;
+    const useInstrumental = opts.instrumental != null ? opts.instrumental : style.instrumental;
+    const hasLyrics = lyrics && lyrics.length >= 30;
 
     return {
       model,
-      title,
-      prompt: lyrics,                 // Suno V5.5: prompt = Lyrics in customMode
-      style: style.style,             // Stil-/Genre-Beschreibung
+      title: opts.titleOverride || title,
+      prompt: lyrics,
+      style: style.style,
       customMode: true,
-      instrumental: !lyrics || lyrics.length < 30,
-      vocalGender,
+      instrumental: useInstrumental || !hasLyrics,
+      vocalGender: useInstrumental ? undefined : vocalGender,
       negativeTags: style.negativeTags || undefined,
-      styleWeight: 0.7,
-      weirdnessConstraint: 0.45,
-      // Wir liefern KEINE callBackUrl, sondern pollen (kein öffentlicher Endpunkt nötig)
+      styleWeight: opts.styleWeight != null ? opts.styleWeight : 0.72,
+      weirdnessConstraint: opts.weirdnessConstraint != null ? opts.weirdnessConstraint : 0.42,
       _weights: style.weights,
       _personality_text: style.personality_text,
       _astrology_text:   style.astrology_text,
-      _methods_text:     style.methods_text
+      _methods_text:     style.methods_text,
+      _intent_text:      style.intent_text,
+      _tempo_bpm:        style.tempo_bpm,
+      _intentId:         opts.intentId || null
     };
   }
 

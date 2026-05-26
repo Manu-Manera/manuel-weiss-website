@@ -1061,6 +1061,109 @@
 }
 .sg-analysis-output p { margin: 0 0 0.75rem; }
 .sg-analysis-output p:last-child { margin-bottom: 0; }
+.sg-analysis-headline {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #4c1d95;
+  line-height: 1.3;
+}
+.sg-analysis-lead-text {
+  font-size: 0.95rem;
+  color: #334155;
+  line-height: 1.65;
+  margin: 0 0 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+.sg-analysis-section {
+  margin-bottom: 1rem;
+  padding-left: 0.65rem;
+  border-left: 3px solid #c4b5fd;
+}
+.sg-analysis-section-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6366f1;
+}
+.sg-analysis-section p {
+  margin: 0 0 0.55rem;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: #1e293b;
+}
+.sg-analysis-closing {
+  margin-top: 0.85rem;
+  padding: 0.65rem 0.75rem;
+  background: linear-gradient(135deg, #f5f3ff, #eef2ff);
+  border-radius: 10px;
+  font-style: italic;
+  color: #4338ca;
+  font-size: 0.9rem;
+}
+.sg-analysis-music-hints {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+.sg-analysis-hints-label { font-size: 0.78rem; color: #64748b; font-weight: 600; }
+
+/* Playlist-Kontext (Produktion) */
+.sg-playlist-panel {
+  margin: 1rem 0 1.25rem;
+  padding: 1rem 1.1rem;
+  background: #fff;
+  border: 1px solid #ddd6fe;
+  border-radius: 14px;
+}
+.sg-playlist-panel h4 { margin: 0 0 0.35rem; font-size: 0.95rem; color: #4c1d95; }
+.sg-playlist-lead { margin: 0 0 0.75rem; font-size: 0.82rem; color: #64748b; line-height: 1.5; }
+.sg-playlist-intents {
+  display: flex; flex-wrap: wrap; gap: 0.45rem;
+  margin-bottom: 0.85rem;
+}
+.sg-playlist-intent {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid #ddd6fe;
+  background: #faf5ff;
+  font-family: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: #5b21b6;
+}
+.sg-playlist-intent.active {
+  background: linear-gradient(135deg, #7c3aed, #6366f1);
+  color: #fff;
+  border-color: transparent;
+}
+.sg-playlist-emoji { font-size: 1rem; }
+.sg-playlist-spec {
+  padding: 0.75rem 0.85rem;
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1px dashed #e2e8f0;
+}
+.sg-playlist-desc { margin: 0 0 0.6rem; font-size: 0.85rem; color: #475569; }
+.sg-playlist-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+.sg-playlist-metric {
+  padding: 0.4rem 0.55rem;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+.sg-playlist-metric-k { display: block; font-size: 0.68rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em; }
+.sg-playlist-metric-v { display: block; font-size: 0.9rem; font-weight: 700; color: #1e293b; margin-top: 0.15rem; }
+.sg-playlist-rationale { margin: 0.5rem 0 0; font-size: 0.78rem; color: #64748b; line-height: 1.45; }
+.sg-playlist-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
 
 .sg-facet-list {
   margin-top: 0.75rem;

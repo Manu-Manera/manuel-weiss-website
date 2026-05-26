@@ -409,6 +409,7 @@
         analysisUi: { mode: 'integrated', length: 'medium' },
         analysisLoading: false,
         analysisError: null,
+        audioIntent: 'personality',
         userMeta: {
           name_or_alias: '',
           lang: 'de',
@@ -1556,11 +1557,7 @@
 
       const stored = persona.ai_analyses && persona.ai_analyses[ui.mode] && persona.ai_analyses[ui.mode][ui.length];
       if (stored) {
-        const out = el('div', 'sg-analysis-output');
-        stored.split(/\n\n+/).forEach(function (para) {
-          if (para.trim()) out.append(el('p', null, para.trim()));
-        });
-        panel.append(out);
+        panel.append(this.renderAnalysisDocument(stored));
       } else if (!this.state.analysisLoading && !this.state.analysisError) {
         panel.append(el('p', 'sg-hint', 'Noch keine Analyse für diese Kombination. Wähle Modus und Länge, dann „Analyse generieren".'));
       }
@@ -1570,6 +1567,41 @@
       }
 
       return panel;
+    }
+
+    renderAnalysisDocument(data) {
+      const wrap = el('article', 'sg-analysis-output');
+      if (typeof data === 'string') {
+        data.split(/\n\n+/).forEach(function (para) {
+          if (para.trim()) wrap.append(el('p', null, para.trim()));
+        });
+        return wrap;
+      }
+      if (data.headline) {
+        const h = el('h4', 'sg-analysis-headline', data.headline);
+        wrap.append(h);
+      }
+      if (data.lead) wrap.append(el('p', 'sg-analysis-lead-text', data.lead));
+      (data.sections || []).forEach(function (sec) {
+        const block = el('section', 'sg-analysis-section');
+        if (sec.title) block.append(el('h5', 'sg-analysis-section-title', sec.title));
+        if (sec.body) {
+          sec.body.split(/\n\n+/).forEach(function (p) {
+            if (p.trim()) block.append(el('p', null, p.trim()));
+          });
+        }
+        wrap.append(block);
+      });
+      if (data.closing) wrap.append(el('p', 'sg-analysis-closing', data.closing));
+      if (Array.isArray(data.music_hints) && data.music_hints.length) {
+        const tags = el('div', 'sg-analysis-music-hints');
+        tags.append(el('span', 'sg-analysis-hints-label', 'Klang-Signale: '));
+        data.music_hints.forEach(function (t) {
+          tags.append(el('span', 'sg-motif-chip', t));
+        });
+        wrap.append(tags);
+      }
+      return wrap;
     }
 
     async runPersonalityAnalysis() {
@@ -1599,26 +1631,32 @@
           ? window.SongTestData.computeScores(this.state.answers, variant)
           : { scales: {}, facets: {} };
 
-        const maxTokens = ui.length === 'short' ? 550 : (ui.length === 'long' ? 1600 : 1000);
-        const text = await callOpenAIText({
+        const maxTokens = ui.length === 'short' ? 900 : (ui.length === 'long' ? 2200 : 1400);
+        const topFacets = window.SongTestData && window.SongTestData.topFacets && this.state.persona.facets_final
+          ? window.SongTestData.topFacets(this.state.persona.facets_final, 6)
+          : [];
+
+        const parsed = await callOpenAIDirect({
           apiKey: apiKey,
-          system: P.SYSTEM_CORE + '\n\nDu schreibst Fliesstext-Analysen (kein JSON). Halte dich exakt an Länge und Struktur.',
+          system: P.ANALYSIS_SYSTEM || P.SYSTEM_CORE,
           user: P.buildPersonalityAnalysisUserPrompt({
             mode: ui.mode,
             length: ui.length,
             test_results: scored.scales || this.state.persona.scales_final || {},
             facets: scored.facets || this.state.persona.facets_final || {},
+            top_facets: topFacets,
             astrology: this.state.persona.astrology ? this._compactAstro(this.state.persona.astrology) : null,
             persona: this.state.persona,
-            answers_count: Object.keys(this.state.answers || {}).length
+            answers_count: Object.keys(this.state.answers || {}).length,
+            imported_narrative: this.state.importedNarrative || ''
           }),
-          temperature: 0.74,
+          temperature: 0.78,
           maxTokens: maxTokens
         });
 
         if (!this.state.persona.ai_analyses) this.state.persona.ai_analyses = {};
         if (!this.state.persona.ai_analyses[ui.mode]) this.state.persona.ai_analyses[ui.mode] = {};
-        this.state.persona.ai_analyses[ui.mode][ui.length] = text;
+        this.state.persona.ai_analyses[ui.mode][ui.length] = parsed;
         saveState(STORAGE_KEYS.persona, this.state.persona);
         this._cloudSave('persona', { updateCurrent: true });
       } catch (err) {
@@ -1910,6 +1948,96 @@
     // ════════════════════════════════════════════════════════════
     // AUDIO-PRODUKTION (KI komponiert echtes Musikstück + Stimme)
     // ════════════════════════════════════════════════════════════
+
+    _buildProductionOpts(base) {
+      base = base || {};
+      const intentId = this.state.audioIntent || 'personality';
+      const ui = this.state.analysisUi || { mode: 'integrated', length: 'medium' };
+      const opts = Object.assign({ intentId: intentId }, base);
+      if (!window.SongPlaylistEngine || !this.state.persona) return opts;
+
+      const excerpt = window.SongPlaylistEngine.pickAnalysisExcerpt(
+        this.state.persona, ui.mode, ui.length
+      );
+      const mods = window.SongPlaylistEngine.computeIntentModifiers(
+        this.state.persona, intentId, excerpt
+      );
+      const blueprint = window.SongPlaylistEngine.computePlaylistBlueprint(this.state.persona, {
+        analysisMode: ui.mode,
+        analysisLength: ui.length
+      });
+      const track = window.SongPlaylistEngine.getTrackSpec(blueprint, intentId);
+      opts.intentModifiers = mods;
+      opts.trackSpec = track;
+      opts.analysisKeywords = mods.analysisKeywords;
+      opts.instrumental = mods.instrumental;
+      if (track && track.titleSuggestion && intentId !== 'personality') {
+        opts.titleOverride = track.titleSuggestion.slice(0, 95);
+      }
+      return opts;
+    }
+
+    renderPlaylistIntentPanel() {
+      const wrap = el('div', 'sg-playlist-panel');
+      wrap.append(el('h4', null, 'Sound-Kontext & Playlist-Konzept'));
+      wrap.append(el('p', 'sg-playlist-lead',
+        'Jeder Modus wird aus Test, Astro, Methoden und deiner KI-Analyse neu berechnet – Tempo, Energie und Stil fliessen in die Suno-Produktion.'));
+
+      const ui = this.state.analysisUi || { mode: 'integrated', length: 'medium' };
+      const blueprint = window.SongPlaylistEngine.computePlaylistBlueprint(this.state.persona, {
+        analysisMode: ui.mode,
+        analysisLength: ui.length
+      });
+      const self = this;
+      const intentId = this.state.audioIntent || 'personality';
+
+      const tabs = el('div', 'sg-playlist-intents');
+      blueprint.tracks.forEach(function (track) {
+        const b = el('button', 'sg-playlist-intent' + (intentId === track.intentId ? ' active' : ''));
+        b.type = 'button';
+        b.append(el('span', 'sg-playlist-emoji', track.emoji));
+        b.append(el('span', 'sg-playlist-label', track.label));
+        b.onclick = function () {
+          self.state.audioIntent = track.intentId;
+          self.render();
+        };
+        tabs.append(b);
+      });
+      wrap.append(tabs);
+
+      const active = blueprint.tracks.find(function (t) { return t.intentId === intentId; }) || blueprint.tracks[0];
+      if (active) {
+        const spec = el('div', 'sg-playlist-spec');
+        spec.append(el('p', 'sg-playlist-desc', active.description));
+        const metrics = el('div', 'sg-playlist-metrics');
+        [
+          ['Tempo', active.tempo + ' BPM'],
+          ['Energie', Math.round((active.energy || 0) * 100) + '%'],
+          ['Helligkeit', Math.round((active.brightness || 0) * 100) + '%'],
+          ['Modus', active.instrumental ? 'Instrumental' : 'Mit Gesang']
+        ].forEach(function (pair) {
+          const m = el('div', 'sg-playlist-metric');
+          m.append(el('span', 'sg-playlist-metric-k', pair[0]));
+          m.append(el('span', 'sg-playlist-metric-v', pair[1]));
+          metrics.append(m);
+        });
+        spec.append(metrics);
+        if (active.rationale) spec.append(el('p', 'sg-playlist-rationale', active.rationale));
+        if (active.styleTags && active.styleTags.length) {
+          const tags = el('div', 'sg-playlist-tags');
+          active.styleTags.forEach(function (t) { tags.append(el('span', 'sg-motif-chip', t)); });
+          spec.append(tags);
+        }
+        wrap.append(spec);
+      }
+
+      const hint = el('p', 'sg-hint',
+        'Eine volle Playlist mit allen 4 Kontexten = 4 Suno-Generierungen (je ~$0.05–0.10). ' +
+        'Wähle hier den Kontext für diese Produktion.');
+      wrap.append(hint);
+      return wrap;
+    }
+
     renderProduction() {
       const box = el('div', 'sg-prod-box');
       const head = el('div', 'sg-prod-head');
@@ -1923,10 +2051,16 @@
       head.append(subtitle);
       box.append(head);
 
+      // Playlist-Intent & berechnetes Konzept
+      if (this.state.persona && window.SongPlaylistEngine) {
+        box.append(this.renderPlaylistIntentPanel());
+      }
+
       // Mix-Matrix anzeigen
       if (this.state.persona && window.SongMusicEngine) {
         try {
-          const preview = window.SongMusicEngine.buildStylePrompt(this.state.persona);
+          const prodOpts = this._buildProductionOpts({ model: 'V5_5' });
+          const preview = window.SongMusicEngine.buildStylePrompt(this.state.persona, prodOpts);
           box.append(this._renderMixMatrix(preview));
         } catch (_e) {}
       }
@@ -1974,10 +2108,10 @@
         const act = el('div', 'sg-actions');
         const startBtn = el('button', 'sg-btn sg-btn-primary', '🎵 Audio jetzt produzieren');
         startBtn.onclick = () => {
-          const o = {
+          const o = this._buildProductionOpts({
             model: mSel.value,
             vocalGender: vgSel.value === 'auto' ? undefined : vgSel.value
-          };
+          });
           this.runProduction(o);
         };
         act.append(startBtn);
@@ -2028,12 +2162,11 @@
         { key: 'personality', label: 'Persönlichkeit', color: '#6366f1',
           text: preview.personality_text },
         { key: 'astrology', label: 'Astrologie', color: '#a78bfa',
-          text: preview.astrology_text || '— (Geburtsdaten nicht angegeben)' },
+          text: preview.astrology_text || '— (keine Geburtsdaten)' },
         { key: 'methods', label: 'Methoden-Bonus', color: '#34d399',
-          text: preview.methods_text ||
-            (preview.weights && preview.weights.methodsCount
-              ? '— (Tags konnten nicht extrahiert werden)'
-              : '— (noch keine Methoden bearbeitet)') }
+          text: preview.methods_text || '—' },
+        { key: 'intent', label: 'Playlist-Kontext', color: '#f59e0b',
+          text: preview.intent_text || 'Persönlichkeits-Song (Standard)' }
       ];
       rows.forEach(r => {
         const w = preview.weights[r.key] || 0;
@@ -2145,6 +2278,7 @@
           tracks: result.tracks || [],
           taskId: result.taskId,
           weights: result.weights,
+          intentId: opts.intentId || this.state.audioIntent,
           generatedAt: new Date().toISOString(),
           provider: 'sunoapi_org',
           model: opts.model
