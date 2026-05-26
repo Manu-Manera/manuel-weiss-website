@@ -479,10 +479,12 @@ async function saveApiSettings(userId, data) {
                 temperature: data.google.temperature ?? existingSettings.google?.temperature ?? 0.7
             };
             console.log('🔐 Google Key verschlüsselt gespeichert');
+        } else if (existingSettings.google) {
+            settingsItem.google = existingSettings.google;
         }
+
+        // Suno Settings (KI-Musik, sunoapi.org)
         if (data.suno) {
-            // Suno: Bearer-Token von Drittanbieter, keine Verschlüsselung nötig wie bei OpenAI
-            // (wird als globaler Key über provider='suno' abgerufen)
             const encryptedKey = encryptNewKey(data.suno.apiKey, existingSettings.suno?.apiKey);
             settingsItem.suno = {
                 apiKey: encryptedKey,
@@ -491,8 +493,8 @@ async function saveApiSettings(userId, data) {
                 temperature: data.suno.temperature ?? existingSettings.suno?.temperature ?? 0.45
             };
             console.log('🎵 Suno Key verschlüsselt gespeichert');
-        } else if (existingSettings.google) {
-            settingsItem.google = existingSettings.google;
+        } else if (existingSettings.suno) {
+            settingsItem.suno = existingSettings.suno;
         }
         
         await docClient.send(new PutCommand({
@@ -500,41 +502,43 @@ async function saveApiSettings(userId, data) {
             Item: settingsItem
         }));
         
-        // WICHTIG: Auch api-settings#global aktualisieren – HR-Coach/BPMN laden Key mit global=true
-        // (ohne Login), daher muss der neue Key dort landen
+        // WICHTIG: Auch api-settings#global aktualisieren – HR-Coach/BPMN/Song-Generator laden Key mit global=true
         try {
+            let existingGlobal = {};
+            try {
+                const existingGlobalResult = await docClient.send(new GetCommand({
+                    TableName: PROFILE_TABLE,
+                    Key: { userId: 'api-settings#global' }
+                }));
+                if (existingGlobalResult.Item) {
+                    existingGlobal = existingGlobalResult.Item;
+                }
+            } catch (_e) {}
+
             const globalItem = {
+                ...existingGlobal,
                 userId: 'api-settings#global',
                 updatedAt: now
             };
-            if (settingsItem.openai && settingsItem.openai.apiKey) {
-                const rawKey = settingsItem.openai.apiKey;
-                globalItem.openai = {
+
+            const syncProviderToGlobal = (providerName) => {
+                const providerSettings = settingsItem[providerName];
+                if (!providerSettings || !providerSettings.apiKey) return;
+                const rawKey = providerSettings.apiKey;
+                globalItem[providerName] = {
                     apiKey: isEncrypted(rawKey) ? decryptApiKey(rawKey, userId) : rawKey,
-                    model: settingsItem.openai.model || 'gpt-5.2',
-                    maxTokens: settingsItem.openai.maxTokens || 1000,
-                    temperature: settingsItem.openai.temperature ?? 0.7
+                    model: providerSettings.model,
+                    maxTokens: providerSettings.maxTokens,
+                    temperature: providerSettings.temperature
                 };
-            }
-            if (settingsItem.anthropic && settingsItem.anthropic.apiKey) {
-                const rawKey = settingsItem.anthropic.apiKey;
-                globalItem.anthropic = {
-                    apiKey: isEncrypted(rawKey) ? decryptApiKey(rawKey, userId) : rawKey,
-                    model: settingsItem.anthropic.model,
-                    maxTokens: settingsItem.anthropic.maxTokens,
-                    temperature: settingsItem.anthropic.temperature
-                };
-            }
-            if (settingsItem.google && settingsItem.google.apiKey) {
-                const rawKey = settingsItem.google.apiKey;
-                globalItem.google = {
-                    apiKey: isEncrypted(rawKey) ? decryptApiKey(rawKey, userId) : rawKey,
-                    model: settingsItem.google.model,
-                    maxTokens: settingsItem.google.maxTokens,
-                    temperature: settingsItem.google.temperature
-                };
-            }
-            if (globalItem.openai || globalItem.anthropic || globalItem.google) {
+            };
+
+            syncProviderToGlobal('openai');
+            syncProviderToGlobal('anthropic');
+            syncProviderToGlobal('google');
+            syncProviderToGlobal('suno');
+
+            if (globalItem.openai || globalItem.anthropic || globalItem.google || globalItem.suno) {
                 await docClient.send(new PutCommand({
                     TableName: PROFILE_TABLE,
                     Item: globalItem

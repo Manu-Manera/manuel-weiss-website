@@ -33,6 +33,15 @@
   function isValidSunoKey(k) { return typeof k === 'string' && k.length > 16; }
   async function getSunoApiKey() {
     if (_keyCache.value && _keyCache.expiresAt > Date.now()) return _keyCache.value;
+
+    function rememberKey(k) {
+      if (!isValidSunoKey(k)) return null;
+      _keyCache.value = k;
+      _keyCache.expiresAt = Date.now() + 5 * 60 * 1000;
+      return k;
+    }
+
+    // 1) AWS global (wie OpenAI/HR-Coach)
     try {
       const res = await fetch(API_BASE + '/api-settings?action=key&provider=suno&global=true', {
         method: 'GET', headers: { 'Content-Type': 'application/json' }
@@ -40,21 +49,33 @@
       if (res.ok) {
         const data = await res.json().catch(() => null);
         const k = data && data.apiKey;
-        if (isValidSunoKey(k)) {
-          _keyCache.value = k;
-          _keyCache.expiresAt = Date.now() + 5 * 60 * 1000;
-          return k;
-        }
+        const cached = rememberKey(k);
+        if (cached) return cached;
       }
     } catch (_e) { /* fall through */ }
+
+    // 2) awsAPISettings (eingeloggt oder global)
     try {
-      const lk = localStorage.getItem('suno-api-key');
-      if (isValidSunoKey(lk)) {
-        _keyCache.value = lk;
-        _keyCache.expiresAt = Date.now() + 5 * 60 * 1000;
-        return lk;
+      if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
+        const k = await window.awsAPISettings.getFullApiKey('suno', true);
+        const cached = rememberKey(k);
+        if (cached) return cached;
       }
+    } catch (_e) { /* fall through */ }
+
+    // 3) Admin-Panel global_api_keys
+    try {
+      const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
+      const cached = rememberKey(globalKeys.suno && globalKeys.suno.apiKey);
+      if (cached) return cached;
+    } catch (_e) { /* fall through */ }
+
+    // 4) Direkter Sofort-Fallback nach Admin-Speichern
+    try {
+      const cached = rememberKey(localStorage.getItem('suno-api-key'));
+      if (cached) return cached;
     } catch (_e) {}
+
     return null;
   }
 

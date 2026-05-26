@@ -583,14 +583,19 @@ class ApiKeysSection {
             }
         } catch (error) {
             console.error('❌ Fehler beim Speichern in AWS:', error);
-            // Lokal ist bereits gespeichert
+            this.showMessage(service, 'Lokal gespeichert, AWS-Speicherung fehlgeschlagen: ' + (error.message || 'Unbekannter Fehler'), 'error');
+            this.updateServiceStatus(service);
+            return;
         }
         
         // Status aktualisieren
         this.updateServiceStatus(service);
         
         // Success Message
-        this.showMessage(service, 'Einstellungen gespeichert!', 'success');
+        const awsHint = window.awsAPISettings && window.awsAPISettings.isUserLoggedIn()
+            ? ' (AWS + lokal)'
+            : ' (nur lokal – bitte im Admin anmelden für AWS)';
+        this.showMessage(service, 'Einstellungen gespeichert' + awsHint + '!', 'success');
     }
     
     /**
