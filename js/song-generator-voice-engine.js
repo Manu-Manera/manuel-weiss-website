@@ -132,33 +132,67 @@
     }
   }
 
-  async function uploadAudioFile(file) {
-    if (!file) throw new Error('Keine Datei gewählt');
-    file = await convertToWavFile(file);
-    var ct = normalizeContentType(file.type || 'audio/wav');
-    var endpoint = getApiBase() + '/profile-image/upload-url';
+  function getLegacyMediaUploadEndpoint() {
+    try {
+      var base = (window.AWS_APP_CONFIG && window.AWS_APP_CONFIG.MEDIA_API_BASE) || '';
+      base = String(base).replace(/\/$/, '');
+      if (base) return base + '/profile-image/upload-url';
+    } catch (_e) {}
+    return 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/profile-image/upload-url';
+  }
+
+  async function requestUploadUrl(endpoint, file, contentType, fileType) {
     var presignRes = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contentType: ct,
+        contentType: contentType,
         userId: getUserId(),
-        fileType: 'voice',
+        fileType: fileType,
         fileName: (file.name || 'voice-sample.wav').replace(/[^a-zA-Z0-9.-]/g, '_')
       })
     });
     var presign = await presignRes.json().catch(function () { return null; });
-    if (!presignRes.ok || !presign || !presign.uploadUrl) {
+    if (!presignRes.ok || !presign) {
       throw new Error('Upload-URL nicht verfügbar' +
         (presign && presign.error ? ': ' + presign.error : ' (HTTP ' + presignRes.status + ')'));
     }
-    var putRes = await fetch(presign.uploadUrl, {
-      method: 'PUT',
-      headers: { 'Content-Type': ct },
-      body: file
-    });
-    if (!putRes.ok) throw new Error('Audio-Upload fehlgeschlagen (HTTP ' + putRes.status + ')');
-    return presign.publicUrl;
+    var uploadUrl = presign.uploadUrl || presign.url;
+    if (!uploadUrl || !presign.publicUrl) {
+      throw new Error('Upload-URL nicht verfügbar: unvollständige Server-Antwort');
+    }
+    return { uploadUrl: uploadUrl, publicUrl: presign.publicUrl };
+  }
+
+  async function uploadAudioFile(file) {
+    if (!file) throw new Error('Keine Datei gewählt');
+    file = await convertToWavFile(file);
+    var ct = normalizeContentType(file.type || 'audio/wav');
+
+    var attempts = [
+      { endpoint: getLegacyMediaUploadEndpoint(), fileType: 'voice' },
+      { endpoint: getApiBase() + '/profile-image/upload-url', fileType: 'voice' }
+    ];
+    var lastErr = null;
+    for (var i = 0; i < attempts.length; i++) {
+      try {
+        var attempt = attempts[i];
+        var presign = await requestUploadUrl(attempt.endpoint, file, ct, attempt.fileType);
+        var putRes = await fetch(presign.uploadUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': ct },
+          body: file
+        });
+        if (!putRes.ok) {
+          throw new Error('Audio-Upload fehlgeschlagen (HTTP ' + putRes.status + ')');
+        }
+        var publicUrl = presign.publicUrl.split('?')[0];
+        return publicUrl;
+      } catch (err) {
+        lastErr = err;
+      }
+    }
+    throw lastErr || new Error('Audio-Upload fehlgeschlagen');
   }
 
   async function startValidation(voiceUrl, vocalStartS, vocalEndS, apiKey, language) {
