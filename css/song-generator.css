@@ -1387,6 +1387,59 @@
   cursor: pointer;
 }
 .sg-voice-verify-box { margin-top: 0.5rem; }
+.sg-voice-train-row {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+}
+.sg-voice-train-link {
+  color: #4338ca;
+  font-weight: 700;
+  text-decoration: none;
+}
+.sg-voice-train-link:hover { text-decoration: underline; }
+.sg-voice-train-hint { color: #64748b; font-size: 0.82rem; }
+.sg-voice-rec-block {
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.65rem;
+  border: 1px dashed #c7d2fe;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+.sg-voice-rec-status {
+  display: block;
+  font-size: 0.78rem;
+  color: #64748b;
+  margin-bottom: 0.4rem;
+}
+.sg-voice-rec-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+.sg-voice-rec-preview { margin-top: 0.35rem; }
+
+.sg-fav-name-input,
+.sg-track-name-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.3rem 0.45rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  background: #fff;
+}
+.sg-fav-name-input:focus,
+.sg-track-name-input:focus {
+  border-color: #6366f1;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+}
+.sg-playlist-track-name-input {
+  max-width: 140px;
+  font-size: 0.82rem;
+}
 
 @media (max-width: 640px) {
   .sg-voice-seg-row { grid-template-columns: 1fr 1fr; }
