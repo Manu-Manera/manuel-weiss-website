@@ -322,13 +322,22 @@
       persParts.push(intentMods.moodWords.slice(0, 3).join(' '));
     }
     const ident = persona && persona.audio_identity;
+    const dnaPhase = persona && persona.music_dna && persona.music_dna.evolution_phase;
     if (ident) {
       if (ident.productionTags && ident.productionTags.length) {
         persParts.push(ident.productionTags.slice(0, 4).join(', '));
       }
-      if (ident.richness >= 0.5) persParts.push('evolved sonic identity');
-      if (ident.depthLevel >= 6) persParts.push('harmonic depth', 'textural layers');
+      if (dnaPhase && dnaPhase.label) {
+        persParts.push('development phase ' + dnaPhase.id.replace(/_/g, ' '));
+      }
       if (ident.evolutionScore >= 5) persParts.push('growth arc in dynamics');
+      if (ident.depthLevel >= 6) persParts.push('textural evolution');
+    }
+    if (persona && persona.music_dna && persona.music_dna.production_evolution_tags) {
+      persParts.push(persona.music_dna.production_evolution_tags.slice(0, 2).join(', '));
+    }
+    if (persona && persona.music_dna && persona.music_dna.tension_curve) {
+      persParts.push(persona.music_dna.tension_curve.replace(/_/g, ' '));
     }
     if (analysisKeywords.length) {
       persParts.push('emotional palette: ' + analysisKeywords.slice(0, 3).join(', '));
@@ -431,7 +440,8 @@
       astrology_text:   astroText,
       methods_text:     methodsText,
       intent_text:      trackSpec ? (trackSpec.rationale || trackSpec.label) : '',
-      identity_text:    (persona && persona.audio_identity && persona.audio_identity.evolutionNarrative) || '',
+      identity_text:    (persona && persona.music_dna && persona.music_dna.evolution_narrative) ||
+                        (persona && persona.audio_identity && persona.audio_identity.evolutionNarrative) || '',
       tempo_bpm:        tempoBpm,
       instrumental:     intentMods ? !!intentMods.instrumental : false
     };

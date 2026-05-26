@@ -310,6 +310,16 @@
   function renderMusicDNAcard(dna) {
     const frag = document.createDocumentFragment();
     if (!dna) return frag;
+
+    const phase = dna.evolution_phase;
+    if (phase && phase.label) {
+      const phaseEl = document.createElement('div');
+      phaseEl.className = 'sg-dna-layer sg-dna-layer-evolution';
+      phaseEl.innerHTML = '<span class="sg-dna-layer-label">Entwicklung</span>' +
+        '<span class="sg-dna-layer-value">' + phase.label + '</span>';
+      frag.appendChild(phaseEl);
+    }
+
     const grid = document.createElement('div');
     grid.className = 'sg-dna-grid';
     function cell(label, value) {
@@ -318,7 +328,7 @@
       const v = document.createElement('span'); v.className = 'sg-dna-value'; v.textContent = value;
       c.appendChild(l); c.appendChild(v); return c;
     }
-    function bar(label, value01) {
+    function bar(label, value01, prov) {
       const c = document.createElement('div'); c.className = 'sg-dna-cell';
       const l = document.createElement('span'); l.className = 'sg-dna-label'; l.textContent = label;
       const wrap = document.createElement('div'); wrap.className = 'sg-dna-bar-wrap';
@@ -328,16 +338,47 @@
       bg.appendChild(fg); wrap.appendChild(bg);
       const txt = document.createElement('span'); txt.className = 'sg-dna-value';
       txt.textContent = Math.round((value01 || 0) * 100) + '%';
-      wrap.appendChild(txt); c.appendChild(l); c.appendChild(wrap); return c;
+      wrap.appendChild(txt); c.appendChild(l); c.appendChild(wrap);
+      if (prov && prov.base != null) {
+        const hint = document.createElement('span');
+        hint.className = 'sg-dna-prov';
+        var parts = ['Test ' + Math.round(prov.base * 100) + '%'];
+        if (prov.astro) parts.push('Resonanz ' + (prov.astro >= 0 ? '+' : '') + Math.round(prov.astro * 100));
+        if (prov.identity) parts.push('Entwicklung ' + (prov.identity >= 0 ? '+' : '') + Math.round(prov.identity * 100));
+        hint.textContent = parts.join(' · ');
+        c.appendChild(hint);
+      }
+      return c;
+    }
+    function provCell(label, provEntry) {
+      if (!provEntry) return cell(label, '—');
+      const c = document.createElement('div'); c.className = 'sg-dna-cell sg-dna-prov-cell';
+      const l = document.createElement('span'); l.className = 'sg-dna-label'; l.textContent = label;
+      const v = document.createElement('span'); v.className = 'sg-dna-value';
+      v.textContent = provEntry.final + (label === 'Tempo' ? ' BPM' : '');
+      const sub = document.createElement('span');
+      sub.className = 'sg-dna-prov';
+      sub.textContent = 'Test ' + provEntry.base +
+        (provEntry.astro ? ', Resonanz ' + (provEntry.astro >= 0 ? '+' : '') + provEntry.astro : '') +
+        ' → ' + provEntry.final;
+      c.appendChild(l); c.appendChild(v); c.appendChild(sub);
+      return c;
+    }
+
+    const prov = dna.provenance || {};
+    if (prov.tempo_bpm) {
+      grid.appendChild(provCell('Tempo', prov.tempo_bpm));
+    } else {
+      grid.appendChild(cell('Tempo', (dna.tempo_bpm || '?') + ' BPM'));
     }
     grid.appendChild(cell('Tonart', (dna.key || '?') + ' ' + (dna.mode || '')));
-    grid.appendChild(cell('Tempo', (dna.tempo_bpm || '?') + ' BPM'));
     grid.appendChild(cell('Takt', dna.time_signature || '?'));
-    grid.appendChild(bar('Energie', dna.energy));
-    grid.appendChild(bar('Helligkeit', dna.brightness));
-    grid.appendChild(bar('Wärme', dna.warmth));
-    grid.appendChild(bar('Dichte', dna.density));
-    grid.appendChild(bar('Grit', dna.grit));
+    grid.appendChild(bar('Energie', dna.energy, prov.energy));
+    grid.appendChild(bar('Helligkeit', dna.brightness, prov.brightness));
+    grid.appendChild(bar('Wärme', dna.warmth, prov.warmth));
+    grid.appendChild(bar('Dichte', dna.density, prov.density));
+    grid.appendChild(bar('Grit', dna.grit, prov.grit));
+
     if (dna.instrumentation) {
       const inst = [].concat(dna.instrumentation.core || [], dna.instrumentation.color || [], dna.instrumentation.rhythm || []);
       grid.appendChild(cell('Instrumente', inst.slice(0, 6).join(' · ')));
@@ -346,6 +387,27 @@
       grid.appendChild(cell('Stimme', (dna.vocal.delivery || '') + ' · ' + (dna.vocal.register || '')));
     }
     frag.appendChild(grid);
+
+    if (dna.modifiers && dna.modifiers.astro) {
+      const astroLayer = document.createElement('div');
+      astroLayer.className = 'sg-dna-layers';
+      const row = document.createElement('div');
+      row.className = 'sg-dna-layer sg-dna-layer-astro';
+      row.innerHTML = '<span class="sg-dna-layer-label">Symbolische Resonanz</span>' +
+        '<span class="sg-dna-layer-value">' +
+        ((dna.modifiers.astro.tags || []).slice(0, 3).join(', ') || 'fein moduliert') +
+        '</span>';
+      astroLayer.appendChild(row);
+      frag.appendChild(astroLayer);
+    }
+
+    if (dna.compose_hints) {
+      const hint = document.createElement('p');
+      hint.className = 'sg-dna-compose-hint';
+      hint.textContent = dna.compose_hints;
+      frag.appendChild(hint);
+    }
+
     return frag;
   }
 

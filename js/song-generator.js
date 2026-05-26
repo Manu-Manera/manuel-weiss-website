@@ -492,6 +492,16 @@
       return this.state.persona;
     }
 
+    _fuseMusicDNA(baseDNA, astro, identity, tensions) {
+      if (!baseDNA || !window.SongMusicDNAFusion) return baseDNA;
+      return window.SongMusicDNAFusion.fuse({
+        core: baseDNA,
+        astro: astro || null,
+        identity: identity != null ? identity : this.state.audioIdentity,
+        tensions: tensions || []
+      });
+    }
+
     async _syncAudioIdentityAfterPersona() {
       if (!window.SongGeneratorCloud || !window.SongGeneratorCloud.syncAudioIdentity) return;
       try {
@@ -1198,7 +1208,7 @@
         tensions: [],
         core_narrative: this._buildNarrative(baseArchetype, scales),
         motifs: this._buildMotifs(scales, astroChart),
-        music_dna: baseDNA,
+        music_dna: this._fuseMusicDNA(baseDNA, astroChart),
         astrology: astroChart || null,
         test_variant: variant,
         imported_narrative: this.state.importedNarrative || null,
@@ -1236,6 +1246,7 @@
         persona.test_variant = variant;
         persona.imported_methods = this.state.importedMethods || [];
         persona.imported_methods_count = importedCount;
+        persona.music_dna = this._fuseMusicDNA(baseDNA, astroChart, this.state.audioIdentity, persona.tensions);
         this.state.persona = persona;
         saveState(STORAGE_KEYS.persona, persona);
         this._cloudSave('persona', { forceNewVersion: true });
@@ -1478,8 +1489,15 @@
       if (p.music_dna) {
         const dnaPanel = el('div', 'sg-profile-panel');
         const dh = el('h3', null, 'Klang-DNA');
-        dh.append(el('span', 'sg-tag', 'aus Profil abgeleitet'));
+        dh.append(el('span', 'sg-tag', 'fusioniert'));
         dnaPanel.append(dh);
+        if (p.music_dna.evolution_phase && p.music_dna.evolution_phase.label) {
+          dnaPanel.append(el('p', 'sg-dna-phase',
+            'Entwicklungsphase: ' + p.music_dna.evolution_phase.label));
+        }
+        if (p.music_dna.evolution_narrative) {
+          dnaPanel.append(el('p', 'sg-dna-evolution-narr', p.music_dna.evolution_narrative));
+        }
         if (window.SongChartRenderer && window.SongChartRenderer.renderMusicDNAcard) {
           dnaPanel.append(window.SongChartRenderer.renderMusicDNAcard(p.music_dna));
         }
@@ -1545,12 +1563,13 @@
       const panel = el('div', 'sg-audio-identity-panel');
       panel.append(el('h3', null, 'Deine Audio-Identität'));
       if (!ident) {
-        panel.append(el('p', 'sg-hint', 'Melde dich an und speichere Produktionen – deine Klangschicht wird mit jeder Entwicklung reicher.'));
+        panel.append(el('p', 'sg-hint', 'Melde dich an und speichere Produktionen – deine Klangschicht entwickelt sich mit jedem Stand weiter.'));
         return panel;
       }
+      const phaseLabel = ident.evolutionPhaseLabel || 'Grundton';
       const head = el('div', 'sg-audio-identity-head');
+      head.append(el('span', 'sg-audio-identity-phase', 'Phase · ' + phaseLabel));
       head.append(el('span', 'sg-audio-identity-depth', 'Tiefe ' + ident.depthLevel + ' / 10'));
-      head.append(el('span', 'sg-audio-identity-rich', 'Reichtum ' + Math.round(ident.richness * 100) + '%'));
       panel.append(head);
       panel.append(el('p', 'sg-audio-identity-narr', ident.evolutionNarrative || ''));
       const stats = el('div', 'sg-audio-identity-stats');
@@ -1563,7 +1582,7 @@
       if (lib && lib.entries && lib.entries.length) {
         panel.append(el('p', 'sg-hint', 'Zuletzt gespeichert: „' + (lib.entries[0].title || 'Audio') + '“'));
       }
-      panel.append(el('p', 'sg-hint', 'Fliesst in Song-Komposition und Suno-Produktion ein – je mehr du dich entwickelst, desto vielschichtiger der Sound.'));
+      panel.append(el('p', 'sg-hint', 'Die Regeln für Komposition und Produktion passen sich deiner Entwicklungsphase an – nicht pauschal lauter, sondern passend weiter.'));
       return panel;
     }
 

@@ -1589,7 +1589,7 @@
   margin-bottom: 0.65rem;
 }
 .sg-audio-identity-depth,
-.sg-audio-identity-rich {
+.sg-audio-identity-phase {
   display: inline-block;
   padding: 0.25rem 0.65rem;
   border-radius: 999px;
@@ -1598,6 +1598,67 @@
   background: #fff;
   color: #4338ca;
   border: 1px solid #c7d2fe;
+}
+.sg-audio-identity-phase {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+.sg-dna-phase {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #047857;
+  margin: 0 0 0.35rem;
+}
+.sg-dna-evolution-narr {
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0 0 0.85rem;
+}
+.sg-dna-layer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  font-size: 0.82rem;
+}
+.sg-dna-layer-evolution {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+}
+.sg-dna-layer-astro {
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+}
+.sg-dna-layer-label {
+  color: #64748b;
+  font-weight: 500;
+}
+.sg-dna-layer-value {
+  color: #1e293b;
+  font-weight: 600;
+  text-align: right;
+}
+.sg-dna-layers {
+  margin-top: 0.65rem;
+}
+.sg-dna-prov {
+  display: block;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-top: 0.2rem;
+}
+.sg-dna-compose-hint {
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.45;
+  margin: 0.75rem 0 0;
+  padding-top: 0.65rem;
+  border-top: 1px dashed #e2e8f0;
 }
 .sg-audio-identity-narr {
   margin: 0 0 0.65rem;

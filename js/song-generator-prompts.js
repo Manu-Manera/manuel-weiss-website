@@ -208,10 +208,15 @@ Falls nein: korrigiere INTERN und gib erst dann das finale JSON aus.`;
     return 'AUFTRAG: Erzeuge einen tief persönlichen Song basierend auf PERSONA_PROFILE.\n\n' +
       'INPUT:\n' + JSON.stringify({ persona, mode, edit_targets, previous_song, creativity }, null, 2) + '\n\n' +
       (persona.audio_identity
-        ? 'AUDIO-IDENTITÄT (verbindlich für Arrangement-Tiefe):\n' +
+        ? 'AUDIO-IDENTITÄT (Entwicklungsphase, verbindlich für Arrangement):\n' +
           persona.audio_identity.composeHints + '\n' +
+          'Phase: ' + (persona.audio_identity.evolutionPhaseLabel || 'Grundton') + '\n' +
           'evolutionNarrative: ' + persona.audio_identity.evolutionNarrative + '\n' +
-          'depthLevel: ' + persona.audio_identity.depthLevel + ', richness: ' + persona.audio_identity.richness + '\n\n'
+          'depthLevel: ' + persona.audio_identity.depthLevel + '\n\n'
+        : '') +
+      (persona.music_dna && persona.music_dna.compose_hints
+        ? 'KLANG-DNA FUSION:\n' + persona.music_dna.compose_hints + '\n' +
+          (persona.music_dna.evolution_narrative || '') + '\n\n'
         : '') +
       'HINWEIS:\n' +
       'persona kann optional ein astrology-Feld enthalten (Geburtskarte). Wenn\n' +

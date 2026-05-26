@@ -1099,14 +1099,14 @@ class UserProfile {
             if (ident) {
                 identityEl.innerHTML =
                     '<div class="ps-identity-badges">' +
+                    '<span class="ps-badge">Phase · ' + (ident.evolutionPhaseLabel || ident.evolution_phase || 'Grundton') + '</span>' +
                     '<span class="ps-badge">Tiefe ' + ident.depthLevel + ' / 10</span>' +
-                    '<span class="ps-badge">Reichtum ' + Math.round((ident.richness || 0) * 100) + '%</span>' +
                     (ident.evolutionScore >= 4 ? '<span class="ps-badge ps-badge-evolve">↗ Entwicklung</span>' : '') +
                     '</div>' +
                     '<p class="ps-identity-narr">' + (ident.evolutionNarrative || '') + '</p>';
             } else {
                 identityEl.innerHTML =
-                    '<p class="ps-songs-hint">Noch keine gespeicherten Produktionen – produziere einen Song im Generator, er landet automatisch hier.</p>';
+                    '<p class="ps-songs-hint">Noch keine gespeicherten Produktionen – produziere einen Song im Generator, er entwickelt sich mit jedem Stand weiter.</p>';
             }
 
             const entries = library.entries || [];

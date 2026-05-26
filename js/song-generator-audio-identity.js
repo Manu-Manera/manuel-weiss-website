@@ -1,6 +1,6 @@
 /**
  * Persönlichkeits-Song Generator – Audio-Identität
- * Wächst mit jedem Profil-Snapshot und jedem gespeicherten Audio in der Cloud.
+ * Entwickelt sich mit jedem Profil-Snapshot und jeder gespeicherten Produktion.
  */
 (function () {
   'use strict';
@@ -65,6 +65,16 @@
     return n;
   }
 
+  function phaseProductionTags(phaseId, dev) {
+    const tags = [];
+    if (phaseId === 'verzweigung') tags.push('developing personal signature');
+    if (phaseId === 'vertiefung') tags.push('branching arrangement');
+    if (phaseId === 'reifung') tags.push('growth arc in dynamics');
+    if (phaseId === 'integration') tags.push('integrated sonic narrative');
+    if (dev >= 0.5 && phaseId !== 'grundton') tags.push('evolving instrumentation');
+    return tags;
+  }
+
   /**
    * Berechnet die kumulative Audio-Identität aus Versions-Historie + Bibliothek.
    */
@@ -99,7 +109,7 @@
       10
     );
 
-    const richness = clamp(
+    const entwicklungsgrad = clamp(
       0.12 +
       depthLevel * 0.065 +
       Math.min(evolutionScore / 100, 0.2) +
@@ -108,46 +118,45 @@
       0.98
     );
 
+    const phase = window.SongMusicDNAFusion && window.SongMusicDNAFusion.getEvolutionPhase
+      ? window.SongMusicDNAFusion.getEvolutionPhase(depthLevel)
+      : { id: 'grundton', label: 'Grundton' };
+
     const accumulatedMotifs = collectMotifs(personas);
     const accumulatedThemes = collectMusicHints(personas);
-    const styleLayers = [];
-    if (depthLevel >= 3) styleLayers.push('evolving personal signature');
-    if (depthLevel >= 5) styleLayers.push('multi-layered harmonic palette');
-    if (depthLevel >= 7) styleLayers.push('mature textural depth');
-    if (evolutionScore >= 6) styleLayers.push('growth arc in dynamics');
-    if (audioCount >= 2) styleLayers.push('continuity from prior productions');
-    accumulatedThemes.slice(0, 3).forEach(function (t) { styleLayers.push(t); });
-
-    const productionTags = styleLayers.slice(0, 6);
-    if (richness >= 0.45) productionTags.push('richer arrangement');
-    if (richness >= 0.65) productionTags.push('expanded instrumentation');
+    const productionTags = phaseProductionTags(phase.id, entwicklungsgrad);
+    if (audioCount >= 2) productionTags.push('continuity from prior productions');
+    accumulatedThemes.slice(0, 2).forEach(function (t) { productionTags.push(t); });
 
     const archetype = (currentPersona && currentPersona.archetype) ||
       (personas[personas.length - 1] && personas[personas.length - 1].archetype) || 'Profil';
 
     const evolutionNarrative = sessionCount <= 1
-      ? 'Erste Klangschicht – dein Profil bildet die Grundlage.'
-      : 'Deine Audio-Identität wächst: ' + sessionCount + ' Entwicklungsstände, ' +
+      ? 'Erste Klangschicht – dein Profil bildet den Ausgangspunkt.'
+      : 'Deine Audio-Identität entwickelt sich weiter: ' + sessionCount + ' Stände, ' +
         audioCount + ' gespeicherte Produktionen' +
-        (evolutionScore >= 4 ? ', spürbare Persönlichkeitsverschiebung im Profil' : '') + '.';
+        (evolutionScore >= 4 ? ', spürbare Verschiebung in deinem Profil' : '') +
+        '. Phase: ' + phase.label + '.';
 
     const composeHints =
-      'Nutze audio_identity: Tiefe ' + Math.round(depthLevel) + '/10, Reichtum ' +
-      Math.round(richness * 100) + '%. Mehr Schichten in Arrangement und Bildern, ' +
-      'wenn depthLevel >= 5. Motive aus accumulatedMotifs einweben.';
+      'Entwicklungsphase „' + phase.label + '“ (Tiefe ' + Math.round(depthLevel) + '/10). ' +
+      'Regeln folgen der Phase – nicht pauschal „mehr“, sondern passende Weiterentwicklung. ' +
+      'Motive aus accumulatedMotifs einweben, wenn die Phase es erlaubt.';
 
     return {
-      version: 1,
+      version: 2,
       depthLevel: Math.round(depthLevel * 10) / 10,
-      richness: Math.round(richness * 1000) / 1000,
+      entwicklungsgrad: Math.round(entwicklungsgrad * 1000) / 1000,
+      richness: Math.round(entwicklungsgrad * 1000) / 1000,
       evolutionScore: Math.round(evolutionScore * 10) / 10,
+      evolutionPhase: phase.id,
+      evolutionPhaseLabel: phase.label,
       sessionCount: sessionCount,
       audioLibraryCount: audioCount,
       analysisCount: analysisCount,
       methodsPeak: methodsMax,
       accumulatedMotifs: accumulatedMotifs,
       accumulatedThemes: accumulatedThemes,
-      styleLayers: styleLayers,
       productionTags: uniq(productionTags),
       evolutionNarrative: evolutionNarrative,
       composeHints: composeHints,
@@ -158,27 +167,22 @@
 
   function enrichPersona(persona, identity) {
     if (!persona) return persona;
-    if (!identity) return persona;
     const out = Object.assign({}, persona);
-    out.audio_identity = identity;
+    if (identity) out.audio_identity = identity;
 
-    if (out.music_dna && typeof out.music_dna === 'object') {
-      out.music_dna = Object.assign({}, out.music_dna);
-      out.music_dna.identity_depth = identity.depthLevel;
-      out.music_dna.richness = identity.richness;
-      const inst = out.music_dna.instrumentation || {};
-      out.music_dna.instrumentation = Object.assign({}, inst);
-      const core = [].concat(inst.core || []);
-      if (identity.depthLevel >= 4 && core.indexOf('strings') === -1) core.push('strings');
-      if (identity.depthLevel >= 6 && core.indexOf('ambient_pad') === -1) core.push('ambient_pad');
-      if (identity.richness >= 0.55 && core.indexOf('subtle_choir') === -1) core.push('subtle_choir');
-      out.music_dna.instrumentation.core = core.slice(0, 6);
-      if (identity.richness >= 0.4) {
-        out.music_dna.density = clamp((out.music_dna.density || 0.5) + identity.richness * 0.12, 0, 1);
-      }
+    var core = out.music_dna && out.music_dna.core ? out.music_dna.core : out.music_dna;
+    if (window.SongMusicDNAFusion && core) {
+      out.music_dna = window.SongMusicDNAFusion.fuse({
+        core: core,
+        astro: out.astrology,
+        identity: identity,
+        tensions: out.tensions
+      });
     }
 
-    out.motifs = uniq([].concat(out.motifs || [], identity.accumulatedMotifs || [])).slice(0, 8);
+    if (identity) {
+      out.motifs = uniq([].concat(out.motifs || [], identity.accumulatedMotifs || [])).slice(0, 8);
+    }
     return out;
   }
 
@@ -225,7 +229,8 @@
       title: title,
       tracks: tracks,
       depthLevel: identity && identity.depthLevel,
-      richness: identity && identity.richness,
+      entwicklungsgrad: identity && identity.entwicklungsgrad,
+      evolutionPhaseLabel: identity && identity.evolutionPhaseLabel,
       archetype: persona.archetype,
       testVariant: state.testVariant,
       personaVersionId: meta.personaVersionId || null
