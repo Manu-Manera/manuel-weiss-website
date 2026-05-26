@@ -487,6 +487,13 @@
         setTimeout(() => this.refreshAuthAndImport(), 300);
       }
 
+      const self = this;
+      if (window.SongPersistentPlayer && window.SongPersistentPlayer.onChange) {
+        window.SongPersistentPlayer.onChange(function () {
+          self._syncPlaybackUi();
+        });
+      }
+
       this.render();
     }
 
@@ -761,6 +768,9 @@
     // RENDER
     // ────────────────────────────────────────────────────────────
     render() {
+      if (window.SongPersistentPlayer && window.SongPersistentPlayer.resetSlot) {
+        window.SongPersistentPlayer.resetSlot();
+      }
       this.root.innerHTML = '';
       this.root.appendChild(this.renderProgressBar());
       switch (this.state.step) {
@@ -772,6 +782,7 @@
         case 5: this.root.appendChild(this.renderCompose()); break;
         case 6: this.root.appendChild(this.renderEditor()); break;
       }
+      if (this.state.step === 6) this._syncPlaybackUi();
     }
 
     renderProgressBar() {
@@ -2581,24 +2592,17 @@
       }
 
       const mainWrap = el('div', 'sg-favorites-main');
-      const mainAudio = document.createElement('audio');
-      mainAudio.className = 'sg-audio-player sg-favorites-main-audio';
-      mainAudio.controls = true;
-      mainAudio.style.width = '100%';
-      mainAudio.src = playable[0].url;
-      this._setupAudioForPlayback(mainAudio, {
-        title: playable[0].title || playable[0].label,
-        artist: 'Meine Favoriten',
-        artwork: playable[0].cover
-      });
-      mainWrap.append(mainAudio);
+      const audioSlot = el('div', 'sg-favorites-audio-slot');
+      mainWrap.append(audioSlot);
       const nowPlaying = el('div', 'sg-favorites-now', '▶ ' + (playable[0].emoji || '♥') + ' ' + self._getDisplayName(playable[0]));
       mainWrap.append(nowPlaying);
       panel.append(mainWrap);
 
       this._favoritesPlayable = playable;
-      this._favoritesMainAudio = mainAudio;
       this._favoritesNowEl = nowPlaying;
+      if (window.SongPersistentPlayer) {
+        window.SongPersistentPlayer.mountSlot(audioSlot, { source: 'favorites' });
+      }
 
       const controls = el('div', 'sg-favorites-controls');
       const playAll = el('button', 'sg-btn sg-btn-primary', '▶ Favoriten abspielen');
@@ -2698,39 +2702,29 @@
         list.append(row);
       });
 
-      mainAudio.addEventListener('ended', function () {
-        if (!self._favoritesAutoplay) return;
-        const next = (self._favoritesPlayIndex || 0) + 1;
-        if (next < playable.length) {
-          self._playFavoriteTrack(next);
-          list.querySelectorAll('.sg-favorites-row').forEach(function (el, j) {
-            el.classList.toggle('active', j === next);
-          });
-        } else {
-          self._favoritesAutoplay = false;
-        }
-      });
-
       panel.append(list);
       return panel;
     }
 
     _playFavoriteTrack(index) {
       const playable = this._favoritesPlayable;
-      const audio = this._favoritesMainAudio;
-      if (!playable || !audio || index < 0 || index >= playable.length) return;
+      if (!playable || index < 0 || index >= playable.length) return;
       const track = playable[index];
       this._favoritesPlayIndex = index;
-      audio.src = track.url;
-      this._setupAudioForPlayback(audio, {
-        title: track.title || track.label,
+      this._playPersistent({
+        source: 'favorites',
+        queue: playable,
+        index: index,
+        autoplayQueue: !!this._favoritesAutoplay,
         artist: 'Meine Favoriten',
-        artwork: track.cover
+        track: track
       });
       if (this._favoritesNowEl) {
         this._favoritesNowEl.textContent = '▶ ' + (track.emoji || '♥') + ' ' + this._getDisplayName(track);
       }
-      audio.play().catch(function () {});
+      if (window.SongPersistentPlayer) {
+        window.SongPersistentPlayer.syncActiveRows(this._favoritesPanelEl, '.sg-favorites-row');
+      }
     }
 
     renderProduction() {
@@ -2934,6 +2928,7 @@
 
     _renderPlaylistPlayer(playlist) {
       const box = el('div', 'sg-playlist-player');
+      this._playlistPlayerEl = box;
       box.append(el('h4', null, '🎧 Deine Persönlichkeits-Playlist'));
       const okCount = playlist.tracks.filter(function (t) { return t.status === 'ok'; }).length;
       const labels = playlist.tracks.filter(function (t) { return t.status === 'ok'; })
@@ -2957,27 +2952,19 @@
       }
 
       const mainWrap = el('div', 'sg-playlist-main');
-      const mainAudio = document.createElement('audio');
-      mainAudio.className = 'sg-audio-player sg-playlist-main-audio';
-      mainAudio.controls = true;
-      mainAudio.style.width = '100%';
+      const audioSlot = el('div', 'sg-playlist-audio-slot');
+      mainWrap.append(audioSlot);
       const first = playable[0];
-      mainAudio.src = first.url;
-      this._setupAudioForPlayback(mainAudio, {
-        title: first.title || first.label,
-        artist: 'Persönlichkeits-Playlist',
-        artwork: first.cover
-      });
-      mainWrap.append(mainAudio);
-
       const nowPlaying = el('div', 'sg-playlist-now', '▶ ' + (first.emoji || '') + ' ' + first.label);
       mainWrap.append(nowPlaying);
       box.append(mainWrap);
 
       const self = this;
       this._playlistPlayable = playable;
-      this._playlistMainAudio = mainAudio;
       this._playlistNowEl = nowPlaying;
+      if (window.SongPersistentPlayer) {
+        window.SongPersistentPlayer.mountSlot(audioSlot, { source: 'playlist' });
+      }
 
       const controls = el('div', 'sg-playlist-controls');
       const playAll = el('button', 'sg-btn sg-btn-primary', '▶ Alle abspielen');
@@ -3036,19 +3023,6 @@
       });
       box.append(list);
 
-      mainAudio.addEventListener('ended', function () {
-        if (!self._playlistAutoplay) return;
-        const next = (self._playlistPlayIndex || 0) + 1;
-        if (next < playable.length) {
-          self._playPlaylistTrack(next);
-          list.querySelectorAll('.sg-playlist-track').forEach(function (el, j) {
-            el.classList.toggle('active', j === next);
-          });
-        } else {
-          self._playlistAutoplay = false;
-        }
-      });
-
       const actions = el('div', 'sg-audio-actions');
       const regen = el('button', 'sg-btn sg-btn-ghost', '↻ Playlist neu generieren');
       regen.onclick = function () {
@@ -3070,20 +3044,23 @@
 
     _playPlaylistTrack(index) {
       const playable = this._playlistPlayable;
-      const audio = this._playlistMainAudio;
-      if (!playable || !audio || index < 0 || index >= playable.length) return;
+      if (!playable || index < 0 || index >= playable.length) return;
       const track = playable[index];
       this._playlistPlayIndex = index;
-      audio.src = track.url;
-      this._setupAudioForPlayback(audio, {
-        title: track.title || track.label,
+      this._playPersistent({
+        source: 'playlist',
+        queue: playable,
+        index: index,
+        autoplayQueue: !!this._playlistAutoplay,
         artist: 'Persönlichkeits-Playlist',
-        artwork: track.cover
+        track: track
       });
       if (this._playlistNowEl) {
-        this._playlistNowEl.textContent = '▶ ' + (track.emoji || '') + ' ' + track.label;
+        this._playlistNowEl.textContent = '▶ ' + (track.emoji || '') + ' ' + (track.customName || track.label);
       }
-      audio.play().catch(function () {});
+      if (window.SongPersistentPlayer && this._playlistPlayerEl) {
+        window.SongPersistentPlayer.syncActiveRows(this._playlistPlayerEl, '.sg-playlist-track');
+      }
     }
 
     _renderMixMatrix(preview) {
@@ -3153,6 +3130,37 @@
       }
     }
 
+    _playPersistent(opts) {
+      if (!window.SongPersistentPlayer) return;
+      window.SongPersistentPlayer.play(opts);
+    }
+
+    _syncPlaybackUi() {
+      if (!window.SongPersistentPlayer) return;
+      var st = window.SongPersistentPlayer.getState();
+      if (!st.url) return;
+      if (st.source === 'favorites' && this._favoritesPanelEl) {
+        window.SongPersistentPlayer.syncActiveRows(this._favoritesPanelEl, '.sg-favorites-row');
+        var favTrack = (this._favoritesPlayable || [])[st.index];
+        if (favTrack && this._favoritesNowEl) {
+          this._favoritesNowEl.textContent = (st.paused ? '⏸ ' : '▶ ') +
+            (favTrack.emoji || '♥') + ' ' + this._getDisplayName(favTrack);
+        }
+        this._favoritesPlayIndex = st.index;
+        this._favoritesAutoplay = st.autoplayQueue;
+      }
+      if (st.source === 'playlist' && this._playlistPlayerEl) {
+        window.SongPersistentPlayer.syncActiveRows(this._playlistPlayerEl, '.sg-playlist-track');
+        var plTrack = (this._playlistPlayable || [])[st.index];
+        if (plTrack && this._playlistNowEl) {
+          this._playlistNowEl.textContent = (st.paused ? '⏸ ' : '▶ ') +
+            (plTrack.emoji || '') + ' ' + (plTrack.customName || plTrack.label || plTrack.title);
+        }
+        this._playlistPlayIndex = st.index;
+        this._playlistAutoplay = st.autoplayQueue;
+      }
+    }
+
     _renderBluetoothHint() {
       const box = el('div', 'sg-bt-hint');
       box.append(el('strong', null, '🔊 Auf Bluetooth-Box, AirPlay oder TV'));
@@ -3217,22 +3225,29 @@
           card.prepend(img);
         }
         if (url) {
-          const audioEl = document.createElement('audio');
-          audioEl.src = url;
-          audioEl.style.width = '100%';
-          this._setupAudioForPlayback(audioEl, {
-            title: t.title || ('Persönlichkeitssong ' + (i + 1)),
-            artist: 'Persönlichkeits-Song Generator',
-            artwork: cover || undefined
-          });
-          card.append(audioEl);
-
           const actions = el('div', 'sg-audio-actions');
           const playBt = el('button', 'sg-btn sg-btn-primary sg-btn-bt', '▶ Abspielen');
           playBt.type = 'button';
           playBt.onclick = function () {
-            audioEl.play().catch(function () {
-              alert('Wiedergabe blockiert – bitte Play am Player oder erneut tippen.');
+            self._playPersistent({
+              source: 'single',
+              queue: [{
+                url: url,
+                title: t.userTitle || t.title,
+                label: t.userTitle || intentLabel || ('Variante ' + (i + 1)),
+                cover: cover,
+                duration: t.duration,
+                emoji: audio.intentId && window.SongPlaylistEngine
+                  ? (window.SongPlaylistEngine.getIntent(audio.intentId).emoji || '🎵') : '🎵'
+              }],
+              index: 0,
+              autoplayQueue: false,
+              artist: 'Persönlichkeits-Song Generator',
+              track: {
+                url: url,
+                title: t.userTitle || t.title,
+                cover: cover
+              }
             });
           };
           actions.append(playBt);
