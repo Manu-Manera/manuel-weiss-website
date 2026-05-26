@@ -20,7 +20,8 @@
     persona: 'sg_persona_v2',
     song: 'sg_song_v1',
     birth: 'sg_birth_data_v1',
-    variant: 'sg_test_variant_v1'
+    variant: 'sg_test_variant_v1',
+    audio: 'sg_audio_v1'
   };
 
   const API_BASE = 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
@@ -350,8 +351,10 @@
         persona: loadState(STORAGE_KEYS.persona),
         song: loadState(STORAGE_KEYS.song),
         birthData: loadState(STORAGE_KEYS.birth, null),
-        astrology: null,          // wird in runSynthesis berechnet
+        astrology: null,
         facets: null,
+        audio: loadState(STORAGE_KEYS.audio, null),
+        audioState: { phase: 'idle' },
         importedMethods: null,
         importedNarrative: '',
         userMeta: {
@@ -1005,6 +1008,7 @@
       }
 
       const externalSignals = this._collectExternalSignals();
+      const importedCount = Array.isArray(this.state.importedMethods) ? this.state.importedMethods.length : 0;
 
       // Direct-Persona als Fallback
       const directPersona = {
@@ -1018,6 +1022,8 @@
         astrology: astroChart || null,
         test_variant: variant,
         imported_narrative: this.state.importedNarrative || null,
+        imported_methods: this.state.importedMethods || [],
+        imported_methods_count: importedCount,
         rationale: 'Profil aus IPIP-NEO-Items (' + variant + '), HEXACO-H, Schwartz-Werten und Bindung berechnet.' +
           (astroChart ? ' Astrologische Bildsprache als Zusatz-Schicht.' : '') +
           (externalSignals.length ? ' Plus ' + externalSignals.length + ' externe(r) Signal(e).' : '')
@@ -1046,6 +1052,8 @@
         persona.astrology = astroChart || null;
         persona.facets_final = persona.facets_final || facets;
         persona.test_variant = variant;
+        persona.imported_methods = this.state.importedMethods || [];
+        persona.imported_methods_count = importedCount;
         this.state.persona = persona;
         saveState(STORAGE_KEYS.persona, persona);
         this.render();
@@ -1406,10 +1414,15 @@
       // Sections
       (s.sections || []).forEach(section => wrap.append(this.renderSongSection(section)));
 
-      // Produktions-Spezifikation
+      // ════════════════════════════════════════════════════════
+      // AUDIO-PRODUKTION (KI komponiert echtes Musikstück mit Stimme)
+      // ════════════════════════════════════════════════════════
+      wrap.append(this.renderProduction());
+
+      // Produktions-Spezifikation (Roh-Daten, ausklappbar)
       if (s.production_spec) {
         const ps = el('details', 'sg-production');
-        ps.append(el('summary', null, 'Produktions-Spezifikation & Engine-Prompts'));
+        ps.append(el('summary', null, 'Produktions-Spezifikation & Engine-Prompts (Roh-Daten)'));
         const pre = el('pre', null, JSON.stringify({
           production_spec: s.production_spec,
           ai_music_engine_prompts: s.ai_music_engine_prompts
@@ -1598,10 +1611,263 @@
       }
     }
 
+    // ════════════════════════════════════════════════════════════
+    // AUDIO-PRODUKTION (KI komponiert echtes Musikstück + Stimme)
+    // ════════════════════════════════════════════════════════════
+    renderProduction() {
+      const box = el('div', 'sg-prod-box');
+      const head = el('div', 'sg-prod-head');
+      head.append(el('h3', null, '🎙️ KI-Audio-Produktion'));
+      const subtitle = el('p', 'sg-prod-sub',
+        'Aus dem komponierten Text + Akkorden + deinem Profil entsteht ein fertiges Musikstück mit Stimme. ' +
+        'Die Mischung folgt einer festen Matrix: 50 % Persönlichkeit, 50 % Astrologie' +
+        (this.state.persona && this.state.persona.imported_methods_count
+          ? ', plus ein Methoden-Bonus aus deinen ' + this.state.persona.imported_methods_count + ' bearbeiteten Methoden.'
+          : '.'));
+      head.append(subtitle);
+      box.append(head);
+
+      // Mix-Matrix anzeigen
+      if (this.state.persona && window.SongMusicEngine) {
+        try {
+          const preview = window.SongMusicEngine.buildStylePrompt(this.state.persona);
+          box.append(this._renderMixMatrix(preview));
+        } catch (_e) {}
+      }
+
+      // Optionen
+      const opts = el('div', 'sg-prod-opts');
+      const vgPersona = (window.SongMusicEngine && this.state.persona)
+        ? (this.state.persona.music_dna && this.state.persona.music_dna.vocal &&
+           this.state.persona.music_dna.vocal.register === 'high' ? 'f' : 'auto') : 'auto';
+      // Vocal Gender Selector
+      const vgWrap = el('div', 'sg-field');
+      vgWrap.append(el('label', null, 'Stimme'));
+      const vgSel = el('select');
+      [['auto', 'Automatisch aus Profil'], ['f', 'Weiblich'], ['m', 'Männlich']].forEach(([v, l]) => {
+        const o = el('option', null, l); o.value = v; vgSel.append(o);
+      });
+      vgSel.value = (this.state.audioState && this.state.audioState.vocalGender) || 'auto';
+      vgSel.onchange = () => {
+        this.state.audioState = Object.assign({}, this.state.audioState, { vocalGender: vgSel.value });
+      };
+      vgWrap.append(vgSel);
+      opts.append(vgWrap);
+
+      // Modell-Wahl
+      const mWrap = el('div', 'sg-field');
+      mWrap.append(el('label', null, 'Modell'));
+      const mSel = el('select');
+      [['V5_5', 'Suno V5.5 (neueste)'], ['V5', 'Suno V5'], ['V4_5PLUS', 'Suno V4.5 Plus (schneller)']].forEach(([v, l]) => {
+        const o = el('option', null, l); o.value = v; mSel.append(o);
+      });
+      mSel.value = (this.state.audioState && this.state.audioState.model) || 'V5_5';
+      mSel.onchange = () => {
+        this.state.audioState = Object.assign({}, this.state.audioState, { model: mSel.value });
+      };
+      mWrap.append(mSel);
+      opts.append(mWrap);
+
+      box.append(opts);
+
+      // Status / Actions / Player
+      const stateBox = el('div', 'sg-prod-state');
+      const phase = (this.state.audioState && this.state.audioState.phase) || 'idle';
+
+      if (phase === 'idle' && !this.state.audio) {
+        const act = el('div', 'sg-actions');
+        const startBtn = el('button', 'sg-btn sg-btn-primary', '🎵 Audio jetzt produzieren');
+        startBtn.onclick = () => {
+          const o = {
+            model: mSel.value,
+            vocalGender: vgSel.value === 'auto' ? undefined : vgSel.value
+          };
+          this.runProduction(o);
+        };
+        act.append(startBtn);
+        const hint = el('p', 'sg-hint',
+          'Generierung dauert ca. 30–90 Sekunden. Es entstehen 2 Varianten zur Auswahl. ' +
+          'Kosten pro Generation ca. $0.05–0.10 (über deinen API-Key bei sunoapi.org).');
+        stateBox.append(act, hint);
+      } else if (phase === 'submitting' || phase === 'polling') {
+        stateBox.append(this.showSpinner());
+        const st = (this.state.audioState && this.state.audioState.status) || 'PENDING';
+        const phaseLabel = {
+          PENDING: 'In Warteschlange …',
+          TEXT_SUCCESS: 'Lyrics-Layer fertig, Audio wird gerendert …',
+          FIRST_SUCCESS: 'Erste Variante fertig! Zweite läuft …',
+          GENERATING: 'KI generiert Audio …'
+        }[st] || ('Status: ' + st);
+        stateBox.append(el('p', 'sg-prod-status', phaseLabel));
+        const cancel = el('button', 'sg-btn sg-btn-ghost', 'Abbrechen');
+        cancel.onclick = () => {
+          this.state.audioState = { phase: 'idle' };
+          this.render();
+        };
+        stateBox.append(cancel);
+      } else if (phase === 'error') {
+        const err = (this.state.audioState && this.state.audioState.error) || 'Unbekannter Fehler';
+        const e = el('div', 'sg-status sg-status-error', '⚠️ ' + err);
+        stateBox.append(e);
+        const retry = el('button', 'sg-btn sg-btn-primary', 'Erneut versuchen');
+        retry.onclick = () => {
+          this.state.audioState = { phase: 'idle' };
+          this.render();
+        };
+        stateBox.append(retry);
+      }
+
+      // Audio-Player wenn Tracks vorhanden
+      if (this.state.audio && Array.isArray(this.state.audio.tracks) && this.state.audio.tracks.length) {
+        stateBox.append(this._renderAudioPlayer(this.state.audio));
+      }
+      box.append(stateBox);
+      return box;
+    }
+
+    _renderMixMatrix(preview) {
+      const box = el('div', 'sg-mix-matrix');
+      box.append(el('div', 'sg-mix-title', 'So wird dein Sound gemischt'));
+      const rows = [
+        { key: 'personality', label: 'Persönlichkeit', color: '#6366f1',
+          text: preview.personality_text },
+        { key: 'astrology', label: 'Astrologie', color: '#a78bfa',
+          text: preview.astrology_text || '— (Geburtsdaten nicht angegeben)' },
+        { key: 'methods', label: 'Methoden-Bonus', color: '#34d399',
+          text: preview.methods_text ||
+            (preview.weights && preview.weights.methodsCount
+              ? '— (Tags konnten nicht extrahiert werden)'
+              : '— (noch keine Methoden bearbeitet)') }
+      ];
+      rows.forEach(r => {
+        const w = preview.weights[r.key] || 0;
+        const row = el('div', 'sg-mix-row');
+        const label = el('div', 'sg-mix-label');
+        label.append(el('span', 'sg-mix-name', r.label));
+        label.append(el('span', 'sg-mix-pct', Math.round(w * 100) + '%'));
+        row.append(label);
+        const bar = el('div', 'sg-mix-bar');
+        const fill = el('div', 'sg-mix-bar-fill');
+        fill.style.width = Math.round(w * 100) + '%';
+        fill.style.background = r.color;
+        bar.append(fill);
+        row.append(bar);
+        if (r.text) {
+          const desc = el('div', 'sg-mix-desc', r.text);
+          row.append(desc);
+        }
+        box.append(row);
+      });
+      return box;
+    }
+
+    _renderAudioPlayer(audio) {
+      const box = el('div', 'sg-audio-results');
+      box.append(el('h4', null, 'Deine Songs (' + (audio.tracks || []).length + ' Varianten)'));
+      (audio.tracks || []).forEach((t, i) => {
+        const card = el('div', 'sg-audio-card');
+        const title = el('div', 'sg-audio-card-head');
+        title.append(el('strong', null, 'Variante ' + (i + 1) + (t.title ? ' – ' + t.title : '')));
+        if (t.duration) title.append(el('span', 'sg-audio-duration', this._formatDuration(t.duration)));
+        card.append(title);
+        const url = t.audio_url || t.source_audio_url || t.stream_audio_url;
+        if (url) {
+          const audioEl = document.createElement('audio');
+          audioEl.controls = true;
+          audioEl.preload = 'none';
+          audioEl.src = url;
+          audioEl.style.width = '100%';
+          card.append(audioEl);
+          const actions = el('div', 'sg-audio-actions');
+          const dl = document.createElement('a');
+          dl.href = url; dl.download = (t.title || 'song-' + (i+1)) + '.mp3';
+          dl.className = 'sg-btn sg-btn-ghost'; dl.textContent = '⬇ MP3 herunterladen';
+          actions.append(dl);
+          card.append(actions);
+        }
+        if (t.image_url) {
+          const img = document.createElement('img');
+          img.src = t.image_url;
+          img.alt = t.title || 'Cover';
+          img.className = 'sg-audio-cover';
+          card.prepend(img);
+        }
+        box.append(card);
+      });
+      const reroll = el('button', 'sg-btn sg-btn-ghost', '↻ Neue Variation generieren');
+      reroll.onclick = () => {
+        this.state.audio = null;
+        clearState(STORAGE_KEYS.audio);
+        this.state.audioState = { phase: 'idle' };
+        this.render();
+      };
+      box.append(reroll);
+      return box;
+    }
+
+    _formatDuration(seconds) {
+      const s = Math.round(seconds || 0);
+      const m = Math.floor(s / 60);
+      const r = s % 60;
+      return m + ':' + String(r).padStart(2, '0');
+    }
+
+    async runProduction(opts) {
+      if (!window.SongMusicEngine) {
+        alert('Music-Engine-Modul wurde nicht geladen.');
+        return;
+      }
+      this.state.audioState = { phase: 'submitting', model: opts.model, vocalGender: opts.vocalGender };
+      this.render();
+      try {
+        const result = await window.SongMusicEngine.generateAudio(
+          this.state.persona,
+          this.state.song,
+          opts,
+          (evt) => {
+            // UI-Update bei Status-Wechseln
+            if (evt.phase === 'submitting') {
+              this.state.audioState = Object.assign({}, this.state.audioState, { phase: 'submitting' });
+            } else if (evt.phase === 'polling') {
+              this.state.audioState = Object.assign({}, this.state.audioState, {
+                phase: 'polling',
+                taskId: evt.taskId || this.state.audioState.taskId,
+                status: evt.status,
+                weights: evt.weights || this.state.audioState.weights
+              });
+            } else if (evt.phase === 'first_ready') {
+              // Erste Variante schon verfügbar: zeige sie schonmal
+              this.state.audio = { tracks: evt.tracks || [], partial: true };
+              saveState(STORAGE_KEYS.audio, this.state.audio);
+              this.state.audioState = Object.assign({}, this.state.audioState, { phase: 'polling', status: evt.status });
+            }
+            // Throttled re-render: nur wenn wir gerade nicht gerade gerendert haben
+            this.render();
+          }
+        );
+        this.state.audio = {
+          tracks: result.tracks || [],
+          taskId: result.taskId,
+          weights: result.weights,
+          generatedAt: new Date().toISOString(),
+          provider: 'sunoapi_org',
+          model: opts.model
+        };
+        saveState(STORAGE_KEYS.audio, this.state.audio);
+        this.state.audioState = { phase: 'success' };
+        this.render();
+      } catch (err) {
+        console.error('[SongGenerator] Audio-Produktion fehlgeschlagen:', err);
+        this.state.audioState = { phase: 'error', error: err.message || String(err) };
+        this.render();
+      }
+    }
+
     exportJson() {
       const blob = new Blob([JSON.stringify({
         persona: this.state.persona,
         song: this.state.song,
+        audio: this.state.audio,
         externalInputs: this.state.externalInputs
       }, null, 2)], { type: 'application/json' });
       const a = document.createElement('a');
