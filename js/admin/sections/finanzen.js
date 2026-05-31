@@ -134,6 +134,7 @@
       self._cache();
       self._renderAll();
       self._refreshCryptoPrices();
+      self._refreshStockPrices();
     }).catch(function (err) {
       console.warn('[Finanzen] Laden fehlgeschlagen:', err.message);
       if (!self.doc) self.doc = self._defaultDoc();
@@ -198,7 +199,7 @@
     if (['cashBalance', 'extraDebtPayment', 'emergencyFundTargetMonths'].indexOf(field) >= 0) this.doc.settings[field] = E().num(value);
     else this.doc.settings[field] = value;
     this.save();
-    this._renderAll();
+    this._recalc();
   };
 
   // ---------------- Events ----------------
@@ -212,10 +213,11 @@
     if (act === 'del') { this._remove(coll, id); return; }
     if (act === 'add-row') { this._handleAdd(coll, t); return; }
     if (act === 'refresh-prices') { this._refreshCryptoPrices(true); return; }
+    if (act === 'refresh-stocks') { this._refreshStockPrices(true); return; }
     if (act === 'ai-coach') { this._runAiCoach(); return; }
     if (act === 'set-strategy') {
       this.doc.settings.payoffStrategy = t.getAttribute('data-strategy');
-      this.save(); this._renderAll(); return;
+      this.save(); this._recalc(); return;
     }
   };
 
@@ -231,8 +233,8 @@
     var field = el.getAttribute('data-field');
     if (!coll || !id || !field) return;
     this._update(coll, id, field, el.type === 'checkbox' ? el.checked : el.value);
-    // KPIs/abhängige Ansichten aktualisieren (Fokus bereits weg, da change=blur)
-    this._renderAll();
+    // Gezieltes Teil-Update (kein komplettes Pane-Rerender -> kein Fokus-/Scrollverlust)
+    this._recalc();
   };
 
   FinanzenSection.prototype._handleAdd = function (coll, btn) {
@@ -245,8 +247,12 @@
       else item[f] = inp.value;
     });
     // Minimalvalidierung
-    var label = item.label || item.name || item.symbol;
-    if (!label) { box.querySelector('[data-new]').focus(); return; }
+    if (coll === 'transactions') {
+      if (!E().num(item.amount)) { var a = box.querySelector('[data-new="amount"]'); if (a) a.focus(); return; }
+    } else {
+      var label = item.label || item.name || item.symbol;
+      if (!label) { box.querySelector('[data-new]').focus(); return; }
+    }
     this._add(coll, item);
   };
 
@@ -271,11 +277,63 @@
 
   FinanzenSection.prototype._renderActive = function () {
     var map = {
-      overview: '_renderOverview', cashflow: '_renderCashflow', debts: '_renderDebts',
-      portfolio: '_renderPortfolio', goals: '_renderGoals', coach: '_renderCoach'
+      overview: '_renderOverview', cashflow: '_renderCashflow', transactions: '_renderTransactions',
+      debts: '_renderDebts', portfolio: '_renderPortfolio', goals: '_renderGoals', coach: '_renderCoach'
     };
     var fn = map[this.activeTab];
     if (fn && this[fn]) this[fn]();
+  };
+
+  /**
+   * These 1: Gezieltes Teil-Update statt komplettes Pane-Rerender.
+   * Aktualisiert KPIs + nur die abgeleiteten Anzeige-Elemente (Summen, Zeilenwerte,
+   * Strategie-Karten, Charts) ohne die Eingabefelder neu zu erzeugen (kein Fokus-/Scrollverlust).
+   */
+  FinanzenSection.prototype._recalc = function () {
+    if (!this.doc) return;
+    var d = this.doc, eng = E(), self = this;
+    this._renderKpis();
+    var tab = this.activeTab;
+    function setTxt(id, txt) { var el = document.getElementById(id); if (el) el.textContent = txt; }
+
+    if (tab === 'overview') { this._renderOverview(); return; }
+    if (tab === 'coach') { return; }
+    if (tab === 'transactions') { this._renderTransactions(); return; }
+
+    if (tab === 'cashflow') {
+      setTxt('fin-inc-sum', eur(eng.monthlyIncome(d)) + ' / Monat');
+      setTxt('fin-exp-sum', eur(eng.monthlyExpenses(d)) + ' / Monat');
+      d.incomes.concat(d.expenses).forEach(function (it) {
+        var c = document.querySelector('[data-rowmonthly="' + it.id + '"]');
+        if (c) c.textContent = eur(eng.toMonthly(it.amount, it.frequency));
+      });
+    } else if (tab === 'debts') {
+      setTxt('fin-debt-sum', eur(eng.totalDebt(d)));
+      var box = document.getElementById('fin-strats-box');
+      if (box) box.innerHTML = this._stratsBoxHtml(d);
+    } else if (tab === 'portfolio') {
+      var totalVal = eng.portfolioValue(d.holdings, this.prices);
+      var totalGain = totalVal - eng.portfolioCost(d.holdings);
+      var ps = document.getElementById('fin-port-sum');
+      if (ps) { ps.textContent = eur(totalVal) + ' (' + (totalGain >= 0 ? '+' : '') + eur(totalGain) + ')'; ps.className = 'fin-sum ' + (totalGain >= 0 ? 'good' : 'bad'); }
+      d.holdings.forEach(function (h) {
+        var key = (h.assetType + ':' + h.symbol).toLowerCase();
+        var price = self.prices[key] != null ? self.prices[key] : h.lastPrice;
+        var val = eng.holdingValue(h, price), cost = eng.holdingCost(h), gain = val - cost, gp = cost > 0 ? gain / cost : 0;
+        var vc = document.querySelector('[data-rowval="' + h.id + '"]'); if (vc) vc.textContent = eur(val);
+        var gc = document.querySelector('[data-rowgain="' + h.id + '"]'); if (gc) { gc.textContent = eur(gain) + ' (' + pct(gp) + ')'; gc.className = 'num ' + (gain >= 0 ? 'good' : 'bad'); }
+      });
+      this._drawAllocChart();
+    } else if (tab === 'goals') {
+      var em = eng.emergencyMonths(d);
+      var ln = document.getElementById('fin-em-line');
+      if (ln) { ln.textContent = (em == null ? '–' : em.toFixed(1) + ' Monate'); ln.className = (em != null && em >= 3 ? 'good' : 'warn'); }
+      d.goals.forEach(function (g) {
+        var prog = eng.num(g.target) > 0 ? Math.min(1, eng.num(g.saved) / eng.num(g.target)) : 0;
+        var bar = document.querySelector('[data-goalbar="' + g.id + '"]'); if (bar) bar.style.width = Math.round(prog * 100) + '%';
+        var sub = document.querySelector('[data-goalsub="' + g.id + '"]'); if (sub) sub.textContent = Math.round(prog * 100) + '% erreicht';
+      });
+    }
   };
 
   FinanzenSection.prototype._renderKpis = function () {
@@ -418,7 +476,7 @@
         '<td>' + inp('incomes', it.id, 'amount', it.amount, 'number', 'step="any" min="0"') + '</td>' +
         '<td><select class="fin-inp" data-coll="incomes" data-id="' + it.id + '" data-field="frequency">' + freqOptions(it.frequency) + '</select></td>' +
         '<td>' + inp('incomes', it.id, 'category', it.category || '', 'text') + '</td>' +
-        '<td class="num">' + eur(eng.toMonthly(it.amount, it.frequency)) + '</td>' +
+        '<td class="num" data-rowmonthly="' + it.id + '">' + eur(eng.toMonthly(it.amount, it.frequency)) + '</td>' +
         '<td>' + delBtn('incomes', it.id) + '</td></tr>';
     }).join('');
 
@@ -428,12 +486,12 @@
         '<td><select class="fin-inp" data-coll="expenses" data-id="' + it.id + '" data-field="frequency">' + freqOptions(it.frequency) + '</select></td>' +
         '<td>' + inp('expenses', it.id, 'category', it.category || '', 'text') + '</td>' +
         '<td><input type="checkbox" data-coll="expenses" data-id="' + it.id + '" data-field="essential"' + (it.essential ? ' checked' : '') + '></td>' +
-        '<td class="num">' + eur(eng.toMonthly(it.amount, it.frequency)) + '</td>' +
+        '<td class="num" data-rowmonthly="' + it.id + '">' + eur(eng.toMonthly(it.amount, it.frequency)) + '</td>' +
         '<td>' + delBtn('expenses', it.id) + '</td></tr>';
     }).join('');
 
     pane.innerHTML =
-      '<div class="fin-card"><h3>Einnahmen <span class="fin-sum good">' + eur(eng.monthlyIncome(d)) + ' / Monat</span></h3>' +
+      '<div class="fin-card"><h3>Einnahmen <span class="fin-sum good" id="fin-inc-sum">' + eur(eng.monthlyIncome(d)) + ' / Monat</span></h3>' +
         '<table class="fin-table"><thead><tr><th>Quelle</th><th>Betrag</th><th>Rhythmus</th><th>Kategorie</th><th class="num">≈ €/Monat</th><th></th></tr></thead>' +
         '<tbody>' + (incRows || '') + '</tbody></table>' +
         '<div class="fin-addform"><input class="fin-inp" data-new="label" type="text" placeholder="z. B. Gehalt"> ' +
@@ -442,7 +500,7 @@
           newInp('category', 'Kategorie') +
           '<button class="btn btn-primary btn-sm" data-act="add-row" data-coll="incomes"><i class="fas fa-plus"></i> Einnahme</button></div>' +
       '</div>' +
-      '<div class="fin-card"><h3>Ausgaben <span class="fin-sum bad">' + eur(eng.monthlyExpenses(d)) + ' / Monat</span></h3>' +
+      '<div class="fin-card"><h3>Ausgaben <span class="fin-sum bad" id="fin-exp-sum">' + eur(eng.monthlyExpenses(d)) + ' / Monat</span></h3>' +
         '<table class="fin-table"><thead><tr><th>Posten</th><th>Betrag</th><th>Rhythmus</th><th>Kategorie</th><th>essenziell</th><th class="num">≈ €/Monat</th><th></th></tr></thead>' +
         '<tbody>' + (expRows || '') + '</tbody></table>' +
         '<div class="fin-addform"><input class="fin-inp" data-new="label" type="text" placeholder="z. B. Miete"> ' +
@@ -454,11 +512,84 @@
       '</div>';
   };
 
+  // ---- These 3: Buchungen (Ist-Werte) + Monatsvergleich ----
+  FinanzenSection.prototype._renderTransactions = function () {
+    var d = this.doc, eng = E();
+    var pane = document.getElementById('fintab-transactions');
+    if (!pane) return;
+
+    var now = new Date();
+    var ym = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+    var monthLabel = now.toLocaleDateString('de-CH', { month: 'long', year: 'numeric' });
+    var monthTx = d.transactions.filter(function (t) { return (t.date || '').slice(0, 7) === ym; });
+    var istIn = monthTx.filter(function (t) { return t.type === 'income'; }).reduce(function (s, t) { return s + eng.num(t.amount); }, 0);
+    var istEx = monthTx.filter(function (t) { return t.type === 'expense'; }).reduce(function (s, t) { return s + eng.num(t.amount); }, 0);
+    var planIn = eng.monthlyIncome(d), planEx = eng.monthlyExpenses(d);
+
+    function cmpCard(label, ist, plan, goodWhenAbove) {
+      var diff = ist - plan;
+      var ok = goodWhenAbove ? diff >= 0 : diff <= 0;
+      return '<div class="fin-kpi"><div class="fin-kpi-label">' + label + '</div>' +
+        '<div class="fin-kpi-value">' + eur(ist) + '</div>' +
+        '<div class="fin-kpi-sub">Plan ' + eur(plan) + ' · <span class="' + (ok ? 'good' : 'bad') + '">' + (diff >= 0 ? '+' : '') + eur(diff) + '</span></div></div>';
+    }
+
+    var sorted = d.transactions.slice().sort(function (a, b) { return (b.date || '').localeCompare(a.date || ''); });
+    var rows = sorted.map(function (t) {
+      return '<tr><td>' + inp('transactions', t.id, 'date', t.date || '', 'date') + '</td>' +
+        '<td><select class="fin-inp" data-coll="transactions" data-id="' + t.id + '" data-field="type">' +
+          '<option value="expense"' + (t.type !== 'income' ? ' selected' : '') + '>Ausgabe</option>' +
+          '<option value="income"' + (t.type === 'income' ? ' selected' : '') + '>Einnahme</option></select></td>' +
+        '<td>' + inp('transactions', t.id, 'amount', t.amount, 'number', 'step="any" min="0"') + '</td>' +
+        '<td>' + inp('transactions', t.id, 'category', t.category || '', 'text') + '</td>' +
+        '<td>' + inp('transactions', t.id, 'note', t.note || '', 'text') + '</td>' +
+        '<td>' + delBtn('transactions', t.id) + '</td></tr>';
+    }).join('');
+
+    var today = ym + '-' + String(now.getDate()).padStart(2, '0');
+    pane.innerHTML =
+      '<div class="fin-card"><h3>Monatsvergleich · ' + monthLabel + '</h3>' +
+        '<div class="fin-kpis" style="margin:.5rem 0 0">' +
+          cmpCard('Ist-Einnahmen', istIn, planIn, true) +
+          cmpCard('Ist-Ausgaben', istEx, planEx, false) +
+          '<div class="fin-kpi"><div class="fin-kpi-label">Ist-Saldo</div><div class="fin-kpi-value ' + ((istIn - istEx) >= 0 ? 'good' : 'bad') + '">' + eur(istIn - istEx) + '</div><div class="fin-kpi-sub">' + monthTx.length + ' Buchungen</div></div>' +
+        '</div>' +
+        '<p class="fin-hint">„Plan" = deine laufenden Einnahmen/Ausgaben. „Ist" = tatsächliche Buchungen in diesem Monat.</p></div>' +
+      '<div class="fin-card"><h3>Buchungen</h3>' +
+        '<table class="fin-table"><thead><tr><th>Datum</th><th>Art</th><th>Betrag</th><th>Kategorie</th><th>Notiz</th><th></th></tr></thead>' +
+        '<tbody>' + (rows || '') + '</tbody></table>' +
+        '<div class="fin-addform">' +
+          '<input class="fin-inp" data-new="date" type="date" value="' + today + '">' +
+          '<select class="fin-inp" data-new="type"><option value="expense">Ausgabe</option><option value="income">Einnahme</option></select>' +
+          newInp('amount', 'Betrag', 'number', 'step="any" min="0"') + newInp('category', 'Kategorie') + newInp('note', 'Notiz') +
+          '<button class="btn btn-primary btn-sm" data-act="add-row" data-coll="transactions"><i class="fas fa-plus"></i> Buchung</button></div>' +
+        (sorted.length ? '' : '<p class="fin-hint">Noch keine Buchungen erfasst.</p>') +
+      '</div>';
+  };
+
+  FinanzenSection.prototype._stratsBoxHtml = function (d) {
+    var eng = E(), cmp = eng.comparePayoff(d);
+    function strat(key, label) {
+      var active = (d.settings.payoffStrategy || 'avalanche') === key;
+      var r = cmp[key];
+      var when = r.neverPaysOff ? 'nie' : (r.months + ' Mon. · ' + (r.payoffDate ? r.payoffDate.toLocaleDateString('de-CH', { month: 'short', year: 'numeric' }) : ''));
+      return '<button class="fin-strat ' + (active ? 'active' : '') + '" data-act="set-strategy" data-strategy="' + key + '">' +
+        '<div class="fin-strat-name">' + label + '</div>' +
+        '<div class="fin-strat-when">' + when + '</div>' +
+        '<div class="fin-strat-int">Zinsen: ' + eur(r.totalInterest) + '</div></button>';
+    }
+    var savedTxt = cmp.interestSaved != null && cmp.interestSaved > 0
+      ? '<div class="fin-saved good">Mit Sondertilgung + Avalanche sparst du <strong>' + eur(cmp.interestSaved) + '</strong> Zinsen ggü. nur Mindestraten.</div>'
+      : '';
+    return '<div class="fin-strats">' + strat('avalanche', '❄️ Avalanche (höchster Zins zuerst)') +
+      strat('snowball', '⛄ Snowball (kleinste Schuld zuerst)') +
+      strat('minimum', '🐌 Nur Mindestraten') + '</div>' + savedTxt;
+  };
+
   FinanzenSection.prototype._renderDebts = function () {
     var d = this.doc, eng = E();
     var pane = document.getElementById('fintab-debts');
     if (!pane) return;
-    var cmp = eng.comparePayoff(d);
 
     var rows = d.debts.map(function (it) {
       return '<tr><td>' + inp('debts', it.id, 'name', it.name, 'text') + '</td>' +
@@ -468,22 +599,8 @@
         '<td>' + delBtn('debts', it.id) + '</td></tr>';
     }).join('');
 
-    function strat(name, key, label) {
-      var active = (d.settings.payoffStrategy || 'avalanche') === key;
-      var r = cmp[key];
-      var when = r.neverPaysOff ? 'nie' : (r.months + ' Mon. · ' + (r.payoffDate ? r.payoffDate.toLocaleDateString('de-CH', { month: 'short', year: 'numeric' }) : ''));
-      return '<button class="fin-strat ' + (active ? 'active' : '') + '" data-act="set-strategy" data-strategy="' + key + '">' +
-        '<div class="fin-strat-name">' + label + '</div>' +
-        '<div class="fin-strat-when">' + when + '</div>' +
-        '<div class="fin-strat-int">Zinsen: ' + eur(r.totalInterest) + '</div></button>';
-    }
-
-    var savedTxt = cmp.interestSaved != null && cmp.interestSaved > 0
-      ? '<div class="fin-saved good">Mit Sondertilgung + Avalanche sparst du <strong>' + eur(cmp.interestSaved) + '</strong> Zinsen ggü. nur Mindestraten.</div>'
-      : '';
-
     pane.innerHTML =
-      '<div class="fin-card"><h3>Kredite &amp; Schulden <span class="fin-sum bad">' + eur(eng.totalDebt(d)) + '</span></h3>' +
+      '<div class="fin-card"><h3>Kredite &amp; Schulden <span class="fin-sum bad" id="fin-debt-sum">' + eur(eng.totalDebt(d)) + '</span></h3>' +
         '<table class="fin-table"><thead><tr><th>Name</th><th>Restschuld</th><th>Zins p.a.</th><th>Mindestrate</th><th></th></tr></thead>' +
         '<tbody>' + (rows || '') + '</tbody></table>' +
         '<div class="fin-addform">' + newInp('name', 'z. B. Autokredit') + newInp('balance', 'Restschuld', 'number', 'step="any" min="0"') +
@@ -493,10 +610,7 @@
       '<div class="fin-card"><h3>Tilgungsstrategie &amp; Sondertilgung</h3>' +
         '<label class="fin-field">Extra-Tilgung pro Monat (€) ' +
           '<input class="fin-inp" data-setting="extraDebtPayment" type="number" step="any" min="0" value="' + esc(d.settings.extraDebtPayment) + '"></label>' +
-        '<div class="fin-strats">' + strat('Avalanche', 'avalanche', '❄️ Avalanche (höchster Zins zuerst)') +
-          strat('Snowball', 'snowball', '⛄ Snowball (kleinste Schuld zuerst)') +
-          strat('Minimum', 'minimum', '🐌 Nur Mindestraten') + '</div>' +
-        savedTxt +
+        '<div id="fin-strats-box">' + this._stratsBoxHtml(d) + '</div>' +
         '<p class="fin-hint">Avalanche spart am meisten Zinsen; Snowball motiviert durch schnelle Erfolge.</p>' +
       '</div>';
   };
@@ -519,8 +633,8 @@
           '<td>' + inp('holdings', h.id, 'quantity', h.quantity, 'number', 'step="any" min="0"') + '</td>' +
           '<td>' + inp('holdings', h.id, 'avgBuyPrice', h.avgBuyPrice, 'number', 'step="any" min="0"') + '</td>' +
           '<td class="num">' + (price ? eur(price) : (type === 'stock' ? inp('holdings', h.id, 'lastPrice', h.lastPrice || '', 'number', 'step="any"') : '–')) + '</td>' +
-          '<td class="num">' + eur(val) + '</td>' +
-          '<td class="num ' + (gain >= 0 ? 'good' : 'bad') + '">' + eur(gain) + ' (' + pct(gainPct) + ')</td>' +
+          '<td class="num" data-rowval="' + h.id + '">' + eur(val) + '</td>' +
+          '<td class="num ' + (gain >= 0 ? 'good' : 'bad') + '" data-rowgain="' + h.id + '">' + eur(gain) + ' (' + pct(gainPct) + ')</td>' +
           '<td>' + delBtn('holdings', h.id) + '</td></tr>';
       }).join('');
     }
@@ -530,10 +644,10 @@
     var totalGain = totalVal - totalCost;
 
     pane.innerHTML =
-      '<div class="fin-card"><h3>Portfolio <span class="fin-sum ' + (totalGain >= 0 ? 'good' : 'bad') + '">' + eur(totalVal) + ' (' + (totalGain >= 0 ? '+' : '') + eur(totalGain) + ')</span>' +
-        '<button class="btn btn-outline btn-sm" data-act="refresh-prices" style="float:right"><i class="fas fa-sync"></i> Kurse aktualisieren</button></h3>' +
+      '<div class="fin-card"><h3>Portfolio <span class="fin-sum ' + (totalGain >= 0 ? 'good' : 'bad') + '" id="fin-port-sum">' + eur(totalVal) + ' (' + (totalGain >= 0 ? '+' : '') + eur(totalGain) + ')</span></h3>' +
         '<canvas id="fin-chart-alloc" height="180"></canvas></div>' +
-      '<div class="fin-card"><h3>₿ Krypto <span class="fin-hint">Live-Kurse via CoinGecko</span></h3>' +
+      '<div class="fin-card"><h3>₿ Krypto <span class="fin-hint">Live-Kurse via CoinGecko</span>' +
+        '<button class="btn btn-outline btn-sm" data-act="refresh-prices" style="margin-left:auto"><i class="fas fa-sync"></i> Kurse</button></h3>' +
         '<table class="fin-table"><thead><tr><th>Symbol</th><th>Name</th><th>Menge</th><th>Ø Kaufpreis</th><th class="num">Kurs</th><th class="num">Wert</th><th class="num">G/V</th><th></th></tr></thead>' +
         '<tbody>' + (rows('crypto') || '') + '</tbody></table>' +
         '<div class="fin-addform">' + newInp('symbol', 'BTC') + newInp('name', 'Bitcoin') + newInp('quantity', 'Menge', 'number', 'step="any" min="0"') +
@@ -541,11 +655,12 @@
           '<input type="hidden" data-new="assetType" value="crypto">' +
           '<button class="btn btn-primary btn-sm" data-act="add-row" data-coll="holdings"><i class="fas fa-plus"></i> Krypto</button></div>' +
       '</div>' +
-      '<div class="fin-card"><h3>📈 Aktien / ETFs <span class="fin-hint">Kurs derzeit manuell (Live-Anbindung optional)</span></h3>' +
+      '<div class="fin-card"><h3>📈 Aktien / ETFs <span class="fin-hint" id="fin-stock-hint">Live-Kurse via Finnhub (Symbol z. B. AAPL, MSFT)</span>' +
+        '<button class="btn btn-outline btn-sm" data-act="refresh-stocks" style="margin-left:auto"><i class="fas fa-sync"></i> Kurse</button></h3>' +
         '<table class="fin-table"><thead><tr><th>Symbol</th><th>Name</th><th>Menge</th><th>Ø Kaufpreis</th><th class="num">Kurs</th><th class="num">Wert</th><th class="num">G/V</th><th></th></tr></thead>' +
         '<tbody>' + (rows('stock') || '') + '</tbody></table>' +
-        '<div class="fin-addform">' + newInp('symbol', 'VWCE') + newInp('name', 'FTSE All-World') + newInp('quantity', 'Menge', 'number', 'step="any" min="0"') +
-          newInp('avgBuyPrice', 'Ø Kaufpreis €', 'number', 'step="any" min="0"') + newInp('lastPrice', 'akt. Kurs €', 'number', 'step="any" min="0"') +
+        '<div class="fin-addform">' + newInp('symbol', 'AAPL') + newInp('name', 'Apple') + newInp('quantity', 'Menge', 'number', 'step="any" min="0"') +
+          newInp('avgBuyPrice', 'Ø Kaufpreis', 'number', 'step="any" min="0"') + newInp('lastPrice', 'akt. Kurs', 'number', 'step="any" min="0"') +
           '<input type="hidden" data-new="assetType" value="stock">' +
           '<button class="btn btn-primary btn-sm" data-act="add-row" data-coll="holdings"><i class="fas fa-plus"></i> Aktie/ETF</button></div>' +
       '</div>';
@@ -589,13 +704,13 @@
         '</select>' + delBtn('goals', g.id) + '</div>' +
         '<div class="fin-goal-amts">Gespart ' + inp('goals', g.id, 'saved', g.saved, 'number', 'step="any" min="0"') +
           ' von ' + inp('goals', g.id, 'target', g.target, 'number', 'step="any" min="0"') + ' €</div>' +
-        '<div class="fin-bar"><div class="fin-bar-fill" style="width:' + Math.round(prog * 100) + '%"></div></div>' +
-        '<div class="fin-goal-sub">' + Math.round(prog * 100) + '% erreicht</div></div>';
+        '<div class="fin-bar"><div class="fin-bar-fill" data-goalbar="' + g.id + '" style="width:' + Math.round(prog * 100) + '%"></div></div>' +
+        '<div class="fin-goal-sub" data-goalsub="' + g.id + '">' + Math.round(prog * 100) + '% erreicht</div></div>';
     }).join('');
 
     pane.innerHTML =
       '<div class="fin-card"><h3>Notgroschen</h3>' +
-        '<p>Reichweite aktuell: <strong class="' + (em != null && em >= 3 ? 'good' : 'warn') + '">' + (em == null ? '–' : em.toFixed(1) + ' Monate') + '</strong> ' +
+        '<p>Reichweite aktuell: <strong id="fin-em-line" class="' + (em != null && em >= 3 ? 'good' : 'warn') + '">' + (em == null ? '–' : em.toFixed(1) + ' Monate') + '</strong> ' +
         '(Ziel: 3–6 Monatsausgaben). Bar-/Tagesgeld: ' +
         '<input class="fin-inp" data-setting="cashBalance" type="number" step="any" min="0" value="' + esc(d.settings.cashBalance) + '"> €</p></div>' +
       '<div class="fin-card"><h3>Sparziele</h3>' + (rows || '<p class="fin-hint">Noch keine Ziele.</p>') +
@@ -618,7 +733,22 @@
         '<p class="fin-hint">Persönlicher Plan auf Basis deiner Daten (nutzt OpenAI). Keine Anlage-/Steuerberatung.</p>' +
         '<button class="btn btn-primary" data-act="ai-coach"><i class="fas fa-wand-magic-sparkles"></i> Coaching-Plan erstellen</button>' +
         '<div id="fin-ai-output" class="fin-ai-output"></div></div>' +
+      this._coachHistoryHtml() +
       '<div class="fin-card"><h3>💡 Einkommensideen</h3>' + this._incomeIdeasHtml() + '</div>';
+  };
+
+  FinanzenSection.prototype._coachHistoryHtml = function () {
+    var notes = (this.doc.coachNotes || []).filter(function (n) { return n && n.text; });
+    if (!notes.length) return '';
+    var self = this;
+    var items = notes.map(function (n) {
+      var dt = '';
+      try { dt = new Date(n.date).toLocaleString('de-CH', { dateStyle: 'medium', timeStyle: 'short' }); } catch (e) { dt = n.date || ''; }
+      return '<details class="fin-history-item"><summary>' + esc(dt) +
+        '<span class="fin-history-del" data-act="del" data-coll="coachNotes" data-id="' + n.id + '" title="Löschen"><i class="fas fa-trash"></i></span></summary>' +
+        '<div class="fin-ai-plan">' + self._mdToHtml(n.text) + '</div></details>';
+    }).join('');
+    return '<div class="fin-card"><h3>🗂️ Coaching-Verlauf <span class="fin-hint">letzte ' + notes.length + ' Pläne</span></h3>' + items + '</div>';
   };
 
   FinanzenSection.prototype._incomeIdeasHtml = function () {
@@ -658,6 +788,46 @@
       if (self.activeTab === 'portfolio') self._renderPortfolio();
       self._renderKpis();
     }).catch(function (e) { console.warn('[Finanzen] CoinGecko-Kurse nicht abrufbar:', e.message); });
+  };
+
+  // ---------------- These 2: Live-Aktienkurse (Finnhub) ----------------
+  FinanzenSection.prototype._stockApiKey = function () {
+    return fetch(V1_API + '/api-settings?action=key&provider=finnhub&global=true', {
+      method: 'GET', headers: { 'Content-Type': 'application/json' }
+    }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) { return d && d.apiKey; })
+      .catch(function () { return null; });
+  };
+
+  FinanzenSection.prototype._refreshStockPrices = function (force) {
+    var self = this, eng = E();
+    var stocks = (this.doc.holdings || []).filter(function (h) { return h.assetType === 'stock' && h.symbol; });
+    if (!stocks.length) return;
+    var hint = document.getElementById('fin-stock-hint');
+
+    this._stockApiKey().then(function (key) {
+      if (!key) {
+        if (hint) hint.textContent = 'Für Live-Kurse einen Finnhub-API-Key unter Admin → API Keys (Provider „finnhub") hinterlegen. Bis dahin Kurs manuell.';
+        return;
+      }
+      if (hint) hint.textContent = 'Live-Kurse via Finnhub (in Notierungswährung der Aktie).';
+      var jobs = stocks.map(function (h) {
+        var sym = encodeURIComponent((h.symbol || '').trim().toUpperCase());
+        return fetch('https://finnhub.io/api/v1/quote?symbol=' + sym + '&token=' + encodeURIComponent(key))
+          .then(function (r) { return r.json(); })
+          .then(function (q) {
+            if (q && typeof q.c === 'number' && q.c > 0) {
+              self.prices[('stock:' + h.symbol).toLowerCase()] = q.c;
+              h.lastPrice = q.c;
+            }
+          })
+          .catch(function () { /* einzelne Symbole ignorieren */ });
+      });
+      return Promise.all(jobs).then(function () {
+        self.save();
+        if (self.activeTab === 'portfolio') self._renderPortfolio();
+        self._renderKpis();
+      });
+    });
   };
 
   // ---------------- KI-Coach (OpenAI) ----------------

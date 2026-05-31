@@ -104,6 +104,15 @@ input.fin-inp[type=number] { text-align:right; }
 .fin-idea strong { display:block; color:#0f172a; margin-bottom:.25rem; font-size:.92rem; }
 .fin-idea span { color:#475569; font-size:.85rem; }
 
+/* Coaching-Verlauf */
+.fin-history-item { border:1px solid #e2e8f0; border-radius:10px; margin-bottom:.6rem; overflow:hidden; }
+.fin-history-item > summary { cursor:pointer; padding:.65rem .9rem; font-weight:600; color:#334155; background:#f8fafc; display:flex; align-items:center; justify-content:space-between; list-style:none; }
+.fin-history-item > summary::-webkit-details-marker { display:none; }
+.fin-history-item[open] > summary { border-bottom:1px solid #e2e8f0; }
+.fin-history-del { color:#cbd5e1; padding:.2rem .4rem; border-radius:6px; }
+.fin-history-del:hover { color:var(--fin-bad); background:#fef2f2; }
+.fin-history-item .fin-ai-plan { border:none; border-radius:0; }
+
 /* KI-Output */
 .fin-ai-output { margin-top:1rem; }
 .fin-ai-plan { background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:1rem 1.25rem; font-size:.92rem; color:#1e293b; line-height:1.55; }
