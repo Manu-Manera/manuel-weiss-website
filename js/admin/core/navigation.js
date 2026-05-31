@@ -232,17 +232,60 @@ class AdminNavigation {
                 // Website Users Section spezifische Initialisierung
                 if (sectionId === 'website-users') {
                     if (window.WebsiteUsersManagement) {
-                        const websiteUsers = window.AdminApp?.sections?.websiteUsers || new window.WebsiteUsersManagement();
-                        if (!websiteUsers.isInitialized && !websiteUsers.isInitializing) {
-                            console.log('Initializing WebsiteUsersManagement');
-                            // Non-blocking - läuft komplett im Hintergrund
-                            websiteUsers.init().catch(err => {
-                                console.error('Error initializing WebsiteUsersManagement:', err);
-                            });
+                        let websiteUsers = window.AdminApp?.sections?.websiteUsers;
+                        if (!websiteUsers) {
+                            websiteUsers = new window.WebsiteUsersManagement();
                         }
-                        if (window.AdminApp && !window.AdminApp.sections.websiteUsers) {
+                        if (window.AdminApp) {
                             window.AdminApp.sections.websiteUsers = websiteUsers;
                         }
+                        const startLoad = () => {
+                            websiteUsers.ensureSectionReady();
+                            websiteUsers.loadWebsiteUsers().catch(err => {
+                                console.error('Error loading WebsiteUsersManagement:', err);
+                            });
+                        };
+                        if (!websiteUsers.isInitialized && !websiteUsers.isInitializing) {
+                            console.log('Initializing WebsiteUsersManagement');
+                            websiteUsers.init().catch(err => {
+                                console.error('Error initializing WebsiteUsersManagement:', err);
+                                startLoad();
+                            });
+                        } else {
+                            startLoad();
+                        }
+                    } else {
+                        console.warn('⚠️ window.WebsiteUsersManagement not found');
+                    }
+                }
+
+                if (sectionId === 'ai-investments' && window.AIInvestmentSection) {
+                    let aiInvestment = window.AdminApp?.sections?.aiInvestment;
+                    if (!aiInvestment) {
+                        aiInvestment = new window.AIInvestmentSection();
+                        if (window.AdminApp) {
+                            window.AdminApp.sections.aiInvestment = aiInvestment;
+                        }
+                    }
+                    if (!aiInvestment.initialized) {
+                        aiInvestment.init();
+                    } else {
+                        aiInvestment.loadAIDashboard();
+                    }
+                }
+
+                if (sectionId === 'finanzen' && window.FinanzenSection) {
+                    let finanzen = window.AdminApp?.sections?.finanzen;
+                    if (!finanzen) {
+                        finanzen = new window.FinanzenSection();
+                        if (window.AdminApp) {
+                            window.AdminApp.sections.finanzen = finanzen;
+                        }
+                    }
+                    if (!finanzen.initialized) {
+                        finanzen.init();
+                    } else {
+                        finanzen.load();
                     }
                 }
                 

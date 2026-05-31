@@ -1,0 +1,36 @@
+<div class="finanzen-section">
+    <div class="section-header">
+        <div>
+            <h2>💶 Finanzen &amp; Freiheit</h2>
+            <p class="section-subtitle">Dein Cockpit für Schuldenabbau, Cashflow und Vermögensaufbau.</p>
+        </div>
+        <div class="fin-header-actions">
+            <span id="fin-save-status" class="fin-save-status" aria-live="polite"></span>
+            <button class="btn btn-outline" id="fin-reload-btn" title="Neu laden">
+                <i class="fas fa-sync"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="fin-kpis" class="fin-kpis">
+        <div class="fin-loading"><i class="fas fa-spinner fa-spin"></i> Lade Finanzdaten …</div>
+    </div>
+
+    <nav class="fin-tabs" role="tablist">
+        <button class="fin-tab active" data-fintab="overview"><i class="fas fa-gauge-high"></i> Überblick</button>
+        <button class="fin-tab" data-fintab="cashflow"><i class="fas fa-right-left"></i> Einnahmen &amp; Ausgaben</button>
+        <button class="fin-tab" data-fintab="debts"><i class="fas fa-hand-holding-dollar"></i> Kredite</button>
+        <button class="fin-tab" data-fintab="portfolio"><i class="fas fa-chart-line"></i> Portfolio</button>
+        <button class="fin-tab" data-fintab="goals"><i class="fas fa-bullseye"></i> Sparziele</button>
+        <button class="fin-tab" data-fintab="coach"><i class="fas fa-user-tie"></i> Coach</button>
+    </nav>
+
+    <div class="fin-panes">
+        <section id="fintab-overview" class="fin-pane" role="tabpanel"></section>
+        <section id="fintab-cashflow" class="fin-pane" role="tabpanel" hidden></section>
+        <section id="fintab-debts" class="fin-pane" role="tabpanel" hidden></section>
+        <section id="fintab-portfolio" class="fin-pane" role="tabpanel" hidden></section>
+        <section id="fintab-goals" class="fin-pane" role="tabpanel" hidden></section>
+        <section id="fintab-coach" class="fin-pane" role="tabpanel" hidden></section>
+    </div>
+</div>

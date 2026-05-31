@@ -61,6 +61,12 @@ class AdminSidebar extends HTMLElement {
                                 <span>Dashboard</span>
                             </a>
                         </li>
+                        <li class="nav-item" data-section="finanzen" data-tooltip="Finanzen">
+                            <a href="#finanzen">
+                                <i class="fas fa-wallet"></i>
+                                <span>Finanzen</span>
+                            </a>
+                        </li>
                         <li class="nav-item" data-section="content" data-tooltip="Inhalte">
                             <a href="#content">
                                 <i class="fas fa-edit"></i>

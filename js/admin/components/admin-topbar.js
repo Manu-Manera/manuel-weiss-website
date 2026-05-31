@@ -437,6 +437,7 @@ class AdminTopbar extends HTMLElement {
         if (breadcrumb) {
             const sectionNames = {
                 'dashboard': 'Dashboard',
+                'finanzen': 'Finanzen',
                 'api-keys': 'API Keys',
                 'applications': 'Bewerbungen',
                 'media': 'Medien',

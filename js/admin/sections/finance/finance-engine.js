@@ -1,0 +1,370 @@
+/**
+ * FinanceEngine – deterministische Finanzberechnungen für das Admin-Finanzmodul.
+ * Reine Funktionen ohne DOM/Netzwerk, damit Logik testbar und vorhersehbar bleibt.
+ *
+ * Datenmodell (financeDoc):
+ *   settings   { currency, emergencyFundTargetMonths, extraDebtPayment, cashBalance }
+ *   incomes[]  { id, label, amount, frequency, category }
+ *   expenses[] { id, label, amount, frequency, category, essential }
+ *   transactions[] { id, date, type('income'|'expense'), amount, category, note }
+ *   debts[]    { id, name, balance, apr, minPayment, type }
+ *   holdings[] { id, assetType('stock'|'crypto'), symbol, name, quantity, avgBuyPrice }
+ *   goals[]    { id, name, target, saved, kind('emergency'|'savings'|'custom'), deadline }
+ */
+(function () {
+  'use strict';
+
+  var FREQ_TO_MONTHLY = {
+    daily: 365 / 12,
+    weekly: 52 / 12,
+    biweekly: 26 / 12,
+    monthly: 1,
+    quarterly: 4 / 12,
+    yearly: 1 / 12,
+    once: 0
+  };
+
+  function num(v) {
+    var n = typeof v === 'number' ? v : parseFloat(String(v == null ? '' : v).replace(',', '.'));
+    return isNaN(n) ? 0 : n;
+  }
+
+  function toMonthly(amount, frequency) {
+    var f = FREQ_TO_MONTHLY[frequency] != null ? FREQ_TO_MONTHLY[frequency] : 1;
+    return num(amount) * f;
+  }
+
+  function sumMonthly(items) {
+    return (items || []).reduce(function (s, it) {
+      return s + toMonthly(it.amount, it.frequency || 'monthly');
+    }, 0);
+  }
+
+  function monthlyIncome(doc) { return sumMonthly(doc && doc.incomes); }
+  function monthlyExpenses(doc) { return sumMonthly(doc && doc.expenses); }
+
+  function monthlyEssentialExpenses(doc) {
+    var ex = (doc && doc.expenses) || [];
+    var essential = ex.filter(function (e) { return e.essential; });
+    // Falls nichts als essenziell markiert ist: gesamte Ausgaben als Näherung.
+    return essential.length ? sumMonthly(essential) : sumMonthly(ex);
+  }
+
+  function cashflow(doc) { return monthlyIncome(doc) - monthlyExpenses(doc); }
+
+  function savingsRate(doc) {
+    var inc = monthlyIncome(doc);
+    if (inc <= 0) return 0;
+    return cashflow(doc) / inc;
+  }
+
+  function totalDebt(doc) {
+    return ((doc && doc.debts) || []).reduce(function (s, d) { return s + num(d.balance); }, 0);
+  }
+
+  function totalMinPayments(doc) {
+    return ((doc && doc.debts) || []).reduce(function (s, d) { return s + num(d.minPayment); }, 0);
+  }
+
+  function weightedApr(doc) {
+    var debts = (doc && doc.debts) || [];
+    var total = totalDebt(doc);
+    if (total <= 0) return 0;
+    return debts.reduce(function (s, d) { return s + num(d.balance) * num(d.apr); }, 0) / total;
+  }
+
+  /** Debt-to-Income: monatliche Schuldenraten / monatliches Einkommen. */
+  function debtToIncome(doc) {
+    var inc = monthlyIncome(doc);
+    if (inc <= 0) return null;
+    return totalMinPayments(doc) / inc;
+  }
+
+  function addMonths(date, months) {
+    var d = new Date(date.getTime());
+    d.setMonth(d.getMonth() + months);
+    return d;
+  }
+
+  /**
+   * Tilgungssimulation Monat für Monat.
+   * strategy: 'avalanche' (höchster Zins zuerst), 'snowball' (kleinste Schuld zuerst),
+   *           'minimum' (nur Mindestraten, keine Umverteilung).
+   * extraPerMonth: zusätzliche Sondertilgung pro Monat.
+   */
+  function simulatePayoff(debtsInput, strategy, extraPerMonth) {
+    var base = (debtsInput || [])
+      .filter(function (d) { return num(d.balance) > 0; })
+      .map(function (d) {
+        return { id: d.id, name: d.name, balance: num(d.balance), apr: num(d.apr), min: num(d.minPayment) };
+      });
+
+    if (!base.length) {
+      return { months: 0, payoffDate: null, totalInterest: 0, totalPaid: 0, neverPaysOff: false, order: [], schedule: [] };
+    }
+
+    var ordered = base.slice();
+    if (strategy === 'snowball') ordered.sort(function (a, b) { return a.balance - b.balance; });
+    else if (strategy === 'avalanche') ordered.sort(function (a, b) { return b.apr - a.apr; });
+
+    var rollover = strategy !== 'minimum';
+    var baseExtra = num(extraPerMonth);
+    var totalMinAll = base.reduce(function (s, d) { return s + d.min; }, 0);
+
+    var month = 0, totalInterest = 0, totalPaid = 0;
+    var maxMonths = 1200;
+    var schedule = [];
+
+    function activeBalance() {
+      return ordered.reduce(function (s, d) { return s + (d.balance > 0 ? d.balance : 0); }, 0);
+    }
+
+    while (activeBalance() > 0.005 && month < maxMonths) {
+      month += 1;
+
+      // 1) Zinsen aufschlagen
+      ordered.forEach(function (d) {
+        if (d.balance > 0) {
+          var interest = d.balance * (d.apr / 100) / 12;
+          d.balance += interest;
+          totalInterest += interest;
+        }
+      });
+
+      // 2) Verfügbares Budget bestimmen
+      var pool;
+      if (rollover) {
+        var activeMins = ordered.reduce(function (s, d) { return s + (d.balance > 0 ? d.min : 0); }, 0);
+        var freed = totalMinAll - activeMins; // freigewordene Mindestraten getilgter Schulden
+        pool = activeMins + freed + baseExtra;
+      } else {
+        pool = ordered.reduce(function (s, d) { return s + (d.balance > 0 ? d.min : 0); }, 0);
+      }
+
+      var remaining = pool;
+
+      // 3) Mindestraten auf alle aktiven Schulden
+      ordered.forEach(function (d) {
+        if (d.balance > 0 && remaining > 0) {
+          var pay = Math.min(d.min, d.balance, remaining);
+          d.balance -= pay; remaining -= pay; totalPaid += pay;
+        }
+      });
+
+      // 4) Rest gebündelt auf die erste aktive Schuld in Reihenfolge
+      for (var i = 0; i < ordered.length && remaining > 0.005; i += 1) {
+        if (ordered[i].balance > 0) {
+          var p = Math.min(ordered[i].balance, remaining);
+          ordered[i].balance -= p; remaining -= p; totalPaid += p;
+        }
+      }
+
+      if (month <= 600) {
+        schedule.push({ month: month, remaining: activeBalance() });
+      }
+    }
+
+    var neverPaysOff = activeBalance() > 0.005;
+    return {
+      months: neverPaysOff ? null : month,
+      payoffDate: neverPaysOff ? null : addMonths(new Date(), month),
+      totalInterest: totalInterest,
+      totalPaid: totalPaid,
+      neverPaysOff: neverPaysOff,
+      order: ordered.map(function (d) { return d.name; }),
+      schedule: schedule
+    };
+  }
+
+  /** Vergleich der Strategien inkl. eingesparter Zinsen ggü. nur Mindestraten. */
+  function comparePayoff(doc, extraPerMonth) {
+    var debts = (doc && doc.debts) || [];
+    var extra = extraPerMonth != null ? num(extraPerMonth) : num(doc && doc.settings && doc.settings.extraDebtPayment);
+    var minimum = simulatePayoff(debts, 'minimum', 0);
+    var avalanche = simulatePayoff(debts, 'avalanche', extra);
+    var snowball = simulatePayoff(debts, 'snowball', extra);
+
+    var interestSaved = null;
+    if (!minimum.neverPaysOff && !avalanche.neverPaysOff) {
+      interestSaved = minimum.totalInterest - avalanche.totalInterest;
+    }
+    return { extra: extra, minimum: minimum, avalanche: avalanche, snowball: snowball, interestSaved: interestSaved };
+  }
+
+  // ---- Portfolio ----
+  function holdingValue(h, price) {
+    return num(h.quantity) * num(price != null ? price : h.lastPrice);
+  }
+  function holdingCost(h) { return num(h.quantity) * num(h.avgBuyPrice); }
+
+  function portfolioValue(holdings, priceMap) {
+    priceMap = priceMap || {};
+    return (holdings || []).reduce(function (s, h) {
+      var key = (h.assetType + ':' + h.symbol).toLowerCase();
+      var price = priceMap[key] != null ? priceMap[key] : h.lastPrice;
+      return s + holdingValue(h, price);
+    }, 0);
+  }
+  function portfolioCost(holdings) {
+    return (holdings || []).reduce(function (s, h) { return s + holdingCost(h); }, 0);
+  }
+
+  // ---- Vermögen / Notgroschen ----
+  function liquidSavings(doc) {
+    var goals = (doc && doc.goals) || [];
+    var saved = goals.reduce(function (s, g) { return s + num(g.saved); }, 0);
+    return saved + num(doc && doc.settings && doc.settings.cashBalance);
+  }
+
+  function emergencyFundSaved(doc) {
+    var goals = (doc && doc.goals) || [];
+    var em = goals.filter(function (g) { return g.kind === 'emergency'; });
+    if (em.length) return em.reduce(function (s, g) { return s + num(g.saved); }, 0);
+    return num(doc && doc.settings && doc.settings.cashBalance);
+  }
+
+  function emergencyMonths(doc) {
+    var essential = monthlyEssentialExpenses(doc);
+    if (essential <= 0) return null;
+    return emergencyFundSaved(doc) / essential;
+  }
+
+  function netWorth(doc, priceMap) {
+    return portfolioValue(doc && doc.holdings, priceMap) + liquidSavings(doc) - totalDebt(doc);
+  }
+
+  // ---- 50/30/20 Budget ----
+  function budget503020(doc) {
+    var inc = monthlyIncome(doc);
+    var ex = (doc && doc.expenses) || [];
+    var needs = sumMonthly(ex.filter(function (e) { return e.essential; }));
+    var wants = sumMonthly(ex.filter(function (e) { return !e.essential; }));
+    var saves = Math.max(0, cashflow(doc));
+    return {
+      income: inc,
+      needs: { actual: needs, target: inc * 0.5 },
+      wants: { actual: wants, target: inc * 0.3 },
+      savings: { actual: saves, target: inc * 0.2 }
+    };
+  }
+
+  function expenseByCategory(doc) {
+    var map = {};
+    ((doc && doc.expenses) || []).forEach(function (e) {
+      var cat = e.category || 'Sonstiges';
+      map[cat] = (map[cat] || 0) + toMonthly(e.amount, e.frequency || 'monthly');
+    });
+    return map;
+  }
+
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+  /**
+   * Finanz-Gesundheits-Score 0..100 mit nachvollziehbaren Teilkomponenten.
+   */
+  function healthScore(doc) {
+    var parts = [];
+
+    // Sparquote: 20%+ = voll
+    var sr = savingsRate(doc);
+    var srScore = clamp(sr / 0.2, 0, 1) * 25;
+    parts.push({ key: 'savingsRate', label: 'Sparquote', value: sr, score: srScore, max: 25 });
+
+    // Notgroschen: 3 Monate = voll
+    var em = emergencyMonths(doc);
+    var emScore = em == null ? 0 : clamp(em / 3, 0, 1) * 25;
+    parts.push({ key: 'emergency', label: 'Notgroschen', value: em, score: emScore, max: 25 });
+
+    // Schuldenquote (DTI): 0% = voll, >=40% = 0
+    var dti = debtToIncome(doc);
+    var dtiScore = dti == null ? 12.5 : clamp(1 - dti / 0.4, 0, 1) * 25;
+    parts.push({ key: 'dti', label: 'Schuldenquote', value: dti, score: dtiScore, max: 25 });
+
+    // Vermögensaufbau: positives Nettovermögen + investiert
+    var nw = netWorth(doc);
+    var invested = portfolioCost(doc && doc.holdings) > 0;
+    var wealthScore = (nw > 0 ? 15 : (nw === 0 ? 7 : 0)) + (invested ? 10 : 0);
+    wealthScore = clamp(wealthScore, 0, 25);
+    parts.push({ key: 'wealth', label: 'Vermögensaufbau', value: nw, score: wealthScore, max: 25 });
+
+    var total = Math.round(parts.reduce(function (s, p) { return s + p.score; }, 0));
+    var rating = total >= 80 ? 'Hervorragend' : total >= 60 ? 'Solide' : total >= 40 ? 'Ausbaufähig' : 'Kritisch';
+    return { total: total, rating: rating, parts: parts };
+  }
+
+  /**
+   * Regelbasierte Insights/Tipps – deterministisch, ohne KI.
+   * Liefert priorisierte Liste { severity, title, text }.
+   */
+  function insights(doc) {
+    var out = [];
+    var inc = monthlyIncome(doc);
+    var cf = cashflow(doc);
+    var sr = savingsRate(doc);
+    var em = emergencyMonths(doc);
+    var dti = debtToIncome(doc);
+    var debts = (doc && doc.debts) || [];
+
+    if (inc <= 0) {
+      out.push({ severity: 'info', title: 'Einkommen erfassen', text: 'Trage deine Einkünfte ein, damit Cashflow, Sparquote und Budget berechnet werden können.' });
+    }
+    if (cf < 0) {
+      out.push({ severity: 'critical', title: 'Negativer Cashflow', text: 'Du gibst mehr aus als du einnimmst (' + fmtEur(cf) + '/Monat). Priorität: Ausgaben senken oder Einkommen erhöhen, bevor investiert wird.' });
+    } else if (sr > 0 && sr < 0.1 && inc > 0) {
+      out.push({ severity: 'warn', title: 'Niedrige Sparquote', text: 'Deine Sparquote liegt bei ' + Math.round(sr * 100) + '%. Ziel: mindestens 20%. Identifiziere die größten Ausgabenblöcke.' });
+    }
+    if (em != null && em < 3) {
+      out.push({ severity: 'warn', title: 'Notgroschen aufbauen', text: 'Dein Notgroschen reicht für ' + (em).toFixed(1) + ' Monate. Ziel: 3-6 Monatsausgaben als Sicherheitspuffer.' });
+    }
+    if (dti != null && dti > 0.36) {
+      out.push({ severity: 'critical', title: 'Hohe Schuldenlast', text: 'Deine Schuldenrate beträgt ' + Math.round(dti * 100) + '% des Einkommens (kritisch ab 36%). Fokus auf Tilgung, neue Kredite vermeiden.' });
+    }
+    if (debts.length > 1) {
+      var byApr = debts.slice().sort(function (a, b) { return num(b.apr) - num(a.apr); });
+      out.push({ severity: 'info', title: 'Tilgungsreihenfolge (Avalanche)', text: 'Tilge zuerst „' + byApr[0].name + '" (' + num(byApr[0].apr) + '% Zins) – das spart am meisten Zinsen.' });
+    }
+    var highApr = debts.filter(function (d) { return num(d.apr) >= 10; });
+    if (highApr.length) {
+      out.push({ severity: 'warn', title: 'Teure Schulden zuerst', text: highApr.length + ' Kredit(e) mit >=10% Zins. Prüfe Umschuldung/Ratenkredit zu niedrigerem Zins.' });
+    }
+    if (cf > 0 && (!doc.holdings || !doc.holdings.length) && (em == null || em >= 3) && (dti == null || dti < 0.2)) {
+      out.push({ severity: 'info', title: 'Investieren starten', text: 'Solide Basis vorhanden. Überschuss von ' + fmtEur(cf) + '/Monat könnte breit gestreut investiert werden (z. B. ETF-Sparplan).' });
+    }
+    return out;
+  }
+
+  function fmtEur(v) {
+    try {
+      return new Intl.NumberFormat('de-CH', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(v || 0);
+    } catch (e) { return (Math.round(v || 0)) + ' EUR'; }
+  }
+
+  window.FinanceEngine = {
+    toMonthly: toMonthly,
+    monthlyIncome: monthlyIncome,
+    monthlyExpenses: monthlyExpenses,
+    monthlyEssentialExpenses: monthlyEssentialExpenses,
+    cashflow: cashflow,
+    savingsRate: savingsRate,
+    totalDebt: totalDebt,
+    totalMinPayments: totalMinPayments,
+    weightedApr: weightedApr,
+    debtToIncome: debtToIncome,
+    simulatePayoff: simulatePayoff,
+    comparePayoff: comparePayoff,
+    portfolioValue: portfolioValue,
+    portfolioCost: portfolioCost,
+    holdingValue: holdingValue,
+    holdingCost: holdingCost,
+    liquidSavings: liquidSavings,
+    emergencyFundSaved: emergencyFundSaved,
+    emergencyMonths: emergencyMonths,
+    netWorth: netWorth,
+    budget503020: budget503020,
+    expenseByCategory: expenseByCategory,
+    healthScore: healthScore,
+    insights: insights,
+    fmtEur: fmtEur,
+    num: num
+  };
+})();

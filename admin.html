@@ -9,9 +9,20 @@
     <link rel="stylesheet" href="admin-styles.css">
     <link rel="stylesheet" href="admin-modern-styles.css">
     <link rel="stylesheet" href="css/ai-investment-styles.css">
+    <link rel="stylesheet" href="css/finanzen-styles.css?v=20260531a">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script>window.ADMIN_ASSET_VERSION = '20260526u';</script>
+    <script>window.ADMIN_ASSET_VERSION = '20260531a';</script>
+    <script>
+        (function () {
+            if (!('serviceWorker' in navigator)) return;
+            navigator.serviceWorker.getRegistrations().then(function (regs) {
+                return Promise.all(regs.map(function (r) { return r.unregister(); }));
+            }).catch(function () {});
+        })();
+    </script>
+    
+    <style>
     
     <style>
         /* Admin Layout */
@@ -918,19 +929,20 @@
     <!-- Core Scripts -->
     <script src="js/admin/core/utils.js?v=20251020"></script>
     <script src="js/admin/core/state-manager.js?v=20251020"></script>
-    <script src="js/admin/core/navigation.js?v=20260112h"></script>
+    <script src="js/admin/core/navigation.js?v=20260531a"></script>
     <script src="js/admin/core/performance-monitor.js?v=20251020"></script>
     <script src="js/admin/core/lazy-loader.js?v=20251020"></script>
-    <script src="js/admin/components/section-loader.js?v=20260526u"></script>
+    <script src="js/admin/components/section-loader.js?v=20260528c"></script>
     
     <!-- Components -->
-    <script src="js/admin/components/admin-sidebar.js?v=20251020"></script>
-    <script src="js/admin/components/admin-topbar.js?v=20251020"></script>
+    <script src="js/admin/components/admin-sidebar.js?v=20260531a"></script>
+    <script src="js/admin/components/admin-topbar.js?v=20260531a"></script>
     
     <!-- Section Modules -->
     <script src="js/admin/sections/dashboard.js?v=20251020"></script>
     <script src="js/admin/sections/api-keys.js?v=20260526w"></script>
     <script src="js/admin/sections/user-management.js?v=20250117"></script>
+    <script src="js/admin/sections/website-users.js?v=20260528c"></script>
     <script src="js/admin/sections/applications.js?v=20251020"></script>
     <script src="js/admin/sections/media.js?v=20251020"></script>
     <script src="js/admin/sections/content.js?v=20251020"></script>
@@ -943,12 +955,17 @@
     <script src="js/admin/sections/personality-methods.js?v=20251020"></script>
     <script src="js/admin/sections/ikigai.js?v=20251020"></script>
     <script src="js/admin/sections/rentals.js?v=20251020"></script>
+
+    <!-- Finanzen-Modul -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="js/admin/sections/finance/finance-engine.js?v=20260531a"></script>
+    <script src="js/admin/sections/finanzen.js?v=20260531a"></script>
     
     <!-- AI Investment System -->
-    <script src="js/admin/sections/ai-investments.js?v=20251020"></script>
+    <script src="js/admin/sections/ai-investments.js?v=20260528c"></script>
     
     <!-- Main Application -->
-    <script src="js/admin/core/admin-application.js?v=20251020"></script>
+    <script src="js/admin/core/admin-application.js?v=20260531a"></script>
     
     <!-- Mobile Menu Script -->
     <script>
