@@ -853,6 +853,37 @@
     };
   };
 
+  // gpt-4.1 ist laut Projekt-Key das freigeschaltete Hauptmodell; weitere als Fallback.
+  FinanzenSection.prototype._coachModels = function () {
+    return ['gpt-4.1', 'gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-3.5-turbo'];
+  };
+
+  FinanzenSection.prototype._callOpenAI = function (key, body, models, idx) {
+    var self = this;
+    idx = idx || 0;
+    if (idx >= models.length) {
+      return Promise.reject(new Error('Kein verfügbares OpenAI-Modell. Geprüft: ' + models.join(', ') + '. Bitte im OpenAI-Projekt ein Modell freischalten oder einen Key mit Modellzugriff hinterlegen.'));
+    }
+    var model = models[idx];
+    var payload = Object.assign({ model: model }, body);
+    return fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      body: JSON.stringify(payload)
+    }).then(function (r) {
+      return r.json().then(function (data) {
+        if (r.ok) return data;
+        var msg = (data.error && data.error.message) || ('OpenAI-Fehler ' + r.status);
+        // Bei fehlendem Modellzugriff/unbekanntem Modell das nächste Modell probieren.
+        var noAccess = /does not have access to model|model_not_found|does not exist|invalid model/i.test(msg);
+        if (noAccess && idx + 1 < models.length) {
+          return self._callOpenAI(key, body, models, idx + 1);
+        }
+        throw new Error(msg);
+      });
+    });
+  };
+
   FinanzenSection.prototype._runAiCoach = function () {
     var self = this;
     var out = document.getElementById('fin-ai-output');
@@ -868,20 +899,10 @@
         'Struktur: 1) Lage in 2 Sätzen 2) Top-3-Sofortmaßnahmen 3) Schuldenplan 4) Spar-/Investitionsschritt 5) eine konkrete Einkommensidee passend zur Lage.';
       var user = 'Hier meine Finanzdaten als JSON:\n' + JSON.stringify(summary, null, 2);
 
-      return fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [{ role: 'system', content: sys }, { role: 'user', content: user }],
-          temperature: 0.6, max_tokens: 900
-        })
-      });
-    }).then(function (r) {
-      return r.json().then(function (data) {
-        if (!r.ok) throw new Error((data.error && data.error.message) || ('OpenAI-Fehler ' + r.status));
-        return data;
-      });
+      return self._callOpenAI(key, {
+        messages: [{ role: 'system', content: sys }, { role: 'user', content: user }],
+        temperature: 0.6, max_tokens: 900
+      }, self._coachModels());
     }).then(function (data) {
       var txt = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
       out.innerHTML = '<div class="fin-ai-plan">' + self._mdToHtml(txt || 'Keine Antwort erhalten.') + '</div>';
