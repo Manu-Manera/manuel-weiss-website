@@ -21,7 +21,9 @@ import {
   GitBranch,
   ExternalLink,
   Puzzle,
-  FileText
+  FileText,
+  Target,
+  Presentation,
 } from 'lucide-react';
 import { useProgress } from '../hooks/useLocalStorage';
 import { weeks } from '../data/onboardingData';
@@ -42,6 +44,12 @@ const navItems = [
     label: 'Tagesvertrag',
     description: '20-Min-Fokus · AWS',
   },
+  {
+    path: '/feedback-framework',
+    icon: Target,
+    label: 'Feedback',
+    description: 'Ramp-Up Review · AWS',
+  },
   { path: '/flashcards', icon: Layers, label: 'Lernkarten', description: 'KI-Karteikarten' },
   { path: '/quiz', icon: Brain, label: 'Quiz', description: 'Wissen testen' },
   { path: '/sso-setup', icon: Shield, label: 'SSO Setup', description: 'Azure ↔ Tempus' },
@@ -52,6 +60,12 @@ const navItems = [
   { path: '/training', icon: GraduationCap, label: 'Training', description: 'Tempus RM/PM/Admin' },
   { path: '/training-admin', icon: Settings, label: 'Training Admin', description: 'Inhalte bearbeiten' },
   { path: '/tempus-demo', icon: Monitor, label: 'Tempus Demo', description: 'Live Demo-Umgebung' },
+  {
+    path: '/kickoff-studio',
+    icon: Presentation,
+    label: 'Kick-off Studio',
+    description: 'Workshop · Vollbild · PDF · Gamma',
+  },
   { path: '/login-mailer', icon: MailPlus, label: 'Login Mailer', description: 'Entwürfe aus Excel' },
   { path: '/qrg-builder', icon: FileText, label: 'QRG Builder', description: 'Quick Reference Guides pro Kunde' },
   {
@@ -197,7 +211,7 @@ export default function Layout() {
             {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </header>
-        <div className="flex-1 px-6 pt-6 pb-20 sm:px-10 sm:pt-8 sm:pb-24 lg:px-12 lg:pt-10 lg:pb-28 xl:px-16 2xl:px-20 xl:pb-32 w-full">
+        <div className="flex-1 pl-10 pr-6 pt-6 pb-20 sm:pl-16 sm:pr-10 sm:pt-8 sm:pb-24 lg:pl-24 lg:pr-12 lg:pt-10 lg:pb-28 xl:pl-32 xl:pr-16 2xl:pl-44 2xl:pr-20 xl:pb-32 w-full">
           <div className="max-w-[56rem] lg:max-w-[72rem] xl:max-w-[90rem] 2xl:max-w-[100rem] mx-auto">
             <Outlet />
           </div>
