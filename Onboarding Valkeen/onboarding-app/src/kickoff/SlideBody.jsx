@@ -30,6 +30,7 @@ export default function SlideBody({
     hasVisual && vizConfig ? (
       <KickoffSlideVisual
         slideId={slideId}
+        slide={slide}
         locale={locale}
         vizConfig={vizConfig}
         onVizChange={onVizChange}
@@ -37,11 +38,14 @@ export default function SlideBody({
       />
     ) : null;
 
+  /** Agenda: Bullets stehen vollständig im Wasserfall-Schaubild */
+  const hideBulletsUnderVisual = slideId === 'agenda' && hasVisual;
+
   if (layout === 'content') {
     return (
       <div className="kickoff-slide-content-stack">
         {visualBlock}
-        {(slide.bullets || []).length > 0 && (
+        {!hideBulletsUnderVisual && (slide.bullets || []).length > 0 && (
           <ul className="kickoff-bullets">
             {(slide.bullets || []).map((b, i) => (
               <li key={i}>{b}</li>

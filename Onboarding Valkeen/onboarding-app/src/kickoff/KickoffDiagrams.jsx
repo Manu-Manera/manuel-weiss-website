@@ -160,17 +160,73 @@ function PhasesDiagram({ locale }) {
   );
 }
 
-function AgendaDiagram({ locale }) {
-  const blocks =
-    locale === 'de'
-      ? ['Kontext', 'Workshop', 'Integrationen', 'Abschluss']
-      : ['Context', 'Workshop', 'Integrations', 'Close'];
+function parseAgendaBullet(text) {
+  const colon = text.indexOf(':');
+  if (colon < 0) return { title: text.trim(), description: '' };
+  return {
+    title: text.slice(0, colon).trim(),
+    description: text.slice(colon + 1).trim(),
+  };
+}
+
+const AGENDA_BULLETS_FALLBACK = {
+  de: [
+    'Kontext: Partnerschaft, Phasen, Tempus-Fähigkeiten, Zusammenarbeit',
+    'Workshop: Antworten live erfassen (→) und Tabellen',
+    'Integrations-Block zuletzt — nur wenn ERP/Schnittstellen im Scope',
+    'Abschluss: Entscheidungen, nächste Schritte, Parking Lot',
+  ],
+  en: [
+    'Context: partnership, phases, Tempus capabilities, ways of working',
+    'Workshop: capture answers live (→) and tables',
+    'Integrations block last — only if ERP/interfaces are in scope',
+    'Close: decisions, next steps, parking lot',
+  ],
+};
+
+/** Wasserfall ab Schritt 1: jede Kachel mit Titel + Beschreibung aus den Agenda-Bullets */
+function AgendaDiagram({ locale, bullets }) {
+  const source =
+    bullets?.length > 0
+      ? bullets
+      : AGENDA_BULLETS_FALLBACK[locale] || AGENDA_BULLETS_FALLBACK.en;
+  const steps = source.map(parseAgendaBullet);
+
   return (
-    <div className="kickoff-viz kickoff-viz-agenda">
-      {blocks.map((b, i) => (
-        <div key={b} className="kickoff-viz-agenda-block">
-          <span className="kickoff-viz-agenda-idx">{i + 1}</span>
-          <span>{b}</span>
+    <div className="kickoff-viz kickoff-viz-agenda-waterfall" role="list">
+      {steps.map((step, i) => (
+        <div
+          key={`${step.title}-${i}`}
+          className="kickoff-agenda-step"
+          style={{ '--agenda-step': i }}
+          role="listitem"
+        >
+          {i > 0 && (
+            <svg
+              className="kickoff-agenda-connector"
+              viewBox="0 0 48 32"
+              aria-hidden
+            >
+              <path
+                d="M4 4 L4 20 Q4 28 12 28 L40 28"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
+          )}
+          <article className="kickoff-agenda-tile">
+            <span className="kickoff-agenda-tile-num" aria-hidden>
+              {i + 1}
+            </span>
+            <div className="kickoff-agenda-tile-body">
+              <h3 className="kickoff-agenda-tile-title">{step.title}</h3>
+              {step.description && (
+                <p className="kickoff-agenda-tile-desc">{step.description}</p>
+              )}
+            </div>
+          </article>
         </div>
       ))}
     </div>
@@ -341,7 +397,7 @@ function IntegrationTilesDiagram() {
   );
 }
 
-function DiagramById({ visualId, locale, vizConfig, onVizChange, editable }) {
+function DiagramById({ visualId, locale, slide, vizConfig, onVizChange, editable }) {
   switch (visualId) {
     case 'modules':
       return (
@@ -357,7 +413,7 @@ function DiagramById({ visualId, locale, vizConfig, onVizChange, editable }) {
     case 'phases':
       return <PhasesDiagram locale={locale} />;
     case 'agenda':
-      return <AgendaDiagram locale={locale} />;
+      return <AgendaDiagram locale={locale} bullets={slide?.bullets} />;
     case 'capacity':
       return <CapacityDiagram locale={locale} />;
     case 'roleConcept':
@@ -374,6 +430,7 @@ function DiagramById({ visualId, locale, vizConfig, onVizChange, editable }) {
 /** Schaubild für aktuelle Folie — bei modules interaktiv im Facilitator-Modus */
 export function KickoffSlideVisual({
   slideId,
+  slide,
   locale,
   vizConfig,
   onVizChange,
@@ -386,6 +443,7 @@ export function KickoffSlideVisual({
     <DiagramById
       visualId={visualId}
       locale={locale}
+      slide={slide}
       vizConfig={vizConfig}
       onVizChange={onVizChange}
       editable={editable && visualId === 'modules'}
