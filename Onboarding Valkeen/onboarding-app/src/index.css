@@ -10,10 +10,17 @@
   --accent-warning: #f59e0b;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* WICHTIG: in @layer base, sonst überschreibt dieser Reset (unlayered)
+   ALLE Tailwind-Utilities (p-6, px-3, m-…), die in @layer utilities liegen.
+   Unlayered > layered laut Cascade-Layer-Spezifikation. Ohne Layer hier
+   bekamen z. B. alle Karten mit "p-6" 0px Padding → Text klebte in der
+   abgerundeten Ecke. */
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 }
 
 body {
