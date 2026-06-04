@@ -915,6 +915,20 @@ export default function MailerWizard() {
     return fillTemplate(activeTemplate.subject || '', validEntries[previewIndex] || validEntries[0]);
   }, [activeTemplate, validEntries, previewIndex]);
 
+  // Welche Platzhalter werden in dieser Vorlage tatsächlich verwendet?
+  // (Betreff + Body). So zeigen wir in der Vorschau nur relevante Variablen –
+  // z. B. kein Passwort, wenn die Vorlage gar kein {PASSWORD} enthält.
+  const usedVarKeys = useMemo(() => {
+    const haystack = `${activeTemplate?.subject || ''} ${templateRawHtml || ''}`.toUpperCase();
+    return {
+      name: haystack.includes('{NAME}'),
+      email: haystack.includes('{EMAIL}'),
+      username: haystack.includes('{USERNAME}'),
+      password: haystack.includes('{PASSWORD}'),
+      url: haystack.includes('{URL}'),
+    };
+  }, [activeTemplate, templateRawHtml]);
+
   // --- Downloads ---
 
   const buildEmlForEntry = (entry) => {
@@ -1914,7 +1928,7 @@ export default function MailerWizard() {
                   <div>
                     <p className="text-sm text-white/60 mb-2">Body-Vorschau (roh, ohne Platzhalter-Ersetzung)</p>
                     <div
-                      className="rounded-xl bg-white text-slate-900 p-4 max-h-[400px] overflow-auto text-sm"
+                      className="rounded-xl bg-white text-slate-900 p-4 max-h-[400px] overflow-auto text-sm mailer-body"
                       dangerouslySetInnerHTML={{
                         __html: inlineImagesAsDataUris(
                           activeTemplate.bodyExt === 'docx'
@@ -2263,17 +2277,30 @@ export default function MailerWizard() {
                     <p className="text-white/40 text-xs">Betreff</p>
                     <p className="font-semibold">{currentSubject}</p>
                   </div>
-                  <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                    <p className="text-white/40 text-xs mb-1">Variablen</p>
-                    <ul className="space-y-0.5 text-xs">
-                      <li><span className="text-white/40">Name:</span> {validEntries[previewIndex]?.name}</li>
-                      <li><span className="text-white/40">Username:</span> <span className="font-mono">{validEntries[previewIndex]?.username}</span></li>
-                      <li><span className="text-white/40">Passwort:</span> <span className="font-mono">{validEntries[previewIndex]?.password}</span></li>
-                      <li><span className="text-white/40">URL:</span> <span className="font-mono break-all">{validEntries[previewIndex]?.url}</span></li>
-                    </ul>
-                  </div>
+                  {(usedVarKeys.name || usedVarKeys.email || usedVarKeys.username || usedVarKeys.password || usedVarKeys.url) && (
+                    <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                      <p className="text-white/40 text-xs mb-1">Variablen (in dieser Vorlage verwendet)</p>
+                      <ul className="space-y-0.5 text-xs">
+                        {usedVarKeys.name && (
+                          <li><span className="text-white/40">Name:</span> {validEntries[previewIndex]?.name}</li>
+                        )}
+                        {usedVarKeys.email && (
+                          <li><span className="text-white/40">E-Mail:</span> <span className="font-mono break-all">{validEntries[previewIndex]?.email}</span></li>
+                        )}
+                        {usedVarKeys.username && (
+                          <li><span className="text-white/40">Username:</span> <span className="font-mono">{validEntries[previewIndex]?.username}</span></li>
+                        )}
+                        {usedVarKeys.password && (
+                          <li><span className="text-white/40">Passwort:</span> <span className="font-mono">{validEntries[previewIndex]?.password}</span></li>
+                        )}
+                        {usedVarKeys.url && (
+                          <li><span className="text-white/40">URL:</span> <span className="font-mono break-all">{validEntries[previewIndex]?.url}</span></li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
                 </div>
-                <div className="rounded-xl bg-white text-slate-900 p-5 max-h-[520px] overflow-auto text-sm shadow-inner"
+                <div className="rounded-xl bg-white text-slate-900 p-5 max-h-[520px] overflow-auto text-sm shadow-inner mailer-body"
                      dangerouslySetInnerHTML={{ __html: currentPreviewHtml || '<p>— leer —</p>' }} />
               </div>
             </>

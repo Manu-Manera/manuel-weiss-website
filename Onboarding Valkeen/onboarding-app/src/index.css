@@ -306,7 +306,7 @@ body {
 
 /* Visueller Editor im Tempus Login Mailer — reset für den contenteditable-Bereich,
    damit Inhalte aus Word (Tabellen, Bilder, Listen) sauber dargestellt werden. */
-.mailer-visual-editor img {
+:is(.mailer-visual-editor, .mailer-body) img {
   /* Tailwind-Preflight setzt img auf display:block — dadurch landen
      Inline-Bilder (z. B. das "?"-Icon) auf einer eigenen Zeile. Wir
      stellen das Inline-Verhalten wieder her, damit Bilder in einer
@@ -316,88 +316,88 @@ body {
   max-width: 100%;
   height: auto;
 }
-.mailer-visual-editor table {
+:is(.mailer-visual-editor, .mailer-body) table {
   border-collapse: collapse;
   max-width: 100%;
 }
-.mailer-visual-editor p {
+:is(.mailer-visual-editor, .mailer-body) p {
   margin: 0 0 0.75em 0;
 }
-.mailer-visual-editor ul,
-.mailer-visual-editor ol {
+:is(.mailer-visual-editor, .mailer-body) ul,
+:is(.mailer-visual-editor, .mailer-body) ol {
   padding-left: 1.5em;
   margin: 0 0 0.75em 0;
 }
 /* Tailwind-Preflight setzt list-style:none — dadurch erzeugt der
    "Aufzählung"-Button zwar ein <ul>/<ol>, es erscheinen aber keine
    Punkte/Zahlen. Wir stellen die Markierungen wieder her. */
-.mailer-visual-editor ul {
+:is(.mailer-visual-editor, .mailer-body) ul {
   list-style: disc outside;
 }
-.mailer-visual-editor ol {
+:is(.mailer-visual-editor, .mailer-body) ol {
   list-style: decimal outside;
 }
-.mailer-visual-editor li {
+:is(.mailer-visual-editor, .mailer-body) li {
   margin: 0 0 0.25em 0;
 }
-.mailer-visual-editor a {
+:is(.mailer-visual-editor, .mailer-body) a {
   color: #2563eb;
   text-decoration: underline;
 }
-.mailer-visual-editor h1,
-.mailer-visual-editor h2,
-.mailer-visual-editor h3 {
+:is(.mailer-visual-editor, .mailer-body) h1,
+:is(.mailer-visual-editor, .mailer-body) h2,
+:is(.mailer-visual-editor, .mailer-body) h3 {
   margin: 0.5em 0 0.35em 0;
   font-weight: 600;
 }
 /* Sicherheitsnetz: falls jemand weiße Schrift aus der dunklen App in den Editor
    pastet oder im Body-Preview rendert, überschreiben wir helle Farben auf dem
    weißen Editor-Hintergrund, damit nichts "unsichtbar" wird. */
-.mailer-visual-editor,
-.mailer-visual-editor * {
+:is(.mailer-visual-editor, .mailer-body),
+:is(.mailer-visual-editor, .mailer-body) * {
   color: inherit;
 }
-.mailer-visual-editor {
+:is(.mailer-visual-editor, .mailer-body) {
   color: #0f172a;
 }
-.mailer-visual-editor [style*="color: white" i],
-.mailer-visual-editor [style*="color:white" i],
-.mailer-visual-editor [style*="color:#fff" i],
-.mailer-visual-editor [style*="color: #fff" i],
-.mailer-visual-editor [style*="color:#FFF" i],
-.mailer-visual-editor [style*="color: #FFF" i],
-.mailer-visual-editor [style*="color:rgb(255" i],
-.mailer-visual-editor [style*="color: rgb(255" i],
-.mailer-visual-editor [style*="color:rgba(255" i],
-.mailer-visual-editor [style*="color: rgba(255" i],
-.mailer-visual-editor font[color="white" i],
-.mailer-visual-editor font[color="#fff" i],
-.mailer-visual-editor font[color="#ffffff" i],
-.mailer-visual-editor .text-white,
-.mailer-visual-editor [class*="text-white"] {
+:is(.mailer-visual-editor, .mailer-body) [style*="color: white" i],
+:is(.mailer-visual-editor, .mailer-body) [style*="color:white" i],
+:is(.mailer-visual-editor, .mailer-body) [style*="color:#fff" i],
+:is(.mailer-visual-editor, .mailer-body) [style*="color: #fff" i],
+:is(.mailer-visual-editor, .mailer-body) [style*="color:#FFF" i],
+:is(.mailer-visual-editor, .mailer-body) [style*="color: #FFF" i],
+:is(.mailer-visual-editor, .mailer-body) [style*="color:rgb(255" i],
+:is(.mailer-visual-editor, .mailer-body) [style*="color: rgb(255" i],
+:is(.mailer-visual-editor, .mailer-body) [style*="color:rgba(255" i],
+:is(.mailer-visual-editor, .mailer-body) [style*="color: rgba(255" i],
+:is(.mailer-visual-editor, .mailer-body) font[color="white" i],
+:is(.mailer-visual-editor, .mailer-body) font[color="#fff" i],
+:is(.mailer-visual-editor, .mailer-body) font[color="#ffffff" i],
+:is(.mailer-visual-editor, .mailer-body) .text-white,
+:is(.mailer-visual-editor, .mailer-body) [class*="text-white"] {
   color: #0f172a !important;
 }
 /* Und dunkle Hintergründe aus gepasteten Dark-UIs neutralisieren, damit
    der weiße Mail-Hintergrund erhalten bleibt. */
-.mailer-visual-editor [style*="background:#0" i],
-.mailer-visual-editor [style*="background: #0" i],
-.mailer-visual-editor [style*="background:#1" i],
-.mailer-visual-editor [style*="background: #1" i],
-.mailer-visual-editor [style*="background-color:#0" i],
-.mailer-visual-editor [style*="background-color: #0" i],
-.mailer-visual-editor [style*="background-color:#1" i],
-.mailer-visual-editor [style*="background-color: #1" i] {
+:is(.mailer-visual-editor, .mailer-body) [style*="background:#0" i],
+:is(.mailer-visual-editor, .mailer-body) [style*="background: #0" i],
+:is(.mailer-visual-editor, .mailer-body) [style*="background:#1" i],
+:is(.mailer-visual-editor, .mailer-body) [style*="background: #1" i],
+:is(.mailer-visual-editor, .mailer-body) [style*="background-color:#0" i],
+:is(.mailer-visual-editor, .mailer-body) [style*="background-color: #0" i],
+:is(.mailer-visual-editor, .mailer-body) [style*="background-color:#1" i],
+:is(.mailer-visual-editor, .mailer-body) [style*="background-color: #1" i] {
   background: transparent !important;
   background-color: transparent !important;
 }
-.mailer-visual-editor kbd {
+:is(.mailer-visual-editor, .mailer-body) kbd {
   background: #f1f5f9;
   border: 1px solid #cbd5e1;
   border-radius: 4px;
   padding: 1px 5px;
   font-size: 0.85em;
 }
-.mailer-visual-editor blockquote {
+:is(.mailer-visual-editor, .mailer-body) blockquote {
   border-left: 3px solid #cbd5e1;
   padding: 0.25em 0.75em;
   color: #475569;
