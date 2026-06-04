@@ -495,8 +495,8 @@ export default function MailerWizard() {
 
   const handleTempusSync = async () => {
     if (!targetIdentityInfo) { alert('Bitte zuerst mit der Ziel-Plattform verbinden.'); return; }
-    if (targetDefaultRoleId == null || targetSecurityGroupId == null) {
-      alert('Bitte Standard-Rolle und Security-Group für die Ziel-Plattform wählen.');
+    if (targetDefaultRoleId == null) {
+      alert('Bitte eine Standard Global Role für die Ziel-Plattform wählen.');
       return;
     }
     const targets = entries
@@ -526,7 +526,7 @@ export default function MailerWizard() {
       `Es werden ${targets.length} Resources nacheinander auf der Ziel-Plattform angelegt.\n\n` +
       `Ziel: ${targetBaseUrl}\n` +
       `${roleInfo}\n` +
-      `Security-Group: ${(targetGroups.find(g => g.id === targetSecurityGroupId)?.name) || targetSecurityGroupId}\n` +
+      `Security-Group: ${(targetGroups.find(g => g.id === targetSecurityGroupId)?.name) || (targetSecurityGroupId != null ? targetSecurityGroupId : 'keine')}\n` +
       `Timesheet-User: ${targetIsTimesheetUser ? 'ja' : 'nein'}\n\n` +
       `Fortfahren?`
     );
@@ -1489,17 +1489,20 @@ export default function MailerWizard() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs text-white/50 mb-1">Security-Group</label>
+                        <label className="block text-xs text-white/50 mb-1">Security-Group (optional)</label>
                         <select
                           value={targetSecurityGroupId ?? ''}
                           onChange={(e) => setTargetSecurityGroupId(e.target.value ? Number(e.target.value) : null)}
                           className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm"
                         >
-                          <option value="">– bitte wählen –</option>
+                          <option value="">– keine –</option>
                           {targetGroups.map(g => (
                             <option key={g.id} value={g.id}>{g.name}</option>
                           ))}
                         </select>
+                        {targetGroups.length === 0 && (
+                          <p className="text-[11px] text-white/40 mt-1">Ziel hat keine Security-Groups – User werden ohne angelegt.</p>
+                        )}
                       </div>
                       <div>
                         <label className="block text-xs text-white/50 mb-1">Timesheets</label>
@@ -1559,7 +1562,7 @@ export default function MailerWizard() {
                       </p>
                       <button
                         onClick={handleTempusSync}
-                        disabled={syncRunning || !entries.length || targetDefaultRoleId == null || targetSecurityGroupId == null}
+                        disabled={syncRunning || !entries.length || targetDefaultRoleId == null}
                         className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed text-slate-900 font-semibold text-sm flex items-center gap-2"
                       >
                         {syncRunning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Users className="w-4 h-4" />}

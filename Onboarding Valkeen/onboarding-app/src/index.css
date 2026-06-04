@@ -307,6 +307,12 @@ body {
 /* Visueller Editor im Tempus Login Mailer — reset für den contenteditable-Bereich,
    damit Inhalte aus Word (Tabellen, Bilder, Listen) sauber dargestellt werden. */
 .mailer-visual-editor img {
+  /* Tailwind-Preflight setzt img auf display:block — dadurch landen
+     Inline-Bilder (z. B. das "?"-Icon) auf einer eigenen Zeile. Wir
+     stellen das Inline-Verhalten wieder her, damit Bilder in einer
+     Textzeile mitfließen. */
+  display: inline;
+  vertical-align: middle;
   max-width: 100%;
   height: auto;
 }
@@ -321,6 +327,18 @@ body {
 .mailer-visual-editor ol {
   padding-left: 1.5em;
   margin: 0 0 0.75em 0;
+}
+/* Tailwind-Preflight setzt list-style:none — dadurch erzeugt der
+   "Aufzählung"-Button zwar ein <ul>/<ol>, es erscheinen aber keine
+   Punkte/Zahlen. Wir stellen die Markierungen wieder her. */
+.mailer-visual-editor ul {
+  list-style: disc outside;
+}
+.mailer-visual-editor ol {
+  list-style: decimal outside;
+}
+.mailer-visual-editor li {
+  margin: 0 0 0.25em 0;
 }
 .mailer-visual-editor a {
   color: #2563eb;
@@ -486,9 +504,15 @@ label + textarea {
   margin-top: 4px;
 }
 
-/* Dropdown-Options (native select): etwas luftiger lesbar. */
+/* Dropdown-Options (native select): etwas luftiger lesbar.
+   WICHTIG: Auf Windows rendert das native Options-Popup mit weißem
+   Hintergrund, erbt aber die helle Schriftfarbe der dunklen App
+   → weiße Schrift auf weiß = unsichtbar. Darum erzwingen wir hier
+   dunkle Schrift auf weißem Grund als Standard für alle Dropdowns. */
 select option {
   padding: 6px 10px;
+  color: #0f172a;
+  background-color: #ffffff;
 }
 
 /* contenteditable (Mailer-Editor) & eingebaute Rich-Text-Bereiche */
