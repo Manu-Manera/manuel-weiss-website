@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Check, Cloud, Copy, GraduationCap, Loader2, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Check, Cloud, Copy, ExternalLink, GraduationCap, Loader2, Plus, Presentation, Trash2 } from 'lucide-react';
 import '../styles/implementation-guide.css';
 import '../styles/implementation-log.css';
 import '../styles/implementation-registers.css';
@@ -47,6 +47,13 @@ import {
   sanitizeLearningEmail,
   trainingRoleForUser,
 } from '../kickoff/implementationLearningAccess';
+import { resolveArtifactHref } from '../kickoff/implementationWorkshopCatalog';
+import {
+  enrichWorkshopEntry,
+  newWorkshopRegisterEntry,
+  selectableWorkshopArtifacts,
+  syncWorkshopRegisterFromPlan,
+} from '../kickoff/implementationTaskWorkshops';
 
 function initSession(searchParams) {
   const sid = searchParams.get('s') || searchParams.get('session');
@@ -87,6 +94,14 @@ export default function ImplementationRegisters() {
   );
   const uat = session.uat || [];
   const risks = session.risks || [];
+  const workshopRegister = session.workshopRegister || [];
+  const planTasks = session.projectPlan || [];
+
+  const workshopCatalog = useMemo(() => selectableWorkshopArtifacts(locale), [locale]);
+  const workshopRows = useMemo(
+    () => workshopRegister.map((e) => enrichWorkshopEntry(e, session, locale)),
+    [workshopRegister, session, locale]
+  );
 
   useEffect(() => {
     try {
@@ -113,6 +128,20 @@ export default function ImplementationRegisters() {
     if (meta) upsertWorkspace(meta);
   }, [session]);
 
+  /** Plan-Workshops automatisch ins Register übernehmen. */
+  useEffect(() => {
+    if (!planTasks.length) return;
+    const synced = syncWorkshopRegisterFromPlan(planTasks, workshopRegister);
+    const keyList = (arr) =>
+      arr
+        .map((e) => `${e.artifactId}::${e.planTaskId || ''}`)
+        .sort()
+        .join('|');
+    if (keyList(synced) !== keyList(workshopRegister)) {
+      setSession((s) => ({ ...s, workshopRegister: synced }));
+    }
+  }, [planTasks, session.sessionId, workshopRegister]);
+
   const setKey = (key, seed) => (updater) =>
     setSession((s) => {
       const cur = s[key]?.length ? s[key] : seed ? seed() : [];
@@ -123,6 +152,7 @@ export default function ImplementationRegisters() {
   const setRoles = setKey('roles', buildStandardRoles);
   const setUat = setKey('uat');
   const setRisks = setKey('risks');
+  const setWorkshops = setKey('workshopRegister');
 
   const upd = (setter) => (id, p) => setter((arr) => arr.map((x) => (x.id === id ? { ...x, ...p } : x)));
   const del = (setter) => (id) => setter((arr) => arr.filter((x) => x.id !== id));
@@ -131,6 +161,7 @@ export default function ImplementationRegisters() {
   const updRole = upd(setRoles);
   const updUat = upd(setUat);
   const updRisk = upd(setRisks);
+  const updWorkshop = upd(setWorkshops);
 
   const trainingCustomerId = session.trainingCustomerId || suggestTrainingCustomerId(session);
   const [accessBusy, setAccessBusy] = useState(null);
@@ -200,7 +231,7 @@ export default function ImplementationRegisters() {
     setSyncMsg('');
     try {
       await saveImplementationSession(
-        { ...session, users, roles, uat, risks },
+        { ...session, users, roles, uat, risks, workshopRegister },
         {
           portalMode,
           portalPassword,
@@ -258,6 +289,10 @@ export default function ImplementationRegisters() {
           id: 'risks',
           label: locale === 'en' ? 'Risks' : 'Risiken',
         },
+        perms.canView('registers') && {
+          id: 'workshops',
+          label: locale === 'en' ? 'Workshops' : 'Workshops',
+        },
       ].filter(Boolean),
     [locale, perms]
   );
@@ -270,7 +305,8 @@ export default function ImplementationRegisters() {
     !perms.canView('stakeholders') &&
     !perms.canView('roles') &&
     !perms.canView('uat') &&
-    !perms.canView('risks')
+    !perms.canView('risks') &&
+    !perms.canView('registers')
   ) {
     return (
       <div className="impllog" style={cssVars}>
@@ -296,7 +332,8 @@ export default function ImplementationRegisters() {
           perms.canEdit('stakeholders') ||
           perms.canEdit('roles') ||
           perms.canEdit('uat') ||
-          perms.canEdit('risks')
+          perms.canEdit('risks') ||
+          perms.canEdit('registers')
             ? saveCloud
             : undefined
         }
@@ -633,6 +670,134 @@ export default function ImplementationRegisters() {
                     </div>
                   );
                 })}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* WORKSHOPS */}
+      {tab === 'workshops' && (
+        <>
+          <p className="implreg-workshop-hint">
+            {locale === 'en'
+              ? 'Workshops from the project plan sync automatically. Add more from the catalog or link them to plan tasks.'
+              : 'Workshops aus dem Projektplan werden automatisch übernommen. Weitere aus dem Katalog hinzufügen oder mit Plan-Aufgaben verknüpfen.'}
+          </p>
+          {canEditTab && (
+            <div style={{ marginBottom: 14 }}>
+              <button
+                className="impl-btn"
+                onClick={() =>
+                  setWorkshops((a) => [...a, newWorkshopRegisterEntry(workshopCatalog[0]?.id || '')])
+                }
+                type="button"
+              >
+                <Plus className="w-4 h-4" />
+                {locale === 'en' ? 'Add workshop' : 'Workshop hinzufügen'}
+              </button>
+            </div>
+          )}
+          {workshopRows.length === 0 ? (
+            <div className="impllog-empty">
+              {locale === 'en' ? 'No workshops yet.' : 'Noch keine Workshops erfasst.'}
+            </div>
+          ) : (
+            <div className="impllog-list implreg-workshop-list">
+              {workshopRows.map((row) => (
+                <div key={row.id} className="impllog-card impl-glass implreg-workshop-card">
+                  <div className="implreg-workshop-card-head">
+                    <Presentation className="w-4 h-4" style={{ color: 'var(--impl-accent)', flexShrink: 0 }} />
+                    <select
+                      className="impl-select"
+                      value={row.artifactId}
+                      onChange={(e) => updWorkshop(row.id, { artifactId: e.target.value, source: 'manual' })}
+                      disabled={!canEditTab}
+                    >
+                      <option value="">{locale === 'en' ? 'Select workshop…' : 'Workshop wählen…'}</option>
+                      {workshopCatalog.map((a) => (
+                        <option key={a.id} value={a.id}>
+                          {a.title}
+                        </option>
+                      ))}
+                    </select>
+                    {row.artifact && (
+                      <button
+                        className="impl-btn impl-btn--nav"
+                        type="button"
+                        onClick={() =>
+                          navigate(resolveArtifactHref(row.artifact, session.sessionId, { portalMode }))
+                        }
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        {locale === 'en' ? 'Open' : 'Öffnen'}
+                      </button>
+                    )}
+                    <button
+                      className="impl-btn"
+                      style={{ padding: 8 }}
+                      onClick={() => del(setWorkshops)(row.id)}
+                      type="button"
+                      disabled={!canEditTab || row.source === 'plan'}
+                      title={
+                        row.source === 'plan'
+                          ? locale === 'en'
+                            ? 'Synced from project plan — remove link in plan'
+                            : 'Aus Projektplan — im Plan entfernen'
+                          : undefined
+                      }
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="impllog-grid2" style={{ marginTop: 10 }}>
+                    <div className="impllog-field">
+                      <span>{locale === 'en' ? 'Plan task' : 'Plan-Aufgabe'}</span>
+                      <select
+                        className="impl-select"
+                        value={row.planTaskId || ''}
+                        onChange={(e) =>
+                          updWorkshop(row.id, {
+                            planTaskId: e.target.value,
+                            source: e.target.value ? row.source || 'manual' : 'manual',
+                          })
+                        }
+                        disabled={!canEditTab}
+                      >
+                        <option value="">{locale === 'en' ? 'No plan link' : 'Keine Plan-Verknüpfung'}</option>
+                        {planTasks.map((t) => (
+                          <option key={t.id} value={t.id}>
+                            {t.title || t.id}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="impllog-field">
+                      <span>{locale === 'en' ? 'Linked task' : 'Verknüpfte Aufgabe'}</span>
+                      <span className="implreg-workshop-source">
+                        {row.planTaskTitle
+                          ? row.planTaskTitle
+                          : locale === 'en'
+                            ? '—'
+                            : '—'}
+                        {row.source === 'plan' && (
+                          <span className="implreg-workshop-badge">
+                            {locale === 'en' ? 'from plan' : 'aus Plan'}
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="impllog-field" style={{ marginTop: 8 }}>
+                    <span>{locale === 'en' ? 'Notes' : 'Notizen'}</span>
+                    <input
+                      className="impl-input"
+                      value={row.notes || ''}
+                      onChange={(e) => updWorkshop(row.id, { notes: e.target.value })}
+                      disabled={!canEditTab}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </>

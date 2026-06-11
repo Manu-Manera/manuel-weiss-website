@@ -17,6 +17,7 @@ import '../styles/implementation-plan.css';
 import '../styles/implementation-workshop-shell.css';
 import ImplementationHubBar from '../kickoff/ImplementationHubBar';
 import GanttInteractiveBar from '../kickoff/GanttInteractiveBar';
+import GanttWorkshopLinks from '../kickoff/GanttWorkshopLinks';
 import { IMPL_PHASES } from '../kickoff/implementationTemplate';
 import {
   PLAN_STATUSES,
@@ -701,6 +702,12 @@ export default function ImplementationPlan() {
                             </div>
                           )}
                           {t.owner && <div className="gantt-task-owner">{t.owner}</div>}
+                          <GanttWorkshopLinks
+                            task={t}
+                            session={session}
+                            portalMode={portalMode}
+                            locale={locale}
+                          />
                         </div>
                         <div className="gantt-timeline gantt-track" style={{ width: totalWidth }}>
                           {weekLines.map((x, i) => (
@@ -814,6 +821,7 @@ export default function ImplementationPlan() {
                     allTasks={tasks}
                     locale={locale}
                     session={session}
+                    portalMode={portalMode}
                     trainingAggregate={trainingAggregate}
                     onEdit={setEditing}
                     onCycle={cycleStatus}
@@ -945,6 +953,7 @@ function PhaseRows({
   allTasks,
   locale,
   session,
+  portalMode,
   trainingAggregate,
   onEdit,
   onCycle,
@@ -1002,9 +1011,18 @@ function PhaseRows({
         const blocked = isTaskBlocked(t, allTasks);
         return (
           <tr key={t.id} className={blocked ? 'implplan-row--blocked' : ''}>
-            <td style={{ cursor: 'pointer' }} onClick={() => onEdit(t.id)}>
-              {t.milestone ? <Diamond className="w-3.5 h-3.5 inline -mt-0.5" style={{ color: 'var(--impl-accent)' }} /> : null}{' '}
-              {t.title || (locale === 'en' ? '(untitled)' : '(ohne Titel)')}
+            <td className="implplan-task-cell">
+              <div className="implplan-task-cell-title" onClick={() => onEdit(t.id)}>
+                {t.milestone ? <Diamond className="w-3.5 h-3.5 inline -mt-0.5" style={{ color: 'var(--impl-accent)' }} /> : null}{' '}
+                {t.title || (locale === 'en' ? '(untitled)' : '(ohne Titel)')}
+              </div>
+              <GanttWorkshopLinks
+                task={t}
+                session={session}
+                portalMode={portalMode}
+                locale={locale}
+                variant="table"
+              />
             </td>
             <td>{t.owner}</td>
             <td>

@@ -520,6 +520,56 @@
   stroke-dasharray: none;
 }
 
+/* Workshop hover links (Gantt + Tabelle) */
+.gantt-workshop-links,
+.implplan-workshop-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+.gantt-row:hover .gantt-workshop-links,
+.implplan-table tr:hover .implplan-workshop-links {
+  opacity: 1;
+  pointer-events: auto;
+}
+.gantt-workshop-link,
+.implplan-workshop-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 7px;
+  border: 1px solid rgba(var(--impl-accent-rgb) / 0.45);
+  background: rgba(var(--impl-accent-rgb) / 0.12);
+  color: var(--impl-accent);
+  cursor: pointer;
+  max-width: 100%;
+  text-align: left;
+}
+.gantt-workshop-link span,
+.implplan-workshop-link span {
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.3;
+}
+.gantt-workshop-link:hover,
+.implplan-workshop-link:hover {
+  background: rgba(var(--impl-accent-rgb) / 0.22);
+  color: var(--impl-text);
+}
+.implplan-task-cell {
+  vertical-align: top;
+}
+.implplan-task-cell-title {
+  cursor: pointer;
+}
+
 /* ---------- Table view ---------- */
 .implplan-table {
   width: 100%;

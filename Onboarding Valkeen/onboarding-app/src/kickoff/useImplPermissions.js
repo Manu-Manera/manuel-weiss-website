@@ -61,5 +61,6 @@ export function registerModuleForTab(tab) {
   if (tab === 'roles') return 'roles';
   if (tab === 'uat') return 'uat';
   if (tab === 'risks') return 'risks';
+  if (tab === 'workshops') return 'registers';
   return 'registers';
 }

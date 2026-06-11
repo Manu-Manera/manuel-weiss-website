@@ -94,3 +94,38 @@
   font-weight: 700;
   font-size: 15px;
 }
+
+/* Workshops register tab */
+.implreg-workshop-hint {
+  font-size: 13px;
+  color: var(--impl-text-soft);
+  margin: 0 0 14px;
+  line-height: 1.45;
+}
+.implreg-workshop-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.implreg-workshop-card-head .impl-select {
+  flex: 1;
+  min-width: 200px;
+}
+.implreg-workshop-source {
+  font-size: 13px;
+  color: var(--impl-text);
+  padding: 8px 0;
+}
+.implreg-workshop-badge {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(var(--impl-accent-rgb) / 0.14);
+  color: var(--impl-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
