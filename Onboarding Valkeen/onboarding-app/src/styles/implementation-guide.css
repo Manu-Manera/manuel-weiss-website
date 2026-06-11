@@ -1,0 +1,375 @@
+/* Implementation Workspace — Leitfaden (Glasoptik, abgerundet, White-Label) */
+
+.impl-guide {
+  min-height: 100vh;
+  background: var(--impl-bg);
+  color: var(--impl-text);
+  font-family: var(--impl-font);
+  padding: 28px clamp(16px, 4vw, 48px) 64px;
+}
+
+.impl-guide *,
+.impl-guide *::before,
+.impl-guide *::after {
+  box-sizing: border-box;
+}
+
+/* ---------- Header ---------- */
+.impl-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+.impl-brandline {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.impl-logo {
+  height: 40px;
+  width: auto;
+  max-width: 180px;
+  object-fit: contain;
+}
+
+.impl-logo--customer {
+  height: 44px;
+  max-width: 200px;
+}
+
+.impl-title {
+  margin: 0;
+  font-size: clamp(20px, 2.4vw, 30px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.impl-subtitle {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--impl-text-soft);
+}
+
+.impl-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Glass primitives ---------- */
+.impl-glass {
+  background: var(--impl-glass);
+  border: 1px solid var(--impl-border);
+  border-radius: var(--impl-radius);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.28);
+}
+
+.impl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--impl-border);
+  background: var(--impl-glass);
+  color: var(--impl-text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.18s ease, border-color 0.18s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.impl-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(var(--impl-primary-rgb) / 0.6);
+}
+.impl-btn--primary {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--impl-primary-rgb) / 0.95),
+    rgba(var(--impl-accent-rgb) / 0.85)
+  );
+  color: #04130d;
+  border-color: transparent;
+}
+.impl-btn--ghost {
+  background: transparent;
+}
+
+.impl-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--impl-border);
+  background: var(--impl-glass);
+  color: var(--impl-text);
+  font-size: 14px;
+  font-family: inherit;
+}
+.impl-input::placeholder {
+  color: var(--impl-text-soft);
+}
+
+/* ---------- Top meta bar ---------- */
+.impl-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 22px;
+}
+.impl-meta label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--impl-text-soft);
+  margin-bottom: 6px;
+}
+
+/* ---------- Progress ---------- */
+.impl-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 26px;
+}
+.impl-progress {
+  flex: 1;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--impl-glass);
+  border: 1px solid var(--impl-border);
+  overflow: hidden;
+}
+.impl-progress-bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(var(--impl-primary-rgb) / 1),
+    rgba(var(--impl-accent-rgb) / 1)
+  );
+  transition: width 0.4s ease;
+}
+.impl-progress-label {
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ---------- Phases ---------- */
+.impl-phases {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+.impl-phase {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.impl-phase-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.impl-phase-index {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 15px;
+  color: #04130d;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--impl-primary-rgb) / 1),
+    rgba(var(--impl-accent-rgb) / 0.9)
+  );
+}
+.impl-phase-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+.impl-phase-goal {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: var(--impl-text-soft);
+  line-height: 1.4;
+}
+
+/* ---------- Steps ---------- */
+.impl-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.impl-step {
+  position: relative;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--impl-border);
+  background: var(--impl-glass);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: transform 0.12s ease, border-color 0.18s ease, background 0.18s ease;
+}
+.impl-step:hover {
+  transform: translateY(-1px);
+  border-color: rgba(var(--impl-primary-rgb) / 0.55);
+  background: var(--impl-glass-strong);
+}
+.impl-step--info {
+  cursor: default;
+}
+.impl-step--info:hover {
+  transform: none;
+  border-color: var(--impl-border);
+}
+
+.impl-step-dot {
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(var(--impl-primary-rgb) / 0.7);
+}
+.impl-step-dot--open {
+  background: transparent;
+}
+.impl-step-dot--in_progress {
+  background: var(--impl-accent);
+  border-color: var(--impl-accent);
+}
+.impl-step-dot--done {
+  background: var(--impl-primary);
+  border-color: var(--impl-primary);
+}
+
+.impl-step-body {
+  flex: 1;
+  min-width: 0;
+}
+.impl-step-title {
+  font-size: 14px;
+  font-weight: 650;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.impl-step-desc {
+  font-size: 12px;
+  color: var(--impl-text-soft);
+  margin-top: 2px;
+  line-height: 1.35;
+}
+.impl-step-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.impl-chip {
+  font-size: 10.5px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--impl-border);
+  color: var(--impl-text-soft);
+}
+.impl-chip--milestone {
+  border-color: rgba(var(--impl-accent-rgb) / 0.6);
+  color: var(--impl-accent);
+}
+.impl-chip--rights {
+  border-color: rgba(var(--impl-primary-rgb) / 0.5);
+}
+
+.impl-step-go {
+  flex-shrink: 0;
+  opacity: 0.55;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.impl-step:hover .impl-step-go {
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+/* ---------- Branding / settings drawer ---------- */
+.impl-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 60;
+  display: flex;
+  justify-content: flex-end;
+}
+.impl-drawer {
+  width: min(420px, 100%);
+  height: 100%;
+  overflow-y: auto;
+  padding: 22px;
+  background: var(--impl-bg);
+  border-left: 1px solid var(--impl-border);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.impl-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.impl-field > span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--impl-text-soft);
+}
+.impl-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.impl-color {
+  width: 44px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--impl-border);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+.impl-range {
+  width: 100%;
+  accent-color: var(--impl-primary);
+}
+.impl-select {
+  width: 100%;
+  padding: 9px 11px;
+  border-radius: 10px;
+  border: 1px solid var(--impl-border);
+  background: var(--impl-glass);
+  color: var(--impl-text);
+  font-size: 13px;
+  font-family: inherit;
+}

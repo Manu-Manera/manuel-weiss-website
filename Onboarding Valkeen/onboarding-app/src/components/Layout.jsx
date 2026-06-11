@@ -24,6 +24,8 @@ import {
   FileText,
   Target,
   Presentation,
+  MousePointer2,
+  GanttChartSquare,
 } from 'lucide-react';
 import { useProgress } from '../hooks/useLocalStorage';
 import { weeks } from '../data/onboardingData';
@@ -61,9 +63,27 @@ const navItems = [
   { path: '/training-admin', icon: Settings, label: 'Training Admin', description: 'Inhalte bearbeiten' },
   { path: '/tempus-demo', icon: Monitor, label: 'Tempus Demo', description: 'Live Demo-Umgebung' },
   {
+    path: '/implementation-studio',
+    icon: Presentation,
+    label: 'Implementation Studio',
+    description: 'Leitfaden · Workshops · Plan · Branding',
+  },
+  {
+    path: '/implementation-plan',
+    icon: GanttChartSquare,
+    label: 'Projektplan',
+    description: 'Gantt · Tasks · To-dos · Termine',
+  },
+  {
+    path: '/implementation-log',
+    icon: ClipboardList,
+    label: 'Projekt-Log',
+    description: 'Meetings · Action Items · Entscheidungen',
+  },
+  {
     path: '/kickoff-studio',
     icon: Presentation,
-    label: 'Kick-off Studio',
+    label: 'Kick-off Deck',
     description: 'Workshop · Vollbild · PDF · Gamma',
   },
   { path: '/login-mailer', icon: MailPlus, label: 'Login Mailer', description: 'Entwürfe aus Excel' },
@@ -75,6 +95,7 @@ const navItems = [
     description: 'Workshop (neues Fenster)',
   },
   { path: '/tempus-trainer', icon: Puzzle, label: 'Tempus Trainer', description: 'Extension · Live-Touren' },
+  { path: '/mouse-automation', icon: MousePointer2, label: 'Drag & Drop', description: 'Koordinaten · Seite' },
   { path: '/tempus-trainer-admin', icon: Settings, label: 'Trainer Admin', description: 'Touren · Folien · Kunden' },
 ];
 

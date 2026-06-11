@@ -1,0 +1,541 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import {
+  ArrowLeft,
+  Cloud,
+  Loader2,
+  Plus,
+  Trash2,
+  X,
+  ZoomIn,
+  ZoomOut,
+} from 'lucide-react';
+import '../styles/implementation-guide.css';
+import '../styles/implementation-plan.css';
+import { IMPL_PHASES } from '../kickoff/implementationTemplate';
+import {
+  PLAN_STATUSES,
+  PLAN_STATUS_LABEL,
+  addDays,
+  buildDefaultPlan,
+  dayDiff,
+  newTask,
+  parseISO,
+  phaseTitle,
+  planBounds,
+  taskProgress,
+  toISO,
+} from '../kickoff/implementationPlan';
+import { brandingCssVars, normalizeBranding } from '../kickoff/implementationBranding';
+import { defaultSession, mergeSession } from '../kickoff/kickoffStudioMerge';
+import {
+  EDIT_PASSWORD_STORAGE_KEY,
+  fetchCloudSession,
+  loadLocalSession,
+  newSessionId,
+  resolveEditPassword,
+  saveCloudSession,
+  saveLocalSession,
+} from '../kickoff/kickoffStudioService';
+
+const MONTHS = {
+  de: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+  en: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+};
+
+function initSession(searchParams) {
+  const sid = searchParams.get('s') || searchParams.get('session');
+  if (sid) {
+    const local = loadLocalSession(sid);
+    if (local) return mergeSession(local, local.tenantSlug);
+    return mergeSession(defaultSession(sid), '');
+  }
+  return mergeSession(defaultSession(newSessionId()), '');
+}
+
+export default function ImplementationPlan() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [session, setSession] = useState(() => initSession(searchParams));
+  const [view, setView] = useState('gantt');
+  const [pxPerDay, setPxPerDay] = useState(18);
+  const [editing, setEditing] = useState(null); // task id
+  const [password, setPassword] = useState('');
+  const [syncing, setSyncing] = useState(false);
+  const [syncMsg, setSyncMsg] = useState('');
+
+  const locale = session.locale || 'de';
+  const cssVars = useMemo(() => brandingCssVars(normalizeBranding(session.branding)), [session.branding]);
+
+  const tasks = useMemo(() => {
+    if (session.projectPlan?.length) return session.projectPlan;
+    return buildDefaultPlan(toISO(new Date()), locale);
+  }, [session.projectPlan, locale]);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(EDIT_PASSWORD_STORAGE_KEY);
+      if (stored) setPassword(stored);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  useEffect(() => {
+    const sid = searchParams.get('s') || searchParams.get('session');
+    if (!sid) return;
+    fetchCloudSession(sid)
+      .then((cloud) => {
+        if (cloud) setSession((prev) => mergeSession({ ...prev, ...cloud }, prev.tenantSlug));
+      })
+      .catch(() => {});
+  }, [searchParams]);
+
+  useEffect(() => {
+    saveLocalSession(session);
+  }, [session]);
+
+  const setTasks = useCallback(
+    (updater) =>
+      setSession((s) => {
+        const cur = s.projectPlan?.length ? s.projectPlan : buildDefaultPlan(toISO(new Date()), locale);
+        const next = typeof updater === 'function' ? updater(cur) : updater;
+        return { ...s, projectPlan: next };
+      }),
+    [locale]
+  );
+
+  const updateTask = (id, patch) =>
+    setTasks((arr) => arr.map((t) => (t.id === id ? { ...t, ...patch } : t)));
+  const removeTask = (id) => setTasks((arr) => arr.filter((t) => t.id !== id));
+  const addTaskToPhase = (phaseId) => {
+    const t = newTask(phaseId, toISO(new Date()));
+    t.title = locale === 'en' ? 'New task' : 'Neue Aufgabe';
+    setTasks((arr) => [...arr, t]);
+    setEditing(t.id);
+  };
+
+  const cycleStatus = (id) => {
+    const t = tasks.find((x) => x.id === id);
+    const cur = t?.status || 'open';
+    const next = PLAN_STATUSES[(PLAN_STATUSES.indexOf(cur) + 1) % PLAN_STATUSES.length];
+    updateTask(id, { status: next });
+  };
+
+  const bounds = useMemo(() => planBounds(tasks), [tasks]);
+  const minISO = toISO(bounds.min);
+  const totalDays = Math.max(1, dayDiff(minISO, toISO(bounds.max)));
+  const totalWidth = totalDays * pxPerDay;
+  const xFor = (iso) => dayDiff(minISO, iso) * pxPerDay;
+
+  const months = useMemo(() => {
+    const out = [];
+    let cur = new Date(bounds.min);
+    cur.setDate(1);
+    while (cur <= bounds.max) {
+      const next = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
+      const segStart = cur < bounds.min ? bounds.min : cur;
+      const segEnd = next > bounds.max ? bounds.max : addDays(next, -1);
+      const days = Math.max(1, dayDiff(toISO(segStart), toISO(segEnd)) + 1);
+      out.push({
+        label: `${MONTHS[locale][cur.getMonth()]} ${String(cur.getFullYear()).slice(2)}`,
+        width: days * pxPerDay,
+      });
+      cur = next;
+    }
+    return out;
+  }, [bounds, pxPerDay, locale]);
+
+  const weekLines = useMemo(() => {
+    const lines = [];
+    for (let d = 0; d <= totalDays; d += 7) lines.push(d * pxPerDay);
+    return lines;
+  }, [totalDays, pxPerDay]);
+
+  const todayISO = toISO(new Date());
+  const todayX = parseISO(todayISO) >= bounds.min && parseISO(todayISO) <= bounds.max ? xFor(todayISO) : null;
+
+  const tasksByPhase = useMemo(() => {
+    const map = {};
+    for (const ph of IMPL_PHASES) map[ph.id] = [];
+    for (const t of tasks) (map[t.phaseId] = map[t.phaseId] || []).push(t);
+    return map;
+  }, [tasks]);
+
+  const progress = useMemo(() => {
+    if (!tasks.length) return 0;
+    return Math.round(tasks.reduce((a, t) => a + taskProgress(t), 0) / tasks.length);
+  }, [tasks]);
+
+  const saveCloud = async () => {
+    setSyncing(true);
+    setSyncMsg('');
+    try {
+      await saveCloudSession({ ...session, projectPlan: tasks }, resolveEditPassword(password));
+      setSyncMsg(locale === 'en' ? 'Saved' : 'Gespeichert');
+      try {
+        const trimmed = String(password || '').trim();
+        if (trimmed) localStorage.setItem(EDIT_PASSWORD_STORAGE_KEY, trimmed);
+      } catch {
+        /* ignore */
+      }
+      setTimeout(() => setSyncMsg(''), 2500);
+    } catch (e) {
+      const msg = e.message || '';
+      setSyncMsg(
+        msg.includes('Invalid password')
+          ? locale === 'en'
+            ? 'Wrong facilitator password (empty = default)'
+            : 'Falsches Facilitator-Passwort (leer = Standard)'
+          : msg || 'Fehler'
+      );
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  const backToGuide = () => {
+    const p = new URLSearchParams();
+    if (session.sessionId) p.set('s', session.sessionId);
+    navigate(`/implementation-studio?${p.toString()}`);
+  };
+
+  const editingTask = tasks.find((t) => t.id === editing) || null;
+
+  return (
+    <div className="implplan" style={cssVars}>
+      <div className="implplan-head">
+        <div>
+          <h1 className="implplan-title">
+            {locale === 'en' ? 'Project plan' : 'Projektplan'}
+            {session.customer ? ` · ${session.customer}` : ''}
+          </h1>
+          <p className="implplan-sub">
+            {progress}% · {tasks.length} {locale === 'en' ? 'tasks' : 'Aufgaben'}
+          </p>
+        </div>
+        <div className="implplan-actions">
+          <button className="impl-btn" onClick={backToGuide} type="button">
+            <ArrowLeft className="w-4 h-4" />
+            {locale === 'en' ? 'Guide' : 'Leitfaden'}
+          </button>
+          <div className="implplan-tabs">
+            <button
+              className={`implplan-tab ${view === 'gantt' ? 'implplan-tab--active' : ''}`}
+              onClick={() => setView('gantt')}
+              type="button"
+            >
+              Gantt
+            </button>
+            <button
+              className={`implplan-tab ${view === 'table' ? 'implplan-tab--active' : ''}`}
+              onClick={() => setView('table')}
+              type="button"
+            >
+              {locale === 'en' ? 'Table' : 'Tabelle'}
+            </button>
+          </div>
+          {view === 'gantt' && (
+            <>
+              <button className="impl-btn" onClick={() => setPxPerDay((p) => Math.max(6, p - 4))} type="button">
+                <ZoomOut className="w-4 h-4" />
+              </button>
+              <button className="impl-btn" onClick={() => setPxPerDay((p) => Math.min(48, p + 4))} type="button">
+                <ZoomIn className="w-4 h-4" />
+              </button>
+            </>
+          )}
+          <button className="impl-btn impl-btn--primary" onClick={saveCloud} type="button" disabled={syncing}>
+            {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Cloud className="w-4 h-4" />}
+            {locale === 'en' ? 'Save' : 'Speichern'}
+          </button>
+          {syncMsg && <span style={{ fontSize: 13, color: 'var(--impl-accent)' }}>{syncMsg}</span>}
+        </div>
+      </div>
+
+      {view === 'gantt' ? (
+        <div className="gantt">
+          <div className="gantt-inner">
+            {/* header */}
+            <div className="gantt-row gantt-header-row">
+              <div className="gantt-label gantt-phase-label">
+                {locale === 'en' ? 'Phase / task' : 'Phase / Aufgabe'}
+              </div>
+              <div className="gantt-timeline" style={{ width: totalWidth, display: 'flex' }}>
+                {months.map((m, i) => (
+                  <div key={i} className="gantt-month" style={{ width: m.width }}>
+                    {m.label}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {IMPL_PHASES.map((ph) => {
+              const phaseTasks = tasksByPhase[ph.id] || [];
+              return (
+                <div key={ph.id}>
+                  <div className="gantt-row">
+                    <div className="gantt-label">
+                      <div className="gantt-phase-label">{phaseTitle(ph.id, locale)}</div>
+                    </div>
+                    <div className="gantt-timeline gantt-phase-track" style={{ width: totalWidth }}>
+                      {weekLines.map((x, i) => (
+                        <div key={i} className="gantt-grid-week" style={{ left: x }} />
+                      ))}
+                      {todayX != null && <div className="gantt-today" style={{ left: todayX }} />}
+                    </div>
+                  </div>
+                  {phaseTasks.map((t) => {
+                    const left = xFor(t.start);
+                    const w = Math.max(pxPerDay, (dayDiff(t.start, t.end) + 1) * pxPerDay);
+                    const prog = taskProgress(t);
+                    return (
+                      <div key={t.id} className="gantt-row">
+                        <div className="gantt-label">
+                          <div className="gantt-task-label" onClick={() => setEditing(t.id)}>
+                            {t.title || (locale === 'en' ? '(untitled)' : '(ohne Titel)')}
+                          </div>
+                          {t.owner && <div className="gantt-task-owner">{t.owner}</div>}
+                        </div>
+                        <div className="gantt-timeline gantt-track" style={{ width: totalWidth }}>
+                          {weekLines.map((x, i) => (
+                            <div key={i} className="gantt-grid-week" style={{ left: x }} />
+                          ))}
+                          {todayX != null && <div className="gantt-today" style={{ left: todayX }} />}
+                          {t.milestone ? (
+                            <>
+                              <div
+                                className="gantt-milestone"
+                                style={{ left }}
+                                onClick={() => setEditing(t.id)}
+                                title={t.title}
+                              />
+                              <span className="gantt-milestone-label" style={{ left }}>
+                                {t.title}
+                              </span>
+                            </>
+                          ) : (
+                            <div
+                              className={`gantt-bar gantt-bar--${t.status}`}
+                              style={{ left, width: w }}
+                              onClick={() => setEditing(t.id)}
+                            >
+                              <div className="gantt-bar-fill" style={{ width: `${prog}%` }} />
+                              <span className="gantt-bar-text">{t.title}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        <div className="impl-glass" style={{ padding: 8, overflowX: 'auto' }}>
+          <table className="implplan-table">
+            <thead>
+              <tr>
+                <th style={{ minWidth: 240 }}>{locale === 'en' ? 'Task' : 'Aufgabe'}</th>
+                <th>{locale === 'en' ? 'Owner' : 'Verantwortlich'}</th>
+                <th>Status</th>
+                <th>{locale === 'en' ? 'Start' : 'Start'}</th>
+                <th>{locale === 'en' ? 'Due' : 'Fällig'}</th>
+                <th>%</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {IMPL_PHASES.map((ph) => {
+                const phaseTasks = tasksByPhase[ph.id] || [];
+                return (
+                  <PhaseRows
+                    key={ph.id}
+                    phaseId={ph.id}
+                    title={phaseTitle(ph.id, locale)}
+                    tasks={phaseTasks}
+                    locale={locale}
+                    onEdit={setEditing}
+                    onCycle={cycleStatus}
+                    onAdd={() => addTaskToPhase(ph.id)}
+                  />
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {editingTask && (
+        <TaskEditor
+          task={editingTask}
+          locale={locale}
+          onChange={(patch) => updateTask(editingTask.id, patch)}
+          onDelete={() => {
+            removeTask(editingTask.id);
+            setEditing(null);
+          }}
+          onClose={() => setEditing(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+function PhaseRows({ phaseId, title, tasks, locale, onEdit, onCycle, onAdd }) {
+  return (
+    <>
+      <tr className="implplan-phase-row">
+        <td colSpan={6}>{title}</td>
+        <td style={{ textAlign: 'right' }}>
+          <button className="impl-btn" style={{ padding: '4px 10px' }} onClick={onAdd} type="button">
+            <Plus className="w-3.5 h-3.5" />
+          </button>
+        </td>
+      </tr>
+      {tasks.map((t) => (
+        <tr key={t.id}>
+          <td style={{ cursor: 'pointer' }} onClick={() => onEdit(t.id)}>
+            {t.milestone ? '◆ ' : ''}
+            {t.title || (locale === 'en' ? '(untitled)' : '(ohne Titel)')}
+          </td>
+          <td>{t.owner}</td>
+          <td>
+            <button
+              className={`implplan-status implplan-status--${t.status}`}
+              onClick={() => onCycle(t.id)}
+              type="button"
+            >
+              {PLAN_STATUS_LABEL[locale][t.status]}
+            </button>
+          </td>
+          <td>{t.start}</td>
+          <td>{t.end}</td>
+          <td>{taskProgress(t)}%</td>
+          <td></td>
+        </tr>
+      ))}
+    </>
+  );
+}
+
+function TaskEditor({ task, locale, onChange, onDelete, onClose }) {
+  const addTodo = () =>
+    onChange({
+      todos: [...(task.todos || []), { id: `td-${Math.random().toString(36).slice(2, 7)}`, text: '', done: false }],
+    });
+  const updateTodo = (id, patch) =>
+    onChange({ todos: (task.todos || []).map((td) => (td.id === id ? { ...td, ...patch } : td)) });
+  const removeTodo = (id) => onChange({ todos: (task.todos || []).filter((td) => td.id !== id) });
+
+  return (
+    <div className="impl-drawer-backdrop" onClick={onClose}>
+      <div className="impl-drawer" onClick={(e) => e.stopPropagation()}>
+        <div className="implplan-head" style={{ marginBottom: 0 }}>
+          <h2 className="implplan-title" style={{ fontSize: 19 }}>
+            {locale === 'en' ? 'Edit task' : 'Aufgabe bearbeiten'}
+          </h2>
+          <button className="impl-btn" onClick={onClose} type="button">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="impl-field">
+          <span>{locale === 'en' ? 'Title' : 'Titel'}</span>
+          <input className="impl-input" value={task.title} onChange={(e) => onChange({ title: e.target.value })} />
+        </div>
+        <div className="impl-field">
+          <span>{locale === 'en' ? 'Owner' : 'Verantwortlich'}</span>
+          <input className="impl-input" value={task.owner} onChange={(e) => onChange({ owner: e.target.value })} />
+        </div>
+        <div className="impl-row2">
+          <div className="impl-field">
+            <span>{locale === 'en' ? 'Start' : 'Start'}</span>
+            <input
+              type="date"
+              className="impl-input"
+              value={task.start}
+              onChange={(e) => onChange({ start: e.target.value })}
+            />
+          </div>
+          <div className="impl-field">
+            <span>{locale === 'en' ? 'Due' : 'Fällig'}</span>
+            <input
+              type="date"
+              className="impl-input"
+              value={task.end}
+              onChange={(e) => onChange({ end: e.target.value })}
+            />
+          </div>
+        </div>
+        <div className="impl-row2">
+          <div className="impl-field">
+            <span>Status</span>
+            <select className="impl-select" value={task.status} onChange={(e) => onChange({ status: e.target.value })}>
+              {PLAN_STATUSES.map((s) => (
+                <option key={s} value={s}>
+                  {PLAN_STATUS_LABEL[locale][s]}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="impl-field">
+            <span>{locale === 'en' ? 'Milestone' : 'Meilenstein'}</span>
+            <select
+              className="impl-select"
+              value={task.milestone ? '1' : '0'}
+              onChange={(e) => onChange({ milestone: e.target.value === '1' })}
+            >
+              <option value="0">{locale === 'en' ? 'No' : 'Nein'}</option>
+              <option value="1">{locale === 'en' ? 'Yes' : 'Ja'}</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="impl-field">
+          <span>To-dos</span>
+          {(task.todos || []).map((td) => (
+            <div className="implplan-todo" key={td.id}>
+              <input
+                type="checkbox"
+                checked={td.done}
+                onChange={(e) => updateTodo(td.id, { done: e.target.checked })}
+              />
+              <input
+                type="text"
+                className={td.done ? 'is-done' : ''}
+                value={td.text}
+                placeholder={locale === 'en' ? 'To-do…' : 'To-do…'}
+                onChange={(e) => updateTodo(td.id, { text: e.target.value })}
+              />
+              <button className="impl-btn" style={{ padding: 6 }} onClick={() => removeTodo(td.id)} type="button">
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ))}
+          <button className="impl-btn" onClick={addTodo} type="button">
+            <Plus className="w-4 h-4" />
+            {locale === 'en' ? 'Add to-do' : 'To-do hinzufügen'}
+          </button>
+        </div>
+
+        <div className="impl-field">
+          <span>{locale === 'en' ? 'Notes' : 'Notizen'}</span>
+          <textarea
+            className="impl-input"
+            rows={3}
+            value={task.notes || ''}
+            onChange={(e) => onChange({ notes: e.target.value })}
+          />
+        </div>
+
+        <button className="impl-btn" onClick={onDelete} type="button" style={{ color: '#ff9b9b' }}>
+          <Trash2 className="w-4 h-4" />
+          {locale === 'en' ? 'Delete task' : 'Aufgabe löschen'}
+        </button>
+      </div>
+    </div>
+  );
+}

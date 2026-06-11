@@ -114,7 +114,7 @@ needs_onboarding_build() {
 
 write_build_hash() {
   mkdir -p "$(dirname "$BUILD_HASH_FILE")"
-  find "$ONBOARDING_SRC/src" "$ONBOARDING_SRC/index.html" "$ONBOARDING_SRC/package.json" "$ONBOARDING_SRC/vite.config.js" "$ONBOARDING_SRC/vite.config.ts" 2>/dev/null \
+  find "$ONBOARDING_SRC/src" "$ONBOARDING_SRC/public" "$ONBOARDING_SRC/index.html" "$ONBOARDING_SRC/package.json" "$ONBOARDING_SRC/vite.config.js" "$ONBOARDING_SRC/vite.config.ts" 2>/dev/null \
     -type f \( -name '*.js' -o -name '*.jsx' -o -name '*.ts' -o -name '*.tsx' -o -name '*.css' -o -name '*.html' -o -name '*.json' \) \
     -exec shasum -a 1 {} + 2>/dev/null | shasum -a 1 | awk '{print $1}' > "$BUILD_HASH_FILE"
 }
@@ -125,7 +125,11 @@ if [ -z "$DRY_RUN" ] && [ -z "$SKIP_BUILD" ]; then
     if [ -d "$ONBOARDING_SRC" ]; then
       echo "📦 Baue Onboarding-App …"
       BUILD_START=$(date +%s)
-      (cd "$ONBOARDING_SRC" && npm run build 2>/dev/null) || true
+      if ! (cd "$ONBOARDING_SRC" && npm run build); then
+        echo "❌ Onboarding-Build fehlgeschlagen — Deploy abgebrochen."
+        echo "   (Kein Upload. Das bisherige Live-Bundle bleibt unverändert.)"
+        exit 1
+      fi
       if [ -d "$ONBOARDING_SRC/dist" ]; then
         rm -rf "$ONBOARDING_DIST"
         mkdir -p "$ONBOARDING_DIST"
@@ -133,6 +137,9 @@ if [ -z "$DRY_RUN" ] && [ -z "$SKIP_BUILD" ]; then
         write_build_hash
         DID_BUILD="1"
         echo "   → onboarding/ aktualisiert ($(( $(date +%s) - BUILD_START ))s)"
+      else
+        echo "❌ Build lief, aber kein dist/ erzeugt — Deploy abgebrochen."
+        exit 1
       fi
     fi
   else
@@ -222,12 +229,18 @@ if [ -n "$QUICK" ] && [ -z "$DRY_RUN" ]; then
       --paths "/onboarding/*" "/*.html" "/admin/*" "/js/*" "/css/*" --region "${AWS_REGION}" >/dev/null 2>&1
   else
     aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
-      --paths "/*.html" "/admin/*" "/js/*" "/css/*" --region "${AWS_REGION}" >/dev/null 2>&1
+      --paths "/*.html" "/admin/*" "/js/*" "/css/*" "/sw.js" --region "${AWS_REGION}" >/dev/null 2>&1
   fi
 
   # Deploy-Marker setzen (für „committed but not deployed“-Erkennung beim nächsten Lauf)
   mkdir -p "$(dirname "$LAST_DEPLOY_FILE")"
   git rev-parse HEAD > "$LAST_DEPLOY_FILE"
+  if [ -x "scripts/sync-hero-video-config.sh" ]; then
+    echo "🎬 Sync Hero-Video-Config (DynamoDB → S3) …"
+    bash scripts/sync-hero-video-config.sh || echo "⚠️ Hero-Video-Config-Sync übersprungen"
+    aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
+      --paths "/config/hero-video.json" --region "${AWS_REGION}" >/dev/null 2>&1 || true
+  fi
   echo "✅ Schnell-Deploy fertig in $(( $(date +%s) - START_TS ))s. In 2–5 Min live: ${SITE_URL}"
   exit 0
 fi
@@ -251,9 +264,12 @@ fi
 
 if [ -z "$DRY_RUN" ]; then
   if grep -qE '^(upload|delete):' "$SYNC_LOG"; then
+    if [ -x "scripts/sync-hero-video-config.sh" ]; then
+      bash scripts/sync-hero-video-config.sh || true
+    fi
     aws cloudfront create-invalidation \
       --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
-      --paths "/onboarding/*" "/*.html" "/index.html" \
+      --paths "/onboarding/*" "/*.html" "/index.html" "/config/hero-video.json" \
       --region "${AWS_REGION}" >/dev/null 2>&1
     echo "✅ Deploy abgeschlossen in $(( $(date +%s) - START_TS ))s. In 2–5 Min live: ${SITE_URL}"
   else

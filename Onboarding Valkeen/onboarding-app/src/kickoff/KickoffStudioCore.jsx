@@ -13,6 +13,10 @@ import {
   Maximize2,
   Minimize2,
   X,
+  Eye,
+  EyeOff,
+  Plus,
+  Pencil,
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import '../styles/kickoff-studio.css';
@@ -26,8 +30,14 @@ import {
   chapterThemeClass,
   slideKindTheme,
   visibleChapters,
-  getPresentationSlides,
 } from './kickoffStudioCatalog';
+import {
+  defaultCustomSlide,
+  getPresentationSlideList,
+  getRailSlideList,
+  isSlideHidden,
+  toggleSlideHidden,
+} from './kickoffDeckState';
 import { getDeckSlides, localizeSlide } from './kickoffDeckLocale';
 import {
   buildExportDeck,
@@ -38,39 +48,52 @@ import {
 import { applyTenantModulePreset, normalizeVizConfig } from './kickoffVizConfig';
 import { exportKickoffPdf } from './kickoffStudioPdf';
 import {
-  DEFAULT_EDIT_PASSWORD,
+  EDIT_PASSWORD_STORAGE_KEY,
   fetchCloudSession,
   loadLocalSession,
   newSessionId,
   requestGammaExport,
+  requestGammaValkeenMaster,
+  resolveEditPassword,
   saveCloudSession,
   saveLocalSession,
 } from './kickoffStudioService';
-import { suggestLinkLabelFromCustomer } from './kickoffLinkLabel';
+import { slugifyLinkLabel, suggestLinkLabelFromCustomer } from './kickoffLinkLabel';
 import {
+  kickoffCustomerOpenHref,
+  kickoffCustomerShareHref,
   kickoffPresenterFallbackHref,
-  kickoffSubdomainHref,
   kickoffSubdomainPreviewHost,
 } from './kickoffTenantUrls';
-import { getTenantByHost, getTenantBySlug } from './kickoffTenants';
+import { getTenantByHost, getTenantBySlug, parseKickoffShortHost } from './kickoffTenants';
 import KickoffTenantLinksPanel from './KickoffTenantLinksPanel';
 import SlideBody from './SlideBody';
+import KickoffSlideEditor from './KickoffSlideEditor';
+import KickoffSlideDesignPanel from './KickoffSlideDesignPanel';
+import { hintForSlide } from './kickoffSlideDesignHints';
+import KickoffPrepAdminPanel from './KickoffPrepAdminPanel';
 
 const fieldClass = 'kickoff-input';
 
-function sessionFromSearchParams(searchParams, tenant, hostOnly) {
+function sessionFromSearchParams(searchParams, tenant, hostContext = null) {
+  const hostOnly = !!(hostContext?.linkLabel || hostContext?.tenant);
   const sid =
     searchParams.get('s') || searchParams.get('session') || newSessionId();
   const tenantSlug = hostOnly
-    ? tenant?.slug || ''
+    ? tenant?.slug || hostContext?.tenant?.slug || ''
     : searchParams.get('tenant') || tenant?.slug || '';
   const base = defaultSession(sid, tenantSlug || tenant);
+  const linkLabel =
+    hostContext?.linkLabel ||
+    searchParams.get('label') ||
+    slugifyLinkLabel(searchParams.get('kurz')) ||
+    '';
   return {
     ...base,
     customer:
       searchParams.get('c') ||
       searchParams.get('customer') ||
-      (hostOnly ? tenant?.customer : '') ||
+      (hostOnly ? tenant?.customer || hostContext?.tenant?.customer : '') ||
       base.customer,
     locale: searchParams.get('locale') || tenant?.localeDefault || base.locale,
     includeIntegrations:
@@ -79,9 +102,12 @@ function sessionFromSearchParams(searchParams, tenant, hostOnly) {
         : searchParams.get('integrations') === '0'
           ? false
           : hostOnly
-            ? (tenant?.includeIntegrationsDefault ?? base.includeIntegrations)
+            ? (tenant?.includeIntegrationsDefault ??
+              hostContext?.tenant?.includeIntegrationsDefault ??
+              base.includeIntegrations)
             : base.includeIntegrations,
-    tenantSlug: hostOnly ? tenant?.slug || '' : searchParams.get('tenant') || '',
+    tenantSlug: hostOnly ? tenant?.slug || hostContext?.tenant?.slug || '' : tenantSlug,
+    linkLabel: linkLabel || base.linkLabel,
     workshopCaptureEnabled: searchParams.get('capture') === '1',
   };
 }
@@ -89,18 +115,41 @@ function sessionFromSearchParams(searchParams, tenant, hostOnly) {
 export default function KickoffStudioCore({
   viewMode = 'facilitator',
   tenantSlug: tenantSlugProp,
+  linkLabel: linkLabelProp = '',
 }) {
   const [searchParams] = useSearchParams();
-  const hostTenant = useMemo(() => getTenantByHost(window.location.hostname), []);
+  const hostContext = useMemo(
+    () => parseKickoffShortHost(window.location.hostname),
+    []
+  );
+  const legacyHostTenant = useMemo(() => getTenantByHost(window.location.hostname), []);
+  const hostTenant = hostContext.tenant || legacyHostTenant;
+  const pathTenant = getTenantBySlug(tenantSlugProp);
+  const pathLinkLabel =
+    linkLabelProp ||
+    (!pathTenant && tenantSlugProp ? slugifyLinkLabel(tenantSlugProp) || tenantSlugProp : '');
   const routeTenant = useMemo(
-    () => getTenantBySlug(tenantSlugProp) || getTenantBySlug(searchParams.get('tenant')),
+    () =>
+      pathTenant ||
+      getTenantBySlug(tenantSlugProp) ||
+      getTenantBySlug(searchParams.get('tenant')),
     [tenantSlugProp, searchParams]
   );
   const tenant = routeTenant || hostTenant;
+  const resolvedHostContext = useMemo(
+    () => ({
+      tenant: hostContext.tenant || tenant,
+      linkLabel: hostContext.linkLabel || pathLinkLabel,
+    }),
+    [hostContext, tenant, pathLinkLabel]
+  );
   const isPresenter = viewMode === 'presenter';
 
   const [session, setSession] = useState(() =>
-    mergeSession(sessionFromSearchParams(searchParams, tenant, !!hostTenant), tenant)
+    mergeSession(
+      sessionFromSearchParams(searchParams, tenant, resolvedHostContext),
+      tenant
+    )
   );
   const [password, setPassword] = useState('');
   const [slideIndex, setSlideIndex] = useState(0);
@@ -113,6 +162,7 @@ export default function KickoffStudioCore({
   const [copied, setCopied] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [browserFullscreen, setBrowserFullscreen] = useState(false);
+  const [slideEditor, setSlideEditor] = useState({ open: false, initial: null, isNew: false });
 
   const locale = session.locale || 'de';
   const t = (key) => ui(locale, key);
@@ -130,16 +180,23 @@ export default function KickoffStudioCore({
     [session.includeIntegrations]
   );
 
-  /** Strikte Reihenfolge wie kickoff-deck.json — Weiter/Zurück = ±1 Folie */
-  const visibleSlideList = useMemo(
-    () => getPresentationSlides(deckSlides, session.includeIntegrations),
-    [deckSlides, session.includeIntegrations]
+  const railSlideList = useMemo(
+    () => getRailSlideList(deckSlides, session),
+    [deckSlides, session]
+  );
+
+  const navSlideList = useMemo(
+    () =>
+      isPresenter
+        ? getPresentationSlideList(deckSlides, session)
+        : railSlideList,
+    [deckSlides, session, isPresenter, railSlideList]
   );
 
   const slideRailRef = useRef(null);
-  const activeSlideIdRef = useRef(visibleSlideList[0]?.id);
+  const activeSlideIdRef = useRef(navSlideList[0]?.id);
 
-  const currentSlide = visibleSlideList[slideIndex];
+  const currentSlide = navSlideList[slideIndex];
   const localizedCurrent = useMemo(
     () =>
       currentSlide
@@ -155,30 +212,103 @@ export default function KickoffStudioCore({
 
   const goToSlide = useCallback(
     (index) => {
-      if (!visibleSlideList.length) return;
-      const i = Math.max(0, Math.min(index, visibleSlideList.length - 1));
+      if (!navSlideList.length) return;
+      const i = Math.max(0, Math.min(index, navSlideList.length - 1));
       setSlideIndex(i);
-      activeSlideIdRef.current = visibleSlideList[i]?.id;
+      activeSlideIdRef.current = navSlideList[i]?.id;
     },
-    [visibleSlideList]
+    [navSlideList]
+  );
+
+  const goToSlideId = useCallback(
+    (slideId) => {
+      const idx = navSlideList.findIndex((s) => s.id === slideId);
+      if (idx >= 0) goToSlide(idx);
+    },
+    [navSlideList, goToSlide]
   );
 
   useEffect(() => {
-    if (!visibleSlideList.length) return;
+    if (!navSlideList.length) return;
     const id = activeSlideIdRef.current;
-    const idx = id ? visibleSlideList.findIndex((s) => s.id === id) : -1;
+    const idx = id ? navSlideList.findIndex((s) => s.id === id) : -1;
     if (idx >= 0 && idx !== slideIndex) {
       setSlideIndex(idx);
-    } else if (slideIndex >= visibleSlideList.length) {
-      setSlideIndex(visibleSlideList.length - 1);
+    } else if (slideIndex >= navSlideList.length) {
+      setSlideIndex(navSlideList.length - 1);
     }
-  }, [visibleSlideList, session.includeIntegrations]);
+  }, [navSlideList, session.includeIntegrations, session.hiddenSlideIds, session.customSlides]);
 
   useEffect(() => {
-    activeSlideIdRef.current = visibleSlideList[slideIndex]?.id;
+    activeSlideIdRef.current = navSlideList[slideIndex]?.id;
     const el = slideRailRef.current?.querySelector('[data-slide-active="true"]');
     el?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-  }, [slideIndex, visibleSlideList]);
+  }, [slideIndex, navSlideList]);
+
+  const railGroups = useMemo(() => {
+    const used = new Set();
+    const groups = chapters
+      .map((ch) => {
+        const slides = ch.slideIds
+          .map((id) => railSlideList.find((s) => s.id === id))
+          .filter(Boolean);
+        slides.forEach((s) => used.add(s.id));
+        return { ch, slides };
+      })
+      .filter((g) => g.slides.length);
+    const orphan = railSlideList.filter((s) => !used.has(s.id));
+    if (orphan.length) {
+      groups.push({
+        ch: { id: 'extra', section: 'core' },
+        slides: orphan,
+        isExtra: true,
+      });
+    }
+    return groups;
+  }, [chapters, railSlideList]);
+
+  const persistSlideDraft = useCallback((draft) => {
+    setSession((s) => {
+      if (draft._source === 'custom' || String(draft.id).startsWith('custom-')) {
+        const custom = [...(s.customSlides || [])];
+        const idx = custom.findIndex((c) => c.id === draft.id);
+        const { _source, ...rest } = draft;
+        if (idx >= 0) custom[idx] = rest;
+        else custom.push(rest);
+        return { ...s, customSlides: custom };
+      }
+      const { id, _source, ...patch } = draft;
+      return {
+        ...s,
+        slideOverrides: {
+          ...(s.slideOverrides || {}),
+          [id]: { ...(s.slideOverrides?.[id] || {}), ...patch },
+        },
+      };
+    });
+    setSlideEditor({ open: false, initial: null, isNew: false });
+  }, []);
+
+  const applyCardsToCurrent = useCallback(() => {
+    if (!currentSlide) return;
+    const patch = { designStyle: 'cards' };
+    if (currentSlide._source === 'custom') {
+      setSession((s) => ({
+        ...s,
+        customSlides: (s.customSlides || []).map((c) =>
+          c.id === currentSlide.id ? { ...c, ...patch } : c
+        ),
+      }));
+    } else {
+      setSession((s) => ({
+        ...s,
+        slideOverrides: {
+          ...(s.slideOverrides || {}),
+          [currentSlide.id]: { ...(s.slideOverrides?.[currentSlide.id] || {}), ...patch },
+        },
+      }));
+    }
+  }, [currentSlide]);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -255,6 +385,15 @@ export default function KickoffStudioCore({
   }, [hostTenant?.slug]);
 
   useEffect(() => {
+    try {
+      const stored = localStorage.getItem(EDIT_PASSWORD_STORAGE_KEY);
+      if (stored) setPassword(stored);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  useEffect(() => {
     const sid = searchParams.get('s') || searchParams.get('session');
     if (!sid) return;
     setSession((s) => ({ ...s, sessionId: sid }));
@@ -292,11 +431,21 @@ export default function KickoffStudioCore({
     setSyncing(true);
     setSyncError('');
     try {
-      const pw = password || DEFAULT_EDIT_PASSWORD;
+      const pw = resolveEditPassword(password);
       await saveCloudSession(session, pw);
       setLastSaved(Date.now());
+      try {
+        const trimmed = String(password || '').trim();
+        if (trimmed) localStorage.setItem(EDIT_PASSWORD_STORAGE_KEY, trimmed);
+        else localStorage.removeItem(EDIT_PASSWORD_STORAGE_KEY);
+      } catch {
+        /* ignore */
+      }
     } catch (e) {
-      setSyncError(e.message || t('cloudError'));
+      const msg = e.message || '';
+      setSyncError(
+        msg.includes('Invalid password') ? t('passwordInvalidHint') : msg || t('cloudError')
+      );
     } finally {
       setSyncing(false);
     }
@@ -307,13 +456,48 @@ export default function KickoffStudioCore({
     setGammaError('');
     setGammaUrl('');
     try {
-      const pw = password || DEFAULT_EDIT_PASSWORD;
+      const pw = resolveEditPassword(password);
       const exportDeck = buildExportDeck(session);
       const res = await requestGammaExport({ ...session, exportDeck }, pw);
       if (res.gammaUrl) setGammaUrl(res.gammaUrl);
       else if (res.error) setGammaError(res.error);
     } catch (e) {
-      setGammaError(e.message || t('gammaUnavailable'));
+      const msg = e.message || '';
+      setGammaError(
+        msg.includes('Load failed') || msg.includes('Failed to fetch')
+          ? t('gammaLoadFailed')
+          : msg || t('gammaUnavailable')
+      );
+    } finally {
+      setGammaLoading(false);
+    }
+  };
+
+  const runGammaValkeenMaster = async (mode = 'workshop') => {
+    setGammaLoading(true);
+    setGammaError('');
+    setGammaUrl('');
+    try {
+      const pw = resolveEditPassword(password);
+      const exportDeck = buildExportDeck(session);
+      const res = await requestGammaValkeenMaster(
+        {
+          mode,
+          locale: session.locale,
+          customer: session.customer,
+          exportDeck: mode === 'workshop' ? exportDeck : undefined,
+        },
+        pw
+      );
+      if (res.gammaUrl) setGammaUrl(res.gammaUrl);
+      else if (res.error) setGammaError(res.error);
+    } catch (e) {
+      const msg = e.message || '';
+      setGammaError(
+        msg.includes('Load failed') || msg.includes('Failed to fetch')
+          ? t('gammaLoadFailed')
+          : msg || t('gammaUnavailable')
+      );
     } finally {
       setGammaLoading(false);
     }
@@ -325,7 +509,7 @@ export default function KickoffStudioCore({
 
   const linkOpts = {
     tenantSlug: session.tenantSlug || tenant?.slug,
-    linkLabel: session.linkLabel,
+    linkLabel: session.linkLabel || suggestLinkLabelFromCustomer(session.customer),
     sessionId: session.sessionId,
     customer: session.customer,
     locale: session.locale,
@@ -335,7 +519,7 @@ export default function KickoffStudioCore({
 
   const copyPresenterLink = (useShortSubdomain = true) => {
     const href = useShortSubdomain
-      ? kickoffSubdomainHref(linkOpts)
+      ? kickoffCustomerShareHref(linkOpts)
       : kickoffPresenterFallbackHref(linkOpts);
     navigator.clipboard.writeText(href);
     setCopied(true);
@@ -343,8 +527,8 @@ export default function KickoffStudioCore({
   };
 
   const progressPct =
-    visibleSlideList.length > 0
-      ? Math.round(((slideIndex + 1) / visibleSlideList.length) * 100)
+    navSlideList.length > 0
+      ? Math.round(((slideIndex + 1) / navSlideList.length) * 100)
       : 0;
 
   const shellClass = [
@@ -393,6 +577,7 @@ export default function KickoffStudioCore({
                 className="kickoff-btn-primary"
                 onClick={runGamma}
                 disabled={gammaLoading}
+                title={t('exportGammaHint')}
               >
                 {gammaLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -402,6 +587,26 @@ export default function KickoffStudioCore({
                 <span className="hidden sm:inline">
                   {gammaLoading ? t('gammaRunning') : t('exportGamma')}
                 </span>
+              </button>
+              <button
+                type="button"
+                className="kickoff-btn-secondary"
+                onClick={() => runGammaValkeenMaster('workshop')}
+                disabled={gammaLoading}
+                title={t('exportGammaValkeenWorkshopHint')}
+              >
+                <Sparkles className="w-4 h-4" />
+                <span className="hidden lg:inline">{t('exportGammaValkeenWorkshop')}</span>
+              </button>
+              <button
+                type="button"
+                className="kickoff-btn-secondary kickoff-btn-secondary--compact"
+                onClick={() => runGammaValkeenMaster('full')}
+                disabled={gammaLoading}
+                title={t('exportGammaValkeenFullHint')}
+              >
+                <span className="hidden xl:inline">{t('exportGammaValkeenFull')}</span>
+                <span className="xl:hidden">121</span>
               </button>
             </>
           )}
@@ -430,13 +635,13 @@ export default function KickoffStudioCore({
 
           {!isPresenter && (
             <a
-              href={kickoffSubdomainHref({
+              href={kickoffCustomerOpenHref({
                 sessionId: session.sessionId,
                 customer: session.customer,
                 locale: session.locale,
                 includeIntegrations: session.includeIntegrations,
                 tenantSlug: session.tenantSlug,
-                linkLabel: session.linkLabel,
+                linkLabel: session.linkLabel || suggestLinkLabelFromCustomer(session.customer),
                 workshopCaptureEnabled: session.workshopCaptureEnabled,
               })}
               target="_blank"
@@ -461,38 +666,102 @@ export default function KickoffStudioCore({
       {gammaError && <div className="kickoff-gamma-banner kickoff-gamma-banner--err">{gammaError}</div>}
 
       <aside className="kickoff-slide-rail" aria-label={t('slidesNav')} ref={slideRailRef}>
-        {chapters.map((ch) => {
-          const slidesInChapter = ch.slideIds
-            .map((id) => visibleSlideList.find((s) => s.id === id))
-            .filter(Boolean);
-          if (!slidesInChapter.length) return null;
+        {railGroups.map(({ ch, slides, isExtra }) => {
+          const displaySlides = isPresenter
+            ? slides.filter((s) => !isSlideHidden(session, s.id))
+            : slides;
+          if (!displaySlides.length) return null;
           return (
-            <div key={ch.id} className={`kickoff-slide-group ${chapterThemeClass(ch)}`}>
-              <div className="kickoff-slide-group-label">{chapterLabel(ch, locale)}</div>
-              {slidesInChapter.map((slide) => {
-                const idx = visibleSlideList.findIndex((s) => s.id === slide.id);
+            <div
+              key={ch.id}
+              className={`kickoff-slide-group ${isExtra ? 'kickoff-slide-group--extra' : chapterThemeClass(ch)}`}
+            >
+              <div className="kickoff-slide-group-label">
+                {isExtra ? t('slideChapterExtra') : chapterLabel(ch, locale)}
+              </div>
+              {displaySlides.map((slide) => {
+                const idx = navSlideList.findIndex((s) => s.id === slide.id);
                 const loc = localizeSlide(slide, locale, session.customer);
                 const isActive = idx === slideIndex;
+                const hidden = isSlideHidden(session, slide.id);
                 return (
-                  <button
+                  <div
                     key={slide.id}
-                    type="button"
-                    data-slide-active={isActive ? 'true' : 'false'}
-                    className={`kickoff-slide-item ${isActive ? 'is-active' : ''} ${
-                      idx < slideIndex ? 'is-past' : ''
-                    }`}
-                    onClick={() => goToSlide(idx)}
+                    className={`kickoff-slide-item-wrap ${hidden ? 'is-hidden-slide' : ''}`}
                   >
-                    <span className="kickoff-slide-item-num">
-                      {idx + 1}
-                    </span>
-                    <span className="kickoff-slide-item-title">{loc.headline}</span>
-                  </button>
+                    <button
+                      type="button"
+                      data-slide-active={isActive ? 'true' : 'false'}
+                      className={`kickoff-slide-item ${isActive ? 'is-active' : ''} ${
+                        idx >= 0 && idx < slideIndex ? 'is-past' : ''
+                      }`}
+                      onClick={() => (idx >= 0 ? goToSlide(idx) : goToSlideId(slide.id))}
+                    >
+                      <span className="kickoff-slide-item-num">{idx >= 0 ? idx + 1 : '·'}</span>
+                      <span className="kickoff-slide-item-title">{loc.headline}</span>
+                      {slide._source === 'custom' && (
+                        <span className="kickoff-slide-item-badge">{t('slideCustomBadge')}</span>
+                      )}
+                    </button>
+                    {!isPresenter && (
+                      <div className="kickoff-slide-item-tools">
+                        <button
+                          type="button"
+                          className="kickoff-icon-btn kickoff-icon-btn--sm"
+                          title={hidden ? t('slideShow') : t('slideHide')}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSession((s) => ({
+                              ...s,
+                              hiddenSlideIds: toggleSlideHidden(s, slide.id),
+                            }));
+                          }}
+                        >
+                          {hidden ? (
+                            <EyeOff className="w-3.5 h-3.5" />
+                          ) : (
+                            <Eye className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                        <button
+                          type="button"
+                          className="kickoff-icon-btn kickoff-icon-btn--sm"
+                          title={t('slideEditorEdit')}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSlideEditor({
+                              open: true,
+                              initial: { ...slide },
+                              isNew: false,
+                            });
+                          }}
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 );
               })}
             </div>
           );
         })}
+        {!isPresenter && (
+          <button
+            type="button"
+            className="kickoff-slide-add"
+            onClick={() =>
+              setSlideEditor({
+                open: true,
+                initial: defaultCustomSlide(currentSlide?.id),
+                isNew: true,
+              })
+            }
+          >
+            <Plus className="w-4 h-4" />
+            {t('slideAdd')}
+          </button>
+        )}
       </aside>
 
       <main className="kickoff-stage">
@@ -629,7 +898,9 @@ export default function KickoffStudioCore({
                       className={fieldClass}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      placeholder={t('passwordHint')}
                     />
+                    <p className="kickoff-settings-hint m-0 mt-1">{t('passwordHint')}</p>
                   </label>
                 </>
               )}
@@ -650,7 +921,7 @@ export default function KickoffStudioCore({
                 onClick={() => copyPresenterLink(true)}
               >
                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                {t('copyCustomerLink')}
+                {t('copySubdomainLink')}
               </button>
               {lastSaved && <span className="text-sm text-[#00a878] self-center">{t('saved')}</span>}
               {syncError && (
@@ -658,6 +929,13 @@ export default function KickoffStudioCore({
               )}
             </div>
             {!isPresenter && (
+              <>
+                <KickoffPrepAdminPanel
+                  session={session}
+                  locale={locale}
+                  editPassword={password}
+                  onSessionUpdate={(patch) => setSession((s) => ({ ...s, ...patch }))}
+                />
               <div className="mt-6">
                 <KickoffTenantLinksPanel
                   locale={locale}
@@ -674,11 +952,12 @@ export default function KickoffStudioCore({
                   }
                 />
               </div>
+              </>
             )}
           </div>
         )}
 
-        <div className="kickoff-slide-body">
+        <div className={`kickoff-slide-body ${!isPresenter ? 'kickoff-slide-body--with-design' : ''}`}>
           <div className="kickoff-slide-inner kickoff-slide-panel">
             <div className="kickoff-slide-header">
               <span className="kickoff-slide-kicker">
@@ -726,8 +1005,27 @@ export default function KickoffStudioCore({
               vizEditable={!isPresenter}
             />
           </div>
+          {!isPresenter && currentSlide && hintForSlide(currentSlide.id, locale) && (
+            <KickoffSlideDesignPanel
+              slide={localizedCurrent || currentSlide}
+              locale={locale}
+              customer={session.customer}
+              password={password}
+              onApplyCards={applyCardsToCurrent}
+              onGammaUrl={setGammaUrl}
+            />
+          )}
         </div>
       </main>
+
+      <KickoffSlideEditor
+        open={slideEditor.open}
+        locale={locale}
+        initial={slideEditor.initial}
+        isNew={slideEditor.isNew}
+        onSave={persistSlideDraft}
+        onClose={() => setSlideEditor({ open: false, initial: null, isNew: false })}
+      />
 
       <footer className="kickoff-footer">
         <div className="kickoff-footer-progress">
@@ -735,7 +1033,7 @@ export default function KickoffStudioCore({
             <div className="kickoff-footer-fill" style={{ width: `${progressPct}%` }} />
           </div>
           <span>
-            {slideIndex + 1} / {visibleSlideList.length} · {progressPct}%
+            {slideIndex + 1} / {navSlideList.length} · {progressPct}%
           </span>
         </div>
         <div className="kickoff-footer-nav">
@@ -751,7 +1049,7 @@ export default function KickoffStudioCore({
           <button
             type="button"
             className="kickoff-btn-primary kickoff-nav-btn"
-            disabled={slideIndex >= visibleSlideList.length - 1}
+            disabled={slideIndex >= navSlideList.length - 1}
             onClick={() => goToSlide(slideIndex + 1)}
           >
             {t('next')}
