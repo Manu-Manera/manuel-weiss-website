@@ -3,6 +3,9 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Cloud, Loader2, Plus, Trash2 } from 'lucide-react';
 import '../styles/implementation-guide.css';
 import '../styles/implementation-log.css';
+import '../styles/implementation-workshop-shell.css';
+import ImplementationHubBar from '../kickoff/ImplementationHubBar';
+import { buildMeetingHref } from '../kickoff/useImplementationNav';
 import {
   DECISION_STATUSES,
   DECISION_STATUS_LABEL,
@@ -216,25 +219,21 @@ export default function ImplementationLog() {
 
   return (
     <div className={`impllog ${!tabCanEdit ? 'impl-readonly' : ''}`} style={cssVars}>
+      <ImplementationHubBar
+        title={locale === 'en' ? 'Project log' : 'Projekt-Log'}
+        locale={locale}
+        session={session}
+        portalMode={portalMode}
+        onSave={canEditLog || canEditDecisions ? saveCloud : undefined}
+        syncing={syncing}
+        syncMsg={syncMsg}
+      />
       <div className="impllog-head">
         <div>
           <h1 className="impllog-title">
             {locale === 'en' ? 'Project log' : 'Projekt-Log'}
             {session.customer ? ` · ${session.customer}` : ''}
           </h1>
-        </div>
-        <div className="impllog-actions">
-          <button className="impl-btn" onClick={backToGuide} type="button">
-            <ArrowLeft className="w-4 h-4" />
-            {locale === 'en' ? 'Guide' : 'Leitfaden'}
-          </button>
-          {(canEditLog || canEditDecisions) && (
-            <button className="impl-btn impl-btn--primary" onClick={saveCloud} type="button" disabled={syncing}>
-              {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Cloud className="w-4 h-4" />}
-              {locale === 'en' ? 'Save' : 'Speichern'}
-            </button>
-          )}
-          {syncMsg && <span style={{ fontSize: 13, color: 'var(--impl-accent)' }}>{syncMsg}</span>}
         </div>
       </div>
 
@@ -285,6 +284,15 @@ export default function ImplementationLog() {
                       value={m.date}
                       onChange={(e) => updateMeeting(m.id, { date: e.target.value })}
                     />
+                    <button
+                      className="impl-btn impl-btn--nav"
+                      type="button"
+                      onClick={() =>
+                        navigate(buildMeetingHref(m.id, session.sessionId, { portalMode }))
+                      }
+                    >
+                      {locale === 'en' ? 'Run-sheet' : 'Run-Sheet'}
+                    </button>
                     <button className="impl-btn" style={{ padding: 8 }} onClick={() => removeMeeting(m.id)} type="button">
                       <Trash2 className="w-4 h-4" />
                     </button>

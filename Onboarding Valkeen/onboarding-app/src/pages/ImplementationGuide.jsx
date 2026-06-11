@@ -19,7 +19,9 @@ import {
   X,
 } from 'lucide-react';
 import { useImplementationPortal } from '../context/ImplementationPortalContext';
-import { changeWorkflowHref } from '../kickoff/implementationPortalUrls';
+import { getArtifact, resolveArtifactHref } from '../kickoff/implementationWorkshopCatalog';
+import WorkshopCatalogDrawer from '../kickoff/WorkshopCatalogDrawer';
+import '../styles/implementation-workshop-shell.css';
 import { downloadTextReport, buildStatusReport } from '../kickoff/implementationReport';
 import '../styles/implementation-guide.css';
 import {
@@ -76,6 +78,7 @@ export default function ImplementationGuide() {
   const [syncing, setSyncing] = useState(false);
   const [syncMsg, setSyncMsg] = useState('');
   const [copied, setCopied] = useState(false);
+  const [catalogOpen, setCatalogOpen] = useState(false);
 
   const locale = session.locale || 'de';
   const branding = useMemo(() => normalizeBranding(session.branding), [session.branding]);
@@ -130,17 +133,19 @@ export default function ImplementationGuide() {
   };
 
   const openStep = (step) => {
-    if (!step.to) return;
     if (!perms.canView(step.module)) return;
-    if (step.module === 'change' && step.to.startsWith('/change-workflow')) {
-      navigate(changeWorkflowHref({ portalMode, sessionId: session.sessionId }));
-      return;
-    }
-    const params = new URLSearchParams();
-    if (session.sessionId) params.set('s', session.sessionId);
-    if (session.customer) params.set('c', session.customer);
-    if (portalMode) params.set('portal', '1');
-    navigate(`${step.to}?${params.toString()}`);
+    const artifact = getArtifact(step.id);
+    const href = resolveArtifactHref(
+      artifact || {
+        id: step.id,
+        route: step.to,
+        shell: step.to ? undefined : 'ChecklistWorkshop',
+        kind: step.kind,
+      },
+      session.sessionId,
+      { portalMode }
+    );
+    navigate(href);
   };
 
   const navParams = () => {
@@ -273,16 +278,14 @@ export default function ImplementationGuide() {
               {locale === 'en' ? 'Registers' : 'Register'}
             </button>
           )}
-          {portalMode && perms.canView('change') && (
-            <button
-              className="impl-btn impl-btn--nav"
-              onClick={() => navigate(changeWorkflowHref({ portalMode, sessionId: session.sessionId }))}
-              type="button"
-            >
-              <GitBranch className="w-4 h-4" />
-              {locale === 'en' ? 'Change mgmt' : 'Change Mgmt'}
-            </button>
-          )}
+          <button
+            className="impl-btn impl-btn--nav"
+            onClick={() => setCatalogOpen(true)}
+            type="button"
+          >
+            <GitBranch className="w-4 h-4" />
+            {locale === 'en' ? 'All workshops' : 'Alle Workshops'}
+          </button>
           {!portalMode && (
             <button className="impl-btn" onClick={() => setDrawer('portal')} type="button">
               {locale === 'en' ? 'Portal' : 'Kundenportal'}
@@ -410,16 +413,16 @@ export default function ImplementationGuide() {
                 const isInfo = step.kind === 'info';
                 const isMilestone = step.kind === 'milestone';
                 const canEditStep = perms.canEdit(step.module);
+                const canOpen = perms.canView(step.module);
                 return (
                   <div
                     key={step.id}
                     className={`impl-step ${isInfo || isMilestone ? 'impl-step--info' : ''}`}
-                    onClick={() => openStep(step)}
-                    role={step.to && perms.canView(step.module) ? 'button' : undefined}
-                    tabIndex={step.to && perms.canView(step.module) ? 0 : undefined}
+                    onClick={() => canOpen && openStep(step)}
+                    role={canOpen ? 'button' : undefined}
+                    tabIndex={canOpen ? 0 : undefined}
                     onKeyDown={(e) => {
-                      if (step.to && perms.canView(step.module) && (e.key === 'Enter' || e.key === ' '))
-                        openStep(step);
+                      if (canOpen && (e.key === 'Enter' || e.key === ' ')) openStep(step);
                     }}
                   >
                     <button
@@ -452,7 +455,7 @@ export default function ImplementationGuide() {
                         )}
                       </div>
                     </div>
-                    {step.to && <ArrowRight className="w-4 h-4 impl-step-go" />}
+                    {canOpen && <ArrowRight className="w-4 h-4 impl-step-go" />}
                   </div>
                 );
               })}
@@ -493,6 +496,13 @@ export default function ImplementationGuide() {
       {drawer === 'report' && (
         <ReportDrawer session={session} locale={locale} onClose={() => setDrawer(null)} />
       )}
+      <WorkshopCatalogDrawer
+        open={catalogOpen}
+        onClose={() => setCatalogOpen(false)}
+        locale={locale}
+        sessionId={session.sessionId}
+        portalMode={portalMode}
+      />
     </div>
   );
 }

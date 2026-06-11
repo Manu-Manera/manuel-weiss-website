@@ -1,0 +1,156 @@
+.impl-ws-shell {
+  min-height: 100vh;
+  background: var(--impl-bg, #0f172a);
+  color: var(--impl-text, #f8fafc);
+}
+
+.impl-ws-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(12px);
+}
+
+.impl-ws-bar__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  color: var(--impl-muted, #94a3b8);
+  text-decoration: none;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+}
+
+.impl-ws-bar__back:hover {
+  color: var(--impl-text);
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.impl-ws-bar__title {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.impl-ws-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.impl-ws-body {
+  min-height: calc(100vh - 52px);
+}
+
+.impl-ws-body--embedded .change-workshop-page,
+.impl-ws-body--embedded .kickoff-studio {
+  padding-top: 0;
+}
+
+.impl-ws-checklist {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.impl-ws-checklist h1 {
+  font-size: 1.35rem;
+  margin: 0 0 0.5rem;
+}
+
+.impl-ws-checklist p {
+  color: var(--impl-muted);
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+
+.impl-ws-meeting {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.impl-ws-meeting-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.impl-ws-meeting label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--impl-muted);
+  margin-bottom: 0.25rem;
+}
+
+.impl-ws-meeting input,
+.impl-ws-meeting textarea,
+.impl-ws-meeting select {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.25);
+  color: inherit;
+  padding: 0.5rem 0.65rem;
+  font: inherit;
+}
+
+.impl-ws-catalog-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.impl-ws-catalog-panel {
+  width: min(420px, 100%);
+  height: 100%;
+  background: var(--impl-surface, #1e293b);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.impl-ws-catalog-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  margin-bottom: 0.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  color: inherit;
+  cursor: pointer;
+}
+
+.impl-ws-catalog-item:hover {
+  border-color: var(--impl-primary, #6366f1);
+}
+
+.impl-ws-catalog-item strong {
+  display: block;
+  font-size: 0.9rem;
+}
+
+.impl-ws-catalog-item span {
+  font-size: 0.75rem;
+  color: var(--impl-muted);
+}

@@ -24,8 +24,9 @@ function newProfileId() {
   return `kp_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
 }
 
-export default function PhaseTilePage() {
-  const { phaseId } = useParams();
+export default function PhaseTilePage({ phaseIdOverride, embedInWorkshop = false }) {
+  const { phaseId: phaseIdParam } = useParams();
+  const phaseId = phaseIdOverride || phaseIdParam;
   const navigate = useNavigate();
   const { progress, isLoading, isSyncing, lastSyncError, updateChangeWorkshopKotter } = useProgress();
 
@@ -159,14 +160,16 @@ export default function PhaseTilePage() {
       <header className="cw-wh-header border-b border-slate-200/80">
         <div className="cw-container cw-wh-top flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between py-3">
           <div className="flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={() => navigate('/change-workflow')}
-              className="cw-btn cw-btn-ghost cw-btn-compact inline-flex items-center gap-2"
-            >
-              <ArrowLeft className="w-4 h-4" aria-hidden />
-              Workshop
-            </button>
+            {!embedInWorkshop && (
+              <button
+                type="button"
+                onClick={() => navigate('/change-workflow')}
+                className="cw-btn cw-btn-ghost cw-btn-compact inline-flex items-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" aria-hidden />
+                Workshop
+              </button>
+            )}
             <span className="cw-kicker">Workshop · Schritt {phaseItem.order}</span>
           </div>
           <div className="flex flex-wrap items-center gap-2 text-sm text-slate-600">

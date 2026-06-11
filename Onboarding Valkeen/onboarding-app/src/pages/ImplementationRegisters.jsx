@@ -4,6 +4,8 @@ import { ArrowLeft, Cloud, Loader2, Plus, Trash2 } from 'lucide-react';
 import '../styles/implementation-guide.css';
 import '../styles/implementation-log.css';
 import '../styles/implementation-registers.css';
+import '../styles/implementation-workshop-shell.css';
+import ImplementationHubBar from '../kickoff/ImplementationHubBar';
 import {
   ACCESS_LABEL,
   ACCESS_LEVELS,
@@ -215,27 +217,27 @@ export default function ImplementationRegisters() {
 
   return (
     <div className={`impllog ${!canEditTab ? 'impl-readonly' : ''}`} style={cssVars}>
+      <ImplementationHubBar
+        title={locale === 'en' ? 'Registers' : 'Register'}
+        locale={locale}
+        session={session}
+        portalMode={portalMode}
+        onSave={
+          perms.canEdit('stakeholders') ||
+          perms.canEdit('roles') ||
+          perms.canEdit('uat') ||
+          perms.canEdit('risks')
+            ? saveCloud
+            : undefined
+        }
+        syncing={syncing}
+        syncMsg={syncMsg}
+      />
       <div className="impllog-head">
         <h1 className="impllog-title">
           {locale === 'en' ? 'Registers' : 'Register'}
           {session.customer ? ` · ${session.customer}` : ''}
         </h1>
-        <div className="impllog-actions">
-          <button className="impl-btn" onClick={backToGuide} type="button">
-            <ArrowLeft className="w-4 h-4" />
-            {locale === 'en' ? 'Guide' : 'Leitfaden'}
-          </button>
-          {(perms.canEdit('stakeholders') ||
-            perms.canEdit('roles') ||
-            perms.canEdit('uat') ||
-            perms.canEdit('risks')) && (
-            <button className="impl-btn impl-btn--primary" onClick={saveCloud} type="button" disabled={syncing}>
-              {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Cloud className="w-4 h-4" />}
-              {locale === 'en' ? 'Save' : 'Speichern'}
-            </button>
-          )}
-          {syncMsg && <span style={{ fontSize: 13, color: 'var(--impl-accent)' }}>{syncMsg}</span>}
-        </div>
       </div>
 
       <div className="impllog-tabs">

@@ -3,6 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Cloud, Loader2 } from 'lucide-react';
 import '../styles/implementation-guide.css';
 import '../styles/implementation-scorecard.css';
+import '../styles/implementation-workshop-shell.css';
+import ImplementationHubBar from '../kickoff/ImplementationHubBar';
 import { buildScorecard } from '../kickoff/implementationScorecard';
 import { brandingCssVars, normalizeBranding } from '../kickoff/implementationBranding';
 import { defaultSession, mergeSession } from '../kickoff/kickoffStudioMerge';
@@ -133,24 +135,20 @@ export default function ImplementationScorecard() {
 
   return (
     <div className="implscore" style={cssVars}>
+      <ImplementationHubBar
+        title={locale === 'en' ? 'Project scorecard' : 'Projekt-Scorecard'}
+        locale={locale}
+        session={session}
+        portalMode={portalMode}
+        onSave={!portalMode && perms.canEdit('plan') ? saveCloud : undefined}
+        syncing={syncing}
+        syncMsg={syncMsg}
+      />
       <div className="impl-header" style={{ marginBottom: 16 }}>
         <h1 className="impl-title">
           {locale === 'en' ? 'Project scorecard' : 'Projekt-Scorecard'}
           {session.customer ? ` · ${session.customer}` : ''}
         </h1>
-        <div className="impl-header-actions">
-          <button className="impl-btn impl-btn--nav" onClick={backToGuide} type="button">
-            <ArrowLeft className="w-4 h-4" />
-            {locale === 'en' ? 'Guide' : 'Leitfaden'}
-          </button>
-          {!portalMode && perms.canEdit('plan') && (
-            <button className="impl-btn impl-btn--primary" onClick={saveCloud} type="button" disabled={syncing}>
-              {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Cloud className="w-4 h-4" />}
-              {locale === 'en' ? 'Save' : 'Speichern'}
-            </button>
-          )}
-          {syncMsg && <span style={{ fontSize: 13, color: 'var(--impl-accent)' }}>{syncMsg}</span>}
-        </div>
       </div>
 
       <div className="implscore-hero impl-glass">

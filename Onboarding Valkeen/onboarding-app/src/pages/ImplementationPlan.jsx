@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 import '../styles/implementation-guide.css';
 import '../styles/implementation-plan.css';
+import '../styles/implementation-workshop-shell.css';
+import ImplementationHubBar from '../kickoff/ImplementationHubBar';
 import { IMPL_PHASES } from '../kickoff/implementationTemplate';
 import {
   PLAN_STATUSES,
@@ -239,6 +241,15 @@ export default function ImplementationPlan() {
 
   return (
     <div className={`implplan ${!canEdit ? 'impl-readonly' : ''}`} style={cssVars}>
+      <ImplementationHubBar
+        title={locale === 'en' ? 'Project plan' : 'Projektplan'}
+        locale={locale}
+        session={session}
+        portalMode={portalMode}
+        onSave={saveCloud}
+        syncing={syncing}
+        syncMsg={syncMsg}
+      />
       <div className="implplan-head">
         <div>
           <h1 className="implplan-title">
@@ -250,10 +261,6 @@ export default function ImplementationPlan() {
           </p>
         </div>
         <div className="implplan-actions">
-          <button className="impl-btn" onClick={backToGuide} type="button">
-            <ArrowLeft className="w-4 h-4" />
-            {locale === 'en' ? 'Guide' : 'Leitfaden'}
-          </button>
           <div className="implplan-tabs">
             <button
               className={`implplan-tab ${view === 'gantt' ? 'implplan-tab--active' : ''}`}
