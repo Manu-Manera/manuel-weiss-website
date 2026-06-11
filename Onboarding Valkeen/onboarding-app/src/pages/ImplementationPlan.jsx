@@ -16,6 +16,7 @@ import '../styles/implementation-guide.css';
 import '../styles/implementation-plan.css';
 import '../styles/implementation-workshop-shell.css';
 import ImplementationHubBar from '../kickoff/ImplementationHubBar';
+import GanttInteractiveBar from '../kickoff/GanttInteractiveBar';
 import { IMPL_PHASES } from '../kickoff/implementationTemplate';
 import {
   PLAN_STATUSES,
@@ -708,38 +709,43 @@ export default function ImplementationPlan() {
                           {todayX != null && <div className="gantt-today" style={{ left: todayX }} />}
                           {t.milestone ? (
                             <>
-                              <div
-                                className="gantt-milestone"
-                                style={{ left }}
-                                ref={(el) => setBarRef(t.id, el)}
-                                onClick={() => setEditing(t.id)}
-                                title={t.title}
+                              <GanttInteractiveBar
+                                task={t}
+                                left={left}
+                                width={w}
+                                prog={prog}
+                                learnPct={learnPct}
+                                blocked={blocked}
+                                canEdit={canEdit}
+                                pxPerDay={pxPerDay}
+                                locale={locale}
+                                setBarRef={setBarRef}
+                                onDatesChange={(patch) => updateTask(t.id, patch)}
+                                onEdit={() => setEditing(t.id)}
                               />
-                              <span className="gantt-milestone-label" style={{ left }}>
-                                {t.title}
+                              <span
+                                className="gantt-milestone-label"
+                                style={{ left }}
+                                onClick={() => setEditing(t.id)}
+                              >
+                                {t.title || (locale === 'en' ? '(untitled)' : '(ohne Titel)')}
                               </span>
                             </>
                           ) : (
-                            <div
-                              className={`gantt-bar gantt-bar--${t.status} ${blocked ? 'gantt-bar--blocked' : ''}`}
-                              style={{ left, width: w }}
-                              ref={(el) => setBarRef(t.id, el)}
-                              onClick={() => setEditing(t.id)}
-                            >
-                              <div className="gantt-bar-fill" style={{ width: `${prog}%` }} />
-                              {learnPct > 0 && (
-                                <div
-                                  className="gantt-bar-learn"
-                                  style={{ width: `${learnPct}%` }}
-                                  title={
-                                    locale === 'en'
-                                      ? `Learning ${learnPct}%`
-                                      : `Lernen ${learnPct}%`
-                                  }
-                                />
-                              )}
-                              <span className="gantt-bar-text">{t.title}</span>
-                            </div>
+                            <GanttInteractiveBar
+                              task={t}
+                              left={left}
+                              width={w}
+                              prog={prog}
+                              learnPct={learnPct}
+                              blocked={blocked}
+                              canEdit={canEdit}
+                              pxPerDay={pxPerDay}
+                              locale={locale}
+                              setBarRef={setBarRef}
+                              onDatesChange={(patch) => updateTask(t.id, patch)}
+                              onEdit={() => setEditing(t.id)}
+                            />
                           )}
                         </div>
                       </div>
