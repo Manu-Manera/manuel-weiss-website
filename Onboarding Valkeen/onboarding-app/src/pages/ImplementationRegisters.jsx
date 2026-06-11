@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Cloud, Loader2, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Check, Cloud, Copy, GraduationCap, Loader2, Plus, Trash2 } from 'lucide-react';
 import '../styles/implementation-guide.css';
 import '../styles/implementation-log.css';
 import '../styles/implementation-registers.css';
@@ -40,6 +40,13 @@ import {
   useImplPermissions,
   useImplPortal,
 } from '../kickoff/useImplPermissions';
+import { requestMagicLink } from '../services/trainingAdminService';
+import { suggestTrainingCustomerId } from '../kickoff/implementationPlanLearning';
+import {
+  buildLearnHubHref,
+  sanitizeLearningEmail,
+  trainingRoleForUser,
+} from '../kickoff/implementationLearningAccess';
 
 function initSession(searchParams) {
   const sid = searchParams.get('s') || searchParams.get('session');
@@ -124,6 +131,69 @@ export default function ImplementationRegisters() {
   const updRole = upd(setRoles);
   const updUat = upd(setUat);
   const updRisk = upd(setRisks);
+
+  const trainingCustomerId = session.trainingCustomerId || suggestTrainingCustomerId(session);
+  const [accessBusy, setAccessBusy] = useState(null);
+  const [accessMsg, setAccessMsg] = useState(null);
+  const [copiedUser, setCopiedUser] = useState(null);
+
+  const grantLearningAccess = async (u) => {
+    if (!u.email) {
+      setAccessMsg({ id: u.id, type: 'err', text: locale === 'en' ? 'E-mail required' : 'E-Mail erforderlich' });
+      return;
+    }
+    setAccessBusy(u.id);
+    setAccessMsg(null);
+    try {
+      const role = trainingRoleForUser(u.role);
+      const res = await requestMagicLink({ email: u.email, customerId: trainingCustomerId, role });
+      const learningUserId = res?.userId || sanitizeLearningEmail(u.email);
+      updUser(u.id, {
+        learningUserId,
+        learningRole: role,
+        learningToken: res?.token || '',
+        learningLinkSentAt: new Date().toISOString(),
+      });
+      const href = buildLearnHubHref({
+        sessionId: session.sessionId,
+        customerId: trainingCustomerId,
+        userId: learningUserId,
+        token: res?.token,
+      });
+      try {
+        await navigator.clipboard.writeText(href);
+        setCopiedUser(u.id);
+        setTimeout(() => setCopiedUser(null), 2500);
+      } catch {
+        /* clipboard optional */
+      }
+      setAccessMsg({
+        id: u.id,
+        type: 'ok',
+        text: locale === 'en' ? 'Learning link created & copied' : 'Learning-Link erstellt & kopiert',
+      });
+    } catch (e) {
+      setAccessMsg({ id: u.id, type: 'err', text: e.message || 'Fehler' });
+    } finally {
+      setAccessBusy(null);
+    }
+  };
+
+  const copyLearningLink = async (u) => {
+    const href = buildLearnHubHref({
+      sessionId: session.sessionId,
+      customerId: trainingCustomerId,
+      userId: u.learningUserId || sanitizeLearningEmail(u.email),
+      token: u.learningToken,
+    });
+    try {
+      await navigator.clipboard.writeText(href);
+      setCopiedUser(u.id);
+      setTimeout(() => setCopiedUser(null), 2500);
+    } catch {
+      /* ignore */
+    }
+  };
 
   const saveCloud = async () => {
     setSyncing(true);
@@ -309,6 +379,66 @@ export default function ImplementationRegisters() {
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
+                  {!portalMode && (
+                    <div className="impl-learning-access">
+                      <button
+                        className="impl-btn impl-btn--nav"
+                        type="button"
+                        onClick={() => grantLearningAccess(u)}
+                        disabled={accessBusy === u.id || !u.email}
+                        title={
+                          locale === 'en'
+                            ? 'Create personal learning hub login'
+                            : 'Persönlichen Learning-Hub-Login erstellen'
+                        }
+                      >
+                        {accessBusy === u.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <GraduationCap className="w-4 h-4" />
+                        )}
+                        {u.learningLinkSentAt
+                          ? locale === 'en'
+                            ? 'Renew learning access'
+                            : 'Learning-Zugang erneuern'
+                          : locale === 'en'
+                            ? 'Grant learning access'
+                            : 'Learning-Zugang geben'}
+                      </button>
+                      {u.learningLinkSentAt && (
+                        <button
+                          className="impl-btn"
+                          type="button"
+                          onClick={() => copyLearningLink(u)}
+                          title={locale === 'en' ? 'Copy learning link' : 'Learning-Link kopieren'}
+                        >
+                          {copiedUser === u.id ? (
+                            <Check className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                          {locale === 'en' ? 'Copy link' : 'Link kopieren'}
+                        </button>
+                      )}
+                      {u.learningUserId && (
+                        <span className="impl-learning-access-id">
+                          {u.learningUserId}
+                          {u.learningLinkSentAt
+                            ? ` · ${new Date(u.learningLinkSentAt).toLocaleDateString(
+                                locale === 'en' ? 'en-GB' : 'de-CH'
+                              )}`
+                            : ''}
+                        </span>
+                      )}
+                      {accessMsg?.id === u.id && (
+                        <span
+                          className={`impl-learning-access-msg impl-learning-access-msg--${accessMsg.type}`}
+                        >
+                          {accessMsg.text}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

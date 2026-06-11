@@ -1,5 +1,29 @@
 /* Implementation Registers — erweitert die .impllog-Klassen */
 
+.impl-learning-access {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--impl-border);
+}
+.impl-learning-access-id {
+  font-size: 11px;
+  color: var(--impl-text-soft);
+  font-family: ui-monospace, monospace;
+}
+.impl-learning-access-msg {
+  font-size: 12px;
+}
+.impl-learning-access-msg--ok {
+  color: #34d399;
+}
+.impl-learning-access-msg--err {
+  color: #f87171;
+}
+
 .impllog-pill {
   font-size: 11px;
   font-weight: 700;

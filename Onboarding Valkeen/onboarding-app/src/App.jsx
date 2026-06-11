@@ -28,6 +28,7 @@ const ImplementationPlan = lazy(() => import('./pages/ImplementationPlan'));
 const ImplementationLog = lazy(() => import('./pages/ImplementationLog'));
 const ImplementationRegisters = lazy(() => import('./pages/ImplementationRegisters'));
 const ImplementationScorecard = lazy(() => import('./pages/ImplementationScorecard'));
+const LearnHub = lazy(() => import('./pages/LearnHub'));
 const ImplementationWorkshopShell = lazy(() => import('./kickoff/ImplementationWorkshopShell'));
 const WorkshopArtifactHost = lazy(() => import('./kickoff/WorkshopArtifactHost'));
 const MeetingWorkshopSheet = lazy(() => import('./kickoff/MeetingWorkshopSheet'));
@@ -174,6 +175,7 @@ function KickoffShortHostRoutes() {
           </Route>
           <Route path="change-workflow/teilnehmer" element={<ChangeWorkflow />} />
         </Route>
+        <Route path="learn" element={<LearnHub />} />
         <Route path="deck" element={<KickoffPresenter />} />
         <Route path="kickoff-presenter/:tenantSlug?" element={<KickoffPresenter />} />
         <Route path="*" element={<KickoffShortHostFallback />} />
@@ -203,6 +205,7 @@ function App() {
           <Route path="kickoff-prep/:prepId" element={<KickoffPrepPublicShell />} />
           <Route path="kickoff-presenter/:tenantSlug?" element={<KickoffPresenter />} />
           <Route path="journey-share/:shareId" element={<JourneyPublicShell />} />
+          <Route path="learn" element={<LearnHub />} />
           <Route path="*" element={<AdminProgressRoutes />} />
         </Routes>
       </Suspense>

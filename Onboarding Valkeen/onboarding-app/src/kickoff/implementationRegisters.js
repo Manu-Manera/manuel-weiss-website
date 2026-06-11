@@ -19,7 +19,19 @@ export const ACCESS_LABEL = {
   en: { none: 'None', viewer: 'Viewer', editor: 'Editor', admin: 'Admin' },
 };
 export function newUser() {
-  return { id: uid('u'), name: '', email: '', role: '', dept: '', access: 'viewer', notes: '' };
+  return {
+    id: uid('u'),
+    name: '',
+    email: '',
+    role: '',
+    dept: '',
+    access: 'viewer',
+    notes: '',
+    learningUserId: '',
+    learningRole: '',
+    learningToken: '',
+    learningLinkSentAt: '',
+  };
 }
 
 /* ---- Rollen & Use-Cases ---- */
