@@ -20,9 +20,12 @@ import {
   IMPL_PHASES,
   STEP_STATUSES,
   STEP_STATUS_LABEL,
-  allModuleKeys,
+  allRightsModuleKeys,
   tx,
 } from '../kickoff/implementationTemplate';
+import ImplementationWorkspaceSwitcher from '../kickoff/ImplementationWorkspaceSwitcher';
+import { upsertWorkspace, workspaceFromSession } from '../kickoff/implementationWorkspace';
+import { useImplPermissions, useImplPortal } from '../kickoff/useImplPermissions';
 import {
   BG_PRESETS,
   FONT_PRESETS,
@@ -71,6 +74,8 @@ export default function ImplementationGuide() {
   const cssVars = useMemo(() => brandingCssVars(branding), [branding]);
   const stepStatus = session.stepStatus || {};
   const permissions = session.modulePermissions || {};
+  const portalMode = useImplPortal();
+  const perms = useImplPermissions(session, portalMode);
 
   useEffect(() => {
     try {
@@ -93,6 +98,8 @@ export default function ImplementationGuide() {
 
   useEffect(() => {
     saveLocalSession(session);
+    const meta = workspaceFromSession({ ...session, updatedAt: Date.now() });
+    if (meta) upsertWorkspace(meta);
   }, [session]);
 
   const patch = useCallback((p) => setSession((s) => ({ ...s, ...p })), []);
@@ -113,10 +120,19 @@ export default function ImplementationGuide() {
 
   const openStep = (step) => {
     if (!step.to) return;
+    if (!perms.canView(step.module)) return;
     const params = new URLSearchParams();
     if (session.sessionId) params.set('s', session.sessionId);
     if (session.customer) params.set('c', session.customer);
+    if (portalMode) params.set('portal', '1');
     navigate(`${step.to}?${params.toString()}`);
+  };
+
+  const navParams = () => {
+    const p = new URLSearchParams();
+    if (session.sessionId) p.set('s', session.sessionId);
+    if (portalMode) p.set('portal', '1');
+    return p;
   };
 
   const linkOpts = {
@@ -162,7 +178,7 @@ export default function ImplementationGuide() {
   };
 
   return (
-    <div className="impl-guide" style={cssVars}>
+    <div className={`impl-guide ${portalMode ? 'impl-guide--portal' : ''}`} style={cssVars}>
       <header className="impl-header">
         <div className="impl-brandline">
           {branding.logoUrl ? (
@@ -171,6 +187,14 @@ export default function ImplementationGuide() {
             <Sparkles className="w-7 h-7" style={{ color: 'var(--impl-primary)' }} />
           )}
           <div>
+            {!portalMode && (
+              <ImplementationWorkspaceSwitcher session={session} locale={locale} />
+            )}
+            {portalMode && (
+              <span className="impl-portal-badge">
+                {locale === 'en' ? 'Customer portal' : 'Kundenportal'}
+              </span>
+            )}
             <h1 className="impl-title">
               {session.customer
                 ? `${session.customer} — Implementation`
@@ -187,94 +211,110 @@ export default function ImplementationGuide() {
           {branding.customerLogoUrl && (
             <img className="impl-logo impl-logo--customer" src={branding.customerLogoUrl} alt="" />
           )}
-          <button
-            className="impl-btn"
-            onClick={() => {
-              const p = new URLSearchParams();
-              if (session.sessionId) p.set('s', session.sessionId);
-              navigate(`/implementation-plan?${p.toString()}`);
-            }}
-            type="button"
-          >
-            <GanttChartSquare className="w-4 h-4" />
-            {locale === 'en' ? 'Project plan' : 'Projektplan'}
-          </button>
-          <button
-            className="impl-btn"
-            onClick={() => {
-              const p = new URLSearchParams();
-              if (session.sessionId) p.set('s', session.sessionId);
-              navigate(`/implementation-log?${p.toString()}`);
-            }}
-            type="button"
-          >
-            <ClipboardList className="w-4 h-4" />
-            {locale === 'en' ? 'Project log' : 'Projekt-Log'}
-          </button>
-          <button
-            className="impl-btn"
-            onClick={() => {
-              const p = new URLSearchParams();
-              if (session.sessionId) p.set('s', session.sessionId);
-              navigate(`/implementation-registers?${p.toString()}`);
-            }}
-            type="button"
-          >
-            <Users className="w-4 h-4" />
-            {locale === 'en' ? 'Registers' : 'Register'}
-          </button>
-          <button className="impl-btn" onClick={() => setDrawer('rights')} type="button">
-            {locale === 'en' ? 'Rights' : 'Rechte'}
-          </button>
-          <button className="impl-btn" onClick={() => setDrawer('branding')} type="button">
-            <Palette className="w-4 h-4" />
-            {locale === 'en' ? 'Branding' : 'Branding'}
-          </button>
-          <button className="impl-btn" onClick={copyCustomerLink} type="button">
-            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-            {locale === 'en' ? 'Customer link' : 'Kunden-Link'}
-          </button>
-          <button className="impl-btn impl-btn--primary" onClick={saveCloud} type="button" disabled={syncing}>
-            {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Cloud className="w-4 h-4" />}
-            {locale === 'en' ? 'Save' : 'Speichern'}
-          </button>
+          {perms.canView('plan') && (
+            <button
+              className="impl-btn impl-btn--nav"
+              onClick={() => navigate(`/implementation-plan?${navParams().toString()}`)}
+              type="button"
+            >
+              <GanttChartSquare className="w-4 h-4" />
+              {locale === 'en' ? 'Project plan' : 'Projektplan'}
+            </button>
+          )}
+          {perms.canView('log') && (
+            <button
+              className="impl-btn impl-btn--nav"
+              onClick={() => navigate(`/implementation-log?${navParams().toString()}`)}
+              type="button"
+            >
+              <ClipboardList className="w-4 h-4" />
+              {locale === 'en' ? 'Project log' : 'Projekt-Log'}
+            </button>
+          )}
+          {(perms.canView('stakeholders') ||
+            perms.canView('uat') ||
+            perms.canView('risks') ||
+            perms.canView('roles')) && (
+            <button
+              className="impl-btn impl-btn--nav"
+              onClick={() => navigate(`/implementation-registers?${navParams().toString()}`)}
+              type="button"
+            >
+              <Users className="w-4 h-4" />
+              {locale === 'en' ? 'Registers' : 'Register'}
+            </button>
+          )}
+          {!portalMode && (
+            <button className="impl-btn" onClick={() => setDrawer('rights')} type="button">
+              {locale === 'en' ? 'Rights' : 'Rechte'}
+            </button>
+          )}
+          {!portalMode && (
+            <button className="impl-btn" onClick={() => setDrawer('branding')} type="button">
+              <Palette className="w-4 h-4" />
+              {locale === 'en' ? 'Branding' : 'Branding'}
+            </button>
+          )}
+          {!portalMode && (
+            <button className="impl-btn" onClick={copyCustomerLink} type="button">
+              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              {locale === 'en' ? 'Customer link' : 'Kunden-Link'}
+            </button>
+          )}
+          {!portalMode && (
+            <button className="impl-btn impl-btn--primary" onClick={saveCloud} type="button" disabled={syncing}>
+              {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Cloud className="w-4 h-4" />}
+              {locale === 'en' ? 'Save' : 'Speichern'}
+            </button>
+          )}
+          {portalMode && (
+            <button className="impl-btn impl-btn--primary" onClick={saveCloud} type="button" disabled={syncing}>
+              {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Cloud className="w-4 h-4" />}
+              {locale === 'en' ? 'Save' : 'Speichern'}
+            </button>
+          )}
         </div>
       </header>
 
-      <div className="impl-meta impl-glass">
-        <div>
-          <label>{locale === 'en' ? 'Customer' : 'Kunde'}</label>
-          <input
-            className="impl-input"
-            value={session.customer || ''}
-            placeholder={locale === 'en' ? 'Customer name' : 'Kundenname'}
-            onChange={(e) => patch({ customer: e.target.value })}
-          />
+      {!portalMode && (
+        <div className="impl-meta impl-glass">
+          <div>
+            <label>{locale === 'en' ? 'Customer' : 'Kunde'}</label>
+            <input
+              className="impl-input"
+              value={session.customer || ''}
+              placeholder={locale === 'en' ? 'Customer name' : 'Kundenname'}
+              onChange={(e) => patch({ customer: e.target.value })}
+            />
+          </div>
+          <div>
+            <label>{locale === 'en' ? 'Link short name' : 'Link-Kurzname'}</label>
+            <input
+              className="impl-input"
+              value={session.linkLabel || ''}
+              placeholder={suggestLinkLabelFromCustomer(session.customer) || 'kunde'}
+              onChange={(e) => patch({ linkLabel: e.target.value })}
+            />
+          </div>
+          <div>
+            <label>{locale === 'en' ? 'Language' : 'Sprache'}</label>
+            <select
+              className="impl-select"
+              value={locale}
+              onChange={(e) => patch({ locale: e.target.value })}
+            >
+              <option value="de">Deutsch</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+          {syncMsg && (
+            <div style={{ alignSelf: 'end', fontSize: 13, color: 'var(--impl-accent)' }}>{syncMsg}</div>
+          )}
         </div>
-        <div>
-          <label>{locale === 'en' ? 'Link short name' : 'Link-Kurzname'}</label>
-          <input
-            className="impl-input"
-            value={session.linkLabel || ''}
-            placeholder={suggestLinkLabelFromCustomer(session.customer) || 'kunde'}
-            onChange={(e) => patch({ linkLabel: e.target.value })}
-          />
-        </div>
-        <div>
-          <label>{locale === 'en' ? 'Language' : 'Sprache'}</label>
-          <select
-            className="impl-select"
-            value={locale}
-            onChange={(e) => patch({ locale: e.target.value })}
-          >
-            <option value="de">Deutsch</option>
-            <option value="en">English</option>
-          </select>
-        </div>
-        {syncMsg && (
-          <div style={{ alignSelf: 'end', fontSize: 13, color: 'var(--impl-accent)' }}>{syncMsg}</div>
-        )}
-      </div>
+      )}
+      {portalMode && syncMsg && (
+        <div style={{ marginBottom: 12, fontSize: 13, color: 'var(--impl-accent)' }}>{syncMsg}</div>
+      )}
 
       <div className="impl-progress-wrap">
         <div className="impl-progress">
@@ -297,28 +337,31 @@ export default function ImplementationGuide() {
             </div>
             <div className="impl-steps">
               {phase.steps.map((step) => {
+                if (perms.isHidden(step.module)) return null;
                 const st = stepStatus[step.id] || 'open';
                 const isInfo = step.kind === 'info';
                 const isMilestone = step.kind === 'milestone';
-                const right = permissions[step.module] || 'view';
+                const canEditStep = perms.canEdit(step.module);
                 return (
                   <div
                     key={step.id}
                     className={`impl-step ${isInfo || isMilestone ? 'impl-step--info' : ''}`}
                     onClick={() => openStep(step)}
-                    role={step.to ? 'button' : undefined}
-                    tabIndex={step.to ? 0 : undefined}
+                    role={step.to && perms.canView(step.module) ? 'button' : undefined}
+                    tabIndex={step.to && perms.canView(step.module) ? 0 : undefined}
                     onKeyDown={(e) => {
-                      if (step.to && (e.key === 'Enter' || e.key === ' ')) openStep(step);
+                      if (step.to && perms.canView(step.module) && (e.key === 'Enter' || e.key === ' '))
+                        openStep(step);
                     }}
                   >
                     <button
                       type="button"
                       className={`impl-step-dot impl-step-dot--${st}`}
                       title={STEP_STATUS_LABEL[locale][st]}
+                      disabled={!canEditStep}
                       onClick={(e) => {
                         e.stopPropagation();
-                        cycleStatus(step.id);
+                        if (canEditStep) cycleStatus(step.id);
                       }}
                       aria-label="Status"
                     />
@@ -336,8 +379,8 @@ export default function ImplementationGuide() {
                             {locale === 'en' ? 'Milestone' : 'Meilenstein'}
                           </span>
                         )}
-                        {step.to && (
-                          <span className="impl-chip impl-chip--rights">{RIGHTS_LABEL[right]}</span>
+                        {step.to && portalMode && (
+                          <span className="impl-chip impl-chip--rights">{perms.rightLabel(step.module)}</span>
                         )}
                       </div>
                     </div>
@@ -514,7 +557,7 @@ function BrandingDrawer({ branding, onChange, onReset, onClose }) {
 }
 
 function RightsDrawer({ permissions, onChange, onClose }) {
-  const modules = allModuleKeys();
+  const modules = allRightsModuleKeys();
   return (
     <div className="impl-drawer-backdrop" onClick={onClose}>
       <div className="impl-drawer" onClick={(e) => e.stopPropagation()}>

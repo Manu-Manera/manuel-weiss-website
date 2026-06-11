@@ -26,6 +26,8 @@ import {
   saveCloudSession,
   saveLocalSession,
 } from '../kickoff/kickoffStudioService';
+import { upsertWorkspace, workspaceFromSession } from '../kickoff/implementationWorkspace';
+import { useImplPermissions, useImplPortal } from '../kickoff/useImplPermissions';
 
 function initSession(searchParams) {
   const sid = searchParams.get('s') || searchParams.get('session');
@@ -47,6 +49,10 @@ export default function ImplementationLog() {
   const [syncMsg, setSyncMsg] = useState('');
 
   const locale = session.locale || 'de';
+  const portalMode = useImplPortal();
+  const perms = useImplPermissions(session, portalMode);
+  const canEditLog = perms.canEdit('log');
+  const canEditDecisions = perms.canEdit('decisions');
   const cssVars = useMemo(() => brandingCssVars(normalizeBranding(session.branding)), [session.branding]);
 
   const meetings = session.meetings || [];
@@ -76,6 +82,8 @@ export default function ImplementationLog() {
 
   useEffect(() => {
     saveLocalSession(session);
+    const meta = workspaceFromSession({ ...session, updatedAt: Date.now() });
+    if (meta) upsertWorkspace(meta);
   }, [session]);
 
   // --- meetings ---
@@ -151,17 +159,52 @@ export default function ImplementationLog() {
   const backToGuide = () => {
     const p = new URLSearchParams();
     if (session.sessionId) p.set('s', session.sessionId);
+    if (portalMode) p.set('portal', '1');
     navigate(`/implementation-studio?${p.toString()}`);
   };
 
-  const TABS = [
-    { id: 'meetings', label: locale === 'en' ? 'Meetings / Weeklys' : 'Meetings / Weeklys' },
-    { id: 'actions', label: `Action Items${rollup.length ? ` (${rollup.length})` : ''}` },
-    { id: 'decisions', label: locale === 'en' ? 'Decisions' : 'Entscheidungen' },
-  ];
+  const TABS = useMemo(
+    () =>
+      [
+        perms.canView('log') && {
+          id: 'meetings',
+          label: locale === 'en' ? 'Meetings / Weeklys' : 'Meetings / Weeklys',
+        },
+        perms.canView('log') && {
+          id: 'actions',
+          label: `Action Items${rollup.length ? ` (${rollup.length})` : ''}`,
+        },
+        perms.canView('decisions') && {
+          id: 'decisions',
+          label: locale === 'en' ? 'Decisions' : 'Entscheidungen',
+        },
+      ].filter(Boolean),
+    [locale, rollup.length, perms]
+  );
+
+  const tabCanEdit =
+    tab === 'decisions' ? canEditDecisions : tab === 'meetings' || tab === 'actions' ? canEditLog : false;
+
+  useEffect(() => {
+    if (!TABS.some((t) => t.id === tab) && TABS[0]) setTab(TABS[0].id);
+  }, [TABS, tab]);
+
+  if (!perms.canView('log') && !perms.canView('decisions')) {
+    return (
+      <div className="impllog" style={cssVars}>
+        <p className="impllog-empty">
+          {locale === 'en' ? 'This module is not available in your portal.' : 'Dieses Modul ist in Ihrem Portal nicht freigeschaltet.'}
+        </p>
+        <button className="impl-btn" onClick={backToGuide} type="button">
+          <ArrowLeft className="w-4 h-4" />
+          {locale === 'en' ? 'Back to guide' : 'Zurück zum Leitfaden'}
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="impllog" style={cssVars}>
+    <div className={`impllog ${!tabCanEdit ? 'impl-readonly' : ''}`} style={cssVars}>
       <div className="impllog-head">
         <div>
           <h1 className="impllog-title">
@@ -174,10 +217,12 @@ export default function ImplementationLog() {
             <ArrowLeft className="w-4 h-4" />
             {locale === 'en' ? 'Guide' : 'Leitfaden'}
           </button>
-          <button className="impl-btn impl-btn--primary" onClick={saveCloud} type="button" disabled={syncing}>
-            {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Cloud className="w-4 h-4" />}
-            {locale === 'en' ? 'Save' : 'Speichern'}
-          </button>
+          {(canEditLog || canEditDecisions) && (
+            <button className="impl-btn impl-btn--primary" onClick={saveCloud} type="button" disabled={syncing}>
+              {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Cloud className="w-4 h-4" />}
+              {locale === 'en' ? 'Save' : 'Speichern'}
+            </button>
+          )}
           {syncMsg && <span style={{ fontSize: 13, color: 'var(--impl-accent)' }}>{syncMsg}</span>}
         </div>
       </div>

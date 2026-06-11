@@ -141,7 +141,13 @@ function KickoffShortHostRoutes() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
-        <Route path="/" element={<KickoffPresenter />} />
+        <Route path="/" element={<ImplementationGuide />} />
+        <Route path="implementation-plan" element={<ImplementationPlan />} />
+        <Route path="implementation-log" element={<ImplementationLog />} />
+        <Route path="implementation-registers" element={<ImplementationRegisters />} />
+        <Route path="implementation-studio" element={<ImplementationGuide />} />
+        <Route path="deck" element={<KickoffPresenter />} />
+        <Route path="kickoff-presenter/:tenantSlug?" element={<KickoffPresenter />} />
         <Route path="*" element={<KickoffShortHostFallback />} />
       </Routes>
     </Suspense>

@@ -31,6 +31,12 @@ import {
   saveCloudSession,
   saveLocalSession,
 } from '../kickoff/kickoffStudioService';
+import { upsertWorkspace, workspaceFromSession } from '../kickoff/implementationWorkspace';
+import {
+  registerModuleForTab,
+  useImplPermissions,
+  useImplPortal,
+} from '../kickoff/useImplPermissions';
 
 function initSession(searchParams) {
   const sid = searchParams.get('s') || searchParams.get('session');
@@ -56,6 +62,10 @@ export default function ImplementationRegisters() {
   const [syncMsg, setSyncMsg] = useState('');
 
   const locale = session.locale || 'de';
+  const portalMode = useImplPortal();
+  const perms = useImplPermissions(session, portalMode);
+  const tabModule = registerModuleForTab(tab);
+  const canEditTab = perms.canEdit(tabModule);
   const cssVars = useMemo(() => brandingCssVars(normalizeBranding(session.branding)), [session.branding]);
 
   const users = session.users || [];
@@ -87,6 +97,8 @@ export default function ImplementationRegisters() {
 
   useEffect(() => {
     saveLocalSession(session);
+    const meta = workspaceFromSession({ ...session, updatedAt: Date.now() });
+    if (meta) upsertWorkspace(meta);
   }, [session]);
 
   const setKey = (key, seed) => (updater) =>
@@ -138,20 +150,60 @@ export default function ImplementationRegisters() {
   const backToGuide = () => {
     const p = new URLSearchParams();
     if (session.sessionId) p.set('s', session.sessionId);
+    if (portalMode) p.set('portal', '1');
     navigate(`/implementation-studio?${p.toString()}`);
   };
 
   const roleNames = roles.map((r) => r.name).filter(Boolean);
 
-  const TABS = [
-    { id: 'users', label: locale === 'en' ? 'Users / Stakeholders' : 'User / Stakeholder' },
-    { id: 'roles', label: locale === 'en' ? 'Roles & use cases' : 'Rollen & Use-Cases' },
-    { id: 'uat', label: locale === 'en' ? 'UAT checklist' : 'UAT-Checkliste' },
-    { id: 'risks', label: locale === 'en' ? 'Risks' : 'Risiken' },
-  ];
+  const TABS = useMemo(
+    () =>
+      [
+        perms.canView('stakeholders') && {
+          id: 'users',
+          label: locale === 'en' ? 'Users / Stakeholders' : 'User / Stakeholder',
+        },
+        perms.canView('roles') && {
+          id: 'roles',
+          label: locale === 'en' ? 'Roles & use cases' : 'Rollen & Use-Cases',
+        },
+        perms.canView('uat') && {
+          id: 'uat',
+          label: locale === 'en' ? 'UAT checklist' : 'UAT-Checkliste',
+        },
+        perms.canView('risks') && {
+          id: 'risks',
+          label: locale === 'en' ? 'Risks' : 'Risiken',
+        },
+      ].filter(Boolean),
+    [locale, perms]
+  );
+
+  useEffect(() => {
+    if (!TABS.some((t) => t.id === tab) && TABS[0]) setTab(TABS[0].id);
+  }, [TABS, tab]);
+
+  if (
+    !perms.canView('stakeholders') &&
+    !perms.canView('roles') &&
+    !perms.canView('uat') &&
+    !perms.canView('risks')
+  ) {
+    return (
+      <div className="impllog" style={cssVars}>
+        <p className="impllog-empty">
+          {locale === 'en' ? 'This module is not available in your portal.' : 'Dieses Modul ist in Ihrem Portal nicht freigeschaltet.'}
+        </p>
+        <button className="impl-btn" onClick={backToGuide} type="button">
+          <ArrowLeft className="w-4 h-4" />
+          {locale === 'en' ? 'Back to guide' : 'Zurück zum Leitfaden'}
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="impllog" style={cssVars}>
+    <div className={`impllog ${!canEditTab ? 'impl-readonly' : ''}`} style={cssVars}>
       <div className="impllog-head">
         <h1 className="impllog-title">
           {locale === 'en' ? 'Registers' : 'Register'}
@@ -162,10 +214,15 @@ export default function ImplementationRegisters() {
             <ArrowLeft className="w-4 h-4" />
             {locale === 'en' ? 'Guide' : 'Leitfaden'}
           </button>
-          <button className="impl-btn impl-btn--primary" onClick={saveCloud} type="button" disabled={syncing}>
-            {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Cloud className="w-4 h-4" />}
-            {locale === 'en' ? 'Save' : 'Speichern'}
-          </button>
+          {(perms.canEdit('stakeholders') ||
+            perms.canEdit('roles') ||
+            perms.canEdit('uat') ||
+            perms.canEdit('risks')) && (
+            <button className="impl-btn impl-btn--primary" onClick={saveCloud} type="button" disabled={syncing}>
+              {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Cloud className="w-4 h-4" />}
+              {locale === 'en' ? 'Save' : 'Speichern'}
+            </button>
+          )}
           {syncMsg && <span style={{ fontSize: 13, color: 'var(--impl-accent)' }}>{syncMsg}</span>}
         </div>
       </div>

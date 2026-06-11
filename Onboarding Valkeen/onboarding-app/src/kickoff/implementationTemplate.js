@@ -319,10 +319,17 @@ export const STANDARD_ROLES = [
   'Resource Manager / Team Lead',
 ];
 
+export const EXTRA_MODULE_KEYS = ['plan', 'log', 'roles', 'risks', 'registers'];
+
 export function allModuleKeys() {
   const keys = new Set();
   for (const ph of IMPL_PHASES) for (const s of ph.steps) keys.add(s.module);
   return [...keys];
+}
+
+/** Alle Keys für die Kunden-Rechte-Matrix (Leitfaden-Steps + Framework-Module). */
+export function allRightsModuleKeys() {
+  return [...new Set([...allModuleKeys(), ...EXTRA_MODULE_KEYS])].sort();
 }
 
 export function tx(node, locale) {

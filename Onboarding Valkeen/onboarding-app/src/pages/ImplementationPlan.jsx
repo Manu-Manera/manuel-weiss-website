@@ -37,6 +37,8 @@ import {
   saveCloudSession,
   saveLocalSession,
 } from '../kickoff/kickoffStudioService';
+import { upsertWorkspace, workspaceFromSession } from '../kickoff/implementationWorkspace';
+import { useImplPermissions, useImplPortal } from '../kickoff/useImplPermissions';
 
 const MONTHS = {
   de: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
@@ -65,6 +67,9 @@ export default function ImplementationPlan() {
   const [syncMsg, setSyncMsg] = useState('');
 
   const locale = session.locale || 'de';
+  const portalMode = useImplPortal();
+  const perms = useImplPermissions(session, portalMode);
+  const canEdit = perms.canEdit('plan');
   const cssVars = useMemo(() => brandingCssVars(normalizeBranding(session.branding)), [session.branding]);
 
   const tasks = useMemo(() => {
@@ -93,6 +98,8 @@ export default function ImplementationPlan() {
 
   useEffect(() => {
     saveLocalSession(session);
+    const meta = workspaceFromSession({ ...session, updatedAt: Date.now() });
+    if (meta) upsertWorkspace(meta);
   }, [session]);
 
   const setTasks = useCallback(
@@ -197,13 +204,28 @@ export default function ImplementationPlan() {
   const backToGuide = () => {
     const p = new URLSearchParams();
     if (session.sessionId) p.set('s', session.sessionId);
+    if (portalMode) p.set('portal', '1');
     navigate(`/implementation-studio?${p.toString()}`);
   };
+
+  if (!perms.canView('plan')) {
+    return (
+      <div className="implplan" style={cssVars}>
+        <p className="impllog-empty">
+          {locale === 'en' ? 'This module is not available in your portal.' : 'Dieses Modul ist in Ihrem Portal nicht freigeschaltet.'}
+        </p>
+        <button className="impl-btn" onClick={backToGuide} type="button">
+          <ArrowLeft className="w-4 h-4" />
+          {locale === 'en' ? 'Back to guide' : 'Zurück zum Leitfaden'}
+        </button>
+      </div>
+    );
+  }
 
   const editingTask = tasks.find((t) => t.id === editing) || null;
 
   return (
-    <div className="implplan" style={cssVars}>
+    <div className={`implplan ${!canEdit ? 'impl-readonly' : ''}`} style={cssVars}>
       <div className="implplan-head">
         <div>
           <h1 className="implplan-title">
@@ -245,10 +267,12 @@ export default function ImplementationPlan() {
               </button>
             </>
           )}
-          <button className="impl-btn impl-btn--primary" onClick={saveCloud} type="button" disabled={syncing}>
-            {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Cloud className="w-4 h-4" />}
-            {locale === 'en' ? 'Save' : 'Speichern'}
-          </button>
+          {canEdit && (
+            <button className="impl-btn impl-btn--primary" onClick={saveCloud} type="button" disabled={syncing}>
+              {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Cloud className="w-4 h-4" />}
+              {locale === 'en' ? 'Save' : 'Speichern'}
+            </button>
+          )}
           {syncMsg && <span style={{ fontSize: 13, color: 'var(--impl-accent)' }}>{syncMsg}</span>}
         </div>
       </div>
