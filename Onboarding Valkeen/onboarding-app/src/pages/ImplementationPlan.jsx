@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft,
   Cloud,
+  Diamond,
+  GitBranch,
   Loader2,
   Plus,
   Trash2,
@@ -22,9 +24,13 @@ import {
   buildDefaultPlan,
   dayDiff,
   newTask,
+  newMilestone,
   parseISO,
   phaseTitle,
-  allStepIdsForDeps,
+  dependencyOptions,
+  depMatches,
+  resolveDependency,
+  dependentsOf,
   isTaskBlocked,
   planBounds,
   toISO,
@@ -76,6 +82,9 @@ export default function ImplementationPlan() {
   const [view, setView] = useState('gantt');
   const [pxPerDay, setPxPerDay] = useState(18);
   const [editing, setEditing] = useState(null); // task id
+  const [showDeps, setShowDeps] = useState(true);
+  const [hoverTaskId, setHoverTaskId] = useState(null);
+  const [depPaths, setDepPaths] = useState([]);
   const [password, setPassword] = useState('');
   const [syncing, setSyncing] = useState(false);
   const [syncMsg, setSyncMsg] = useState('');
@@ -175,11 +184,87 @@ export default function ImplementationPlan() {
   const updateTask = (id, patch) =>
     setTasks((arr) => arr.map((t) => (t.id === id ? { ...t, ...patch } : t)));
   const removeTask = (id) => setTasks((arr) => arr.filter((t) => t.id !== id));
+
+  /** Startdatum für neue Items: nach dem letzten Item der Phase, sonst heute. */
+  const phaseDefaultStart = (phaseId) => {
+    const inPhase = tasks.filter((t) => t.phaseId === phaseId);
+    if (!inPhase.length) return toISO(new Date());
+    const lastEnd = inPhase
+      .map((t) => t.end || t.start)
+      .filter(Boolean)
+      .sort()
+      .pop();
+    return lastEnd ? toISO(addDays(parseISO(lastEnd), 1)) : toISO(new Date());
+  };
+
   const addTaskToPhase = (phaseId) => {
-    const t = newTask(phaseId, toISO(new Date()));
+    const t = newTask(phaseId, phaseDefaultStart(phaseId));
     t.title = locale === 'en' ? 'New task' : 'Neue Aufgabe';
     setTasks((arr) => [...arr, t]);
     setEditing(t.id);
+  };
+  const addMilestoneToPhase = (phaseId) => {
+    const t = newMilestone(phaseId, phaseDefaultStart(phaseId));
+    t.title = locale === 'en' ? 'New milestone' : 'Neuer Meilenstein';
+    setTasks((arr) => [...arr, t]);
+    setEditing(t.id);
+  };
+
+  const customPhases = session.customPhases || [];
+  const allPhases = useMemo(
+    () => [
+      ...IMPL_PHASES.map((p) => ({ id: p.id, title: p.title, custom: false })),
+      ...customPhases.map((p) => ({
+        id: p.id,
+        title: typeof p.title === 'string' ? { de: p.title, en: p.title } : p.title,
+        custom: true,
+      })),
+    ],
+    [customPhases]
+  );
+  const phaseLabelFor = useCallback(
+    (phaseId) => {
+      const custom = customPhases.find((p) => p.id === phaseId);
+      if (custom) return typeof custom.title === 'string' ? custom.title : custom.title?.[locale] || custom.title?.de || phaseId;
+      return phaseTitle(phaseId, locale);
+    },
+    [customPhases, locale]
+  );
+
+  const addPhase = () => {
+    const name = typeof window !== 'undefined'
+      ? window.prompt(locale === 'en' ? 'New phase name' : 'Name der neuen Phase', locale === 'en' ? 'New phase' : 'Neue Phase')
+      : null;
+    if (!name) return;
+    const id = `cph-${Math.random().toString(36).slice(2, 8)}`;
+    setSession((s) => ({
+      ...s,
+      customPhases: [...(s.customPhases || []), { id, title: { de: name, en: name } }],
+    }));
+  };
+  const renamePhase = (phaseId, name) => {
+    setSession((s) => ({
+      ...s,
+      customPhases: (s.customPhases || []).map((p) =>
+        p.id === phaseId ? { ...p, title: { de: name, en: name } } : p
+      ),
+    }));
+  };
+  const removePhase = (phaseId) => {
+    const hasTasks = tasks.some((t) => t.phaseId === phaseId);
+    if (hasTasks && typeof window !== 'undefined') {
+      const ok = window.confirm(
+        locale === 'en'
+          ? 'This phase still has tasks. Delete phase and its tasks?'
+          : 'Diese Phase enthält noch Aufgaben. Phase samt Aufgaben löschen?'
+      );
+      if (!ok) return;
+    }
+    setTasks((arr) => arr.filter((t) => t.phaseId !== phaseId));
+    setSession((s) => ({
+      ...s,
+      customPhases: (s.customPhases || []).filter((p) => p.id !== phaseId),
+    }));
   };
 
   const cycleStatus = (id) => {
@@ -224,10 +309,10 @@ export default function ImplementationPlan() {
 
   const tasksByPhase = useMemo(() => {
     const map = {};
-    for (const ph of IMPL_PHASES) map[ph.id] = [];
+    for (const ph of allPhases) map[ph.id] = [];
     for (const t of tasks) (map[t.phaseId] = map[t.phaseId] || []).push(t);
     return map;
-  }, [tasks]);
+  }, [tasks, allPhases]);
 
   const progress = useMemo(() => {
     if (!tasks.length) return 0;
@@ -238,6 +323,63 @@ export default function ImplementationPlan() {
       ) / tasks.length
     );
   }, [tasks, session, trainingAggregate, locale]);
+
+  const ganttInnerRef = useRef(null);
+  const barRefs = useRef({});
+  const setBarRef = useCallback((id, el) => {
+    if (el) barRefs.current[id] = el;
+    else delete barRefs.current[id];
+  }, []);
+
+  /** Verwandte Tasks (Vorgänger + Nachfolger) für Hover-Hervorhebung. */
+  const relatedIds = useMemo(() => {
+    if (!hoverTaskId) return null;
+    const t = tasks.find((x) => x.id === hoverTaskId);
+    if (!t) return null;
+    const set = new Set([hoverTaskId]);
+    for (const dep of t.dependsOn || []) {
+      const pred = resolveDependency(tasks, dep);
+      if (pred) set.add(pred.id);
+    }
+    for (const succ of dependentsOf(t, tasks)) set.add(succ.id);
+    return set;
+  }, [hoverTaskId, tasks]);
+
+  /** Pfeile zwischen Vorgänger und Nachfolger aus gemessenen Balkenpositionen. */
+  useLayoutEffect(() => {
+    if (view !== 'gantt' || !showDeps) {
+      setDepPaths([]);
+      return;
+    }
+    const inner = ganttInnerRef.current;
+    if (!inner) return;
+    const base = inner.getBoundingClientRect();
+    const paths = [];
+    for (const t of tasks) {
+      for (const dep of t.dependsOn || []) {
+        const pred = resolveDependency(tasks, dep);
+        if (!pred) continue;
+        const fromEl = barRefs.current[pred.id];
+        const toEl = barRefs.current[t.id];
+        if (!fromEl || !toEl) continue;
+        const f = fromEl.getBoundingClientRect();
+        const to = toEl.getBoundingClientRect();
+        const x1 = f.right - base.left + inner.scrollLeft;
+        const y1 = f.top + f.height / 2 - base.top + inner.scrollTop;
+        const x2 = to.left - base.left + inner.scrollLeft;
+        const y2 = to.top + to.height / 2 - base.top + inner.scrollTop;
+        paths.push({
+          id: `${pred.id}->${t.id}`,
+          x1,
+          y1,
+          x2,
+          y2,
+          active: relatedIds ? relatedIds.has(pred.id) && relatedIds.has(t.id) : false,
+        });
+      }
+    }
+    setDepPaths(paths);
+  }, [view, showDeps, tasks, pxPerDay, relatedIds, trainingAggregate, session, locale]);
 
   const saveCloud = async () => {
     setSyncing(true);
@@ -352,6 +494,15 @@ export default function ImplementationPlan() {
           </div>
           {view === 'gantt' && (
             <>
+              <button
+                className={`impl-btn ${showDeps ? 'impl-btn--nav' : ''}`}
+                onClick={() => setShowDeps((v) => !v)}
+                type="button"
+                title={locale === 'en' ? 'Toggle dependency arrows' : 'Abhängigkeitspfeile ein/aus'}
+              >
+                <GitBranch className="w-4 h-4" />
+                {locale === 'en' ? 'Dependencies' : 'Abhängigkeiten'}
+              </button>
               <button className="impl-btn" onClick={() => setPxPerDay((p) => Math.max(6, p - 4))} type="button">
                 <ZoomOut className="w-4 h-4" />
               </button>
@@ -359,6 +510,12 @@ export default function ImplementationPlan() {
                 <ZoomIn className="w-4 h-4" />
               </button>
             </>
+          )}
+          {canEdit && view !== 'learning' && (
+            <button className="impl-btn" onClick={addPhase} type="button">
+              <Plus className="w-4 h-4" />
+              {locale === 'en' ? 'Phase' : 'Phase'}
+            </button>
           )}
           {canEdit && (
             <button className="impl-btn impl-btn--primary" onClick={saveCloud} type="button" disabled={syncing}>
@@ -435,7 +592,7 @@ export default function ImplementationPlan() {
         />
       ) : view === 'gantt' ? (
         <div className="gantt">
-          <div className="gantt-inner">
+          <div className="gantt-inner" ref={ganttInnerRef}>
             {/* header */}
             <div className="gantt-row gantt-header-row">
               <div className="gantt-label gantt-phase-label">
@@ -450,13 +607,44 @@ export default function ImplementationPlan() {
               </div>
             </div>
 
-            {IMPL_PHASES.map((ph) => {
+            {allPhases.map((ph) => {
               const phaseTasks = tasksByPhase[ph.id] || [];
               return (
                 <div key={ph.id}>
                   <div className="gantt-row">
-                    <div className="gantt-label">
-                      <div className="gantt-phase-label">{phaseTitle(ph.id, locale)}</div>
+                    <div className="gantt-label gantt-phase-row-label">
+                      <div className="gantt-phase-label">{phaseLabelFor(ph.id)}</div>
+                      {canEdit && (
+                        <div className="gantt-phase-add">
+                          <button
+                            className="gantt-add-btn"
+                            onClick={() => addTaskToPhase(ph.id)}
+                            type="button"
+                            title={locale === 'en' ? 'Add task' : 'Aufgabe hinzufügen'}
+                          >
+                            <Plus className="w-3 h-3" />
+                            {locale === 'en' ? 'Task' : 'Aufgabe'}
+                          </button>
+                          <button
+                            className="gantt-add-btn"
+                            onClick={() => addMilestoneToPhase(ph.id)}
+                            type="button"
+                            title={locale === 'en' ? 'Add milestone' : 'Meilenstein hinzufügen'}
+                          >
+                            <Diamond className="w-3 h-3" />
+                          </button>
+                          {ph.custom && (
+                            <button
+                              className="gantt-add-btn gantt-add-btn--danger"
+                              onClick={() => removePhase(ph.id)}
+                              type="button"
+                              title={locale === 'en' ? 'Delete phase' : 'Phase löschen'}
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div className="gantt-timeline gantt-phase-track" style={{ width: totalWidth }}>
                       {weekLines.map((x, i) => (
@@ -465,30 +653,52 @@ export default function ImplementationPlan() {
                       {todayX != null && <div className="gantt-today" style={{ left: todayX }} />}
                     </div>
                   </div>
+                  {phaseTasks.length === 0 && canEdit && (
+                    <div className="gantt-row gantt-row--empty">
+                      <div className="gantt-label">
+                        <button className="gantt-add-btn" onClick={() => addTaskToPhase(ph.id)} type="button">
+                          <Plus className="w-3 h-3" />
+                          {locale === 'en' ? 'Add first task' : 'Erste Aufgabe'}
+                        </button>
+                      </div>
+                      <div className="gantt-timeline" style={{ width: totalWidth }} />
+                    </div>
+                  )}
                   {phaseTasks.map((t) => {
                     const left = xFor(t.start);
                     const w = Math.max(pxPerDay, (dayDiff(t.start, t.end) + 1) * pxPerDay);
                     const prog = combinedTaskProgress(t, session, trainingAggregate, locale);
-                    const learnPct = learningModuleStatuses(t, session, trainingAggregate, locale).length
-                      ? Math.round(
-                          learningModuleStatuses(t, session, trainingAggregate, locale).reduce(
-                            (a, m) => a + m.pct,
-                            0
-                          ) / learningModuleStatuses(t, session, trainingAggregate, locale).length
-                        )
+                    const lm = learningModuleStatuses(t, session, trainingAggregate, locale);
+                    const learnPct = lm.length
+                      ? Math.round(lm.reduce((a, m) => a + m.pct, 0) / lm.length)
                       : 0;
                     const blocked = isTaskBlocked(t, tasks);
+                    const deps = (t.dependsOn || [])
+                      .map((d) => resolveDependency(tasks, d))
+                      .filter(Boolean);
+                    const dimmed = relatedIds && !relatedIds.has(t.id);
                     return (
-                      <div key={t.id} className="gantt-row">
+                      <div
+                        key={t.id}
+                        className={`gantt-row ${dimmed ? 'gantt-row--dim' : ''}`}
+                        onMouseEnter={() => setHoverTaskId(t.id)}
+                        onMouseLeave={() => setHoverTaskId((cur) => (cur === t.id ? null : cur))}
+                      >
                         <div className="gantt-label">
                           <div className="gantt-task-label" onClick={() => setEditing(t.id)}>
                             {blocked && (
-                              <span style={{ color: '#f87171', marginRight: 4 }} title={locale === 'en' ? 'Blocked' : 'Blockiert'}>
+                              <span style={{ color: '#f87171', marginRight: 4 }} title={locale === 'en' ? 'Blocked by dependency' : 'Durch Abhängigkeit blockiert'}>
                                 ⏸
                               </span>
                             )}
                             {t.title || (locale === 'en' ? '(untitled)' : '(ohne Titel)')}
                           </div>
+                          {deps.length > 0 && (
+                            <div className="gantt-dep-chip" title={deps.map((d) => d.title).join(', ')}>
+                              <GitBranch className="w-3 h-3" />
+                              {locale === 'en' ? 'after' : 'nach'} {deps.map((d) => d.title || '—').join(', ')}
+                            </div>
+                          )}
                           {t.owner && <div className="gantt-task-owner">{t.owner}</div>}
                         </div>
                         <div className="gantt-timeline gantt-track" style={{ width: totalWidth }}>
@@ -501,6 +711,7 @@ export default function ImplementationPlan() {
                               <div
                                 className="gantt-milestone"
                                 style={{ left }}
+                                ref={(el) => setBarRef(t.id, el)}
                                 onClick={() => setEditing(t.id)}
                                 title={t.title}
                               />
@@ -510,8 +721,9 @@ export default function ImplementationPlan() {
                             </>
                           ) : (
                             <div
-                              className={`gantt-bar gantt-bar--${t.status}`}
+                              className={`gantt-bar gantt-bar--${t.status} ${blocked ? 'gantt-bar--blocked' : ''}`}
                               style={{ left, width: w }}
+                              ref={(el) => setBarRef(t.id, el)}
                               onClick={() => setEditing(t.id)}
                             >
                               <div className="gantt-bar-fill" style={{ width: `${prog}%` }} />
@@ -536,6 +748,36 @@ export default function ImplementationPlan() {
                 </div>
               );
             })}
+
+            {showDeps && depPaths.length > 0 && (
+              <svg className="gantt-dep-svg" width="100%" height="100%">
+                <defs>
+                  <marker
+                    id="gantt-arrow"
+                    viewBox="0 0 10 10"
+                    refX="8"
+                    refY="5"
+                    markerWidth="6"
+                    markerHeight="6"
+                    orient="auto-start-reverse"
+                  >
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--impl-accent)" />
+                  </marker>
+                </defs>
+                {depPaths.map((p) => {
+                  const midX = Math.max(p.x1 + 14, (p.x1 + p.x2) / 2);
+                  return (
+                    <path
+                      key={p.id}
+                      className={`gantt-dep-path ${p.active ? 'gantt-dep-path--active' : ''}`}
+                      d={`M ${p.x1} ${p.y1} C ${midX} ${p.y1}, ${midX} ${p.y2}, ${p.x2} ${p.y2}`}
+                      markerEnd="url(#gantt-arrow)"
+                      fill="none"
+                    />
+                  );
+                })}
+              </svg>
+            )}
           </div>
         </div>
       ) : (
@@ -546,6 +788,7 @@ export default function ImplementationPlan() {
                 <th style={{ minWidth: 240 }}>{locale === 'en' ? 'Task' : 'Aufgabe'}</th>
                 <th>{locale === 'en' ? 'Owner' : 'Verantwortlich'}</th>
                 <th>Status</th>
+                <th>{locale === 'en' ? 'Depends on' : 'Abhängig von'}</th>
                 <th>{locale === 'en' ? 'Start' : 'Start'}</th>
                 <th>{locale === 'en' ? 'Due' : 'Fällig'}</th>
                 <th>%</th>
@@ -553,23 +796,37 @@ export default function ImplementationPlan() {
               </tr>
             </thead>
             <tbody>
-              {IMPL_PHASES.map((ph) => {
+              {allPhases.map((ph) => {
                 const phaseTasks = tasksByPhase[ph.id] || [];
                 return (
                   <PhaseRows
                     key={ph.id}
                     phaseId={ph.id}
-                    title={phaseTitle(ph.id, locale)}
+                    title={phaseLabelFor(ph.id)}
+                    custom={ph.custom}
                     tasks={phaseTasks}
+                    allTasks={tasks}
                     locale={locale}
                     session={session}
                     trainingAggregate={trainingAggregate}
                     onEdit={setEditing}
                     onCycle={cycleStatus}
-                    onAdd={() => addTaskToPhase(ph.id)}
+                    onAddTask={() => addTaskToPhase(ph.id)}
+                    onAddMilestone={() => addMilestoneToPhase(ph.id)}
+                    onRemovePhase={ph.custom ? () => removePhase(ph.id) : null}
                   />
                 );
               })}
+              {canEdit && (
+                <tr className="implplan-addphase-row">
+                  <td colSpan={8}>
+                    <button className="impl-btn" onClick={addPhase} type="button">
+                      <Plus className="w-4 h-4" />
+                      {locale === 'en' ? 'Add phase' : 'Phase hinzufügen'}
+                    </button>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -580,6 +837,8 @@ export default function ImplementationPlan() {
           task={editingTask}
           locale={locale}
           allTasks={tasks}
+          phases={allPhases}
+          phaseLabelFor={phaseLabelFor}
           session={session}
           trainingAggregate={trainingAggregate}
           portalMode={portalMode}
@@ -672,39 +931,96 @@ function PlanLearningView({ summary, locale, session, portalMode, trainingCustom
   );
 }
 
-function PhaseRows({ phaseId, title, tasks, locale, session, trainingAggregate, onEdit, onCycle, onAdd }) {
+function PhaseRows({
+  phaseId,
+  title,
+  custom,
+  tasks,
+  allTasks,
+  locale,
+  session,
+  trainingAggregate,
+  onEdit,
+  onCycle,
+  onAddTask,
+  onAddMilestone,
+  onRemovePhase,
+}) {
   return (
     <>
       <tr className="implplan-phase-row">
-        <td colSpan={6}>{title}</td>
-        <td style={{ textAlign: 'right' }}>
-          <button className="impl-btn" style={{ padding: '4px 10px' }} onClick={onAdd} type="button">
+        <td colSpan={7}>{title}</td>
+        <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+          <button
+            className="impl-btn"
+            style={{ padding: '4px 8px' }}
+            onClick={onAddTask}
+            type="button"
+            title={locale === 'en' ? 'Add task' : 'Aufgabe hinzufügen'}
+          >
             <Plus className="w-3.5 h-3.5" />
           </button>
+          <button
+            className="impl-btn"
+            style={{ padding: '4px 8px', marginLeft: 4 }}
+            onClick={onAddMilestone}
+            type="button"
+            title={locale === 'en' ? 'Add milestone' : 'Meilenstein hinzufügen'}
+          >
+            <Diamond className="w-3.5 h-3.5" />
+          </button>
+          {custom && onRemovePhase && (
+            <button
+              className="impl-btn"
+              style={{ padding: '4px 8px', marginLeft: 4, color: '#ff9b9b' }}
+              onClick={onRemovePhase}
+              type="button"
+              title={locale === 'en' ? 'Delete phase' : 'Phase löschen'}
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          )}
         </td>
       </tr>
-      {tasks.map((t) => (
-        <tr key={t.id}>
-          <td style={{ cursor: 'pointer' }} onClick={() => onEdit(t.id)}>
-            {t.milestone ? '◆ ' : ''}
-            {t.title || (locale === 'en' ? '(untitled)' : '(ohne Titel)')}
+      {tasks.length === 0 && (
+        <tr>
+          <td colSpan={8} className="implplan-empty-cell">
+            {locale === 'en' ? 'No items — add a task or milestone.' : 'Keine Einträge — Aufgabe oder Meilenstein hinzufügen.'}
           </td>
-          <td>{t.owner}</td>
-          <td>
-            <button
-              className={`implplan-status implplan-status--${t.status}`}
-              onClick={() => onCycle(t.id)}
-              type="button"
-            >
-              {PLAN_STATUS_LABEL[locale][t.status]}
-            </button>
-          </td>
-          <td>{t.start}</td>
-          <td>{t.end}</td>
-          <td>{combinedTaskProgress(t, session, trainingAggregate, locale)}%</td>
-          <td></td>
         </tr>
-      ))}
+      )}
+      {tasks.map((t) => {
+        const deps = (t.dependsOn || [])
+          .map((d) => resolveDependency(allTasks, d))
+          .filter(Boolean);
+        const blocked = isTaskBlocked(t, allTasks);
+        return (
+          <tr key={t.id} className={blocked ? 'implplan-row--blocked' : ''}>
+            <td style={{ cursor: 'pointer' }} onClick={() => onEdit(t.id)}>
+              {t.milestone ? <Diamond className="w-3.5 h-3.5 inline -mt-0.5" style={{ color: 'var(--impl-accent)' }} /> : null}{' '}
+              {t.title || (locale === 'en' ? '(untitled)' : '(ohne Titel)')}
+            </td>
+            <td>{t.owner}</td>
+            <td>
+              <button
+                className={`implplan-status implplan-status--${t.status}`}
+                onClick={() => onCycle(t.id)}
+                type="button"
+              >
+                {PLAN_STATUS_LABEL[locale][t.status]}
+              </button>
+            </td>
+            <td className="implplan-dep-cell">
+              {blocked && <span style={{ color: '#f87171', marginRight: 4 }} title={locale === 'en' ? 'Blocked' : 'Blockiert'}>⏸</span>}
+              {deps.length ? deps.map((d) => d.title || '—').join(', ') : <span style={{ opacity: 0.4 }}>—</span>}
+            </td>
+            <td>{t.start}</td>
+            <td>{t.end}</td>
+            <td>{combinedTaskProgress(t, session, trainingAggregate, locale)}%</td>
+            <td></td>
+          </tr>
+        );
+      })}
     </>
   );
 }
@@ -713,6 +1029,8 @@ function TaskEditor({
   task,
   locale,
   allTasks,
+  phases,
+  phaseLabelFor,
   session,
   trainingAggregate,
   portalMode,
@@ -720,7 +1038,26 @@ function TaskEditor({
   onDelete,
   onClose,
 }) {
-  const depOptions = allStepIdsForDeps(allTasks).filter((x) => x.stepId !== task.stepId);
+  const [depFilter, setDepFilter] = useState('');
+  const depOpts = dependencyOptions(allTasks, task);
+  const filteredDepOpts = depFilter
+    ? depOpts.filter((o) => (o.title || '').toLowerCase().includes(depFilter.toLowerCase()))
+    : depOpts;
+  const depByPhase = (phases || []).map((ph) => ({
+    phase: ph,
+    items: filteredDepOpts.filter((o) => o.phaseId === ph.id),
+  })).filter((g) => g.items.length > 0);
+
+  const toggleDep = (opt) => {
+    const cur = task.dependsOn || [];
+    const isOn = depMatches(cur, opt);
+    if (isOn) {
+      onChange({ dependsOn: cur.filter((d) => d !== opt.value && d !== opt.legacyStep) });
+    } else {
+      onChange({ dependsOn: [...cur, opt.value] });
+    }
+  };
+
   const addTodo = () =>
     onChange({
       todos: [...(task.todos || []), { id: `td-${Math.random().toString(36).slice(2, 7)}`, text: '', done: false }],
@@ -769,49 +1106,89 @@ function TaskEditor({
             />
           </div>
         </div>
+        <div className="impl-field">
+          <span>Status</span>
+          <select className="impl-select" value={task.status} onChange={(e) => onChange({ status: e.target.value })}>
+            {PLAN_STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {PLAN_STATUS_LABEL[locale][s]}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="impl-row2">
           <div className="impl-field">
-            <span>Status</span>
-            <select className="impl-select" value={task.status} onChange={(e) => onChange({ status: e.target.value })}>
-              {PLAN_STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {PLAN_STATUS_LABEL[locale][s]}
+            <span>{locale === 'en' ? 'Phase' : 'Phase'}</span>
+            <select
+              className="impl-select"
+              value={task.phaseId}
+              onChange={(e) => onChange({ phaseId: e.target.value })}
+            >
+              {(phases || []).map((ph) => (
+                <option key={ph.id} value={ph.id}>
+                  {phaseLabelFor ? phaseLabelFor(ph.id) : ph.id}
                 </option>
               ))}
             </select>
           </div>
           <div className="impl-field">
-            <span>{locale === 'en' ? 'Milestone' : 'Meilenstein'}</span>
+            <span>{locale === 'en' ? 'Type' : 'Typ'}</span>
             <select
               className="impl-select"
               value={task.milestone ? '1' : '0'}
               onChange={(e) => onChange({ milestone: e.target.value === '1' })}
             >
-              <option value="0">{locale === 'en' ? 'No' : 'Nein'}</option>
-              <option value="1">{locale === 'en' ? 'Yes' : 'Ja'}</option>
+              <option value="0">{locale === 'en' ? 'Task' : 'Aufgabe'}</option>
+              <option value="1">{locale === 'en' ? 'Milestone' : 'Meilenstein'}</option>
             </select>
           </div>
         </div>
 
-        {depOptions.length > 0 && (
+        {depOpts.length > 0 && (
           <div className="impl-field">
-            <span>{locale === 'en' ? 'Depends on (steps)' : 'Abhängig von (Schritte)'}</span>
-            <select
-              className="impl-select"
-              multiple
-              value={task.dependsOn || []}
-              onChange={(e) => {
-                const selected = Array.from(e.target.selectedOptions).map((o) => o.value);
-                onChange({ dependsOn: selected });
-              }}
-              style={{ minHeight: 72 }}
-            >
-              {depOptions.map((o) => (
-                <option key={o.stepId} value={o.stepId}>
-                  {o.title} ({o.stepId})
-                </option>
+            <span>{locale === 'en' ? 'Depends on (predecessors)' : 'Abhängig von (Vorgänger)'}</span>
+            {depOpts.length > 6 && (
+              <input
+                className="impl-input"
+                placeholder={locale === 'en' ? 'Filter…' : 'Filtern…'}
+                value={depFilter}
+                onChange={(e) => setDepFilter(e.target.value)}
+                style={{ marginBottom: 6 }}
+              />
+            )}
+            <div className="implplan-deplist">
+              {depByPhase.length === 0 && (
+                <p className="implplan-hint" style={{ padding: '4px 2px' }}>
+                  {locale === 'en' ? 'No matches.' : 'Keine Treffer.'}
+                </p>
+              )}
+              {depByPhase.map((g) => (
+                <div key={g.phase.id} className="implplan-depgroup">
+                  <div className="implplan-depgroup-title">
+                    {phaseLabelFor ? phaseLabelFor(g.phase.id) : g.phase.id}
+                  </div>
+                  {g.items.map((o) => {
+                    const checked = depMatches(task.dependsOn, o);
+                    return (
+                      <label key={o.value} className={`implplan-depitem ${checked ? 'is-checked' : ''}`}>
+                        <input type="checkbox" checked={checked} onChange={() => toggleDep(o)} />
+                        <span className="implplan-depitem-title">
+                          {o.milestone && <Diamond className="w-3 h-3 inline -mt-0.5" />}{' '}
+                          {o.title || (locale === 'en' ? '(untitled)' : '(ohne Titel)')}
+                        </span>
+                        <span className="implplan-depitem-date">{o.end || o.start || ''}</span>
+                      </label>
+                    );
+                  })}
+                </div>
               ))}
-            </select>
+            </div>
+            <p className="implplan-hint">
+              {locale === 'en'
+                ? 'Task is blocked until all predecessors are done.'
+                : 'Aufgabe ist blockiert, bis alle Vorgänger erledigt sind.'}
+            </p>
           </div>
         )}
 

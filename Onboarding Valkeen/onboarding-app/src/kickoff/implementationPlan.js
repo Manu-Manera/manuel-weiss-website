@@ -128,11 +128,63 @@ export function newTask(phaseId, startISO) {
   };
 }
 
-/** Alle Step-IDs für Abhängigkeits-Auswahl im Editor. */
+export function newMilestone(phaseId, startISO) {
+  const s = startISO ? parseISO(startISO) : new Date();
+  return {
+    id: uid('ms'),
+    phaseId,
+    title: '',
+    owner: '',
+    status: 'open',
+    start: toISO(s),
+    end: toISO(s),
+    milestone: true,
+    dependsOn: [],
+    todos: [],
+    notes: '',
+  };
+}
+
+/** Alle Step-IDs für Abhängigkeits-Auswahl im Editor (Legacy). */
 export function allStepIdsForDeps(tasks) {
   return (tasks || [])
     .filter((t) => t.stepId)
     .map((t) => ({ stepId: t.stepId, title: t.title, phaseId: t.phaseId }));
+}
+
+/** Eine Abhängigkeit (Task-ID oder Legacy-stepId) zu einem Task auflösen. */
+export function resolveDependency(tasks, dep) {
+  return (tasks || []).find((t) => t.id === dep || (t.stepId && t.stepId === dep)) || null;
+}
+
+/** Reiche Optionsliste für die Abhängigkeits-Auswahl (alle Tasks außer self). */
+export function dependencyOptions(tasks, selfTask) {
+  const selfId = selfTask?.id;
+  return (tasks || [])
+    .filter((t) => t.id !== selfId)
+    .map((t) => ({
+      value: t.id,
+      legacyStep: t.stepId || '',
+      title: t.title,
+      phaseId: t.phaseId,
+      milestone: !!t.milestone,
+      start: t.start,
+      end: t.end,
+    }));
+}
+
+/** Ist eine Abhängigkeit (id/stepId) in der dependsOn-Liste enthalten? */
+export function depMatches(deps, option) {
+  const list = deps || [];
+  return list.includes(option.value) || (option.legacyStep && list.includes(option.legacyStep));
+}
+
+/** Direkte Nachfolger eines Tasks (die von ihm abhängen). */
+export function dependentsOf(task, tasks) {
+  if (!task) return [];
+  return (tasks || []).filter((t) =>
+    (t.dependsOn || []).some((d) => d === task.id || (task.stepId && d === task.stepId))
+  );
 }
 
 export function planBounds(tasks) {
@@ -188,9 +240,10 @@ export function phaseDepsMet(phaseId, tasks) {
 export function taskDependenciesMet(task, tasks) {
   const deps = task.dependsOn || [];
   if (!deps.length) return true;
-  return deps.every((depStepId) => {
-    const depTask = (tasks || []).find((t) => t.stepId === depStepId);
-    return depTask?.status === 'done';
+  return deps.every((dep) => {
+    const depTask = resolveDependency(tasks, dep);
+    // Unbekannte (gelöschte) Vorgänger blockieren nicht.
+    return !depTask || depTask.status === 'done';
   });
 }
 

@@ -384,6 +384,88 @@
   white-space: nowrap;
 }
 
+/* ---------- Gantt dependencies + add controls ---------- */
+.gantt-phase-row-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.gantt-phase-add {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.gantt-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 7px;
+  border: 1px solid var(--impl-border);
+  background: var(--impl-glass);
+  color: var(--impl-text-soft);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.gantt-add-btn:hover {
+  background: rgba(var(--impl-accent-rgb) / 0.16);
+  color: var(--impl-text);
+}
+.gantt-add-btn--danger:hover {
+  background: rgba(248, 113, 113, 0.18);
+  color: #ffb4b4;
+}
+
+.gantt-row--empty .gantt-label {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+.gantt-row--dim {
+  opacity: 0.4;
+  transition: opacity 0.15s ease;
+}
+
+.gantt-dep-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--impl-text-soft);
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gantt-bar--blocked {
+  border-style: dashed;
+  opacity: 0.78;
+}
+
+.gantt-dep-svg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: visible;
+}
+.gantt-dep-path {
+  stroke: var(--impl-accent);
+  stroke-width: 1.5;
+  opacity: 0.45;
+  stroke-dasharray: 4 3;
+}
+.gantt-dep-path--active {
+  opacity: 1;
+  stroke-width: 2.2;
+  stroke-dasharray: none;
+}
+
 /* ---------- Table view ---------- */
 .implplan-table {
   width: 100%;
@@ -495,4 +577,74 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+}
+
+/* ---------- Table extras ---------- */
+.implplan-dep-cell {
+  font-size: 12px;
+  color: var(--impl-text-soft);
+  max-width: 220px;
+}
+.implplan-empty-cell {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--impl-text-soft);
+  opacity: 0.7;
+}
+.implplan-row--blocked td {
+  background: rgba(248, 113, 113, 0.05);
+}
+.implplan-addphase-row td {
+  padding: 10px 12px;
+  background: transparent;
+}
+
+/* ---------- Dependency picker (editor) ---------- */
+.implplan-deplist {
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--impl-border);
+  border-radius: 10px;
+  background: var(--impl-glass);
+  padding: 6px;
+}
+.implplan-depgroup + .implplan-depgroup {
+  margin-top: 6px;
+}
+.implplan-depgroup-title {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--impl-accent);
+  padding: 4px 4px 2px;
+}
+.implplan-depitem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12.5px;
+}
+.implplan-depitem:hover {
+  background: rgba(var(--impl-accent-rgb) / 0.08);
+}
+.implplan-depitem.is-checked {
+  background: rgba(var(--impl-accent-rgb) / 0.14);
+}
+.implplan-depitem input[type='checkbox'] {
+  flex-shrink: 0;
+}
+.implplan-depitem-title {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.implplan-depitem-date {
+  font-size: 10.5px;
+  color: var(--impl-text-soft);
+  flex-shrink: 0;
 }
