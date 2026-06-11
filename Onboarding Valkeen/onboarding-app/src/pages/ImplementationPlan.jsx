@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -27,9 +27,18 @@ import {
   allStepIdsForDeps,
   isTaskBlocked,
   planBounds,
-  taskProgress,
   toISO,
 } from '../kickoff/implementationPlan';
+import {
+  combinedTaskProgress,
+  ensurePlanLearning,
+  learningModuleStatuses,
+  planLearningSummary,
+  suggestTrainingCustomerId,
+} from '../kickoff/implementationPlanLearning';
+import { getProgressAggregate } from '../services/trainingAdminService';
+import { resolveArtifactHref, getArtifact } from '../kickoff/implementationWorkshopCatalog';
+import { GraduationCap, ExternalLink } from 'lucide-react';
 import { brandingCssVars, normalizeBranding } from '../kickoff/implementationBranding';
 import { defaultSession, mergeSession } from '../kickoff/kickoffStudioMerge';
 import {
@@ -70,6 +79,9 @@ export default function ImplementationPlan() {
   const [password, setPassword] = useState('');
   const [syncing, setSyncing] = useState(false);
   const [syncMsg, setSyncMsg] = useState('');
+  const [trainingAggregate, setTrainingAggregate] = useState(null);
+  const [trainingLoadErr, setTrainingLoadErr] = useState('');
+  const learningSyncedRef = useRef('');
 
   const locale = session.locale || 'de';
   const portalFromHost = useImplPortal();
@@ -80,9 +92,13 @@ export default function ImplementationPlan() {
   const cssVars = useMemo(() => brandingCssVars(normalizeBranding(session.branding)), [session.branding]);
 
   const tasks = useMemo(() => {
-    if (session.projectPlan?.length) return session.projectPlan;
-    return buildDefaultPlan(toISO(new Date()), locale);
+    const raw = session.projectPlan?.length
+      ? session.projectPlan
+      : buildDefaultPlan(toISO(new Date()), locale);
+    return ensurePlanLearning(raw, locale);
   }, [session.projectPlan, locale]);
+
+  const trainingCustomerId = session.trainingCustomerId || suggestTrainingCustomerId(session);
 
   useEffect(() => {
     try {
@@ -108,6 +124,43 @@ export default function ImplementationPlan() {
     const meta = workspaceFromSession({ ...session, updatedAt: Date.now() });
     if (meta) upsertWorkspace(meta);
   }, [session]);
+
+  useEffect(() => {
+    if (!trainingCustomerId) return;
+    let cancelled = false;
+    setTrainingLoadErr('');
+    getProgressAggregate(trainingCustomerId)
+      .then((data) => {
+        if (!cancelled) setTrainingAggregate(data);
+      })
+      .catch((e) => {
+        if (!cancelled) setTrainingLoadErr(e.message || 'Training-Fortschritt nicht geladen');
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [trainingCustomerId]);
+
+  const learningSummary = useMemo(
+    () => planLearningSummary(tasks, session, trainingAggregate, locale),
+    [tasks, session, trainingAggregate, locale]
+  );
+
+  /** Learning-To-dos einmalig in session.projectPlan persistieren. */
+  useEffect(() => {
+    const key = `${session.sessionId}:${locale}`;
+    if (learningSyncedRef.current === key) return;
+    if (!session.projectPlan?.length) return;
+    const enriched = ensurePlanLearning(session.projectPlan, locale);
+    const changed = enriched.some((t, i) => {
+      const orig = session.projectPlan[i];
+      return JSON.stringify(t.todos) !== JSON.stringify(orig?.todos) || t.learning && !orig?.learning;
+    });
+    learningSyncedRef.current = key;
+    if (changed) {
+      setSession((s) => ({ ...s, projectPlan: enriched }));
+    }
+  }, [session.sessionId, session.projectPlan, locale]);
 
   const setTasks = useCallback(
     (updater) =>
@@ -178,8 +231,13 @@ export default function ImplementationPlan() {
 
   const progress = useMemo(() => {
     if (!tasks.length) return 0;
-    return Math.round(tasks.reduce((a, t) => a + taskProgress(t), 0) / tasks.length);
-  }, [tasks]);
+    return Math.round(
+      tasks.reduce(
+        (a, t) => a + combinedTaskProgress(t, session, trainingAggregate, locale),
+        0
+      ) / tasks.length
+    );
+  }, [tasks, session, trainingAggregate, locale]);
 
   const saveCloud = async () => {
     setSyncing(true);
@@ -258,6 +316,13 @@ export default function ImplementationPlan() {
           </h1>
           <p className="implplan-sub">
             {progress}% · {tasks.length} {locale === 'en' ? 'tasks' : 'Aufgaben'}
+            {learningSummary.count > 0 && (
+              <>
+                {' · '}
+                <GraduationCap className="w-3.5 h-3.5 inline -mt-0.5" aria-hidden />
+                {learningSummary.averageLearningPct}% {locale === 'en' ? 'learning' : 'Lernen'}
+              </>
+            )}
           </p>
         </div>
         <div className="implplan-actions">
@@ -275,6 +340,14 @@ export default function ImplementationPlan() {
               type="button"
             >
               {locale === 'en' ? 'Table' : 'Tabelle'}
+            </button>
+            <button
+              className={`implplan-tab ${view === 'learning' ? 'implplan-tab--active' : ''}`}
+              onClick={() => setView('learning')}
+              type="button"
+            >
+              <GraduationCap className="w-3.5 h-3.5" aria-hidden />
+              {locale === 'en' ? 'Learning' : 'Lernen'}
             </button>
           </div>
           {view === 'gantt' && (
@@ -317,10 +390,50 @@ export default function ImplementationPlan() {
               onChange={(e) => setSession((s) => ({ ...s, goLiveDate: e.target.value }))}
             />
           </div>
+          <div>
+            <label>{locale === 'en' ? 'Training customer ID' : 'Training-Kunden-ID'}</label>
+            <input
+              className="impl-input"
+              value={session.trainingCustomerId || ''}
+              placeholder={suggestTrainingCustomerId(session)}
+              onChange={(e) =>
+                setSession((s) => ({ ...s, trainingCustomerId: e.target.value.trim() }))
+              }
+            />
+            <p className="implplan-hint">
+              {locale === 'en'
+                ? 'Links extension tours to this project plan'
+                : 'Verknüpft Extension-Touren mit diesem Projektplan'}
+            </p>
+          </div>
+          <div>
+            <label>{locale === 'en' ? 'Learning hub' : 'Learning-Hub'}</label>
+            <a
+              className="impl-btn impl-btn--nav"
+              href={`/onboarding/tempus-trainer`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <ExternalLink className="w-4 h-4" />
+              Tempus Trainer
+            </a>
+          </div>
         </div>
       )}
 
-      {view === 'gantt' ? (
+      {trainingLoadErr && view === 'learning' && (
+        <p className="implplan-hint implplan-hint--warn">{trainingLoadErr}</p>
+      )}
+
+      {view === 'learning' ? (
+        <PlanLearningView
+          summary={learningSummary}
+          locale={locale}
+          session={session}
+          portalMode={portalMode}
+          trainingCustomerId={trainingCustomerId}
+        />
+      ) : view === 'gantt' ? (
         <div className="gantt">
           <div className="gantt-inner">
             {/* header */}
@@ -355,7 +468,15 @@ export default function ImplementationPlan() {
                   {phaseTasks.map((t) => {
                     const left = xFor(t.start);
                     const w = Math.max(pxPerDay, (dayDiff(t.start, t.end) + 1) * pxPerDay);
-                    const prog = taskProgress(t);
+                    const prog = combinedTaskProgress(t, session, trainingAggregate, locale);
+                    const learnPct = learningModuleStatuses(t, session, trainingAggregate, locale).length
+                      ? Math.round(
+                          learningModuleStatuses(t, session, trainingAggregate, locale).reduce(
+                            (a, m) => a + m.pct,
+                            0
+                          ) / learningModuleStatuses(t, session, trainingAggregate, locale).length
+                        )
+                      : 0;
                     const blocked = isTaskBlocked(t, tasks);
                     return (
                       <div key={t.id} className="gantt-row">
@@ -394,6 +515,17 @@ export default function ImplementationPlan() {
                               onClick={() => setEditing(t.id)}
                             >
                               <div className="gantt-bar-fill" style={{ width: `${prog}%` }} />
+                              {learnPct > 0 && (
+                                <div
+                                  className="gantt-bar-learn"
+                                  style={{ width: `${learnPct}%` }}
+                                  title={
+                                    locale === 'en'
+                                      ? `Learning ${learnPct}%`
+                                      : `Lernen ${learnPct}%`
+                                  }
+                                />
+                              )}
                               <span className="gantt-bar-text">{t.title}</span>
                             </div>
                           )}
@@ -430,6 +562,8 @@ export default function ImplementationPlan() {
                     title={phaseTitle(ph.id, locale)}
                     tasks={phaseTasks}
                     locale={locale}
+                    session={session}
+                    trainingAggregate={trainingAggregate}
                     onEdit={setEditing}
                     onCycle={cycleStatus}
                     onAdd={() => addTaskToPhase(ph.id)}
@@ -446,6 +580,9 @@ export default function ImplementationPlan() {
           task={editingTask}
           locale={locale}
           allTasks={tasks}
+          session={session}
+          trainingAggregate={trainingAggregate}
+          portalMode={portalMode}
           onChange={(patch) => updateTask(editingTask.id, patch)}
           onDelete={() => {
             removeTask(editingTask.id);
@@ -458,7 +595,84 @@ export default function ImplementationPlan() {
   );
 }
 
-function PhaseRows({ phaseId, title, tasks, locale, onEdit, onCycle, onAdd }) {
+function PlanLearningView({ summary, locale, session, portalMode, trainingCustomerId }) {
+  const navigate = useNavigate();
+  return (
+    <div className="implplan-learning impl-glass">
+      <div className="implplan-learning-head">
+        <h2>
+          {locale === 'en' ? 'Learning aligned with project plan' : 'Lernen im Projektplan'}
+        </h2>
+        <p>
+          {locale === 'en'
+            ? 'Checkpoints, tours and workshops tied to plan tasks — team progress from Tempus Trainer.'
+            : 'Checkpoints, Touren und Workshops an Plan-Tasks — Team-Fortschritt aus Tempus Trainer.'}
+          {trainingCustomerId && (
+            <span className="implplan-hint"> · ID: {trainingCustomerId}</span>
+          )}
+        </p>
+      </div>
+      {summary.rows.length === 0 ? (
+        <p className="impllog-empty">
+          {locale === 'en' ? 'No learning modules on plan tasks yet.' : 'Noch keine Lernmodule auf Plan-Tasks.'}
+        </p>
+      ) : (
+        <div className="implplan-learning-list">
+          {summary.rows.map((row) => (
+            <section key={row.taskId} className="implplan-learning-card">
+              <header>
+                <div>
+                  <strong>{row.title}</strong>
+                  <span className="implplan-hint">
+                    {row.start} → {row.end}
+                    {row.required && (
+                      <span className="impl-chip impl-chip--milestone" style={{ marginLeft: 8 }}>
+                        {locale === 'en' ? 'Required for done' : 'Pflicht für Abschluss'}
+                      </span>
+                    )}
+                  </span>
+                </div>
+                <div className="implplan-learning-pct">
+                  <span title={locale === 'en' ? 'Combined' : 'Kombiniert'}>{row.progress}%</span>
+                  <span className="implplan-learning-pct-sub">
+                    {locale === 'en' ? 'Learning' : 'Lernen'} {row.learning}%
+                  </span>
+                </div>
+              </header>
+              <ul>
+                {row.modules.map((m, i) => (
+                  <li key={i} className={m.done ? 'is-done' : ''}>
+                    <span className="implplan-learning-module-pct">{m.pct}%</span>
+                    <span>{m.label || m.type}</span>
+                    {m.type === 'artifact' && m.artifactId && (
+                      <button
+                        type="button"
+                        className="impl-btn impl-btn--nav"
+                        style={{ marginLeft: 8, padding: '2px 8px' }}
+                        onClick={() => {
+                          const art = getArtifact(m.artifactId);
+                          if (art) {
+                            navigate(
+                              resolveArtifactHref(art, session.sessionId, { portalMode })
+                            );
+                          }
+                        }}
+                      >
+                        {locale === 'en' ? 'Open' : 'Öffnen'}
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PhaseRows({ phaseId, title, tasks, locale, session, trainingAggregate, onEdit, onCycle, onAdd }) {
   return (
     <>
       <tr className="implplan-phase-row">
@@ -487,7 +701,7 @@ function PhaseRows({ phaseId, title, tasks, locale, onEdit, onCycle, onAdd }) {
           </td>
           <td>{t.start}</td>
           <td>{t.end}</td>
-          <td>{taskProgress(t)}%</td>
+          <td>{combinedTaskProgress(t, session, trainingAggregate, locale)}%</td>
           <td></td>
         </tr>
       ))}
@@ -495,7 +709,17 @@ function PhaseRows({ phaseId, title, tasks, locale, onEdit, onCycle, onAdd }) {
   );
 }
 
-function TaskEditor({ task, locale, allTasks, onChange, onDelete, onClose }) {
+function TaskEditor({
+  task,
+  locale,
+  allTasks,
+  session,
+  trainingAggregate,
+  portalMode,
+  onChange,
+  onDelete,
+  onClose,
+}) {
   const depOptions = allStepIdsForDeps(allTasks).filter((x) => x.stepId !== task.stepId);
   const addTodo = () =>
     onChange({
@@ -588,6 +812,25 @@ function TaskEditor({ task, locale, allTasks, onChange, onDelete, onClose }) {
                 </option>
               ))}
             </select>
+          </div>
+        )}
+
+        {task.stepId && learningModuleStatuses(task, session, trainingAggregate, locale).length > 0 && (
+          <div className="impl-field implplan-learning-inline">
+            <span>{locale === 'en' ? 'Learning modules (plan)' : 'Lernmodule (Plan)'}</span>
+            <ul>
+              {learningModuleStatuses(task, session, trainingAggregate, locale).map((m, i) => (
+                <li key={i}>
+                  <span className="implplan-learning-module-pct">{m.pct}%</span>
+                  {m.label || m.type}
+                </li>
+              ))}
+            </ul>
+            <p className="implplan-hint">
+              {locale === 'en'
+                ? 'Checkpoints sync as to-dos below. Tours sync from Tempus Trainer team progress.'
+                : 'Checkpoints erscheinen als To-dos unten. Touren aus Tempus-Trainer Team-Fortschritt.'}
+            </p>
           </div>
         )}
 

@@ -11,6 +11,7 @@
  * }
  */
 import { IMPL_PHASES, tx } from './implementationTemplate';
+import { ensurePlanLearning } from './implementationPlanLearning';
 
 export const PLAN_STATUSES = ['open', 'in_progress', 'done'];
 export const PLAN_STATUS_LABEL = {
@@ -107,7 +108,7 @@ export function buildDefaultPlan(startDateISO, locale = 'de') {
       cursor = addDays(e, milestone ? 1 : 2);
     });
   }
-  return tasks;
+  return ensurePlanLearning(tasks, locale);
 }
 
 export function newTask(phaseId, startISO) {

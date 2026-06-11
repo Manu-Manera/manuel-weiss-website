@@ -39,6 +39,104 @@
   align-items: center;
 }
 
+.implplan-hint {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: var(--impl-text-soft);
+}
+.implplan-hint--warn {
+  color: #fbbf24;
+  margin-bottom: 12px;
+}
+
+.implplan-learning {
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.implplan-learning-head h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+.implplan-learning-head p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--impl-text-soft);
+}
+.implplan-learning-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+.implplan-learning-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(0, 0, 0, 0.15);
+}
+.implplan-learning-card header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+.implplan-learning-pct {
+  text-align: right;
+  font-weight: 700;
+  font-size: 18px;
+}
+.implplan-learning-pct-sub {
+  display: block;
+  font-size: 11px;
+  color: var(--impl-accent);
+  font-weight: 500;
+}
+.implplan-learning-card ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.implplan-learning-card li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 13px;
+}
+.implplan-learning-card li.is-done {
+  color: var(--impl-accent);
+}
+.implplan-learning-module-pct {
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 36px;
+  color: var(--impl-primary);
+}
+.implplan-learning-inline ul {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+.implplan-learning-inline li {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  padding: 4px 0;
+}
+
+.gantt-bar-learn {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, rgba(52, 211, 153, 0.55), rgba(16, 185, 129, 0.35));
+  border-radius: inherit;
+  pointer-events: none;
+  max-width: 100%;
+}
+
 /* reuse impl-btn / impl-glass / impl-input from implementation-guide.css if present;
    define fallbacks here so the page is self-contained */
 .implplan .impl-btn {
