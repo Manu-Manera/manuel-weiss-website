@@ -8,6 +8,7 @@ import {
   Flag,
   GanttChartSquare,
   ClipboardList,
+  Users,
   Info,
   Loader2,
   Palette,
@@ -209,6 +210,18 @@ export default function ImplementationGuide() {
           >
             <ClipboardList className="w-4 h-4" />
             {locale === 'en' ? 'Project log' : 'Projekt-Log'}
+          </button>
+          <button
+            className="impl-btn"
+            onClick={() => {
+              const p = new URLSearchParams();
+              if (session.sessionId) p.set('s', session.sessionId);
+              navigate(`/implementation-registers?${p.toString()}`);
+            }}
+            type="button"
+          >
+            <Users className="w-4 h-4" />
+            {locale === 'en' ? 'Registers' : 'Register'}
           </button>
           <button className="impl-btn" onClick={() => setDrawer('rights')} type="button">
             {locale === 'en' ? 'Rights' : 'Rechte'}

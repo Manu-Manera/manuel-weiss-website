@@ -26,6 +26,7 @@ import {
   Presentation,
   MousePointer2,
   GanttChartSquare,
+  Users,
 } from 'lucide-react';
 import { useProgress } from '../hooks/useLocalStorage';
 import { weeks } from '../data/onboardingData';
@@ -79,6 +80,12 @@ const navItems = [
     icon: ClipboardList,
     label: 'Projekt-Log',
     description: 'Meetings · Action Items · Entscheidungen',
+  },
+  {
+    path: '/implementation-registers',
+    icon: Users,
+    label: 'Register',
+    description: 'User · Rollen · UAT · Risiken',
   },
   {
     path: '/kickoff-studio',

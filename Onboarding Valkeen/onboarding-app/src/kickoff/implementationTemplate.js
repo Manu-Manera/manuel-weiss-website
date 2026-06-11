@@ -160,7 +160,7 @@ export const IMPL_PHASES = [
         id: 'uat',
         kind: 'tool',
         module: 'uat',
-        to: '/implementation-studio',
+        to: '/implementation-registers?tab=uat',
         owner: 'Valkeen/Cistec',
         title: { de: 'UAT-Checkliste', en: 'UAT checklist' },
         desc: {

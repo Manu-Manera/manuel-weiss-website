@@ -1,0 +1,72 @@
+/* Implementation Registers — erweitert die .impllog-Klassen */
+
+.impllog-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--impl-border);
+  background: transparent;
+  color: var(--impl-text);
+  cursor: pointer;
+}
+.impllog-pill--pass,
+.impllog-pill--mitigated {
+  border-color: rgba(34, 197, 94, 0.6);
+  background: rgba(34, 197, 94, 0.16);
+}
+.impllog-pill--fail {
+  border-color: rgba(239, 68, 68, 0.6);
+  background: rgba(239, 68, 68, 0.16);
+}
+.impllog-pill--blocked,
+.impllog-pill--open {
+  border-color: rgba(var(--impl-accent-rgb) / 0.5);
+  background: rgba(var(--impl-accent-rgb) / 0.12);
+}
+.impllog-pill--closed {
+  opacity: 0.6;
+}
+
+.impllog-sev {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid var(--impl-border);
+  background: transparent;
+  color: var(--impl-text);
+}
+.impllog-sev--low {
+  border-color: rgba(34, 197, 94, 0.5);
+  background: rgba(34, 197, 94, 0.12);
+}
+.impllog-sev--medium {
+  border-color: rgba(234, 179, 8, 0.5);
+  background: rgba(234, 179, 8, 0.14);
+}
+.impllog-sev--high {
+  border-color: rgba(239, 68, 68, 0.55);
+  background: rgba(239, 68, 68, 0.16);
+}
+
+.impllog-score {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--impl-border);
+  color: var(--impl-text-soft);
+}
+.impllog-score--hot {
+  border-color: rgba(239, 68, 68, 0.6);
+  background: rgba(239, 68, 68, 0.16);
+  color: var(--impl-text);
+}
+
+.impllog-rolehead {
+  font-weight: 700;
+  font-size: 15px;
+}
