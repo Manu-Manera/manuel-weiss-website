@@ -27,6 +27,7 @@ import {
   MousePointer2,
   GanttChartSquare,
   Users,
+  Activity,
 } from 'lucide-react';
 import { useProgress } from '../hooks/useLocalStorage';
 import { weeks } from '../data/onboardingData';
@@ -68,6 +69,12 @@ const navItems = [
     icon: Presentation,
     label: 'Implementation Studio',
     description: 'Leitfaden · Workshops · Plan · Branding',
+  },
+  {
+    path: '/implementation-scorecard',
+    icon: Activity,
+    label: 'Scorecard',
+    description: 'Ampel · Phasen · Meilensteine · Go-Live',
   },
   {
     path: '/implementation-plan',

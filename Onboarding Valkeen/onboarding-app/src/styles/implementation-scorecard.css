@@ -1,0 +1,223 @@
+/* Projekt-Scorecard */
+
+.implscore {
+  min-height: 100vh;
+  background: var(--impl-bg);
+  color: var(--impl-text);
+  font-family: var(--impl-font);
+  padding: 24px clamp(14px, 3vw, 40px) 64px;
+}
+.implscore *,
+.implscore *::before,
+.implscore *::after {
+  box-sizing: border-box;
+}
+
+.implscore-hero {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 24px;
+  align-items: center;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.implscore-ampel {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+.implscore-ampel--green {
+  background: radial-gradient(circle at 30% 30%, #4ade80, #16a34a);
+  color: #052e16;
+}
+.implscore-ampel--yellow {
+  background: radial-gradient(circle at 30% 30%, #fde047, #ca8a04);
+  color: #422006;
+}
+.implscore-ampel--red {
+  background: radial-gradient(circle at 30% 30%, #f87171, #dc2626);
+  color: #450a0a;
+}
+
+.implscore-hero-title {
+  margin: 0 0 6px;
+  font-size: clamp(20px, 2.5vw, 28px);
+  font-weight: 700;
+}
+.implscore-hero-sub {
+  margin: 0;
+  font-size: 14px;
+  color: var(--impl-text-soft);
+}
+.implscore-reasons {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  color: var(--impl-text-soft);
+}
+.implscore-reasons li::before {
+  content: '• ';
+  color: var(--impl-accent);
+}
+
+.implscore-timeline {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.implscore-timecard {
+  padding: 14px 16px;
+  text-align: center;
+}
+.implscore-timecard-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--impl-text-soft);
+  margin-bottom: 4px;
+}
+.implscore-timecard-value {
+  font-size: 18px;
+  font-weight: 700;
+}
+.implscore-timecard--highlight .implscore-timecard-value {
+  color: var(--impl-accent);
+}
+
+.implscore-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.implscore-card {
+  padding: 16px;
+}
+.implscore-card h3 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.implscore-phases {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.implscore-phase {
+  flex: 1;
+  min-width: 120px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--impl-border);
+  background: rgba(var(--impl-primary-rgb) / 0.06);
+  position: relative;
+}
+.implscore-phase--current {
+  border-color: rgba(var(--impl-accent-rgb) / 0.55);
+  background: rgba(var(--impl-accent-rgb) / 0.12);
+}
+.implscore-phase-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+.implscore-phase-dot--green {
+  background: #22c55e;
+}
+.implscore-phase-dot--yellow {
+  background: #eab308;
+}
+.implscore-phase-dot--red {
+  background: #ef4444;
+}
+.implscore-phase-dot--gray {
+  background: #94a3b8;
+}
+.implscore-phase-name {
+  font-size: 12px;
+  font-weight: 700;
+}
+.implscore-phase-pct {
+  font-size: 11px;
+  color: var(--impl-text-soft);
+}
+
+.implscore-milestone {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(var(--impl-primary-rgb) / 0.08);
+  font-size: 13px;
+}
+.implscore-milestone:last-child {
+  border-bottom: none;
+}
+.implscore-milestone--done {
+  opacity: 0.65;
+}
+.implscore-milestone--overdue {
+  color: #f87171;
+}
+
+.implscore-todo {
+  display: flex;
+  gap: 8px;
+  padding: 7px 0;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(var(--impl-primary-rgb) / 0.07);
+}
+.implscore-todo-due {
+  font-size: 11px;
+  color: var(--impl-text-soft);
+  white-space: nowrap;
+}
+
+.implscore-risk {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(var(--impl-primary-rgb) / 0.08);
+}
+.implscore-risk:last-child {
+  border-bottom: none;
+}
+.implscore-risk-title {
+  font-weight: 600;
+  font-size: 13px;
+}
+.implscore-risk-mit {
+  font-size: 12px;
+  color: var(--impl-text-soft);
+  margin-top: 4px;
+}
+
+.implscore-progress-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(var(--impl-primary-rgb) / 0.12);
+  overflow: hidden;
+  margin-top: 8px;
+}
+.implscore-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(var(--impl-primary-rgb) / 0.9),
+    rgba(var(--impl-accent-rgb) / 0.85)
+  );
+}

@@ -15,6 +15,7 @@ import {
   Sparkles,
   FileText,
   GitBranch,
+  Activity,
   X,
 } from 'lucide-react';
 import { useImplementationPortal } from '../context/ImplementationPortalContext';
@@ -229,6 +230,16 @@ export default function ImplementationGuide() {
           {branding.customerLogoUrl && (
             <img className="impl-logo impl-logo--customer" src={branding.customerLogoUrl} alt="" />
           )}
+          {(perms.canView('scorecard') || perms.canView('plan')) && (
+            <button
+              className="impl-btn impl-btn--nav"
+              onClick={() => navigate(`/implementation-scorecard?${navParams().toString()}`)}
+              type="button"
+            >
+              <Activity className="w-4 h-4" />
+              {locale === 'en' ? 'Scorecard' : 'Scorecard'}
+            </button>
+          )}
           {perms.canView('plan') && (
             <button
               className="impl-btn impl-btn--nav"
@@ -345,6 +356,24 @@ export default function ImplementationGuide() {
               <option value="de">Deutsch</option>
               <option value="en">English</option>
             </select>
+          </div>
+          <div>
+            <label>{locale === 'en' ? 'Kick-off date' : 'Kick-off Datum'}</label>
+            <input
+              type="date"
+              className="impl-input"
+              value={session.kickoffDate || ''}
+              onChange={(e) => patch({ kickoffDate: e.target.value })}
+            />
+          </div>
+          <div>
+            <label>Go-Live</label>
+            <input
+              type="date"
+              className="impl-input"
+              value={session.goLiveDate || ''}
+              onChange={(e) => patch({ goLiveDate: e.target.value })}
+            />
           </div>
           {syncMsg && (
             <div style={{ alignSelf: 'end', fontSize: 13, color: 'var(--impl-accent)' }}>{syncMsg}</div>

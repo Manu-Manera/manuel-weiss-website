@@ -4,6 +4,7 @@
 import { IMPL_PHASES, STEP_STATUS_LABEL, tx } from './implementationTemplate';
 import { openActionItems } from './implementationLog';
 import { riskScore } from './implementationRegisters';
+import { buildScorecard } from './implementationScorecard';
 
 export function appendAuditLog(existing, entry) {
   const log = Array.isArray(existing) ? [...existing] : [];
@@ -30,6 +31,14 @@ export function buildStatusReport(session, locale = 'de') {
     `${loc === 'en' ? 'Progress' : 'Fortschritt'}: ${progress}% (${done}/${allSteps.length})`
   );
   lines.push(`${loc === 'en' ? 'Updated' : 'Stand'}: ${new Date().toLocaleString(loc === 'en' ? 'en-GB' : 'de-CH')}`);
+
+  const sc = buildScorecard(session, loc);
+  lines.push(
+    `${loc === 'en' ? 'Scorecard' : 'Scorecard'}: ${sc.ampelLabel} · ${sc.overallProgress}% · Go-Live ${sc.goLiveDate || '—'} (${sc.daysToGoLive ?? '—'} ${loc === 'en' ? 'days' : 'Tage'})`
+  );
+  if (sc.currentPhase) {
+    lines.push(`${loc === 'en' ? 'Phase' : 'Phase'}: ${sc.currentPhase.title}`);
+  }
   lines.push('');
 
   lines.push(`## ${loc === 'en' ? 'Phases' : 'Phasen'}`);

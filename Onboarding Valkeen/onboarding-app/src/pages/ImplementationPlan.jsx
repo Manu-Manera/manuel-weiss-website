@@ -22,6 +22,8 @@ import {
   newTask,
   parseISO,
   phaseTitle,
+  allStepIdsForDeps,
+  isTaskBlocked,
   planBounds,
   taskProgress,
   toISO,
@@ -288,6 +290,29 @@ export default function ImplementationPlan() {
         </div>
       </div>
 
+      {canEdit && (
+        <div className="impl-meta impl-glass" style={{ marginBottom: 16 }}>
+          <div>
+            <label>{locale === 'en' ? 'Kick-off date' : 'Kick-off Datum'}</label>
+            <input
+              type="date"
+              className="impl-input"
+              value={session.kickoffDate || ''}
+              onChange={(e) => setSession((s) => ({ ...s, kickoffDate: e.target.value }))}
+            />
+          </div>
+          <div>
+            <label>Go-Live</label>
+            <input
+              type="date"
+              className="impl-input"
+              value={session.goLiveDate || ''}
+              onChange={(e) => setSession((s) => ({ ...s, goLiveDate: e.target.value }))}
+            />
+          </div>
+        </div>
+      )}
+
       {view === 'gantt' ? (
         <div className="gantt">
           <div className="gantt-inner">
@@ -324,10 +349,16 @@ export default function ImplementationPlan() {
                     const left = xFor(t.start);
                     const w = Math.max(pxPerDay, (dayDiff(t.start, t.end) + 1) * pxPerDay);
                     const prog = taskProgress(t);
+                    const blocked = isTaskBlocked(t, tasks);
                     return (
                       <div key={t.id} className="gantt-row">
                         <div className="gantt-label">
                           <div className="gantt-task-label" onClick={() => setEditing(t.id)}>
+                            {blocked && (
+                              <span style={{ color: '#f87171', marginRight: 4 }} title={locale === 'en' ? 'Blocked' : 'Blockiert'}>
+                                ⏸
+                              </span>
+                            )}
                             {t.title || (locale === 'en' ? '(untitled)' : '(ohne Titel)')}
                           </div>
                           {t.owner && <div className="gantt-task-owner">{t.owner}</div>}
@@ -407,6 +438,7 @@ export default function ImplementationPlan() {
         <TaskEditor
           task={editingTask}
           locale={locale}
+          allTasks={tasks}
           onChange={(patch) => updateTask(editingTask.id, patch)}
           onDelete={() => {
             removeTask(editingTask.id);
@@ -456,7 +488,8 @@ function PhaseRows({ phaseId, title, tasks, locale, onEdit, onCycle, onAdd }) {
   );
 }
 
-function TaskEditor({ task, locale, onChange, onDelete, onClose }) {
+function TaskEditor({ task, locale, allTasks, onChange, onDelete, onClose }) {
+  const depOptions = allStepIdsForDeps(allTasks).filter((x) => x.stepId !== task.stepId);
   const addTodo = () =>
     onChange({
       todos: [...(task.todos || []), { id: `td-${Math.random().toString(36).slice(2, 7)}`, text: '', done: false }],
@@ -528,6 +561,28 @@ function TaskEditor({ task, locale, onChange, onDelete, onClose }) {
             </select>
           </div>
         </div>
+
+        {depOptions.length > 0 && (
+          <div className="impl-field">
+            <span>{locale === 'en' ? 'Depends on (steps)' : 'Abhängig von (Schritte)'}</span>
+            <select
+              className="impl-select"
+              multiple
+              value={task.dependsOn || []}
+              onChange={(e) => {
+                const selected = Array.from(e.target.selectedOptions).map((o) => o.value);
+                onChange({ dependsOn: selected });
+              }}
+              style={{ minHeight: 72 }}
+            >
+              {depOptions.map((o) => (
+                <option key={o.stepId} value={o.stepId}>
+                  {o.title} ({o.stepId})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className="impl-field">
           <span>To-dos</span>

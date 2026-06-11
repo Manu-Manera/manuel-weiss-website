@@ -27,6 +27,7 @@ const ImplementationGuide = lazy(() => import('./pages/ImplementationGuide'));
 const ImplementationPlan = lazy(() => import('./pages/ImplementationPlan'));
 const ImplementationLog = lazy(() => import('./pages/ImplementationLog'));
 const ImplementationRegisters = lazy(() => import('./pages/ImplementationRegisters'));
+const ImplementationScorecard = lazy(() => import('./pages/ImplementationScorecard'));
 const LoginMailer = lazy(() => import('./pages/LoginMailer'));
 const QrgBuilder = lazy(() => import('./pages/QrgBuilder'));
 const ChangeWorkflow = lazy(() => import('./pages/ChangeWorkflow'));
@@ -124,6 +125,7 @@ function AdminProgressRoutes() {
               <Route path="implementation-plan" element={<ImplementationPlan />} />
               <Route path="implementation-log" element={<ImplementationLog />} />
               <Route path="implementation-registers" element={<ImplementationRegisters />} />
+              <Route path="implementation-scorecard" element={<ImplementationScorecard />} />
             </Route>
             <Route path="login-mailer" element={<LoginMailer />} />
             <Route path="qrg-builder" element={<QrgBuilder />} />
@@ -157,6 +159,7 @@ function KickoffShortHostRoutes() {
           <Route path="implementation-plan" element={<ImplementationPlan />} />
           <Route path="implementation-log" element={<ImplementationLog />} />
           <Route path="implementation-registers" element={<ImplementationRegisters />} />
+          <Route path="implementation-scorecard" element={<ImplementationScorecard />} />
           <Route path="implementation-studio" element={<ImplementationGuide />} />
           <Route path="change-workflow/teilnehmer" element={<ChangeWorkflow />} />
         </Route>

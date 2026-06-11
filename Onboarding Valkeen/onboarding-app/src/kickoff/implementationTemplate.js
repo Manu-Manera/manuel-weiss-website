@@ -319,7 +319,7 @@ export const STANDARD_ROLES = [
   'Resource Manager / Team Lead',
 ];
 
-export const EXTRA_MODULE_KEYS = ['plan', 'log', 'roles', 'risks', 'registers'];
+export const EXTRA_MODULE_KEYS = ['plan', 'log', 'roles', 'risks', 'registers', 'scorecard'];
 
 export function allModuleKeys() {
   const keys = new Set();

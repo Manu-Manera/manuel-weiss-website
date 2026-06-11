@@ -63,17 +63,30 @@ function uid(prefix = 't') {
   return `${prefix}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-/** Standard-Plan aus den Phasen/Schritten ableiten (sequentiell ab Startdatum). */
+/** Standard-Plan aus den Phasen/Schritten ableiten (sequentiell + Abhängigkeiten). */
 export function buildDefaultPlan(startDateISO, locale = 'de') {
   const start = startDateISO ? parseISO(startDateISO) : new Date();
   let cursor = new Date(start);
   const tasks = [];
+  const phaseLastStepId = {};
+  let prevStepId = null;
+
   for (const phase of IMPL_PHASES) {
-    for (const step of phase.steps) {
+    phase.steps.forEach((step, stepIdx) => {
       const dur = STEP_DURATION[step.id] ?? 5;
       const milestone = step.kind === 'milestone' || dur === 0;
       const s = new Date(cursor);
       const e = milestone ? new Date(cursor) : addDays(cursor, Math.max(1, dur) - 1);
+
+      const dependsOn = [];
+      if (prevStepId) dependsOn.push(prevStepId);
+      if (stepIdx === 0) {
+        for (const depPh of PHASE_DEPENDENCIES[phase.id] || []) {
+          const last = phaseLastStepId[depPh];
+          if (last && !dependsOn.includes(last)) dependsOn.push(last);
+        }
+      }
+
       tasks.push({
         id: uid(),
         stepId: step.id,
@@ -84,11 +97,15 @@ export function buildDefaultPlan(startDateISO, locale = 'de') {
         start: toISO(s),
         end: toISO(e),
         milestone,
+        dependsOn,
         todos: [],
         notes: '',
       });
+
+      prevStepId = step.id;
+      phaseLastStepId[phase.id] = step.id;
       cursor = addDays(e, milestone ? 1 : 2);
-    }
+    });
   }
   return tasks;
 }
@@ -104,9 +121,17 @@ export function newTask(phaseId, startISO) {
     start: toISO(s),
     end: toISO(addDays(s, 4)),
     milestone: false,
+    dependsOn: [],
     todos: [],
     notes: '',
   };
+}
+
+/** Alle Step-IDs für Abhängigkeits-Auswahl im Editor. */
+export function allStepIdsForDeps(tasks) {
+  return (tasks || [])
+    .filter((t) => t.stepId)
+    .map((t) => ({ stepId: t.stepId, title: t.title, phaseId: t.phaseId }));
 }
 
 export function planBounds(tasks) {
@@ -140,3 +165,100 @@ export function phaseTitle(phaseId, locale) {
 }
 
 export const PHASE_ORDER = IMPL_PHASES.map((p) => p.id);
+
+/** Phasen-Abhängigkeiten (Vorgänger-Phasen müssen abgeschlossen sein). */
+export const PHASE_DEPENDENCIES = {
+  onboarding: [],
+  analysis: ['onboarding'],
+  build: ['analysis'],
+  enablement: ['build'],
+  hypercare: ['enablement'],
+};
+
+export function phaseDepsMet(phaseId, tasks) {
+  const deps = PHASE_DEPENDENCIES[phaseId] || [];
+  return deps.every((depPh) => {
+    const depTasks = (tasks || []).filter((t) => t.phaseId === depPh);
+    if (!depTasks.length) return true;
+    return depTasks.every((t) => t.status === 'done');
+  });
+}
+
+export function taskDependenciesMet(task, tasks) {
+  const deps = task.dependsOn || [];
+  if (!deps.length) return true;
+  return deps.every((depStepId) => {
+    const depTask = (tasks || []).find((t) => t.stepId === depStepId);
+    return depTask?.status === 'done';
+  });
+}
+
+export function isTaskBlocked(task, tasks) {
+  if (!task || task.status === 'done') return false;
+  return !taskDependenciesMet(task, tasks);
+}
+
+export function resolveKickoffDate(session, tasks) {
+  if (session?.kickoffDate) return session.kickoffDate;
+  const kickoffTask = (tasks || []).find((t) => t.stepId === 'kickoff');
+  if (kickoffTask?.start) return kickoffTask.start;
+  const meetings = session?.meetings || [];
+  const kickoffM = meetings.find((m) => m.type === 'kickoff' && m.date);
+  return kickoffM?.date || '';
+}
+
+export function resolveGoLiveDate(session, tasks) {
+  if (session?.goLiveDate) return session.goLiveDate;
+  const golive = (tasks || []).find((t) => t.stepId === 'go-live');
+  return golive?.end || golive?.start || '';
+}
+
+export function openTodosFromPlan(tasks, limit = 8) {
+  const out = [];
+  for (const t of tasks || []) {
+    if (t.status === 'done') continue;
+    for (const td of t.todos || []) {
+      if (!td.done && td.text?.trim()) {
+        out.push({
+          id: td.id,
+          text: td.text,
+          due: t.end,
+          owner: t.owner,
+          taskTitle: t.title,
+          priority: t.milestone ? 2 : 1,
+        });
+      }
+    }
+    if (!t.milestone && t.status !== 'done' && !t.todos?.length && t.title) {
+      out.push({
+        id: t.id,
+        text: t.title,
+        due: t.end,
+        owner: t.owner,
+        taskTitle: t.title,
+        priority: 0,
+      });
+    }
+  }
+  out.sort((a, b) => {
+    const da = a.due || '9999';
+    const db = b.due || '9999';
+    if (da !== db) return da.localeCompare(db);
+    return b.priority - a.priority;
+  });
+  return out.slice(0, limit);
+}
+
+export function milestonesFromPlan(tasks) {
+  return [...(tasks || [])]
+    .filter((t) => t.milestone)
+    .sort((a, b) => (a.end || a.start || '').localeCompare(b.end || b.start || ''));
+}
+
+export function phaseStats(tasks, phaseId) {
+  const phaseTasks = (tasks || []).filter((t) => t.phaseId === phaseId);
+  const done = phaseTasks.filter((t) => t.status === 'done').length;
+  const blocked = phaseTasks.filter((t) => isTaskBlocked(t, tasks)).length;
+  const progress = phaseTasks.length ? Math.round((done / phaseTasks.length) * 100) : 0;
+  return { total: phaseTasks.length, done, blocked, progress };
+}
