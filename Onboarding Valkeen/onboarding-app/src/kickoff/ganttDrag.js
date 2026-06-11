@@ -1,4 +1,4 @@
-import { addDays, dayDiff, parseISO, toISO } from './implementationPlan';
+import { addDays, dayDiff, dependentsOf, parseISO, toISO } from './implementationPlan';
 
 /** Verschiebt Start und Ende um dieselbe Anzahl Tage. */
 export function shiftTaskDates(task, dayDelta) {
@@ -42,4 +42,39 @@ export function pixelsToDayDelta(deltaX, pxPerDay) {
 /** Anzeige-Dauer in Tagen (inkl. Starttag). */
 export function taskSpanDays(task) {
   return Math.max(1, dayDiff(task.start, task.end) + 1);
+}
+
+/** Alle Nachfolger (direkt + indirekt), die von diesem Task abhängen. */
+export function collectSuccessorIds(task, tasks) {
+  const out = new Set();
+  const walk = (t) => {
+    for (const succ of dependentsOf(t, tasks)) {
+      if (!out.has(succ.id)) {
+        out.add(succ.id);
+        walk(succ);
+      }
+    }
+  };
+  if (task) walk(task);
+  return out;
+}
+
+/**
+ * Verschiebt einen Task und alle abhängigen Nachfolger um dieselbe Tages-Delta.
+ * Ohne Nachfolger wird nur der Task selbst verschoben.
+ */
+export function shiftTaskTree(taskId, dayDelta, tasks) {
+  const root = (tasks || []).find((t) => t.id === taskId);
+  if (!root || !dayDelta) return {};
+
+  const ids = new Set([taskId]);
+  for (const id of collectSuccessorIds(root, tasks)) ids.add(id);
+
+  const patches = {};
+  for (const id of ids) {
+    const t = tasks.find((x) => x.id === id);
+    if (!t) continue;
+    patches[id] = t.milestone ? moveMilestone(t, dayDelta) : shiftTaskDates(t, dayDelta);
+  }
+  return patches;
 }

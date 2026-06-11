@@ -11,6 +11,7 @@ const DRAG_CLICK_THRESHOLD = 4;
 
 /**
  * Interaktiver Gantt-Balken: Verschieben (drag) + Start/Ende ziehen (resize).
+ * onDateAdjust: { mode, dayDelta } — Parent verschiebt bei move auch Nachfolger.
  */
 export default function GanttInteractiveBar({
   task,
@@ -23,7 +24,7 @@ export default function GanttInteractiveBar({
   pxPerDay,
   locale,
   setBarRef,
-  onDatesChange,
+  onDateAdjust,
   onEdit,
 }) {
   const [dragging, setDragging] = useState(false);
@@ -37,6 +38,10 @@ export default function GanttInteractiveBar({
   const applyDrag = useCallback(
     (mode, dayDelta) => {
       if (!dayDelta) return;
+      if (mode === 'move') {
+        onDateAdjust?.({ mode, dayDelta });
+        return;
+      }
       let patch;
       if (task.milestone) {
         patch = moveMilestone(task, dayDelta);
@@ -47,9 +52,9 @@ export default function GanttInteractiveBar({
       } else {
         patch = shiftTaskDates(task, dayDelta);
       }
-      onDatesChange(patch);
+      onDateAdjust?.({ mode, dayDelta, patch });
     },
-    [task, onDatesChange]
+    [task, onDateAdjust]
   );
 
   const startPointerDrag = useCallback(
@@ -100,6 +105,8 @@ export default function GanttInteractiveBar({
     [canEdit, pxPerDay, applyDrag, finishDrag, onEdit]
   );
 
+  const displayTitle = task.title || (locale === 'en' ? '(untitled)' : '(ohne Titel)');
+
   if (task.milestone) {
     return (
       <div
@@ -110,9 +117,9 @@ export default function GanttInteractiveBar({
         title={
           canEdit
             ? locale === 'en'
-              ? 'Drag to move date'
-              : 'Ziehen zum Verschieben'
-            : task.title
+              ? 'Drag to move date (with dependents)'
+              : 'Ziehen zum Verschieben (mit Abhängigen)'
+            : displayTitle
         }
       />
     );
@@ -134,9 +141,9 @@ export default function GanttInteractiveBar({
       title={
         canEdit
           ? locale === 'en'
-            ? 'Drag to move · edges to resize'
-            : 'Ziehen zum Verschieben · Ränder zum Verlängern/Kürzen'
-          : task.title
+            ? 'Drag to move · edges to resize · dependents follow'
+            : 'Ziehen zum Verschieben · Ränder zum Verlängern/Kürzen · Abhängige folgen'
+          : displayTitle
       }
     >
       <div className="gantt-bar-fill" style={{ width: `${prog}%` }} />
@@ -147,6 +154,7 @@ export default function GanttInteractiveBar({
           title={locale === 'en' ? `Learning ${learnPct}%` : `Lernen ${learnPct}%`}
         />
       )}
+      <span className="gantt-bar-text">{displayTitle}</span>
       {canEdit && (
         <>
           <span

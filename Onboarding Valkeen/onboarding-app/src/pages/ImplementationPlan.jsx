@@ -17,6 +17,7 @@ import '../styles/implementation-plan.css';
 import '../styles/implementation-workshop-shell.css';
 import ImplementationHubBar from '../kickoff/ImplementationHubBar';
 import GanttInteractiveBar from '../kickoff/GanttInteractiveBar';
+import { shiftTaskTree } from '../kickoff/ganttDrag';
 import GanttWorkshopLinks from '../kickoff/GanttWorkshopLinks';
 import { IMPL_PHASES } from '../kickoff/implementationTemplate';
 import {
@@ -186,6 +187,19 @@ export default function ImplementationPlan() {
   const updateTask = (id, patch) =>
     setTasks((arr) => arr.map((t) => (t.id === id ? { ...t, ...patch } : t)));
   const removeTask = (id) => setTasks((arr) => arr.filter((t) => t.id !== id));
+
+  /** Gantt: Verschieben inkl. Nachfolger; Resize nur ein Task. */
+  const handleGanttDateAdjust = useCallback(
+    (taskId, { mode, dayDelta, patch }) => {
+      if (mode === 'move' && dayDelta) {
+        const patches = shiftTaskTree(taskId, dayDelta, tasks);
+        setTasks((arr) => arr.map((t) => (patches[t.id] ? { ...t, ...patches[t.id] } : t)));
+      } else if (patch) {
+        setTasks((arr) => arr.map((t) => (t.id === taskId ? { ...t, ...patch } : t)));
+      }
+    },
+    [tasks, setTasks]
+  );
 
   /** Startdatum für neue Items: nach dem letzten Item der Phase, sonst heute. */
   const phaseDefaultStart = (phaseId) => {
@@ -743,7 +757,7 @@ export default function ImplementationPlan() {
                                 pxPerDay={pxPerDay}
                                 locale={locale}
                                 setBarRef={setBarRef}
-                                onDatesChange={(patch) => updateTask(t.id, patch)}
+                                onDateAdjust={(opts) => handleGanttDateAdjust(t.id, opts)}
                                 onEdit={() => setEditing(t.id)}
                               />
                               <span
@@ -766,7 +780,7 @@ export default function ImplementationPlan() {
                               pxPerDay={pxPerDay}
                               locale={locale}
                               setBarRef={setBarRef}
-                              onDatesChange={(patch) => updateTask(t.id, patch)}
+                              onDateAdjust={(opts) => handleGanttDateAdjust(t.id, opts)}
                               onEdit={() => setEditing(t.id)}
                             />
                           )}
