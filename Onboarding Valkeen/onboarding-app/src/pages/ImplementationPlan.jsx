@@ -350,7 +350,7 @@ export default function ImplementationPlan() {
   /** Pfeile zwischen Vorgänger und Nachfolger aus gemessenen Balkenpositionen. */
   useLayoutEffect(() => {
     if (view !== 'gantt' || !showDeps) {
-      setDepPaths([]);
+      setDepPaths((prev) => (prev.length === 0 ? prev : []));
       return;
     }
     const inner = ganttInnerRef.current;
@@ -380,8 +380,24 @@ export default function ImplementationPlan() {
         });
       }
     }
-    setDepPaths(paths);
-  }, [view, showDeps, tasks, pxPerDay, relatedIds, trainingAggregate, session, locale]);
+    setDepPaths((prev) => {
+      if (
+        prev.length === paths.length &&
+        prev.every(
+          (p, i) =>
+            p.id === paths[i].id &&
+            p.x1 === paths[i].x1 &&
+            p.y1 === paths[i].y1 &&
+            p.x2 === paths[i].x2 &&
+            p.y2 === paths[i].y2 &&
+            p.active === paths[i].active
+        )
+      ) {
+        return prev;
+      }
+      return paths;
+    });
+  }, [view, showDeps, tasks, pxPerDay, relatedIds]);
 
   const saveCloud = async () => {
     setSyncing(true);
