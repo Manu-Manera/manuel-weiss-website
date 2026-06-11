@@ -23,9 +23,10 @@ import {
   loadLocalSession,
   newSessionId,
   resolveEditPassword,
-  saveCloudSession,
+  saveImplementationSession,
   saveLocalSession,
 } from '../kickoff/kickoffStudioService';
+import { useImplementationPortal } from '../context/ImplementationPortalContext';
 import { upsertWorkspace, workspaceFromSession } from '../kickoff/implementationWorkspace';
 import { useImplPermissions, useImplPortal } from '../kickoff/useImplPermissions';
 
@@ -49,7 +50,9 @@ export default function ImplementationLog() {
   const [syncMsg, setSyncMsg] = useState('');
 
   const locale = session.locale || 'de';
-  const portalMode = useImplPortal();
+  const portalFromHost = useImplPortal();
+  const { portalMode: portalFromCtx, portalPassword } = useImplementationPortal();
+  const portalMode = portalFromCtx || portalFromHost;
   const perms = useImplPermissions(session, portalMode);
   const canEditLog = perms.canEdit('log');
   const canEditDecisions = perms.canEdit('decisions');
@@ -133,7 +136,15 @@ export default function ImplementationLog() {
     setSyncing(true);
     setSyncMsg('');
     try {
-      await saveCloudSession({ ...session, meetings, decisions }, resolveEditPassword(password));
+      await saveImplementationSession(
+        { ...session, meetings, decisions },
+        {
+          portalMode,
+          portalPassword,
+          facilitatorPassword: password,
+          actor: portalMode ? 'customer' : 'facilitator',
+        }
+      );
       setSyncMsg(locale === 'en' ? 'Saved' : 'Gespeichert');
       try {
         const trimmed = String(password || '').trim();

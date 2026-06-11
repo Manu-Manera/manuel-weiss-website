@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate, Outlet } from 'react-router-dom';
 import { isKickoffShortHost } from './kickoff/kickoffTenants';
+import { ImplementationPortalProvider } from './context/ImplementationPortalContext';
 import { lazy, Suspense } from 'react';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
@@ -117,11 +118,13 @@ function AdminProgressRoutes() {
             <Route path="sso-setup" element={<SSOSetup />} />
             <Route path="tempus-demo" element={<TempusDemo />} />
             <Route path="kickoff-studio" element={<KickoffStudio />} />
-            <Route path="implementation-studio" element={<ImplementationGuide />} />
-            <Route path="implementation-guide" element={<ImplementationGuide />} />
-            <Route path="implementation-plan" element={<ImplementationPlan />} />
-            <Route path="implementation-log" element={<ImplementationLog />} />
-            <Route path="implementation-registers" element={<ImplementationRegisters />} />
+            <Route element={<ImplementationPortalLayout />}>
+              <Route path="implementation-studio" element={<ImplementationGuide />} />
+              <Route path="implementation-guide" element={<ImplementationGuide />} />
+              <Route path="implementation-plan" element={<ImplementationPlan />} />
+              <Route path="implementation-log" element={<ImplementationLog />} />
+              <Route path="implementation-registers" element={<ImplementationRegisters />} />
+            </Route>
             <Route path="login-mailer" element={<LoginMailer />} />
             <Route path="qrg-builder" element={<QrgBuilder />} />
             <Route path="*" element={<Navigate to="/" replace />} />
@@ -137,15 +140,26 @@ function KickoffShortHostFallback() {
   return <Navigate to={{ pathname: '/', search }} replace />;
 }
 
+function ImplementationPortalLayout() {
+  return (
+    <ImplementationPortalProvider>
+      <Outlet />
+    </ImplementationPortalProvider>
+  );
+}
+
 function KickoffShortHostRoutes() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
-        <Route path="/" element={<ImplementationGuide />} />
-        <Route path="implementation-plan" element={<ImplementationPlan />} />
-        <Route path="implementation-log" element={<ImplementationLog />} />
-        <Route path="implementation-registers" element={<ImplementationRegisters />} />
-        <Route path="implementation-studio" element={<ImplementationGuide />} />
+        <Route element={<ImplementationPortalLayout />}>
+          <Route path="/" element={<ImplementationGuide />} />
+          <Route path="implementation-plan" element={<ImplementationPlan />} />
+          <Route path="implementation-log" element={<ImplementationLog />} />
+          <Route path="implementation-registers" element={<ImplementationRegisters />} />
+          <Route path="implementation-studio" element={<ImplementationGuide />} />
+          <Route path="change-workflow/teilnehmer" element={<ChangeWorkflow />} />
+        </Route>
         <Route path="deck" element={<KickoffPresenter />} />
         <Route path="kickoff-presenter/:tenantSlug?" element={<KickoffPresenter />} />
         <Route path="*" element={<KickoffShortHostFallback />} />

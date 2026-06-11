@@ -28,9 +28,10 @@ import {
   loadLocalSession,
   newSessionId,
   resolveEditPassword,
-  saveCloudSession,
+  saveImplementationSession,
   saveLocalSession,
 } from '../kickoff/kickoffStudioService';
+import { useImplementationPortal } from '../context/ImplementationPortalContext';
 import { upsertWorkspace, workspaceFromSession } from '../kickoff/implementationWorkspace';
 import {
   registerModuleForTab,
@@ -62,7 +63,9 @@ export default function ImplementationRegisters() {
   const [syncMsg, setSyncMsg] = useState('');
 
   const locale = session.locale || 'de';
-  const portalMode = useImplPortal();
+  const portalFromHost = useImplPortal();
+  const { portalMode: portalFromCtx, portalPassword } = useImplementationPortal();
+  const portalMode = portalFromCtx || portalFromHost;
   const perms = useImplPermissions(session, portalMode);
   const tabModule = registerModuleForTab(tab);
   const canEditTab = perms.canEdit(tabModule);
@@ -124,7 +127,15 @@ export default function ImplementationRegisters() {
     setSyncing(true);
     setSyncMsg('');
     try {
-      await saveCloudSession({ ...session, users, roles, uat, risks }, resolveEditPassword(password));
+      await saveImplementationSession(
+        { ...session, users, roles, uat, risks },
+        {
+          portalMode,
+          portalPassword,
+          facilitatorPassword: password,
+          actor: portalMode ? 'customer' : 'facilitator',
+        }
+      );
       setSyncMsg(locale === 'en' ? 'Saved' : 'Gespeichert');
       try {
         const trimmed = String(password || '').trim();

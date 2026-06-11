@@ -373,8 +373,12 @@ export default function ChangeWorkflow() {
     const q =
       searchParams.get('teilnehmer') === '1' ||
       searchParams.get('teilnehmer') === 'true' ||
-      searchParams.get('modus') === 'teilnehmer';
-    return endsTeilnehmer || q;
+      searchParams.get('modus') === 'teilnehmer' ||
+      searchParams.get('portal') === '1';
+    const implHost =
+      typeof window !== 'undefined' &&
+      /\.(impl|k)\.manuel-weiss\.ch$/i.test(window.location.hostname);
+    return endsTeilnehmer || q || implHost;
   }, [location.pathname, searchParams]);
 
   const teilnehmerShareUrl = useMemo(() => {

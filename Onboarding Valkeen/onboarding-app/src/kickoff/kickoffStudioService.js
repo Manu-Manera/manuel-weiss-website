@@ -49,12 +49,17 @@ export function saveLocalSession(session) {
   }
 }
 
-export async function fetchCloudSession(sessionId) {
+export async function fetchCloudSession(sessionId, opts = {}) {
+  const headers = { Accept: 'application/json' };
+  const portalPassword = opts.portalPassword || '';
+  if (portalPassword) headers['X-Portal-Password'] = portalPassword;
+  if (opts.facilitatorPassword) headers['X-Demo-Password'] = opts.facilitatorPassword;
   const res = await fetch(`${KICKOFF_URL}?sessionId=${encodeURIComponent(sessionId)}`, {
     method: 'GET',
-    headers: { Accept: 'application/json' },
+    headers,
   });
   if (res.status === 204) return null;
+  if (res.status === 401) throw new Error('PORTAL_AUTH_REQUIRED');
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || `HTTP ${res.status}`);
@@ -70,6 +75,28 @@ export async function saveCloudSession(session, password) {
       'X-Demo-Password': password,
     },
     body: JSON.stringify({ action: 'save', ...session }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+  return data;
+}
+
+/** Kundenportal-Speichern (Portal-Passwort statt Facilitator-Passwort). */
+export async function saveImplementationSession(session, opts = {}) {
+  if (opts.portalMode) {
+    return savePortalSession(session, opts.portalPassword || '', opts.actor || 'customer');
+  }
+  return saveCloudSession(session, resolveEditPassword(opts.facilitatorPassword));
+}
+
+export async function savePortalSession(session, portalPassword, actor = 'customer') {
+  const res = await fetch(KICKOFF_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Portal-Password': portalPassword || '',
+    },
+    body: JSON.stringify({ action: 'portal-save', actor, ...session }),
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);

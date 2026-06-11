@@ -13,8 +13,13 @@ import {
   Loader2,
   Palette,
   Sparkles,
+  FileText,
+  GitBranch,
   X,
 } from 'lucide-react';
+import { useImplementationPortal } from '../context/ImplementationPortalContext';
+import { changeWorkflowHref } from '../kickoff/implementationPortalUrls';
+import { downloadTextReport, buildStatusReport } from '../kickoff/implementationReport';
 import '../styles/implementation-guide.css';
 import {
   IMPL_PHASES,
@@ -40,7 +45,7 @@ import {
   loadLocalSession,
   newSessionId,
   resolveEditPassword,
-  saveCloudSession,
+  saveImplementationSession,
   saveLocalSession,
 } from '../kickoff/kickoffStudioService';
 import { kickoffCustomerShareHref } from '../kickoff/kickoffTenantUrls';
@@ -63,7 +68,9 @@ export default function ImplementationGuide() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [session, setSession] = useState(() => initSession(searchParams));
-  const [drawer, setDrawer] = useState(null); // 'branding' | 'rights' | null
+  const [drawer, setDrawer] = useState(null); // 'branding' | 'rights' | 'portal' | 'report' | null
+  const portalFromHost = useImplPortal();
+  const { portalMode: portalFromCtx, portalPassword } = useImplementationPortal();
   const [password, setPassword] = useState('');
   const [syncing, setSyncing] = useState(false);
   const [syncMsg, setSyncMsg] = useState('');
@@ -74,7 +81,7 @@ export default function ImplementationGuide() {
   const cssVars = useMemo(() => brandingCssVars(branding), [branding]);
   const stepStatus = session.stepStatus || {};
   const permissions = session.modulePermissions || {};
-  const portalMode = useImplPortal();
+  const portalMode = portalFromCtx || portalFromHost;
   const perms = useImplPermissions(session, portalMode);
 
   useEffect(() => {
@@ -89,12 +96,15 @@ export default function ImplementationGuide() {
   useEffect(() => {
     const sid = searchParams.get('s') || searchParams.get('session');
     if (!sid) return;
-    fetchCloudSession(sid)
+    const opts = portalMode
+      ? { portalPassword }
+      : { facilitatorPassword: resolveEditPassword(password) };
+    fetchCloudSession(sid, opts)
       .then((cloud) => {
         if (cloud) setSession((prev) => mergeSession({ ...prev, ...cloud }, prev.tenantSlug));
       })
       .catch(() => {});
-  }, [searchParams]);
+  }, [searchParams, portalMode, portalPassword, password]);
 
   useEffect(() => {
     saveLocalSession(session);
@@ -121,6 +131,10 @@ export default function ImplementationGuide() {
   const openStep = (step) => {
     if (!step.to) return;
     if (!perms.canView(step.module)) return;
+    if (step.module === 'change' && step.to.startsWith('/change-workflow')) {
+      navigate(changeWorkflowHref({ portalMode, sessionId: session.sessionId }));
+      return;
+    }
     const params = new URLSearchParams();
     if (session.sessionId) params.set('s', session.sessionId);
     if (session.customer) params.set('c', session.customer);
@@ -153,8 +167,12 @@ export default function ImplementationGuide() {
     setSyncing(true);
     setSyncMsg('');
     try {
-      const pw = resolveEditPassword(password);
-      await saveCloudSession(session, pw);
+      await saveImplementationSession(session, {
+        portalMode,
+        portalPassword,
+        facilitatorPassword: password,
+        actor: portalMode ? 'customer' : 'facilitator',
+      });
       setSyncMsg(locale === 'en' ? 'Saved' : 'Gespeichert');
       try {
         const trimmed = String(password || '').trim();
@@ -242,6 +260,27 @@ export default function ImplementationGuide() {
             >
               <Users className="w-4 h-4" />
               {locale === 'en' ? 'Registers' : 'Register'}
+            </button>
+          )}
+          {portalMode && perms.canView('change') && (
+            <button
+              className="impl-btn impl-btn--nav"
+              onClick={() => navigate(changeWorkflowHref({ portalMode, sessionId: session.sessionId }))}
+              type="button"
+            >
+              <GitBranch className="w-4 h-4" />
+              {locale === 'en' ? 'Change mgmt' : 'Change Mgmt'}
+            </button>
+          )}
+          {!portalMode && (
+            <button className="impl-btn" onClick={() => setDrawer('portal')} type="button">
+              {locale === 'en' ? 'Portal' : 'Kundenportal'}
+            </button>
+          )}
+          {!portalMode && (
+            <button className="impl-btn" onClick={() => setDrawer('report')} type="button">
+              <FileText className="w-4 h-4" />
+              {locale === 'en' ? 'Status report' : 'Status-Report'}
             </button>
           )}
           {!portalMode && (
@@ -414,6 +453,114 @@ export default function ImplementationGuide() {
           onClose={() => setDrawer(null)}
         />
       )}
+      {drawer === 'portal' && (
+        <PortalDrawer
+          session={session}
+          onPatch={patch}
+          onClose={() => setDrawer(null)}
+          locale={locale}
+        />
+      )}
+      {drawer === 'report' && (
+        <ReportDrawer session={session} locale={locale} onClose={() => setDrawer(null)} />
+      )}
+    </div>
+  );
+}
+
+function PortalDrawer({ session, onPatch, onClose, locale }) {
+  return (
+    <div className="impl-drawer-backdrop" onClick={onClose}>
+      <div className="impl-drawer" onClick={(e) => e.stopPropagation()}>
+        <div className="impl-header" style={{ marginBottom: 4 }}>
+          <h2 className="impl-title" style={{ fontSize: 20 }}>
+            {locale === 'en' ? 'Customer portal' : 'Kundenportal'}
+          </h2>
+          <button className="impl-btn impl-btn--ghost" onClick={onClose} type="button">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+        <p style={{ fontSize: 13, color: 'var(--impl-text-soft)', margin: '0 0 12px' }}>
+          {locale === 'en'
+            ? 'Set portal password and release — customers log in at impl subdomain.'
+            : 'Portal-Passwort setzen und freigeben — Kunden loggen sich auf der impl-Subdomain ein.'}
+        </p>
+        <div className="impl-field">
+          <span>{locale === 'en' ? 'Portal password' : 'Portal-Passwort'}</span>
+          <input
+            className="impl-input"
+            type="password"
+            value={session.portalPassword || ''}
+            placeholder={locale === 'en' ? 'Optional — recommended' : 'Optional — empfohlen'}
+            onChange={(e) => onPatch({ portalPassword: e.target.value })}
+          />
+        </div>
+        <div className="impl-field">
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+            <input
+              type="checkbox"
+              checked={session.portalReleased !== false}
+              onChange={(e) => onPatch({ portalReleased: e.target.checked })}
+            />
+            {locale === 'en' ? 'Portal released for customer' : 'Portal für Kunden freigegeben'}
+          </label>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ReportDrawer({ session, locale, onClose }) {
+  const report = buildStatusReport(session, locale);
+  const audit = (session.auditLog || []).slice().reverse().slice(0, 30);
+  return (
+    <div className="impl-drawer-backdrop" onClick={onClose}>
+      <div className="impl-drawer" onClick={(e) => e.stopPropagation()}>
+        <div className="impl-header" style={{ marginBottom: 4 }}>
+          <h2 className="impl-title" style={{ fontSize: 20 }}>
+            {locale === 'en' ? 'Status report' : 'Status-Report'}
+          </h2>
+          <button className="impl-btn impl-btn--ghost" onClick={onClose} type="button">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+        <button
+          className="impl-btn impl-btn--primary"
+          type="button"
+          onClick={() => downloadTextReport(session, locale)}
+          style={{ marginBottom: 12 }}
+        >
+          <FileText className="w-4 h-4" />
+          {locale === 'en' ? 'Download Markdown' : 'Markdown herunterladen'}
+        </button>
+        <pre
+          className="impl-glass"
+          style={{
+            fontSize: 12,
+            padding: 12,
+            whiteSpace: 'pre-wrap',
+            maxHeight: 200,
+            overflow: 'auto',
+            marginBottom: 12,
+          }}
+        >
+          {report}
+        </pre>
+        {audit.length > 0 && (
+          <>
+            <h3 style={{ fontSize: 14, margin: '0 0 8px' }}>
+              {locale === 'en' ? 'Audit log' : 'Audit-Log'}
+            </h3>
+            <ul style={{ fontSize: 12, margin: 0, paddingLeft: 18, color: 'var(--impl-text-soft)' }}>
+              {audit.map((a) => (
+                <li key={a.id}>
+                  {a.at} · {a.actor || '—'} · {a.action}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
     </div>
   );
 }

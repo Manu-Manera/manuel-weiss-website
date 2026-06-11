@@ -34,9 +34,10 @@ import {
   loadLocalSession,
   newSessionId,
   resolveEditPassword,
-  saveCloudSession,
+  saveImplementationSession,
   saveLocalSession,
 } from '../kickoff/kickoffStudioService';
+import { useImplementationPortal } from '../context/ImplementationPortalContext';
 import { upsertWorkspace, workspaceFromSession } from '../kickoff/implementationWorkspace';
 import { useImplPermissions, useImplPortal } from '../kickoff/useImplPermissions';
 
@@ -67,7 +68,9 @@ export default function ImplementationPlan() {
   const [syncMsg, setSyncMsg] = useState('');
 
   const locale = session.locale || 'de';
-  const portalMode = useImplPortal();
+  const portalFromHost = useImplPortal();
+  const { portalMode: portalFromCtx, portalPassword } = useImplementationPortal();
+  const portalMode = portalFromCtx || portalFromHost;
   const perms = useImplPermissions(session, portalMode);
   const canEdit = perms.canEdit('plan');
   const cssVars = useMemo(() => brandingCssVars(normalizeBranding(session.branding)), [session.branding]);
@@ -178,7 +181,15 @@ export default function ImplementationPlan() {
     setSyncing(true);
     setSyncMsg('');
     try {
-      await saveCloudSession({ ...session, projectPlan: tasks }, resolveEditPassword(password));
+      await saveImplementationSession(
+        { ...session, projectPlan: tasks },
+        {
+          portalMode,
+          portalPassword,
+          facilitatorPassword: password,
+          actor: portalMode ? 'customer' : 'facilitator',
+        }
+      );
       setSyncMsg(locale === 'en' ? 'Saved' : 'Gespeichert');
       try {
         const trimmed = String(password || '').trim();
