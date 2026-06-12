@@ -1,17 +1,17 @@
 import { useCallback, useRef, useState } from 'react';
-import {
-  moveMilestone,
-  pixelsToDayDelta,
-  resizeTaskEnd,
-  resizeTaskStart,
-  shiftTaskDates,
-} from './ganttDrag';
+import { pixelsToDayDelta } from './ganttDrag';
 
 const DRAG_CLICK_THRESHOLD = 4;
 
 /**
  * Interaktiver Gantt-Balken: Verschieben (drag) + Start/Ende ziehen (resize).
- * onDateAdjust: { mode, dayDelta } — Parent verschiebt bei move auch Nachfolger.
+ *
+ * Kommuniziert per onDateAdjust mit dem Parent:
+ *  - { type: 'start' }                       → Drag beginnt (Parent snapshottet Plan)
+ *  - { type: 'drag', mode, dayDelta }        → dayDelta ist KUMULATIV ab Drag-Start
+ *  - { type: 'end' }                         → Drag fertig
+ * Der Parent berechnet aus seinem Snapshot absolute Datums-Patches inkl.
+ * abhängiger Nachfolger.
  */
 export default function GanttInteractiveBar({
   task,
@@ -30,33 +30,6 @@ export default function GanttInteractiveBar({
   const [dragging, setDragging] = useState(false);
   const dragRef = useRef(null);
 
-  const finishDrag = useCallback(() => {
-    dragRef.current = null;
-    setDragging(false);
-  }, []);
-
-  const applyDrag = useCallback(
-    (mode, dayDelta) => {
-      if (!dayDelta) return;
-      if (mode === 'move') {
-        onDateAdjust?.({ mode, dayDelta });
-        return;
-      }
-      let patch;
-      if (task.milestone) {
-        patch = moveMilestone(task, dayDelta);
-      } else if (mode === 'resize-start') {
-        patch = resizeTaskStart(task, dayDelta);
-      } else if (mode === 'resize-end') {
-        patch = resizeTaskEnd(task, dayDelta);
-      } else {
-        patch = shiftTaskDates(task, dayDelta);
-      }
-      onDateAdjust?.({ mode, dayDelta, patch });
-    },
-    [task, onDateAdjust]
-  );
-
   const startPointerDrag = useCallback(
     (e, mode) => {
       if (!canEdit) return;
@@ -68,21 +41,21 @@ export default function GanttInteractiveBar({
       dragRef.current = {
         mode,
         startX: e.clientX,
-        lastAppliedDelta: 0,
+        lastDelta: 0,
         moved: false,
         pointerId: e.pointerId,
       };
       setDragging(true);
+      onDateAdjust?.({ type: 'start' });
 
       const onMove = (ev) => {
         const d = dragRef.current;
         if (!d || ev.pointerId !== d.pointerId) return;
-        const rawDelta = pixelsToDayDelta(ev.clientX - d.startX, pxPerDay);
-        const stepDelta = rawDelta - d.lastAppliedDelta;
-        if (stepDelta !== 0) {
-          d.lastAppliedDelta = rawDelta;
-          d.moved = Math.abs(ev.clientX - d.startX) > DRAG_CLICK_THRESHOLD;
-          applyDrag(d.mode, stepDelta);
+        if (Math.abs(ev.clientX - d.startX) > DRAG_CLICK_THRESHOLD) d.moved = true;
+        const delta = pixelsToDayDelta(ev.clientX - d.startX, pxPerDay);
+        if (delta !== d.lastDelta) {
+          d.lastDelta = delta;
+          onDateAdjust?.({ type: 'drag', mode: d.mode, dayDelta: delta });
         }
       };
 
@@ -93,8 +66,10 @@ export default function GanttInteractiveBar({
         window.removeEventListener('pointerup', onUp);
         window.removeEventListener('pointercancel', onUp);
         if (el?.hasPointerCapture(ev.pointerId)) el.releasePointerCapture(ev.pointerId);
-        const wasMoved = d?.moved;
-        finishDrag();
+        const wasMoved = d.moved;
+        dragRef.current = null;
+        setDragging(false);
+        onDateAdjust?.({ type: 'end' });
         if (!wasMoved) onEdit?.();
       };
 
@@ -102,7 +77,7 @@ export default function GanttInteractiveBar({
       window.addEventListener('pointerup', onUp);
       window.addEventListener('pointercancel', onUp);
     },
-    [canEdit, pxPerDay, applyDrag, finishDrag, onEdit]
+    [canEdit, pxPerDay, onDateAdjust, onEdit]
   );
 
   const displayTitle = task.title || (locale === 'en' ? '(untitled)' : '(ohne Titel)');

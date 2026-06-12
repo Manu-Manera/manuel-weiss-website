@@ -1,5 +1,68 @@
 import { addDays, dayDiff, dependentsOf, parseISO, toISO } from './implementationPlan';
 
+/** ISO-Datum um n Tage verschieben. */
+export function shiftISO(iso, dayDelta) {
+  return toISO(addDays(parseISO(iso), dayDelta));
+}
+
+/**
+ * Absolute Patches für eine laufende Drag-Operation, berechnet aus einem
+ * Snapshot (Stand bei Drag-Start) + kumulativem Tages-Delta.
+ *
+ * mode:
+ *  - 'move'         → Task + alle Nachfolger um dayDelta verschieben
+ *  - 'resize-start' → nur Startdatum (Ende fix, min. 1 Tag), keine Nachfolger
+ *  - 'resize-end'   → Enddatum (Start fix, min. 1 Tag); Nachfolger wandern um
+ *                     das effektive Delta mit (Verkettung bleibt erhalten)
+ */
+export function dragPatches(snapshot, taskId, mode, dayDelta) {
+  const tasks = snapshot || [];
+  const root = tasks.find((t) => t.id === taskId);
+  if (!root) return {};
+
+  const patches = {};
+
+  const shiftTree = (delta) => {
+    if (!delta) return;
+    for (const id of collectSuccessorIds(root, tasks)) {
+      const t = tasks.find((x) => x.id === id);
+      if (!t) continue;
+      patches[id] = t.milestone
+        ? { start: shiftISO(t.start, delta), end: shiftISO(t.start, delta) }
+        : { start: shiftISO(t.start, delta), end: shiftISO(t.end, delta) };
+    }
+  };
+
+  if (root.milestone || mode === 'move') {
+    patches[taskId] = root.milestone
+      ? { start: shiftISO(root.start, dayDelta), end: shiftISO(root.start, dayDelta) }
+      : { start: shiftISO(root.start, dayDelta), end: shiftISO(root.end, dayDelta) };
+    shiftTree(dayDelta);
+    return patches;
+  }
+
+  if (mode === 'resize-start') {
+    const end = parseISO(root.end);
+    let newStart = addDays(parseISO(root.start), dayDelta);
+    if (newStart > end) newStart = end;
+    patches[taskId] = { start: toISO(newStart), end: root.end };
+    return patches;
+  }
+
+  if (mode === 'resize-end') {
+    const start = parseISO(root.start);
+    let newEnd = addDays(parseISO(root.end), dayDelta);
+    if (newEnd < start) newEnd = start;
+    const newEndISO = toISO(newEnd);
+    patches[taskId] = { start: root.start, end: newEndISO };
+    // Nachfolger um das tatsächlich angewandte Delta mitziehen.
+    shiftTree(dayDiff(root.end, newEndISO));
+    return patches;
+  }
+
+  return patches;
+}
+
 /** Verschiebt Start und Ende um dieselbe Anzahl Tage. */
 export function shiftTaskDates(task, dayDelta) {
   if (!dayDelta) return { start: task.start, end: task.end };

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft,
+  BookmarkPlus,
   Cloud,
   Diamond,
   GitBranch,
@@ -17,7 +18,7 @@ import '../styles/implementation-plan.css';
 import '../styles/implementation-workshop-shell.css';
 import ImplementationHubBar from '../kickoff/ImplementationHubBar';
 import GanttInteractiveBar from '../kickoff/GanttInteractiveBar';
-import { shiftTaskTree } from '../kickoff/ganttDrag';
+import { dragPatches } from '../kickoff/ganttDrag';
 import GanttWorkshopLinks from '../kickoff/GanttWorkshopLinks';
 import { IMPL_PHASES } from '../kickoff/implementationTemplate';
 import {
@@ -61,6 +62,7 @@ import {
 } from '../kickoff/kickoffStudioService';
 import { useImplementationPortal } from '../context/ImplementationPortalContext';
 import { upsertWorkspace, workspaceFromSession } from '../kickoff/implementationWorkspace';
+import { saveTemplate } from '../kickoff/implementationTemplates';
 import { useImplPermissions, useImplPortal } from '../kickoff/useImplPermissions';
 
 const MONTHS = {
@@ -188,17 +190,35 @@ export default function ImplementationPlan() {
     setTasks((arr) => arr.map((t) => (t.id === id ? { ...t, ...patch } : t)));
   const removeTask = (id) => setTasks((arr) => arr.filter((t) => t.id !== id));
 
-  /** Gantt: Verschieben inkl. Nachfolger; Resize nur ein Task. */
+  // Stand bei Drag-Start, damit kumulative Deltas absolut & flackerfrei wirken.
+  const tasksRef = useRef(tasks);
+  tasksRef.current = tasks;
+  const dragSnapshotRef = useRef(null);
+
+  /**
+   * Gantt-Drag: dayDelta ist kumulativ ab Drag-Start. Wir berechnen aus dem
+   * Snapshot absolute Datums-Patches (inkl. abhängiger Nachfolger) – dadurch
+   * lassen sich Balken beliebig weit verschieben/verlängern und Verkettungen
+   * wandern live mit.
+   */
   const handleGanttDateAdjust = useCallback(
-    (taskId, { mode, dayDelta, patch }) => {
-      if (mode === 'move' && dayDelta) {
-        const patches = shiftTaskTree(taskId, dayDelta, tasks);
-        setTasks((arr) => arr.map((t) => (patches[t.id] ? { ...t, ...patches[t.id] } : t)));
-      } else if (patch) {
-        setTasks((arr) => arr.map((t) => (t.id === taskId ? { ...t, ...patch } : t)));
+    (taskId, evt) => {
+      if (!evt) return;
+      if (evt.type === 'start') {
+        dragSnapshotRef.current = tasksRef.current;
+        return;
       }
+      if (evt.type === 'end') {
+        dragSnapshotRef.current = null;
+        return;
+      }
+      const snapshot = dragSnapshotRef.current;
+      if (!snapshot) return;
+      const patches = dragPatches(snapshot, taskId, evt.mode, evt.dayDelta);
+      if (!Object.keys(patches).length) return;
+      setTasks((arr) => arr.map((t) => (patches[t.id] ? { ...t, ...patches[t.id] } : t)));
     },
-    [tasks, setTasks]
+    [setTasks]
   );
 
   /** Startdatum für neue Items: nach dem letzten Item der Phase, sonst heute. */
@@ -281,6 +301,29 @@ export default function ImplementationPlan() {
       ...s,
       customPhases: (s.customPhases || []).filter((p) => p.id !== phaseId),
     }));
+  };
+
+  const saveAsTemplate = () => {
+    if (typeof window === 'undefined') return;
+    const suggestion = session.customer
+      ? `${session.customer} – ${locale === 'en' ? 'Plan' : 'Plan'}`
+      : locale === 'en'
+      ? 'Implementation plan'
+      : 'Implementierungsplan';
+    const name = window.prompt(
+      locale === 'en'
+        ? 'Save this project plan as a reusable template. Template name:'
+        : 'Diesen Projektplan als wiederverwendbare Vorlage speichern. Name der Vorlage:',
+      suggestion
+    );
+    if (!name) return;
+    const tpl = saveTemplate({ ...session, projectPlan: tasks }, name);
+    setSyncMsg(
+      locale === 'en'
+        ? `Template "${tpl.name}" saved (${tpl.taskCount} tasks)`
+        : `Vorlage „${tpl.name}" gespeichert (${tpl.taskCount} Aufgaben)`
+    );
+    window.setTimeout(() => setSyncMsg(''), 4000);
   };
 
   const cycleStatus = (id) => {
@@ -547,6 +590,21 @@ export default function ImplementationPlan() {
             <button className="impl-btn" onClick={addPhase} type="button">
               <Plus className="w-4 h-4" />
               {locale === 'en' ? 'Phase' : 'Phase'}
+            </button>
+          )}
+          {canEdit && (
+            <button
+              className="impl-btn"
+              onClick={saveAsTemplate}
+              type="button"
+              title={
+                locale === 'en'
+                  ? 'Save this plan as a reusable template'
+                  : 'Diesen Plan als wiederverwendbare Vorlage speichern'
+              }
+            >
+              <BookmarkPlus className="w-4 h-4" />
+              {locale === 'en' ? 'Save as template' : 'Als Vorlage'}
             </button>
           )}
           {canEdit && (
