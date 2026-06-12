@@ -459,6 +459,35 @@
   justify-content: space-between;
   gap: 8px;
 }
+.gantt-phase-label-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.gantt-phase-label--editable {
+  cursor: pointer;
+}
+.gantt-phase-label--editable:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.gantt-phase-rename {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--impl-text-soft);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.gantt-phase-rename:hover {
+  color: var(--impl-accent);
+  background: rgba(var(--impl-accent-rgb) / 0.1);
+}
 .gantt-phase-add {
   display: flex;
   gap: 4px;
@@ -609,6 +638,13 @@
   letter-spacing: 0.05em;
   color: var(--impl-accent);
   background: rgba(var(--impl-accent-rgb) / 0.05);
+}
+.implplan-phase-title--editable {
+  cursor: pointer;
+}
+.implplan-phase-title--editable:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .implplan-status {

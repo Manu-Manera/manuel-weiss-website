@@ -7,6 +7,7 @@ import {
   Diamond,
   GitBranch,
   Loader2,
+  Pencil,
   Plus,
   Trash2,
   X,
@@ -247,6 +248,7 @@ export default function ImplementationPlan() {
   };
 
   const customPhases = session.customPhases || [];
+  const phaseLabels = session.phaseLabels || {};
   const allPhases = useMemo(
     () => [
       ...IMPL_PHASES.map((p) => ({ id: p.id, title: p.title, custom: false })),
@@ -262,9 +264,11 @@ export default function ImplementationPlan() {
     (phaseId) => {
       const custom = customPhases.find((p) => p.id === phaseId);
       if (custom) return typeof custom.title === 'string' ? custom.title : custom.title?.[locale] || custom.title?.de || phaseId;
+      const override = phaseLabels[phaseId];
+      if (override) return override[locale] || override.de || phaseTitle(phaseId, locale);
       return phaseTitle(phaseId, locale);
     },
-    [customPhases, locale]
+    [customPhases, phaseLabels, locale]
   );
 
   const addPhase = () => {
@@ -279,12 +283,37 @@ export default function ImplementationPlan() {
     }));
   };
   const renamePhase = (phaseId, name) => {
-    setSession((s) => ({
-      ...s,
-      customPhases: (s.customPhases || []).map((p) =>
-        p.id === phaseId ? { ...p, title: { de: name, en: name } } : p
-      ),
-    }));
+    const trimmed = String(name || '').trim();
+    if (!trimmed) return;
+    setSession((s) => {
+      const isCustom = (s.customPhases || []).some((p) => p.id === phaseId);
+      if (isCustom) {
+        return {
+          ...s,
+          customPhases: (s.customPhases || []).map((p) =>
+            p.id === phaseId ? { ...p, title: { de: trimmed, en: trimmed } } : p
+          ),
+        };
+      }
+      return {
+        ...s,
+        phaseLabels: {
+          ...(s.phaseLabels || {}),
+          [phaseId]: { de: trimmed, en: trimmed },
+        },
+      };
+    });
+  };
+
+  const promptRenamePhase = (phaseId) => {
+    if (typeof window === 'undefined') return;
+    const current = phaseLabelFor(phaseId);
+    const name = window.prompt(
+      locale === 'en' ? 'Rename phase:' : 'Phase umbenennen:',
+      current
+    );
+    if (name == null) return;
+    renamePhase(phaseId, name);
   };
   const removePhase = (phaseId) => {
     const hasTasks = tasks.some((t) => t.phaseId === phaseId);
@@ -703,7 +732,25 @@ export default function ImplementationPlan() {
                 <div key={ph.id}>
                   <div className="gantt-row">
                     <div className="gantt-label gantt-phase-row-label">
-                      <div className="gantt-phase-label">{phaseLabelFor(ph.id)}</div>
+                      <div className="gantt-phase-label-row">
+                        <div
+                          className={`gantt-phase-label ${canEdit ? 'gantt-phase-label--editable' : ''}`}
+                          onClick={canEdit ? () => promptRenamePhase(ph.id) : undefined}
+                          title={canEdit ? (locale === 'en' ? 'Click to rename phase' : 'Klicken zum Umbenennen') : undefined}
+                        >
+                          {phaseLabelFor(ph.id)}
+                        </div>
+                        {canEdit && (
+                          <button
+                            className="gantt-phase-rename"
+                            onClick={() => promptRenamePhase(ph.id)}
+                            type="button"
+                            title={locale === 'en' ? 'Rename phase' : 'Phase umbenennen'}
+                          >
+                            <Pencil className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
                       {canEdit && (
                         <div className="gantt-phase-add">
                           <button
@@ -915,6 +962,7 @@ export default function ImplementationPlan() {
                     onCycle={cycleStatus}
                     onAddTask={() => addTaskToPhase(ph.id)}
                     onAddMilestone={() => addMilestoneToPhase(ph.id)}
+                    onRenamePhase={canEdit ? () => promptRenamePhase(ph.id) : null}
                     onRemovePhase={ph.custom ? () => removePhase(ph.id) : null}
                   />
                 );
@@ -1047,13 +1095,33 @@ function PhaseRows({
   onCycle,
   onAddTask,
   onAddMilestone,
+  onRenamePhase,
   onRemovePhase,
 }) {
   return (
     <>
       <tr className="implplan-phase-row">
-        <td colSpan={7}>{title}</td>
+        <td colSpan={7}>
+          <span
+            className={onRenamePhase ? 'implplan-phase-title--editable' : undefined}
+            onClick={onRenamePhase || undefined}
+            title={onRenamePhase ? (locale === 'en' ? 'Click to rename phase' : 'Klicken zum Umbenennen') : undefined}
+          >
+            {title}
+          </span>
+        </td>
         <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+          {onRenamePhase && (
+            <button
+              className="impl-btn"
+              style={{ padding: '4px 8px' }}
+              onClick={onRenamePhase}
+              type="button"
+              title={locale === 'en' ? 'Rename phase' : 'Phase umbenennen'}
+            >
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
+          )}
           <button
             className="impl-btn"
             style={{ padding: '4px 8px' }}

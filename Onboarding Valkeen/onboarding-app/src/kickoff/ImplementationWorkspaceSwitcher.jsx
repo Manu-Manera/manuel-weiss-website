@@ -53,9 +53,13 @@ export default function ImplementationWorkspaceSwitcher({ session, locale = 'de'
 
     const tpl = templateId ? listTemplates().find((t) => t.id === templateId) : null;
     if (tpl) {
-      const { projectPlan, customPhases, workshopRegister } = instantiateTemplate(tpl, toISO(new Date()));
+      const { projectPlan, customPhases, phaseLabels, workshopRegister } = instantiateTemplate(
+        tpl,
+        toISO(new Date())
+      );
       fresh.projectPlan = projectPlan;
       fresh.customPhases = customPhases;
+      fresh.phaseLabels = phaseLabels;
       fresh.workshopRegister = workshopRegister;
     }
 

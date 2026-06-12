@@ -76,6 +76,7 @@ export function templateFromSession(session, name) {
     sourceCustomer: String(session?.customer || '').trim(),
     taskCount: plan.length,
     customPhases: session?.customPhases || [],
+    phaseLabels: session?.phaseLabels || {},
     workshopRegister: session?.workshopRegister || [],
     projectPlan: plan,
   };
@@ -97,7 +98,12 @@ export function saveTemplate(session, name) {
 export function instantiateTemplate(tpl, startISO) {
   const tasks = tpl?.projectPlan || [];
   if (!tasks.length) {
-    return { projectPlan: [], customPhases: tpl?.customPhases || [], workshopRegister: [] };
+    return {
+      projectPlan: [],
+      customPhases: tpl?.customPhases || [],
+      phaseLabels: tpl?.phaseLabels || {},
+      workshopRegister: [],
+    };
   }
 
   const baseISO = earliestStartISO(tasks);
@@ -127,6 +133,7 @@ export function instantiateTemplate(tpl, startISO) {
   return {
     projectPlan,
     customPhases: tpl.customPhases || [],
+    phaseLabels: tpl.phaseLabels || {},
     workshopRegister,
   };
 }
