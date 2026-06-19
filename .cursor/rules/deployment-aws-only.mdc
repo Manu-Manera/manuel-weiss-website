@@ -1,0 +1,44 @@
+---
+description: Deployment läuft ausschließlich über AWS - NIEMALS Netlify erwähnen oder verwenden
+alwaysApply: true
+---
+
+# Deployment: NUR AWS
+
+## KRITISCH - KEINE NETLIFY-REFERENZEN
+
+Diese Website läuft **ausschließlich über AWS**:
+- **S3**: Statische Dateien (Bucket: `manuel-weiss-website`)
+- **CloudFront**: CDN (Distribution: `E305V0ATIXMNNG`)
+- **Lambda**: Backend-APIs
+- **DynamoDB**: Datenbank
+- **Cognito**: Auth
+- **SES**: E-Mail
+
+## Deployment-Befehl
+
+```bash
+cd "/Users/manumanera/Documents/GitHub/Persönliche Website"
+./deploy-aws-website.sh
+```
+
+## VERBOTEN
+
+- ❌ NIEMALS "Netlify" erwähnen
+- ❌ NIEMALS `netlify.toml` verwenden
+- ❌ NIEMALS Netlify-Deployment vorschlagen
+- ❌ NIEMALS Netlify-Dokumentation referenzieren
+
+## Domain
+
+- Produktiv: `https://manuel-weiss.ch`
+- Onboarding-App: `https://manuel-weiss.ch/onboarding/`
+
+## Nach Code-Änderungen
+
+Immer `./deploy-aws-website.sh` ausführen - das Skript:
+1. Baut die Onboarding-App (`npm run build`)
+2. Synct Dateien zu S3
+3. Invalidiert CloudFront-Cache
+
+Änderungen sind in 2-5 Minuten live.
