@@ -1,0 +1,11 @@
+{
+  "name": "telegram-productivity-bot",
+  "version": "1.0.0",
+  "description": "Telegram Bot für Produktivitäts-Erfassung (DSGVO/DSG-konform)",
+  "main": "index.js",
+  "author": "Manuel Weiss",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
