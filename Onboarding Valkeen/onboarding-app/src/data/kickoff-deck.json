@@ -1,0 +1,534 @@
+{
+  "meta": {
+    "title": "Tempus Resource Implementation",
+    "subtitle": "Interactive Kick-Off Workshop · {{customer}}\nValkeen · Theory & live questions — alternating in this deck",
+    "customer_placeholder": "Your organization",
+    "consultant_contact": "Valkeen Implementation Team · valkeen.com",
+    "workshop_mode": true,
+    "notes": "Horizon is a Siemens Healthineers program name (like other division labels), not a Tempus product — keep {{customer}} generic."
+  },
+  "template": {
+    "content_slide_index": 3
+  },
+  "closing": {
+    "headline": "Thank you — great kick-off!",
+    "subline": "Valkeen · ProSymmetry · {{customer}}",
+    "bullets": [
+      "We will circulate this deck with your answers filled in",
+      "Questions? · {{consultant_contact}}"
+    ]
+  },
+  "slides": [
+    {
+      "id": "agenda",
+      "kind": "theory",
+      "section": "core",
+      "layout": "content",
+      "headline": "Agenda",
+      "subline": "Context slides + workshop slides — we alternate throughout",
+      "bullets": [
+        "Context: partnership, phases, Tempus capabilities, ways of working",
+        "Workshop: capture answers live (→) and tables",
+        "Integrations block last — only if ERP/interfaces are in scope",
+        "Close: decisions, next steps, parking lot"
+      ]
+    },
+    {
+      "id": "workshop-rules",
+      "kind": "theory",
+      "section": "core",
+      "layout": "content",
+      "headline": "How we use this deck",
+      "subline": "",
+      "bullets": [
+        "Type answers on workshop slides (Presenter view or shared file)",
+        "Green arrows (→) = agreed answer we capture now",
+        "Program names (e.g. Horizon at Siemens Healthineers) = your {{customer}} label — same deck for all clients",
+        "Integration section optional — skip if Wave 1 is Tempus-only"
+      ]
+    },
+    {
+      "id": "path-to-success",
+      "kind": "theory",
+      "section": "core",
+      "layout": "content",
+      "headline": "Path to success",
+      "subline": "From the Valkeen kick-off playbook",
+      "bullets": [
+        "Defined purpose for Tempus Resource — why {{customer}} is implementing now",
+        "Engaged implementation team with an end-to-end view (not only IT)",
+        "Change management considered from day one",
+        "High-level vision: modern enterprise resource & portfolio management",
+        "Replace legacy PPM / spreadsheets with one source of truth for capacity and actuals"
+      ]
+    },
+    {
+      "id": "team",
+      "kind": "workshop",
+      "section": "core",
+      "layout": "capture",
+      "headline": "Who is with us today?",
+      "subline": "Name · Role · Area · Email",
+      "headers": ["Name", "Role (Admin / RM / PM / IT / Finance)", "Area", "Email"],
+      "rows": [["", "", "", ""], ["", "", "", ""], ["", "", "", ""], ["", "", "", ""], ["", "", "", ""]],
+      "facilitator_note": "Client PM + at least one future Tempus Admin"
+    },
+    {
+      "id": "partnership",
+      "kind": "theory",
+      "section": "core",
+      "layout": "content",
+      "headline": "Valkeen & ProSymmetry",
+      "subline": "Strategic partnership for your implementation",
+      "bullets": [
+        "Valkeen: 15+ years PPM · pharma, medtech, finance, engineering — Zurich",
+        "ProSymmetry: Tempus Resource · Gartner MQ purpose-built enterprise RPM",
+        "Together: RPM, capacity planning, strategic workforce optimization, change in PPM",
+        "References include Deloitte, Lonza, Helvetia, Intertek, Siemens Healthineers"
+      ]
+    },
+    {
+      "id": "impl-team-roles",
+      "kind": "theory",
+      "section": "core",
+      "layout": "content",
+      "headline": "Your implementation team",
+      "subline": "Three parties — clear ownership",
+      "bullets": [
+        "Client: organizational expertise · admins · power users · data owners",
+        "Valkeen: implementation · configuration · training · data load support",
+        "ProSymmetry: product · technical depth · custom integrations & enhancements",
+        "Success needs all three engaged — not “vendor-only” delivery"
+      ]
+    },
+    {
+      "id": "ways-of-working-theory",
+      "kind": "theory",
+      "section": "core",
+      "layout": "content",
+      "headline": "Ways of working — typical rhythm",
+      "subline": "We align specifics on the next slide",
+      "bullets": [
+        "Weekly checkpoint (~0.5h) after initial environment & load",
+        "Admin training: 2–3 sessions × 1h",
+        "Stakeholder reviews per user group (internal or with Valkeen)",
+        "Shared workspace (Teams / SharePoint) for plan, status, decisions",
+        "Implementation plan & status report updated continuously in shared folder"
+      ]
+    },
+    {
+      "id": "ways-of-working",
+      "kind": "workshop",
+      "section": "core",
+      "layout": "workshop_qa",
+      "headline": "Ways of working — your choices",
+      "subline": "Confirm dates, URLs, workspace",
+      "duration_min": 10,
+      "questions": [
+        {"q": "Weekly checkpoint — day & time?", "hint": "After initial load"},
+        {"q": "Production Tempus URL — approved?", "hint": "Tenant URL + client sign-off"},
+        {"q": "Sandbox / Dev URL — approved?", "hint": "If used"},
+        {"q": "Shared folder link & owner?", "hint": "Implementation project folder"}
+      ]
+    },
+    {
+      "id": "valkeen-expectations",
+      "kind": "theory",
+      "section": "core",
+      "layout": "content",
+      "headline": "What we each bring",
+      "subline": "Valkeen ↔ Client responsibilities",
+      "bullets": [
+        "Valkeen: plan & timeline · demos & Q&A · config guidance · data formatting · process fit",
+        "Valkeen: security/access setup support · recommendations aligned to your culture",
+        "Client: implementation PM · at least one long-term Tempus Admin",
+        "Client: requirements, use cases, data gathering, integration specs with IT",
+        "Client: organizational context to pair with Tempus functionality"
+      ]
+    },
+    {
+      "id": "success-metrics",
+      "kind": "workshop",
+      "section": "core",
+      "layout": "workshop_qa",
+      "headline": "Defining success — your goals",
+      "subline": "Per role · realistic for go-live",
+      "duration_min": 10,
+      "questions": [
+        {"q": "Target go-live window?", "hint": "Often 8–12 weeks intensive support"},
+        {"q": "Top 3 goals for Admin?", "hint": ""},
+        {"q": "Top 3 goals for Resource Managers?", "hint": ""},
+        {"q": "Top 3 goals for PMs / Timesheet users?", "hint": ""}
+      ]
+    },
+    {
+      "id": "impl-phases",
+      "kind": "theory",
+      "section": "core",
+      "layout": "content",
+      "headline": "Implementation phases",
+      "subline": "Typically 8–12 weeks intensive support",
+      "bullets": [
+        "Discover & align scope · environment · core team",
+        "Configure tenant · security · attributes · calendars",
+        "Data load (projects, resources, assignments) · validation",
+        "Train admins & pilot user groups · UAT",
+        "Go-live Wave 1 · hypercare · integrate later waves if needed",
+        "Status tracked in shared implementation plan (Excel or equivalent)"
+      ]
+    },
+    {
+      "id": "documents-training",
+      "kind": "theory",
+      "section": "core",
+      "layout": "content",
+      "headline": "Documents & training resources",
+      "subline": "Available throughout the journey",
+      "bullets": [
+        "Shared folder: project plan, status, decisions, templates (continuously updated)",
+        "Demo recordings · customized Quick Reference Guides (after UAT)",
+        "Tempus University / Help Center · optional sandbox practice",
+        "Discovery questionnaire (baseline — often completed pre kick-off)"
+      ]
+    },
+    {
+      "id": "scope-theory",
+      "kind": "theory",
+      "section": "core",
+      "layout": "content",
+      "headline": "Defining scope — dimensions",
+      "subline": "What we decide in the checklist next",
+      "bullets": [
+        "Database setup · Excel import vs manual vs API integrations",
+        "User groups: Admin, RM, PM, Program/Portfolio Manager, Timesheet user",
+        "Capacity: units (hours/FTE), BAU, absences, holidays",
+        "Lifecycle: proposal → approval → project → actuals",
+        "RR workflow · role concept (primary / secondary / skills)",
+        "Integrations: ERP, HR, PMO tools — program-specific (e.g. SAP at Siemens)"
+      ]
+    },
+    {
+      "id": "scope-wave1",
+      "kind": "workshop",
+      "section": "core",
+      "layout": "checklist",
+      "headline": "Wave 1 — in scope?",
+      "subline": "Yes / No / Later per line",
+      "items": [
+        "Resource capacity & allocation planning",
+        "Resource requests & dispatching (RR)",
+        "Project portfolio & attributes",
+        "Timesheets (submit → approve)",
+        "Demand planning / NN resources",
+        "Program & portfolio views",
+        "Excel / API data load",
+        "ERP / Finance integration (e.g. SAP)",
+        "Other interfaces (HR, PMO, BI)",
+        "Custom reporting beyond standard"
+      ]
+    },
+    {
+      "id": "user-groups-theory",
+      "kind": "theory",
+      "section": "core",
+      "layout": "content",
+      "headline": "User groups — tasks by role",
+      "subline": "Who does what in Tempus",
+      "bullets": [
+        "Admin: tenant settings, security, attributes, calendars, integrations config",
+        "Resource Manager: capacity, RR approve/reject/delegate, heatmaps",
+        "Project Manager: projects, staffing, timesheets for team",
+        "Program/Portfolio Manager: portfolio views, cross-project demand",
+        "Timesheet user: weekly actuals — often sole time system when ERP integrated"
+      ]
+    },
+    {
+      "id": "user-groups",
+      "kind": "workshop",
+      "section": "core",
+      "layout": "capture",
+      "headline": "User groups — headcount & pilot",
+      "subline": "Rough numbers today",
+      "headers": ["User group", "Approx. # users", "Pilot (Y/N)", "Notes"],
+      "rows": [
+        ["Admin", "", "", ""],
+        ["Resource Manager", "", "", ""],
+        ["Project Manager", "", "", ""],
+        ["Program / Portfolio Manager", "", "", ""],
+        ["Timesheet user", "", "", ""],
+        ["Stakeholder / read-only", "", "", ""]
+      ]
+    },
+    {
+      "id": "integrated-process",
+      "kind": "theory",
+      "section": "core",
+      "layout": "content",
+      "headline": "Integrated process",
+      "subline": "Demand · resources · portfolio aligned",
+      "bullets": [
+        "Synchronize demand planning, resource allocation, and project portfolio",
+        "One flow from request → approval → project execution → actuals",
+        "Reduces shadow spreadsheets and conflicting capacity views",
+        "Foundation before ERP finance posting (actuals must be trustworthy)"
+      ]
+    },
+    {
+      "id": "projects-tempus",
+      "kind": "theory",
+      "section": "core",
+      "layout": "content",
+      "headline": "Projects in Tempus",
+      "subline": "Creation · attributes · access",
+      "bullets": [
+        "Create via UI workflow, template, or clone",
+        "Also: Excel import or API (SmartSheet, Jira, MS Project, …)",
+        "Project attributes & dynamic policies per field access",
+        "View allocations · request capacity changes · raise resource requests inline"
+      ]
+    },
+    {
+      "id": "resource-requests",
+      "kind": "theory",
+      "section": "core",
+      "layout": "content",
+      "headline": "Resource requests & dispatching",
+      "subline": "Resource Manager workflow",
+      "bullets": [
+        "Approve, partially approve, reject, or delegate to another RM",
+        "Switch units (hours, FTE, …) and time granularity per view",
+        "Search pool · filters · heatmap of availability",
+        "Named or demand-planning (NN) resources on tasks"
+      ]
+    },
+    {
+      "id": "role-concept",
+      "kind": "theory",
+      "section": "core",
+      "layout": "content",
+      "headline": "Role concept",
+      "subline": "Primary · secondary · skills",
+      "bullets": [
+        "Primary role drives default matching and reporting",
+        "Secondary roles for matrix organizations",
+        "Skills matrix for staffing recommendations (where configured)",
+        "Aligns RR and capacity views with how {{customer}} describes people"
+      ]
+    },
+    {
+      "id": "timesheets-theory",
+      "kind": "theory",
+      "section": "core",
+      "layout": "content",
+      "headline": "Timesheets in Tempus",
+      "subline": "Usually the system of record for actuals",
+      "bullets": [
+        "Weekly (typical): submit → approve → Timesheet Actuals table",
+        "Approved actuals feed reporting and optional ERP export",
+        "Not the same as allocation plan — finance integrations use actuals",
+        "At Siemens programs (e.g. Horizon), SAP posting is separate from planning"
+      ]
+    },
+    {
+      "id": "timesheets",
+      "kind": "workshop",
+      "section": "core",
+      "layout": "workshop_qa",
+      "headline": "Timesheets — your decisions",
+      "subline": "Before any ERP integration",
+      "duration_min": 12,
+      "questions": [
+        {"q": "Time tracking ONLY in Tempus?", "hint": "No parallel ERP time (e.g. CATS)"},
+        {"q": "Weekly submit & approve?", "hint": ""},
+        {"q": "Who must submit in Wave 1?", "hint": ""},
+        {"q": "Planning unit: hours / FTE / person-days?", "hint": ""}
+      ]
+    },
+    {
+      "id": "capacity-theory",
+      "kind": "theory",
+      "section": "core",
+      "layout": "content",
+      "headline": "Capacity management — best practice",
+      "subline": "Net capacity & granularity",
+      "bullets": [
+        "Net capacity: holidays, absences, admin-time categories",
+        "Plan in FTE, FTE%, hours, person-days, or cost",
+        "Granularity: quarter, month, week, day — pick per process",
+        "BAU / non-project time tracked where required"
+      ]
+    },
+    {
+      "id": "capacity",
+      "kind": "workshop",
+      "section": "core",
+      "layout": "workshop_qa",
+      "headline": "Capacity — your defaults",
+      "subline": "Confirm for configuration",
+      "duration_min": 8,
+      "questions": [
+        {"q": "Include holidays + absences + admin in net capacity?", "hint": ""},
+        {"q": "Default planning granularity?", "hint": ""},
+        {"q": "Primary / secondary / skills — ready to model?", "hint": ""}
+      ]
+    },
+    {
+      "id": "data-migration-theory",
+      "kind": "theory",
+      "section": "core",
+      "layout": "content",
+      "headline": "Data migration — preparation",
+      "subline": "Standard kick-off deliverables from client",
+      "bullets": [
+        "Project list: name, program, phase, status, dates (Excel / MPP)",
+        "Resource pool: roles, location, department, manager",
+        "Assignment data: hours or FTE between resources and projects",
+        "If integrations: engage internal data owners early",
+        "Templates from Valkeen after scope confirmation"
+      ]
+    },
+    {
+      "id": "data-migration",
+      "kind": "workshop",
+      "section": "core",
+      "layout": "workshop_qa",
+      "headline": "Data migration — owners & dates",
+      "subline": "",
+      "duration_min": 10,
+      "questions": [
+        {"q": "Projects list — owner & ETA?", "hint": ""},
+        {"q": "Resources list — owner & ETA?", "hint": ""},
+        {"q": "Load method per entity (Excel / manual / API)?", "hint": ""},
+        {"q": "Historical actuals in Wave 1?", "hint": "Y/N · months"}
+      ]
+    },
+    {
+      "id": "integrations-theory",
+      "kind": "theory",
+      "section": "integrations",
+      "layout": "content",
+      "headline": "Integration options",
+      "subline": "When Wave 1 includes ERP or other systems",
+      "bullets": [
+        "Common pattern: approved Timesheet Actuals → Finance (e.g. SAP via CPI)",
+        "Not allocation plan data — finance needs booked actuals per line",
+        "Larger programs may add inbound budget (EUR per project key) — Phase 2",
+        "Siemens Healthineers example: program names like Horizon — same patterns, client-specific IDs",
+        "Mapping workshop after PO · Dev → UAT → Prod"
+      ]
+    },
+    {
+      "id": "integrations-scope",
+      "kind": "workshop",
+      "section": "integrations",
+      "layout": "decisions",
+      "headline": "Integrations — in Wave 1?",
+      "subline": "Go / no-go",
+      "options": [
+        {"id": "A", "label": "Yes — outbound actuals to Finance/ERP", "note": "Typical Phase 1"},
+        {"id": "B", "label": "Yes — outbound + inbound (e.g. budget)", "note": "Larger scope"},
+        {"id": "C", "label": "No — Tempus-only Wave 1", "note": "Integrate later"}
+      ],
+      "decision_label": "Decision today"
+    },
+    {
+      "id": "integrations-data",
+      "kind": "workshop",
+      "section": "integrations",
+      "layout": "workshop_qa",
+      "headline": "Integration — data & format",
+      "subline": "Before mapping workshop",
+      "duration_min": 12,
+      "questions": [
+        {"q": "Target system(s)? (SAP, ERP, API…)", "hint": ""},
+        {"q": "Source: Timesheet Actuals only?", "hint": "Not allocation"},
+        {"q": "Line-level bookings (not aggregated)?", "hint": ""},
+        {"q": "Rhythm & lookback (e.g. monthly)?", "hint": ""},
+        {"q": "Project/cost key field in Tempus?", "hint": ""}
+      ]
+    },
+    {
+      "id": "integrations-budget",
+      "kind": "workshop",
+      "section": "integrations",
+      "layout": "decisions",
+      "headline": "Finance — budget & posting",
+      "subline": "If ERP applies",
+      "options": [
+        {"id": "A", "label": "Inbound ERP + logic in Tempus before export", "note": "High effort"},
+        {"id": "B", "label": "Budget/activity rules at posting in ERP", "note": "Common Phase 1"},
+        {"id": "C", "label": "Manual in Tempus interim", "note": ""}
+      ],
+      "decision_label": "Decision today"
+    },
+    {
+      "id": "integrations-owners",
+      "kind": "workshop",
+      "section": "integrations",
+      "layout": "capture",
+      "headline": "Integration — owners",
+      "subline": "Names today",
+      "headers": ["Topic", "Client owner", "Valkeen / ProSymmetry", "Notes"],
+      "rows": [
+        ["Middleware / iPaaS", "", "", ""],
+        ["ERP Finance / CO", "", "", ""],
+        ["Test environment", "", "", ""],
+        ["Tempus API / export", "", "", ""],
+        ["Mapping workshop", "", "", ""]
+      ]
+    },
+    {
+      "id": "integrations-open",
+      "kind": "workshop",
+      "section": "integrations",
+      "layout": "workshop_qa",
+      "headline": "Integration — open points",
+      "subline": "Assign on parking lot if needed",
+      "duration_min": 8,
+      "questions": [
+        {"q": "Mandatory booking attributes?", "hint": "Mapping Excel"},
+        {"q": "Idempotency / already sent?", "hint": ""},
+        {"q": "Zero-hour lines?", "hint": "Often no"},
+        {"q": "Rates in Wave 1?", "hint": "Often no"}
+      ]
+    },
+    {
+      "id": "parking-lot",
+      "kind": "workshop",
+      "section": "core",
+      "layout": "capture",
+      "headline": "Parking lot",
+      "subline": "Not finished today",
+      "headers": ["Topic", "Owner", "Target date"],
+      "rows": [["", "", ""], ["", "", ""], ["", "", ""], ["", "", ""], ["", "", ""]]
+    },
+    {
+      "id": "decisions-today",
+      "kind": "workshop",
+      "section": "core",
+      "layout": "capture",
+      "headline": "Decisions captured today",
+      "subline": "Read back before close",
+      "headers": ["#", "Decision", "Owner", "Date"],
+      "rows": [["1", "", "", ""], ["2", "", "", ""], ["3", "", "", ""], ["4", "", "", ""], ["5", "", "", ""]],
+      "highlight_header": true
+    },
+    {
+      "id": "next-steps",
+      "kind": "workshop",
+      "section": "core",
+      "layout": "capture",
+      "headline": "Next steps",
+      "subline": "Immediate follow-up",
+      "headers": ["Action", "Owner", "Due date", "Status"],
+      "rows": [
+        ["Contract / order & scope", "", "", ""],
+        ["URLs approved · access delivered", "", "", ""],
+        ["Admin training scheduled", "", "", ""],
+        ["Migration data & templates", "", "", ""],
+        ["Integration quote / requirements (if applicable)", "", "", ""],
+        ["Weekly cadence confirmed", "", "", ""]
+      ]
+    }
+  ]
+}

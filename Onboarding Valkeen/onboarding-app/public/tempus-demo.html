@@ -1,0 +1,2686 @@
+<!DOCTYPE html>
+<html lang="de" class="lang-de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tempus Demo – Team Resources</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+
+:root {
+  --navy:        #0f2342;
+  --navy-mid:    #1a3a6b;
+  --teal:        #0d7fa0;
+  --teal-light:  #e0f4f9;
+  --gold:        #c8860a;
+  --gold-light:  #fff8e6;
+  --green:       #1a7a3c;
+  --green-light: #e8f7ee;
+  --purple:      #5b3fa0;
+  --purple-light:#f0ebfc;
+  --red:         #c0392b;
+  --red-light:   #fdf0ee;
+  --rm:          #065f46;
+  --rm-light:    #d1fae5;
+  --reto:        #0369a1;
+  --reto-light:  #e0f2fe;
+  --peter:       #7c3f00;
+  --peter-light: #fef3e2;
+  --gray-100:    #f7f8fa;
+  --gray-200:    #eef0f4;
+  --gray-300:    #d8dce6;
+  --gray-500:    #6b7280;
+  --gray-600:    #4b5563;
+  --gray-700:    #374151;
+  --gray-800:    #1f2937;
+  --gray-900:    #111827;
+  --radius:      8px;
+  --shadow:      0 2px 8px rgba(0,0,0,0.09);
+  --shadow-lg:   0 8px 24px rgba(0,0,0,0.13);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', -apple-system, sans-serif; font-size: 15px; line-height: 1.65; color: var(--gray-900); background: #f0f3f8; }
+
+/* ── LANG SWITCHER ───────────────────────── */
+.lang-switcher { position: fixed; top: 16px; right: 20px; z-index: 1000; display: flex; gap: 6px; background: rgba(255,255,255,0.95); border: 1px solid var(--gray-300); border-radius: 30px; padding: 5px 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); backdrop-filter: blur(8px); }
+.lang-btn { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border: none; background: transparent; border-radius: 20px; font-size: 13px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.18s ease; color: var(--gray-500); }
+.lang-btn:hover { background: var(--gray-200); color: var(--gray-900); }
+.lang-btn.active { background: var(--rm); color: white; }
+.lang-flag { font-size: 18px; line-height: 1; }
+.lang-de .t-en { display: none; }
+.lang-en .t-de { display: none; }
+
+/* ── HERO ────────────────────────────────── */
+.hero { background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #0d7fa0 100%); color: white; padding: 56px 0 48px; position: relative; overflow: hidden; }
+.hero::before { content: ''; position: absolute; top: -80px; right: -80px; width: 400px; height: 400px; border-radius: 50%; background: rgba(255,255,255,0.03); }
+.hero-inner { max-width: 880px; margin: 0 auto; padding: 0 28px; position: relative; z-index: 1; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.9); font-size: 11px; font-weight: 600; letter-spacing: 1.8px; text-transform: uppercase; padding: 5px 14px; border-radius: 20px; margin-bottom: 22px; }
+.hero-title { font-family: 'Playfair Display', Georgia, serif; font-size: 44px; font-weight: 700; line-height: 1.12; margin-bottom: 8px; }
+.hero-title span { color: #6ee7b7; }
+.hero-subtitle { font-size: 17px; opacity: 0.82; margin-bottom: 32px; max-width: 640px; line-height: 1.6; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 12px; }
+.hero-meta-item { display: flex; align-items: center; gap: 8px; font-size: 13px; background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 6px; color: rgba(255,255,255,0.85); }
+.continuity-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(110,231,183,0.2); border: 1px solid rgba(110,231,183,0.4); color: #6ee7b7; font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 20px; margin-bottom: 14px; }
+
+/* ── LAYOUT ──────────────────────────────── */
+.page { max-width: 880px; margin: 0 auto; padding: 0 28px; }
+
+/* ── GUIDE LEGEND ────────────────────────── */
+.guide-legend { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); padding: 18px 22px; margin: 24px 0 8px; box-shadow: var(--shadow); }
+.guide-legend-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gray-500); margin-bottom: 14px; }
+.legend-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; font-size: 13px; }
+.legend-item { display: flex; gap: 10px; align-items: flex-start; }
+.legend-dot { min-width: 28px; height: 28px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.legend-label { font-weight: 700; margin-bottom: 2px; }
+.legend-desc { color: var(--gray-500); line-height: 1.5; }
+.legend-flow { margin-top: 14px; padding: 10px 14px; background: var(--gray-100); border-radius: 5px; font-size: 12px; color: var(--gray-500); border-left: 3px solid var(--rm); }
+
+/* ── PRE-DEMO ────────────────────────────── */
+.pre-demo-strip { background: #fff3cd; border: 1px solid #f59e0b; border-radius: var(--radius); padding: 14px 20px; margin: 8px 0; display: flex; gap: 12px; align-items: flex-start; font-size: 14px; }
+.pre-demo-strip strong { color: #7c5000; display: block; margin-bottom: 4px; }
+
+/* ── STORY HOOK ──────────────────────────── */
+.story-hook { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); overflow: hidden; margin-bottom: 8px; box-shadow: var(--shadow); }
+.story-hook-header { background: var(--navy); color: white; padding: 14px 24px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+.story-hook-body { padding: 24px 28px; font-size: 15px; line-height: 1.8; color: var(--gray-700); font-style: italic; border-left: 4px solid var(--rm); }
+.story-hook-body strong { font-style: normal; color: var(--gray-900); }
+
+/* ── CAST ────────────────────────────────── */
+.cast-section { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); padding: 22px 28px; margin-bottom: 8px; box-shadow: var(--shadow); }
+.cast-section h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--gray-500); margin-bottom: 16px; }
+.cast-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.cast-card { border: 1px solid var(--gray-200); border-radius: 6px; padding: 14px 16px; background: var(--gray-100); }
+.cast-card.hero-char { background: linear-gradient(135deg, var(--rm-light), #ecfdf5); border-color: #6ee7b7; }
+.cast-card.pm-cameo { background: linear-gradient(135deg, var(--reto-light), #f0f9ff); border-color: #93c5fd; }
+.cast-card.skeptic { background: linear-gradient(135deg, var(--peter-light), #fff8f0); border-color: #e8c07a; }
+.cast-emoji { font-size: 22px; margin-bottom: 8px; }
+.cast-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.cast-role { font-size: 12px; color: var(--gray-500); line-height: 1.4; }
+.cast-quote { font-size: 12px; font-style: italic; color: var(--rm); margin-top: 6px; border-top: 1px solid var(--gray-200); padding-top: 6px; }
+
+/* Agenda Vollseite → demo-agenda-window.css */
+/* ── SCENE ───────────────────────────────── */
+.scene { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); margin-bottom: 20px; box-shadow: var(--shadow); overflow: hidden; }
+.scene-header { display: flex; align-items: stretch; border-bottom: 1px solid var(--gray-200); }
+.scene-num-badge { background: var(--rm); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px 20px; min-width: 88px; text-align: center; flex-shrink: 0; }
+.scene-num-big { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 3px; }
+.scene-num-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.7; }
+.scene-title-area { flex: 1; padding: 14px 20px; background: var(--gray-100); display: flex; flex-direction: column; justify-content: center; }
+.scene-act { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--rm); margin-bottom: 3px; }
+.scene-title { font-size: 18px; font-weight: 700; }
+.scene-subtitle { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+.scene-tags { display: flex; flex-wrap: wrap; gap: 5px; padding: 9px 20px; border-bottom: 1px solid var(--gray-200); background: white; }
+.tag { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 4px; border: 1px solid; }
+.tag-blue   { background: #e8f0fe; color: #1a4fa0; border-color: #c5d8f5; }
+.tag-green  { background: var(--green-light); color: var(--green); border-color: #b6dfc8; }
+.tag-orange { background: var(--gold-light); color: var(--gold); border-color: #f0d08a; }
+.tag-purple { background: var(--purple-light); color: var(--purple); border-color: #c9bde8; }
+.tag-teal   { background: var(--teal-light); color: var(--teal); border-color: #a0d4e6; }
+.tag-rm     { background: var(--rm-light); color: var(--rm); border-color: #6ee7b7; }
+.tag-red    { background: var(--red-light); color: var(--red); border-color: #f0c0bb; }
+.scene-body { padding: 20px 24px; }
+
+/* ── BOXES ───────────────────────────────── */
+.box { border-radius: var(--radius); margin: 12px 0; overflow: hidden; }
+.box-header { display: flex; align-items: center; gap: 10px; padding: 9px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+.box-body { padding: 14px 18px; font-size: 14px; line-height: 1.7; }
+.box-icon { font-size: 15px; }
+.box-story .box-header { background: var(--navy); color: white; }
+.box-story .box-body   { background: #f4f7fb; color: var(--gray-700); font-style: italic; border: 1px solid #d0d8e8; border-top: none; }
+.box-say .box-header   { background: var(--rm); color: white; }
+.box-say .box-body     { background: var(--rm-light); color: var(--gray-700); border: 1px solid #6ee7b7; border-top: none; }
+.box-click .box-header { background: var(--teal); color: white; }
+.box-click .box-body   { background: var(--teal-light); color: var(--gray-900); border: 1px solid #a0d4e6; border-top: none; }
+.box-reto .box-header  { background: var(--reto); color: white; }
+.box-reto .box-body    { background: var(--reto-light); color: var(--gray-700); border: 1px solid #93c5fd; border-top: none; }
+.box-context .box-header { background: var(--gold); color: white; }
+.box-context .box-body   { background: var(--gold-light); color: var(--gray-700); border: 1px solid #ecc87a; border-top: none; }
+.box-impact .box-header  { background: var(--purple); color: white; }
+.box-impact .box-body    { background: var(--purple-light); color: var(--gray-900); border: 1px solid #c9bde8; border-top: none; font-weight: 600; font-style: italic; font-size: 15px; }
+.box-warn .box-header    { background: var(--red); color: white; }
+.box-warn .box-body      { background: var(--red-light); color: var(--gray-700); border: 1px solid #f0c0bb; border-top: none; }
+.box-tip .box-header     { background: #2d6a4f; color: white; }
+
+.box-feedback .box-header { background: linear-gradient(90deg, #f59e0b, #d97706); color: white; font-weight: 700; }
+.box-feedback .box-body   { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); color: var(--gray-700); border: 2px dashed #f59e0b; border-top: none; font-size: 13px; line-height: 1.65; }
+.box-feedback .box-body strong { color: #92400e; }
+.qr-section { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); margin-bottom: 20px; box-shadow: var(--shadow); overflow: hidden; }
+.qr-header { background: var(--rm); color: white; padding: 14px 24px; font-size: 15px; font-weight: 700; }
+.qr-body { padding: 20px 24px; }
+
+.box-tip .box-body       { background: #d8f3dc; color: #1b4332; border: 1px solid #b7e4c7; border-top: none; }
+
+/* Steps */
+.click-steps { list-style: none; }
+.click-steps li { display: flex; align-items: flex-start; gap: 12px; padding: 7px 0; border-bottom: 1px solid #b0dcea; font-size: 14px; }
+.click-steps li:last-child { border-bottom: none; }
+.click-step-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: var(--teal); color: white; border-radius: 50%; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+.click-path { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: rgba(0,0,0,0.07); padding: 2px 7px; border-radius: 3px; color: #0a4020; white-space: nowrap; }
+.quote-line { border-left: 3px solid var(--rm); padding: 8px 16px; margin: 10px 0; color: var(--gray-700); font-style: italic; font-size: 14px; background: white; border-radius: 0 4px 4px 0; }
+.quote-reto  { border-left-color: var(--reto); background: var(--reto-light); }
+.quote-peter { border-left-color: #f59e0b; background: var(--peter-light); }
+.transition { display: flex; align-items: center; gap: 12px; margin: 16px 0 0; padding: 11px 16px; background: var(--gray-100); border-radius: 6px; border: 1px dashed var(--gray-300); font-size: 13px; color: var(--gray-500); }
+
+/* ── QUICK REF / CLOSING ─────────────────── */
+.qr-section { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); margin-bottom: 20px; box-shadow: var(--shadow); overflow: hidden; }
+.qr-header { background: var(--rm); color: white; padding: 14px 24px; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.qr-body { padding: 20px 24px; }
+table.ref { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.ref th { text-align: left; padding: 8px 12px; background: var(--gray-100); border: 1px solid var(--gray-300); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-500); }
+table.ref td { padding: 8px 12px; border: 1px solid var(--gray-300); vertical-align: top; }
+table.ref tr:nth-child(even) td { background: var(--gray-100); }
+code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: var(--gray-200); padding: 2px 6px; border-radius: 3px; color: #1a3a6b; }
+.closing { background: linear-gradient(135deg, #064e3b 0%, #065f46 100%); color: white; border-radius: var(--radius); padding: 36px; margin-bottom: 20px; box-shadow: var(--shadow-lg); }
+.closing h2 { font-family: 'Playfair Display', serif; font-size: 26px; margin-bottom: 20px; }
+.closing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.closing-item { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 14px 16px; font-size: 13px; display: flex; gap: 10px; }
+.closing-final { border-top: 1px solid rgba(255,255,255,0.15); padding-top: 20px; font-size: 18px; font-style: italic; font-weight: 300; line-height: 1.6; }
+.closing-final strong { font-weight: 700; font-style: normal; }
+.doc-footer { text-align: center; padding: 28px 0 40px; color: var(--gray-500); font-size: 13px; line-height: 1.8; }
+
+/* ════════════════════════════════════════
+   EDIT MODE
+════════════════════════════════════════ */
+#edit-toolbar { position:fixed;top:56px;right:20px;z-index:1000;display:flex;flex-direction:column;align-items:stretch;gap:6px;max-width:min(380px,94vw);background:rgba(255,255,255,0.97);border:1px solid var(--gray-300);border-radius:14px;padding:6px 8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);backdrop-filter:blur(8px);font-family:'Inter',sans-serif; }
+.edit-toolbar-main { display:flex;align-items:center;gap:6px;flex-wrap:wrap; }
+.edit-versions-panel { display:none;position:fixed;inset:0;z-index:10002;background:rgba(15,23,42,0.45);align-items:flex-end;justify-content:flex-end;padding:16px;box-sizing:border-box; }
+.edit-versions-panel.open { display:flex; }
+.edit-versions-panel-inner { background:#fff;border-radius:14px;border:1px solid var(--gray-300);max-width:min(420px,96vw);max-height:min(520px,78vh);overflow:hidden;display:flex;flex-direction:column;box-shadow:0 16px 48px rgba(0,0,0,0.22);font-family:'Inter',sans-serif; }
+.edit-versions-panel-head { display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-bottom:1px solid var(--gray-200);font-size:13px; }
+.edit-versions-close { border:none;background:var(--gray-100);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;line-height:1;color:var(--gray-700); }
+.edit-versions-close:hover { background:var(--gray-200); }
+.edit-versions-list { overflow:auto;padding:8px 10px 12px;display:flex;flex-direction:column;gap:8px; }
+.edit-versions-row { display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:10px;background:var(--gray-50);border:1px solid var(--gray-200);font-size:12px; }
+.edit-versions-row button { flex-shrink:0;padding:4px 10px;border-radius:8px;border:1px solid var(--gray-300);background:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit; }
+.edit-versions-row button:hover { background:var(--gray-100); }
+.edit-versions-empty { font-size:12px;color:var(--gray-500);padding:8px 4px; }
+#edit-toggle-btn { display:flex;align-items:center;gap:6px;padding:6px 14px;border:none;background:transparent;border-radius:20px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--gray-500);transition:all 0.18s; }
+#edit-toggle-btn:hover { background:var(--gray-200);color:var(--gray-900); }
+.edit-mode-active #edit-toggle-btn { background:#fee2e2;color:#dc2626; }
+.edit-actions-btn { padding:5px 12px;border:none;border-radius:16px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;transition:all 0.18s;white-space:nowrap; }
+.edit-save-btn { background:#dcfce7;color:#166534; }
+.edit-save-btn:hover { background:#bbf7d0; }
+.edit-versions-btn { background:var(--gray-100);color:var(--gray-500); }
+.edit-versions-btn:hover { background:var(--gray-200);color:var(--gray-700); }
+#edit-status { font-size:11px;font-weight:600;color:#16a34a;padding:0 6px;display:none; }
+#edit-unsaved { font-size:11px;font-weight:600;color:#d97706;padding:0 4px;display:none; }
+.edit-mode-active .scene-num-badge { cursor:grab;user-select:none; }
+.edit-mode-active .scene-num-badge:active { cursor:grabbing; }
+.edit-mode-active .scene-num-badge::before { content:'⠿';display:block;font-size:14px;opacity:0.45;margin-bottom:4px;line-height:1; }
+.edit-mode-active .scene-num-badge:hover::before { opacity:1; }
+.scene.scene-dragging { opacity:0.35;box-shadow:0 12px 40px rgba(0,0,0,0.22); }
+.scene.scene-drag-over-top { border-top:3px solid var(--teal);margin-top:-1px; }
+.scene.scene-drag-over-bottom { border-bottom:3px solid var(--teal);margin-bottom:-1px; }
+.edit-mode-active .scene { position:relative; }
+.scene-delete-btn { position:absolute;top:8px;right:10px;z-index:6;border:none;background:rgba(254,226,226,0.97);color:#dc2626;font-size:20px;line-height:1;width:36px;height:36px;border-radius:8px;cursor:pointer;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,0.08); }
+.scene-delete-btn:hover { background:#fecaca; }
+.edit-scene-add-below { display:none;margin:4px 0 10px;padding:0;text-align:center;clear:both; }
+.edit-mode-active .edit-scene-add-below { display:block; }
+.edit-scene-add-below-btn { border:1px dashed var(--rm);background:var(--rm-light);color:#064e3b;font:inherit;font-size:14px;font-weight:700;padding:8px 18px;border-radius:10px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+.edit-scene-add-below-btn:hover { background:#b8f0d8;border-color:var(--rm); }
+.edit-mode-active .edit-removable-target { position: relative; }
+.edit-chrome-remove-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 25;
+  border: none;
+  background: rgba(254, 226, 226, 0.97);
+  color: #dc2626;
+  font-size: 18px;
+  line-height: 1;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.edit-chrome-remove-btn:hover { background: #fecaca; }
+.edit-chrome-remove-btn:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+.hero-meta-item .edit-chrome-remove-btn,
+.continuity-badge .edit-chrome-remove-btn {
+  top: 2px;
+  right: 2px;
+  width: 22px;
+  height: 22px;
+  font-size: 15px;
+}
+.pre-demo-strip .edit-chrome-remove-btn { top: 10px; right: 10px; }
+.scene-tags .edit-chrome-remove-btn { top: 6px; right: 8px; }
+.story-hook .edit-chrome-remove-btn,
+.transition .edit-chrome-remove-btn { top: 8px; right: 8px; }
+.editable-macro-split { display:none;flex-direction:column;align-items:stretch;gap:8px;margin:12px 0 20px;clear:both; }
+.edit-mode-active .editable-macro-split { display:flex; }
+.editable-macro-split-line { height:0;border:none;border-top:2px dashed rgba(6,95,70,0.4);margin:0 8px; }
+.editable-macro-split-btn { align-self:center;min-width:44px;height:36px;padding:0 18px;border:2px dashed var(--rm);background:var(--rm-light);color:#064e3b;border-radius:10px;font-size:22px;font-weight:700;cursor:pointer;line-height:1;font-family:inherit;transition:background 0.15s,border-color 0.15s; }
+.editable-macro-split-btn:hover { background:#b8f0d8;border-color:var(--rm); }
+.demo-macro-free-block { position:relative; }
+.edit-mode-active [contenteditable] { border-radius:3px;outline:none;cursor:text;transition:background 0.15s,box-shadow 0.15s;min-width:4px; }
+.edit-mode-active [contenteditable]:hover { background:rgba(13,127,160,0.07) !important;box-shadow:0 0 0 1px rgba(13,127,160,0.2); }
+.edit-mode-active [contenteditable]:focus { background:rgba(13,127,160,0.11) !important;box-shadow:0 0 0 2px rgba(13,127,160,0.3); }
+.edit-mode-active [contenteditable][data-lang]::before { content:attr(data-lang);display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.08em;background:rgba(13,127,160,0.15);color:var(--teal);border-radius:3px;padding:1px 4px;margin-right:4px;vertical-align:middle;pointer-events:none;font-style:normal; }
+.step-delete-btn { border:none;background:transparent;color:#dc2626;font-size:16px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:4px;margin-left:6px;flex-shrink:0;opacity:0;transition:opacity 0.15s,background 0.15s; }
+.click-steps li:hover .step-delete-btn,.click-steps li:focus-within .step-delete-btn { opacity:1; }
+.step-delete-btn:hover { background:#fee2e2; }
+.edit-mode-active .click-steps li:hover .step-drag-btn,.edit-mode-active .click-steps li:focus-within .step-drag-btn { opacity:1; }
+.step-drag-btn { border:none;background:transparent;color:var(--gray-500);font-size:14px;line-height:1;cursor:grab;padding:2px 4px 0 0;flex-shrink:0;opacity:0.45;align-self:flex-start;margin-top:1px; }
+.step-drag-btn:hover { opacity:1;color:var(--teal); }
+.step-drag-btn:active { cursor:grabbing; }
+.click-steps li.click-step-li-dragging { opacity:0.4; }
+.click-steps li.click-step-over-top { border-top:2px solid var(--teal); }
+.click-steps li.click-step-over-bottom { border-bottom:2px solid var(--teal); }
+.step-add-btn { display:flex;align-items:center;gap:8px;width:100%;margin-top:8px;padding:8px 14px;border:2px dashed #b6dfc8;border-radius:6px;background:transparent;color:var(--green);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all 0.18s; }
+.step-add-btn:hover { background:var(--green-light);border-color:var(--green); }
+.edit-mode-active .agenda-fullpage-num { cursor:grab;user-select:none; }
+.edit-mode-active .agenda-fullpage-num:active { cursor:grabbing; }
+.edit-mode-active .agenda-fullpage-num::before { content:'⠿';display:block;font-size:12px;opacity:0.45;margin-bottom:2px;line-height:1; }
+.edit-mode-active .agenda-fullpage-num:hover::before { opacity:1; }
+.edit-mode-active .agenda-fullpage-block { position:relative; }
+.agenda-block-delete-btn { position:absolute;top:6px;right:0;z-index:3;border:none;background:rgba(254,226,226,0.95);color:#dc2626;font-size:18px;line-height:1;width:32px;height:32px;border-radius:6px;cursor:pointer;font-weight:700; }
+.agenda-block-delete-btn:hover { background:#fecaca; }
+.agenda-fullpage-block.agenda-block-dragging { opacity:0.38;box-shadow:0 12px 32px rgba(0,0,0,0.15); }
+.agenda-fullpage-block.agenda-block-over-top { border-top:3px solid var(--teal);margin-top:-1px;padding-top:19px; }
+.agenda-fullpage-block.agenda-block-over-bottom { border-bottom:3px solid var(--teal);margin-bottom:-1px;padding-bottom:19px; }
+.agenda-add-block-btn { display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:4px;padding:10px 14px;border:2px dashed #93c5d6;border-radius:8px;background:rgba(255,255,255,0.6);color:var(--teal);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all 0.18s; }
+.agenda-add-block-btn:hover { background:var(--teal-light);border-color:var(--teal); }
+.edit-mode-active .agenda-fullpage-block ul { list-style:none;padding-left:0; }
+.edit-mode-active .agenda-fullpage-block ul li { display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin:6px 0;padding:4px 0;border-radius:4px; }
+.edit-mode-active .agenda-fullpage-block ul li:hover { background:rgba(13,127,160,0.04); }
+.agenda-li-drag { border:none;background:transparent;color:var(--gray-500);font-size:14px;line-height:1;cursor:grab;padding:2px 4px 0 0;flex-shrink:0;opacity:0.55; }
+.agenda-li-drag:hover { opacity:1;color:var(--teal); }
+.agenda-li-drag:active { cursor:grabbing; }
+.agenda-li-delete-btn { border:none;background:transparent;color:#dc2626;font-size:15px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:4px;margin-left:auto;flex-shrink:0;opacity:0;transition:opacity 0.15s; }
+.edit-mode-active .agenda-fullpage-block ul li:hover .agenda-li-delete-btn,.edit-mode-active .agenda-fullpage-block ul li:focus-within .agenda-li-delete-btn { opacity:1; }
+.agenda-li-delete-btn:hover { background:#fee2e2; }
+.agenda-li-add-btn { display:flex;align-items:center;gap:6px;margin-top:6px;margin-bottom:4px;padding:6px 12px;border:2px dashed #b6dfc8;border-radius:6px;background:transparent;color:var(--green);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;width:fit-content;max-width:100%; }
+.agenda-li-add-btn:hover { background:var(--green-light);border-color:var(--green); }
+.agenda-fullpage-block li.agenda-li-dragging { opacity:0.4; }
+.agenda-fullpage-block li.agenda-li-over-top { border-top:2px solid var(--teal); }
+.agenda-fullpage-block li.agenda-li-over-bottom { border-bottom:2px solid var(--teal); }
+.edit-mode-active .scene-title-area { background:#f0f8ff; }
+.edit-mode-active .hero-inner { outline:2px dashed rgba(255,255,255,0.45);outline-offset:6px;border-radius:8px; }
+.edit-mode-active .scene-title-area [contenteditable] { display:block;padding:2px 4px; }
+#edit-hint { position:fixed;bottom:0;left:0;right:0;z-index:999;background:rgba(6,95,70,0.93);color:white;font-size:12px;font-weight:500;font-family:'Inter',sans-serif;text-align:center;padding:8px 16px;letter-spacing:0.02em;display:none; }
+.edit-mode-active #edit-hint { display:block; }
+.box-drag-handle { display:inline-flex;align-items:center;cursor:grab;font-size:13px;color:rgba(255,255,255,0.45);margin-right:7px;user-select:none;padding:0 2px;transition:color 0.15s;flex-shrink:0; }
+.box-drag-handle:hover { color:rgba(255,255,255,0.9); }
+.box-drag-handle:active { cursor:grabbing; }
+.box-delete-btn { margin-left:auto;flex-shrink:0;border:none;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);border-radius:4px;padding:2px 8px;font-size:15px;line-height:1;cursor:pointer;transition:all 0.15s; }
+.box-delete-btn:hover { background:rgba(220,38,38,0.55);color:white; }
+.box.box-dragging { opacity:0.3;transform:scale(0.99);box-shadow:0 8px 32px rgba(0,0,0,0.25); }
+.box.box-drop-top { border-top:3px solid rgba(255,255,255,0.65);margin-top:-1px; }
+.box.box-drop-bottom { border-bottom:3px solid rgba(255,255,255,0.65);margin-bottom:-1px; }
+.box-add-btn { display:flex;align-items:center;gap:8px;width:100%;margin-top:12px;padding:10px 16px;border:2px dashed var(--gray-300);border-radius:8px;background:transparent;color:var(--gray-500);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all 0.18s; }
+.box-add-btn:hover { border-color:var(--teal);color:var(--teal);background:var(--teal-light); }
+#box-picker-overlay { position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:20px;animation:bpFadeIn .15s ease; }
+@keyframes bpFadeIn { from{opacity:0}to{opacity:1} }
+#box-picker { background:white;border-radius:14px;padding:26px 24px;max-width:580px;width:100%;box-shadow:0 32px 96px rgba(0,0,0,0.35);max-height:90vh;overflow-y:auto;animation:bpSlide .18s ease; }
+@keyframes bpSlide { from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1} }
+#box-picker h3 { font-size:15px;font-weight:700;color:var(--gray-900);margin-bottom:16px; }
+.bp-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:9px;margin-bottom:14px; }
+.bp-card { border:2px solid var(--gray-200);border-radius:9px;overflow:hidden;cursor:pointer;transition:all 0.16s; }
+.bp-card:hover { border-color:var(--teal);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.13); }
+.bp-card-header { padding:9px 12px;font-size:12px;font-weight:700;color:white;display:flex;align-items:center;gap:6px; }
+.bp-card-body { padding:7px 12px;font-size:11px;color:var(--gray-500);background:var(--gray-100);line-height:1.4; }
+.bp-cancel { width:100%;padding:9px;border:1px solid var(--gray-300);border-radius:7px;background:white;color:var(--gray-500);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:background 0.15s;margin-top:2px; }
+.bp-cancel:hover { background:var(--gray-100); }
+
+@media print {
+  body { background: white; }
+  .lang-switcher, #edit-toolbar, .edit-format-bar, .edit-versions-panel { display: none; }
+  .scene { box-shadow: none; break-inside: avoid; }
+  .hero, .closing { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+@media (max-width: 600px) {
+  .hero-title { font-size: 30px; }
+  .cast-grid, .closing-grid { grid-template-columns: 1fr; }
+}
+</style>
+<link rel="stylesheet" href="demo-agenda-window.css">
+<link rel="stylesheet" href="demo-edit-format.css">
+<script src="demo-edit-format.js"></script>
+</head>
+<body>
+
+<div class="lang-switcher">
+  <button class="lang-btn active" id="btn-de" onclick="setLang('de')">
+    <span class="lang-flag">🇩🇪</span>
+  </button>
+  <button class="lang-btn" id="btn-en" onclick="setLang('en')">
+    <span class="lang-flag">🇬🇧</span>
+  </button>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+      <div class="continuity-badge">👥 <span class="t-de">Team Planning · Agile + Waterfall</span><span class="t-en">Team Planning · Agile + Waterfall</span></div>
+      <a href="tempus-demo-rm.html" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">← <span class="t-de">RM Demo öffnen</span><span class="t-en">Open RM Demo</span></a>
+    </div>
+    <div class="hero-eyebrow">👥 <span class="t-de">Team Resources · Teambasierte Planung</span><span class="t-en">Team Resources · Team-Based Planning</span></div>
+    <h1 class="hero-title">
+      <span class="t-de">Team Resources —<br><span>Teams als planbare Einheit</span></span>
+      <span class="t-en">Team Resources —<br><span>Teams as Assignable Units</span></span>
+    </h1>
+    <p class="hero-subtitle">
+      <span class="t-de">Wie man in Tempus Resource <strong>Teams</strong> erstellt, Personen zuweist, und Teams auf Projekte allokiert — für Organisationen mit Agile, Waterfall oder gemischten Methoden.</span>
+      <span class="t-en">How to create <strong>Teams</strong> in Tempus Resource, assign people to them, and allocate teams to projects — for organizations using Agile, Waterfall, or mixed methodologies.</span>
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">⏱️ <span class="t-de">ca. 15–20 Min.</span><span class="t-en">approx. 15–20 min.</span></div>
+      <div class="hero-meta-item">👥 <span class="t-de">Resource Manager / Team Leads</span><span class="t-en">Resource Managers / Team Leads</span></div>
+      <div class="hero-meta-item">📋 <span class="t-de">9 Blöcke · inkl. Feedback</span><span class="t-en">9 blocks · incl. feedback</span></div>
+      <div class="hero-meta-item">🔗 trial5.tempus-resource.com/slot4</div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="custom-editable-intro">
+
+<!-- GUIDE LEGEND -->
+<div class="guide-legend" style="margin-top:24px;">
+  <div class="guide-legend-title">🗺️ <span class="t-de">So liest du diesen Guide</span><span class="t-en">How to read this guide</span></div>
+  <div class="legend-grid">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--navy);">📖</div>
+      <div><div class="legend-label"><span class="t-de">Einstieg — laut sagen</span><span class="t-en">Intro — say aloud</span></div><div class="legend-desc"><span class="t-de">Narrative Überleitung</span><span class="t-en">Narrative bridge</span></div></div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--rm);">🎙️</div>
+      <div><div class="legend-label"><span class="t-de">Während du klickst</span><span class="t-en">While clicking</span></div><div class="legend-desc"><span class="t-de">Feature-Erklärung</span><span class="t-en">Feature explanation</span></div></div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--teal);">🖱️</div>
+      <div><div class="legend-label"><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div><div class="legend-desc"><span class="t-de">Schritt-für-Schritt</span><span class="t-en">Step-by-step</span></div></div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--gold);">💡</div>
+      <div><div class="legend-label"><span class="t-de">Hintergrund</span><span class="t-en">Background</span></div><div class="legend-desc"><span class="t-de">Für Rückfragen</span><span class="t-en">For follow-ups</span></div></div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--purple);">⚡</div>
+      <div><div class="legend-label"><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div><div class="legend-desc"><span class="t-de">Am Ende der Szene</span><span class="t-en">End of scene</span></div></div>
+    </div>
+  </div>
+  <div class="legend-flow">
+    💬 <strong><span class="t-de">Ablauf:</span><span class="t-en">Flow:</span></strong>
+    <span class="t-de"> Einstieg → klicken → Erklärpunkte → Wirkungssatz → nächste Szene</span>
+    <span class="t-en"> Say intro → click → talking points → impact → next scene</span>
+  </div>
+</div>
+
+<!-- PRE-DEMO -->
+<div class="pre-demo-strip">
+  <div style="font-size:22px;">⚙️</div>
+  <div>
+    <strong><span class="t-de">Vor dem Start — Technische Vorbereitung</span><span class="t-en">Before you start — Technical preparation</span></strong>
+    <span class="t-de">Instanz: <code>trial5.tempus-resource.com/slot4</code> · Benutzer: Admin oder RM mit Team-Berechtigungen · Ein oder mehrere bestehende Ressourcen sollten vorhanden sein.</span>
+    <span class="t-en">Instance: <code>trial5.tempus-resource.com/slot4</code> · User: Admin or RM with Team permissions · One or more existing resources should be available.</span>
+  </div>
+</div>
+
+<!-- STORY HOOK -->
+<div class="story-hook">
+  <div class="story-hook-header">🎙️ <span class="t-de">Opening — Warum Team Resources?</span><span class="t-en">Opening — Why Team Resources?</span></div>
+  <div class="story-hook-body">
+    <span class="t-de">
+      „Willkommen zur heutigen Follow-up-Demo zu <strong>Team Resources</strong> in Tempus Resource.<br><br>
+      In den bisherigen Sessions haben wir mit einzelnen Named Resources gearbeitet — konkreten Personen wie Manuel, Tanja oder Edina. Heute schauen wir uns einen anderen Planungsansatz an: <strong>Wie plane ich nicht eine einzelne Person, sondern ein ganzes Team?</strong><br><br>
+      Das ist besonders relevant, wenn man <em>agil arbeitet</em>, mit <em>Delivery Teams</em> plant oder wenn die genaue personelle Verteilung noch nicht im Detail entschieden ist."
+    </span>
+    <span class="t-en">
+      "Welcome to today's follow-up demo on <strong>Team Resources</strong> in Tempus Resource.<br><br>
+      In previous sessions, we worked with individual Named Resources — specific people like Manuel, Tanja, or Edina. Today we'll look at a different planning approach: <strong>How do I plan not a single person, but an entire team?</strong><br><br>
+      This is especially relevant when working <em>agile</em>, planning with <em>Delivery Teams</em>, or when the exact staffing isn't decided in detail yet."
+    </span>
+  
+<div class="box box-feedback" style="margin-top:16px;">
+  <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback — Opening / Story</span><span class="t-en">Feedback — Opening / story</span></div>
+  <div class="box-body">
+    <span class="t-de"><strong>Fokus auf das Warum:</strong> Giacomo will sein ganzes Delivery Team als eine Einheit planen — nicht fünf separate Assignment-Zeilen. Das löst seinen Alltags-Schmerz als Team Lead.</span>
+    <span class="t-en"><strong>Focus on why:</strong> Giacomo wants to plan his whole delivery team as one unit — not five separate assignment lines.</span>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- CAST -->
+<div class="cast-section">
+  <h3><span class="t-de">Empfohlene Demo-Story</span><span class="t-en">Recommended Demo Story</span></h3>
+  <div class="cast-grid">
+    <div class="cast-card hero-char">
+      <div class="cast-emoji">🧑‍💼</div>
+      <div class="cast-name">Giacomo Telesca</div>
+      <div class="cast-role"><span class="t-de">Team Lead des E-DOC Teams bei HR Campus</span><span class="t-en">Team Lead of the E-DOC Team at HR Campus</span></div>
+      <div class="cast-quote"><span class="t-de">„Nicht jede Planung soll auf einzelne Personen heruntergebrochen werden."</span><span class="t-en">"Not every plan needs to be broken down to individual people."</span></div>
+    </div>
+    <div class="cast-card pm-cameo">
+      <div class="cast-emoji">👥</div>
+      <div class="cast-name"><span class="t-de">E-DOC Delivery Team</span><span class="t-en">E-DOC Delivery Team</span></div>
+      <div class="cast-role"><span class="t-de">Team Resource mit Manuel, Tanja, Edina, Christoph</span><span class="t-en">Team Resource with Manuel, Tanja, Edina, Christoph</span></div>
+      <div class="cast-quote"><span class="t-de">„Das Team wird auf Stardust 2026 geplant."</span><span class="t-en">"The team is allocated to Stardust 2026."</span></div>
+    </div>
+    <div class="cast-card skeptic">
+      <div class="cast-emoji">📊</div>
+      <div class="cast-name">Stardust 2026</div>
+      <div class="cast-role"><span class="t-de">Zielprojekt für die Team-Allokation</span><span class="t-en">Target project for team allocation</span></div>
+      <div class="cast-quote"><span class="t-de">„Das Team als Einheit allokieren, ohne jede Person einzeln zuzuweisen."</span><span class="t-en">"Allocate the team as a unit without assigning each person individually."</span></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /page -->
+
+<!-- ═══ TEAM RESOURCES AGENDA ═══ -->
+<div class="agenda-fullpage-wrap" id="custom-training-agenda">
+  <div class="agenda-fullpage-inner">
+    <p class="agenda-fullpage-kicker"><span class="t-de">Team Resources · Teambasierte Planung</span><span class="t-en">Team Resources · Team-Based Planning</span></p>
+    <h2 class="agenda-fullpage-title"><span class="t-de">Agenda</span><span class="t-en">Agenda</span></h2>
+    <p class="agenda-fullpage-sub">
+      <span class="t-de">In dieser Session lernen wir, wie man Teams als planbare Einheiten erstellt und nutzt — für Organisationen, die Agile, Waterfall oder gemischte Methoden verwenden.</span>
+      <span class="t-en">In this session we'll learn how to create and use teams as assignable units — for organizations using Agile, Waterfall, or mixed methodologies.</span>
+    </p>
+    <div class="agenda-fullpage-blocks">
+      <div class="agenda-fullpage-block">
+        <div class="agenda-fullpage-num">1</div>
+        <div>
+          <h4><span class="t-de">Team Resource Grundlagen &amp; Profil</span><span class="t-en">Team Resource Basics &amp; Profile</span></h4>
+          <ul>
+            <li><span class="t-de">Unterschied zwischen Named und Team Resource verstehen, Team Capacity und Inclusion % einrichten.</span><span class="t-en">Understand the difference between Named and Team Resource, set up Team Capacity and Inclusion %.</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="agenda-fullpage-block">
+        <div class="agenda-fullpage-num">2</div>
+        <div>
+          <h4><span class="t-de">Team auf Projekt allokieren</span><span class="t-en">Allocate Team to Project</span></h4>
+          <ul>
+            <li><span class="t-de">Team Resource als Einheit zuweisen, FTE = Full Team Equivalent verstehen, Story Points optional.</span><span class="t-en">Assign Team Resource as a unit, understand FTE = Full Team Equivalent, Story Points optional.</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="agenda-fullpage-block">
+        <div class="agenda-fullpage-num">3</div>
+        <div>
+          <h4><span class="t-de">Net Availability &amp; BPAFG</span><span class="t-en">Net Availability &amp; BPAFG</span></h4>
+          <ul>
+            <li><span class="t-de">Auswirkungen auf Team Capacity sehen, Team Assignments im BPA Flatgrid über Projekte hinweg steuern.</span><span class="t-en">See impact on Team Capacity, manage Team Assignments across projects in the BPA Flatgrid.</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="agenda-fullpage-block">
+        <div class="agenda-fullpage-num">4</div>
+        <div>
+          <h4><span class="t-de">Recap &amp; Q&amp;A</span><span class="t-en">Recap &amp; Q&amp;A</span></h4>
+          <ul>
+            <li><span class="t-de">Kernbotschaften zusammenfassen, offene Fragen klären.</span><span class="t-en">Summarize key messages, answer open questions.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="agenda-fullpage-footnote">
+      <span class="t-de"><strong>Team Resources:</strong> 4 Blöcke · ⏱️ ca. 20 Min. · 🔗 <code>trial5.tempus-resource.com/slot4</code></span>
+      <span class="t-en"><strong>Team Resources:</strong> 4 blocks · ⏱️ approx. 20 min · 🔗 <code>trial5.tempus-resource.com/slot4</code></span>
+    </div>
+
+    <!-- Agenda Verbal — gesprochener Ablauf (nach Stichpunkt-Agenda) -->
+    <div class="agenda-verbal-block" style="margin-top: 32px; padding: 22px 24px; background: rgba(255,255,255,0.92); border: 1px solid var(--gray-300); border-radius: var(--radius); border-left: 5px solid var(--rm); box-shadow: var(--shadow);">
+      <div style="font-size: 12px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: var(--rm); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 20px; line-height: 1;">📖</span>
+        <span><span class="t-de">Agenda Verbal</span><span class="t-en">Agenda — spoken intro</span></span>
+      </div>
+      <div class="agenda-verbal-body" style="font-size: 15px; line-height: 1.78; color: var(--gray-800); font-style: normal;">
+        <p style="margin: 0 0 14px;">
+          <span class="t-de">Willkommen zur heutigen Follow-up-Demo zu <strong>Team Resources</strong> in Tempus Resource. In den bisherigen Sessions haben wir mit einzelnen Named Resources gearbeitet — konkreten Personen wie Manuel, Tanja oder Edina. Heute schauen wir uns einen anderen Planungsansatz an: <strong>Wie plane ich nicht eine einzelne Person, sondern ein ganzes Team?</strong></span>
+          <span class="t-en">Welcome to today's follow-up demo on <strong>Team Resources</strong> in Tempus Resource. In previous sessions, we worked with individual Named Resources — specific people like Manuel, Tanja, or Edina. Today we'll look at a different planning approach: <strong>How do I plan not a single person, but an entire team?</strong></span>
+        </p>
+        <p style="margin: 0 0 14px;">
+          <span class="t-de">Das ist besonders relevant, wenn man agil arbeitet, mit Delivery Teams plant oder wenn die genaue personelle Verteilung noch nicht im Detail entschieden ist. <strong>Agenda zeigen!</strong></span>
+          <span class="t-en">This is especially relevant when working agile, planning with delivery teams, or when the exact staffing isn't decided in detail yet. <strong>Show agenda!</strong></span>
+        </p>
+        <p style="margin: 0 0 14px;">
+          <span class="t-de">Wir starten mit den <strong>Grundlagen</strong>: Was unterscheidet eine Team Resource von einer Named Resource? Wo sehe ich Teams im Grid? Wie baue ich Team Capacity auf — mit Mitgliedern, Inclusion % und optional Story Points? <em>Danach wisst ihr, wann es Sinn macht, ein Team statt Einzelpersonen zu planen — und ihr könnt selbst einschätzen, ob das für eure Organisation relevant ist.</em></span>
+          <span class="t-en">We start with the <strong>basics</strong>: What distinguishes a Team Resource from a Named Resource? Where do I see teams in the grid? How do I build Team Capacity — with members, Inclusion % and optionally Story Points? <em>After this, you'll know when it makes sense to plan a team instead of individuals — and you can judge whether this is relevant for your organization.</em></span>
+        </p>
+        <p style="margin: 0 0 14px;">
+          <span class="t-de">Dann <strong>allokieren wir ein Team auf ein Projekt</strong>: Wie weise ich ein Team als Einheit zu? Was bedeutet FTE bei einem Team? Wie funktioniert die Kostenberechnung? <em>Das spart euch in der Praxis viel Zeit — statt fünf Einzelanfragen macht ihr eine Teamzuweisung, und Tempus rechnet die Kosten automatisch.</em></span>
+          <span class="t-en">Then we <strong>allocate a team to a project</strong>: How do I assign a team as a unit? What does FTE mean for a team? How does cost calculation work? <em>This saves you a lot of time in practice — instead of five individual requests, you make one team assignment, and Tempus calculates costs automatically.</em></span>
+        </p>
+        <p style="margin: 0 0 14px;">
+          <span class="t-de">Danach schauen wir uns die <strong>Auswirkungen</strong> an: Net Availability auf Team-Ebene und wie Team Assignments im BPA Flatgrid über mehrere Projekte hinweg aussehen. <em>Damit habt ihr immer den Überblick, wie ausgelastet euer Team wirklich ist — nicht nur Einzelpersonen, sondern das Team als Ganzes.</em></span>
+          <span class="t-en">Then we look at the <strong>impact</strong>: Net Availability at team level and how Team Assignments appear across projects in the BPA Flatgrid. <em>This gives you a clear view of how utilized your team really is — not just individuals, but the team as a whole.</em></span>
+        </p>
+        <p style="margin: 0;">
+          <span class="t-de">Am Ende fassen wir die <strong>Kernbotschaften</strong> zusammen und beantworten eure Fragen. <em>Ihr geht raus mit einem klaren Bild, ob und wie Team Resources euren Planungsalltag vereinfachen können.</em> Alles klar? Dann springen wir rein.</span>
+          <span class="t-en">At the end, we summarize the <strong>key messages</strong> and answer your questions. <em>You'll leave with a clear picture of whether and how Team Resources can simplify your daily planning.</em> Ready? Let's jump in.</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="custom-scenes-page">
+
+<!-- ══════════════════════════════════════════════
+     SCENE 1 – Resource Management Grid
+══════════════════════════════════════════════ -->
+<div class="scene" id="custom-scene-01">
+  <div class="scene-header">
+    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--teal),var(--navy))"><div class="scene-num-big">01</div><div class="scene-num-label">Grid</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Block 1 · Übersicht</span><span class="t-en">Block 1 · Overview</span></div>
+      <div class="scene-title"><span class="t-de">Team Resources im Resource Management Grid</span><span class="t-en">Team Resources in Resource Management Grid</span></div>
+      <div class="scene-subtitle"><span class="t-de">Unterschied Named vs. Team Resource</span><span class="t-en">Named vs. Team Resource</span></div>
+    </div>
+  </div>
+  <div class="scene-tags"><span class="tag tag-teal">Grid</span><span class="tag tag-blue">Filter</span></div>
+  <div class="scene-body">
+    <div class="box box-story">
+      <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg</span><span class="t-en">Intro</span></div>
+      <div class="box-body"><span class="t-de">„Ich starte im <strong>Resource Management Grid</strong>. Team Resources wirken zunächst wie normale Ressourcen — der Unterschied: <strong>Named Resource</strong> = eine Person, <strong>Team Resource</strong> = eine Gruppe, gemeinsam planbar.“</span><span class="t-en">"I start in the <strong>Resource Management Grid</strong>. Team Resources look like normal resources at first — the difference: <strong>Named Resource</strong> = one person, <strong>Team Resource</strong> = a group planned together."</span></div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
+      <div class="box-body"><ul class="click-steps">
+        <li><div class="click-step-num">1</div><div><span class="t-de"><span class="click-path">Resource Management</span> Tile</span><span class="t-en"><span class="click-path">Resource Management</span> tile</span></div></li>
+        <li><div class="click-step-num">2</div><div><span class="t-de"><span class="click-path">Quick Filter → Team Resources</span></span><span class="t-en"><span class="click-path">Quick Filter → Team Resources</span></span></div></li>
+        <li><div class="click-step-num">3</div><div><span class="t-de"><span class="click-path">Columns → Is Team Resource</span></span><span class="t-en"><span class="click-path">Columns → Is Team Resource</span></span></div></li>
+      </ul></div>
+    </div>
+    <div class="box box-feedback">
+      <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback</span><span class="t-en">Feedback</span></div>
+      <div class="box-body"><span class="t-de"><strong>Quick Filter:</strong> Bei großem Resource Pool unbedingt zeigen — Kunden schätzen das.</span><span class="t-en"><strong>Quick Filter:</strong> Always show with large resource pools — customers value this.</span></div>
+    </div>
+    <div class="box box-impact">
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact</span></div>
+      <div class="box-body"><span class="t-de">„Eine Team Resource ist <strong>keine Person und kein Login-User</strong> — eine planbare Kapazitätseinheit für ein Team.“</span><span class="t-en">"A Team Resource is <strong>not a person or login user</strong> — an assignable capacity unit for a team."</span></div>
+    </div>
+    <div class="transition">→ <span class="t-de">Team Resource Profile öffnen</span><span class="t-en">Open Team Resource profile</span></div>
+  </div>
+</div>
+
+<!-- SCENE 2 -->
+<div class="scene" id="custom-scene-02">
+  <div class="scene-header">
+    <div class="scene-num-badge"><div class="scene-num-big">02</div><div class="scene-num-label">Profile</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Block 2 · Profil</span><span class="t-en">Block 2 · Profile</span></div>
+      <div class="scene-title"><span class="t-de">Team Resource Profile öffnen</span><span class="t-en">Open Team Resource Profile</span></div>
+      <div class="scene-subtitle"><span class="t-de">Was ist anders als bei Named Resources?</span><span class="t-en">What's different from Named Resources?</span></div>
+    </div>
+  </div>
+  <div class="scene-tags"><span class="tag tag-rm">Profil</span><span class="tag tag-gold">Rate</span></div>
+  <div class="scene-body">
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
+      <div class="box-body"><ul class="click-steps">
+        <li><div class="click-step-num">1</div><div><span class="t-de">Team Resource <strong>E-DOC Delivery Team</strong> öffnen</span><span class="t-en">Open <strong>E-DOC Delivery Team</strong></span></div></li>
+        <li><div class="click-step-num">2</div><div><span class="t-de">Attribute Page — fehlende Login-Felder zeigen</span><span class="t-en">Attribute page — show missing login fields</span></div></li>
+        <li><div class="click-step-num">3</div><div><span class="t-de">Default Rate / Rate-Bereich</span><span class="t-en">Default Rate area</span></div></li>
+      </ul></div>
+    </div>
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
+      <div class="box-body"><ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
+        <li><span class="t-de">Kein Login, E-Mail, SSO, Global Role — <strong>Planungsobjekt</strong>, keine Person</span><span class="t-en">No login, email, SSO, global role — a <strong>planning object</strong>, not a person</span></li>
+        <li><span class="t-de"><strong>Manual</strong> — Flat Default-Rate fürs Team</span><span class="t-en"><strong>Manual</strong> — flat default rate for the team</span></li>
+        <li><span class="t-de"><strong>Advanced</strong> — zeitphasierter Stundensatz</span><span class="t-en"><strong>Advanced</strong> — time-phased hourly rate</span></li>
+        <li><span class="t-de"><strong>Auto-calculated</strong> — aus Team-Zusammensetzung (meist Kundenwunsch)</span><span class="t-en"><strong>Auto-calculated</strong> — from team constitution (most customers)</span></li>
+      </ul></div>
+    </div>
+    <div class="box box-feedback">
+      <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback (Aayushi)</span><span class="t-en">Feedback (Aayushi)</span></div>
+      <div class="box-body"><span class="t-de"><strong>Team Capacity</strong> ist die Standard-Landingpage — bewusst, weil das die wichtigste Seite ist. Alle <strong>3 Rate-Optionen</strong> kurz erklären.</span><span class="t-en"><strong>Team Capacity</strong> is the default landing page — all <strong>3 rate options</strong> briefly.</span></div>
+    </div>
+    <div class="transition">→ <span class="t-de">Team Capacity: Mitglieder &amp; Inclusion %</span><span class="t-en">Team Capacity: members &amp; Inclusion %</span></div>
+  </div>
+</div>
+
+<!-- SCENE 3 -->
+<div class="scene" id="custom-scene-03">
+  <div class="scene-header">
+    <div class="scene-num-badge"><div class="scene-num-big">03</div><div class="scene-num-label">Capacity</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Block 3 · Team Capacity</span><span class="t-en">Block 3 · Team Capacity</span></div>
+      <div class="scene-title"><span class="t-de">Team Capacity: Mitglieder und Inclusion %</span><span class="t-en">Team Capacity: Members and Inclusion %</span></div>
+      <div class="scene-subtitle"><span class="t-de">Der wichtigste Mechanismus</span><span class="t-en">The key mechanism</span></div>
+    </div>
+  </div>
+  <div class="scene-tags"><span class="tag tag-rm">Inclusion %</span><span class="tag tag-teal">Net Avail.</span></div>
+  <div class="scene-body">
+    <div class="box box-story">
+      <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg</span><span class="t-en">Intro</span></div>
+      <div class="box-body"><span class="t-de">„Hier definiere ich, <strong>wer</strong> zum Team gehört und <strong>wie viel</strong> jede Person beiträgt — das ist der Kern von Team Resources.“</span><span class="t-en">"Here I define <strong>who</strong> is on the team and <strong>how much</strong> each person contributes — the core of Team Resources."</span></div>
+    </div>
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
+      <div class="box-body"><ul class="click-steps">
+        <li><div class="click-step-num">1</div><div><span class="t-de">Tab <span class="click-path">Team Capacity</span></span><span class="t-en"><span class="click-path">Team Capacity</span> tab</span></div></li>
+        <li><div class="click-step-num">2</div><div><span class="t-de">Start/End Date + Quick Date Picker</span><span class="t-en">Start/End date + quick picker</span></div></li>
+        <li><div class="click-step-num">3</div><div><span class="t-de">Net Availability Grid unten — Manuel, Tanja, Edina, Christoph auswählen</span><span class="t-en">Net Availability grid — select members</span></div></li>
+        <li><div class="click-step-num">4</div><div><span class="t-de">Tab <span class="click-path">Inclusion %</span> — Standard 100 %</span><span class="t-en"><span class="click-path">Inclusion %</span> tab — default 100%</span></div></li>
+      </ul></div>
+    </div>
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte (mit Zahlen!)</span><span class="t-en">Talking points (use numbers!)</span></div>
+      <div class="box-body"><span class="t-de">Beispiel: Manuel 176 h/Monat, <strong>50 % Inclusion</strong> → nur <strong>88 h</strong> zählen zur Team Capacity. Tanja/Edina/Christoph je 100 % → 176 h. <strong>Summe = 616 h</strong> (nicht 704 h).<br><br><strong>Formel:</strong> Team Capacity = Σ (Mitgliedskapazität × Inclusion %). Inclusion % ist zeitphasierbar (Juni 100 %, Juli 50 %).</span><span class="t-en">Example: Manuel 176 h/month at <strong>50% inclusion</strong> → only <strong>88 h</strong> count. Others at 100% → 176 h each. <strong>Total = 616 h</strong> (not 704).<br><br><strong>Formula:</strong> Team Capacity = sum(member capacity × inclusion %). Inclusion % can be time-phased.</span></div>
+    </div>
+    <div class="box box-feedback">
+      <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback</span><span class="t-en">Feedback</span></div>
+      <div class="box-body"><span class="t-de"><strong>Hier die meiste Zeit verbringen!</strong> Konkrete Zahlen nutzen. Team nur innerhalb Start/End allokierbar. Heatmap im Grid unten kurz zeigen. <strong>Ressourcen können mehreren Teams</strong> angehören — kein Limit.</span><span class="t-en"><strong>Spend most time here!</strong> Use concrete numbers. Team allocatable only within date range. Briefly show heatmap. <strong>Resources can belong to multiple teams</strong>.</span></div>
+    </div>
+    <div class="box box-impact">
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact</span></div>
+      <div class="box-body"><span class="t-de">„Inclusion % steuert, wie viel Kapazität jede Person dem Team wirklich gibt — das ist der Hebel für realistische Teamplanung.“</span><span class="t-en">"Inclusion % controls how much capacity each person truly gives the team — the lever for realistic team planning."</span></div>
+    </div>
+    <div class="transition">→ <span class="t-de">Story Points (kurz)</span><span class="t-en">Story Points (brief)</span></div>
+  </div>
+</div>
+
+<!-- SCENE 4 -->
+<div class="scene" id="custom-scene-04">
+  <div class="scene-header">
+    <div class="scene-num-badge"><div class="scene-num-big">04</div><div class="scene-num-label">SP</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Block 4 · Story Points</span><span class="t-en">Block 4 · Story Points</span></div>
+      <div class="scene-title"><span class="t-de">Story Points &amp; Cost per Story Point</span><span class="t-en">Story Points &amp; Cost per Story Point</span></div>
+      <div class="scene-subtitle"><span class="t-de">Kurz zeigen — nicht live rechnen</span><span class="t-en">Brief — don't calculate live</span></div>
+    </div>
+  </div>
+  <div class="scene-body">
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
+      <div class="box-body"><ul class="click-steps"><li><div class="click-step-num">1</div><div><span class="t-de">Tab <span class="click-path">Story Points</span></span><span class="t-en"><span class="click-path">Story Points</span> tab</span></div></li>
+      <li><div class="click-step-num">2</div><div><span class="t-de">z. B. 80 Story Points für einen Monat</span><span class="t-en">e.g. 80 story points for one month</span></div></li></ul></div>
+    </div>
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
+      <div class="box-body"><span class="t-de">Story Points = <strong>Delivery Capacity des Teams</strong>, nur auf Team-Ebene. Formel (nur erwähnen): Cost/SP = (Team Capacity × Kosten/h × 100) / SP. Beispiel: 616 h, CHF 150/h, 80 SP → ca. CHF 1'155/SP. <strong>Nicht live rechnen.</strong></span><span class="t-en">Story Points = <strong>team delivery capacity</strong>, team level only. Mention formula only. <strong>Don't calculate live.</strong></span></div>
+    </div>
+    <div class="box box-feedback">
+      <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback (Aayushi)</span><span class="t-en">Feedback (Aayushi)</span></div>
+      <div class="box-body"><span class="t-de">Story Points gehören dem <strong>Team</strong>, nicht Einzelpersonen — häufiges Missverständnis. Bei klassischer Stunden/FTE-Planung sind SP <strong>optional</strong>.</span><span class="t-en">Story Points belong to the <strong>team</strong>, not individuals. Optional for hours/FTE planning.</span></div>
+    </div>
+    <div class="box box-impact">
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact</span></div>
+      <div class="box-body"><span class="t-de">„Story Points sind keine Einzelaufwände — sie sind eine Kapazitätseinheit für das gesamte Team.“</span><span class="t-en">"Story Points are not individual effort — they're a capacity unit for the whole team."</span></div>
+    </div>
+    <div class="transition">→ <span class="t-de">Team auf Projekt allokieren</span><span class="t-en">Allocate team to project</span></div>
+  </div>
+</div>
+
+<!-- SCENE 5 -->
+<div class="scene" id="custom-scene-05">
+  <div class="scene-header">
+    <div class="scene-num-badge"><div class="scene-num-big">05</div><div class="scene-num-label">Assign</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Block 5 · Allokation</span><span class="t-en">Block 5 · Allocation</span></div>
+      <div class="scene-title"><span class="t-de">Team Resource auf Projekt allokieren</span><span class="t-en">Allocate Team Resource to Project</span></div>
+      <div class="scene-subtitle"><span class="t-de">FTE = Full Team Equivalent</span><span class="t-en">FTE = Full Team Equivalent</span></div>
+    </div>
+  </div>
+  <div class="scene-body">
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
+      <div class="box-body"><ul class="click-steps">
+        <li><div class="click-step-num">1</div><div><span class="t-de">Projekt <strong>Stardust 2026</strong> → Allocation</span><span class="t-en">Project <strong>Stardust 2026</strong> → Allocation</span></div></li>
+        <li><div class="click-step-num">2</div><div><span class="t-de"><span class="click-path">Add Assignment</span> → E-DOC Delivery Team (Team-Icon!)</span><span class="t-en"><span class="click-path">Add Assignment</span> → team (note icon!)</span></div></li>
+        <li><div class="click-step-num">3</div><div><span class="t-de">Einheit: Hours / FTE / Story Points</span><span class="t-en">Unit: Hours / FTE / Story Points</span></div></li>
+      </ul></div>
+    </div>
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
+      <div class="box-body"><span class="t-de"><strong>1 FTE ≠ 1 Person.</strong> 1 FTE = Full Team Equivalent = gesamte Team Capacity (616 h). 0,5 FTE = 308 h. Vergleich: 1 FTE Einzelperson = 176 h. Eine Teamzuweisung statt fünf Einzel-Assignments.</span><span class="t-en"><strong>1 FTE ≠ 1 person.</strong> 1 FTE = full team equivalent. One team assignment instead of five individual ones.</span></div>
+    </div>
+    <div class="box box-feedback">
+      <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback</span><span class="t-en">Feedback</span></div>
+      <div class="box-body"><span class="t-de">Immer das <strong>Team-Icon</strong> zeigen. Bei SP in Capacity: Auto-Umrechnung zwischen Einheiten; bei ungültiger Berechnung <strong>Alert-Icon</strong> → neu berechnen.</span><span class="t-en">Always point out the <strong>team icon</strong>. Alert icon if recalculation needed.</span></div>
+    </div>
+    <div class="transition">→ <span class="t-de">Net Availability</span><span class="t-en">Net Availability</span></div>
+  </div>
+</div>
+
+<!-- SCENE 6 -->
+<div class="scene" id="custom-scene-06">
+  <div class="scene-header">
+    <div class="scene-num-badge"><div class="scene-num-big">06</div><div class="scene-num-label">Net Avail.</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Block 6 · Auswirkungen</span><span class="t-en">Block 6 · Impact</span></div>
+      <div class="scene-title"><span class="t-de">Auswirkung auf Net Availability</span><span class="t-en">Impact on Net Availability</span></div>
+    </div>
+  </div>
+  <div class="scene-body">
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
+      <div class="box-body"><ul class="click-steps">
+        <li><div class="click-step-num">1</div><div><span class="t-de">Resource Management → <span class="click-path">Net Availability</span></span><span class="t-en">Resource Management → <span class="click-path">Net Availability</span></span></div></li>
+        <li><div class="click-step-num">2</div><div><span class="t-de">Quick Filter: Team Resources</span><span class="t-en">Quick Filter: Team Resources</span></div></li>
+        <li><div class="click-step-num">3</div><div><span class="t-de">Auf Zelle klicken → Projekte hinter Allokation</span><span class="t-en">Click cell → projects behind allocation</span></div></li>
+      </ul></div>
+    </div>
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
+      <div class="box-body"><span class="t-de"><strong>Stunden:</strong> Net Availability = Team Capacity − Allokationen.<br><strong>FTE:</strong> Net Availability = 1 FTE − Allokationen (Team hat immer 1 FTE = Full Team Equivalent).<br>Aggregierte <strong>Team-Verfügbarkeit</strong>, nicht Einzelpersonen.</span><span class="t-en">Hours and FTE formulas. Aggregated <strong>team availability</strong>.</span></div>
+    </div>
+    <div class="box box-feedback">
+      <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback (Aayushi)</span><span class="t-en">Feedback (Aayushi)</span></div>
+      <div class="box-body"><span class="t-de">Cross-Project-Allocation-Grid im Team-Profil als alternative Ansicht erwähnen.</span><span class="t-en">Mention cross-project allocation grid in team profile.</span></div>
+    </div>
+    <div class="transition">→ <span class="t-de">BPA Flatgrid</span><span class="t-en">BPA Flatgrid</span></div>
+  </div>
+</div>
+
+<!-- SCENE 7 -->
+<div class="scene" id="custom-scene-07">
+  <div class="scene-header">
+    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--rm),var(--teal))"><div class="scene-num-big">07</div><div class="scene-num-label">BPAFG</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Block 7 · BPA</span><span class="t-en">Block 7 · BPA</span></div>
+      <div class="scene-title"><span class="t-de">Team Resources im BPA Flatgrid</span><span class="t-en">Team Resources in BPA Flatgrid</span></div>
+    </div>
+  </div>
+  <div class="scene-body">
+    <div class="box box-click">
+      <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
+      <div class="box-body"><ul class="click-steps">
+        <li><div class="click-step-num">1</div><div><span class="t-de"><span class="click-path">Bulk Project Allocation Flat Grid</span></span><span class="t-en"><span class="click-path">BPA Flat Grid</span></span></div></li>
+        <li><div class="click-step-num">2</div><div><span class="t-de">Resource Mode → Filter Team Resources</span><span class="t-en">Resource mode → filter teams</span></div></li>
+        <li><div class="click-step-num">3</div><div><span class="t-de"><span class="click-path">Options → Show Team Assignments</span></span><span class="t-en"><span class="click-path">Show Team Assignments</span></span></div></li>
+        <li><div class="click-step-num">4</div><div><span class="t-de">Resource Type Filter + Spalte Is Team Resource</span><span class="t-en">Resource type filter + column</span></div></li>
+      </ul></div>
+    </div>
+    <div class="box box-feedback">
+      <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback (Aayushi)</span><span class="t-en">Feedback (Aayushi)</span></div>
+      <div class="box-body"><span class="t-de"><strong>Show Team Assignments</strong> zeigt pro Person Team-Zugehörigkeit inkl. Inclusion % — erklärt Einfluss auf individuelle Verfügbarkeit. Zahlen im BPA sind <strong>team-basiert</strong>.</span><span class="t-en"><strong>Show Team Assignments</strong> explains impact on individual availability.</span></div>
+    </div>
+    <div class="box box-impact">
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact</span></div>
+      <div class="box-body"><span class="t-de">„Das BPA Flatgrid ist der operative Arbeitsplatz für Team-Planung über Projekte hinweg.“</span><span class="t-en">"The BPA Flatgrid is the operational workspace for team planning across projects."</span></div>
+    </div>
+    <div class="transition">→ <span class="t-de">Resource Requests (kurz)</span><span class="t-en">Resource Requests (brief)</span></div>
+  </div>
+</div>
+
+<!-- SCENE 8 -->
+<div class="scene" id="custom-scene-08">
+  <div class="scene-header">
+    <div class="scene-num-badge"><div class="scene-num-big">08</div><div class="scene-num-label">RR</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Block 8 · Requests</span><span class="t-en">Block 8 · Requests</span></div>
+      <div class="scene-title"><span class="t-de">Resource Requests &amp; Replace</span><span class="t-en">Resource Requests &amp; Replace</span></div>
+    </div>
+  </div>
+  <div class="scene-body">
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Regeln (kurz)</span><span class="t-en">Rules (brief)</span></div>
+      <div class="box-body"><ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
+        <li><span class="t-de">Request geht an <strong>RM der Team Resource</strong></span><span class="t-en">Request goes to <strong>team resource RM</strong></span></li>
+        <li><span class="t-de">Team ↔ Team ersetzen; Named ↔ Named</span><span class="t-en">Team ↔ team; Named ↔ named</span></li>
+      </ul></div>
+    </div>
+    <div class="box box-feedback">
+      <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback</span><span class="t-en">Feedback</span></div>
+      <div class="box-body"><span class="t-de">Kurz halten — nicht live zeigen, es sei denn der Kunde fragt.</span><span class="t-en">Keep short — don't demo live unless asked.</span></div>
+    </div>
+    <div class="box box-impact">
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact</span></div>
+      <div class="box-body"><span class="t-de">„Team Resources und Named Resources sind zuweisbar, aber <strong>nicht austauschbar</strong>.“</span><span class="t-en">"Team and Named Resources are assignable but <strong>not interchangeable</strong>."</span></div>
+    </div>
+    <div class="transition">→ <span class="t-de">Timesheets FAQ</span><span class="t-en">Timesheets FAQ</span></div>
+  </div>
+</div>
+
+<!-- SCENE 9 -->
+<div class="scene" id="custom-scene-09">
+  <div class="scene-header">
+    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--purple),var(--navy))"><div class="scene-num-big">09</div><div class="scene-num-label">FAQ</div></div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Block 9 · FAQ</span><span class="t-en">Block 9 · FAQ</span></div>
+      <div class="scene-title"><span class="t-de">Timesheets &amp; Reporting</span><span class="t-en">Timesheets &amp; Reporting</span></div>
+    </div>
+  </div>
+  <div class="scene-body">
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Häufige Frage</span><span class="t-en">Common question</span></div>
+      <div class="box-body"><span class="t-de">„Wenn Team Resources keine Timesheet User sind — wie funktioniert Time Tracking?“ → Team Resource bucht nicht selbst; Mitglieder (Timesheet User) buchen auf Team Assignments; Auswertung via <strong>Pivot Grid Reporting</strong>.</span><span class="t-en">Team resource doesn't book time; members book on team assignments; reporting via pivot grid.</span></div>
+    </div>
+    <div class="box box-feedback">
+      <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback</span><span class="t-en">Feedback</span></div>
+      <div class="box-body"><span class="t-de">Nicht durchklicken — nur verbal. Separates Thema.</span><span class="t-en">Verbal only — separate topic.</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- CLOSING -->
+<div class="closing">
+  <h2><span class="t-de">Zusammenfassung — Team Resources</span><span class="t-en">Summary — Team Resources</span></h2>
+  <div class="closing-grid">
+    <div class="closing-item"><div style="font-size:18px;">👥</div><div><span class="t-de"><strong>Team Resource</strong> — keine Person, planbare Team-Kapazität</span><span class="t-en"><strong>Team Resource</strong> — not a person, assignable team capacity</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;">📊</div><div><span class="t-de"><strong>Inclusion %</strong> — Anteil jeder Person an Team Capacity</span><span class="t-en"><strong>Inclusion %</strong> — each person's share of team capacity</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;">⚡</div><div><span class="t-de"><strong>1 FTE</strong> = Full Team Equivalent (nicht eine Person)</span><span class="t-en"><strong>1 FTE</strong> = Full Team Equivalent (not one person)</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;">📈</div><div><span class="t-de"><strong>Story Points</strong> — Team als Ganzes, optional</span><span class="t-en"><strong>Story Points</strong> — whole team, optional</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;">🔄</div><div><span class="t-de"><strong>Replace:</strong> Team ↔ Team, Named ↔ Named</span><span class="t-en"><strong>Replace:</strong> team ↔ team, named ↔ named</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;">🎯</div><div><span class="t-de"><strong>Requests</strong> → RM der Team Resource</span><span class="t-en"><strong>Requests</strong> → team resource RM</span></div></div>
+  </div>
+  <div class="closing-final">
+    <span class="t-de">„Weg von vorschneller Detailplanung auf Personenebene — <strong>hin zu realistischer, steuerbarer Team-Capacity.</strong> Das spart Zeit und gibt bessere Transparenz über die Team-Auslastung.“</span>
+    <span class="t-en">"Away from premature individual detail planning — <strong>towards realistic, manageable team capacity.</strong> This saves time and improves visibility into team utilization."</span>
+  </div>
+</div>
+
+<div class="qr-section">
+  <div class="qr-header">📋 <span class="t-de">Quick Cheat Sheet — 20 Minuten</span><span class="t-en">Quick cheat sheet — 20 min</span></div>
+  <div class="qr-body">
+    <p style="font-weight:700;margin-bottom:8px;"><span class="t-de">Nicht zu tief gehen:</span><span class="t-en">Don't go too deep:</span></p>
+    <ul style="list-style:disc;padding-left:20px;font-size:14px;line-height:2;">
+      <li><span class="t-de">Detaillierte Kostenformeln (nur erwähnen)</span><span class="t-en">Detailed cost formulas (mention only)</span></li>
+      <li><span class="t-de">Team Resources klonen</span><span class="t-en">Cloning team resources</span></li>
+      <li><span class="t-de">Global Replace im Detail</span><span class="t-en">Global replace in detail</span></li>
+      <li><span class="t-de">Pivot Grid Timesheet Reporting live</span><span class="t-en">Pivot grid timesheet reporting live</span></li>
+    </ul>
+    <p style="font-weight:700;margin:16px 0 8px;"><span class="t-de">Bester Demo-Flow:</span><span class="t-en">Best demo flow:</span></p>
+    <p style="font-size:14px;line-height:1.7;"><span class="t-de">RM Grid → Profil → <strong>Team Capacity (Zeit!)</strong> → Projekt-Allokation → Net Availability → BPA (<strong>Show Team Assignments</strong>) → Recap</span><span class="t-en">RM Grid → Profile → <strong>Team Capacity (time!)</strong> → Project allocation → Net Availability → BPA → Recap</span></p>
+  </div>
+</div>
+
+<div class="box box-feedback" style="margin:20px 0;">
+  <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Opening — Feedback (Story)</span><span class="t-en">Opening — Feedback (story)</span></div>
+  <div class="box-body">
+    <span class="t-de"><strong>Mehr Story:</strong> Warum nutzt Giacomo Team Resources? Er will nicht 5 Einzel-Assignments verwalten — er allokiert sein Delivery Team als <strong>eine Einheit</strong> auf Stardust 2026.</span>
+    <span class="t-en"><strong>More story:</strong> Why does Giacomo use Team Resources? He doesn't want five individual assignments — he allocates his delivery team as <strong>one unit</strong>.</span>
+  </div>
+</div>
+
+</div><!-- /page -->
+
+<div class="doc-footer">
+  <strong>Tempus Resource · <span class="t-de">Team Resources · Teambasierte Planung</span><span class="t-en">Team Resources · Team-Based Planning</span></strong><br>
+  <span class="t-de">Für Organisationen mit Agile, Waterfall oder gemischten Methoden</span>
+  <span class="t-en">For organizations using Agile, Waterfall, or mixed methodologies</span><br>
+  <span style="font-size:12px;display:block;margin-top:4px;">trial5.tempus-resource.com/slot4</span>
+</div>
+
+<div id="edit-hint">
+  <span class="t-de">✏️ Texte direkt anklicken · ⠿ Bereiche/Szenen an «⠿» ziehen · ＋ Bereich in Szene · ＋ Neue Szene unter jeder Szenen-Kachel (Nummern passen sich an) · × Kästchen löschen · 💾 Speichern nicht vergessen</span>
+  <span class="t-en">✏️ Click to edit · ⠿ Drag scenes/blocks · ＋ Block in scene · ＋ New scene under each scene card (numbers update) · × Delete boxes · 💾 Save</span>
+</div>
+
+<template id="custom-empty-scene-template">
+<div class="scene">
+  <div class="scene-header">
+    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--rm),var(--teal))">
+      <div class="scene-num-big">01</div>
+      <div class="scene-num-label"><span class="t-de">Neu</span><span class="t-en">New</span></div>
+    </div>
+    <div class="scene-title-area">
+      <div class="scene-act"><span class="t-de">Neuer Block</span><span class="t-en">New block</span></div>
+      <div class="scene-title"><span class="t-de">Neue Szene — Titel bearbeiten</span><span class="t-en">New scene — edit title</span></div>
+      <div class="scene-subtitle"><span class="t-de">Untertitel (optional)</span><span class="t-en">Subtitle (optional)</span></div>
+    </div>
+  </div>
+  <div class="scene-body">
+    <div class="box box-say">
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
+      <div class="box-body"><span class="t-de">Hier Inhalt einfügen…</span><span class="t-en">Add content here…</span></div>
+    </div>
+  </div>
+</div>
+</template>
+
+<script src="demo-script-export-word.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════
+   LANGUAGE SWITCHER
+═══════════════════════════════════════════════════ */
+function setLang(lang) {
+  document.documentElement.classList.remove('lang-de','lang-en');
+  document.documentElement.classList.add('lang-' + lang);
+  document.getElementById('btn-de').classList.toggle('active', lang==='de');
+  document.getElementById('btn-en').classList.toggle('active', lang==='en');
+  if (editMode) {
+    clearContentEditable();
+    initInlineEdit();
+    initSceneAddBelowButtons();
+  }
+  const rmVerLbl = document.getElementById('edit-versions-btn-label-demo');
+  if (rmVerLbl) rmVerLbl.textContent = demoLang() === 'de' ? 'Versionen' : 'Versions';
+}
+
+/* ═══════════════════════════════════════════════════
+   EDIT MODE ENGINE
+═══════════════════════════════════════════════════ */
+const DEMO_SLUG = (new URLSearchParams(location.search).get('demo') || '').toLowerCase();
+if (!/^[a-z0-9][a-z0-9-]{0,48}$/.test(DEMO_SLUG)) {
+  document.addEventListener('DOMContentLoaded', () => {
+    document.body.innerHTML = '<p style="padding:2rem;font-family:Inter,sans-serif">Demo-ID fehlt oder ungültig. URL: <code>?demo=ihr-slug</code></p>';
+  });
+}
+const STORAGE_KEY = 'tempus-demo-custom-' + DEMO_SLUG + '-v1';
+const CUSTOM_STATE_SCHEMA_VERSION = 1;
+let editMode = false;
+let dragSrc = null;
+let clickStepLiDragSrc = null;
+let clickStepDragCleanups = [];
+let hasUnsavedChanges = false;
+
+/* ── Bootstrap ─────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  loadSaved();
+  createEditToolbar();
+  initFormatToolbar({ onChange: markUnsaved });
+
+  window.addEventListener('beforeunload', (e) => {
+    if (editMode && hasUnsavedChanges) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+});
+
+/* ── Toolbar ────────────────────────────────────── */
+function createEditToolbar() {
+  const bar = document.createElement('div');
+  bar.id = 'edit-toolbar';
+  bar.innerHTML = `
+    <div class="edit-toolbar-main">
+      <button id="edit-toggle-btn" onclick="toggleEditMode()">
+        <span id="edit-icon">✏️</span>
+        <span id="edit-label">Bearbeiten</span>
+      </button>
+      <button type="button" class="edit-actions-btn demo-export-word-btn" onclick="DemoWordExport.export()" title="Demo-Skript als Word exportieren (aktuelle Sprache)">📄 Word</button>
+      <div id="edit-extra" style="display:none;align-items:center;gap:6px;flex-wrap:wrap;">
+        <button class="edit-actions-btn edit-save-btn" onclick="saveAll()">💾 Speichern</button>
+        <button type="button" class="edit-actions-btn edit-versions-btn" onclick="toggleDemoVersionsPanel()" title="Letzte gespeicherte Stände (AWS)">📜 <span id="edit-versions-btn-label-demo"></span></button>
+      </div>
+      <span id="edit-unsaved">● ungespeichert</span>
+      <span id="edit-status">Gespeichert</span>
+    </div>
+    <div id="edit-format-bar" class="edit-format-bar" aria-label="Textformatierung"></div>
+  `;
+  document.body.appendChild(bar);
+  const rmVerLbl = document.getElementById('edit-versions-btn-label-demo');
+  if (rmVerLbl) rmVerLbl.textContent = demoLang() === 'de' ? 'Versionen' : 'Versions';
+}
+
+
+/* ── Toggle ─────────────────────────────────────── */
+function toggleEditMode() {
+  editMode = !editMode;
+  document.body.classList.toggle('edit-mode-active', editMode);
+
+  const extra = document.getElementById('edit-extra');
+  const label = document.getElementById('edit-label');
+  const icon  = document.getElementById('edit-icon');
+
+  if (editMode) {
+    label.textContent = 'Fertig';
+    icon.textContent  = '✕';
+    extra.style.display = 'flex';
+    /* Zuerst × auf Kacheln — unabhängig von Agenda/Box-Init */
+    initGlobalChromeRemovables();
+    initDrag();
+    initSceneDeleteButtons();
+    initInlineEdit();
+    initClickStepEditing();
+    initBoxDrag();
+    initBoxAdding();
+    initAgendaEditing();
+    initMacroBlockSplitters();
+    initSceneAddBelowButtons();
+    hasUnsavedChanges = false;
+    setUnsaved(false);
+  } else {
+    if (hasUnsavedChanges &&
+        !confirm('Nicht gespeicherte Änderungen verwerfen und Bearbeitungsmodus beenden?')) {
+      editMode = true;
+      return;
+    }
+    label.textContent = 'Bearbeiten';
+    icon.textContent  = '✏️';
+    extra.style.display = 'none';
+    clearContentEditable();
+    removeDragListeners();
+    removeSceneDeleteButtons();
+    removeStepButtons();
+    removeBoxDragListeners();
+    removeBoxAddButtons();
+    removeAgendaEditing();
+    removeGlobalChromeRemovables();
+    removeMacroBlockSplitters();
+    removeSceneAddBelowButtons();
+    closeBoxPicker();
+    closeRmVersionsPanel();
+    hasUnsavedChanges = false;
+    setUnsaved(false);
+  }
+}
+
+function refreshEditModeDomAfterStateRestoreRm() {
+  if (!editMode) return;
+  clearContentEditable();
+  removeDragListeners();
+  removeSceneDeleteButtons();
+  removeStepButtons();
+  removeBoxDragListeners();
+  removeBoxAddButtons();
+  removeAgendaEditing();
+  removeGlobalChromeRemovables();
+  removeMacroBlockSplitters();
+  removeSceneAddBelowButtons();
+  closeBoxPicker();
+  initGlobalChromeRemovables();
+  initDrag();
+  initSceneDeleteButtons();
+  initInlineEdit();
+  initClickStepEditing();
+  initBoxDrag();
+  initBoxAdding();
+  initAgendaEditing();
+  initMacroBlockSplitters();
+  initSceneAddBelowButtons();
+}
+
+function setUnsaved(state) {
+  hasUnsavedChanges = state;
+  const el = document.getElementById('edit-unsaved');
+  if (el) el.style.display = state ? 'inline' : 'none';
+}
+
+let _autoSaveTimer = null;
+function autoSave(delayMs = 1500) {
+  setUnsaved(true);
+  clearTimeout(_autoSaveTimer);
+  _autoSaveTimer = setTimeout(() => {
+    saveAll({ fromAutosave: true }).catch((e) => { console.warn('autoSave: saveAll rejected', e); });
+  }, delayMs);
+}
+
+function stripEditChromeFromClone(clone) {
+  if (!clone) return;
+  clone.querySelectorAll('.edit-chrome-remove-btn').forEach(n => n.remove());
+  clone.querySelectorAll('.edit-removable-target').forEach(el => el.classList.remove('edit-removable-target'));
+  clone.querySelectorAll('.editable-macro-split').forEach(n => n.remove());
+  clone.querySelectorAll('.edit-scene-add-below').forEach(n => n.remove());
+}
+
+function attachEditChromeRemove(el, opts) {
+  if (!el || !el.parentNode) return;
+  if (el.querySelector(':scope > .edit-chrome-remove-btn')) return;
+  el.classList.add('edit-removable-target');
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'edit-chrome-remove-btn';
+  btn.textContent = '×';
+  const L = demoLang();
+  btn.title = opts.title || (L === 'de' ? 'Kästchen löschen' : 'Delete box');
+  btn.setAttribute('aria-label', btn.title);
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const msg = opts.confirmMsg || (L === 'de' ? 'Dieses Kästchen löschen?' : 'Remove this box?');
+    if (confirm(msg)) {
+      el.remove();
+      autoSave(800);
+    }
+  });
+  el.appendChild(btn);
+}
+
+function initGlobalChromeRemovables() {
+  const L = demoLang();
+  const title = L === 'de' ? 'Kästchen löschen' : 'Delete box';
+  const confirmMsg = L === 'de' ? 'Dieses Kästchen löschen?' : 'Remove this box?';
+  const o = { title, confirmMsg };
+
+  document.querySelectorAll('.hero-meta-item').forEach(el => attachEditChromeRemove(el, o));
+  document.querySelectorAll('.continuity-badge').forEach(el => attachEditChromeRemove(el, o));
+  document.querySelectorAll('.pre-demo-strip').forEach(el => attachEditChromeRemove(el, o));
+
+  const pmIntro = document.getElementById('pm-editable-intro');
+  if (pmIntro) {
+    pmIntro.querySelectorAll(':scope > .box').forEach(el => attachEditChromeRemove(el, o));
+    pmIntro.querySelectorAll(':scope > .cast-section .cast-card').forEach(el => attachEditChromeRemove(el, o));
+    const firstBlock = pmIntro.firstElementChild;
+    if (firstBlock && !firstBlock.classList.contains('pre-demo-strip') && !firstBlock.classList.contains('cast-section') && !firstBlock.classList.contains('box')) {
+      [...firstBlock.children].forEach(row => {
+        const st = row.getAttribute('style') || '';
+        if (/display\s*:\s*grid/i.test(st)) {
+          row.querySelectorAll(':scope > div').forEach(cell => attachEditChromeRemove(cell, o));
+        } else {
+          attachEditChromeRemove(row, o);
+        }
+      });
+    }
+  }
+
+  const rmIntro = document.getElementById('custom-editable-intro');
+  if (rmIntro) {
+    rmIntro.querySelectorAll('.guide-legend .guide-legend-title').forEach(el => attachEditChromeRemove(el, o));
+    rmIntro.querySelectorAll('.guide-legend .legend-item').forEach(el => attachEditChromeRemove(el, o));
+    rmIntro.querySelectorAll('.guide-legend .legend-flow').forEach(el => attachEditChromeRemove(el, o));
+    rmIntro.querySelectorAll(':scope > .pre-demo-strip').forEach(el => attachEditChromeRemove(el, o));
+    rmIntro.querySelectorAll(':scope > .story-hook').forEach(el => attachEditChromeRemove(el, o));
+    rmIntro.querySelectorAll(':scope > .cast-section .cast-card').forEach(el => attachEditChromeRemove(el, o));
+  }
+
+  if (document.getElementById('custom-editable-intro')) {
+    const tailPage = document.querySelector('.page:not(#custom-editable-intro)');
+    if (tailPage) {
+      tailPage.querySelectorAll(':scope > .story-hook, :scope > .box').forEach(el => attachEditChromeRemove(el, o));
+    }
+  }
+
+  document.querySelectorAll('#custom-training-agenda .agenda-verbal-block').forEach(el => attachEditChromeRemove(el, o));
+
+  document.querySelectorAll('.scene .scene-tags').forEach(el => attachEditChromeRemove(el, o));
+  document.querySelectorAll('.scene .scene-body > .story-hook').forEach(el => attachEditChromeRemove(el, o));
+  document.querySelectorAll('.scene .scene-body > .transition').forEach(el => attachEditChromeRemove(el, o));
+  document.querySelectorAll('.demo-macro-free-block').forEach(el => attachEditChromeRemove(el, {
+    title: L === 'de' ? 'Grossen Block löschen' : 'Delete large block',
+    confirmMsg: L === 'de' ? 'Diesen grossen Block löschen?' : 'Delete this large block?'
+  }));
+}
+
+function removeGlobalChromeRemovables() {
+  document.querySelectorAll('.edit-chrome-remove-btn').forEach(b => b.remove());
+  document.querySelectorAll('.edit-removable-target').forEach(el => el.classList.remove('edit-removable-target'));
+}
+
+function removeMacroBlockSplitters() {
+  document.querySelectorAll('.editable-macro-split').forEach(n => n.remove());
+}
+
+function rmMacroSplitBlockLabel() {
+  return demoLang() === 'de' ? 'Grossen Textblock hier einfügen' : 'Insert large text block here';
+}
+
+function createMacroSplitButtonRm(onAdd, title) {
+  const wrap = document.createElement('div');
+  wrap.className = 'editable-macro-split';
+  wrap.setAttribute('role', 'separator');
+  const line = document.createElement('div');
+  line.className = 'editable-macro-split-line';
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'editable-macro-split-btn';
+  btn.textContent = '＋';
+  btn.title = title;
+  btn.setAttribute('aria-label', title);
+  btn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); onAdd(); });
+  wrap.appendChild(line);
+  wrap.appendChild(btn);
+  return wrap;
+}
+
+function buildRmMacroFreeBlock() {
+  const div = document.createElement('div');
+  div.className = 'demo-macro-free-block';
+  div.style.cssText = 'background:white;border:1px solid var(--gray-300);border-radius:8px;padding:18px 22px;margin:16px 0;box-shadow:var(--shadow);';
+  div.innerHTML = `<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray-500);margin-bottom:10px;">
+      <span class="t-de">Grosser Block</span><span class="t-en">Large block</span>
+    </div>
+    <p style="margin:0;line-height:1.65;color:var(--gray-800);">
+      <span class="t-de">Hier klicken und Inhalt der Präsentation einfügen…</span>
+      <span class="t-en">Click and add your presenter content…</span>
+    </p>`;
+  return div;
+}
+
+function wireRmMacroBlockEditable(root) {
+  if (!root) return;
+  const lang = demoLang();
+  root.querySelectorAll(`.t-${lang}`).forEach(el => {
+    el.contentEditable = 'true';
+    el.spellcheck = false;
+    el.setAttribute('data-lang', lang.toUpperCase());
+    el.addEventListener('input', markUnsaved);
+    el.addEventListener('keydown', preventEnterIfNotWanted);
+  });
+}
+
+function insertRmMacroFreeBlockBefore(beforeNode) {
+  if (!beforeNode) return;
+  const block = buildRmMacroFreeBlock();
+  const agenda = document.getElementById('custom-training-agenda');
+  if (agenda && beforeNode === agenda) {
+    const intro = document.getElementById('custom-editable-intro');
+    if (intro) intro.appendChild(block);
+    else if (beforeNode.parentNode) beforeNode.parentNode.insertBefore(block, beforeNode);
+    else return;
+  } else {
+    if (!beforeNode.parentNode) return;
+    beforeNode.parentNode.insertBefore(block, beforeNode);
+  }
+  wireRmMacroBlockEditable(block);
+  removeMacroBlockSplitters();
+  initMacroBlockSplitters();
+  initGlobalChromeRemovables();
+  markUnsaved();
+  autoSave(800);
+}
+
+function initMacroBlockSplitters() {
+  if (!editMode) return;
+  removeMacroBlockSplitters();
+
+  const intro = document.getElementById('custom-editable-intro');
+  const agenda = document.getElementById('custom-training-agenda');
+
+  if (intro) {
+    const ch = Array.from(intro.querySelectorAll(':scope > *'));
+    for (let i = ch.length - 1; i >= 1; i--) {
+      const before = ch[i];
+      intro.insertBefore(
+        createMacroSplitButtonRm(() => insertRmMacroFreeBlockBefore(before), rmMacroSplitBlockLabel()),
+        before
+      );
+    }
+  }
+  if (agenda && intro && agenda.parentNode) {
+    agenda.parentNode.insertBefore(
+      createMacroSplitButtonRm(() => insertRmMacroFreeBlockBefore(agenda), rmMacroSplitBlockLabel()),
+      agenda
+    );
+  }
+}
+
+function wireNewSceneForEdit(scene) {
+  if (!scene || !scene.classList.contains('scene')) return;
+  scene.draggable = false;
+  const badge = scene.querySelector('.scene-num-badge');
+  if (badge) badge.addEventListener('mousedown', () => { scene.draggable = true; });
+  scene.addEventListener('dragstart', onDragStart);
+  scene.addEventListener('dragover', onDragOver);
+  scene.addEventListener('dragleave', onDragLeave);
+  scene.addEventListener('drop', onDrop);
+  scene.addEventListener('dragend', onDragEnd);
+  initSceneDeleteButtons();
+  scene.querySelectorAll('.scene-body .box').forEach(box => attachBoxDnd(box));
+  initBoxAdding();
+  initClickStepEditing();
+  const lang = demoLang();
+  scene.querySelectorAll(`.t-${lang}`).forEach(el => {
+    el.contentEditable = 'true';
+    el.spellcheck = false;
+    el.setAttribute('data-lang', lang.toUpperCase());
+    el.addEventListener('input', markUnsaved);
+    el.addEventListener('keydown', preventEnterIfNotWanted);
+  });
+  scene.querySelectorAll('.click-path').forEach(el => {
+    el.contentEditable = 'true';
+    el.spellcheck = false;
+    el.addEventListener('input', markUnsaved);
+  });
+  initGlobalChromeRemovables();
+  initMacroBlockSplitters();
+  initSceneAddBelowButtons();
+}
+
+function insertEmptyScene(beforeNode) {
+  const page = document.getElementById('custom-scenes-page');
+  const closing = page && page.querySelector('.closing');
+  const tpl = document.getElementById('custom-empty-scene-template');
+  if (!page || !tpl || !tpl.content.firstElementChild) return;
+  const ref = (beforeNode && beforeNode.classList && beforeNode.classList.contains('scene')) ? beforeNode : closing;
+  if (!ref) return;
+  const node = tpl.content.firstElementChild.cloneNode(true);
+  page.insertBefore(node, ref);
+  renumberScenes();
+  if (editMode) wireNewSceneForEdit(node);
+  autoSave(800);
+}
+
+/* ═══════════════════════════════════════════════════
+   INLINE TEXT EDITING
+═══════════════════════════════════════════════════ */
+function initInlineEdit() {
+  const lang = document.documentElement.classList.contains('lang-de') ? 'de' : 'en';
+
+  document.querySelectorAll(`.hero .t-${lang}, #custom-editable-intro .t-${lang}, .demo-macro-free-block .t-${lang}, #custom-training-agenda .t-${lang}, .scene .t-${lang}`).forEach(el => {
+    el.contentEditable = 'true';
+    el.spellcheck = false;
+    el.setAttribute('data-lang', lang.toUpperCase());
+    el.addEventListener('input', markUnsaved);
+    el.addEventListener('keydown', preventEnterIfNotWanted);
+  });
+
+  document.querySelectorAll('.scene .click-path, #custom-editable-intro .click-path, #custom-training-agenda .click-path').forEach(el => {
+    el.contentEditable = 'true';
+    el.spellcheck = false;
+    el.addEventListener('input', markUnsaved);
+  });
+}
+
+function clearContentEditable() {
+  document.querySelectorAll('[contenteditable]').forEach(el => {
+    el.removeAttribute('contenteditable');
+    el.removeAttribute('spellcheck');
+    el.removeAttribute('data-lang');
+    el.removeEventListener('input', markUnsaved);
+    el.removeEventListener('keydown', preventEnterIfNotWanted);
+  });
+}
+
+function markUnsaved() { setUnsaved(true); }
+
+function preventEnterIfNotWanted(e) {
+  const isTitle = this.closest(
+    '.scene-title, .scene-act, .scene-subtitle, .box-icon, .hero-title, .hero-eyebrow, .hero-meta-item'
+  );
+  if (isTitle && e.key === 'Enter') e.preventDefault();
+}
+
+/* ═══════════════════════════════════════════════════
+   DRAG & DROP SCENE REORDERING
+═══════════════════════════════════════════════════ */
+function initDrag() {
+  document.querySelectorAll('.scene').forEach(scene => {
+    scene.draggable = false;
+    const badge = scene.querySelector('.scene-num-badge');
+    if (badge) badge.addEventListener('mousedown', () => { scene.draggable = true; });
+    scene.addEventListener('dragstart',  onDragStart);
+    scene.addEventListener('dragover',   onDragOver);
+    scene.addEventListener('dragleave',  onDragLeave);
+    scene.addEventListener('drop',       onDrop);
+    scene.addEventListener('dragend',    onDragEnd);
+  });
+}
+
+function removeDragListeners() {
+  document.querySelectorAll('.scene').forEach(scene => {
+    scene.draggable = false;
+    scene.removeEventListener('dragstart',  onDragStart);
+    scene.removeEventListener('dragover',   onDragOver);
+    scene.removeEventListener('dragleave',  onDragLeave);
+    scene.removeEventListener('drop',       onDrop);
+    scene.removeEventListener('dragend',    onDragEnd);
+    const badge = scene.querySelector('.scene-num-badge');
+    if (badge) badge.onmousedown = null;
+  });
+}
+
+function initSceneDeleteButtons() {
+  document.querySelectorAll('.scene').forEach(scene => {
+    if (scene.querySelector('.scene-delete-btn')) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'scene-delete-btn';
+    btn.textContent = '×';
+    btn.title = 'Szene löschen';
+    btn.setAttribute('aria-label', 'Szene löschen');
+    btn.addEventListener('click', e => {
+      e.stopPropagation(); e.preventDefault();
+      const titleEl = scene.querySelector('.scene-title');
+      const hint = titleEl ? titleEl.textContent.trim().replace(/\s+/g, ' ').slice(0, 48) : '';
+      const msg = hint
+        ? `Diese Szene löschen?\n\n„${hint}${hint.length >= 48 ? '…' : ''}"`
+        : 'Diese Szene löschen?';
+      if (confirm(msg)) {
+        scene.remove();
+        renumberScenes();
+        if (editMode) {
+          initSceneAddBelowButtons();
+          initMacroBlockSplitters();
+        }
+        autoSave(800);
+      }
+    });
+    scene.appendChild(btn);
+  });
+}
+
+function removeSceneDeleteButtons() {
+  document.querySelectorAll('.scene-delete-btn').forEach(el => el.remove());
+}
+
+function findNextSceneSibling(el) {
+  if (!el) return null;
+  let n = el.nextElementSibling;
+  while (n) {
+    if (n.classList && n.classList.contains('scene')) return n;
+    n = n.nextElementSibling;
+  }
+  return null;
+}
+
+function insertEmptySceneAfter(scene) {
+  if (!scene || !scene.classList || !scene.classList.contains('scene')) return;
+  const next = findNextSceneSibling(scene);
+  insertEmptyScene(next);
+}
+
+function removeSceneAddBelowButtons() {
+  document.querySelectorAll('.edit-scene-add-below').forEach(el => el.remove());
+}
+
+function initSceneAddBelowButtons() {
+  if (!editMode) return;
+  removeSceneAddBelowButtons();
+  const L = demoLang();
+  const label = L === 'de' ? '＋ Neue Szene' : '＋ New scene';
+  const title = L === 'de' ? 'Neue Szene unter dieser Kachel einfügen' : 'Insert a new scene below this card';
+  document.querySelectorAll('.scene').forEach(scene => {
+    const wrap = document.createElement('div');
+    wrap.className = 'edit-scene-add-below';
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'edit-scene-add-below-btn';
+    btn.textContent = label;
+    btn.title = title;
+    btn.setAttribute('aria-label', title);
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      insertEmptySceneAfter(scene);
+    });
+    wrap.appendChild(btn);
+    scene.parentNode.insertBefore(wrap, scene.nextSibling);
+  });
+}
+
+function onDragStart(e) {
+  dragSrc = this;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+  setTimeout(() => this.classList.add('scene-dragging'), 0);
+}
+function onDragOver(e) {
+  if (!dragSrc || dragSrc === this) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  const rect = this.getBoundingClientRect();
+  const mid  = rect.top + rect.height / 2;
+  this.classList.remove('scene-drag-over-top', 'scene-drag-over-bottom');
+  this.classList.add(e.clientY < mid ? 'scene-drag-over-top' : 'scene-drag-over-bottom');
+}
+function onDragLeave() { this.classList.remove('scene-drag-over-top', 'scene-drag-over-bottom'); }
+function onDrop(e) {
+  e.preventDefault(); e.stopPropagation();
+  this.classList.remove('scene-drag-over-top', 'scene-drag-over-bottom');
+  if (!dragSrc || dragSrc === this) return;
+  const parent = this.parentNode;
+  const rect   = this.getBoundingClientRect();
+  if (e.clientY < rect.top + rect.height / 2) parent.insertBefore(dragSrc, this);
+  else {
+    const next = findNextSceneSibling(this);
+    if (next) parent.insertBefore(dragSrc, next);
+    else {
+      const closing = parent.querySelector('.closing');
+      if (closing) parent.insertBefore(dragSrc, closing);
+      else parent.appendChild(dragSrc);
+    }
+  }
+  renumberScenes();
+  if (editMode) {
+    initMacroBlockSplitters();
+    initSceneAddBelowButtons();
+  }
+  autoSave();
+}
+function onDragEnd() {
+  this.draggable = false;
+  this.classList.remove('scene-dragging');
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('scene-drag-over-top', 'scene-drag-over-bottom'));
+  dragSrc = null;
+}
+function renumberScenes() {
+  document.querySelectorAll('.scene').forEach((scene, i) => {
+    const el = scene.querySelector('.scene-num-big');
+    if (el) el.textContent = String(i + 1).padStart(2, '0');
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   CLICK STEP CRUD + Reihenfolge (Drag)
+═══════════════════════════════════════════════════ */
+function initClickStepEditing() {
+  document.querySelectorAll('.click-steps').forEach(ul => {
+    ul.querySelectorAll('li').forEach(li => { attachStepDrag(li, ul); attachDeleteBtn(li, ul); });
+    attachAddBtn(ul);
+  });
+}
+
+function removeStepButtons() {
+  clickStepDragCleanups.forEach(fn => { try { fn(); } catch (e) { /* ignore */ } });
+  clickStepDragCleanups = [];
+  clickStepLiDragSrc = null;
+  document.querySelectorAll('.step-delete-btn, .step-add-btn, .step-drag-btn').forEach(el => el.remove());
+  document.querySelectorAll('.click-steps li').forEach(li => {
+    li.draggable = false;
+    li.classList.remove('click-step-li-dragging', 'click-step-over-top', 'click-step-over-bottom');
+  });
+}
+
+function onClickStepDragStart(e) {
+  clickStepLiDragSrc = this;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+  setTimeout(() => this.classList.add('click-step-li-dragging'), 0);
+}
+function onClickStepDragOver(e) {
+  if (!clickStepLiDragSrc || clickStepLiDragSrc === this) return;
+  if (clickStepLiDragSrc.parentNode !== this.parentNode) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  const rect = this.getBoundingClientRect();
+  const mid = rect.top + rect.height / 2;
+  this.classList.remove('click-step-over-top', 'click-step-over-bottom');
+  this.classList.add(e.clientY < mid ? 'click-step-over-top' : 'click-step-over-bottom');
+}
+function onClickStepDragLeave() { this.classList.remove('click-step-over-top', 'click-step-over-bottom'); }
+function onClickStepDrop(e) {
+  e.preventDefault(); e.stopPropagation();
+  this.classList.remove('click-step-over-top', 'click-step-over-bottom');
+  if (!clickStepLiDragSrc || clickStepLiDragSrc === this) return;
+  const parent = this.parentNode;
+  if (!parent || !parent.classList.contains('click-steps')) return;
+  if (clickStepLiDragSrc.parentNode !== parent) return;
+  const rect = this.getBoundingClientRect();
+  if (e.clientY < rect.top + rect.height / 2) parent.insertBefore(clickStepLiDragSrc, this);
+  else parent.insertBefore(clickStepLiDragSrc, this.nextSibling);
+  renumberSteps(parent); autoSave();
+}
+function onClickStepDragEnd() {
+  this.draggable = false;
+  this.classList.remove('click-step-li-dragging');
+  const ul = this.parentNode;
+  if (ul) ul.querySelectorAll(':scope > li').forEach(li => li.classList.remove('click-step-over-top', 'click-step-over-bottom'));
+  clickStepLiDragSrc = null;
+}
+
+function attachStepDrag(li, ul) {
+  if (li.querySelector('.step-drag-btn')) return;
+  const drag = document.createElement('button');
+  drag.type = 'button'; drag.className = 'step-drag-btn';
+  drag.textContent = '⠿'; drag.title = 'Ziehen zum Sortieren';
+  drag.addEventListener('mousedown', () => { li.draggable = true; });
+
+  const ds = e => onClickStepDragStart.call(li, e);
+  const de = () => onClickStepDragEnd.call(li);
+  const dov = e => onClickStepDragOver.call(li, e);
+  const dl = () => onClickStepDragLeave.call(li);
+  const dr = e => onClickStepDrop.call(li, e);
+
+  li.addEventListener('dragstart', ds);
+  li.addEventListener('dragend', de);
+  li.addEventListener('dragover', dov);
+  li.addEventListener('dragleave', dl);
+  li.addEventListener('drop', dr);
+  li.insertBefore(drag, li.firstChild);
+
+  clickStepDragCleanups.push(() => {
+    li.removeEventListener('dragstart', ds);
+    li.removeEventListener('dragend', de);
+    li.removeEventListener('dragover', dov);
+    li.removeEventListener('dragleave', dl);
+    li.removeEventListener('drop', dr);
+    drag.remove();
+  });
+}
+
+function attachDeleteBtn(li, ul) {
+  if (li.querySelector('.step-delete-btn')) return;
+  const btn = document.createElement('button');
+  btn.className = 'step-delete-btn'; btn.type = 'button';
+  btn.textContent = '×'; btn.title = 'Schritt löschen';
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (confirm('Diesen Schritt löschen?')) { li.remove(); renumberSteps(ul); autoSave(800); }
+  });
+  li.appendChild(btn);
+}
+
+function attachAddBtn(ul) {
+  const existing = ul.parentNode.querySelector('.step-add-btn');
+  if (existing) existing.remove();
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'step-add-btn';
+  btn.textContent = '＋ Schritt hinzufügen';
+  btn.addEventListener('click', () => addClickStep(ul));
+  ul.after(btn);
+}
+
+function addClickStep(ul) {
+  const lang = document.documentElement.classList.contains('lang-de') ? 'de' : 'en';
+  const num  = ul.querySelectorAll('li').length + 1;
+  const placeholder = lang === 'de'
+    ? 'Neuer Schritt — hier klicken und Text eingeben'
+    : 'New step — click here to edit';
+  const li = document.createElement('li');
+  li.innerHTML = `<div class="click-step-num">${num}</div><div><span class="t-${lang}" contenteditable="true" spellcheck="false" data-lang="${lang.toUpperCase()}" style="display:inline;min-width:40px">${placeholder}</span></div>`;
+  li.querySelector('[contenteditable]').addEventListener('input', markUnsaved);
+  attachStepDrag(li, ul); attachDeleteBtn(li, ul);
+  ul.appendChild(li); setUnsaved(true);
+  setTimeout(() => {
+    const editable = li.querySelector('[contenteditable]');
+    editable.focus();
+    const range = document.createRange();
+    range.selectNodeContents(editable);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+  }, 50);
+}
+
+function renumberSteps(ul) {
+  ul.querySelectorAll('li').forEach((li, i) => {
+    const n = li.querySelector('.click-step-num');
+    if (n) n.textContent = i + 1;
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   RM-TRAINING-AGENDA: Blöcke & Punkte (CRUD + Drag)
+═══════════════════════════════════════════════════ */
+let agendaEditCleanups = [];
+let agendaBlockDragSrc = null;
+let agendaLiDragSrc = null;
+
+function renumberAgendaBlocks(wrap) {
+  const container = wrap || document.querySelector('#custom-training-agenda .agenda-fullpage-blocks');
+  if (!container) return;
+  container.querySelectorAll(':scope > .agenda-fullpage-block').forEach((block, i) => {
+    const num = block.querySelector('.agenda-fullpage-num');
+    if (num) num.textContent = String(i + 1);
+  });
+}
+
+function enableAgendaContentEditable(root) {
+  if (!root) return;
+  ['de', 'en'].forEach(lang => {
+    root.querySelectorAll(`.t-${lang}`).forEach(el => {
+      el.contentEditable = 'true'; el.spellcheck = false;
+      el.setAttribute('data-lang', lang.toUpperCase());
+      el.addEventListener('input', markUnsaved);
+      el.addEventListener('keydown', preventEnterIfNotWanted);
+    });
+  });
+  root.querySelectorAll('.click-path').forEach(el => {
+    el.contentEditable = 'true'; el.spellcheck = false;
+    el.addEventListener('input', markUnsaved);
+  });
+}
+
+function onAgendaBlockDragStart(e) {
+  agendaBlockDragSrc = this;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+  setTimeout(() => this.classList.add('agenda-block-dragging'), 0);
+}
+function onAgendaBlockDragOver(e) {
+  if (!agendaBlockDragSrc || agendaBlockDragSrc === this) return;
+  e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+  const rect = this.getBoundingClientRect();
+  const mid = rect.top + rect.height / 2;
+  this.classList.remove('agenda-block-over-top', 'agenda-block-over-bottom');
+  this.classList.add(e.clientY < mid ? 'agenda-block-over-top' : 'agenda-block-over-bottom');
+}
+function onAgendaBlockDragLeave() { this.classList.remove('agenda-block-over-top', 'agenda-block-over-bottom'); }
+function onAgendaBlockDrop(e) {
+  e.preventDefault(); e.stopPropagation();
+  this.classList.remove('agenda-block-over-top', 'agenda-block-over-bottom');
+  if (!agendaBlockDragSrc || agendaBlockDragSrc === this) return;
+  const parent = this.parentNode;
+  if (!parent || !parent.classList.contains('agenda-fullpage-blocks')) return;
+  const rect = this.getBoundingClientRect();
+  if (e.clientY < rect.top + rect.height / 2) parent.insertBefore(agendaBlockDragSrc, this);
+  else parent.insertBefore(agendaBlockDragSrc, this.nextSibling);
+  renumberAgendaBlocks(parent); autoSave();
+}
+function onAgendaBlockDragEnd() {
+  this.draggable = false;
+  this.classList.remove('agenda-block-dragging');
+  document.querySelectorAll('.agenda-fullpage-block').forEach(b => b.classList.remove('agenda-block-over-top', 'agenda-block-over-bottom'));
+  agendaBlockDragSrc = null;
+}
+
+function setupAgendaBlock(block, blocksWrap) {
+  const num = block.querySelector('.agenda-fullpage-num');
+  if (!num) return;
+
+  const onNumDown = () => { block.draggable = true; };
+  num.addEventListener('mousedown', onNumDown);
+
+  const ds = e => onAgendaBlockDragStart.call(block, e);
+  const de = () => onAgendaBlockDragEnd.call(block);
+  const dov = e => onAgendaBlockDragOver.call(block, e);
+  const dl = () => onAgendaBlockDragLeave.call(block);
+  const dr = e => onAgendaBlockDrop.call(block, e);
+
+  block.addEventListener('dragstart', ds);
+  block.addEventListener('dragend', de);
+  block.addEventListener('dragover', dov);
+  block.addEventListener('dragleave', dl);
+  block.addEventListener('drop', dr);
+
+  agendaEditCleanups.push(() => {
+    num.removeEventListener('mousedown', onNumDown);
+    block.removeEventListener('dragstart', ds);
+    block.removeEventListener('dragend', de);
+    block.removeEventListener('dragover', dov);
+    block.removeEventListener('dragleave', dl);
+    block.removeEventListener('drop', dr);
+  });
+
+  if (!block.querySelector('.agenda-block-delete-btn')) {
+    const del = document.createElement('button');
+    del.type = 'button'; del.className = 'agenda-block-delete-btn';
+    del.textContent = '×'; del.title = 'Block löschen';
+    del.addEventListener('click', ev => {
+      ev.stopPropagation();
+      if (confirm('Diesen Agenda-Block löschen?')) { block.remove(); renumberAgendaBlocks(blocksWrap); autoSave(800); }
+    });
+    block.appendChild(del);
+  }
+}
+
+function onAgendaLiDragStart(e) {
+  agendaLiDragSrc = this;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+  setTimeout(() => this.classList.add('agenda-li-dragging'), 0);
+}
+function onAgendaLiDragOver(e) {
+  if (!agendaLiDragSrc || agendaLiDragSrc === this) return;
+  if (agendaLiDragSrc.parentNode !== this.parentNode) return;
+  e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+  const rect = this.getBoundingClientRect();
+  const mid = rect.top + rect.height / 2;
+  this.classList.remove('agenda-li-over-top', 'agenda-li-over-bottom');
+  this.classList.add(e.clientY < mid ? 'agenda-li-over-top' : 'agenda-li-over-bottom');
+}
+function onAgendaLiDragLeave() { this.classList.remove('agenda-li-over-top', 'agenda-li-over-bottom'); }
+function onAgendaLiDrop(e) {
+  e.preventDefault(); e.stopPropagation();
+  this.classList.remove('agenda-li-over-top', 'agenda-li-over-bottom');
+  if (!agendaLiDragSrc || agendaLiDragSrc === this) return;
+  const parent = this.parentNode;
+  if (agendaLiDragSrc.parentNode !== parent) return;
+  const rect = this.getBoundingClientRect();
+  if (e.clientY < rect.top + rect.height / 2) parent.insertBefore(agendaLiDragSrc, this);
+  else parent.insertBefore(agendaLiDragSrc, this.nextSibling);
+  autoSave();
+}
+function onAgendaLiDragEnd() {
+  this.draggable = false;
+  this.classList.remove('agenda-li-dragging');
+  this.parentNode && this.parentNode.querySelectorAll(':scope > li').forEach(li => li.classList.remove('agenda-li-over-top', 'agenda-li-over-bottom'));
+  agendaLiDragSrc = null;
+}
+
+function setupAgendaLi(li, ul) {
+  if (li.querySelector('.agenda-li-drag')) return;
+  const drag = document.createElement('button');
+  drag.type = 'button'; drag.className = 'agenda-li-drag';
+  drag.textContent = '⠿'; drag.title = 'Ziehen zum Sortieren';
+  drag.addEventListener('mousedown', () => { li.draggable = true; });
+  li.insertBefore(drag, li.firstChild);
+
+  const del = document.createElement('button');
+  del.type = 'button'; del.className = 'agenda-li-delete-btn';
+  del.textContent = '×'; del.title = 'Punkt löschen';
+  del.addEventListener('click', ev => {
+    ev.stopPropagation();
+    if (confirm('Diesen Punkt löschen?')) { li.remove(); autoSave(800); }
+  });
+  li.appendChild(del);
+
+  const ds = e => onAgendaLiDragStart.call(li, e);
+  const de = () => onAgendaLiDragEnd.call(li);
+  const dov = e => onAgendaLiDragOver.call(li, e);
+  const dl = () => onAgendaLiDragLeave.call(li);
+  const dr = e => onAgendaLiDrop.call(li, e);
+
+  li.addEventListener('dragstart', ds);
+  li.addEventListener('dragend', de);
+  li.addEventListener('dragover', dov);
+  li.addEventListener('dragleave', dl);
+  li.addEventListener('drop', dr);
+
+  agendaEditCleanups.push(() => {
+    li.removeEventListener('dragstart', ds);
+    li.removeEventListener('dragend', de);
+    li.removeEventListener('dragover', dov);
+    li.removeEventListener('dragleave', dl);
+    li.removeEventListener('drop', dr);
+    drag.remove(); del.remove();
+  });
+}
+
+function setupAgendaUl(ul) {
+  ul.querySelectorAll(':scope > li').forEach(li => setupAgendaLi(li, ul));
+  if (ul.nextElementSibling && ul.nextElementSibling.classList.contains('agenda-li-add-btn')) return;
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'agenda-li-add-btn';
+  btn.textContent = '＋ Punkt hinzufügen';
+  btn.addEventListener('click', () => addAgendaLi(ul));
+  ul.after(btn);
+}
+
+function addAgendaLi(ul) {
+  const li = document.createElement('li');
+  li.innerHTML = '<span class="t-de">Neuer Punkt — Text bearbeiten</span><span class="t-en">New bullet — edit text</span>';
+  ul.appendChild(li);
+  enableAgendaContentEditable(li);
+  setupAgendaLi(li, ul);
+  setUnsaved(true); autoSave();
+}
+
+function addAgendaBlock(blocksWrap) {
+  const addBtn = blocksWrap.querySelector('.agenda-add-block-btn');
+  const block = document.createElement('div');
+  block.className = 'agenda-fullpage-block';
+  block.innerHTML = `<div class="agenda-fullpage-num">0</div><div><h4><span class="t-de">Neuer Blocktitel</span><span class="t-en">New block title</span></h4><ul><li><span class="t-de">Erster Punkt</span><span class="t-en">First bullet</span></li></ul></div>`;
+  if (addBtn) blocksWrap.insertBefore(block, addBtn);
+  else blocksWrap.appendChild(block);
+  renumberAgendaBlocks(blocksWrap);
+  enableAgendaContentEditable(block);
+  setupAgendaBlock(block, blocksWrap);
+  const ul = block.querySelector('ul');
+  if (ul) setupAgendaUl(ul);
+  setUnsaved(true); autoSave();
+}
+
+function initAgendaEditing() {
+  removeAgendaEditing();
+  const root = document.getElementById('custom-training-agenda');
+  if (!root) return;
+  const blocksWrap = root.querySelector('.agenda-fullpage-blocks');
+  if (!blocksWrap) return;
+
+  if (!blocksWrap.querySelector('.agenda-add-block-btn')) {
+    const addBlock = document.createElement('button');
+    addBlock.type = 'button'; addBlock.className = 'agenda-add-block-btn';
+    addBlock.textContent = '＋ Block hinzufügen';
+    addBlock.addEventListener('click', () => addAgendaBlock(blocksWrap));
+    blocksWrap.appendChild(addBlock);
+  }
+
+  blocksWrap.querySelectorAll(':scope > .agenda-fullpage-block').forEach(block => setupAgendaBlock(block, blocksWrap));
+  root.querySelectorAll('.agenda-fullpage-block ul').forEach(ul => setupAgendaUl(ul));
+}
+
+function removeAgendaEditing() {
+  agendaEditCleanups.forEach(fn => { try { fn(); } catch (e) { /* ignore */ } });
+  agendaEditCleanups = [];
+  agendaBlockDragSrc = null;
+  agendaLiDragSrc = null;
+  document.querySelectorAll(
+    '#custom-training-agenda .agenda-block-delete-btn, #custom-training-agenda .agenda-add-block-btn, ' +
+    '#custom-training-agenda .agenda-li-delete-btn, #custom-training-agenda .agenda-li-add-btn, #custom-training-agenda .agenda-li-drag'
+  ).forEach(el => el.remove());
+  document.querySelectorAll('#custom-training-agenda .agenda-fullpage-block, #custom-training-agenda .agenda-fullpage-block li').forEach(el => {
+    el.draggable = false;
+    el.classList.remove('agenda-block-dragging', 'agenda-block-over-top', 'agenda-block-over-bottom',
+      'agenda-li-dragging', 'agenda-li-over-top', 'agenda-li-over-bottom');
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   AWS PERSISTENZ (wie PM-Demo)
+   Quelle API: infrastructure/cdk-outputs.json + /demo-script/team-resources — docs/DEMO_SCRIPT_API_EINHEITLICH_AWS.md
+   Speichern: POST …/v1/demo-script/team-resources, sonst Presigned PUT. Laden: S3 data/tempus-demo-team-resources-state.json.
+═══════════════════════════════════════════════════ */
+
+const WEBSITE_API_BASE = 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
+const DEMO_SCRIPT_API_URL = `${WEBSITE_API_BASE}/demo-script/custom/${DEMO_SLUG}`;
+const DEMO_PRESIGNED_CONFIG_KEY = null;
+
+/** Presigned PUT — nur Fallback; URLs in /config/demo-presigned-fallback.json (nicht im Git). */
+let PRESIGNED_PUT_URL = null;
+
+async function ensureDemoPresignedPutUrl() {
+  if (PRESIGNED_PUT_URL) return PRESIGNED_PUT_URL;
+  try {
+    const r = await fetch('/config/demo-presigned-fallback.json', { cache: 'no-store' });
+    if (!r.ok) return null;
+    const cfg = await r.json();
+    PRESIGNED_PUT_URL = cfg[DEMO_PRESIGNED_CONFIG_KEY] || null;
+  } catch (e) {
+    console.warn('Demo presigned config:', e);
+  }
+  return PRESIGNED_PUT_URL;
+}
+
+const DEMO_SCRIPT_EDIT_PASSWORD = 'tempus-demo-edit-2024';
+
+
+/* Immer S3 direkt — nicht manuel-weiss.ch/data/… (CloudFront-Cache, nicht geräteübergreifend frisch). */
+const STATE_READ_URL = null;
+
+function demoLang() {
+  return document.documentElement.classList.contains('lang-de') ? 'de' : 'en';
+}
+
+let __tempusCustomLastPersisted = null;
+/** Bezugsstand für Versionshistorie beim expliziten Speichern — Auto-Save aktualisiert diesen nicht (verhindert fehlende Einträge nach Auto-Save). */
+let __rmManualHistoryBaseline = null;
+
+const HISTORY_MAX_ENTRIES_RM = 10;
+const HISTORY_MAX_JSON_CHARS_RM = 4500000;
+
+function snapshotPayloadWithoutHistoryRm(p) {
+  if (!p || typeof p !== 'object' || !Array.isArray(p.scenes)) return null;
+  return {
+    scenes: p.scenes,
+    heroHtml: p.heroHtml != null ? p.heroHtml : null,
+    introHtml: p.introHtml != null ? p.introHtml : null,
+    agendaHtml: p.agendaHtml != null ? p.agendaHtml : null,
+    ts: typeof p.ts === 'number' ? p.ts : Date.now(),
+    schemaVersion: typeof p.schemaVersion === 'number' ? p.schemaVersion : 0
+  };
+}
+
+function stateContentEqualsRm(a, b) {
+  if (!a || !b) return false;
+  try {
+    return JSON.stringify({
+      scenes: a.scenes,
+      heroHtml: a.heroHtml,
+      introHtml: a.introHtml,
+      agendaHtml: a.agendaHtml
+    }) === JSON.stringify({
+      scenes: b.scenes,
+      heroHtml: b.heroHtml,
+      introHtml: b.introHtml,
+      agendaHtml: b.agendaHtml
+    });
+  } catch (e) {
+    return false;
+  }
+}
+
+function trimHistoryPayloadSizeRm(obj) {
+  try {
+    while (JSON.stringify(obj).length > HISTORY_MAX_JSON_CHARS_RM && Array.isArray(obj.history) && obj.history.length > 0) {
+      obj.history = obj.history.slice(0, -1);
+    }
+  } catch (e) {
+    obj.history = [];
+  }
+  return obj;
+}
+
+function buildPayloadWithHistoryRm(lastPersisted, freshParts, schemaVer, opts = {}) {
+  const fromAutosave = !!opts.fromAutosave;
+  const base = {
+    scenes: freshParts.scenes,
+    heroHtml: freshParts.heroHtml,
+    introHtml: freshParts.introHtml,
+    agendaHtml: freshParts.agendaHtml,
+    ts: freshParts.ts,
+    schemaVersion: schemaVer
+  };
+  const prevHist = lastPersisted && Array.isArray(lastPersisted.history)
+    ? lastPersisted.history.slice()
+    : [];
+  let archived;
+  if (fromAutosave) {
+    archived = snapshotPayloadWithoutHistoryRm(lastPersisted);
+  } else {
+    archived = __rmManualHistoryBaseline != null
+      ? __rmManualHistoryBaseline
+      : snapshotPayloadWithoutHistoryRm(lastPersisted);
+  }
+  const freshSnap = snapshotPayloadWithoutHistoryRm({
+    ...freshParts,
+    schemaVersion: schemaVer
+  });
+  let history = prevHist.slice(0, HISTORY_MAX_ENTRIES_RM);
+  if (archived && freshSnap && !stateContentEqualsRm(archived, freshSnap)) {
+    const dup = history.length && stateContentEqualsRm(history[0], archived);
+    if (!dup) {
+      const archCopy = JSON.parse(JSON.stringify(archived));
+      history = [archCopy, ...prevHist].slice(0, HISTORY_MAX_ENTRIES_RM);
+    }
+  }
+  base.history = history;
+  return trimHistoryPayloadSizeRm(base);
+}
+
+function persistRmLastKnownPayload(parsed, opts = {}) {
+  try {
+    __tempusCustomLastPersisted = JSON.parse(JSON.stringify(parsed));
+  } catch (e) {
+    __tempusCustomLastPersisted = parsed;
+  }
+  if (opts.syncManualBaseline !== false) {
+    const snap = snapshotPayloadWithoutHistoryRm(__tempusCustomLastPersisted);
+    __rmManualHistoryBaseline = snap ? JSON.parse(JSON.stringify(snap)) : null;
+  }
+}
+
+function ensureRmVersionsPanel() {
+  let panel = document.getElementById('edit-versions-panel-rm');
+  if (panel) return panel;
+  panel = document.createElement('div');
+  panel.id = 'edit-versions-panel-rm';
+  panel.className = 'edit-versions-panel';
+  panel.setAttribute('role', 'dialog');
+  panel.setAttribute('aria-modal', 'true');
+  panel.innerHTML = `
+    <div class="edit-versions-panel-inner">
+      <div class="edit-versions-panel-head">
+        <strong id="edit-versions-panel-title-rm"></strong>
+        <button type="button" class="edit-versions-close" id="edit-versions-close-rm" aria-label="Close">✕</button>
+      </div>
+      <div class="edit-versions-list" id="edit-versions-list-rm"></div>
+    </div>
+  `;
+  document.body.appendChild(panel);
+  document.getElementById('edit-versions-close-rm').addEventListener('click', closeRmVersionsPanel);
+  panel.addEventListener('click', e => {
+    if (e.target === panel) closeRmVersionsPanel();
+  });
+  return panel;
+}
+
+function renderRmVersionsPanel() {
+  const L = demoLang();
+  const list = document.getElementById('edit-versions-list-rm');
+  const title = document.getElementById('edit-versions-panel-title-rm');
+  if (!list || !title) return;
+  title.textContent = L === 'de' ? 'Letzte Versionen (AWS)' : 'Recent versions (AWS)';
+  const hist = (__tempusCustomLastPersisted && Array.isArray(__tempusCustomLastPersisted.history))
+    ? __tempusCustomLastPersisted.history
+    : [];
+  list.innerHTML = '';
+  if (!hist.length) {
+    const empty = document.createElement('div');
+    empty.className = 'edit-versions-empty';
+    empty.textContent = L === 'de'
+      ? 'Noch keine ältere Version gespeichert — nach einer Änderung auf „Speichern“ (auch wenn Auto-Save schon lief) taucht hier ein Eintrag auf.'
+      : 'No older snapshot yet — after editing, click Save (even if auto-save ran) to list a rollback point.';
+    list.appendChild(empty);
+    return;
+  }
+  const locale = L === 'de' ? 'de-CH' : 'en-GB';
+  hist.forEach((entry, idx) => {
+    const row = document.createElement('div');
+    row.className = 'edit-versions-row';
+    const when = entry && entry.ts
+      ? new Date(entry.ts).toLocaleString(locale)
+      : '—';
+    const label = document.createElement('span');
+    label.textContent = when + (entry.schemaVersion != null ? ' · v' + entry.schemaVersion : '');
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = L === 'de' ? 'Wiederherstellen' : 'Restore';
+    btn.addEventListener('click', () => restoreRmHistoryEntry(idx));
+    row.appendChild(label);
+    row.appendChild(btn);
+    list.appendChild(row);
+  });
+}
+
+function toggleDemoVersionsPanel() {
+  const panel = ensureRmVersionsPanel();
+  const open = !panel.classList.contains('open');
+  if (open) {
+    renderRmVersionsPanel();
+    panel.classList.add('open');
+  } else {
+    closeRmVersionsPanel();
+  }
+}
+
+function closeRmVersionsPanel() {
+  const panel = document.getElementById('edit-versions-panel-rm');
+  if (panel) panel.classList.remove('open');
+}
+
+function restoreRmHistoryEntry(idx) {
+  const L = demoLang();
+  const hist = (__tempusCustomLastPersisted && Array.isArray(__tempusCustomLastPersisted.history))
+    ? __tempusCustomLastPersisted.history
+    : [];
+  const entry = hist[idx];
+  if (!entry || !Array.isArray(entry.scenes)) return;
+  const msg = L === 'de'
+    ? 'Diese gespeicherte Version in die Seite laden? Aktuelle (nicht gespeicherte) Bearbeitungen gehen verloren.'
+    : 'Load this saved version into the page? Unsaved edits will be lost.';
+  if (!confirm(msg)) return;
+  const keepHist = hist.slice();
+  applyState(entry);
+  persistRmLastKnownPayload({
+    scenes: entry.scenes,
+    heroHtml: entry.heroHtml,
+    introHtml: entry.introHtml,
+    agendaHtml: entry.agendaHtml,
+    ts: entry.ts,
+    schemaVersion: entry.schemaVersion,
+    history: keepHist
+  });
+  if (editMode) refreshEditModeDomAfterStateRestoreRm();
+  markUnsaved(true);
+  closeRmVersionsPanel();
+  flashStatus(
+    L === 'de'
+      ? 'Version wiederhergestellt — „Speichern“ schreibt nach AWS.'
+      : 'Version restored — use Save to publish to AWS.',
+    false
+  );
+}
+
+function serializeScenes() {
+  const scenes = [];
+  document.querySelectorAll('.scene').forEach(scene => {
+    const clone = scene.cloneNode(true);
+    clone.querySelectorAll('.step-delete-btn, .step-add-btn, .step-drag-btn, .box-drag-handle, .box-delete-btn, .box-add-btn, .scene-delete-btn, .edit-chrome-remove-btn').forEach(el => el.remove());
+    clone.querySelectorAll('.edit-scene-add-below').forEach(el => el.remove());
+    clone.querySelectorAll('.edit-removable-target').forEach(el => el.classList.remove('edit-removable-target'));
+    clone.querySelectorAll('.click-steps li').forEach(li => {
+      li.removeAttribute('draggable');
+      li.classList.remove('click-step-li-dragging', 'click-step-over-top', 'click-step-over-bottom');
+    });
+    clone.querySelectorAll('.media-controls').forEach(el => el.remove());
+    clone.querySelectorAll('img.media-preview, video.media-preview').forEach(el => {
+      const attr = 'src';
+      if (el[attr]) el.setAttribute(attr, el[attr].split('?v=')[0]);
+    });
+    clone.querySelectorAll('[contenteditable]').forEach(el => {
+      el.removeAttribute('contenteditable');
+      el.removeAttribute('spellcheck');
+      el.removeAttribute('data-lang');
+    });
+    scenes.push(clone.outerHTML);
+  });
+  return scenes;
+}
+
+function serializeHeroOrIntro(el) {
+  if (!el) return null;
+  const clone = el.cloneNode(true);
+  stripEditChromeFromClone(clone);
+  clone.querySelectorAll(
+    '.agenda-block-delete-btn, .agenda-add-block-btn, .agenda-li-delete-btn, .agenda-li-add-btn, .agenda-li-drag'
+  ).forEach(node => node.remove());
+  clone.querySelectorAll('.agenda-fullpage-block, .agenda-fullpage-block li').forEach(node => {
+    node.removeAttribute('draggable');
+  });
+  clone.querySelectorAll('[contenteditable]').forEach(node => {
+    node.removeAttribute('contenteditable');
+    node.removeAttribute('spellcheck');
+    node.removeAttribute('data-lang');
+  });
+  return clone.outerHTML;
+}
+
+async function saveAll(opts = {}) {
+  const fromAutosave = !!opts.fromAutosave;
+  const L = demoLang();
+  const btn = document.querySelector('.edit-save-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = L === 'de' ? '⏳ Speichert…' : '⏳ Saving…';
+  }
+
+  let payload;
+  try {
+    const scenes = serializeScenes();
+    const heroHtml = serializeHeroOrIntro(document.querySelector('.hero'));
+    const introHtml = serializeHeroOrIntro(document.querySelector('#custom-editable-intro'));
+    const agendaHtml = serializeHeroOrIntro(document.querySelector('#custom-training-agenda'));
+    const payloadObj = buildPayloadWithHistoryRm(__tempusCustomLastPersisted, {
+      scenes,
+      heroHtml,
+      introHtml,
+      agendaHtml,
+      ts: Date.now()
+    }, CUSTOM_STATE_SCHEMA_VERSION, { fromAutosave });
+    payload = JSON.stringify(payloadObj);
+  } catch (prepErr) {
+    console.error('saveAll: Aufbau des Speicher-JSON fehlgeschlagen', prepErr);
+    const msg = prepErr && prepErr.message ? prepErr.message : String(prepErr);
+    alert(L === 'de'
+      ? 'Speichern abgebrochen (Seiteninhalt konnte nicht serialisiert werden): ' + msg
+      : 'Save aborted (could not serialize page): ' + msg);
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = L === 'de' ? '💾 Speichern' : '💾 Save';
+    }
+    return;
+  }
+
+  try {
+    let apiOk = false;
+    try {
+      const apiRes = await fetch(DEMO_SCRIPT_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Demo-Password': DEMO_SCRIPT_EDIT_PASSWORD
+        },
+        body: payload
+      });
+      apiOk = apiRes.ok;
+      if (apiOk) {
+        localStorage.setItem(STORAGE_KEY, payload);
+        try {
+          persistRmLastKnownPayload(JSON.parse(payload), { syncManualBaseline: !fromAutosave });
+        } catch (e) {}
+        setUnsaved(false);
+        flashStatus(L === 'de' ? 'Gespeichert (AWS, API)' : 'Saved (AWS, API)', false);
+      }
+    } catch (apiErr) {
+      console.warn('Demo API save unreachable:', apiErr);
+    }
+
+    if (!apiOk) {
+      await ensureDemoPresignedPutUrl();
+      if (!PRESIGNED_PUT_URL) {
+        localStorage.setItem(STORAGE_KEY, payload);
+        console.warn('Cloud-Sync: API und Presigned-Fallback nicht verfügbar — nur lokal gespeichert.');
+        return;
+      }
+      const res = await fetch(PRESIGNED_PUT_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload
+      });
+      if (res.status >= 200 && res.status < 300) {
+        localStorage.setItem(STORAGE_KEY, payload);
+        try {
+          persistRmLastKnownPayload(JSON.parse(payload), { syncManualBaseline: !fromAutosave });
+        } catch (e) {}
+        setUnsaved(false);
+        flashStatus(L === 'de' ? 'Gespeichert (AWS S3, Presigned)' : 'Saved (AWS S3, presigned)', false);
+      } else {
+        const hint = res.status === 403
+          ? (L === 'de' ? ' Presigned-URL abgelaufen? → ./refresh-demo-state-url.sh' : ' Presigned URL expired? → ./refresh-demo-state-url.sh')
+          : '';
+        throw new Error(`HTTP ${res.status}${hint}`);
+      }
+    }
+  } catch (err) {
+    console.warn('AWS save failed:', err);
+    try {
+      localStorage.setItem(STORAGE_KEY, payload);
+      try {
+        persistRmLastKnownPayload(JSON.parse(payload), { syncManualBaseline: !fromAutosave });
+      } catch (e) {}
+      setUnsaved(false);
+      flashStatus(
+        L === 'de'
+          ? '⚠️ Nur im Browser — API & Presigned fehlgeschlagen. ./refresh-demo-state-url.sh oder Lambda-Freigabe.'
+          : '⚠️ Browser only — API & presigned failed.',
+        true
+      );
+    } catch (e2) {
+      alert(L === 'de'
+        ? 'Speichern fehlgeschlagen (weder Cloud noch Browser-Speicher).'
+        : 'Save failed (cloud and local storage).');
+    }
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = L === 'de' ? '💾 Speichern' : '💾 Save';
+    }
+  }
+}
+
+function flashStatus(msg, isWarning) {
+  const status = document.getElementById('edit-status');
+  if (!status) return;
+  status.textContent = msg;
+  status.style.display = 'inline';
+  status.style.color = isWarning ? '#c2410c' : '#16a34a';
+  status.style.maxWidth = 'min(420px, 92vw)';
+  status.style.whiteSpace = 'normal';
+  status.style.lineHeight = '1.35';
+  const ms = isWarning ? 9000 : 5000;
+  setTimeout(() => {
+    status.style.display = 'none';
+    status.textContent = '';
+    status.style.color = '';
+    status.style.maxWidth = '';
+    status.style.whiteSpace = '';
+    status.style.lineHeight = '';
+  }, ms);
+}
+
+async function loadSaved() {
+  let remoteData = null;
+  try {
+    const apiRes = await fetch(DEMO_SCRIPT_API_URL + '?v=' + Date.now(), { cache: 'no-store' });
+    if (apiRes.ok) {
+      remoteData = await apiRes.json();
+    }
+  } catch (err) {
+    console.log('API state load skipped:', err.message);
+  }
+
+  let localData = null;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) localData = JSON.parse(raw);
+  } catch (e) { /* ignore */ }
+
+  let data = remoteData;
+  if (remoteData && localData && Array.isArray(localData.scenes)) {
+    const ls = localData.schemaVersion || 0;
+    const rs = remoteData.schemaVersion || 0;
+    if (ls >= CUSTOM_STATE_SCHEMA_VERSION && rs >= CUSTOM_STATE_SCHEMA_VERSION) {
+      if ((localData.ts || 0) > (remoteData.ts || 0)) {
+        data = localData;
+        console.info('tempus-demo-bpafg: Neuerer Stand im Browser als in AWS — lokale Version angewendet (ts).');
+      }
+    }
+  } else if (!data && localData) {
+    data = localData;
+  }
+
+  if (!data || !Array.isArray(data.scenes)) return;
+  if ((data.schemaVersion || 0) < CUSTOM_STATE_SCHEMA_VERSION) {
+    console.info('tempus-demo-bpafg: Gespeicherter Stand zu alt — eingebaute HTML-Szenen werden verwendet.');
+    return;
+  }
+  if (!data.scenes.length) return;
+  applyState(data);
+  persistRmLastKnownPayload(data);
+}
+
+function applyState(data) {
+  try {
+    const page = document.getElementById('custom-scenes-page');
+    const closing = page ? page.querySelector('.closing') : null;
+    if (!closing) return;
+
+    if (data.heroHtml) {
+      const t = document.createElement('template');
+      t.innerHTML = data.heroHtml.trim();
+      const node = t.content.firstElementChild;
+      const cur = document.querySelector('.hero');
+      if (node && cur && node.classList && node.classList.contains('hero')) cur.replaceWith(node);
+    }
+
+    if (data.introHtml) {
+      const t = document.createElement('template');
+      t.innerHTML = data.introHtml.trim();
+      const node = t.content.firstElementChild;
+      const cur = document.querySelector('#custom-editable-intro');
+      if (node && cur && node.id === 'custom-editable-intro') cur.replaceWith(node);
+    }
+
+    if (data.agendaHtml) {
+      const t = document.createElement('template');
+      t.innerHTML = data.agendaHtml.trim();
+      const node = t.content.firstElementChild;
+      const cur = document.querySelector('#custom-training-agenda');
+      if (node && cur && node.id === 'custom-training-agenda') cur.replaceWith(node);
+    }
+
+    page.querySelectorAll('.scene').forEach(s => s.remove());
+    const frag = document.createDocumentFragment();
+    data.scenes.forEach(html => {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      if (tmp.firstElementChild) frag.appendChild(tmp.firstElementChild);
+    });
+    page.insertBefore(frag, closing);
+
+    showRestoredBanner(data.ts);
+  } catch (e) {
+    console.warn('Could not apply state:', e);
+  }
+}
+
+function showRestoredBanner(ts) {
+  const banner = document.createElement('div');
+  const when   = ts ? new Date(ts).toLocaleString('de-CH') : '';
+  banner.style.cssText = [
+    'position:fixed', 'bottom:12px', 'left:50%', 'transform:translateX(-50%)',
+    'z-index:9999', 'background:rgba(22,163,74,0.9)', 'color:white',
+    'font-size:12px', 'font-weight:600', 'font-family:Inter,sans-serif',
+    'padding:8px 20px', 'border-radius:100px', 'box-shadow:0 4px 16px rgba(0,0,0,0.2)',
+    'pointer-events:none'
+  ].join(';');
+  banner.textContent = `💾 Gespeicherte Version geladen (${when})`;
+  document.body.appendChild(banner);
+  setTimeout(() => banner.remove(), 3500);
+}
+
+function resetAll() {
+  const L = demoLang();
+  const msg = L === 'de'
+    ? 'Alle eigenen Änderungen löschen und die Original-Version wiederherstellen?\n\nDies überschreibt auch die gespeicherte AWS-Version!'
+    : 'Discard all changes and restore the original?\n\nThis also overwrites the saved cloud copy!';
+  if (confirm(msg)) {
+    const resetBody = JSON.stringify({
+      scenes: [],
+      history: [],
+      ts: Date.now(),
+      reset: true,
+      schemaVersion: CUSTOM_STATE_SCHEMA_VERSION
+    });
+    ensureDemoPresignedPutUrl().then((url) => {
+      if (url) {
+        fetch(url, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: resetBody
+        }).catch(() => {});
+      }
+    });
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   BOX DRAG & DROP (Bereiche innerhalb einer Szene)
+═══════════════════════════════════════════════════ */
+let dragSrcBox = null;
+
+function initBoxDrag() {
+  document.querySelectorAll('.scene .scene-body .box').forEach(box => attachBoxDnd(box));
+}
+
+function attachBoxDnd(box) {
+  const header = box.querySelector('.box-header');
+  if (header && !header.querySelector('.box-drag-handle')) {
+    const h = document.createElement('span');
+    h.className = 'box-drag-handle'; h.innerHTML = '⠿';
+    h.title = 'Ziehen zum Verschieben';
+    header.insertBefore(h, header.firstChild);
+  }
+  if (header && !header.querySelector('.box-delete-btn')) {
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'box-delete-btn';
+    btn.innerHTML = '×'; btn.title = 'Bereich löschen';
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (confirm('Diesen Bereich löschen?')) { box.remove(); autoSave(800); }
+    });
+    header.appendChild(btn);
+  }
+
+  box.draggable = false;
+  const handle = header ? header.querySelector('.box-drag-handle') : null;
+  if (handle) handle.addEventListener('mousedown', () => { box.draggable = true; });
+
+  box.addEventListener('dragstart',  onBoxDragStart);
+  box.addEventListener('dragover',   onBoxDragOver);
+  box.addEventListener('dragleave',  onBoxDragLeave);
+  box.addEventListener('drop',       onBoxDrop);
+  box.addEventListener('dragend',    onBoxDragEnd);
+}
+
+function removeBoxDragListeners() {
+  document.querySelectorAll('.scene .scene-body .box').forEach(box => {
+    box.draggable = false;
+    box.removeEventListener('dragstart',  onBoxDragStart);
+    box.removeEventListener('dragover',   onBoxDragOver);
+    box.removeEventListener('dragleave',  onBoxDragLeave);
+    box.removeEventListener('drop',       onBoxDrop);
+    box.removeEventListener('dragend',    onBoxDragEnd);
+  });
+  document.querySelectorAll('.box-drag-handle, .box-delete-btn').forEach(el => el.remove());
+}
+
+function onBoxDragStart(e) {
+  dragSrcBox = this;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', '');
+  e.stopPropagation();
+  setTimeout(() => this.classList.add('box-dragging'), 0);
+}
+function onBoxDragOver(e) {
+  if (!dragSrcBox || dragSrcBox === this) return;
+  if (dragSrcBox.parentNode !== this.parentNode) return;
+  e.preventDefault(); e.stopPropagation();
+  e.dataTransfer.dropEffect = 'move';
+  const mid = this.getBoundingClientRect().top + this.getBoundingClientRect().height / 2;
+  this.classList.remove('box-drop-top', 'box-drop-bottom');
+  this.classList.add(e.clientY < mid ? 'box-drop-top' : 'box-drop-bottom');
+}
+function onBoxDragLeave(e) {
+  if (!e.relatedTarget || !this.contains(e.relatedTarget)) this.classList.remove('box-drop-top', 'box-drop-bottom');
+}
+function onBoxDrop(e) {
+  e.preventDefault(); e.stopPropagation();
+  this.classList.remove('box-drop-top', 'box-drop-bottom');
+  if (!dragSrcBox || dragSrcBox === this) return;
+  if (dragSrcBox.parentNode !== this.parentNode) return;
+  const mid = this.getBoundingClientRect().top + this.getBoundingClientRect().height / 2;
+  this.parentNode.insertBefore(dragSrcBox, e.clientY < mid ? this : this.nextSibling);
+  autoSave();
+}
+function onBoxDragEnd() {
+  this.draggable = false;
+  this.classList.remove('box-dragging');
+  document.querySelectorAll('.box').forEach(b => b.classList.remove('box-drop-top', 'box-drop-bottom'));
+  dragSrcBox = null;
+}
+
+/* ═══════════════════════════════════════════════════
+   BOX ADDING — "+" Button und Typ-Auswahl
+═══════════════════════════════════════════════════ */
+const BOX_TYPES = [
+  { type: 'story',   icon: '📖', label: 'Story-Einstieg',     desc: 'Narrativer Einstieg vor dem ersten Klick',    bg: '#0f2342' },
+  { type: 'say',     icon: '🎙️', label: 'Erklärpunkte',       desc: 'Was du während der Demo sagst',               bg: '#065f46' },
+  { type: 'click',   icon: '🖱️', label: 'Klickpfad',          desc: 'Nummerierte Schritt-für-Schritt-Liste',        bg: '#1a7a3c' },
+  { type: 'reto',    icon: '📱', label: 'PM-Verbindung',       desc: 'Verbindung zur PM-Demo',                       bg: '#7c3f00' },
+  { type: 'context', icon: '💡', label: 'Hintergrund-Info',    desc: 'Zusatzwissen für den Moderator',              bg: '#c8860a' },
+  { type: 'impact',  icon: '⚡', label: 'Wirkungssatz',        desc: 'Abschlusssatz der Szene',                     bg: '#5b3fa0' },
+  { type: 'warn',    icon: '🔧', label: 'Fallback / Warnung',  desc: 'Was tun wenn etwas nicht klappt',             bg: '#c0392b' },
+  { type: 'feedback', icon: '🔧', label: 'Feedback',           desc: 'Review-Hinweis aus Transkript', bg: '#d97706' },
+  { type: 'tip',     icon: '✅', label: 'Tipp',                desc: 'Hilfreicher Hinweis',                         bg: '#2d6a4f' },
+];
+
+let boxPickerTarget = null;
+
+function initBoxAdding() {
+  document.querySelectorAll('.scene .scene-body').forEach(body => {
+    if (!body.querySelector('.box-add-btn')) {
+      const btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'box-add-btn';
+      btn.textContent = '＋ Bereich hinzufügen';
+      btn.addEventListener('click', (e) => { e.stopPropagation(); openBoxPicker(body); });
+      body.appendChild(btn);
+    }
+  });
+}
+
+function removeBoxAddButtons() {
+  document.querySelectorAll('.box-add-btn').forEach(el => el.remove());
+}
+
+function openBoxPicker(sceneBody) {
+  boxPickerTarget = sceneBody;
+  const overlay = document.createElement('div');
+  overlay.id = 'box-picker-overlay';
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeBoxPicker(); });
+
+  const picker = document.createElement('div');
+  picker.id = 'box-picker';
+  picker.innerHTML = `<h3>Welchen Bereich möchtest du hinzufügen?</h3><div class="bp-grid" id="bp-grid"></div><button class="bp-cancel" onclick="closeBoxPicker()">Abbrechen</button>`;
+
+  const grid = picker.querySelector('#bp-grid');
+  BOX_TYPES.forEach(bt => {
+    const card = document.createElement('div');
+    card.className = 'bp-card';
+    card.innerHTML = `<div class="bp-card-header" style="background:${bt.bg}"><span>${bt.icon}</span>${bt.label}</div><div class="bp-card-body">${bt.desc}</div>`;
+    card.addEventListener('click', () => { insertNewBox(bt); closeBoxPicker(); });
+    grid.appendChild(card);
+  });
+
+  overlay.appendChild(picker);
+  document.body.appendChild(overlay);
+}
+
+function closeBoxPicker() {
+  const el = document.getElementById('box-picker-overlay');
+  if (el) el.remove();
+  boxPickerTarget = null;
+}
+
+function insertNewBox(bt) {
+  if (!boxPickerTarget) return;
+  const lang = document.documentElement.classList.contains('lang-de') ? 'de' : 'en';
+  const ph   = lang === 'de' ? 'Hier klicken und Text eingeben…' : 'Click here to edit…';
+
+  let innerBody;
+  if (bt.type === 'click') {
+    innerBody = `<ul class="click-steps"><li><div class="click-step-num">1</div><div><span class="t-${lang}">${ph}</span></div></li></ul>`;
+  } else {
+    innerBody = `<span class="t-${lang}">${ph}</span>`;
+  }
+
+  const box = document.createElement('div');
+  box.className = `box box-${bt.type}`;
+  box.innerHTML = `<div class="box-header"><span class="box-drag-handle" title="Ziehen zum Verschieben">⠿</span><span class="box-icon">${bt.icon}</span><span class="t-${lang}" contenteditable="true" spellcheck="false" data-lang="${lang.toUpperCase()}">${bt.label}</span><button class="box-delete-btn" type="button" title="Bereich löschen">×</button></div><div class="box-body">${innerBody}</div>`;
+
+  box.querySelector('.box-delete-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    if (confirm('Diesen Bereich löschen?')) { box.remove(); autoSave(800); }
+  });
+
+  box.draggable = false;
+  const newHandle = box.querySelector('.box-drag-handle');
+  if (newHandle) newHandle.addEventListener('mousedown', () => { box.draggable = true; });
+  box.addEventListener('dragstart',  onBoxDragStart);
+  box.addEventListener('dragover',   onBoxDragOver);
+  box.addEventListener('dragleave',  onBoxDragLeave);
+  box.addEventListener('drop',       onBoxDrop);
+  box.addEventListener('dragend',    onBoxDragEnd);
+
+  box.querySelectorAll('.t-de, .t-en').forEach(el => {
+    el.contentEditable = 'true'; el.spellcheck = false;
+    el.setAttribute('data-lang', lang.toUpperCase());
+    el.addEventListener('input', markUnsaved);
+    el.addEventListener('keydown', preventEnterIfNotWanted);
+  });
+
+  if (bt.type === 'click') {
+    const ul = box.querySelector('.click-steps');
+    ul.querySelectorAll('li').forEach(li => { attachStepDrag(li, ul); attachDeleteBtn(li, ul); });
+    attachAddBtn(ul);
+  }
+
+  const addBtn = boxPickerTarget.querySelector('.box-add-btn');
+  boxPickerTarget.insertBefore(box, addBtn);
+  setUnsaved(true);
+
+  setTimeout(() => {
+    const first = box.querySelector('.box-body [contenteditable]');
+    if (first) {
+      first.focus();
+      const r = document.createRange();
+      r.selectNodeContents(first);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(r);
+    }
+  }, 60);
+}
+</script>
+<script src="demo-agenda-window.js" data-agenda-id="custom-training-agenda" data-demo-label="Custom Demo"></script>
+</body>
+</html>

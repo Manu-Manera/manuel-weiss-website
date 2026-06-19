@@ -6,6 +6,7 @@
   'use strict';
 
   const MAX_FAVORITES = 50;
+  const BACKUP_KEY = 'sg_favorites_backup_v1';
 
   function trackKey(item) {
     const url = (item && (item.url || item.audio_url || item.audioUrl ||
@@ -79,8 +80,24 @@
     return reorder(favorites, index, index + 1);
   }
 
+  /** Einträge normalisieren (id + url) – Legacy-Daten ohne id reparieren */
+  function sanitizeList(list) {
+    if (!Array.isArray(list)) return [];
+    var out = [];
+    var seen = {};
+    list.forEach(function (f) {
+      var norm = normalize(f);
+      if (!norm || !norm.id || seen[norm.id]) return;
+      seen[norm.id] = true;
+      out.push(norm);
+    });
+    return out;
+  }
+
   /** Cloud + local zusammenführen – nie leere Cloud-Liste überschreibt lokale Favoriten */
   function mergeLists(cloudList, localList) {
+    cloudList = sanitizeList(cloudList);
+    localList = sanitizeList(localList);
     var byId = {};
     (cloudList || []).forEach(function (f) {
       if (f && f.id) byId[f.id] = f;
@@ -110,6 +127,22 @@
     return ordered;
   }
 
+  function backupToSession(list) {
+    try {
+      sessionStorage.setItem(BACKUP_KEY, JSON.stringify(sanitizeList(list || [])));
+    } catch (_e) {}
+  }
+
+  function restoreFromSession() {
+    try {
+      var raw = sessionStorage.getItem(BACKUP_KEY);
+      if (!raw) return [];
+      return sanitizeList(JSON.parse(raw));
+    } catch (_e) {
+      return [];
+    }
+  }
+
   function getDisplayName(item) {
     if (!item) return 'Favorit';
     return item.customName || item.userTitle || item.label || item.title || 'Favorit';
@@ -129,6 +162,9 @@
     MAX_FAVORITES: MAX_FAVORITES,
     trackKey: trackKey,
     normalize: normalize,
+    sanitizeList: sanitizeList,
+    backupToSession: backupToSession,
+    restoreFromSession: restoreFromSession,
     getDisplayName: getDisplayName,
     updateName: updateName,
     isFavorite: isFavorite,

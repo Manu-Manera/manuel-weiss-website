@@ -102,6 +102,24 @@ class HeroVideoSection {
     /**
      * Helper: Auth-Token für API-Calls holen
      */
+    /**
+     * DynamoDB ist Source of Truth; Startseite liest zusätzlich /config/hero-video.json (S3).
+     * Nach Upload: deploy-aws-website.sh oder scripts/sync-hero-video-config.sh ausführen.
+     */
+    async syncPublicHeroVideoConfig(videoUrl) {
+        console.info(
+            'ℹ️ Hero-Video in DynamoDB gespeichert. Für die Startseite:',
+            'scripts/sync-hero-video-config.sh oder ./deploy-aws-website.sh'
+        );
+        const hint = document.getElementById('heroVideoDeployHint');
+        if (hint) {
+            hint.textContent =
+                'Für die Live-Startseite bitte deploy-aws-website.sh oder scripts/sync-hero-video-config.sh ausführen.';
+            hint.style.display = 'block';
+        }
+        void videoUrl;
+    }
+
     async getAuthToken() {
         // 1. Versuche awsAPISettings
         if (window.awsAPISettings && typeof window.awsAPISettings.getAuthToken === 'function') {
@@ -322,6 +340,8 @@ class HeroVideoSection {
                         throw new Error('Fehler beim Speichern der Einstellung');
                     }
 
+                    await this.syncPublicHeroVideoConfig(publicUrl);
+
                 } catch (directUploadError) {
                     console.warn('⚠️ Direkter S3-Upload fehlgeschlagen, versuche Server-Side Upload:', directUploadError);
                     // Fallback zu Server-Side Upload
@@ -451,6 +471,7 @@ class HeroVideoSection {
                         } else {
                             console.log('✅ Video-URL in Settings gespeichert');
                         }
+                        await this.syncPublicHeroVideoConfig(publicUrl);
                     } catch (settingsError) {
                         console.warn('⚠️ Fehler beim Speichern in Settings:', settingsError);
                     }

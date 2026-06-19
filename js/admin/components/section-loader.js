@@ -100,10 +100,12 @@ class AdminSectionLoader {
      * Script laden
      */
     async loadScript(scriptPath, sectionId) {
-        const fullPath = this.basePath + scriptPath;
+        const version = (typeof window !== 'undefined' && window.ADMIN_ASSET_VERSION) || String(Date.now());
+        const bustPath = scriptPath + (scriptPath.includes('?') ? '&' : '?') + 'v=' + encodeURIComponent(version);
+        const fullPath = this.basePath + bustPath;
         
-        // Cache prüfen
-        if (this.scriptCache.has(fullPath)) {
+        // Cache prüfen – nur wenn globale Klasse für die Section bereits existiert
+        if (this.scriptCache.has(fullPath) && this.isSectionScriptReady(sectionId)) {
             return this.scriptCache.get(fullPath);
         }
         
@@ -113,7 +115,7 @@ class AdminSectionLoader {
         }
         
         // Script laden
-        const loadingPromise = this.fetchScript(fullPath, sectionId);
+        const loadingPromise = this.fetchScript(bustPath, sectionId);
         this.loadingPromises.set(fullPath, loadingPromise);
         
         try {
@@ -145,9 +147,7 @@ class AdminSectionLoader {
             }
             
             const scriptContent = await response.text();
-            
-            // Script nicht ausführen, nur zurückgeben
-            // Das Script wird von der Section selbst verwaltet
+            await this.executeScript(scriptPath, scriptContent, sectionId);
             console.log(`Script loaded for section ${sectionId}: ${scriptPath}`);
             
             return true;
@@ -156,6 +156,38 @@ class AdminSectionLoader {
             console.error(`Failed to load script ${scriptPath}:`, error);
             throw new Error(`Script loading failed: ${error.message}`);
         }
+    }
+
+    isSectionScriptReady(sectionId) {
+        const classBySection = {
+            'website-users': 'WebsiteUsersManagement',
+            'api-keys': 'ApiKeysManagement',
+            'dashboard': 'DashboardSection'
+        };
+        const className = classBySection[sectionId];
+        return !className || typeof window[className] !== 'undefined';
+    }
+
+    executeScript(scriptPath, scriptContent, sectionId) {
+        const marker = `data-admin-section-script="${sectionId}"`;
+        const existing = document.querySelector(`script[${marker}]`);
+        if (existing && this.isSectionScriptReady(sectionId)) {
+            return Promise.resolve(true);
+        }
+        if (existing) {
+            existing.remove();
+        }
+
+        return new Promise((resolve, reject) => {
+            const scriptEl = document.createElement('script');
+            scriptEl.setAttribute('data-admin-section-script', sectionId);
+            scriptEl.setAttribute('data-admin-script-path', scriptPath);
+            scriptEl.textContent = `${scriptContent}\n//# sourceURL=${scriptPath}`;
+            scriptEl.onload = () => resolve(true);
+            scriptEl.onerror = () => reject(new Error(`Script execution failed: ${scriptPath}`));
+            document.head.appendChild(scriptEl);
+            resolve(true);
+        });
     }
     
     /**

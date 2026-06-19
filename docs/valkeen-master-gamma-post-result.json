@@ -1,0 +1,20 @@
+{
+  "parts": [
+    {
+      "generationId": "1zYsHVUn7hegqq9IOSNcR",
+      "status": "completed",
+      "gammaId": "g_ziofdspwvrx14wc",
+      "gammaUrl": "https://gamma.app/docs/47hvgk50pahqcv6",
+      "credits": {
+        "deducted": 282,
+        "remaining": 4124
+      },
+      "part": "Teil 2/2",
+      "slideRange": [
+        61,
+        121
+      ]
+    }
+  ],
+  "note": "Gamma API: kein PPTX-Upload; 2 Teile wegen 60-Karten-Limit"
+}

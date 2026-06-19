@@ -28,6 +28,7 @@ import {
   GanttChartSquare,
   Users,
   Activity,
+  TrendingUp,
 } from 'lucide-react';
 import { useProgress } from '../hooks/useLocalStorage';
 import { weeks } from '../data/onboardingData';
@@ -53,6 +54,12 @@ const navItems = [
     icon: Target,
     label: 'Feedback',
     description: 'Ramp-Up Review · AWS',
+  },
+  {
+    path: '/productivity',
+    icon: TrendingUp,
+    label: 'Produktivität',
+    description: 'Artefakte · Impact · AWS',
   },
   { path: '/flashcards', icon: Layers, label: 'Lernkarten', description: 'KI-Karteikarten' },
   { path: '/quiz', icon: Brain, label: 'Quiz', description: 'Wissen testen' },

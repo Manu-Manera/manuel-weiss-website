@@ -4,7 +4,7 @@ import {
   localizedClosing,
   localizedMeta,
 } from './kickoffDeckLocale';
-import { getPresentationSlides } from './kickoffStudioCatalog';
+import { getPresentationSlideList } from './kickoffDeckState';
 import { newSessionId } from './kickoffStudioService';
 import { defaultVizConfig, normalizeVizConfig } from './kickoffVizConfig';
 import { getTenantBySlug } from './kickoffTenants';
@@ -17,8 +17,16 @@ export function buildExportDeck({
   includeIntegrations,
   answers = {},
   vizConfig,
+  hiddenSlideIds,
+  customSlides,
+  slideOverrides,
 }) {
-  const ordered = getPresentationSlides(getDeckSlides(), includeIntegrations);
+  const ordered = getPresentationSlideList(getDeckSlides(), {
+    includeIntegrations,
+    hiddenSlideIds,
+    customSlides,
+    slideOverrides,
+  });
 
   const slides = ordered.map((base) => {
     const id = base.id;
@@ -106,6 +114,13 @@ export function defaultSession(sessionId, tenantOrSlug = '') {
     linkLabel: '',
     answers: {},
     vizConfig: defaultVizConfig(tenantOrSlug || ''),
+    hiddenSlideIds: [],
+    customSlides: [],
+    slideOverrides: {},
+    prepId: '',
+    prepSalutation: 'sie',
+    prepAudience: 'team',
+    prepStatus: 'draft',
     updatedAt: Date.now(),
   };
 }
@@ -122,6 +137,13 @@ export function mergeSession(stored, tenantOrSlug = '') {
     ...stored,
     vizConfig: normalizeVizConfig(stored?.vizConfig, tenant || stored?.tenantSlug),
     answers: stored?.answers || {},
+    hiddenSlideIds: stored?.hiddenSlideIds || [],
+    customSlides: stored?.customSlides || [],
+    slideOverrides: stored?.slideOverrides || {},
+    prepId: stored?.prepId || '',
+    prepSalutation: stored?.prepSalutation || 'sie',
+    prepAudience: stored?.prepAudience || 'team',
+    prepStatus: stored?.prepStatus || 'draft',
   };
 }
 

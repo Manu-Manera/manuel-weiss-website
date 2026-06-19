@@ -14,6 +14,148 @@ class WebsiteUsersManagement {
         this.userToDelete = null;
         this.isInitializing = false;
     }
+
+    getApiBase() {
+        return window.AWS_CONFIG?.apiBaseUrl ||
+            window.AWS_CONFIG?.apiGateway?.baseUrl ||
+            'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod';
+    }
+
+    async apiFetch(path, options = {}) {
+        const session = window.adminAuth?.getSession();
+        if (!session?.idToken) {
+            throw new Error('Admin-Session fehlt – bitte erneut anmelden');
+        }
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+        try {
+            const response = await fetch(`${this.getApiBase()}${path}`, {
+                ...options,
+                signal: controller.signal,
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${session.idToken}`,
+                    ...(options.headers || {})
+                }
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                throw new Error(data.error || data.message || `API-Fehler (${response.status})`);
+            }
+            return data;
+        } finally {
+            clearTimeout(timeoutId);
+        }
+    }
+
+    ensureCognitoClient() {
+        if (this.cognitoIdentityServiceProvider) return true;
+        if (typeof AWS === 'undefined') return false;
+        AWS.config.region = this.region;
+        this.cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider({
+            region: this.region
+        });
+        return true;
+    }
+
+    async loadAccessFromDynamoDB(userId) {
+        if (!userId || typeof AWS === 'undefined' || !AWS.DynamoDB) return false;
+        try {
+            const dynamoDB = new AWS.DynamoDB.DocumentClient({ region: this.region });
+            const tableName = window.AWS_CONFIG?.dynamodb?.tableName || 'mawps-user-profiles';
+            const result = await dynamoDB.get({
+                TableName: tableName,
+                Key: { userId: userId }
+            }).promise();
+            return !!(result.Item && result.Item.access &&
+                result.Item.access.features &&
+                result.Item.access.features.personality_song === true);
+        } catch (error) {
+            console.warn('Access laden fehlgeschlagen für', userId, error.message);
+            return false;
+        }
+    }
+
+    async saveAccessViaApi(username, personalitySong) {
+        await this.apiFetch(`/admin/users/${encodeURIComponent(username)}/access`, {
+            method: 'PUT',
+            body: JSON.stringify({ personality_song: !!personalitySong })
+        });
+    }
+
+    async saveAccessToDynamoDB(userId, personalitySong) {
+        if (!userId || typeof AWS === 'undefined' || !AWS.DynamoDB) {
+            throw new Error('DynamoDB-Zugriff nicht verfügbar');
+        }
+        const dynamoDB = new AWS.DynamoDB.DocumentClient({ region: this.region });
+        const tableName = window.AWS_CONFIG?.dynamodb?.tableName || 'mawps-user-profiles';
+        const adminEmail = window.adminAuth?.getCurrentUser?.()?.email || 'admin';
+        const now = new Date().toISOString();
+        await dynamoDB.update({
+            TableName: tableName,
+            Key: { userId: userId },
+            UpdateExpression: 'SET #access = :access, #updatedAt = :updatedAt',
+            ExpressionAttributeNames: {
+                '#access': 'access',
+                '#updatedAt': 'updatedAt'
+            },
+            ExpressionAttributeValues: {
+                ':access': {
+                    features: { personality_song: !!personalitySong },
+                    updatedAt: now,
+                    updatedBy: adminEmail
+                },
+                ':updatedAt': now
+            }
+        }).promise();
+    }
+
+    parseApiDate(value) {
+        if (value == null || value === '') return new Date();
+        const num = Number(value);
+        if (!Number.isNaN(num)) {
+            if (num > 1e12) return new Date(num);
+            if (num > 1e9) return new Date(num * 1000);
+            return new Date(num);
+        }
+        const parsed = new Date(value);
+        return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
+    }
+
+    getAdminEmailSet() {
+        return new Set([
+            'manuel@manuel-weiss.com',
+            'admin@manuel-weiss.com',
+            'manumanera@gmail.com',
+            'weiss-manuel@gmx.de'
+        ].map((email) => email.toLowerCase()));
+    }
+
+    filterWebsiteUsers(users) {
+        const adminEmails = this.getAdminEmailSet();
+        return (users || []).filter((user) => {
+            const email = (this.getUserAttribute(user, 'email') || user.Username || '').toLowerCase();
+            return !adminEmails.has(email) && !this.adminUsers.includes(user.Username);
+        });
+    }
+
+    mapApiUser(user) {
+        const personalitySong = !!(user.access && user.access.personality_song) ||
+            !!(user.profile && user.profile.access && user.profile.access.features &&
+                user.profile.access.features.personality_song === true);
+        return {
+            Username: user.username || user.id || user.email,
+            Attributes: [
+                { Name: 'email', Value: user.email || user.username },
+                { Name: 'name', Value: user.name || '' },
+                { Name: 'email_verified', Value: user.emailVerified ? 'true' : 'false' }
+            ],
+            UserStatus: user.status,
+            Enabled: user.enabled !== false,
+            UserCreateDate: this.parseApiDate(user.createdAt),
+            _personalitySong: personalitySong
+        };
+    }
     
     async init() {
         // Prevent multiple initializations
@@ -46,20 +188,10 @@ class WebsiteUsersManagement {
             `;
         }
         
-        // Initialize AWS SDK and setup event listeners immediately (non-blocking)
+        // Setup + Cognito-Fallback vorbereiten
         try {
-            if (typeof AWS === 'undefined') {
-                throw new Error('AWS SDK not loaded');
-            }
-            
-            AWS.config.region = this.region;
-            this.cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider({
-                region: this.region
-            });
-            
-            // Setup event listeners first (non-blocking)
+            this.ensureCognitoClient();
             this.setupEventListeners();
-            
         } catch (error) {
             console.error('❌ Error setting up Website Users Management:', error);
             this.isInitializing = false;
@@ -85,22 +217,13 @@ class WebsiteUsersManagement {
     }
     
     async loadDataAsync() {
-        // Load admin users first to exclude them (with timeout)
-        try {
-            await Promise.race([
-                this.loadAdminUsersList(),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000))
-            ]);
-        } catch (adminError) {
-            console.warn('⚠️ Could not load admin users list:', adminError);
-            this.adminUsers = [];
-        }
-        
-        // Load website users (with timeout)
         await Promise.race([
             this.loadWebsiteUsers(),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout beim Laden der User')), 15000))
-        ]);
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout beim Laden der User')), 20000))
+        ]).catch((error) => {
+            console.error('loadDataAsync failed:', error);
+            this.handleInitializationError(error);
+        });
     }
     
     handleInitializationError(error) {
@@ -116,7 +239,7 @@ class WebsiteUsersManagement {
                         <pre style="background: #f1f5f9; padding: 1rem; border-radius: 6px; margin-top: 0.5rem; font-size: 0.75rem; overflow-x: auto;">${error.stack || error.toString()}</pre>
                     </details>
                     <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;">
-                        <button class="btn btn-outline" onclick="window.AdminApp?.sections?.websiteUsers?.init()">
+                        <button class="btn btn-outline" onclick="window.AdminApp?.sections?.websiteUsers?.loadWebsiteUsers()">
                             <i class="fas fa-sync"></i> Erneut versuchen
                         </button>
                         <button class="btn btn-outline" onclick="window.location.reload()">
@@ -147,8 +270,46 @@ class WebsiteUsersManagement {
         }
     }
     
+    bindListActions() {
+        const listEl = document.getElementById('website-users-list');
+        if (!listEl || listEl.dataset.actionsBound === 'true') return;
+        listEl.dataset.actionsBound = 'true';
+
+        listEl.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-action]');
+            if (!btn || !listEl.contains(btn)) return;
+
+            const row = btn.closest('tr');
+            if (!row) return;
+
+            const username = row.dataset.username;
+            const email = row.dataset.email;
+            const user = this.users.find((u) => u.Username === username);
+            const action = btn.dataset.action;
+
+            if (action === 'edit-user' && user) {
+                e.preventDefault();
+                this.showEditUserModal(user);
+            } else if (action === 'confirm-user') {
+                e.preventDefault();
+                this.handleConfirmUser(email, username);
+            } else if (action === 'reset-password') {
+                e.preventDefault();
+                this.showResetPasswordModal(email, username);
+            } else if (action === 'delete-user') {
+                e.preventDefault();
+                this.showDeleteConfirmModal(email);
+            }
+        });
+    }
+
+    ensureSectionReady() {
+        this.setupEventListeners();
+    }
+
     setupEventListeners() {
-        // Create new user button
+        this.bindListActions();
+
         const btnCreate = document.getElementById('btn-create-website-user');
         if (btnCreate) {
             btnCreate.addEventListener('click', () => this.showCreateUserModal());
@@ -211,90 +372,63 @@ class WebsiteUsersManagement {
                     <p>Lade Website-Benutzer...</p>
                 </div>
             `;
-            
-            // Try API endpoint first, fallback to direct Cognito
+
             let allUsers = [];
-            
-            const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl;
             const session = window.adminAuth?.getSession();
-            
-            if (apiBaseUrl && session && session.idToken) {
+
+            if (session?.idToken) {
                 try {
-                    console.log('📡 Lade Website-Benutzer über API-Endpoint...');
-                    
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 5000);
-                    
-                    const response = await fetch(`${apiBaseUrl}/admin/users?excludeAdmin=true`, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${session.idToken}`
-                        },
-                        signal: controller.signal
-                    });
-                    
-                    clearTimeout(timeoutId);
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        allUsers = (data.users || []).map(user => ({
-                            Username: user.id || user.email || user.username,
-                            Attributes: [
-                                { Name: 'email', Value: user.email },
-                                { Name: 'name', Value: user.name || '' },
-                                { Name: 'email_verified', Value: user.emailVerified ? 'true' : 'false' }
-                            ],
-                            UserStatus: user.status,
-                            Enabled: user.enabled !== false,
-                            UserCreateDate: user.createdAt ? new Date(user.createdAt) : new Date()
-                        }));
-                        console.log('✅ Website-Benutzer über API geladen:', allUsers.length);
-                    } else {
-                        throw new Error(`API Error: ${response.status}`);
-                    }
+                    console.log('📡 Lade Website-Benutzer über API:', this.getApiBase());
+                    const data = await this.apiFetch('/admin/users');
+                    allUsers = this.filterWebsiteUsers(
+                        (data.users || []).map((user) => this.mapApiUser(user))
+                    );
+                    console.log('✅ Website-Benutzer über API geladen:', allUsers.length);
                 } catch (apiError) {
-                    console.warn('⚠️ API-Endpoint fehlgeschlagen, verwende Cognito-Fallback:', apiError);
-                    // Fall through to Cognito
+                    console.warn('⚠️ API fehlgeschlagen, versuche Cognito-Fallback:', apiError.message);
                 }
             }
-            
-            // Fallback: Direct Cognito access
-            if (allUsers.length === 0) {
+
+            if (allUsers.length === 0 && this.ensureCognitoClient()) {
                 console.log('📡 Lade Website-Benutzer direkt über Cognito...');
-                const params = {
-                    UserPoolId: this.userPoolId,
-                    Limit: 60
-                };
-                
+                await this.loadAdminUsersList();
+                const params = { UserPoolId: this.userPoolId, Limit: 60 };
                 let paginationToken = null;
-                const maxIterations = 10;
-                let iterations = 0;
-                
+                let guard = 0;
                 do {
-                    if (paginationToken) {
-                        params.PaginationToken = paginationToken;
-                    }
-                    
+                    if (paginationToken) params.PaginationToken = paginationToken;
                     const result = await Promise.race([
                         this.cognitoIdentityServiceProvider.listUsers(params).promise(),
-                        new Promise((_, reject) => setTimeout(() => reject(new Error('Cognito Timeout (10s)')), 10000))
+                        new Promise((_, reject) => setTimeout(() => reject(new Error('Cognito Timeout (15s)')), 15000))
                     ]);
-                    
-                    allUsers = allUsers.concat(result.Users || []);
+                    (result.Users || []).forEach((user) => {
+                        if (!this.adminUsers.includes(user.Username)) {
+                            allUsers.push({
+                                Username: user.Username,
+                                Attributes: user.Attributes || [],
+                                UserStatus: user.UserStatus,
+                                Enabled: user.Enabled !== false,
+                                UserCreateDate: user.UserCreateDate ? new Date(user.UserCreateDate) : new Date(),
+                                _personalitySong: false
+                            });
+                        }
+                    });
                     paginationToken = result.PaginationToken;
-                    iterations++;
-                } while (paginationToken && iterations < maxIterations);
-                
+                    guard += 1;
+                } while (paginationToken && guard < 10);
                 console.log('✅ Website-Benutzer über Cognito geladen:', allUsers.length);
             }
-            
-            // Filter out admin users
-            this.users = allUsers.filter(user => !this.adminUsers.includes(user.Username));
+
+            this.users = allUsers;
             this.filteredUsers = [...this.users];
-            
-            console.log(`📊 Website-Benutzer geladen: ${this.users.length} (${allUsers.length} insgesamt, ${this.adminUsers.length} Admin)`);
-            
+
+            if (this.users.length && typeof AWS !== 'undefined' && AWS.DynamoDB) {
+                await Promise.allSettled(this.users.map(async (user) => {
+                    user._personalitySong = await this.loadAccessFromDynamoDB(user.Username);
+                }));
+            }
+
+            console.log(`📊 Website-Benutzer geladen: ${this.users.length}`);
             this.renderUsersList();
             
         } catch (error) {
@@ -315,7 +449,7 @@ class WebsiteUsersManagement {
                     <details style="margin-top: 1rem; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
                         <summary style="cursor: pointer; color: #667eea; font-weight: bold;">🔍 Debug-Informationen</summary>
                         <div style="background: #f1f5f9; padding: 1rem; border-radius: 6px; margin-top: 0.5rem; font-size: 0.75rem;">
-                            <p><strong>API Base URL:</strong> ${window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl || 'NICHT KONFIGURIERT'}</p>
+                            <p><strong>API Base URL:</strong> ${this.getApiBase()}</p>
                             <p><strong>Admin Auth:</strong> ${window.adminAuth ? 'Verfügbar' : 'NICHT VERFÜGBAR'}</p>
                             <p><strong>Session:</strong> ${window.adminAuth?.getSession() ? 'Vorhanden' : 'NICHT VORHANDEN'}</p>
                             <p><strong>idToken:</strong> ${window.adminAuth?.getSession()?.idToken ? 'Vorhanden' : 'NICHT VORHANDEN'}</p>
@@ -362,6 +496,7 @@ class WebsiteUsersManagement {
                             <th>E-Mail</th>
                             <th>Name</th>
                             <th>Status</th>
+                            <th>Persönlichkeits-Song</th>
                             <th>Erstellt</th>
                             <th>Aktionen</th>
                         </tr>
@@ -373,43 +508,7 @@ class WebsiteUsersManagement {
             </div>
         `;
         
-        // Add event listeners for action buttons
-        listEl.querySelectorAll('[data-action="edit-user"]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const row = e.target.closest('tr');
-                const username = row.dataset.username;
-                const user = this.users.find(u => u.Username === username);
-                if (user) {
-                    this.showEditUserModal(user);
-                }
-            });
-        });
-        
-        listEl.querySelectorAll('[data-action="confirm-user"]').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                e.stopPropagation();
-                const row = e.target.closest('tr');
-                const email = row.dataset.email;
-                const username = row.dataset.username;
-                await this.handleConfirmUser(email, username);
-            });
-        });
-        
-        listEl.querySelectorAll('[data-action="reset-password"]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const row = e.target.closest('tr');
-                const email = row.dataset.email;
-                const username = row.dataset.username;
-                this.showResetPasswordModal(email, username);
-            });
-        });
-        
-        listEl.querySelectorAll('[data-action="delete-user"]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const email = e.target.closest('tr').dataset.email;
-                this.showDeleteConfirmModal(email);
-            });
-        });
+        this.bindListActions();
     }
     
     renderUserRow(user) {
@@ -417,17 +516,22 @@ class WebsiteUsersManagement {
         const name = this.getUserAttribute(user, 'name') || '-';
         const status = this.getStatusLabel(user.UserStatus);
         const created = user.UserCreateDate ? new Date(user.UserCreateDate).toLocaleDateString('de-DE') : '-';
+        const songAccess = user._personalitySong
+            ? '<span title="Freigeschaltet">✅</span>'
+            : '<span title="Nicht freigeschaltet">❌</span>';
         
         return `
             <tr data-email="${email}" data-username="${user.Username}">
                 <td>${email}</td>
                 <td>${name}</td>
                 <td><span class="status-badge status-${user.UserStatus}">${status}</span></td>
+                <td style="text-align:center;">${songAccess}</td>
                 <td>${created}</td>
                 <td>
                     <div class="action-buttons">
                         ${user.UserStatus === 'UNCONFIRMED' ? `
                         <button 
+                            type="button"
                             class="btn-icon" 
                             data-action="confirm-user"
                             title="E-Mail bestätigen"
@@ -437,6 +541,7 @@ class WebsiteUsersManagement {
                         </button>
                         ` : ''}
                         <button 
+                            type="button"
                             class="btn-icon" 
                             data-action="edit-user"
                             title="User bearbeiten"
@@ -445,6 +550,7 @@ class WebsiteUsersManagement {
                             <i class="fas fa-edit"></i>
                         </button>
                         <button 
+                            type="button"
                             class="btn-icon" 
                             data-action="reset-password"
                             title="Passwort zurücksetzen"
@@ -453,6 +559,7 @@ class WebsiteUsersManagement {
                             <i class="fas fa-key"></i>
                         </button>
                         <button 
+                            type="button"
                             class="btn-icon btn-danger" 
                             data-action="delete-user"
                             title="User löschen"
@@ -600,57 +707,13 @@ class WebsiteUsersManagement {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Erstelle User...';
             
             console.log('👤 Erstelle neuen Website-Benutzer:', email);
+
+            await this.apiFetch('/admin/users', {
+                method: 'POST',
+                body: JSON.stringify({ email, password, name, sendEmail })
+            });
             
-            // Direct Cognito access only (no API calls)
-            console.log('📡 Erstelle User direkt über Cognito...');
-            
-            // Check if user already exists
-            let userExists = false;
-            try {
-                await this.cognitoIdentityServiceProvider.adminGetUser({
-                    UserPoolId: this.userPoolId,
-                    Username: email
-                }).promise();
-                userExists = true;
-            } catch (checkError) {
-                if (checkError.code !== 'UserNotFoundException') {
-                    throw checkError;
-                }
-            }
-            
-            if (userExists) {
-                this.showError('Ein User mit dieser E-Mail-Adresse existiert bereits.');
-                return;
-            }
-            
-            // Create new user
-            const createParams = {
-                UserPoolId: this.userPoolId,
-                Username: email,
-                UserAttributes: [
-                    { Name: 'email', Value: email },
-                    { Name: 'email_verified', Value: 'true' }
-                ],
-                MessageAction: sendEmail ? 'SEND' : 'SUPPRESS'
-            };
-            
-            if (name) {
-                createParams.UserAttributes.push({ Name: 'name', Value: name });
-            }
-            
-            await this.cognitoIdentityServiceProvider.adminCreateUser(createParams).promise();
-            console.log('✅ User erstellt');
-            
-            // Set password
-            await this.cognitoIdentityServiceProvider.adminSetUserPassword({
-                UserPoolId: this.userPoolId,
-                Username: email,
-                Password: password,
-                Permanent: true
-            }).promise();
-            console.log('✅ Passwort gesetzt');
-            
-            this.showSuccess(`✅ Neuer Website-Benutzer ${email} wurde erfolgreich erstellt!`);
+            this.showSuccess(`✅ Neuer Website-Benutzer ${email} wurde erfolgreich erstellt! (Persönlichkeits-Song: aus)`);
             
             this.closeModal('modal-create-website-user');
             await this.loadWebsiteUsers();
@@ -692,6 +755,7 @@ class WebsiteUsersManagement {
         document.getElementById('edit-user-name').value = name;
         document.getElementById('edit-user-status').value = user.UserStatus;
         document.getElementById('edit-user-email-verified').checked = emailVerified;
+        document.getElementById('edit-user-personality-song').checked = !!user._personalitySong;
         
         modal.classList.add('show');
         document.getElementById('edit-user-email')?.focus();
@@ -723,11 +787,11 @@ class WebsiteUsersManagement {
         
         try {
             console.log('✅ Bestätige Benutzer:', email);
-            
-            await this.cognitoIdentityServiceProvider.adminConfirmSignUp({
-                UserPoolId: this.userPoolId,
-                Username: username || email
-            }).promise();
+
+            await this.apiFetch(`/admin/users/${encodeURIComponent(username || email)}`, {
+                method: 'PUT',
+                body: JSON.stringify({ status: 'CONFIRMED' })
+            });
             
             this.showSuccess(`Benutzer ${email} wurde erfolgreich bestätigt!`);
             
@@ -761,6 +825,7 @@ class WebsiteUsersManagement {
         const name = formData.get('name').trim();
         const status = formData.get('status');
         const emailVerified = formData.get('emailVerified') === 'on';
+        const personalitySong = formData.get('personalitySong') === 'on';
         
         if (!newEmail) {
             this.showError('E-Mail-Adresse ist erforderlich.');
@@ -775,63 +840,47 @@ class WebsiteUsersManagement {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Speichere Änderungen...';
             
             console.log('✏️ Bearbeite Website-Benutzer:', username);
-            
-            // Direct Cognito access only (no API calls)
-            console.log('📡 Aktualisiere User direkt über Cognito...');
-            
-            // User-Attribute aktualisieren
-            const attributes = [];
-            
-            // E-Mail-Adresse aktualisieren (wenn geändert)
+
             const currentUser = this.users.find(u => u.Username === username);
-            const currentEmail = this.getUserAttribute(currentUser, 'email') || currentUser.Username;
-            
-            if (newEmail !== currentEmail) {
-                attributes.push({ Name: 'email', Value: newEmail });
-                console.log('⚠️ E-Mail-Änderung erfordert Username-Update');
-            }
-            
-            // Name aktualisieren
-            const currentName = this.getUserAttribute(currentUser, 'name') || '';
-            if (name !== currentName) {
-                if (name) {
-                    attributes.push({ Name: 'name', Value: name });
-                } else {
-                    attributes.push({ Name: 'name', Value: '' });
+            const oldEmail = currentUser
+                ? (this.getUserAttribute(currentUser, 'email') || currentUser.Username)
+                : username;
+            const oldName = currentUser ? (this.getUserAttribute(currentUser, 'name') || '') : '';
+            const oldEmailVerified = currentUser
+                ? this.getUserAttribute(currentUser, 'email_verified') === 'true'
+                : false;
+            const accessChanged = !currentUser || currentUser._personalitySong !== personalitySong;
+            const profileChanged = !currentUser ||
+                newEmail !== oldEmail ||
+                name !== oldName ||
+                emailVerified !== oldEmailVerified ||
+                (status && currentUser.UserStatus !== status);
+
+            if (accessChanged) {
+                try {
+                    await this.saveAccessViaApi(username, personalitySong);
+                } catch (accessError) {
+                    console.warn('Access über API fehlgeschlagen, versuche DynamoDB:', accessError.message);
+                    await this.saveAccessToDynamoDB(username, personalitySong);
                 }
             }
-            
-            // E-Mail-Verifizierung aktualisieren
-            const currentEmailVerified = this.getUserAttribute(currentUser, 'email_verified') === 'true';
-            if (emailVerified !== currentEmailVerified) {
-                attributes.push({ Name: 'email_verified', Value: emailVerified ? 'true' : 'false' });
+
+            if (profileChanged) {
+                await this.apiFetch(`/admin/users/${encodeURIComponent(username)}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        email: newEmail,
+                        name,
+                        emailVerified,
+                        status
+                    })
+                });
             }
             
-            // Attribute aktualisieren
-            if (attributes.length > 0) {
-                await this.cognitoIdentityServiceProvider.adminUpdateUserAttributes({
-                    UserPoolId: this.userPoolId,
-                    Username: username,
-                    UserAttributes: attributes
-                }).promise();
-                console.log('✅ User-Attribute aktualisiert');
-            }
-            
-            // Status aktualisieren (wenn geändert)
-            if (status !== currentUser.UserStatus) {
-                if (status === 'CONFIRMED' && currentUser.UserStatus !== 'CONFIRMED') {
-                    await this.cognitoIdentityServiceProvider.adminConfirmSignUp({
-                        UserPoolId: this.userPoolId,
-                        Username: username
-                    }).promise();
-                    console.log('✅ User bestätigt');
-                } else if (status === 'FORCE_CHANGE_PASSWORD') {
-                    console.log('ℹ️ Status FORCE_CHANGE_PASSWORD wird durch Passwort-Reset gesetzt');
-                }
-            }
-            
-            if (newEmail !== currentEmail) {
+            if (newEmail !== oldEmail) {
                 this.showSuccess(`✅ User-Daten aktualisiert! ⚠️ Hinweis: Die E-Mail-Adresse wurde geändert. Der User muss sich mit der neuen E-Mail-Adresse anmelden.`);
+            } else if (accessChanged && !profileChanged) {
+                this.showSuccess('✅ Persönlichkeits-Song-Freigabe wurde gespeichert.');
             } else {
                 this.showSuccess(`✅ User-Daten wurden erfolgreich aktualisiert!`);
             }
@@ -877,18 +926,11 @@ class WebsiteUsersManagement {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Setze Passwort...';
             
             console.log('🔑 Setze Passwort für Website-Benutzer:', username);
-            
-            // Direct Cognito access only (no API calls)
-            console.log('📡 Setze Passwort direkt über Cognito...');
-            
-            await this.cognitoIdentityServiceProvider.adminSetUserPassword({
-                UserPoolId: this.userPoolId,
-                Username: username,
-                Password: password,
-                Permanent: !temporary
-            }).promise();
-            
-            console.log('✅ Passwort gesetzt');
+
+            await this.apiFetch(`/admin/users/${encodeURIComponent(username)}`, {
+                method: 'PUT',
+                body: JSON.stringify({ password, temporary })
+            });
             
             this.showSuccess(`✅ Passwort wurde erfolgreich ${temporary ? 'als temporäres Passwort' : ''} gesetzt!`);
             
@@ -909,30 +951,6 @@ class WebsiteUsersManagement {
         }
     }
     
-    async handleConfirmUser(email, username) {
-        if (!confirm(`Möchten Sie den Benutzer ${email} manuell bestätigen?\n\nDies umgeht die E-Mail-Bestätigung und aktiviert das Konto sofort.`)) {
-            return;
-        }
-        
-        try {
-            console.log('✅ Bestätige Benutzer:', email);
-            
-            await this.cognitoIdentityServiceProvider.adminConfirmSignUp({
-                UserPoolId: this.userPoolId,
-                Username: username || email
-            }).promise();
-            
-            this.showSuccess(`Benutzer ${email} wurde erfolgreich bestätigt!`);
-            
-            // Reload users list
-            await this.loadWebsiteUsers();
-            
-        } catch (error) {
-            console.error('❌ Fehler beim Bestätigen des Benutzers:', error);
-            this.showError(`Fehler beim Bestätigen: ${error.message || error.code || 'Unbekannter Fehler'}`);
-        }
-    }
-    
     async handleDeleteUser() {
         if (!this.userToDelete) return;
         
@@ -944,16 +962,10 @@ class WebsiteUsersManagement {
             confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lösche User...';
             
             console.log('🗑️ Lösche Website-Benutzer:', this.userToDelete);
-            
-            // Direct Cognito access only (no API calls)
-            console.log('📡 Lösche User direkt über Cognito...');
-            
-            await this.cognitoIdentityServiceProvider.adminDeleteUser({
-                UserPoolId: this.userPoolId,
-                Username: this.userToDelete
-            }).promise();
-            
-            console.log('✅ User gelöscht');
+
+            await this.apiFetch(`/admin/users/${encodeURIComponent(this.userToDelete)}`, {
+                method: 'DELETE'
+            });
             
             this.showSuccess(`✅ Website-Benutzer ${this.userToDelete} wurde erfolgreich gelöscht!`);
             
@@ -1001,41 +1013,6 @@ class WebsiteUsersManagement {
             notification.classList.remove('show');
             setTimeout(() => notification.remove(), 300);
         }, 5000);
-    }
-}
-
-// Register section
-if (window.AdminApp && window.AdminApp.sections) {
-    window.AdminApp.sections.websiteUsers = new WebsiteUsersManagement();
-} else {
-    // Wait for AdminApp to be ready
-    document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => {
-            if (window.AdminApp && window.AdminApp.sections) {
-                window.AdminApp.sections.websiteUsers = new WebsiteUsersManagement();
-            }
-        }, 1000);
-    });
-}
-
-// Auto-initialize when section is loaded (only if not already initialized)
-if (document.getElementById('website-users-list')) {
-    // Check if already initialized to prevent duplicate initialization
-    if (!window.AdminApp?.sections?.websiteUsers?.isInitialized && 
-        !window.AdminApp?.sections?.websiteUsers?.isInitializing) {
-        const websiteUsers = new WebsiteUsersManagement();
-        // Don't await - let it run in background
-        websiteUsers.init().catch(err => {
-            console.error('Error auto-initializing WebsiteUsersManagement:', err);
-        });
-        
-        // Make it globally available
-        if (window.AdminApp) {
-            if (!window.AdminApp.sections) {
-                window.AdminApp.sections = {};
-            }
-            window.AdminApp.sections.websiteUsers = websiteUsers;
-        }
     }
 }
 

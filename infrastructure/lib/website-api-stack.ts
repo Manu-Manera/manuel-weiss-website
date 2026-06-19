@@ -85,6 +85,22 @@ export class WebsiteApiStack extends cdk.Stack {
       resources: ['*']
     }));
 
+    // Cognito Admin (Website-Benutzer-Verwaltung)
+    lambdaRole.addToPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+        'cognito-idp:ListUsers',
+        'cognito-idp:AdminGetUser',
+        'cognito-idp:AdminCreateUser',
+        'cognito-idp:AdminDeleteUser',
+        'cognito-idp:AdminUpdateUserAttributes',
+        'cognito-idp:AdminSetUserPassword',
+        'cognito-idp:AdminConfirmSignUp',
+        'cognito-idp:ListUsersInGroup'
+      ],
+      resources: [`arn:aws:cognito-idp:${this.region}:${this.account}:userpool/eu-central-1_8gP4gLK9r`]
+    }));
+
     // ========================================
     // API GATEWAY
     // ========================================
@@ -837,7 +853,10 @@ export class WebsiteApiStack extends cdk.Stack {
       resources: [
         'arn:aws:s3:::manuel-weiss-website/data/tempus-demo-pm-state.json',
         'arn:aws:s3:::manuel-weiss-website/data/tempus-demo-rm-state.json',
-        'arn:aws:s3:::manuel-weiss-website/data/tempus-demo-bpafg-state.json'
+        'arn:aws:s3:::manuel-weiss-website/data/tempus-demo-bpafg-state.json',
+        'arn:aws:s3:::manuel-weiss-website/data/tempus-demo-team-resources-state.json',
+        'arn:aws:s3:::manuel-weiss-website/data/tempus-demo-catalog.json',
+        'arn:aws:s3:::manuel-weiss-website/data/tempus-demo-custom/*'
       ]
     }));
 
@@ -851,6 +870,18 @@ export class WebsiteApiStack extends cdk.Stack {
     const demoScriptBpafgResource = demoScriptResource.addResource('bpafg');
     demoScriptBpafgResource.addMethod('GET',  demoScriptIntegration);
     demoScriptBpafgResource.addMethod('POST', demoScriptIntegration);
+    const demoScriptTeamResourcesResource = demoScriptResource.addResource('team-resources');
+    demoScriptTeamResourcesResource.addMethod('GET',  demoScriptIntegration);
+    demoScriptTeamResourcesResource.addMethod('POST', demoScriptIntegration);
+
+    const demoScriptCatalogResource = demoScriptResource.addResource('catalog');
+    demoScriptCatalogResource.addMethod('GET',  demoScriptIntegration);
+    demoScriptCatalogResource.addMethod('POST', demoScriptIntegration);
+
+    const demoScriptCustomResource = demoScriptResource.addResource('custom');
+    const demoScriptCustomSlugResource = demoScriptCustomResource.addResource('{slug}');
+    demoScriptCustomSlugResource.addMethod('GET',  demoScriptIntegration);
+    demoScriptCustomSlugResource.addMethod('POST', demoScriptIntegration);
 
     // ========================================
     // TEMPUS LOGIN MAILER
@@ -1002,6 +1033,39 @@ export class WebsiteApiStack extends cdk.Stack {
     const fokusWeekResource = fokusTagebuchResource.addResource('week');
     fokusWeekResource.addMethod('GET', new apigateway.LambdaIntegration(fokusTagebuchLambda));
     fokusWeekResource.addMethod('PUT', new apigateway.LambdaIntegration(fokusTagebuchLambda));
+
+    // ========================================
+    // ADMIN USERS API (Cognito-Liste + Feature-Zugang)
+    // ========================================
+    const adminUsersLambda = new lambda.Function(this, 'AdminUsersApiFunction', {
+      functionName: 'website-admin-users-api',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('../lambda/admin-users-api'),
+      role: lambdaRole,
+      timeout: cdk.Duration.seconds(30),
+      memorySize: 256,
+      environment: {
+        USER_POOL_ID: 'eu-central-1_8gP4gLK9r',
+        PROFILES_TABLE: 'mawps-user-profiles',
+        ADMIN_GROUP: 'admin'
+      }
+    });
+
+    const userAccessResource = this.api.root.addResource('user');
+    const userAccessPath = userAccessResource.addResource('access');
+    userAccessPath.addMethod('GET', new apigateway.LambdaIntegration(adminUsersLambda));
+
+    const adminResource = this.api.root.addResource('admin');
+    const adminUsersResource = adminResource.addResource('users');
+    adminUsersResource.addMethod('GET', new apigateway.LambdaIntegration(adminUsersLambda));
+    adminUsersResource.addMethod('POST', new apigateway.LambdaIntegration(adminUsersLambda));
+    const adminUserItem = adminUsersResource.addResource('{username}');
+    adminUserItem.addMethod('PUT', new apigateway.LambdaIntegration(adminUsersLambda));
+    adminUserItem.addMethod('DELETE', new apigateway.LambdaIntegration(adminUsersLambda));
+    const adminUserAccess = adminUserItem.addResource('access');
+    adminUserAccess.addMethod('GET', new apigateway.LambdaIntegration(adminUsersLambda));
+    adminUserAccess.addMethod('PUT', new apigateway.LambdaIntegration(adminUsersLambda));
 
     // ========================================
     // OUTPUTS

@@ -46,20 +46,8 @@
 /healthz            /health.html           200
 /readyz             /health.html           200
 
-# API: Proxy-Pfade (Legacy-Pfade; Ziel ggf. auf Lambda/API Gateway umgestellt)
-/api/user-data/*    /.netlify/functions/user-data/:splat  200
-/api/cv-general     /.netlify/functions/cv-general        200
-/api/cv-target      /.netlify/functions/cv-target         200
-/api/cv-job-parse   /.netlify/functions/cv-job-parse      200
-/api/cv-files-parse /.netlify/functions/cv-files-parse    200
-/api/cv-export      /.netlify/functions/cv-export         200
-/api/job-parser     /.netlify/functions/job-parser        200
-/api/openai-proxy   /.netlify/functions/openai-proxy      200
-/api/api-settings/* /.netlify/functions/api-settings/:splat 200
-/api/hero-video/*   /.netlify/functions/hero-video-settings 200
-/api/s3-upload      /.netlify/functions/s3-upload         200
-/api/contact        /.netlify/functions/send-contact-email 200
-/api/highscores     /.netlify/functions/snowflake-highscores 200
+# API: früher Netlify Functions — Produktion nutzt API Gateway (js/aws-app-config.js).
+# Keine /.netlify/functions-Redirects mehr (S3/CloudFront würden sie ohnehin nicht ausführen).
 
 # WICHTIG: Kein Catch-all Redirect für SPA!
 # Das würde alle anderen Routen überschreiben

@@ -2,6 +2,7 @@ import { ui } from './kickoffStudioI18n';
 import { KickoffSlideVisual } from './KickoffDiagrams';
 import { CapturePreviewTable } from './KickoffVisuals';
 import { visualIdForSlide } from './kickoffSlideVisuals';
+import KickoffBulletCards from './KickoffBulletCards';
 
 const CHECKLIST_VALUES = ['yes', 'no', 'later'];
 
@@ -42,15 +43,21 @@ export default function SlideBody({
   const hideBulletsUnderVisual = slideId === 'agenda' && hasVisual;
 
   if (layout === 'content') {
+    const useCards = rawSlide?.designStyle !== 'plain';
+    const bullets = slide.bullets || [];
     return (
       <div className="kickoff-slide-content-stack">
         {visualBlock}
-        {!hideBulletsUnderVisual && (slide.bullets || []).length > 0 && (
-          <ul className="kickoff-bullets">
-            {(slide.bullets || []).map((b, i) => (
-              <li key={i}>{b}</li>
-            ))}
-          </ul>
+        {!hideBulletsUnderVisual && bullets.length > 0 && (
+          useCards ? (
+            <KickoffBulletCards bullets={bullets} />
+          ) : (
+            <ul className="kickoff-bullets">
+              {bullets.map((b, i) => (
+                <li key={i}>{b}</li>
+              ))}
+            </ul>
+          )
         )}
       </div>
     );

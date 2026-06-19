@@ -79,6 +79,9 @@
     var lastPitch = null;
     var statusEl = null;
     var calSamples = [];
+    var calStartTime = 0;
+    var tonePlayer = typeof ReferenceTonePlayer !== 'undefined' ? new ReferenceTonePlayer() : null;
+    var resizeObs = null;
 
     function recalcDuration() {
       totalDuration = melody.reduce(function (s, n) { return s + n.durationMs; }, 0);
@@ -172,9 +175,13 @@
       applyTranspose(2);
     };
     hearBtn.onclick = function () {
-      if (!detector) return;
       var note = melody[0];
-      if (note) detector.playReferenceNote(note.midi, 700);
+      if (!note) return;
+      if (tonePlayer) {
+        tonePlayer.playNote(note.midi, 900, 0.2);
+      } else if (detector) {
+        detector.playReferenceNote(note.midi, 900, 0.2);
+      }
     };
 
     function getMelodyState(elapsed) {
@@ -247,8 +254,10 @@
 
     function initCanvas() {
       if (!canvas) return;
-      var w = canvas.offsetWidth || 320;
-      var h = canvas.offsetHeight || 160;
+      var w = canvas.clientWidth || canvas.offsetWidth || 320;
+      var h = canvas.clientHeight || canvas.offsetHeight || 160;
+      if (w < 10) w = 320;
+      if (h < 10) h = 160;
       canvas.width = w * 2;
       canvas.height = h * 2;
       ctx = canvas.getContext('2d');
@@ -256,10 +265,59 @@
       ctx.scale(2, 2);
     }
 
+    function pitchToX(t, calMode) {
+      var w = canvas.clientWidth || canvas.offsetWidth || 320;
+      if (calMode) return Math.min(t / 3200, 1) * w;
+      return Math.min(t / totalDuration, 1) * w;
+    }
+
+    function drawVoiceSegments(pitchHistory, calMode, midiToY) {
+      if (!pitchHistory.length) return;
+      var w = canvas.clientWidth || canvas.offsetWidth || 320;
+      var segment = [];
+      function flush() {
+        if (segment.length < 1) return;
+        ctx.beginPath();
+        segment.forEach(function (p, i) {
+          var px = pitchToX(p.t, calMode);
+          var py = midiToY(p.midi);
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        });
+        ctx.strokeStyle = '#818cf8';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+        segment = [];
+      }
+      pitchHistory.forEach(function (p) {
+        if (p.midi == null) {
+          flush();
+        } else {
+          segment.push(p);
+        }
+      });
+      flush();
+
+      var last = null;
+      for (var i = pitchHistory.length - 1; i >= 0; i--) {
+        if (pitchHistory[i].midi != null) { last = pitchHistory[i]; break; }
+      }
+      if (last) {
+        var lx = pitchToX(last.t, calMode);
+        var ly = midiToY(last.midi);
+        ctx.beginPath();
+        ctx.arc(lx, ly, 6, 0, Math.PI * 2);
+        ctx.fillStyle = '#818cf8';
+        ctx.fill();
+      }
+    }
+
     function drawFrame(elapsed, data) {
       if (!ctx || !canvas) return;
-      var w = canvas.offsetWidth || 320;
-      var h = canvas.offsetHeight || 160;
+      var w = canvas.clientWidth || canvas.offsetWidth || 320;
+      var h = canvas.clientHeight || canvas.offsetHeight || 160;
+      if (w < 10) w = 320;
+      if (h < 10) h = 160;
       var midis = melody.map(function (n) { return n.midi; });
       var minMidi = Math.min.apply(null, midis) - 3;
       var maxMidi = Math.max.apply(null, midis) + 3;
@@ -327,43 +385,27 @@
       }
 
       if (running) {
-        pitchHistory.push({ t: elapsed, midi: data && data.midi != null ? data.midi : null });
-        if (pitchHistory.length > 150) pitchHistory.shift();
+        drawVoiceSegments(pitchHistory, calibrating, midiToY);
       }
 
-      if (pitchHistory.length > 1) {
-        ctx.lineWidth = 2.5;
+      if (running && !calibrating && data && data.midi != null) {
+        var match = nearestMidiToTarget(data.midi, state && state.note ? state.note.midi : null);
+        var diff = match && state && state.note ? match.diffCents / 100 : 99;
+        var lx = pitchToX(elapsed, false);
+        var ly = midiToY(data.midi);
+        var col = diff <= toleranceCents / 100 ? '#22c55e' : diff <= (toleranceCents * 1.5) / 100 ? '#eab308' : '#ef4444';
         ctx.beginPath();
-        var started = false;
-        pitchHistory.forEach(function (p) {
-          if (p.midi == null) return;
-          var px = calibrating ? w - 20 : Math.min(p.t / totalDuration, 1) * w;
-          var py = midiToY(p.midi);
-          if (!started) { ctx.moveTo(px, py); started = true; }
-          else ctx.lineTo(px, py);
-        });
-        ctx.strokeStyle = '#818cf8';
-        ctx.stroke();
-
-        var last = pitchHistory[pitchHistory.length - 1];
-        if (last.midi != null && state && state.note) {
-          var lx = calibrating ? w - 20 : Math.min(last.t / totalDuration, 1) * w;
-          var ly = midiToY(last.midi);
-          var match = nearestMidiToTarget(last.midi, state.note.midi);
-          var diff = match ? match.diffCents / 100 : 99;
-          var col = diff <= toleranceCents / 100 ? '#22c55e' : diff <= (toleranceCents * 1.5) / 100 ? '#eab308' : '#ef4444';
-          ctx.beginPath();
-          ctx.arc(lx, ly, 8, 0, Math.PI * 2);
-          ctx.fillStyle = col;
-          ctx.fill();
-        }
+        ctx.arc(lx, ly, 8, 0, Math.PI * 2);
+        ctx.fillStyle = col;
+        ctx.fill();
       }
     }
 
     function tick() {
       if (!running) return;
       if (calibrating) {
-        drawFrame(0, lastPitch);
+        var calElapsed = Date.now() - calStartTime;
+        drawFrame(calElapsed, lastPitch);
         updateInfo({ note: melody[0], index: 0 }, lastPitch);
         rafId = requestAnimationFrame(tick);
         return;
@@ -392,12 +434,12 @@
       stats = { hits: 0, total: 0 };
       pitchHistory = [];
       calSamples = [];
-      var start = Date.now();
+      calStartTime = Date.now();
       statusEl.textContent = 'Sing einen bequemen «La»-Ton – 3 Sekunden …';
 
       return new Promise(function (resolve) {
         var iv = setInterval(function () {
-          var left = Math.max(0, 3 - Math.floor((Date.now() - start) / 1000));
+          var left = Math.max(0, 3 - Math.floor((Date.now() - calStartTime) / 1000));
           if (left > 0) {
             statusEl.textContent = 'Sing «La» in deiner normalen Tonhöhe … ' + left + ' s';
           }
@@ -437,9 +479,9 @@
           detector = new PitchDetector();
           await detector.init({
             forVoice: true,
-            threshold: 0.12,
-            minClarity: 0.28,
-            rmsThreshold: 0.004,
+            threshold: 0.1,
+            minClarity: 0.18,
+            rmsThreshold: 0.002,
             minFreq: 80,
             maxFreq: 1200
           });
@@ -454,6 +496,12 @@
 
         detector.start(function (data) {
           lastPitch = data;
+          if (!running) return;
+          var t = calibrating ? Date.now() - calStartTime : Date.now() - practiceStart;
+          if (data.midi != null) {
+            pitchHistory.push({ t: t, midi: data.midi });
+            if (pitchHistory.length > 250) pitchHistory.shift();
+          }
           if (calibrating) {
             if (data.midi != null && !data.tooQuiet) calSamples.push(data.midi);
             return;
@@ -463,12 +511,22 @@
           if (data.midi != null && state && state.note) scorePitch(data, state.note.midi);
         });
 
+        rafId = requestAnimationFrame(tick);
         await runCalibration();
         practiceStart = Date.now();
         pitchHistory = [];
         stats = { hits: 0, total: 0 };
+        if (statusEl) statusEl.textContent = 'Orientierungston startet – sing die grüne Linie mit (Kopfhörer hilft).';
+        try {
+          if (detector && detector.playMelodySequence) {
+            await detector.playMelodySequence(melody, 0.16);
+          } else if (tonePlayer) {
+            await tonePlayer.playMelody(melody, 0.16);
+          }
+        } catch (_melErr) {}
+        practiceStart = Date.now();
+        pitchHistory = [];
         if (statusEl) statusEl.textContent = 'Los – halte jeden grünen Ton, bis der Cursor weitergeht.';
-        rafId = requestAnimationFrame(tick);
       } catch (err) {
         alert('Mikrofon für Pitch-Guide: ' + (err.message || 'Bitte Berechtigung erlauben.'));
         running = false;
@@ -497,6 +555,10 @@
 
     function destroy() {
       stopPractice(false);
+      if (resizeObs) {
+        resizeObs.disconnect();
+        resizeObs = null;
+      }
       if (detector) {
         detector.destroy();
         detector = null;
@@ -507,14 +569,31 @@
     stopBtn.onclick = function () { stopPractice(false); };
 
     window.addEventListener('resize', initCanvas);
-    setTimeout(initCanvas, 50);
-    drawFrame(0, null);
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObs = new ResizeObserver(function () {
+        initCanvas();
+        drawFrame(0, null);
+      });
+      resizeObs.observe(canvas);
+    }
+    setTimeout(function () {
+      initCanvas();
+      drawFrame(0, null);
+    }, 50);
 
     return {
       element: wrap,
       start: startPractice,
       stop: stopPractice,
       destroy: destroy,
+      isRunning: function () { return running; },
+      reattach: function (container) {
+        if (container && wrap.parentNode !== container) {
+          container.appendChild(wrap);
+          initCanvas();
+          drawFrame(0, lastPitch);
+        }
+      },
       getStats: function () {
         return {
           hits: stats.hits,

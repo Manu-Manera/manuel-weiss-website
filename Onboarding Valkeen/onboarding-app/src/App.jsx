@@ -9,6 +9,7 @@ import { ProgressProvider } from './hooks/useLocalStorage';
 const Tracker = lazy(() => import('./pages/Tracker'));
 const Tagesvertrag = lazy(() => import('./pages/Tagesvertrag'));
 const FeedbackFramework = lazy(() => import('./pages/FeedbackFramework'));
+const ProductivityTracker = lazy(() => import('./pages/ProductivityTracker'));
 const Quiz = lazy(() => import('./pages/Quiz'));
 const AICoach = lazy(() => import('./pages/AICoach'));
 const Calendar = lazy(() => import('./pages/Calendar'));
@@ -109,6 +110,7 @@ function AdminProgressRoutes() {
             <Route path="tracker" element={<Tracker />} />
             <Route path="tagesvertrag" element={<Tagesvertrag />} />
             <Route path="feedback-framework" element={<FeedbackFramework />} />
+            <Route path="productivity" element={<ProductivityTracker />} />
             <Route path="flashcards" element={<Flashcards />} />
             <Route path="quiz" element={<Quiz />} />
             <Route path="ai-coach" element={<AICoach />} />

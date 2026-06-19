@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="lang-en">
+<html lang="de" class="lang-de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -98,31 +98,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; font-size: 15px; line-he
 .cast-role { font-size: 12px; color: var(--gray-500); line-height: 1.4; }
 .cast-quote { font-size: 12px; font-style: italic; color: var(--rm); margin-top: 6px; border-top: 1px solid var(--gray-200); padding-top: 6px; }
 
-/* ── FULLPAGE AGENDA ─────────────────────── */
-.agenda-fullpage-wrap {
-  width: 100vw; position: relative; left: 50%; right: 50%;
-  margin-left: -50vw; margin-right: -50vw;
-  min-height: 100vh;
-  padding: 40px max(24px, calc((100vw - 920px) / 2)) 48px;
-  box-sizing: border-box;
-  background: linear-gradient(168deg, #ecfdf5 0%, #ffffff 38%, #e5f3f8 100%);
-  border-top: 3px solid var(--rm); border-bottom: 3px solid var(--rm);
-  margin-top: 8px; margin-bottom: 28px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
-}
-.agenda-fullpage-inner { max-width: 920px; margin: 0 auto; }
-.agenda-fullpage-kicker { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--rm); margin-bottom: 10px; text-align: center; }
-.agenda-fullpage-title { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(26px, 4vw, 36px); font-weight: 700; color: var(--rm); text-align: center; margin-bottom: 8px; line-height: 1.2; }
-.agenda-fullpage-sub { text-align: center; font-size: 14px; color: var(--gray-600); margin-bottom: 32px; max-width: 640px; margin-left: auto; margin-right: auto; line-height: 1.5; }
-.agenda-fullpage-blocks { display: flex; flex-direction: column; gap: 0; }
-.agenda-fullpage-block { display: grid; grid-template-columns: 52px 1fr; gap: 16px 20px; align-items: start; padding: 22px 0; border-bottom: 1px solid var(--gray-300); }
-.agenda-fullpage-block:last-child { border-bottom: none; }
-.agenda-fullpage-num { width: 48px; height: 48px; border-radius: 10px; background: linear-gradient(135deg, var(--rm), var(--teal)); color: white; font-size: 20px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.agenda-fullpage-block h4 { font-size: 17px; font-weight: 700; color: var(--gray-900); margin: 0 0 10px; line-height: 1.3; }
-.agenda-fullpage-block ul { margin: 0; padding-left: 1.15em; font-size: 14px; color: var(--gray-700); line-height: 1.65; }
-.agenda-fullpage-block li { margin: 4px 0; }
-.agenda-fullpage-footnote { margin-top: 28px; padding: 14px 18px; background: rgba(255,255,255,0.75); border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 13px; color: var(--gray-600); line-height: 1.55; }
-
+/* Agenda Vollseite → demo-agenda-window.css */
 /* ── SCENE ───────────────────────────────── */
 .scene { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); margin-bottom: 20px; box-shadow: var(--shadow); overflow: hidden; }
 .scene-header { display: flex; align-items: stretch; border-bottom: 1px solid var(--gray-200); }
@@ -164,6 +140,14 @@ body { font-family: 'Inter', -apple-system, sans-serif; font-size: 15px; line-he
 .box-warn .box-header    { background: var(--red); color: white; }
 .box-warn .box-body      { background: var(--red-light); color: var(--gray-700); border: 1px solid #f0c0bb; border-top: none; }
 .box-tip .box-header     { background: #2d6a4f; color: white; }
+
+.box-feedback .box-header { background: linear-gradient(90deg, #f59e0b, #d97706); color: white; font-weight: 700; }
+.box-feedback .box-body   { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); color: var(--gray-700); border: 2px dashed #f59e0b; border-top: none; font-size: 13px; line-height: 1.65; }
+.box-feedback .box-body strong { color: #92400e; }
+.qr-section { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); margin-bottom: 20px; box-shadow: var(--shadow); overflow: hidden; }
+.qr-header { background: var(--rm); color: white; padding: 14px 24px; font-size: 15px; font-weight: 700; }
+.qr-body { padding: 20px 24px; }
+
 .box-tip .box-body       { background: #d8f3dc; color: #1b4332; border: 1px solid #b7e4c7; border-top: none; }
 
 /* Steps */
@@ -199,13 +183,6 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 ════════════════════════════════════════ */
 #edit-toolbar { position:fixed;top:56px;right:20px;z-index:1000;display:flex;flex-direction:column;align-items:stretch;gap:6px;max-width:min(380px,94vw);background:rgba(255,255,255,0.97);border:1px solid var(--gray-300);border-radius:14px;padding:6px 8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);backdrop-filter:blur(8px);font-family:'Inter',sans-serif; }
 .edit-toolbar-main { display:flex;align-items:center;gap:6px;flex-wrap:wrap; }
-.edit-format-bar { display:none;flex-wrap:wrap;gap:4px;align-items:center;padding-top:4px;border-top:1px solid var(--gray-200); }
-.edit-mode-active .edit-format-bar { display:flex; }
-.edit-fmt-btn { min-width:28px;padding:4px 8px;border:1px solid var(--gray-300);border-radius:6px;background:var(--gray-100);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;color:var(--gray-800);line-height:1.2; }
-.edit-fmt-btn:hover { background:var(--gray-200);border-color:var(--gray-400); }
-.edit-fmt-btn:active { transform:scale(0.97); }
-.edit-fmt-sep { width:1px;height:18px;background:var(--gray-300);margin:0 2px;flex-shrink:0; }
-.edit-fmt-hint { font-size:10px;color:var(--gray-500);width:100%;margin-top:2px;line-height:1.3; }
 .edit-versions-panel { display:none;position:fixed;inset:0;z-index:10002;background:rgba(15,23,42,0.45);align-items:flex-end;justify-content:flex-end;padding:16px;box-sizing:border-box; }
 .edit-versions-panel.open { display:flex; }
 .edit-versions-panel-inner { background:#fff;border-radius:14px;border:1px solid var(--gray-300);max-width:min(420px,96vw);max-height:min(520px,78vh);overflow:hidden;display:flex;flex-direction:column;box-shadow:0 16px 48px rgba(0,0,0,0.22);font-family:'Inter',sans-serif; }
@@ -364,14 +341,17 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
   .cast-grid, .closing-grid { grid-template-columns: 1fr; }
 }
 </style>
+<link rel="stylesheet" href="demo-agenda-window.css">
+<link rel="stylesheet" href="demo-edit-format.css">
+<script src="demo-edit-format.js"></script>
 </head>
 <body>
 
 <div class="lang-switcher">
-  <button class="lang-btn" id="btn-de" onclick="setLang('de')">
+  <button class="lang-btn active" id="btn-de" onclick="setLang('de')">
     <span class="lang-flag">🇩🇪</span>
   </button>
-  <button class="lang-btn active" id="btn-en" onclick="setLang('en')">
+  <button class="lang-btn" id="btn-en" onclick="setLang('en')">
     <span class="lang-flag">🇬🇧</span>
   </button>
 </div>
@@ -395,7 +375,7 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
     <div class="hero-meta">
       <div class="hero-meta-item">⏱️ <span class="t-de">ca. 15–20 Min.</span><span class="t-en">approx. 15–20 min.</span></div>
       <div class="hero-meta-item">👥 <span class="t-de">Resource Manager / Team Leads</span><span class="t-en">Resource Managers / Team Leads</span></div>
-      <div class="hero-meta-item">📋 <span class="t-de">4 Blöcke</span><span class="t-en">4 Blocks</span></div>
+      <div class="hero-meta-item">📋 <span class="t-de">9 Blöcke · inkl. Feedback</span><span class="t-en">9 blocks · incl. feedback</span></div>
       <div class="hero-meta-item">🔗 trial5.tempus-resource.com/slot4</div>
     </div>
   </div>
@@ -459,7 +439,16 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
       In previous sessions, we worked with individual Named Resources — specific people like Manuel, Tanja, or Edina. Today we'll look at a different planning approach: <strong>How do I plan not a single person, but an entire team?</strong><br><br>
       This is especially relevant when working <em>agile</em>, planning with <em>Delivery Teams</em>, or when the exact staffing isn't decided in detail yet."
     </span>
+  
+<div class="box box-feedback" style="margin-top:16px;">
+  <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback — Opening / Story</span><span class="t-en">Feedback — Opening / story</span></div>
+  <div class="box-body">
+    <span class="t-de"><strong>Fokus auf das Warum:</strong> Giacomo will sein ganzes Delivery Team als eine Einheit planen — nicht fünf separate Assignment-Zeilen. Das löst seinen Alltags-Schmerz als Team Lead.</span>
+    <span class="t-en"><strong>Focus on why:</strong> Giacomo wants to plan his whole delivery team as one unit — not five separate assignment lines.</span>
   </div>
+</div>
+
+</div>
 </div>
 
 <!-- CAST -->
@@ -580,7 +569,7 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 <div class="page" id="team-resources-scenes-page">
 
 <!-- ══════════════════════════════════════════════
-     SCENE 1 – Team Resources im Resource Management Grid
+     SCENE 1 – Resource Management Grid
 ══════════════════════════════════════════════ -->
 <div class="scene" id="team-resources-scene-01">
   <div class="scene-header">
@@ -588,58 +577,36 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
     <div class="scene-title-area">
       <div class="scene-act"><span class="t-de">Block 1 · Übersicht</span><span class="t-en">Block 1 · Overview</span></div>
       <div class="scene-title"><span class="t-de">Team Resources im Resource Management Grid</span><span class="t-en">Team Resources in Resource Management Grid</span></div>
-      <div class="scene-subtitle"><span class="t-de">Unterschied zwischen Named und Team Resource</span><span class="t-en">Difference between Named and Team Resource</span></div>
+      <div class="scene-subtitle"><span class="t-de">Unterschied Named vs. Team Resource</span><span class="t-en">Named vs. Team Resource</span></div>
     </div>
   </div>
-  <div class="scene-tags"><span class="tag tag-teal">Grid</span><span class="tag tag-blue">Filter</span><span class="tag tag-rm">Unterschied</span></div>
+  <div class="scene-tags"><span class="tag tag-teal">Grid</span><span class="tag tag-blue">Filter</span></div>
   <div class="scene-body">
     <div class="box box-story">
       <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg</span><span class="t-en">Intro</span></div>
-      <div class="box-body">
-        <span class="t-de">„Ich starte im Resource Management Grid, weil Team Resources aus Resource-Manager-Sicht zunächst wie normale Ressourcen im Resource Pool sichtbar sind. Der wichtige Unterschied ist: Eine Named Resource steht für <strong>eine Person</strong>. Eine Team Resource steht für <strong>eine Gruppe von Personen</strong>, die gemeinsam geplant werden kann."</span>
-        <span class="t-en">"I start in the Resource Management Grid, because Team Resources are initially visible like normal resources in the Resource Pool from a Resource Manager's perspective. The key difference is: A Named Resource represents <strong>one person</strong>. A Team Resource represents <strong>a group of people</strong> that can be planned together."</span>
-      </div>
+      <div class="box-body"><span class="t-de">„Ich starte im <strong>Resource Management Grid</strong>. Team Resources wirken zunächst wie normale Ressourcen — der Unterschied: <strong>Named Resource</strong> = eine Person, <strong>Team Resource</strong> = eine Gruppe, gemeinsam planbar.“</span><span class="t-en">"I start in the <strong>Resource Management Grid</strong>. Team Resources look like normal resources at first — the difference: <strong>Named Resource</strong> = one person, <strong>Team Resource</strong> = a group planned together."</span></div>
     </div>
     <div class="box box-click">
       <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de"><span class="click-path">Resource Management</span> Tile öffnen</span><span class="t-en">Open <span class="click-path">Resource Management</span> Tile</span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de"><span class="click-path">Quick Filter → Team Resources</span> auswählen</span><span class="t-en">Select <span class="click-path">Quick Filter → Team Resources</span></span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de"><span class="click-path">Columns → „Is Team Resource"</span> Spalte hinzufügen</span><span class="t-en">Add <span class="click-path">Columns → "Is Team Resource"</span> column</span></div></li>
-        </ul>
-      </div>
+      <div class="box-body"><ul class="click-steps">
+        <li><div class="click-step-num">1</div><div><span class="t-de"><span class="click-path">Resource Management</span> Tile</span><span class="t-en"><span class="click-path">Resource Management</span> tile</span></div></li>
+        <li><div class="click-step-num">2</div><div><span class="t-de"><span class="click-path">Quick Filter → Team Resources</span></span><span class="t-en"><span class="click-path">Quick Filter → Team Resources</span></span></div></li>
+        <li><div class="click-step-num">3</div><div><span class="t-de"><span class="click-path">Columns → Is Team Resource</span></span><span class="t-en"><span class="click-path">Columns → Is Team Resource</span></span></div></li>
+      </ul></div>
     </div>
-    <div class="box box-say">
-      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
-      <div class="box-body">
-        <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
-          <li><span class="t-de"><strong>Quick Filter:</strong> Zeigt nur Ressourcen, die als Team Resource angelegt wurden — hilfreich bei grösserem Resource Pool.</span><span class="t-en"><strong>Quick Filter:</strong> Shows only resources created as Team Resources — helpful with larger Resource Pools.</span></li>
-          <li><span class="t-de"><strong>„Is Team Resource" Spalte:</strong> Read-only Feld, zeigt eindeutig ob eine Zeile ein Team ist — nutzbar zum Filtern und Gruppieren.</span><span class="t-en"><strong>"Is Team Resource" column:</strong> Read-only field clearly showing if a row is a team — usable for filtering and grouping.</span></li>
-        </ul>
-      </div>
+    <div class="box box-feedback">
+      <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback</span><span class="t-en">Feedback</span></div>
+      <div class="box-body"><span class="t-de"><strong>Quick Filter:</strong> Bei großem Resource Pool unbedingt zeigen — Kunden schätzen das.</span><span class="t-en"><strong>Quick Filter:</strong> Always show with large resource pools — customers value this.</span></div>
     </div>
     <div class="box box-impact">
-      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
-      <div class="box-body">
-        <span class="t-de">„Eine Team Resource ist <strong>keine Person und kein Login-User</strong>. Sie ist eine planbare Kapazitätseinheit für ein Team."</span>
-        <span class="t-en">"A Team Resource is <strong>not a person and not a login user</strong>. It's an assignable capacity unit for a team."</span>
-      </div>
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact</span></div>
+      <div class="box-body"><span class="t-de">„Eine Team Resource ist <strong>keine Person und kein Login-User</strong> — eine planbare Kapazitätseinheit für ein Team.“</span><span class="t-en">"A Team Resource is <strong>not a person or login user</strong> — an assignable capacity unit for a team."</span></div>
     </div>
-    <div class="box box-context">
-      <div class="box-header"><span class="box-icon">💡</span><span class="t-de">Hintergrund</span><span class="t-en">Background</span></div>
-      <div class="box-body">
-        <span class="t-de">Team Resources können nicht selbst Timesheet User sein und haben auch keine Login-/E-Mail-/Global-Role-Logik wie normale User. Die einzelnen Teammitglieder können aber trotzdem Zeit auf Team Assignments buchen, wenn Timesheets in Tempus genutzt werden.</span>
-        <span class="t-en">Team Resources cannot be Timesheet Users themselves and don't have Login/Email/Global Role logic like normal users. However, individual team members can still book time on Team Assignments if Timesheets are used in Tempus.</span>
-      </div>
-    </div>
-    <div class="transition">→ <span class="t-de">„Schauen wir uns ein Team Resource Profile genauer an."</span><span class="t-en">"Let's look at a Team Resource Profile in more detail."</span></div>
+    <div class="transition">→ <span class="t-de">Team Resource Profile öffnen</span><span class="t-en">Open Team Resource profile</span></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     SCENE 2 – Team Resource Profile öffnen
-══════════════════════════════════════════════ -->
+<!-- SCENE 2 -->
 <div class="scene" id="team-resources-scene-02">
   <div class="scene-header">
     <div class="scene-num-badge"><div class="scene-num-big">02</div><div class="scene-num-label">Profile</div></div>
@@ -649,382 +616,286 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
       <div class="scene-subtitle"><span class="t-de">Was ist anders als bei Named Resources?</span><span class="t-en">What's different from Named Resources?</span></div>
     </div>
   </div>
-  <div class="scene-tags"><span class="tag tag-rm">Profile</span><span class="tag tag-blue">Attributes</span><span class="tag tag-orange">Rate</span></div>
+  <div class="scene-tags"><span class="tag tag-rm">Profil</span><span class="tag tag-gold">Rate</span></div>
   <div class="scene-body">
     <div class="box box-click">
       <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de">Team Resource öffnen, z.B. <span class="click-path">„E-DOC Delivery Team"</span></span><span class="t-en">Open Team Resource, e.g. <span class="click-path">"E-DOC Delivery Team"</span></span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de"><span class="click-path">Attributes &amp; Identity</span> kurz zeigen</span><span class="t-en">Briefly show <span class="click-path">Attributes &amp; Identity</span></span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de"><span class="click-path">Default Rate / Rate-Bereich</span> zeigen</span><span class="t-en">Show <span class="click-path">Default Rate / Rate area</span></span></div></li>
-        </ul>
-      </div>
+      <div class="box-body"><ul class="click-steps">
+        <li><div class="click-step-num">1</div><div><span class="t-de">Team Resource <strong>E-DOC Delivery Team</strong> öffnen</span><span class="t-en">Open <strong>E-DOC Delivery Team</strong></span></div></li>
+        <li><div class="click-step-num">2</div><div><span class="t-de">Attribute Page — fehlende Login-Felder zeigen</span><span class="t-en">Attribute page — show missing login fields</span></div></li>
+        <li><div class="click-step-num">3</div><div><span class="t-de">Default Rate / Rate-Bereich</span><span class="t-en">Default Rate area</span></div></li>
+      </ul></div>
     </div>
     <div class="box box-say">
       <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
-      <div class="box-body">
-        <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
-          <li><span class="t-de"><strong>Attribute Page:</strong> Viele ähnliche Informationen wie bei einer normalen Resource — aber einige Felder sind <strong>bewusst nicht verfügbar</strong>: Login, Passwort, E-Mail, Is Timesheet User.</span><span class="t-en"><strong>Attribute Page:</strong> Many similar fields like a normal resource — but some fields are <strong>intentionally unavailable</strong>: Login, Password, Email, Is Timesheet User.</span></li>
-          <li><span class="t-de"><strong>Warum?</strong> Weil diese Team Resource keine echte Person ist — sie ist ein <strong>Planungsobjekt</strong>.</span><span class="t-en"><strong>Why?</strong> Because this Team Resource is not a real person — it's a <strong>planning object</strong>.</span></li>
-          <li><span class="t-de"><strong>Resource Attributes:</strong> Department, Role, Location etc. können trotzdem gepflegt werden.</span><span class="t-en"><strong>Resource Attributes:</strong> Department, Role, Location etc. can still be maintained.</span></li>
-          <li><span class="t-de"><strong>Rate:</strong> Entweder manuell pflegen oder Tempus berechnet sie automatisch aus den Rates der Teammitglieder.</span><span class="t-en"><strong>Rate:</strong> Either manually maintain or Tempus calculates it automatically from team members' rates.</span></li>
-        </ul>
-      </div>
+      <div class="box-body"><ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
+        <li><span class="t-de">Kein Login, E-Mail, SSO, Global Role — <strong>Planungsobjekt</strong>, keine Person</span><span class="t-en">No login, email, SSO, global role — a <strong>planning object</strong>, not a person</span></li>
+        <li><span class="t-de"><strong>Manual</strong> — Flat Default-Rate fürs Team</span><span class="t-en"><strong>Manual</strong> — flat default rate for the team</span></li>
+        <li><span class="t-de"><strong>Advanced</strong> — zeitphasierter Stundensatz</span><span class="t-en"><strong>Advanced</strong> — time-phased hourly rate</span></li>
+        <li><span class="t-de"><strong>Auto-calculated</strong> — aus Team-Zusammensetzung (meist Kundenwunsch)</span><span class="t-en"><strong>Auto-calculated</strong> — from team constitution (most customers)</span></li>
+      </ul></div>
     </div>
-    <div class="box box-context">
-      <div class="box-header"><span class="box-icon">💡</span><span class="t-de">Hintergrund</span><span class="t-en">Background</span></div>
-      <div class="box-body">
-        <span class="t-de">Wenn die Kostenberechnung auf Resource Default Rate basiert, nutzt Tempus die Team Rate (manuell oder automatisch) für Cost Calculations in Projekten und im BPA Flatgrid. Nicht zu tief in die Formel einsteigen — nur erwähnen, dass es zwei Möglichkeiten gibt.</span>
-        <span class="t-en">When cost calculation is based on Resource Default Rate, Tempus uses the Team Rate (manual or automatic) for Cost Calculations in projects and the BPA Flatgrid. Don't go too deep into the formula — just mention there are two options.</span>
-      </div>
+    <div class="box box-feedback">
+      <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback (Aayushi)</span><span class="t-en">Feedback (Aayushi)</span></div>
+      <div class="box-body"><span class="t-de"><strong>Team Capacity</strong> ist die Standard-Landingpage — bewusst, weil das die wichtigste Seite ist. Alle <strong>3 Rate-Optionen</strong> kurz erklären.</span><span class="t-en"><strong>Team Capacity</strong> is the default landing page — all <strong>3 rate options</strong> briefly.</span></div>
     </div>
-    <div class="box box-impact">
-      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
-      <div class="box-body">
-        <span class="t-de">„Die Qualität der Resource Planning hängt stark von der Qualität der Resource-Daten ab — das gilt auch für Teams."</span>
-        <span class="t-en">"The quality of Resource Planning strongly depends on the quality of Resource data — this applies to Teams too."</span>
-      </div>
-    </div>
-    <div class="transition">→ <span class="t-de">„Jetzt wird es interessant: Team Capacity."</span><span class="t-en">"Now it gets interesting: Team Capacity."</span></div>
+    <div class="transition">→ <span class="t-de">Team Capacity: Mitglieder &amp; Inclusion %</span><span class="t-en">Team Capacity: members &amp; Inclusion %</span></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     SCENE 3 – Team Capacity: Mitglieder und Inclusion %
-══════════════════════════════════════════════ -->
+<!-- SCENE 3 -->
 <div class="scene" id="team-resources-scene-03">
   <div class="scene-header">
     <div class="scene-num-badge"><div class="scene-num-big">03</div><div class="scene-num-label">Capacity</div></div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Block 3 · Kernmechanismus</span><span class="t-en">Block 3 · Core Mechanism</span></div>
-      <div class="scene-title"><span class="t-de">Team Capacity: Mitglieder &amp; Inclusion %</span><span class="t-en">Team Capacity: Members &amp; Inclusion %</span></div>
-      <div class="scene-subtitle"><span class="t-de">Der wichtigste Team-Resource-Mechanismus</span><span class="t-en">The most important Team Resource mechanism</span></div>
+      <div class="scene-act"><span class="t-de">Block 3 · Team Capacity</span><span class="t-en">Block 3 · Team Capacity</span></div>
+      <div class="scene-title"><span class="t-de">Team Capacity: Mitglieder und Inclusion %</span><span class="t-en">Team Capacity: Members and Inclusion %</span></div>
+      <div class="scene-subtitle"><span class="t-de">Der wichtigste Mechanismus</span><span class="t-en">The key mechanism</span></div>
     </div>
   </div>
-  <div class="scene-tags"><span class="tag tag-rm">Capacity</span><span class="tag tag-green">Members</span><span class="tag tag-purple">Inclusion %</span></div>
+  <div class="scene-tags"><span class="tag tag-rm">Inclusion %</span><span class="tag tag-teal">Net Avail.</span></div>
   <div class="scene-body">
     <div class="box box-story">
       <div class="box-header"><span class="box-icon">📖</span><span class="t-de">Einstieg</span><span class="t-en">Intro</span></div>
-      <div class="box-body">
-        <span class="t-de">„Die Team Capacity Page ist der zentrale Ort, an dem ich definiere, <strong>aus welchen Personen</strong> dieses Team besteht und <strong>wie stark</strong> sie Teil dieses Teams sind. Das ist der wichtigste Unterschied zur normalen Resource Capacity."</span>
-        <span class="t-en">"The Team Capacity Page is the central place where I define <strong>which people</strong> this team consists of and <strong>how much</strong> they are part of this team. This is the key difference from normal Resource Capacity."</span>
-      </div>
+      <div class="box-body"><span class="t-de">„Hier definiere ich, <strong>wer</strong> zum Team gehört und <strong>wie viel</strong> jede Person beiträgt — das ist der Kern von Team Resources.“</span><span class="t-en">"Here I define <strong>who</strong> is on the team and <strong>how much</strong> each person contributes — the core of Team Resources."</span></div>
     </div>
     <div class="box box-click">
       <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de"><span class="click-path">Team Capacity</span> öffnen</span><span class="t-en">Open <span class="click-path">Team Capacity</span></span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de"><span class="click-path">Start Date / End Date</span> zeigen — Team ist nur in diesem Zeitraum aktiv</span><span class="t-en">Show <span class="click-path">Start Date / End Date</span> — team is only active in this period</span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de"><span class="click-path">Net Availability Grid</span> im unteren Bereich zeigen</span><span class="t-en">Show <span class="click-path">Net Availability Grid</span> in the bottom area</span></div></li>
-          <li><div class="click-step-num">4</div><div><span class="t-de">Ressourcen auswählen: <strong>Manuel, Tanja, Edina, Christoph</strong></span><span class="t-en">Select resources: <strong>Manuel, Tanja, Edina, Christoph</strong></span></div></li>
-          <li><div class="click-step-num">5</div><div><span class="t-de">Tab <span class="click-path">Inclusion %</span> zeigen</span><span class="t-en">Show <span class="click-path">Inclusion %</span> tab</span></div></li>
-          <li><div class="click-step-num">6</div><div><span class="t-de">Monat ändern oder Inclusion % in einem Monat anpassen</span><span class="t-en">Change month or adjust Inclusion % in a month</span></div></li>
-        </ul>
-      </div>
+      <div class="box-body"><ul class="click-steps">
+        <li><div class="click-step-num">1</div><div><span class="t-de">Tab <span class="click-path">Team Capacity</span></span><span class="t-en"><span class="click-path">Team Capacity</span> tab</span></div></li>
+        <li><div class="click-step-num">2</div><div><span class="t-de">Start/End Date + Quick Date Picker</span><span class="t-en">Start/End date + quick picker</span></div></li>
+        <li><div class="click-step-num">3</div><div><span class="t-de">Net Availability Grid unten — Manuel, Tanja, Edina, Christoph auswählen</span><span class="t-en">Net Availability grid — select members</span></div></li>
+        <li><div class="click-step-num">4</div><div><span class="t-de">Tab <span class="click-path">Inclusion %</span> — Standard 100 %</span><span class="t-en"><span class="click-path">Inclusion %</span> tab — default 100%</span></div></li>
+      </ul></div>
     </div>
     <div class="box box-say">
-      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
-      <div class="box-body">
-        <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
-          <li><span class="t-de"><strong>Inclusion %:</strong> Wie viel einer Person steht diesem Team zur Verfügung? Tanja = 100%, Edina = 100%, Manuel = 50% (andere Themen parallel).</span><span class="t-en"><strong>Inclusion %:</strong> How much of a person is available for this team? Tanja = 100%, Edina = 100%, Manuel = 50% (other work in parallel).</span></li>
-          <li><span class="t-de"><strong>Team Capacity:</strong> Nicht „Anzahl Personen", sondern <strong>Summe der individuellen Capacity gewichtet nach Inclusion %</strong>.</span><span class="t-en"><strong>Team Capacity:</strong> Not "number of people", but <strong>sum of individual capacity weighted by Inclusion %</strong>.</span></li>
-          <li><span class="t-de"><strong>Zeitphasenbasiert:</strong> Inclusion % kann sich über die Zeit ändern. Eine Person kann im Juni zu 100% im Team sein, im Juli nur zu 50%.</span><span class="t-en"><strong>Time-phased:</strong> Inclusion % can change over time. A person can be 100% in the team in June, but only 50% in July.</span></li>
-        </ul>
-      </div>
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte (mit Zahlen!)</span><span class="t-en">Talking points (use numbers!)</span></div>
+      <div class="box-body"><span class="t-de">Beispiel: Manuel 176 h/Monat, <strong>50 % Inclusion</strong> → nur <strong>88 h</strong> zählen zur Team Capacity. Tanja/Edina/Christoph je 100 % → 176 h. <strong>Summe = 616 h</strong> (nicht 704 h).<br><br><strong>Formel:</strong> Team Capacity = Σ (Mitgliedskapazität × Inclusion %). Inclusion % ist zeitphasierbar (Juni 100 %, Juli 50 %).</span><span class="t-en">Example: Manuel 176 h/month at <strong>50% inclusion</strong> → only <strong>88 h</strong> count. Others at 100% → 176 h each. <strong>Total = 616 h</strong> (not 704).<br><br><strong>Formula:</strong> Team Capacity = sum(member capacity × inclusion %). Inclusion % can be time-phased.</span></div>
+    </div>
+    <div class="box box-feedback">
+      <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback</span><span class="t-en">Feedback</span></div>
+      <div class="box-body"><span class="t-de"><strong>Hier die meiste Zeit verbringen!</strong> Konkrete Zahlen nutzen. Team nur innerhalb Start/End allokierbar. Heatmap im Grid unten kurz zeigen. <strong>Ressourcen können mehreren Teams</strong> angehören — kein Limit.</span><span class="t-en"><strong>Spend most time here!</strong> Use concrete numbers. Team allocatable only within date range. Briefly show heatmap. <strong>Resources can belong to multiple teams</strong>.</span></div>
     </div>
     <div class="box box-impact">
-      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
-      <div class="box-body">
-        <span class="t-de">„Wenn Manuel nur zu 50% im Team ist, zählt auch nur <strong>50% seiner Capacity</strong> zur Team Capacity."</span>
-        <span class="t-en">"If Manuel is only 50% on the team, only <strong>50% of his capacity</strong> counts toward Team Capacity."</span>
-      </div>
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact</span></div>
+      <div class="box-body"><span class="t-de">„Inclusion % steuert, wie viel Kapazität jede Person dem Team wirklich gibt — das ist der Hebel für realistische Teamplanung.“</span><span class="t-en">"Inclusion % controls how much capacity each person truly gives the team — the lever for realistic team planning."</span></div>
     </div>
-    <div class="transition">→ <span class="t-de">„Story Points sind der zweite wichtige Tab."</span><span class="t-en">"Story Points is the second important tab."</span></div>
+    <div class="transition">→ <span class="t-de">Story Points (kurz)</span><span class="t-en">Story Points (brief)</span></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     SCENE 4 – Story Points und Cost per Story Point
-══════════════════════════════════════════════ -->
+<!-- SCENE 4 -->
 <div class="scene" id="team-resources-scene-04">
   <div class="scene-header">
-    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--rm),var(--teal))"><div class="scene-num-big">04</div><div class="scene-num-label">Story Pts</div></div>
+    <div class="scene-num-badge"><div class="scene-num-big">04</div><div class="scene-num-label">SP</div></div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Block 4 · Agile Planning</span><span class="t-en">Block 4 · Agile Planning</span></div>
+      <div class="scene-act"><span class="t-de">Block 4 · Story Points</span><span class="t-en">Block 4 · Story Points</span></div>
       <div class="scene-title"><span class="t-de">Story Points &amp; Cost per Story Point</span><span class="t-en">Story Points &amp; Cost per Story Point</span></div>
-      <div class="scene-subtitle"><span class="t-de">Für agile Teams optional, aber mächtig</span><span class="t-en">Optional for agile teams, but powerful</span></div>
+      <div class="scene-subtitle"><span class="t-de">Kurz zeigen — nicht live rechnen</span><span class="t-en">Brief — don't calculate live</span></div>
     </div>
   </div>
-  <div class="scene-tags"><span class="tag tag-teal">Agile</span><span class="tag tag-purple">Story Points</span><span class="tag tag-orange">Velocity</span></div>
   <div class="scene-body">
     <div class="box box-click">
       <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de">Tab <span class="click-path">„Story Points"</span> öffnen</span><span class="t-en">Open <span class="click-path">"Story Points"</span> tab</span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de">Story Points für einen Monat eintragen, z.B. <strong>80 Story Points</strong></span><span class="t-en">Enter Story Points for a month, e.g. <strong>80 Story Points</strong></span></div></li>
-        </ul>
-      </div>
+      <div class="box-body"><ul class="click-steps"><li><div class="click-step-num">1</div><div><span class="t-de">Tab <span class="click-path">Story Points</span></span><span class="t-en"><span class="click-path">Story Points</span> tab</span></div></li>
+      <li><div class="click-step-num">2</div><div><span class="t-de">z. B. 80 Story Points für einen Monat</span><span class="t-en">e.g. 80 story points for one month</span></div></li></ul></div>
     </div>
     <div class="box box-say">
       <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
-      <div class="box-body">
-        <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
-          <li><span class="t-de"><strong>Story Points gehören zum Team:</strong> Sie beschreiben nicht die Stunden einer einzelnen Person, sondern die <strong>Delivery Capacity des gesamten Teams</strong>.</span><span class="t-en"><strong>Story Points belong to the team:</strong> They don't describe individual hours, but the <strong>delivery capacity of the entire team</strong>.</span></li>
-          <li><span class="t-de"><strong>Calculated Cost per Story Point:</strong> Tempus kann ableiten, wie Story Points mit Hours, FTE und Cost zusammenhängen.</span><span class="t-en"><strong>Calculated Cost per Story Point:</strong> Tempus can derive how Story Points relate to Hours, FTE and Cost.</span></li>
-          <li><span class="t-de"><strong>Optional:</strong> Story Points sind nur relevant, wenn die Organisation wirklich agil mit Story Points plant. Sonst kann man sie ignorieren.</span><span class="t-en"><strong>Optional:</strong> Story Points are only relevant if the organization actually plans agile with Story Points. Otherwise, they can be ignored.</span></li>
-        </ul>
-      </div>
+      <div class="box-body"><span class="t-de">Story Points = <strong>Delivery Capacity des Teams</strong>, nur auf Team-Ebene. Formel (nur erwähnen): Cost/SP = (Team Capacity × Kosten/h × 100) / SP. Beispiel: 616 h, CHF 150/h, 80 SP → ca. CHF 1'155/SP. <strong>Nicht live rechnen.</strong></span><span class="t-en">Story Points = <strong>team delivery capacity</strong>, team level only. Mention formula only. <strong>Don't calculate live.</strong></span></div>
+    </div>
+    <div class="box box-feedback">
+      <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback (Aayushi)</span><span class="t-en">Feedback (Aayushi)</span></div>
+      <div class="box-body"><span class="t-de">Story Points gehören dem <strong>Team</strong>, nicht Einzelpersonen — häufiges Missverständnis. Bei klassischer Stunden/FTE-Planung sind SP <strong>optional</strong>.</span><span class="t-en">Story Points belong to the <strong>team</strong>, not individuals. Optional for hours/FTE planning.</span></div>
     </div>
     <div class="box box-impact">
-      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
-      <div class="box-body">
-        <span class="t-de">„Story Points sind <strong>kein Personalaufwand pro Person</strong>. Sie sind eine Kapazitäts- oder Aufwandseinheit für das gesamte Team."</span>
-        <span class="t-en">"Story Points are <strong>not individual effort</strong>. They are a capacity or effort unit for the entire team."</span>
-      </div>
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact</span></div>
+      <div class="box-body"><span class="t-de">„Story Points sind keine Einzelaufwände — sie sind eine Kapazitätseinheit für das gesamte Team.“</span><span class="t-en">"Story Points are not individual effort — they're a capacity unit for the whole team."</span></div>
     </div>
-    <div class="box box-context">
-      <div class="box-header"><span class="box-icon">💡</span><span class="t-de">Hintergrund</span><span class="t-en">Background</span></div>
-      <div class="box-body">
-        <span class="t-de">Wenn der Kunde klassisch mit Hours oder FTE plant, können Team Resources <strong>trotzdem genutzt werden — auch ohne Story Points</strong>.</span>
-        <span class="t-en">If the customer plans classically with Hours or FTE, Team Resources can <strong>still be used — even without Story Points</strong>.</span>
-      </div>
-    </div>
-    <div class="transition">→ <span class="t-de">„Jetzt allokieren wir das Team auf ein Projekt."</span><span class="t-en">"Now let's allocate the team to a project."</span></div>
+    <div class="transition">→ <span class="t-de">Team auf Projekt allokieren</span><span class="t-en">Allocate team to project</span></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     SCENE 5 – Team Resource auf Projekt allokieren
-══════════════════════════════════════════════ -->
+<!-- SCENE 5 -->
 <div class="scene" id="team-resources-scene-05">
   <div class="scene-header">
-    <div class="scene-num-badge" style="background:linear-gradient(135deg,#0d5c7a,var(--teal))"><div class="scene-num-big">05</div><div class="scene-num-label">Allocate</div></div>
+    <div class="scene-num-badge"><div class="scene-num-big">05</div><div class="scene-num-label">Assign</div></div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Block 5 · Projektzuweisung</span><span class="t-en">Block 5 · Project Allocation</span></div>
+      <div class="scene-act"><span class="t-de">Block 5 · Allokation</span><span class="t-en">Block 5 · Allocation</span></div>
       <div class="scene-title"><span class="t-de">Team Resource auf Projekt allokieren</span><span class="t-en">Allocate Team Resource to Project</span></div>
-      <div class="scene-subtitle"><span class="t-de">FTE = Full Team Equivalent verstehen</span><span class="t-en">Understand FTE = Full Team Equivalent</span></div>
+      <div class="scene-subtitle"><span class="t-de">FTE = Full Team Equivalent</span><span class="t-en">FTE = Full Team Equivalent</span></div>
     </div>
   </div>
-  <div class="scene-tags"><span class="tag tag-rm">Allocate</span><span class="tag tag-purple">FTE</span><span class="tag tag-blue">Project</span></div>
   <div class="scene-body">
     <div class="box box-click">
       <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de"><span class="click-path">Projects</span> öffnen, z.B. <strong>„Stardust 2026"</strong></span><span class="t-en">Open <span class="click-path">Projects</span>, e.g. <strong>"Stardust 2026"</strong></span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de"><span class="click-path">Allocation Screen / Project Allocation</span> öffnen</span><span class="t-en">Open <span class="click-path">Allocation Screen / Project Allocation</span></span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de"><span class="click-path">Type New Resource</span> oder <span class="click-path">Add Assignment</span></span><span class="t-en"><span class="click-path">Type New Resource</span> or <span class="click-path">Add Assignment</span></span></div></li>
-          <li><div class="click-step-num">4</div><div><span class="t-de">Team Resource <strong>„E-DOC Delivery Team"</strong> auswählen (Team-Icon beachten!)</span><span class="t-en">Select Team Resource <strong>"E-DOC Delivery Team"</strong> (note the team icon!)</span></div></li>
-          <li><div class="click-step-num">5</div><div><span class="t-de">Task auswählen, z.B. <strong>„Implementation"</strong></span><span class="t-en">Select task, e.g. <strong>"Implementation"</strong></span></div></li>
-          <li><div class="click-step-num">6</div><div><span class="t-de">Einheit wechseln: <span class="click-path">Hours → FTE → Story Points</span></span><span class="t-en">Change unit: <span class="click-path">Hours → FTE → Story Points</span></span></div></li>
-          <li><div class="click-step-num">7</div><div><span class="t-de">Allocation eintragen, z.B. <strong>1 FTE</strong> oder <strong>80 Story Points</strong></span><span class="t-en">Enter allocation, e.g. <strong>1 FTE</strong> or <strong>80 Story Points</strong></span></div></li>
-        </ul>
-      </div>
+      <div class="box-body"><ul class="click-steps">
+        <li><div class="click-step-num">1</div><div><span class="t-de">Projekt <strong>Stardust 2026</strong> → Allocation</span><span class="t-en">Project <strong>Stardust 2026</strong> → Allocation</span></div></li>
+        <li><div class="click-step-num">2</div><div><span class="t-de"><span class="click-path">Add Assignment</span> → E-DOC Delivery Team (Team-Icon!)</span><span class="t-en"><span class="click-path">Add Assignment</span> → team (note icon!)</span></div></li>
+        <li><div class="click-step-num">3</div><div><span class="t-de">Einheit: Hours / FTE / Story Points</span><span class="t-en">Unit: Hours / FTE / Story Points</span></div></li>
+      </ul></div>
     </div>
     <div class="box box-say">
       <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
-      <div class="box-body">
-        <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
-          <li><span class="t-de"><strong>FTE bei Team Resource:</strong> 1 FTE bedeutet nicht „eine Person". Es bedeutet <strong>ein Full Team Equivalent</strong> — die gesamte verfügbare Team Capacity.</span><span class="t-en"><strong>FTE for Team Resource:</strong> 1 FTE doesn't mean "one person". It means <strong>a Full Team Equivalent</strong> — the entire available Team Capacity.</span></li>
-          <li><span class="t-de"><strong>Recalculate Icon:</strong> Wenn FTE, Hours und Story Points nach Änderungen nicht mehr zusammenpassen, zeigt Tempus ein Icon zum Recalculate.</span><span class="t-en"><strong>Recalculate Icon:</strong> When FTE, Hours and Story Points no longer match after changes, Tempus shows a recalculate icon.</span></li>
-        </ul>
-      </div>
+      <div class="box-body"><span class="t-de"><strong>1 FTE ≠ 1 Person.</strong> 1 FTE = Full Team Equivalent = gesamte Team Capacity (616 h). 0,5 FTE = 308 h. Vergleich: 1 FTE Einzelperson = 176 h. Eine Teamzuweisung statt fünf Einzel-Assignments.</span><span class="t-en"><strong>1 FTE ≠ 1 person.</strong> 1 FTE = full team equivalent. One team assignment instead of five individual ones.</span></div>
     </div>
-    <div class="box box-impact">
-      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
-      <div class="box-body">
-        <span class="t-de">„Wenn drei Personen jeweils 100% im Team sind, entspricht <strong>1 Team-FTE</strong> viel mehr Stunden als 1 FTE einer einzelnen Person."</span>
-        <span class="t-en">"If three people are each 100% on the team, <strong>1 Team FTE</strong> equals many more hours than 1 FTE of a single person."</span>
-      </div>
+    <div class="box box-feedback">
+      <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback</span><span class="t-en">Feedback</span></div>
+      <div class="box-body"><span class="t-de">Immer das <strong>Team-Icon</strong> zeigen. Bei SP in Capacity: Auto-Umrechnung zwischen Einheiten; bei ungültiger Berechnung <strong>Alert-Icon</strong> → neu berechnen.</span><span class="t-en">Always point out the <strong>team icon</strong>. Alert icon if recalculation needed.</span></div>
     </div>
-    <div class="transition">→ <span class="t-de">„Schauen wir uns die Auswirkungen auf Net Availability an."</span><span class="t-en">"Let's look at the impact on Net Availability."</span></div>
+    <div class="transition">→ <span class="t-de">Net Availability</span><span class="t-en">Net Availability</span></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     SCENE 6 – Auswirkungen in Net Availability
-══════════════════════════════════════════════ -->
+<!-- SCENE 6 -->
 <div class="scene" id="team-resources-scene-06">
   <div class="scene-header">
-    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--rm),#0d5c7a)"><div class="scene-num-big">06</div><div class="scene-num-label">NetAvail</div></div>
+    <div class="scene-num-badge"><div class="scene-num-big">06</div><div class="scene-num-label">Net Avail.</div></div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Block 6 · Capacity Impact</span><span class="t-en">Block 6 · Capacity Impact</span></div>
-      <div class="scene-title"><span class="t-de">Auswirkungen in Net Availability</span><span class="t-en">Impact on Net Availability</span></div>
-      <div class="scene-subtitle"><span class="t-de">Team Capacity minus Allocations</span><span class="t-en">Team Capacity minus Allocations</span></div>
+      <div class="scene-act"><span class="t-de">Block 6 · Auswirkungen</span><span class="t-en">Block 6 · Impact</span></div>
+      <div class="scene-title"><span class="t-de">Auswirkung auf Net Availability</span><span class="t-en">Impact on Net Availability</span></div>
     </div>
   </div>
-  <div class="scene-tags"><span class="tag tag-rm">Net Availability</span><span class="tag tag-teal">Capacity</span></div>
   <div class="scene-body">
     <div class="box box-click">
       <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de"><span class="click-path">Resource Management → Net Availability</span></span><span class="t-en"><span class="click-path">Resource Management → Net Availability</span></span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de"><span class="click-path">Quick Filter: Team Resources</span></span><span class="t-en"><span class="click-path">Quick Filter: Team Resources</span></span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de">Team Resource öffnen oder auf Zelle klicken</span><span class="t-en">Open Team Resource or click on a cell</span></div></li>
-        </ul>
-      </div>
+      <div class="box-body"><ul class="click-steps">
+        <li><div class="click-step-num">1</div><div><span class="t-de">Resource Management → <span class="click-path">Net Availability</span></span><span class="t-en">Resource Management → <span class="click-path">Net Availability</span></span></div></li>
+        <li><div class="click-step-num">2</div><div><span class="t-de">Quick Filter: Team Resources</span><span class="t-en">Quick Filter: Team Resources</span></div></li>
+        <li><div class="click-step-num">3</div><div><span class="t-de">Auf Zelle klicken → Projekte hinter Allokation</span><span class="t-en">Click cell → projects behind allocation</span></div></li>
+      </ul></div>
     </div>
     <div class="box box-say">
       <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
-      <div class="box-body">
-        <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
-          <li><span class="t-de"><strong>Net Availability Berechnung:</strong> Team Capacity minus Team Allocations = Net Availability.</span><span class="t-en"><strong>Net Availability Calculation:</strong> Team Capacity minus Team Allocations = Net Availability.</span></li>
-          <li><span class="t-de"><strong>Klick auf Zelle:</strong> Zeigt, welche Projekte oder Aktivitäten hinter der Allocation stehen.</span><span class="t-en"><strong>Click on cell:</strong> Shows which projects or activities are behind the allocation.</span></li>
-        </ul>
-      </div>
+      <div class="box-body"><span class="t-de"><strong>Stunden:</strong> Net Availability = Team Capacity − Allokationen.<br><strong>FTE:</strong> Net Availability = 1 FTE − Allokationen (Team hat immer 1 FTE = Full Team Equivalent).<br>Aggregierte <strong>Team-Verfügbarkeit</strong>, nicht Einzelpersonen.</span><span class="t-en">Hours and FTE formulas. Aggregated <strong>team availability</strong>.</span></div>
     </div>
-    <div class="box box-impact">
-      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
-      <div class="box-body">
-        <span class="t-de">„Bei einer Team Resource schaue ich nicht auf die Availability einer einzelnen Person, sondern auf die <strong>aggregierte Team Availability</strong>."</span>
-        <span class="t-en">"With a Team Resource, I don't look at one person's availability, but at the <strong>aggregated Team Availability</strong>."</span>
-      </div>
+    <div class="box box-feedback">
+      <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback (Aayushi)</span><span class="t-en">Feedback (Aayushi)</span></div>
+      <div class="box-body"><span class="t-de">Cross-Project-Allocation-Grid im Team-Profil als alternative Ansicht erwähnen.</span><span class="t-en">Mention cross-project allocation grid in team profile.</span></div>
     </div>
-    <div class="transition">→ <span class="t-de">„Jetzt ins BPA Flatgrid für den operativen Überblick."</span><span class="t-en">"Now to the BPA Flatgrid for the operational overview."</span></div>
+    <div class="transition">→ <span class="t-de">BPA Flatgrid</span><span class="t-en">BPA Flatgrid</span></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     SCENE 7 – Team Resources im BPA Flatgrid
-══════════════════════════════════════════════ -->
+<!-- SCENE 7 -->
 <div class="scene" id="team-resources-scene-07">
   <div class="scene-header">
-    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--teal),var(--navy))"><div class="scene-num-big">07</div><div class="scene-num-label">BPAFG</div></div>
+    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--rm),var(--teal))"><div class="scene-num-big">07</div><div class="scene-num-label">BPAFG</div></div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Block 7 · Operativer Workspace</span><span class="t-en">Block 7 · Operational Workspace</span></div>
-      <div class="scene-title"><span class="t-de">Team Resources im BPA Flatgrid</span><span class="t-en">Team Resources in the BPA Flatgrid</span></div>
-      <div class="scene-subtitle"><span class="t-de">Team Assignments über Projekte hinweg steuern</span><span class="t-en">Manage team assignments across projects</span></div>
+      <div class="scene-act"><span class="t-de">Block 7 · BPA</span><span class="t-en">Block 7 · BPA</span></div>
+      <div class="scene-title"><span class="t-de">Team Resources im BPA Flatgrid</span><span class="t-en">Team Resources in BPA Flatgrid</span></div>
     </div>
   </div>
-  <div class="scene-tags"><span class="tag tag-rm">BPAFG</span><span class="tag tag-blue">Multi-Project</span></div>
   <div class="scene-body">
     <div class="box box-click">
       <div class="box-header"><span class="box-icon">🖱️</span><span class="t-de">Klickpfad</span><span class="t-en">Click path</span></div>
-      <div class="box-body">
-        <ul class="click-steps">
-          <li><div class="click-step-num">1</div><div><span class="t-de"><span class="click-path">Bulk Project Allocation Flat Grid</span> öffnen</span><span class="t-en">Open <span class="click-path">Bulk Project Allocation Flat Grid</span></span></div></li>
-          <li><div class="click-step-num">2</div><div><span class="t-de">Setup: Date Range aktuelles Quartal, Dataset: Allocation and Demand, Resource Mode</span><span class="t-en">Setup: Date Range current quarter, Dataset: Allocation and Demand, Resource Mode</span></div></li>
-          <li><div class="click-step-num">3</div><div><span class="t-de">Resource Type Filter: <strong>Team Resources</strong> oder Team auswählen</span><span class="t-en">Resource Type Filter: <strong>Team Resources</strong> or select team</span></div></li>
-          <li><div class="click-step-num">4</div><div><span class="t-de"><span class="click-path">Options → Show Team Assignments</span> erwähnen</span><span class="t-en">Mention <span class="click-path">Options → Show Team Assignments</span></span></div></li>
-        </ul>
-      </div>
+      <div class="box-body"><ul class="click-steps">
+        <li><div class="click-step-num">1</div><div><span class="t-de"><span class="click-path">Bulk Project Allocation Flat Grid</span></span><span class="t-en"><span class="click-path">BPA Flat Grid</span></span></div></li>
+        <li><div class="click-step-num">2</div><div><span class="t-de">Resource Mode → Filter Team Resources</span><span class="t-en">Resource mode → filter teams</span></div></li>
+        <li><div class="click-step-num">3</div><div><span class="t-de"><span class="click-path">Options → Show Team Assignments</span></span><span class="t-en"><span class="click-path">Show Team Assignments</span></span></div></li>
+        <li><div class="click-step-num">4</div><div><span class="t-de">Resource Type Filter + Spalte Is Team Resource</span><span class="t-en">Resource type filter + column</span></div></li>
+      </ul></div>
     </div>
-    <div class="box box-say">
-      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
-      <div class="box-body">
-        <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
-          <li><span class="t-de"><strong>Team Assignments sehen:</strong> Team Assignments über mehrere Projekte gleichzeitig sichtbar.</span><span class="t-en"><strong>See Team Assignments:</strong> Team assignments visible across multiple projects at once.</span></li>
-          <li><span class="t-de"><strong>Show Team Assignments Option:</strong> Besonders relevant, um zu verstehen, wie Team Assignments auf Basis der Inclusion % berücksichtigt werden.</span><span class="t-en"><strong>Show Team Assignments Option:</strong> Especially relevant to understand how team assignments are considered based on Inclusion %.</span></li>
-          <li><span class="t-de"><strong>Direkt anpassen:</strong> Team Allocations können hier direkt angepasst werden — aber man verändert Team Capacity, nicht eine Person.</span><span class="t-en"><strong>Adjust directly:</strong> Team allocations can be adjusted directly here — but you're changing Team Capacity, not a person.</span></li>
-        </ul>
-      </div>
+    <div class="box box-feedback">
+      <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback (Aayushi)</span><span class="t-en">Feedback (Aayushi)</span></div>
+      <div class="box-body"><span class="t-de"><strong>Show Team Assignments</strong> zeigt pro Person Team-Zugehörigkeit inkl. Inclusion % — erklärt Einfluss auf individuelle Verfügbarkeit. Zahlen im BPA sind <strong>team-basiert</strong>.</span><span class="t-en"><strong>Show Team Assignments</strong> explains impact on individual availability.</span></div>
     </div>
     <div class="box box-impact">
-      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
-      <div class="box-body">
-        <span class="t-de">„Das BPA Flatgrid zeigt Team Resources nicht als Sonderfall, sondern als <strong>operative Planungsressource</strong> — aber die Bedeutung der Zahlen ist Team-basiert."</span>
-        <span class="t-en">"The BPA Flatgrid shows Team Resources not as a special case, but as an <strong>operational planning resource</strong> — but the meaning of the numbers is team-based."</span>
-      </div>
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact</span></div>
+      <div class="box-body"><span class="t-de">„Das BPA Flatgrid ist der operative Arbeitsplatz für Team-Planung über Projekte hinweg.“</span><span class="t-en">"The BPA Flatgrid is the operational workspace for team planning across projects."</span></div>
     </div>
-    <div class="transition">→ <span class="t-de">„Ein wichtiger Punkt: Resource Requests und Replace."</span><span class="t-en">"An important point: Resource Requests and Replace."</span></div>
+    <div class="transition">→ <span class="t-de">Resource Requests (kurz)</span><span class="t-en">Resource Requests (brief)</span></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     SCENE 8 – Resource Requests und Replace
-══════════════════════════════════════════════ -->
+<!-- SCENE 8 -->
 <div class="scene" id="team-resources-scene-08">
   <div class="scene-header">
-    <div class="scene-num-badge"><div class="scene-num-big">08</div><div class="scene-num-label">Requests</div></div>
+    <div class="scene-num-badge"><div class="scene-num-big">08</div><div class="scene-num-label">RR</div></div>
     <div class="scene-title-area">
-      <div class="scene-act"><span class="t-de">Block 8 · Wichtige Regeln</span><span class="t-en">Block 8 · Important Rules</span></div>
+      <div class="scene-act"><span class="t-de">Block 8 · Requests</span><span class="t-en">Block 8 · Requests</span></div>
       <div class="scene-title"><span class="t-de">Resource Requests &amp; Replace</span><span class="t-en">Resource Requests &amp; Replace</span></div>
-      <div class="scene-subtitle"><span class="t-de">Team Resources können nur durch Team Resources ersetzt werden</span><span class="t-en">Team Resources can only be replaced by Team Resources</span></div>
     </div>
   </div>
-  <div class="scene-tags"><span class="tag tag-orange">Requests</span><span class="tag tag-red">Replace</span></div>
   <div class="scene-body">
     <div class="box box-say">
-      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Erklärpunkte</span><span class="t-en">Talking points</span></div>
-      <div class="box-body">
-        <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
-          <li><span class="t-de"><strong>Team Resource Requests:</strong> Projektmanager kann eine Team Resource anfragen — der Request geht an den <strong>Resource Manager der Team Resource</strong>, nicht der einzelnen Mitglieder.</span><span class="t-en"><strong>Team Resource Requests:</strong> Project Manager can request a Team Resource — the request goes to the <strong>Resource Manager of the Team Resource</strong>, not the individual members.</span></li>
-          <li><span class="t-de"><strong>Ersetzungsregeln:</strong> Team Resource ersetzt Team Resource. Named Resource ersetzt Named Resource. <strong>Nicht austauschbar.</strong></span><span class="t-en"><strong>Replacement rules:</strong> Team Resource replaces Team Resource. Named Resource replaces Named Resource. <strong>Not interchangeable.</strong></span></li>
-        </ul>
-      </div>
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Regeln (kurz)</span><span class="t-en">Rules (brief)</span></div>
+      <div class="box-body"><ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
+        <li><span class="t-de">Request geht an <strong>RM der Team Resource</strong></span><span class="t-en">Request goes to <strong>team resource RM</strong></span></li>
+        <li><span class="t-de">Team ↔ Team ersetzen; Named ↔ Named</span><span class="t-en">Team ↔ team; Named ↔ named</span></li>
+      </ul></div>
+    </div>
+    <div class="box box-feedback">
+      <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback</span><span class="t-en">Feedback</span></div>
+      <div class="box-body"><span class="t-de">Kurz halten — nicht live zeigen, es sei denn der Kunde fragt.</span><span class="t-en">Keep short — don't demo live unless asked.</span></div>
     </div>
     <div class="box box-impact">
-      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact statement</span></div>
-      <div class="box-body">
-        <span class="t-de">„Team Resources und Named Resources sind beide planbar, aber sie sind <strong>nicht austauschbar</strong>."</span>
-        <span class="t-en">"Team Resources and Named Resources are both assignable, but they are <strong>not interchangeable</strong>."</span>
-      </div>
+      <div class="box-header"><span class="box-icon">⚡</span><span class="t-de">Wirkungssatz</span><span class="t-en">Impact</span></div>
+      <div class="box-body"><span class="t-de">„Team Resources und Named Resources sind zuweisbar, aber <strong>nicht austauschbar</strong>.“</span><span class="t-en">"Team and Named Resources are assignable but <strong>not interchangeable</strong>."</span></div>
     </div>
-    <div class="box box-context">
-      <div class="box-header"><span class="box-icon">💡</span><span class="t-de">Warum so?</span><span class="t-en">Why is that?</span></div>
-      <div class="box-body">
-        <span class="t-de">Das hält die Logik sauber, weil eine Team Resource anders berechnet wird als eine einzelne Person.</span>
-        <span class="t-en">This keeps the logic clean because a Team Resource is calculated differently than a single person.</span>
-      </div>
-    </div>
-    <div class="transition">→ <span class="t-de">„Und was ist mit Timesheets?"</span><span class="t-en">"And what about Timesheets?"</span></div>
+    <div class="transition">→ <span class="t-de">Timesheets FAQ</span><span class="t-en">Timesheets FAQ</span></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     SCENE 9 – Timesheets und Reporting
-══════════════════════════════════════════════ -->
+<!-- SCENE 9 -->
 <div class="scene" id="team-resources-scene-09">
   <div class="scene-header">
-    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--purple),var(--navy))"><div class="scene-num-big">09</div><div class="scene-num-label">Timesheets</div></div>
+    <div class="scene-num-badge" style="background:linear-gradient(135deg,var(--purple),var(--navy))"><div class="scene-num-big">09</div><div class="scene-num-label">FAQ</div></div>
     <div class="scene-title-area">
       <div class="scene-act"><span class="t-de">Block 9 · FAQ</span><span class="t-en">Block 9 · FAQ</span></div>
       <div class="scene-title"><span class="t-de">Timesheets &amp; Reporting</span><span class="t-en">Timesheets &amp; Reporting</span></div>
-      <div class="scene-subtitle"><span class="t-de">Häufige Frage proaktiv beantworten</span><span class="t-en">Proactively answer common questions</span></div>
     </div>
   </div>
-  <div class="scene-tags"><span class="tag tag-purple">Timesheets</span><span class="tag tag-blue">Reporting</span></div>
   <div class="scene-body">
     <div class="box box-say">
-      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Häufige Frage beantworten</span><span class="t-en">Answer common question</span></div>
-      <div class="box-body">
-        <ul style="list-style:disc;padding-left:18px;font-size:14px;line-height:2;">
-          <li><span class="t-de"><strong>Frage:</strong> „Wenn Team Resources keine Timesheet User sind — wie funktioniert dann Time Tracking?"</span><span class="t-en"><strong>Question:</strong> "If Team Resources aren't Timesheet Users — how does time tracking work?"</span></li>
-          <li><span class="t-de"><strong>Antwort:</strong> Die Team Resource selbst bucht keine Zeit. Aber die <strong>Teammitglieder</strong>, die Timesheet User sind, können Zeit auf Team Assignments buchen.</span><span class="t-en"><strong>Answer:</strong> The Team Resource itself doesn't book time. But <strong>team members</strong> who are Timesheet Users can book time on Team Assignments.</span></li>
-          <li><span class="t-de"><strong>Reporting:</strong> Diese Zeiten werden nicht als Actuals auf die Team Resource zurückgeschrieben, können aber über Pivot Grid Reporting ausgewertet werden.</span><span class="t-en"><strong>Reporting:</strong> These times aren't written back as actuals to the Team Resource, but can be evaluated via Pivot Grid Reporting.</span></li>
-        </ul>
-      </div>
+      <div class="box-header"><span class="box-icon">🎙️</span><span class="t-de">Häufige Frage</span><span class="t-en">Common question</span></div>
+      <div class="box-body"><span class="t-de">„Wenn Team Resources keine Timesheet User sind — wie funktioniert Time Tracking?“ → Team Resource bucht nicht selbst; Mitglieder (Timesheet User) buchen auf Team Assignments; Auswertung via <strong>Pivot Grid Reporting</strong>.</span><span class="t-en">Team resource doesn't book time; members book on team assignments; reporting via pivot grid.</span></div>
     </div>
-    <div class="box box-context">
-      <div class="box-header"><span class="box-icon">💡</span><span class="t-de">Demo-Tipp</span><span class="t-en">Demo tip</span></div>
-      <div class="box-body">
-        <span class="t-de">Für eine 20-Minuten-Demo <strong>nicht live durchklicken</strong>. Nur erklären: „Das ist reportbar, aber es ist ein separates Timesheet-/Reporting-Thema."</span>
-        <span class="t-en">For a 20-minute demo <strong>don't click through live</strong>. Just explain: "This is reportable, but it's a separate Timesheet/Reporting topic."</span>
-      </div>
+    <div class="box box-feedback">
+      <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Feedback</span><span class="t-en">Feedback</span></div>
+      <div class="box-body"><span class="t-de">Nicht durchklicken — nur verbal. Separates Thema.</span><span class="t-en">Verbal only — separate topic.</span></div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     CLOSING & Q&A
-══════════════════════════════════════════════ -->
+
+<!-- CLOSING -->
 <div class="closing">
   <h2><span class="t-de">Zusammenfassung — Team Resources</span><span class="t-en">Summary — Team Resources</span></h2>
   <div class="closing-grid">
-    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">👥</div><div><span class="t-de">Team Resources sind <strong>planbare Teams</strong>, keine einzelnen Personen</span><span class="t-en">Team Resources are <strong>assignable teams</strong>, not individual people</span></div></div>
-    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">📊</div><div><span class="t-de">Team Capacity = Summe Mitglieder-Capacity × <strong>Inclusion %</strong></span><span class="t-en">Team Capacity = Sum of members' capacity × <strong>Inclusion %</strong></span></div></div>
-    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">⚡</div><div><span class="t-de">Story Points optional — nur relevant bei agiler Planung</span><span class="t-en">Story Points optional — only relevant for agile planning</span></div></div>
-    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">💰</div><div><span class="t-de">Allokation in Hours, FTE, Cost, Mandays oder Story Points</span><span class="t-en">Allocation in Hours, FTE, Cost, Mandays or Story Points</span></div></div>
-    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">🔍</div><div><span class="t-de">Net Availability + BPA zeigen Team-Level Auswirkungen</span><span class="t-en">Net Availability + BPA show team-level impact</span></div></div>
-    <div class="closing-item"><div style="font-size:18px;flex-shrink:0;">🔄</div><div><span class="t-de">Team Resources nur durch Team Resources ersetzbar</span><span class="t-en">Team Resources only replaceable by Team Resources</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;">👥</div><div><span class="t-de"><strong>Team Resource</strong> — keine Person, planbare Team-Kapazität</span><span class="t-en"><strong>Team Resource</strong> — not a person, assignable team capacity</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;">📊</div><div><span class="t-de"><strong>Inclusion %</strong> — Anteil jeder Person an Team Capacity</span><span class="t-en"><strong>Inclusion %</strong> — each person's share of team capacity</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;">⚡</div><div><span class="t-de"><strong>1 FTE</strong> = Full Team Equivalent (nicht eine Person)</span><span class="t-en"><strong>1 FTE</strong> = Full Team Equivalent (not one person)</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;">📈</div><div><span class="t-de"><strong>Story Points</strong> — Team als Ganzes, optional</span><span class="t-en"><strong>Story Points</strong> — whole team, optional</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;">🔄</div><div><span class="t-de"><strong>Replace:</strong> Team ↔ Team, Named ↔ Named</span><span class="t-en"><strong>Replace:</strong> team ↔ team, named ↔ named</span></div></div>
+    <div class="closing-item"><div style="font-size:18px;">🎯</div><div><span class="t-de"><strong>Requests</strong> → RM der Team Resource</span><span class="t-en"><strong>Requests</strong> → team resource RM</span></div></div>
   </div>
   <div class="closing-final">
-    <span class="t-de">„Weg von zu früher Detailplanung auf Personenebene —<br><strong>hin zu realistischer, steuerbarer Team-Capacity."</strong></span>
-    <span class="t-en">"Away from premature detail planning at individual level —<br><strong>towards realistic, manageable Team Capacity."</strong></span>
+    <span class="t-de">„Weg von vorschneller Detailplanung auf Personenebene — <strong>hin zu realistischer, steuerbarer Team-Capacity.</strong> Das spart Zeit und gibt bessere Transparenz über die Team-Auslastung.“</span>
+    <span class="t-en">"Away from premature individual detail planning — <strong>towards realistic, manageable team capacity.</strong> This saves time and improves visibility into team utilization."</span>
+  </div>
+</div>
+
+<div class="qr-section">
+  <div class="qr-header">📋 <span class="t-de">Quick Cheat Sheet — 20 Minuten</span><span class="t-en">Quick cheat sheet — 20 min</span></div>
+  <div class="qr-body">
+    <p style="font-weight:700;margin-bottom:8px;"><span class="t-de">Nicht zu tief gehen:</span><span class="t-en">Don't go too deep:</span></p>
+    <ul style="list-style:disc;padding-left:20px;font-size:14px;line-height:2;">
+      <li><span class="t-de">Detaillierte Kostenformeln (nur erwähnen)</span><span class="t-en">Detailed cost formulas (mention only)</span></li>
+      <li><span class="t-de">Team Resources klonen</span><span class="t-en">Cloning team resources</span></li>
+      <li><span class="t-de">Global Replace im Detail</span><span class="t-en">Global replace in detail</span></li>
+      <li><span class="t-de">Pivot Grid Timesheet Reporting live</span><span class="t-en">Pivot grid timesheet reporting live</span></li>
+    </ul>
+    <p style="font-weight:700;margin:16px 0 8px;"><span class="t-de">Bester Demo-Flow:</span><span class="t-en">Best demo flow:</span></p>
+    <p style="font-size:14px;line-height:1.7;"><span class="t-de">RM Grid → Profil → <strong>Team Capacity (Zeit!)</strong> → Projekt-Allokation → Net Availability → BPA (<strong>Show Team Assignments</strong>) → Recap</span><span class="t-en">RM Grid → Profile → <strong>Team Capacity (time!)</strong> → Project allocation → Net Availability → BPA → Recap</span></p>
+  </div>
+</div>
+
+<div class="box box-feedback" style="margin:20px 0;">
+  <div class="box-header"><span class="box-icon">🔧</span><span class="t-de">Opening — Feedback (Story)</span><span class="t-en">Opening — Feedback (story)</span></div>
+  <div class="box-body">
+    <span class="t-de"><strong>Mehr Story:</strong> Warum nutzt Giacomo Team Resources? Er will nicht 5 Einzel-Assignments verwalten — er allokiert sein Delivery Team als <strong>eine Einheit</strong> auf Stardust 2026.</span>
+    <span class="t-en"><strong>More story:</strong> Why does Giacomo use Team Resources? He doesn't want five individual assignments — he allocates his delivery team as <strong>one unit</strong>.</span>
   </div>
 </div>
 
@@ -1064,6 +935,7 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 </div>
 </template>
 
+<script src="demo-script-export-word.js"></script>
 <script>
 /* ═══════════════════════════════════════════════════
    LANGUAGE SWITCHER
@@ -1097,7 +969,7 @@ let hasUnsavedChanges = false;
 document.addEventListener('DOMContentLoaded', () => {
   loadSaved();
   createEditToolbar();
-  initFormatToolbar();
+  initFormatToolbar({ onChange: markUnsaved });
 
   window.addEventListener('beforeunload', (e) => {
     if (editMode && hasUnsavedChanges) {
@@ -1117,6 +989,7 @@ function createEditToolbar() {
         <span id="edit-icon">✏️</span>
         <span id="edit-label">Bearbeiten</span>
       </button>
+      <button type="button" class="edit-actions-btn demo-export-word-btn" onclick="DemoWordExport.export()" title="Demo-Skript als Word exportieren (aktuelle Sprache)">📄 Word</button>
       <div id="edit-extra" style="display:none;align-items:center;gap:6px;flex-wrap:wrap;">
         <button class="edit-actions-btn edit-save-btn" onclick="saveAll()">💾 Speichern</button>
         <button type="button" class="edit-actions-btn edit-versions-btn" onclick="toggleRmVersionsPanel()" title="Letzte gespeicherte Stände (AWS)">📜 <span id="edit-versions-btn-label-rm"></span></button>
@@ -1131,70 +1004,6 @@ function createEditToolbar() {
   if (rmVerLbl) rmVerLbl.textContent = rmLang() === 'de' ? 'Versionen' : 'Versions';
 }
 
-function initFormatToolbar() {
-  const bar = document.getElementById('edit-format-bar');
-  if (!bar || bar.dataset.wired) return;
-  bar.dataset.wired = '1';
-
-  const addBtn = (label, title, fn) => {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'edit-fmt-btn';
-    b.textContent = label;
-    b.title = title;
-    b.addEventListener('mousedown', e => { e.preventDefault(); });
-    b.addEventListener('click', () => { fn(); markUnsaved(); });
-    bar.appendChild(b);
-  };
-
-  addBtn('B', 'Fett (Strg+B)', () => { document.execCommand('bold'); });
-  addBtn('K', 'Kursiv (Strg+I)', () => { document.execCommand('italic'); });
-  addBtn('N', 'Normal — Formatierung der Auswahl entfernen', () => {
-    document.execCommand('removeFormat');
-    try { document.execCommand('unlink'); } catch (e) { /* ignore */ }
-    const sel = window.getSelection();
-    if (sel.rangeCount) {
-      const c = sel.getRangeAt(0).commonAncestorContainer;
-      const editable = (c.nodeType === 3 ? c.parentElement : c);
-      const root = editable ? (editable.closest('[contenteditable]') || editable) : null;
-      if (root) {
-        root.querySelectorAll('font').forEach(f => {
-          while (f.firstChild) f.parentNode.insertBefore(f.firstChild, f);
-          f.remove();
-        });
-        root.querySelectorAll('[style]').forEach(el => {
-          el.style.removeProperty('font-size');
-          if (!el.getAttribute('style').trim()) el.removeAttribute('style');
-        });
-      }
-    }
-  });
-
-  const sep = document.createElement('span');
-  sep.className = 'edit-fmt-sep';
-  sep.setAttribute('aria-hidden', 'true');
-  bar.appendChild(sep);
-
-  addBtn('A+', 'Schrift grösser', () => {
-    try {
-      if (document.queryCommandSupported && document.queryCommandSupported('increaseFontSize')) {
-        document.execCommand('increaseFontSize');
-      } else { document.execCommand('fontSize', false, '4'); }
-    } catch (e) { document.execCommand('fontSize', false, '4'); }
-  });
-  addBtn('A−', 'Schrift kleiner', () => {
-    try {
-      if (document.queryCommandSupported && document.queryCommandSupported('decreaseFontSize')) {
-        document.execCommand('decreaseFontSize');
-      } else { document.execCommand('fontSize', false, '2'); }
-    } catch (e) { document.execCommand('fontSize', false, '2'); }
-  });
-
-  const hint = document.createElement('div');
-  hint.className = 'edit-fmt-hint';
-  hint.textContent = 'Text markieren, dann Format wählen — gilt für alle bearbeitbaren Bereiche.';
-  bar.appendChild(hint);
-}
 
 /* ── Toggle ─────────────────────────────────────── */
 function toggleEditMode() {
@@ -2116,9 +1925,26 @@ function removeAgendaEditing() {
 
 const WEBSITE_API_BASE = 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
 const DEMO_SCRIPT_API_URL = `${WEBSITE_API_BASE}/demo-script/team-resources`;
+const DEMO_PRESIGNED_CONFIG_KEY = 'team-resources';
+
+/** Presigned PUT — nur Fallback; URLs in /config/demo-presigned-fallback.json (nicht im Git). */
+let PRESIGNED_PUT_URL = null;
+
+async function ensureDemoPresignedPutUrl() {
+  if (PRESIGNED_PUT_URL) return PRESIGNED_PUT_URL;
+  try {
+    const r = await fetch('/config/demo-presigned-fallback.json', { cache: 'no-store' });
+    if (!r.ok) return null;
+    const cfg = await r.json();
+    PRESIGNED_PUT_URL = cfg[DEMO_PRESIGNED_CONFIG_KEY] || null;
+  } catch (e) {
+    console.warn('Demo presigned config:', e);
+  }
+  return PRESIGNED_PUT_URL;
+}
+
 const DEMO_SCRIPT_EDIT_PASSWORD = 'tempus-demo-edit-2024';
 
-const PRESIGNED_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-demo-team-resources-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3MG2WEBUJ%2F20260521%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260521T153354Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=977e193e05ae0038323d5fba5f097ffb316c0725a202e9338805c39412b8f0a9';
 
 /* Immer S3 direkt — nicht manuel-weiss.ch/data/… (CloudFront-Cache, nicht geräteübergreifend frisch). */
 const STATE_READ_URL =
@@ -2443,6 +2269,12 @@ async function saveAll(opts = {}) {
     }
 
     if (!apiOk) {
+      await ensureDemoPresignedPutUrl();
+      if (!PRESIGNED_PUT_URL) {
+        localStorage.setItem(STORAGE_KEY, payload);
+        console.warn('Cloud-Sync: API und Presigned-Fallback nicht verfügbar — nur lokal gespeichert.');
+        return;
+      }
       const res = await fetch(PRESIGNED_PUT_URL, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -2625,11 +2457,15 @@ function resetAll() {
       reset: true,
       schemaVersion: RM_STATE_SCHEMA_VERSION
     });
-    fetch(PRESIGNED_PUT_URL, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: resetBody
-    }).catch(() => {});
+    ensureDemoPresignedPutUrl().then((url) => {
+      if (url) {
+        fetch(url, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: resetBody
+        }).catch(() => {});
+      }
+    });
     localStorage.removeItem(STORAGE_KEY);
     location.reload();
   }
@@ -2732,6 +2568,7 @@ const BOX_TYPES = [
   { type: 'context', icon: '💡', label: 'Hintergrund-Info',    desc: 'Zusatzwissen für den Moderator',              bg: '#c8860a' },
   { type: 'impact',  icon: '⚡', label: 'Wirkungssatz',        desc: 'Abschlusssatz der Szene',                     bg: '#5b3fa0' },
   { type: 'warn',    icon: '🔧', label: 'Fallback / Warnung',  desc: 'Was tun wenn etwas nicht klappt',             bg: '#c0392b' },
+  { type: 'feedback', icon: '🔧', label: 'Feedback',           desc: 'Review-Hinweis aus Transkript', bg: '#d97706' },
   { type: 'tip',     icon: '✅', label: 'Tipp',                desc: 'Hilfreicher Hinweis',                         bg: '#2d6a4f' },
 ];
 
@@ -2841,5 +2678,6 @@ function insertNewBox(bt) {
   }, 60);
 }
 </script>
+<script src="demo-agenda-window.js" data-agenda-id="team-resources-training-agenda" data-demo-label="Team Resources"></script>
 </body>
 </html>

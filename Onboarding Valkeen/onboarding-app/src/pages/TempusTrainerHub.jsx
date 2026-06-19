@@ -9,7 +9,8 @@ import {
   ArrowRight,
   CheckCircle2,
   LayoutDashboard,
-  Play
+  Play,
+  MousePointer2
 } from 'lucide-react';
 import { useExtensionStatus } from '../components/training/ExtensionBridge';
 import TraineeHub from '../components/training/TraineeHub';
@@ -115,6 +116,19 @@ export default function TempusTrainerHub() {
               <p className="text-sm text-white/55 flex-1">Statische Demo-Umgebung und Einstieg ohne Produktiv-Mandant.</p>
               <span className="text-sm text-indigo-300 flex items-center gap-1 group-hover:gap-2 transition-all">
                 Demo öffnen <ArrowRight className="w-4 h-4" />
+              </span>
+            </NavLink>
+            <NavLink
+              to="/mouse-automation"
+              className="glass-card p-5 flex flex-col gap-3 no-underline hover:border-indigo-500/30 transition-colors group md:col-span-3 lg:col-span-1"
+            >
+              <MousePointer2 className="w-8 h-8 text-indigo-400" />
+              <h2 className="text-lg font-semibold text-white">Drag &amp; Drop</h2>
+              <p className="text-sm text-white/55 flex-1">
+                Koordinaten-basierter Drag auf der Seite – klicken, halten, ziehen, loslassen.
+              </p>
+              <span className="text-sm text-indigo-300 flex items-center gap-1 group-hover:gap-2 transition-all">
+                Tool öffnen <ArrowRight className="w-4 h-4" />
               </span>
             </NavLink>
           </div>

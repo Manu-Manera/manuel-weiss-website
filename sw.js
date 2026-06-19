@@ -4,9 +4,20 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_NAME = 'bewerbungsmanager-v1';
-const STATIC_CACHE = 'static-v1';
-const DYNAMIC_CACHE = 'dynamic-v1';
+const CACHE_NAME = 'bewerbungsmanager-v2';
+const STATIC_CACHE = 'static-v2';
+const DYNAMIC_CACHE = 'dynamic-v2';
+
+function shouldBypassServiceWorker(url) {
+    const path = url.pathname;
+    return path.startsWith('/admin') ||
+        path === '/admin.html' ||
+        path === '/admin-login.html' ||
+        path.startsWith('/js/admin/') ||
+        path.startsWith('/admin/') ||
+        path.endsWith('admin-styles.css') ||
+        path.endsWith('admin-modern-styles.css');
+}
 
 // Static files to cache immediately
 const STATIC_FILES = [
@@ -92,6 +103,12 @@ self.addEventListener('fetch', event => {
     
     // Skip non-GET requests
     if (request.method !== 'GET') {
+        return;
+    }
+
+    // Admin panel always from network (no SW cache)
+    if (shouldBypassServiceWorker(url)) {
+        event.respondWith(fetch(request));
         return;
     }
     

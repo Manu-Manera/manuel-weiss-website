@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="de" class="lang-de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tempus Excel-Upload – Walkthrough</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+
+:root {
+  --navy:        #0f2342;
+  --primary:     #0f4c81;
+  --teal:        #0d7fa0;
+  --teal-light:  #e0f4f9;
+  --accent:      #00a878;
+  --accent-light:#e3f7ef;
+  --gold:        #c8860a;
+  --gold-light:  #fff8e6;
+  --red:         #c0392b;
+  --red-light:   #fdf0ee;
+  --purple:      #5b3fa0;
+  --purple-light:#f0ebfc;
+  --gray-100:    #f7f8fa;
+  --gray-200:    #eef0f4;
+  --gray-300:    #d8dce6;
+  --gray-400:    #b6bdca;
+  --gray-500:    #6b7280;
+  --gray-600:    #4b5563;
+  --gray-700:    #374151;
+  --gray-800:    #1f2937;
+  --gray-900:    #111827;
+  --radius:      10px;
+  --shadow:      0 2px 10px rgba(15,35,66,0.08);
+  --shadow-lg:   0 10px 30px rgba(15,35,66,0.14);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', -apple-system, sans-serif; font-size: 15px; line-height: 1.65; color: var(--gray-900); background: #eef2f7; }
+
+/* ── LAYOUT ──────────────────────────────── */
+.deck { max-width: 1080px; margin: 0 auto; padding: 0 22px 80px; }
+.slide {
+  background: white; border: 1px solid var(--gray-200); border-radius: 16px;
+  box-shadow: var(--shadow); margin: 26px 0; padding: 40px 44px; position: relative; overflow: hidden;
+  scroll-margin-top: 20px;
+}
+.slide::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
+  background: linear-gradient(180deg, var(--primary), var(--accent));
+}
+.slide-num {
+  position: absolute; top: 18px; right: 24px; font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; color: var(--gray-400); letter-spacing: 1px;
+}
+.kicker { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+h1.slide-title { font-family: 'Playfair Display', Georgia, serif; font-size: 30px; line-height: 1.18; color: var(--navy); margin-bottom: 6px; }
+h2.slide-title { font-family: 'Playfair Display', Georgia, serif; font-size: 26px; line-height: 1.2; color: var(--navy); margin-bottom: 6px; }
+.slide-sub { font-size: 15px; color: var(--gray-600); margin-bottom: 22px; max-width: 760px; }
+p { margin-bottom: 12px; }
+strong { color: var(--gray-900); }
+code { font-family: 'JetBrains Mono', monospace; font-size: 0.86em; background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: 5px; padding: 1px 6px; color: var(--primary); }
+
+/* ── HERO ────────────────────────────────── */
+.hero {
+  background: linear-gradient(135deg, #0b1f3f 0%, #0f4c81 55%, #0d7fa0 100%);
+  color: white; border-radius: 18px; padding: 56px 48px 48px; margin: 28px 0; position: relative; overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.hero::after { content:''; position:absolute; right:-80px; top:-80px; width:340px; height:340px; border-radius:50%; background:rgba(255,255,255,0.05); }
+.hero-eyebrow { display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.22); font-size:11px; font-weight:700; letter-spacing:1.6px; text-transform:uppercase; padding:6px 14px; border-radius:20px; margin-bottom:20px; }
+.hero h1 { font-family:'Playfair Display', Georgia, serif; font-size:42px; line-height:1.1; margin-bottom:14px; position:relative; }
+.hero h1 span { color:#6ee7b7; }
+.hero p { font-size:17px; opacity:0.9; max-width:680px; margin-bottom:26px; position:relative; }
+.hero-meta { display:flex; flex-wrap:wrap; gap:10px; position:relative; }
+.hero-chip { display:flex; align-items:center; gap:8px; font-size:13px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.14); padding:7px 14px; border-radius:8px; }
+
+/* ── TOC ─────────────────────────────────── */
+.toc { display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:10px; }
+.toc a { display:flex; gap:10px; align-items:center; text-decoration:none; color:var(--gray-800); background:var(--gray-100); border:1px solid var(--gray-200); border-radius:8px; padding:11px 14px; font-size:14px; font-weight:600; transition:all .15s; }
+.toc a:hover { background:var(--accent-light); border-color:var(--accent); transform:translateY(-1px); }
+.toc-n { display:flex; align-items:center; justify-content:center; min-width:26px; height:26px; border-radius:6px; background:var(--primary); color:white; font-size:12px; font-weight:800; }
+
+/* ── CARDS ───────────────────────────────── */
+.callout { border-radius:10px; padding:16px 20px; margin:16px 0; font-size:14.5px; border:1px solid; }
+.callout-title { font-weight:700; display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.callout.info { background:var(--teal-light); border-color:#a9dce8; }
+.callout.info .callout-title { color:var(--teal); }
+.callout.tip { background:var(--accent-light); border-color:#9fe3c9; }
+.callout.tip .callout-title { color:var(--accent); }
+.callout.warn { background:var(--gold-light); border-color:#ecc87a; }
+.callout.warn .callout-title { color:#9a6800; }
+.callout.danger { background:var(--red-light); border-color:#f2b8b0; }
+.callout.danger .callout-title { color:var(--red); }
+
+ul.clean { list-style:none; }
+ul.clean li { position:relative; padding-left:24px; margin-bottom:9px; }
+ul.clean li::before { content:''; position:absolute; left:4px; top:9px; width:8px; height:8px; border-radius:2px; background:var(--accent); }
+ol.steps { counter-reset:s; list-style:none; }
+ol.steps > li { position:relative; padding-left:46px; margin-bottom:16px; min-height:32px; }
+ol.steps > li::before { counter-increment:s; content:counter(s); position:absolute; left:0; top:-2px; width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg,var(--primary),var(--teal)); color:white; font-weight:800; display:flex; align-items:center; justify-content:center; font-size:15px; }
+ol.steps > li strong { display:block; margin-bottom:2px; }
+
+/* ── TABLE ───────────────────────────────── */
+table { width:100%; border-collapse:collapse; margin:14px 0; font-size:13.5px; }
+th { background:var(--navy); color:white; text-align:left; padding:10px 12px; font-weight:600; font-size:12.5px; }
+th:first-child { border-top-left-radius:8px; } th:last-child { border-top-right-radius:8px; }
+td { padding:9px 12px; border-bottom:1px solid var(--gray-200); vertical-align:top; }
+tr:nth-child(even) td { background:var(--gray-100); }
+.badge { display:inline-block; font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; white-space:nowrap; }
+.badge.req { background:var(--red-light); color:var(--red); }
+.badge.opt { background:var(--gray-200); color:var(--gray-600); }
+.badge.dep { background:var(--purple-light); color:var(--purple); }
+.badge.none { background:var(--accent-light); color:var(--accent); }
+
+/* ── 10 FILES GRID ───────────────────────── */
+.files { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:14px; }
+.file-card { border:1px solid var(--gray-200); border-radius:12px; padding:16px 18px; background:white; box-shadow:var(--shadow); position:relative; }
+.file-card .fc-head { display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+.file-card .fc-num { min-width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; font-size:16px; }
+.file-card .fc-name { font-weight:700; font-size:15px; color:var(--navy); line-height:1.2; }
+.file-card .fc-sheet { font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--gray-500); }
+.file-card .fc-desc { font-size:13px; color:var(--gray-600); margin-bottom:8px; }
+.file-card .fc-dep { font-size:12px; color:var(--purple); font-weight:600; }
+.file-card .fc-dep.free { color:var(--accent); }
+.tier-1 .fc-num { background:linear-gradient(135deg,#0f4c81,#0d7fa0); }
+.tier-2 .fc-num { background:linear-gradient(135deg,#5b3fa0,#8b6fd6); }
+.tier-3 .fc-num { background:linear-gradient(135deg,#c8860a,#e0a82e); }
+
+/* ── DEPENDENCY DIAGRAM ──────────────────── */
+.dep { display:flex; flex-direction:column; gap:0; margin:10px 0 4px; }
+.dep-tier { border:1px dashed var(--gray-300); border-radius:12px; padding:16px 18px 18px; position:relative; margin-bottom:30px; background:var(--gray-100); }
+.dep-tier:last-child { margin-bottom:0; }
+.dep-tier::after { content:'▼'; position:absolute; left:50%; bottom:-26px; transform:translateX(-50%); color:var(--gray-400); font-size:18px; }
+.dep-tier:last-child::after { display:none; }
+.dep-label { font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.dep-row { display:flex; flex-wrap:wrap; gap:10px; }
+.dep-node { display:flex; align-items:center; gap:10px; background:white; border:1px solid var(--gray-300); border-radius:10px; padding:10px 14px; font-weight:600; font-size:14px; box-shadow:var(--shadow); }
+.dep-node .dn { min-width:28px; height:28px; border-radius:7px; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:13px; }
+.dep-node small { display:block; font-weight:500; color:var(--gray-500); font-size:11px; }
+.t1 .dep-label { color:var(--primary); } .t1 .dn { background:var(--primary); }
+.t2 .dep-label { color:var(--purple); } .t2 .dn { background:var(--purple); }
+.t3 .dep-label { color:var(--gold); } .t3 .dn { background:var(--gold); }
+
+/* ── FLOW MINI ───────────────────────────── */
+.flow { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:10px 0; font-size:13px; }
+.flow .step { background:var(--gray-100); border:1px solid var(--gray-300); border-radius:8px; padding:8px 12px; font-weight:600; }
+.flow .arr { color:var(--accent); font-weight:800; }
+
+/* ── footer / print ──────────────────────── */
+.foot { text-align:center; color:var(--gray-500); font-size:12px; margin-top:18px; }
+.print-hint { font-size:12px; color:var(--gray-500); }
+@media print {
+  body { background:white; }
+  .deck { max-width:none; padding:0; }
+  .slide, .hero { box-shadow:none; border:1px solid #ddd; break-inside:avoid; page-break-inside:avoid; margin:0 0 12px; }
+  .toc a { break-inside:avoid; }
+  .no-print { display:none !important; }
+  .hero, .file-card .fc-num, th, ol.steps > li::before, .dep-node .dn { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+}
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+@media (max-width:760px){ .two-col { grid-template-columns:1fr; } .slide{padding:28px 22px;} .hero{padding:38px 24px;} .hero h1{font-size:30px;} }
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- ░░ HERO ░░ -->
+<div class="hero">
+  <div class="hero-eyebrow">📊 Tempus Resource · Data Synchronization</div>
+  <h1>Excel-Upload <span>Walkthrough</span><br>So passen die Dateien zusammen</h1>
+  <p>Ein gemeinsamer Durchgang durch den Excel-Import in Tempus: was in welcher Datei steht,
+     wie sie voneinander abhängen und in welcher <strong>Reihenfolge</strong> sie hochgeladen werden.</p>
+  <div class="hero-meta">
+    <div class="hero-chip">🗂️ 10 Import-Bausteine</div>
+    <div class="hero-chip">🔗 Klare Abhängigkeiten</div>
+    <div class="hero-chip">⏱️ ca. 30–45 Min. Walkthrough</div>
+    <div class="hero-chip">👥 PMO · Admin · Datenverantwortliche</div>
+  </div>
+</div>
+
+<!-- ░░ AGENDA ░░ -->
+<section class="slide" id="agenda">
+  <div class="slide-num">01</div>
+  <div class="kicker">Agenda</div>
+  <h2 class="slide-title">Was wir gemeinsam durchgehen</h2>
+  <p class="slide-sub">Ziel: Sie verstehen am Ende, <strong>welche Excel-Datei wofür</strong> da ist,
+     <strong>warum die Reihenfolge zählt</strong> und können einen sauberen Import selbst durchführen.</p>
+  <div class="toc">
+    <a href="#big-picture"><span class="toc-n">2</span> Das große Ganze</a>
+    <a href="#where"><span class="toc-n">3</span> Wo der Upload passiert</a>
+    <a href="#files"><span class="toc-n">4</span> Die 10 Dateien im Überblick</a>
+    <a href="#dependencies"><span class="toc-n">5</span> Zusammenhänge der Dateien</a>
+    <a href="#order"><span class="toc-n">6</span> Die richtige Reihenfolge</a>
+    <a href="#matching"><span class="toc-n">7</span> Wie Tempus Zeilen erkennt</a>
+    <a href="#behavior"><span class="toc-n">8</span> Import Behavior: Merge/Overwrite/Skip</a>
+    <a href="#timephased"><span class="toc-n">9</span> Zeit-phasierte Spalten</a>
+    <a href="#walkthrough"><span class="toc-n">10</span> Schritt-für-Schritt Upload</a>
+    <a href="#errors"><span class="toc-n">11</span> Häufige Fehler vermeiden</a>
+    <a href="#checklist"><span class="toc-n">12</span> Checkliste & nächste Schritte</a>
+  </div>
+</section>
+
+<!-- ░░ BIG PICTURE ░░ -->
+<section class="slide" id="big-picture">
+  <div class="slide-num">02</div>
+  <div class="kicker">Das große Ganze</div>
+  <h2 class="slide-title">Tempus ist anfangs ein leeres Blatt</h2>
+  <p class="slide-sub">Wir befüllen Tempus über standardisierte Excel-Vorlagen. Jede Vorlage steht für
+     einen <strong>Datentyp</strong> – und diese Typen bauen logisch aufeinander auf.</p>
+  <div class="two-col">
+    <div>
+      <ul class="clean">
+        <li><strong>Stammdaten zuerst:</strong> Felder (Attribute), Ressourcen und Skills sind das Fundament.</li>
+        <li><strong>Dann die Container:</strong> Projekte – sie nutzen die Attribute aus Schritt 1.</li>
+        <li><strong>Dann die Verknüpfungen:</strong> Zuweisungen verbinden <em>Ressource + Projekt + Aufwand</em>.</li>
+        <li><strong>Zuletzt die Details:</strong> Finanzen, Raten, Admin-Zeiten, Team-Mitglieder.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="callout info">
+        <div class="callout-title">💡 Kernidee</div>
+        Eine Zuweisung kann nur entstehen, wenn die <strong>Ressource</strong> und das <strong>Projekt</strong>
+        bereits existieren. Deshalb ist die Reihenfolge keine Formalität, sondern Voraussetzung.
+      </div>
+      <div class="flow">
+        <span class="step">Felder</span><span class="arr">→</span>
+        <span class="step">Ressourcen</span><span class="arr">→</span>
+        <span class="step">Projekte</span><span class="arr">→</span>
+        <span class="step">Zuweisungen</span><span class="arr">→</span>
+        <span class="step">Details</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ WHERE ░░ -->
+<section class="slide" id="where">
+  <div class="slide-num">03</div>
+  <div class="kicker">Der Upload-Ort</div>
+  <h2 class="slide-title">Wo der Excel-Import passiert</h2>
+  <p class="slide-sub">Alle Vorlagen laufen über denselben Ort in Tempus – nur die Datei wechselt.</p>
+  <ol class="steps">
+    <li><strong>Anmelden &amp; navigieren</strong>
+      <code>Admin Settings &gt; Data Synchronization &gt; Excel</code></li>
+    <li><strong>Datei wählen</strong> – <em>Choose File</em> klicken oder die <code>.xlsx</code> auf die Seite ziehen.</li>
+    <li><strong>Synchronisieren</strong> – Button <em>Synchronize</em> startet den Import.</li>
+  </ol>
+  <div class="callout warn">
+    <div class="callout-title">⚠️ Zwei Regeln, die oft vergessen werden</div>
+    <ul class="clean" style="margin-top:4px;">
+      <li>Die auszufüllende Vorlage muss die <strong>erste Registerkarte (erstes Tab)</strong> der Datei sein.</li>
+      <li>Dateiformat ist immer <code>.xlsx</code> – pro Synchronisation eine Vorlage / ein Datentyp.</li>
+    </ul>
+  </div>
+  <div class="callout tip">
+    <div class="callout-title">✅ Empfehlung</div>
+    Erst in der <strong>Sandbox</strong> testen (gleicher Pfad), dann in Produktion. So sehen Sie Fehler,
+    bevor echte Daten betroffen sind.
+  </div>
+</section>
+
+<!-- ░░ 10 FILES ░░ -->
+<section class="slide" id="files">
+  <div class="slide-num">04</div>
+  <div class="kicker">Überblick</div>
+  <h2 class="slide-title">Die 10 Import-Dateien</h2>
+  <p class="slide-sub">Jede Datei hat ein festes Arbeitsblatt (Sheet) und einen klaren Zweck.
+     Farbe = Ebene der Abhängigkeit (blau = Fundament, lila = baut auf Fundament auf, gold = Detail-/Finanzdaten).</p>
+  <div class="files">
+    <div class="file-card tier-1">
+      <div class="fc-head"><div class="fc-num">1</div><div><div class="fc-name">Attributes</div><div class="fc-sheet">Sheet: Attributes</div></div></div>
+      <div class="fc-desc">Eigene Felder (Custom Fields) für Projekte, Ressourcen, Zuweisungen, Milestones, Finanzen – inkl. Auswahllisten.</div>
+      <div class="fc-dep free">Keine Voraussetzung · Fundament für 3, 4, 5, 9</div>
+    </div>
+    <div class="file-card tier-1">
+      <div class="fc-head"><div class="fc-num">2</div><div><div class="fc-name">Resources</div><div class="fc-sheet">Sheet: Resources</div></div></div>
+      <div class="fc-desc">Ressourcen-Pool: Mitarbeitende, Externe, generische Rollen, Team-Ressourcen, Login/Rollen, Kapazität.</div>
+      <div class="fc-dep free">Keine Voraussetzung · Fundament für 4, 5, 8, 9, 10</div>
+    </div>
+    <div class="file-card tier-1">
+      <div class="fc-head"><div class="fc-num">6</div><div><div class="fc-name">Skills</div><div class="fc-sheet">Sheet: Skills</div></div></div>
+      <div class="fc-desc">Skill-Katalog (Bool, Range, Kategorie …) inkl. Kategorien und optionaler Gültigkeits-Verfolgung.</div>
+      <div class="fc-dep free">Unabhängig – jederzeit importierbar</div>
+    </div>
+    <div class="file-card tier-2">
+      <div class="fc-head"><div class="fc-num">3</div><div><div class="fc-name">Projects</div><div class="fc-sheet">Sheet: Projects</div></div></div>
+      <div class="fc-desc">Projektliste mit Start/Ende, Dataset Preference (Allocation/Demand), Priorität, Phase, Benefit.</div>
+      <div class="fc-dep">Braucht: Attribute (1) für Custom Fields</div>
+    </div>
+    <div class="file-card tier-2">
+      <div class="fc-head"><div class="fc-num">8</div><div><div class="fc-name">Advanced Rates</div><div class="fc-sheet">Sheet: Resource Rates</div></div></div>
+      <div class="fc-desc">Zeitlich gestaffelte Stundensätze pro Ressource (von/bis-Datum).</div>
+      <div class="fc-dep">Braucht: Ressourcen (2)</div>
+    </div>
+    <div class="file-card tier-2">
+      <div class="fc-head"><div class="fc-num">10</div><div><div class="fc-name">Team Resources</div><div class="fc-sheet">Sheet: Team Resource Members</div></div></div>
+      <div class="fc-desc">Team-Mitglieder zu Team-Ressourcen, zeit-phasiert nach Inclusion % (FTE).</div>
+      <div class="fc-dep">Braucht: Ressourcen (2)</div>
+    </div>
+    <div class="file-card tier-2">
+      <div class="fc-head"><div class="fc-num">5</div><div><div class="fc-name">Admin Times</div><div class="fc-sheet">Sheet: Admin Times</div></div></div>
+      <div class="fc-desc">Nicht-projektbezogene Zeiten (z. B. Urlaub, Schulung) je Ressource, zeit-phasiert.</div>
+      <div class="fc-dep">Braucht: Ressourcen (2), ggf. Kategorien (1)</div>
+    </div>
+    <div class="file-card tier-3">
+      <div class="fc-head"><div class="fc-num">4</div><div><div class="fc-name">Allocation &amp; Tasks</div><div class="fc-sheet">Sheet: Assignments</div></div></div>
+      <div class="fc-desc">Das Herzstück: Zuweisungen + geplante/ist Werte. Verbindet Projekt + Ressource + Task.</div>
+      <div class="fc-dep">Braucht: Ressourcen (2) &amp; Projekte (3)</div>
+    </div>
+    <div class="file-card tier-3">
+      <div class="fc-head"><div class="fc-num">9</div><div><div class="fc-name">Financials</div><div class="fc-sheet">Sheet: Financials</div></div></div>
+      <div class="fc-desc">Kosten je Projekt &amp; Kategorie (Planned/Actual), zeit-phasiert nach Monat/Quartal/Jahr.</div>
+      <div class="fc-dep">Braucht: Projekte (3), Kategorien (1)</div>
+    </div>
+    <div class="file-card tier-3">
+      <div class="fc-head"><div class="fc-num">7</div><div><div class="fc-name">Sheets</div><div class="fc-sheet">Sheet: Sheet Data</div></div></div>
+      <div class="fc-desc">Daten für vorhandene Sheet-Templates (z. B. an Projekten). Zeilen werden angehängt.</div>
+      <div class="fc-dep">Braucht: Projekte/Ressourcen (2,3) &amp; Template</div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ DEPENDENCIES ░░ -->
+<section class="slide" id="dependencies">
+  <div class="slide-num">05</div>
+  <div class="kicker">Zusammenhänge</div>
+  <h2 class="slide-title">Wie die Dateien voneinander abhängen</h2>
+  <p class="slide-sub">Drei Ebenen. Was unten steht, setzt voraus, dass die Ebene darüber bereits in Tempus existiert.</p>
+  <div class="dep">
+    <div class="dep-tier t1">
+      <div class="dep-label">⬤ Ebene 1 · Fundament (keine Voraussetzungen)</div>
+      <div class="dep-row">
+        <div class="dep-node"><span class="dn">1</span> Attributes <small>Felder &amp; Auswahllisten</small></div>
+        <div class="dep-node"><span class="dn">2</span> Resources <small>Ressourcen-Pool</small></div>
+        <div class="dep-node"><span class="dn">6</span> Skills <small>Skill-Katalog</small></div>
+      </div>
+    </div>
+    <div class="dep-tier t2">
+      <div class="dep-label">⬤ Ebene 2 · Baut auf dem Fundament auf</div>
+      <div class="dep-row">
+        <div class="dep-node"><span class="dn">3</span> Projects <small>← Attribute (1)</small></div>
+        <div class="dep-node"><span class="dn">8</span> Advanced Rates <small>← Ressourcen (2)</small></div>
+        <div class="dep-node"><span class="dn">10</span> Team Resources <small>← Ressourcen (2)</small></div>
+        <div class="dep-node"><span class="dn">5</span> Admin Times <small>← Ressourcen (2) · Attr. (1)</small></div>
+      </div>
+    </div>
+    <div class="dep-tier t3">
+      <div class="dep-label">⬤ Ebene 3 · Verknüpft Projekte &amp; Ressourcen</div>
+      <div class="dep-row">
+        <div class="dep-node"><span class="dn">4</span> Allocation &amp; Tasks <small>← Ressourcen (2) + Projekte (3)</small></div>
+        <div class="dep-node"><span class="dn">9</span> Financials <small>← Projekte (3) · Kategorien (1)</small></div>
+        <div class="dep-node"><span class="dn">7</span> Sheets <small>← Projekte/Ressourcen + Template</small></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout danger" style="margin-top:24px;">
+    <div class="callout-title">🚫 Typischer Stolperstein</div>
+    Eine <strong>Zuweisung (4)</strong> auf „Projekt X / Max M." schlägt fehl, wenn Projekt X oder Max M.
+    noch nicht existieren. Referenzierte Objekte müssen <strong>vorher</strong> angelegt sein.
+  </div>
+</section>
+
+<!-- ░░ ORDER ░░ -->
+<section class="slide" id="order">
+  <div class="slide-num">06</div>
+  <div class="kicker">Reihenfolge</div>
+  <h2 class="slide-title">Die empfohlene Import-Reihenfolge</h2>
+  <p class="slide-sub">Die offizielle Nummerierung 1 → 10 bildet genau die Abhängigkeiten ab.
+     Wer der Reihe folgt, vermeidet die meisten Fehler automatisch.</p>
+  <table>
+    <thead><tr><th style="width:46px;">#</th><th>Datei</th><th>Warum an dieser Stelle</th><th style="width:150px;">Voraussetzung</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1</strong></td><td>Attributes</td><td>Definiert Felder &amp; Auswahllisten, die Projekte/Ressourcen/Zuweisungen später nutzen.</td><td><span class="badge none">keine</span></td></tr>
+      <tr><td><strong>2</strong></td><td>Resources</td><td>Der Ressourcen-Pool – Grundlage für Zuweisungen, Raten, Team, Admin-Zeiten.</td><td><span class="badge none">keine</span></td></tr>
+      <tr><td><strong>3</strong></td><td>Projects</td><td>Projekte als Container; nutzen die Attribute aus Schritt 1.</td><td><span class="badge dep">1</span></td></tr>
+      <tr><td><strong>4</strong></td><td>Allocation &amp; Tasks</td><td>Verknüpft Ressource + Projekt + Aufwand – braucht beide vorher.</td><td><span class="badge dep">2 · 3</span></td></tr>
+      <tr><td><strong>5</strong></td><td>Admin Times</td><td>Nicht-Projektzeiten je Ressource.</td><td><span class="badge dep">2 · 1</span></td></tr>
+      <tr><td><strong>6</strong></td><td>Skills</td><td>Unabhängig – kann auch früher laufen.</td><td><span class="badge none">keine</span></td></tr>
+      <tr><td><strong>7</strong></td><td>Sheets</td><td>Daten in bestehende Sheet-Templates an Projekten/Ressourcen.</td><td><span class="badge dep">2 · 3</span></td></tr>
+      <tr><td><strong>8</strong></td><td>Advanced Rates</td><td>Zeitgestaffelte Sätze je Ressource.</td><td><span class="badge dep">2</span></td></tr>
+      <tr><td><strong>9</strong></td><td>Financials</td><td>Kosten je Projekt &amp; Kategorie.</td><td><span class="badge dep">3 · 1</span></td></tr>
+      <tr><td><strong>10</strong></td><td>Team Resources</td><td>Team-Mitglieder zu Team-Ressourcen.</td><td><span class="badge dep">2</span></td></tr>
+    </tbody>
+  </table>
+  <div class="callout tip">
+    <div class="callout-title">✅ Faustregel</div>
+    <strong>Stammdaten → Container → Verknüpfungen → Details.</strong> Innerhalb dieser Logik sind kleine
+    Umstellungen ok (z. B. Skills früh), die drei Ebenen aber nie überspringen.
+  </div>
+</section>
+
+<!-- ░░ MATCHING ░░ -->
+<section class="slide" id="matching">
+  <div class="slide-num">07</div>
+  <div class="kicker">Erkennung</div>
+  <h2 class="slide-title">Wie Tempus Zeilen wiedererkennt</h2>
+  <p class="slide-sub">Beim erneuten Import entscheidet ein <strong>Schlüssel</strong>, ob ein Datensatz neu angelegt
+     oder aktualisiert wird. Das ist die Basis für saubere Updates.</p>
+  <table>
+    <thead><tr><th>Datei</th><th>Schlüssel für Wiedererkennung</th></tr></thead>
+    <tbody>
+      <tr><td>Attributes (1)</td><td><strong>Custom Field Name + Entity Type</strong></td></tr>
+      <tr><td>Resources (2)</td><td><strong>Resource Name</strong> (oder API External Id, falls so konfiguriert)</td></tr>
+      <tr><td>Projects (3)</td><td><strong>Project Name</strong> (oder API External Id)</td></tr>
+      <tr><td>Allocation &amp; Tasks (4)</td><td><strong>Project + Resource + Task + Plan Type + Allocation Type</strong></td></tr>
+      <tr><td>Skills (6)</td><td><strong>Skill Name</strong></td></tr>
+    </tbody>
+  </table>
+  <div class="callout info">
+    <div class="callout-title">💡 Praxis</div>
+    Halten Sie Namen über alle Dateien hinweg <strong>identisch</strong> (z. B. „Max Müller" überall gleich
+    geschrieben). Schon ein Tippfehler erzeugt versehentlich einen zweiten Datensatz.
+  </div>
+  <div class="callout warn">
+    <div class="callout-title">⚙️ Projekt-Level-Zuweisung</div>
+    Soll auf Projektebene (ohne echten Task) geplant werden, nutzen Sie den eingebauten Task-Namen
+    <code>Generic</code> in Spalte <em>Task</em>.
+  </div>
+</section>
+
+<!-- ░░ IMPORT BEHAVIOR ░░ -->
+<section class="slide" id="behavior">
+  <div class="slide-num">08</div>
+  <div class="kicker">Steuerung pro Zeile</div>
+  <h2 class="slide-title">Import Behavior: Merge · Overwrite · Skip</h2>
+  <p class="slide-sub">Jede Zeile trägt die Spalte <code>Import Behavior</code>. Sie bestimmt, was Tempus mit
+     bestehenden Daten macht.</p>
+  <table>
+    <thead><tr><th style="width:130px;">Wert</th><th>Wirkung</th><th style="width:150px;">Empfehlung</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Merge</strong></td><td>Legt neue Datensätze an und aktualisiert bestehende. In Tempus gepflegte Werte bleiben erhalten.</td><td><span class="badge none">Standard</span> für fast alles</td></tr>
+      <tr><td><strong>Overwrite</strong></td><td>Ersetzt einen bestehenden gleichnamigen Datensatz vollständig – bisherige Werte gehen verloren.</td><td><span class="badge req">Vorsicht</span> nur bewusst</td></tr>
+      <tr><td><strong>Skip</strong></td><td>Überspringt die komplette Zeile – nichts wird importiert.</td><td><span class="badge opt">selektiv</span></td></tr>
+    </tbody>
+  </table>
+  <div class="callout danger">
+    <div class="callout-title">🚫 Datenverlust-Risiko</div>
+    <strong>Overwrite</strong> entfernt und ersetzt. Bei Attributen gehen damit auch zugeordnete
+    Werte verloren. Im Zweifel immer <strong>Merge</strong>.
+  </div>
+</section>
+
+<!-- ░░ TIME-PHASED ░░ -->
+<section class="slide" id="timephased">
+  <div class="slide-num">09</div>
+  <div class="kicker">Zeitverlauf</div>
+  <h2 class="slide-title">Zeit-phasierte Spalten (Datum-Spalten)</h2>
+  <p class="slide-sub">Einige Dateien haben hinter den festen Spalten <strong>Datums-Spalten</strong> – je eine pro
+     Periode. Der Spaltenkopf ist das Datum, der Wert die Menge in dieser Periode.</p>
+  <div class="two-col">
+    <div>
+      <table>
+        <thead><tr><th>Datei</th><th>Raster</th><th>Einheit</th></tr></thead>
+        <tbody>
+          <tr><td>Resources (2)</td><td>Monat</td><td>Stunden (Kapazität)</td></tr>
+          <tr><td>Allocation (4)</td><td>Projekt/Jahr/Quartal/Monat/Woche/Tag</td><td>Hours oder FTE</td></tr>
+          <tr><td>Admin Times (5)</td><td>Woche</td><td>Stunden / FTE</td></tr>
+          <tr><td>Financials (9)</td><td>Monat/Quartal/Jahr</td><td>Kosten</td></tr>
+          <tr><td>Team Resources (10)</td><td>Woche</td><td>FTE (Inclusion %)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div class="callout info">
+        <div class="callout-title">💡 Time Period = Spaltenköpfe</div>
+        Der Wert in <code>Time Period</code> muss zu den Datums-Spalten passen. Beispiel: bei
+        <code>Month</code> ein beliebiges Datum im Monat; bei <code>Week</code> immer der
+        <strong>Montag</strong> der Woche.
+      </div>
+      <div class="callout tip">
+        <div class="callout-title">✅ Hours vs. FTE</div>
+        <strong>Hours</strong> = Aufwand, der über die Arbeitstage der Periode verteilt wird.<br>
+        <strong>FTE</strong> = Kapazitätsanteil, der über die Arbeitstage repliziert wird.
+      </div>
+      <div class="callout warn">
+        <div class="callout-title">⚠️ Tagesraster</div>
+        Bei <code>Day</code> müssen Datteln lückenlos sein (inkl. Sa/So) – Werte an Wochenenden werden ignoriert.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ WALKTHROUGH ░░ -->
+<section class="slide" id="walkthrough">
+  <div class="slide-num">10</div>
+  <div class="kicker">Live-Durchlauf</div>
+  <h2 class="slide-title">Schritt-für-Schritt: Ein sauberer Import</h2>
+  <p class="slide-sub">So gehen wir gemeinsam einen vollständigen Erst-Import durch.</p>
+  <ol class="steps">
+    <li><strong>Vorbereiten</strong> Pro Datentyp eine <code>.xlsx</code>, Vorlage als erstes Tab, Namen einheitlich.</li>
+    <li><strong>Schritt 1 – Attributes</strong> Erst die Felder &amp; Auswahllisten anlegen (sonst fehlen sie später).</li>
+    <li><strong>Schritt 2 – Resources</strong> Ressourcen-Pool inkl. Kapazität importieren.</li>
+    <li><strong>Schritt 3 – Projects</strong> Projekte anlegen; Attribute aus Schritt 1 werden befüllt.</li>
+    <li><strong>Schritt 4 – Allocation &amp; Tasks</strong> Zuweisungen mit geplanten Werten – jetzt existieren alle Referenzen.</li>
+    <li><strong>Schritte 5–10 – Details</strong> Admin-Zeiten, Skills, Sheets, Raten, Finanzen, Team-Mitglieder ergänzen.</li>
+    <li><strong>Prüfen</strong> Nach jedem Synchronize die Rückmeldung kontrollieren und Stichproben in Tempus ansehen.</li>
+  </ol>
+  <div class="callout tip">
+    <div class="callout-title">✅ Pro Schritt einzeln synchronisieren</div>
+    Jede Datei separat hochladen und prüfen – so ist bei einem Fehler sofort klar, welcher Datentyp betroffen ist.
+  </div>
+</section>
+
+<!-- ░░ ERRORS ░░ -->
+<section class="slide" id="errors">
+  <div class="slide-num">11</div>
+  <div class="kicker">Qualität</div>
+  <h2 class="slide-title">Häufige Fehler – und wie wir sie vermeiden</h2>
+  <table>
+    <thead><tr><th style="width:200px;">Fehler</th><th>Beispiel</th><th>Vermeidung</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Auswahlwert fehlt</strong></td><td>„Critical" bei Priorität (nur High/Medium/Low)</td><td>Wert vorab in Attributes (1) ergänzen</td></tr>
+      <tr><td><strong>Attribut fehlt</strong></td><td>Projekt nutzt „Portfolio", Feld nicht angelegt</td><td>Custom Field in Schritt 1 anlegen</td></tr>
+      <tr><td><strong>Referenz fehlt</strong></td><td>Zuweisung auf unbekanntes Projekt/Ressource</td><td>Reihenfolge einhalten (2 &amp; 3 vor 4)</td></tr>
+      <tr><td><strong>Falsches Format</strong></td><td>Datum „01.02.2026" statt erwartetem Format</td><td>Vorlagenformat übernehmen, nicht umformatieren</td></tr>
+      <tr><td><strong>Falsche Reihenfolge</strong></td><td>Projects vor Attributes</td><td>1 → 10 abarbeiten</td></tr>
+      <tr><td><strong>Spalten weichen ab</strong></td><td>„Priorität" statt „Project Priority"</td><td>Original-Spaltenüberschriften beibehalten</td></tr>
+      <tr><td><strong>Vorlage nicht erstes Tab</strong></td><td>INSTRUCTIONS-Tab zuerst</td><td>Datenblatt an erste Stelle ziehen</td></tr>
+    </tbody>
+  </table>
+  <div class="callout info">
+    <div class="callout-title">🤝 Valkeen-Unterstützung</div>
+    Für stark abweichende Quell-Exporte (SAP, Jira, MS Project) prüfen wir mit Ihnen ein
+    <strong>Mapping</strong>, das Ihre Spalten automatisch auf die Tempus-Vorlagen übersetzt.
+  </div>
+</section>
+
+<!-- ░░ CHECKLIST ░░ -->
+<section class="slide" id="checklist">
+  <div class="slide-num">12</div>
+  <div class="kicker">Zum Mitnehmen</div>
+  <h2 class="slide-title">Checkliste vor jedem Import</h2>
+  <div class="two-col">
+    <div>
+      <ul class="clean">
+        <li>Datentyp klar → richtige Vorlage gewählt</li>
+        <li>Vorlage ist das <strong>erste Tab</strong>, Format <code>.xlsx</code></li>
+        <li>Original-<strong>Spaltenüberschriften</strong> unverändert</li>
+        <li>Pflichtfelder gefüllt (mind. der Name)</li>
+        <li>Namen über alle Dateien <strong>identisch</strong></li>
+      </ul>
+    </div>
+    <div>
+      <ul class="clean">
+        <li><strong>Reihenfolge</strong> 1 → 10 eingehalten</li>
+        <li><code>Import Behavior</code> bewusst gesetzt (i. d. R. Merge)</li>
+        <li>Datums-Spalten passen zu <code>Time Period</code></li>
+        <li>Auswahlwerte existieren in den Attributen</li>
+        <li>Erst <strong>Sandbox</strong>, dann Produktion</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout tip">
+    <div class="callout-title">👉 Nächste Schritte</div>
+    Gemeinsamer Test-Import in der Sandbox mit Ihren echten Dateien – wir gehen Schritt 1–4 live durch
+    und klären offene Punkte direkt am Bildschirm.
+  </div>
+  <div class="foot">Valkeen GmbH · Tempus Resource · Excel-Upload Walkthrough &nbsp;·&nbsp; <span class="print-hint no-print">Tipp: Mit <strong>Strg/Cmd + P</strong> als PDF speichern</span></div>
+</section>
+
+</div>
+</body>
+</html>

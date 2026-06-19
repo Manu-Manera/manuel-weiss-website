@@ -399,7 +399,13 @@
   // Storage helpers
   // ────────────────────────────────────────────────────────────
   function saveState(key, val) {
-    try { localStorage.setItem(key, JSON.stringify(val)); } catch (_e) {}
+    try {
+      localStorage.setItem(key, JSON.stringify(val));
+      return true;
+    } catch (err) {
+      console.warn('[SongGenerator] localStorage speichern fehlgeschlagen:', key, err && err.message);
+      return false;
+    }
   }
   function loadState(key, fallback) {
     try {
@@ -425,6 +431,17 @@
     if (window.authModals && window.authModals.showLogin) return window.authModals.showLogin();
     if (window.awsAuth && window.awsAuth.showLoginModal) return window.awsAuth.showLoginModal();
     alert('Login-System wird geladen, bitte einen Moment warten und erneut klicken.');
+  }
+
+  function hasPersonalitySongAccess() {
+    if (window.SongGeneratorAuthGate && window.SongGeneratorAuthGate.hasPersonalitySongAccess) {
+      return window.SongGeneratorAuthGate.hasPersonalitySongAccess();
+    }
+    return false;
+  }
+
+  function canUseSongGenerator() {
+    return isLoggedIn() && hasPersonalitySongAccess();
   }
 
   // ────────────────────────────────────────────────────────────
@@ -456,6 +473,8 @@
         audioState: { phase: 'idle' },
         _playlistAutoplay: false,
         _favoritesAutoplay: false,
+        _favoritesHydrating: false,
+        _cloudLoadPromise: null,
         playlistPack: 'core',
         importedMethods: null,
         importedNarrative: '',
@@ -484,13 +503,11 @@
       // 'songGenerator:authChanged' (vom HTML-Code dispatched).
       // KEIN Listener auf 'userLoggedIn'/'authStateChanged', sonst Schleife.
       window.addEventListener('songGenerator:authChanged', () => {
+        if (window.SongGeneratorAuthGate && window.SongGeneratorAuthGate.clearAccessCache) {
+          window.SongGeneratorAuthGate.clearAccessCache();
+        }
         this.refreshAuthAndImport();
       });
-
-      // Bei Init bereits eingeloggt? → Cloud + Import
-      if (isLoggedIn()) {
-        setTimeout(() => this.refreshAuthAndImport(), 300);
-      }
 
       const self = this;
       if (window.SongPersistentPlayer && window.SongPersistentPlayer.onChange) {
@@ -499,7 +516,39 @@
         });
       }
 
+      this._bootstrapFavorites();
+      this._initAccessAndRender();
+    }
+
+    _initAccessAndRender() {
+      const self = this;
+      if (isLoggedIn() && window.SongGeneratorAuthGate && window.SongGeneratorAuthGate.fetchUserAccess) {
+        window.SongGeneratorAuthGate.fetchUserAccess(false).finally(function () {
+          self.render();
+          self.refreshAuthAndImport();
+        });
+        this.render();
+        return;
+      }
+      if (isLoggedIn()) {
+        setTimeout(function () { self.refreshAuthAndImport(); }, 300);
+      }
       this.render();
+    }
+
+    _bootstrapFavorites() {
+      if (!window.SongFavorites) return;
+      var local = loadState(STORAGE_KEYS.favorites, []);
+      var backup = window.SongFavorites.restoreFromSession
+        ? window.SongFavorites.restoreFromSession() : [];
+      var merged = window.SongFavorites.mergeLists(backup, local);
+      if (merged.length) {
+        this.state.favorites = merged;
+        saveState(STORAGE_KEYS.favorites, merged);
+        if (window.SongFavorites.backupToSession) {
+          window.SongFavorites.backupToSession(merged);
+        }
+      }
     }
 
     syncLocalCache() {
@@ -528,68 +577,93 @@
 
     async loadCloudState() {
       if (!window.SongGeneratorCloud || !window.SongGeneratorCloud.isLoggedIn()) return;
-      try {
-        const localMerge = {
-          playlist: loadState(STORAGE_KEYS.playlist, null),
-          audio: loadState(STORAGE_KEYS.audio, null),
-          favorites: loadState(STORAGE_KEYS.favorites, [])
-        };
-        const loaded = await window.SongGeneratorCloud.loadLatest();
-        if (loaded && loaded.snapshot) {
-          window.SongGeneratorCloud.applySnapshotToState(this.state, loaded.snapshot, localMerge);
-        }
-        if (window.SongGeneratorCloud.loadAndMergeFavorites) {
-          this.state.favorites = await window.SongGeneratorCloud.loadAndMergeFavorites(
-            this.state.favorites, localMerge.favorites
-          );
-        } else if (window.SongFavorites) {
-          this.state.favorites = window.SongFavorites.mergeLists(
-            this.state.favorites, localMerge.favorites
-          );
-        }
-        if (window.SongGeneratorCloud.syncAudioIdentity) {
-          await window.SongGeneratorCloud.syncAudioIdentity(this.state);
-          if (this.state.persona) saveState(STORAGE_KEYS.persona, this.state.persona);
-        }
-        saveState(STORAGE_KEYS.favorites, this.state.favorites);
-        if (window.SongGeneratorCloud.loadAndMergeVoiceState) {
-          const voiceMerged = await window.SongGeneratorCloud.loadAndMergeVoiceState(
-            this.state.voiceProfile,
-            this.state.voiceWizard,
-            loadState(STORAGE_KEYS.voiceProfile, null),
-            loadState(STORAGE_KEYS.voiceWizard, null)
-          );
-          if (voiceMerged.profile && voiceMerged.profile.voiceId) {
-            this.state.voiceProfile = voiceMerged.profile;
-            this.state.voiceWizard = { phase: 'idle' };
-            if (voiceMerged.profile.voiceId) this.state.useCustomVoice = true;
-          } else {
-            if (voiceMerged.profile) this.state.voiceProfile = voiceMerged.profile;
-            if (voiceMerged.wizard) this.state.voiceWizard = voiceMerged.wizard;
+      if (this._cloudLoadPromise) return this._cloudLoadPromise;
+      const self = this;
+      this._cloudLoadPromise = (async function () {
+        try {
+          const localBefore = loadState(STORAGE_KEYS.favorites, []);
+          const localMerge = {
+            playlist: loadState(STORAGE_KEYS.playlist, null),
+            audio: loadState(STORAGE_KEYS.audio, null),
+            favorites: localBefore
+          };
+          const loaded = await window.SongGeneratorCloud.loadLatest();
+          if (loaded && loaded.snapshot) {
+            window.SongGeneratorCloud.applySnapshotToState(self.state, loaded.snapshot, localMerge);
           }
-          saveState(STORAGE_KEYS.voiceProfile, this.state.voiceProfile);
-          saveState(STORAGE_KEYS.voiceWizard, this.state.voiceWizard);
-          saveState(STORAGE_KEYS.useCustomVoice, this.state.useCustomVoice);
-        } else if (window.SongGeneratorCloud.loadVoiceProfile) {
-          const vp = await window.SongGeneratorCloud.loadVoiceProfile();
-          if (vp && vp.voiceId) {
-            this.state.voiceProfile = vp;
-            this.state.voiceWizard = { phase: 'idle' };
-            this.state.useCustomVoice = true;
-            saveState(STORAGE_KEYS.voiceProfile, vp);
-            saveState(STORAGE_KEYS.useCustomVoice, true);
+          const localFresh = loadState(STORAGE_KEYS.favorites, localBefore);
+          if (window.SongGeneratorCloud.loadAndMergeFavorites) {
+            self.state.favorites = await window.SongGeneratorCloud.loadAndMergeFavorites(
+              self.state.favorites, localFresh
+            );
+          } else if (window.SongFavorites) {
+            self.state.favorites = window.SongFavorites.mergeLists(
+              self.state.favorites, localFresh
+            );
           }
+          if (window.SongFavorites) {
+            self.state.favorites = window.SongFavorites.sanitizeList(self.state.favorites || []);
+            var sanitizedLocal = window.SongFavorites.sanitizeList(localFresh || []);
+            if (!self.state.favorites.length && sanitizedLocal.length) {
+              self.state.favorites = sanitizedLocal;
+            }
+          }
+          if (window.SongGeneratorCloud.syncAudioIdentity) {
+            await window.SongGeneratorCloud.syncAudioIdentity(self.state);
+            if (self.state.persona) saveState(STORAGE_KEYS.persona, self.state.persona);
+            if (window.SongFavorites) {
+              self.state.favorites = window.SongFavorites.sanitizeList(self.state.favorites || []);
+            }
+          }
+          if (window.SongFavorites) {
+            var afterSanitized = window.SongFavorites.sanitizeList(localFresh || []);
+            if (!self.state.favorites.length && afterSanitized.length) {
+              self.state.favorites = afterSanitized;
+            }
+          }
+          saveState(STORAGE_KEYS.favorites, self.state.favorites);
+          if (window.SongGeneratorCloud.loadAndMergeVoiceState) {
+            const voiceMerged = await window.SongGeneratorCloud.loadAndMergeVoiceState(
+              self.state.voiceProfile,
+              self.state.voiceWizard,
+              loadState(STORAGE_KEYS.voiceProfile, null),
+              loadState(STORAGE_KEYS.voiceWizard, null)
+            );
+            if (voiceMerged.profile && voiceMerged.profile.voiceId) {
+              self.state.voiceProfile = voiceMerged.profile;
+              self.state.voiceWizard = { phase: 'idle' };
+              self.state.useCustomVoice = true;
+            } else {
+              if (voiceMerged.profile) self.state.voiceProfile = voiceMerged.profile;
+              if (voiceMerged.wizard) self.state.voiceWizard = voiceMerged.wizard;
+            }
+            saveState(STORAGE_KEYS.voiceProfile, self.state.voiceProfile);
+            saveState(STORAGE_KEYS.voiceWizard, self.state.voiceWizard);
+            saveState(STORAGE_KEYS.useCustomVoice, self.state.useCustomVoice);
+          } else if (window.SongGeneratorCloud.loadVoiceProfile) {
+            const vp = await window.SongGeneratorCloud.loadVoiceProfile();
+            if (vp && vp.voiceId) {
+              self.state.voiceProfile = vp;
+              self.state.voiceWizard = { phase: 'idle' };
+              self.state.useCustomVoice = true;
+              saveState(STORAGE_KEYS.voiceProfile, vp);
+              saveState(STORAGE_KEYS.useCustomVoice, true);
+            }
+          }
+          self.syncLocalCache();
+          if (window.SongMusicEngine && window.SongMusicEngine.invalidateSunoKeyCache) {
+            window.SongMusicEngine.invalidateSunoKeyCache();
+          }
+          console.log('[SongGenerator] Cloud geladen, Favoriten:', (self.state.favorites || []).length,
+            'Stimme:', self.state.voiceProfile && self.state.voiceProfile.voiceId ? 'registriert' :
+            (self.state.voiceWizard && self.state.voiceWizard.phase !== 'idle' ? self.state.voiceWizard.phase : 'keine'));
+        } catch (err) {
+          console.warn('[SongGenerator] Cloud-Laden fehlgeschlagen:', err && err.message);
+        } finally {
+          self._cloudLoadPromise = null;
         }
-        this.syncLocalCache();
-        if (window.SongMusicEngine && window.SongMusicEngine.invalidateSunoKeyCache) {
-          window.SongMusicEngine.invalidateSunoKeyCache();
-        }
-        console.log('[SongGenerator] Cloud geladen, Favoriten:', (this.state.favorites || []).length,
-          'Stimme:', this.state.voiceProfile && this.state.voiceProfile.voiceId ? 'registriert' :
-          (this.state.voiceWizard && this.state.voiceWizard.phase !== 'idle' ? this.state.voiceWizard.phase : 'keine'));
-      } catch (err) {
-        console.warn('[SongGenerator] Cloud-Laden fehlgeschlagen:', err && err.message);
-      }
+      })();
+      return this._cloudLoadPromise;
     }
 
     _hasRegisteredVoice() {
@@ -639,6 +713,76 @@
       } catch (err) {
         console.warn('[SongGenerator] Audio-Identität sync:', err && err.message);
       }
+    }
+
+    _songsApiBase() {
+      return (window.AWS_CONFIG && (window.AWS_CONFIG.apiBaseUrl ||
+        (window.AWS_CONFIG.apiGateway && window.AWS_CONFIG.apiGateway.baseUrl))) ||
+        'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod';
+    }
+
+    /**
+     * Lädt eine frisch generierte Suno-MP3 in den eigenen S3-Bucket und schreibt
+     * die Track-URL auf die dauerhafte S3-Adresse um. Hintergrund: Suno-CDN-URLs
+     * laufen nach kurzer Zeit ab → danach kein Abspielen/Download mehr möglich.
+     * Schlägt der Vorgang fehl (CORS, Timeout, zu groß), bleibt die Suno-URL erhalten
+     * (kein Regressionsrisiko – Verhalten wie bisher).
+     */
+    async _archiveTrackToS3(track) {
+      if (!track || track._archived) return false;
+      const src = track.audio_url || track.audioUrl || track.source_audio_url || track.sourceAudioUrl;
+      if (!src || /manuel-weiss-public-media/.test(src)) return false;
+
+      const fetchWithTimeout = function (url, options, ms) {
+        const controller = new AbortController();
+        const id = setTimeout(function () { controller.abort(); }, ms);
+        return fetch(url, Object.assign({}, options, { signal: controller.signal }))
+          .finally(function () { clearTimeout(id); });
+      };
+
+      try {
+        const resp = await fetchWithTimeout(src, {}, 45000);
+        if (!resp.ok) throw new Error('Download HTTP ' + resp.status);
+        const blob = await resp.blob();
+        if (!blob.size || blob.size > 9.5 * 1024 * 1024) {
+          throw new Error('MP3 außerhalb des Upload-Limits (' + blob.size + ' Bytes)');
+        }
+
+        const rawId = String(track.id || track.audioId ||
+          (Date.now() + '-' + Math.random().toString(36).slice(2, 10)));
+        const key = rawId.replace(/[^a-zA-Z0-9_-]/g, '') + '.mp3';
+
+        const put = await fetchWithTimeout(this._songsApiBase() + '/songs/' + encodeURIComponent(key), {
+          method: 'PUT',
+          headers: { 'Content-Type': 'audio/mpeg' },
+          body: blob
+        }, 60000);
+        if (!put.ok) throw new Error('Upload HTTP ' + put.status);
+
+        const s3Url = 'https://manuel-weiss-public-media.s3.eu-central-1.amazonaws.com/public/songs/' + key;
+        track._sunoUrl = src;
+        track.audio_url = s3Url;
+        track.audioUrl = s3Url;
+        track.source_audio_url = s3Url;
+        track.url = s3Url;
+        track._archived = true;
+        return true;
+      } catch (e) {
+        console.warn('[SongGenerator] S3-Archivierung fehlgeschlagen, behalte Suno-URL:', (e && e.message) || e);
+        return false;
+      }
+    }
+
+    async _archiveTracksToS3(tracks) {
+      if (!Array.isArray(tracks) || !tracks.length) return 0;
+      let count = 0;
+      for (const t of tracks) {
+        const usable = t && (t.status === 'ok' || t.audio_url || t.audioUrl || t.url);
+        if (!usable) continue;
+        // eslint-disable-next-line no-await-in-loop
+        if (await this._archiveTrackToS3(t)) count += 1;
+      }
+      return count;
     }
 
     async _persistAudioToProfile(type, meta) {
@@ -759,16 +903,47 @@
 
     _syncFavoritesFromLocalStorage() {
       const local = loadState(STORAGE_KEYS.favorites, []);
-      if (!local || !local.length) return;
       if (window.SongFavorites) {
-        this.state.favorites = window.SongFavorites.mergeLists(this.state.favorites || [], local);
-      } else if (!this.state.favorites || !this.state.favorites.length) {
-        this.state.favorites = local.slice();
+        var sanitized = window.SongFavorites.sanitizeList(local || []);
+        this.state.favorites = window.SongFavorites.mergeLists(this.state.favorites || [], sanitized);
+        if (!this.state.favorites.length && sanitized.length) {
+          this.state.favorites = sanitized;
+        }
+      } else if (local && local.length) {
+        if (!this.state.favorites || !this.state.favorites.length) {
+          this.state.favorites = local.slice();
+        }
+      }
+    }
+
+    async _hydrateFavoritesIfNeeded() {
+      if (this.state._favoritesHydrating) return;
+      this._syncFavoritesFromLocalStorage();
+      if ((this.state.favorites || []).length) return;
+      if (!window.SongGeneratorCloud || !window.SongGeneratorCloud.isLoggedIn()) return;
+      if (!window.SongGeneratorCloud.loadAndMergeFavorites) return;
+      this.state._favoritesHydrating = true;
+      const self = this;
+      try {
+        const local = loadState(STORAGE_KEYS.favorites, []);
+        const merged = await window.SongGeneratorCloud.loadAndMergeFavorites([], local);
+        if (merged && merged.length) {
+          self.state.favorites = merged;
+          saveState(STORAGE_KEYS.favorites, merged);
+          if (self.state.step === 6) self.render();
+        }
+      } catch (err) {
+        console.warn('[SongGenerator] Favoriten laden:', err && err.message);
+      } finally {
+        self.state._favoritesHydrating = false;
       }
     }
 
     _persistFavoritesLocal() {
       saveState(STORAGE_KEYS.favorites, this.state.favorites);
+      if (window.SongFavorites && window.SongFavorites.backupToSession) {
+        window.SongFavorites.backupToSession(this.state.favorites);
+      }
     }
 
     async _persistFavoritesCloud() {
@@ -798,13 +973,17 @@
     }
 
     async _toggleFavorite(meta) {
-      const norm = this._buildFavoriteMeta(meta);
-      if (!norm || !norm.url) return;
+      const norm = this._buildFavoriteMeta(meta) ||
+        (meta && window.SongFavorites ? window.SongFavorites.normalize(meta) : null);
+      if (!norm || !norm.url) {
+        alert('Noch keine abspielbare URL – bitte warten bis der Song fertig ist, dann erneut ♡ tippen.');
+        return;
+      }
       if (!window.SongFavorites) return;
 
       const result = window.SongFavorites.toggle(this.state.favorites || [], norm);
       const self = this;
-      this.state.favorites = result.favorites;
+      this.state.favorites = window.SongFavorites.sanitizeList(result.favorites);
       this._persistFavoritesLocal();
       this.render();
 
@@ -814,6 +993,14 @@
         setTimeout(function () {
           if (self._favoritesPanelEl) self._favoritesPanelEl.classList.remove('sg-favorites-flash');
         }, 1200);
+      } else if (result.removed && this._favoritesPanelEl) {
+        var cnt = (self.state.favorites || []).length;
+        var hint = self._favoritesPanelEl.querySelector('.sg-favorites-count-hint');
+        if (!hint) {
+          hint = el('p', 'sg-hint sg-favorites-count-hint', '');
+          self._favoritesPanelEl.insertBefore(hint, self._favoritesPanelEl.children[1] || null);
+        }
+        hint.textContent = cnt ? (cnt + ' Favorit' + (cnt === 1 ? '' : 'en') + ' gespeichert.') : 'Favorit entfernt.';
       }
 
       if (window.SongGeneratorCloud && window.SongGeneratorCloud.isLoggedIn()) {
@@ -873,6 +1060,14 @@
         this.render();
         return;
       }
+      if (window.SongGeneratorAuthGate && window.SongGeneratorAuthGate.fetchUserAccess) {
+        await window.SongGeneratorAuthGate.fetchUserAccess(true);
+      }
+      if (!hasPersonalitySongAccess()) {
+        this.state.importedMethods = null;
+        this.render();
+        return;
+      }
       await this.loadCloudState();
       if (window.SongMusicEngine && window.SongMusicEngine.invalidateSunoKeyCache) {
         window.SongMusicEngine.invalidateSunoKeyCache();
@@ -892,7 +1087,16 @@
       this.render();
     }
 
-    setStep(n) { this.state.step = n; this.render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    setStep(n) {
+      if (!canUseSongGenerator()) {
+        this.state.step = 0;
+        this.render();
+        return;
+      }
+      this.state.step = n;
+      this.render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
     persistTest() {
       saveState(STORAGE_KEYS.test, { questions: this.state.questions, answers: this.state.answers });
@@ -903,8 +1107,13 @@
     // RENDER
     // ────────────────────────────────────────────────────────────
     render() {
+      if (!canUseSongGenerator() && this.state.step !== 0) {
+        this.state.step = 0;
+      }
       this.root.innerHTML = '';
-      this.root.appendChild(this.renderProgressBar());
+      if (canUseSongGenerator()) {
+        this.root.appendChild(this.renderProgressBar());
+      }
       switch (this.state.step) {
         case 0: this.root.appendChild(this.renderWelcome()); break;
         case 1: this.root.appendChild(this.renderTest()); break;
@@ -924,7 +1133,7 @@
         const dot = el('div', 'sg-progress-step' + (idx === this.state.step ? ' active' : (idx < this.state.step ? ' done' : '')));
         dot.append(el('span', 'sg-progress-dot', String(idx + 1)));
         dot.append(el('span', 'sg-progress-label', label));
-        if (idx < this.state.step + 1 && (idx <= this.state.step || (idx === 6 && this.state.song))) {
+        if (canUseSongGenerator() && idx < this.state.step + 1 && (idx <= this.state.step || (idx === 6 && this.state.song))) {
           dot.style.cursor = 'pointer';
           dot.onclick = () => this.setStep(idx);
         }
@@ -936,9 +1145,19 @@
 
     // ── Step 0: Welcome ─────────────────────────────────────────
     renderWelcome() {
-      // Login-Wall: ohne Anmeldung kein Zugriff (User-Anforderung)
       if (!isLoggedIn()) {
         return this.renderLoginWall();
+      }
+      if (window.SongGeneratorAuthGate && window.SongGeneratorAuthGate.fetchUserAccess &&
+          !window.SongGeneratorAuthGate.hasPersonalitySongAccess() &&
+          !sessionStorage.getItem('sg_feature_access_v1')) {
+        const pending = el('div', 'sg-card sg-welcome');
+        pending.append(el('h2', null, 'Berechtigung wird geprüft …'));
+        pending.append(this.showSpinner());
+        return pending;
+      }
+      if (!hasPersonalitySongAccess()) {
+        return this.renderNotGrantedWall();
       }
 
       const wrap = el('div', 'sg-card sg-welcome');
@@ -1036,6 +1255,27 @@
       return wrap;
     }
 
+    renderNotGrantedWall() {
+      const wrap = el('div', 'sg-card sg-login-wall');
+      const icon = el('div', 'sg-login-icon');
+      icon.innerHTML = '<i class="fas fa-hourglass-half"></i>';
+      wrap.append(icon);
+      wrap.append(el('h2', null, 'Noch nicht freigeschaltet'));
+      wrap.append(el('p', 'sg-lead',
+        'Der Persönlichkeits-Song ist für dein Konto noch nicht freigegeben. ' +
+        'Bitte wende dich an den Administrator, wenn du Zugang erhalten möchtest.'
+      ));
+      wrap.append(el('p', 'sg-hint',
+        'Alle anderen Persönlichkeitsentwicklungs-Methoden auf manuel-weiss.ch bleiben für dich nutzbar.'
+      ));
+      const actions = el('div', 'sg-actions');
+      const backBtn = el('a', 'sg-btn sg-btn-ghost', '← Zurück zu den Methoden');
+      backBtn.href = 'persoenlichkeitsentwicklung-uebersicht.html';
+      actions.append(backBtn);
+      wrap.append(actions);
+      return wrap;
+    }
+
     renderImportedDataBox() {
       const box = el('div', 'sg-import-box');
       const head = el('div', 'sg-import-head');
@@ -1100,7 +1340,7 @@
 
     // ── Step 1: Test ────────────────────────────────────────────
     startTest() {
-      if (!isLoggedIn()) { this.setStep(0); return; }
+      if (!canUseSongGenerator()) { this.setStep(0); return; }
       if (!this.state.questions || this.state.questions.variant !== this.state.testVariant) {
         if (!window.SongTestData) {
           const wrap0 = this.root.querySelector('.sg-card') || this.root;
@@ -2378,20 +2618,21 @@
         analysisLength: ui.length
       });
       const track = window.SongPlaylistEngine.getTrackSpec(blueprint, intentId);
-      opts.intentModifiers = mods;
-      opts.trackSpec = track;
-      opts.analysisKeywords = mods.analysisKeywords;
       const prefs = window.SongPlaylistEngine.normalizeStylePrefs
         ? window.SongPlaylistEngine.normalizeStylePrefs(this.state.audioStylePrefs)
         : (this.state.audioStylePrefs || { genreAccent: 'auto', vocalMode: 'auto' });
-      if (window.SongPlaylistEngine.applyStylePrefs) {
-        mods = window.SongPlaylistEngine.applyStylePrefs(mods, prefs, intentId);
-        opts.intentModifiers = mods;
-      }
+      // Genre kommt ausschliesslich vom gewählten Kontext-Tab – kein separates Dropdown
+      prefs.genreAccent = 'auto';
+      const intentMods = window.SongPlaylistEngine.applyStylePrefs
+        ? window.SongPlaylistEngine.applyStylePrefs(mods, prefs, intentId)
+        : mods;
+      opts.intentModifiers = intentMods;
+      opts.trackSpec = track;
+      opts.analysisKeywords = intentMods.analysisKeywords;
       opts.stylePrefs = prefs;
       opts.instrumental = window.SongPlaylistEngine.resolveInstrumental
-        ? window.SongPlaylistEngine.resolveInstrumental(mods, prefs, intentId)
-        : mods.instrumental;
+        ? window.SongPlaylistEngine.resolveInstrumental(intentMods, prefs, intentId)
+        : intentMods.instrumental;
       opts._persona = persona;
       const wantsCustomVoice = (base.vocalGender === 'custom' || this.state.useCustomVoice) &&
         this.state.voiceProfile && this.state.voiceProfile.voiceId;
@@ -2416,7 +2657,7 @@
       const wrap = el('div', 'sg-playlist-panel');
       wrap.append(el('h4', null, 'Sound-Kontext & Playlist-Konzept'));
       wrap.append(el('p', 'sg-playlist-lead',
-        '21 Kontexte aus Test, Astro und KI-Analyse – plus Genre- und Vocal-Einstellungen für deinen Sound.'));
+        '21 Kontexte aus Test, Astro und KI-Analyse – Genre und Stimmung wählst du unten; Gesang optional oben.'));
 
       wrap.append(this.renderStylePrefsPanel());
 
@@ -2521,34 +2762,14 @@
       const box = el('div', 'sg-style-prefs');
       box.append(el('p', 'sg-style-prefs-title', '🎚 Eigene Klang-Einstellungen'));
       box.append(el('p', 'sg-style-prefs-lead',
-        'Electro, Hip-Hop oder Reggae mit Persönlichkeit: Dein Profil liefert Texte, Motive und Stimmung – das Genre ist die Klanghülle. ' +
-        'Für Electro: „Sinnlich-minimal“ oder „Nur Instrumental“.'));
+        'Genre wählst du unten bei den Kontext-Buttons (z. B. Jazz, Hip-Hop, Electro). ' +
+        'Hier nur Gesang: z. B. „Sinnlich-minimal“ oder „Nur Instrumental“.'));
 
       const prefs = window.SongPlaylistEngine.normalizeStylePrefs
         ? window.SongPlaylistEngine.normalizeStylePrefs(this.state.audioStylePrefs)
         : (this.state.audioStylePrefs || { genreAccent: 'auto', vocalMode: 'auto' });
 
       const row = el('div', 'sg-style-prefs-row');
-
-      const genreWrap = el('div', 'sg-field sg-field-inline');
-      genreWrap.append(el('label', null, 'Genre-Akzent'));
-      const genreSel = el('select');
-      const accents = window.SongPlaylistEngine.GENRE_ACCENTS || {};
-      Object.keys(accents).forEach(function (key) {
-        const o = el('option', null, accents[key].label);
-        o.value = key;
-        genreSel.append(o);
-      });
-      genreSel.value = prefs.genreAccent || 'auto';
-      genreSel.onchange = function () {
-        self.state.audioStylePrefs = Object.assign({}, self.state.audioStylePrefs || {}, {
-          genreAccent: genreSel.value
-        });
-        saveState(STORAGE_KEYS.audioStylePrefs, self.state.audioStylePrefs);
-        self.render();
-      };
-      genreWrap.append(genreSel);
-      row.append(genreWrap);
 
       const vocalWrap = el('div', 'sg-field sg-field-inline');
       vocalWrap.append(el('label', null, 'Gesang'));
@@ -2586,7 +2807,10 @@
 
     renderVoicePanel() {
       const self = this;
-      if (self._voicePitchGuide && self._voicePitchGuide.destroy) {
+      const pitchGuideRunning = self._voicePitchGuide &&
+        self._voicePitchGuide.isRunning &&
+        self._voicePitchGuide.isRunning();
+      if (self._voicePitchGuide && self._voicePitchGuide.destroy && !pitchGuideRunning) {
         self._voicePitchGuide.destroy();
         self._voicePitchGuide = null;
       }
@@ -2719,7 +2943,11 @@
       const pitchWrap = el('div', 'sg-voice-pitch-wrap');
       form.append(pitchWrap);
       if (window.SongPitchGuide && window.SongPitchGuide.mount) {
-        self._voicePitchGuide = window.SongPitchGuide.mount(pitchWrap);
+        if (pitchGuideRunning && self._voicePitchGuide.reattach) {
+          self._voicePitchGuide.reattach(pitchWrap);
+        } else {
+          self._voicePitchGuide = window.SongPitchGuide.mount(pitchWrap);
+        }
       }
 
       form.append(el('p', 'sg-hint', 'Stimmprobe aufnehmen (5–30 s) – am besten dieselbe Melodie singen – oder MP3/WAV hochladen.'));
@@ -2814,6 +3042,9 @@
     renderFavoritesPlaylist() {
       const self = this;
       this._syncFavoritesFromLocalStorage();
+      if (!(this.state.favorites || []).length) {
+        this._hydrateFavoritesIfNeeded();
+      }
       const favs = this.state.favorites || [];
       const panel = el('div', 'sg-favorites-panel');
       this._favoritesPanelEl = panel;
@@ -2826,7 +3057,9 @@
       }
 
       if (!favs.length) {
-        panel.append(el('p', 'sg-hint', 'Noch keine Favoriten – tippe ♡ bei einem Song.'));
+        panel.append(el('p', 'sg-hint', 'Noch keine Favoriten – tippe ♡ bei einem fertigen Song (wenn ▶ Abspielen geht).'));
+        panel.append(el('p', 'sg-hint',
+          'Frühere Markierungen können durch einen Speicher-Bug verloren gegangen sein – bitte erneut ♡ tippen.'));
         return panel;
       }
 
@@ -2985,6 +3218,17 @@
       head.append(subtitle);
       box.append(head);
 
+      if (window.SongPlaylistEngine && this.state.audioStylePrefs) {
+        var ap = window.SongPlaylistEngine.normalizeStylePrefs(this.state.audioStylePrefs);
+        var intent = window.SongPlaylistEngine.getIntent(this.state.audioIntent || 'personality');
+        var vm = (window.SongPlaylistEngine.VOCAL_MODES[ap.vocalMode] || {}).label || 'Automatisch';
+        var voiceNote = (this.state.useCustomVoice && this._hasRegisteredVoice())
+          ? ' · Stimme: Meine Stimme (registriert)' : '';
+        box.append(el('p', 'sg-prod-active-prefs',
+          'Aktiver Kontext: ' + (intent.emoji || '') + ' ' + (intent.label || 'Kompositions-Song') +
+          ' · Gesang: ' + vm + voiceNote));
+      }
+
       box.append(this.renderFavoritesPlaylist());
 
       // Playlist-Intent & berechnetes Konzept
@@ -3062,11 +3306,16 @@
         const act = el('div', 'sg-actions sg-actions-split sg-actions-queue');
         const startBtn = el('button', 'sg-btn sg-btn-primary', '🎵 Einzel-Song produzieren');
         startBtn.onclick = () => {
-          const o = this._buildProductionOpts({
-            model: mSel.value,
-            vocalGender: vgSel.value
-          });
-          this.runProduction(o);
+          try {
+            const o = this._buildProductionOpts({
+              model: mSel.value,
+              vocalGender: vgSel.value
+            });
+            this.runProduction(o);
+          } catch (err) {
+            console.error('[SongGenerator] Einzel-Song starten:', err);
+            alert('Produktion konnte nicht starten: ' + (err.message || String(err)));
+          }
         };
         act.append(startBtn);
 
@@ -3076,11 +3325,16 @@
         const queueBtn = el('button', 'sg-btn sg-btn-secondary sg-btn-queue',
           (pack.emoji || '🎧') + ' ' + pack.label + ' (' + (pack.order || []).length + ' Songs)');
         queueBtn.onclick = () => {
-          this.runPlaylistQueue({
-            model: mSel.value,
-            vocalGender: vgSel.value,
-            pack: this.state.playlistPack || 'core'
-          });
+          try {
+            this.runPlaylistQueue({
+              model: mSel.value,
+              vocalGender: vgSel.value,
+              pack: this.state.playlistPack || 'core'
+            });
+          } catch (err) {
+            console.error('[SongGenerator] Playlist-Queue starten:', err);
+            alert('Playlist konnte nicht starten: ' + (err.message || String(err)));
+          }
         };
         act.append(queueBtn);
 
@@ -3115,44 +3369,150 @@
         stateBox.append(retry);
       }
 
-      // Audio-Player: Einzel-Song oder volle Playlist
+      // Audio-Player: Einzel-Song oder volle Playlist (auch live während Queue)
+      const phaseLive = phase === 'queue_running';
       if (this.state.playlist && Array.isArray(this.state.playlist.tracks) && this.state.playlist.tracks.length) {
-        stateBox.append(this._renderPlaylistPlayer(this.state.playlist));
+        const hasPlayable = this.state.playlist.tracks.some(function (t) {
+          return t && t.status === 'ok' && t.url;
+        });
+        if (hasPlayable || phaseLive) {
+          stateBox.append(this._renderPlaylistPlayer(this.state.playlist, { live: phaseLive }));
+        }
       } else if (this.state.audio && Array.isArray(this.state.audio.tracks) && this.state.audio.tracks.length) {
-        stateBox.append(this._renderAudioPlayer(this.state.audio));
+        stateBox.append(this._renderAudioPlayer(this.state.audio, {
+          live: phase === 'submitting' || phase === 'polling'
+        }));
       }
       box.append(stateBox);
       return box;
     }
 
+    _schedulePollRender() {
+      if (this._pollRenderTimer) return;
+      var self = this;
+      this._pollRenderTimer = setTimeout(function () {
+        self._pollRenderTimer = null;
+        self.render();
+      }, 1500);
+    }
+
+    _syncLivePlaylist(playlistTracks, baseOpts, packId, partial) {
+      this.state.playlist = {
+        tracks: playlistTracks.slice(),
+        generatedAt: partial ? this.state.playlist && this.state.playlist.generatedAt : new Date().toISOString(),
+        model: (baseOpts && baseOpts.model) || 'V5_5',
+        pack: packId,
+        partial: !!partial
+      };
+      saveState(STORAGE_KEYS.playlist, this.state.playlist);
+    }
+
+    _applyRawToPlaylistTrack(entry, raw, intent) {
+      if (!entry || !raw) return false;
+      const url = this._trackUrl(raw);
+      if (!url) return false;
+      entry.url = url;
+      entry.title = raw.title || intent.label;
+      entry.cover = raw.image_url || raw.imageUrl;
+      entry.duration = raw.duration;
+      entry.status = 'ok';
+      return true;
+    }
+
+    _playQueueTrackAt(trackIndex) {
+      const tracks = (this.state.playlist && this.state.playlist.tracks) || [];
+      const track = tracks[trackIndex];
+      if (!track || track.status !== 'ok' || !track.url) return;
+      const playable = tracks.filter(function (t) { return t.status === 'ok' && t.url; });
+      const playableIndex = playable.findIndex(function (t) { return t.url === track.url; });
+      if (playableIndex < 0) return;
+      this._playlistAutoplay = false;
+      this._playPlaylistTrack(playableIndex);
+      if (this._playlistPlayerEl) {
+        window.SongPersistentPlayer && window.SongPersistentPlayer.syncActiveRows(
+          this._playlistPlayerEl, '.sg-playlist-track'
+        );
+      }
+    }
+
     _renderPlaylistQueueProgress() {
       const st = this.state.audioState || {};
-      const idx = (st.queueIndex || 0) + 1;
       const total = st.queueTotal || 4;
-      const pct = Math.round(((st.queueIndex || 0) / total) * 100);
+      const tracks = (this.state.playlist && this.state.playlist.tracks) || [];
+      const doneOk = tracks.filter(function (t) { return t && t.status === 'ok'; }).length;
+      const doneFail = tracks.filter(function (t) { return t && t.status === 'failed'; }).length;
+      const finished = doneOk + doneFail;
+      const currentIdx = typeof st.queueIndex === 'number' ? st.queueIndex : 0;
+      const idx = currentIdx + 1;
+      const overallPct = total ? Math.round((finished / total) * 100) : 0;
+      const currentTrack = tracks[currentIdx];
+      const isGenerating = st.phase === 'queue_running' && currentTrack &&
+        (currentTrack.status === 'generating' || currentTrack.status === 'pending');
+
       const wrap = el('div', 'sg-queue-progress');
-      wrap.append(el('h4', null, 'Playlist wird produziert …'));
+      wrap.append(el('h4', null, '🎧 Playlist wird produziert …'));
+      wrap.append(el('p', 'sg-prod-status-lead',
+        finished + ' von ' + total + ' fertig' +
+        (isGenerating && st.queueLabel ? ' · aktuell: ' + st.queueLabel : '')));
+
       const friendly = this._humanProductionStatus(st.queueStatus, {
         songIndex: idx,
         songTotal: total,
         songLabel: st.queueLabel || 'Song'
       });
-      wrap.append(el('p', 'sg-prod-status-lead',
-        'Song ' + idx + ' von ' + total + (st.queueLabel ? ': ' + st.queueLabel : '')));
       if (friendly) wrap.append(el('p', 'sg-prod-status', friendly));
+
+      const barWrap = el('div', 'sg-queue-bars');
       const bar = el('div', 'sg-queue-bar');
       const fill = el('div', 'sg-queue-bar-fill');
-      fill.style.width = pct + '%';
+      fill.style.width = overallPct + '%';
       bar.append(fill);
-      wrap.append(bar);
-      wrap.append(this.showSpinner());
+      barWrap.append(bar);
+      if (isGenerating) {
+        barWrap.append(this._renderProductionProgressBar(true));
+      }
+      wrap.append(barWrap);
 
-      if (Array.isArray(st.queueDone) && st.queueDone.length) {
+      if (tracks.length) {
+        const list = el('div', 'sg-queue-tracklist');
+        const self = this;
+        tracks.forEach(function (track, i) {
+          const status = track.status || 'pending';
+          const row = el('div', 'sg-queue-track sg-queue-track-' + status +
+            (i === currentIdx && status === 'generating' ? ' current' : ''));
+          const meta = el('span', 'sg-queue-track-meta');
+          meta.append(el('span', 'sg-queue-track-emoji', track.emoji || '🎵'));
+          meta.append(el('span', 'sg-queue-track-label', track.label || ('Song ' + (i + 1))));
+          row.append(meta);
+
+          const badge = el('span', 'sg-queue-track-badge');
+          if (status === 'ok') {
+            badge.textContent = '✓ Fertig';
+          } else if (status === 'failed') {
+            badge.textContent = '✗ Fehler';
+          } else if (status === 'generating') {
+            badge.textContent = '⏳ Wird produziert …';
+          } else {
+            badge.textContent = '· Wartet';
+          }
+          row.append(badge);
+
+          if (status === 'ok' && track.url) {
+            const playBtn = el('button', 'sg-btn sg-btn-secondary sg-queue-track-play', '▶ Abspielen');
+            playBtn.type = 'button';
+            playBtn.onclick = function () { self._playQueueTrackAt(i); };
+            row.append(playBtn);
+          } else if (status === 'generating' && i === currentIdx) {
+            row.append(self.showSpinner());
+          }
+          list.append(row);
+        });
+        wrap.append(list);
+      } else if (Array.isArray(st.queueDone) && st.queueDone.length) {
         const done = el('ul', 'sg-queue-done');
         st.queueDone.forEach(function (item) {
-          const li = el('li', item.status === 'ok' ? 'ok' : 'fail',
-            (item.status === 'ok' ? '✓ ' : '✗ ') + item.label);
-          done.append(li);
+          done.append(el('li', item.status === 'ok' ? 'ok' : 'fail',
+            (item.status === 'ok' ? '✓ ' : '✗ ') + item.label));
         });
         wrap.append(done);
       }
@@ -3172,18 +3532,52 @@
         t.stream_audio_url || t.streamAudioUrl);
     }
 
-    _renderPlaylistPlayer(playlist) {
+    /** Finale MP3-URL bevorzugen (Stream-URLs eignen sich schlecht zum Download). */
+    _downloadUrl(t) {
+      if (!t) return '';
+      return t.audio_url || t.audioUrl || t.source_audio_url || t.sourceAudioUrl ||
+        t.stream_audio_url || t.streamAudioUrl || t.url || '';
+    }
+
+    _downloadFilename(track, index, fallback) {
+      const base = (track && (track.userTitle || track.title)) || fallback || ('persoenlichkeitssong-' + ((index || 0) + 1));
+      return String(base).toLowerCase().replace(/[^a-z0-9äöüß]+/gi, '-').replace(/^-|-$/g, '') + '.mp3';
+    }
+
+    /** Suno-MP3 direkt vom CDN – kein fetch (blockiert sonst Player + Browser-Ladebalken). */
+    _triggerDownload(url, filename) {
+      if (!url) return false;
+      const opened = window.open(url, '_blank', 'noopener,noreferrer');
+      if (!opened) {
+        const a = document.createElement('a');
+        a.href = url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+      return true;
+    }
+
+    _renderPlaylistPlayer(playlist, opts) {
+      opts = opts || {};
+      const self = this;
       const box = el('div', 'sg-playlist-player');
       this._playlistPlayerEl = box;
-      box.append(el('h4', null, '🎧 Deine Persönlichkeits-Playlist'));
+      const live = !!opts.live;
+      box.append(el('h4', null, live ? '🎧 Playlist (wird ergänzt …)' : '🎧 Deine Persönlichkeits-Playlist'));
       const okCount = playlist.tracks.filter(function (t) { return t.status === 'ok'; }).length;
       const labels = playlist.tracks.filter(function (t) { return t.status === 'ok'; })
         .map(function (t) { return (t.emoji || '') + ' ' + t.label; }).join(' → ');
-      box.append(el('p', 'sg-playlist-player-sub', okCount + ' Songs · ' + (labels || '—')));
-      if (window.SongGeneratorCloud && window.SongGeneratorCloud.isLoggedIn()) {
+      const sub = live
+        ? (okCount + ' von ' + playlist.tracks.length + ' abspielbar · fertige Songs sofort hören')
+        : (okCount + ' Songs · ' + (labels || '—'));
+      box.append(el('p', 'sg-playlist-player-sub', sub));
+      if (!live && window.SongGeneratorCloud && window.SongGeneratorCloud.isLoggedIn()) {
         box.append(el('p', 'sg-playlist-saved-hint',
           '☁️ Playlist gespeichert – im Profil unter Fortschritt → Persönlichkeits-Songs.'));
-      } else {
+      } else if (!live) {
         box.append(el('p', 'sg-hint',
           'Nur in diesem Browser gespeichert – anmelden für Cloud-Speicher im Profil.'));
       }
@@ -3193,7 +3587,18 @@
         return t.status === 'ok' && t.url;
       });
       if (!playable.length) {
-        box.append(el('p', 'sg-hint', 'Keine abspielbaren Tracks in der Playlist.'));
+        box.append(el('p', 'sg-hint', live
+          ? 'Noch kein Song fertig – der erste erscheint hier zum Abspielen, sobald Suno eine URL liefert.'
+          : 'Keine abspielbaren Tracks in der Playlist.'));
+        if (live) {
+          const pending = el('div', 'sg-playlist-pending');
+          playlist.tracks.filter(function (t) { return t.status !== 'ok'; }).forEach(function (t) {
+            pending.append(el('div', 'sg-queue-track sg-queue-track-' + (t.status || 'pending'),
+              (t.emoji || '🎵') + ' ' + (t.label || 'Song') +
+              (t.status === 'generating' ? ' – wird produziert …' : ' – wartet')));
+          });
+          box.append(pending);
+        }
         return box;
       }
 
@@ -3205,7 +3610,6 @@
       mainWrap.append(nowPlaying);
       box.append(mainWrap);
 
-      const self = this;
       this._playlistPlayable = playable;
       this._playlistNowEl = nowPlaying;
       if (window.SongPersistentPlayer) {
@@ -3269,8 +3673,23 @@
       });
       box.append(list);
 
+      if (live) {
+        const waiting = playlist.tracks.filter(function (t) { return t.status !== 'ok'; });
+        if (waiting.length) {
+          const pending = el('div', 'sg-playlist-pending');
+          pending.append(el('p', 'sg-hint', 'Noch in Produktion:'));
+          waiting.forEach(function (t) {
+            pending.append(el('div', 'sg-queue-track sg-queue-track-' + (t.status || 'pending'),
+              (t.emoji || '🎵') + ' ' + (t.label || 'Song') +
+              (t.status === 'generating' ? ' – wird produziert …' : ' – wartet')));
+          });
+          box.append(pending);
+        }
+      }
+
       const actions = el('div', 'sg-audio-actions');
       const regen = el('button', 'sg-btn sg-btn-ghost', '↻ Playlist neu generieren');
+      if (live) regen.disabled = true;
       regen.onclick = function () {
         const pack = window.SongPlaylistEngine
           ? window.SongPlaylistEngine.getPlaylistPack(self.state.playlistPack || 'core')
@@ -3405,6 +3824,12 @@
         this._playlistPlayIndex = st.index;
         this._playlistAutoplay = st.autoplayQueue;
       }
+      if (st.source === 'single' && this._singleAudioSlot && window.SongPersistentPlayer.mountSlot) {
+        window.SongPersistentPlayer.mountSlot(this._singleAudioSlot, { source: 'single' });
+        if (this._singleNowEl && st.meta && st.meta.title) {
+          this._singleNowEl.textContent = (st.paused ? '⏸ ' : '▶ ') + st.meta.title;
+        }
+      }
     }
 
     _renderBluetoothHint() {
@@ -3421,10 +3846,15 @@
       return box;
     }
 
-    _renderAudioPlayer(audio) {
+    _renderAudioPlayer(audio, opts) {
+      opts = opts || {};
       const self = this;
+      const live = !!opts.live;
       const box = el('div', 'sg-audio-results');
-      box.append(el('h4', null, 'Deine Songs (' + (audio.tracks || []).length + ' Varianten)'));
+      const trackCount = (audio.tracks || []).length;
+      box.append(el('h4', null, live
+        ? 'Deine Songs (' + trackCount + ' Varianten – werden geladen …)'
+        : 'Deine Songs (' + trackCount + ' Varianten)'));
       box.append(this._renderBluetoothHint());
 
       const intentLabel = (window.SongPlaylistEngine && audio.intentId)
@@ -3434,10 +3864,22 @@
         box.append(el('p', 'sg-audio-intent-tag', 'Kontext: ' + intentLabel));
       }
 
+      const mainWrap = el('div', 'sg-audio-main');
+      const audioSlot = el('div', 'sg-single-audio-slot');
+      mainWrap.append(audioSlot);
+      this._singleAudioSlot = audioSlot;
+      this._singleNowEl = el('div', 'sg-audio-now', '▶ Song wählen');
+      mainWrap.append(this._singleNowEl);
+      if (window.SongPersistentPlayer) {
+        window.SongPersistentPlayer.mountSlot(audioSlot, { source: 'single' });
+      }
+      box.append(mainWrap);
+
       (audio.tracks || []).forEach((t, i) => {
         const url = t.audio_url || t.audioUrl || t.source_audio_url || t.sourceAudioUrl || t.stream_audio_url || t.streamAudioUrl;
         const cover = t.image_url || t.imageUrl;
-        const card = el('div', 'sg-audio-card');
+        const generating = !!t._generating || (live && !url);
+        const card = el('div', 'sg-audio-card' + (generating ? ' sg-audio-card-generating' : ''));
         const title = el('div', 'sg-audio-card-head');
         const nameIn = el('input', 'sg-track-name-input');
         nameIn.type = 'text';
@@ -3463,6 +3905,12 @@
           duration: t.duration
         }));
         card.append(title);
+        if (generating) {
+          const prog = el('div', 'sg-audio-card-progress');
+          prog.append(self._renderProductionProgressBar(true));
+          prog.append(el('p', 'sg-hint', 'Variante ' + (i + 1) + ' wird produziert …'));
+          card.append(prog);
+        }
         if (cover) {
           const img = document.createElement('img');
           img.src = cover;
@@ -3475,12 +3923,13 @@
           const playBt = el('button', 'sg-btn sg-btn-primary sg-btn-bt', '▶ Abspielen');
           playBt.type = 'button';
           playBt.onclick = function () {
+            const label = t.userTitle || intentLabel || ('Variante ' + (i + 1));
             self._playPersistent({
               source: 'single',
               queue: [{
                 url: url,
                 title: t.userTitle || t.title,
-                label: t.userTitle || intentLabel || ('Variante ' + (i + 1)),
+                label: label,
                 cover: cover,
                 duration: t.duration,
                 emoji: audio.intentId && window.SongPlaylistEngine
@@ -3495,18 +3944,22 @@
                 cover: cover
               }
             });
+            if (self._singleNowEl) {
+              self._singleNowEl.textContent = '▶ ' + label;
+            }
+            if (self._singleAudioSlot && window.SongPersistentPlayer) {
+              window.SongPersistentPlayer.mountSlot(self._singleAudioSlot, { source: 'single' });
+            }
           };
           actions.append(playBt);
 
-          const slug = (t.title || 'persoenlichkeitssong-' + (i + 1))
-            .toLowerCase().replace(/[^a-z0-9äöüß]+/gi, '-').replace(/^-|-$/g, '');
-          const dl = document.createElement('a');
-          dl.href = url;
-          dl.download = slug + '.mp3';
-          dl.className = 'sg-btn sg-btn-ghost';
-          dl.textContent = '⬇ MP3 (offline / andere App)';
-          dl.setAttribute('target', '_blank');
-          dl.setAttribute('rel', 'noopener');
+          const dlUrl = self._downloadUrl(t) || url;
+          const dl = el('button', 'sg-btn sg-btn-ghost', '⬇ MP3 speichern');
+          dl.type = 'button';
+          dl.title = 'Öffnet die MP3 in einem neuen Tab – dort: Rechtsklick → Speichern unter (Mac) bzw. Teilen → In Dateien speichern (iPhone)';
+          dl.onclick = function () {
+            self._triggerDownload(dlUrl, t.userTitle || t.title || ('Variante ' + (i + 1)));
+          };
           actions.append(dl);
 
           if (navigator.share) {
@@ -3598,16 +4051,25 @@
         return;
       }
       baseOpts = baseOpts || {};
+      const self = this;
+      try {
       const packId = baseOpts.pack || this.state.playlistPack || 'core';
       const pack = window.SongPlaylistEngine.getPlaylistPack(packId);
       const order = pack.order || window.SongPlaylistEngine.PLAYLIST_INTENT_ORDER ||
         Object.keys(window.SongPlaylistEngine.INTENTS);
       const queueDone = [];
-      const playlistTracks = [];
+      const playlistTracks = order.map(function (intentId) {
+        const intent = window.SongPlaylistEngine.getIntent(intentId);
+        return {
+          intentId: intentId,
+          label: intent.label,
+          emoji: intent.emoji,
+          status: 'pending'
+        };
+      });
 
       this.state.audio = null;
       clearState(STORAGE_KEYS.audio);
-      this.state.playlist = null;
 
       this.state.audioState = {
         phase: 'queue_running',
@@ -3621,6 +4083,7 @@
         model: baseOpts.model,
         vocalGender: baseOpts.vocalGender
       };
+      this._syncLivePlaylist(playlistTracks, baseOpts, packId, true);
       this.render();
 
       for (let i = 0; i < order.length; i += 1) {
@@ -3628,10 +4091,12 @@
 
         const intentId = order[i];
         const intent = window.SongPlaylistEngine.getIntent(intentId);
+        playlistTracks[i].status = 'generating';
         this.state.audioState.queueIndex = i;
         this.state.audioState.queueLabel = intent.label;
         this.state.audioState.queueStatus = 'Start …';
         this.state.audioState.queueDone = queueDone.slice();
+        this._syncLivePlaylist(playlistTracks, baseOpts, packId, true);
         this.render();
 
         const opts = this._buildProductionOpts(Object.assign({}, baseOpts, { intentId: intentId }));
@@ -3641,66 +4106,50 @@
             opts._persona || this.getEnrichedPersona() || this.state.persona,
             this.state.song,
             opts,
-            (evt) => {
+            function (evt) {
               if (evt.phase === 'polling' || evt.phase === 'first_ready') {
-                this.state.audioState.queueStatus = evt.status || 'Generiert …';
-                if (!this._pollRenderTimer) {
-                  var self = this;
-                  this._pollRenderTimer = setTimeout(function () {
-                    self._pollRenderTimer = null;
-                    self.render();
-                  }, 400);
+                self.state.audioState.queueStatus = evt.status || 'Generiert …';
+                const raw = evt.tracks && evt.tracks[0];
+                if (raw && self._applyRawToPlaylistTrack(playlistTracks[i], raw, intent)) {
+                  self._syncLivePlaylist(playlistTracks, baseOpts, packId, true);
                 }
+                self._schedulePollRender();
               }
             }
           );
           const raw = (result.tracks && result.tracks[0]) || null;
-          const url = raw ? this._trackUrl(raw) : null;
-          if (url) {
-            const entry = {
-              intentId: intentId,
-              label: intent.label,
-              emoji: intent.emoji,
-              title: raw.title || intent.label,
-              url: url,
-              cover: raw.image_url || raw.imageUrl,
-              duration: raw.duration,
-              status: 'ok'
-            };
+          if (raw && self._applyRawToPlaylistTrack(playlistTracks[i], raw, intent)) {
             queueDone.push({ label: intent.label, status: 'ok' });
-            playlistTracks.push(entry);
-          } else {
+          } else if (playlistTracks[i].status !== 'ok') {
             queueDone.push({ label: intent.label, status: 'fail' });
-            playlistTracks.push({
-              intentId: intentId,
-              label: intent.label,
-              emoji: intent.emoji,
-              status: 'failed',
-              error: 'Keine Audio-URL'
-            });
+            playlistTracks[i].status = 'failed';
+            playlistTracks[i].error = 'Keine Audio-URL';
+          } else if (queueDone.every(function (d) { return d.label !== intent.label; })) {
+            queueDone.push({ label: intent.label, status: 'ok' });
           }
         } catch (err) {
           console.warn('[SongGenerator] Playlist-Track fehlgeschlagen:', intentId, err);
           queueDone.push({ label: intent.label, status: 'fail' });
-          playlistTracks.push({
-            intentId: intentId,
-            label: intent.label,
-            emoji: intent.emoji,
-            status: 'failed',
-            error: err.message || String(err)
-          });
+          playlistTracks[i].status = 'failed';
+          playlistTracks[i].error = err.message || String(err);
         }
         this.state.audioState.queueDone = queueDone.slice();
+        this._syncLivePlaylist(playlistTracks, baseOpts, packId, true);
+        this.render();
       }
 
       const cancelled = this.state.audioState.cancelQueue;
+      const okCount = playlistTracks.filter(function (t) { return t.status === 'ok'; }).length;
       this.state.playlist = {
         tracks: playlistTracks,
         generatedAt: new Date().toISOString(),
         model: baseOpts.model || 'V5_5',
         pack: packId,
-        partial: cancelled || playlistTracks.filter(function (t) { return t.status === 'ok'; }).length < order.length
+        partial: cancelled || okCount < order.length
       };
+      saveState(STORAGE_KEYS.playlist, this.state.playlist);
+      // Playlist-Songs dauerhaft sichern (Suno-URLs laufen ab)
+      await this._archiveTracksToS3(playlistTracks);
       saveState(STORAGE_KEYS.playlist, this.state.playlist);
       this.syncLocalCache();
       await this._persistAudioToProfile('playlist', { title: pack.label || 'Persönlichkeits-Playlist' });
@@ -3716,6 +4165,14 @@
         this.state.audioState = { phase: 'idle' };
       }
       this.render();
+      } catch (err) {
+        console.error('[SongGenerator] Playlist-Queue:', err);
+        this.state.audioState = {
+          phase: 'error',
+          error: err.message || String(err)
+        };
+        this.render();
+      }
     }
 
     async runProduction(opts) {
@@ -3723,7 +4180,17 @@
         alert('Music-Engine-Modul wurde nicht geladen.');
         return;
       }
+      const self = this;
+      const intentId = opts.intentId || this.state.audioIntent;
       this.state.audioState = { phase: 'submitting', model: opts.model, vocalGender: opts.vocalGender };
+      this.state.audio = {
+        tracks: [
+          { userTitle: 'Variante 1', title: 'Variante 1', _generating: true },
+          { userTitle: 'Variante 2', title: 'Variante 2', _generating: true }
+        ],
+        partial: true,
+        intentId: intentId
+      };
       this.render();
       try {
         const persona = opts._persona || this.getEnrichedPersona() || this.state.persona;
@@ -3731,41 +4198,45 @@
           persona,
           this.state.song,
           opts,
-          (evt) => {
+          function (evt) {
             if (evt.phase === 'submitting') {
-              this.state.audioState = Object.assign({}, this.state.audioState, { phase: 'submitting' });
-            } else if (evt.phase === 'polling') {
-              this.state.audioState = Object.assign({}, this.state.audioState, {
+              self.state.audioState = Object.assign({}, self.state.audioState, { phase: 'submitting' });
+            } else if (evt.phase === 'polling' || evt.phase === 'first_ready') {
+              const tracks = (evt.tracks && evt.tracks.length)
+                ? evt.tracks
+                : (self.state.audio && self.state.audio.tracks) || [];
+              self.state.audio = {
+                tracks: tracks,
+                partial: evt.phase !== 'success',
+                intentId: intentId,
+                taskId: evt.taskId || (self.state.audio && self.state.audio.taskId),
+                weights: evt.weights || (self.state.audio && self.state.audio.weights)
+              };
+              if (evt.phase === 'first_ready') {
+                saveState(STORAGE_KEYS.audio, self.state.audio);
+              }
+              self.state.audioState = Object.assign({}, self.state.audioState, {
                 phase: 'polling',
-                taskId: evt.taskId || this.state.audioState.taskId,
+                taskId: evt.taskId || self.state.audioState.taskId,
                 status: evt.status,
-                weights: evt.weights || this.state.audioState.weights
-              });
-            } else if (evt.phase === 'first_ready') {
-              this.state.audio = { tracks: evt.tracks || [], partial: true };
-              saveState(STORAGE_KEYS.audio, this.state.audio);
-              this.state.audioState = Object.assign({}, this.state.audioState, {
-                phase: 'polling', status: evt.status
+                weights: evt.weights || self.state.audioState.weights
               });
             }
-            if (!this._pollRenderTimer) {
-              var self = this;
-              this._pollRenderTimer = setTimeout(function () {
-                self._pollRenderTimer = null;
-                self.render();
-              }, 400);
-            }
+            self._schedulePollRender();
           }
         );
         this.state.audio = {
           tracks: result.tracks || [],
           taskId: result.taskId,
           weights: result.weights,
-          intentId: opts.intentId || this.state.audioIntent,
+          intentId: intentId,
           generatedAt: new Date().toISOString(),
           provider: 'sunoapi_org',
           model: opts.model
         };
+        saveState(STORAGE_KEYS.audio, this.state.audio);
+        // Songs dauerhaft sichern (Suno-URLs laufen ab) – vor Cloud-Persistenz, damit die S3-URL gespeichert wird
+        await this._archiveTracksToS3(this.state.audio.tracks);
         saveState(STORAGE_KEYS.audio, this.state.audio);
         const intent = window.SongPlaylistEngine && window.SongPlaylistEngine.getIntent
           ? window.SongPlaylistEngine.getIntent(opts.intentId || this.state.audioIntent)

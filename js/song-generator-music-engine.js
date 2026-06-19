@@ -296,12 +296,29 @@
           C = sf.BIG5_C || 50, N = sf.BIG5_N || 50;
     const persParts = [];
 
-    // Genre-Grundlinie aus Profil
+    var accentLocked = false;
+    var accentDef = null;
+    var normPrefs = null;
+    if (stylePrefs && window.SongPlaylistEngine) {
+      normPrefs = window.SongPlaylistEngine.normalizeStylePrefs(stylePrefs);
+      if (normPrefs.genreAccent && normPrefs.genreAccent !== 'auto') {
+        accentLocked = true;
+        accentDef = window.SongPlaylistEngine.GENRE_ACCENTS[normPrefs.genreAccent];
+      }
+    }
+
+    // Genre-Grundlinie aus Profil – bei manuellem Genre-Akzent nicht mit Electro/EDM überdecken
     const akustisch = (dna.instrumentation && dna.instrumentation.core || []).includes('felt_piano');
     const elektro = (dna.instrumentation && dna.instrumentation.core || []).includes('analog_keys');
-    if (akustisch) persParts.push('intimate acoustic singer-songwriter');
-    else if (elektro) persParts.push('introspective electronic indie pop');
-    else persParts.push('hybrid acoustic-electronic');
+    if (accentLocked && accentDef && accentDef.tags.length) {
+      persParts.push('PRIMARY GENRE LOCK: ' + accentDef.tags.join(', '));
+    } else if (akustisch) {
+      persParts.push('intimate acoustic singer-songwriter');
+    } else if (elektro) {
+      persParts.push('introspective electronic indie pop');
+    } else {
+      persParts.push('hybrid acoustic-electronic');
+    }
 
     // Mood-Hauptachsen
     if (E >= 65) persParts.push('uplifting');
@@ -369,15 +386,14 @@
       persParts.push(intentMods.personalGenreNote);
     }
     if (stylePrefs && window.SongPlaylistEngine) {
-      var norm = window.SongPlaylistEngine.normalizeStylePrefs(stylePrefs);
-      var vocalDef = window.SongPlaylistEngine.VOCAL_MODES[norm.vocalMode];
-      var accentDef = window.SongPlaylistEngine.GENRE_ACCENTS[norm.genreAccent];
-      if (accentDef && accentDef.tags && accentDef.tags.length && norm.genreAccent !== 'auto') {
-        persParts.unshift(accentDef.tags[0]);
-      }
-      if (vocalDef && vocalDef.tags && vocalDef.tags.length && norm.vocalMode !== 'auto') {
+      var vocalDef = window.SongPlaylistEngine.VOCAL_MODES[normPrefs.vocalMode];
+      if (vocalDef && vocalDef.tags && vocalDef.tags.length && normPrefs.vocalMode !== 'auto') {
         persParts.push(vocalDef.tags.join(', '));
       }
+    }
+
+    if (opts.useCustomVoice || opts.personaId) {
+      persParts.push('custom cloned voice persona, natural intimate vocal timbre');
     }
 
     // Vocal
@@ -454,7 +470,13 @@
 
     // Negative tags: was wir nie wollen
     const avoid = (dna.instrumentation && dna.instrumentation.avoid) || [];
-    const negativeTags = avoid.map(humanizeInstrument).slice(0, 5).join(', ');
+    var negativeParts = avoid.map(humanizeInstrument).slice(0, 5);
+    if (accentLocked && normPrefs && normPrefs.genreAccent === 'jazz') {
+      negativeParts = negativeParts.concat(['generic EDM', 'techno', 'dubstep', 'trance', 'synthwave']);
+    } else if (accentLocked && normPrefs && normPrefs.genreAccent === 'funk') {
+      negativeParts = negativeParts.concat(['generic EDM', 'techno']);
+    }
+    const negativeTags = negativeParts.filter(Boolean).join(', ');
 
     // Gewichte für UI
     const weights = {
@@ -469,6 +491,7 @@
 
     return {
       style, negativeTags, weights,
+      _accentLocked: accentLocked,
       personality_text: personalityText,
       astrology_text:   astroText,
       methods_text:     methodsText,
@@ -524,17 +547,21 @@
     }
     const useInstrumental = opts.instrumental != null ? opts.instrumental : style.instrumental;
     const hasLyrics = lyrics && lyrics.length >= 30;
+    var styleStr = style.style;
+    if (useVoicePersona) {
+      styleStr = 'custom voice persona clone, ' + styleStr;
+    }
 
     return {
       model,
       title: opts.titleOverride || title,
       prompt: lyrics,
-      style: style.style,
+      style: styleStr,
       customMode: true,
       instrumental: useInstrumental || !hasLyrics,
       vocalGender: useInstrumental ? undefined : vocalGender,
       negativeTags: style.negativeTags || undefined,
-      styleWeight: opts.styleWeight != null ? opts.styleWeight : 0.72,
+      styleWeight: opts.styleWeight != null ? opts.styleWeight : (style._accentLocked ? 0.88 : 0.72),
       weirdnessConstraint: opts.weirdnessConstraint != null ? opts.weirdnessConstraint : 0.42,
       _weights: style.weights,
       _personality_text: style.personality_text,

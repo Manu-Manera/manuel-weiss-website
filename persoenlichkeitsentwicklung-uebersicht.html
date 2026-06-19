@@ -196,8 +196,9 @@
             </div>
             
             <div class="methods-grid">
-                <!-- Persönlichkeits-Song Generator - Neu, prominent -->
-                <div class="method-card" onclick="startMethod('personality-song')" data-category="self-discovery">
+                <!-- Persönlichkeits-Song Generator - nur nach Anmeldung sichtbar -->
+                <div class="method-card" data-auth-gate="song-generator" hidden style="display:none"
+                     onclick="SongGeneratorAuthGate.openSongGenerator()" data-category="self-discovery">
                     <div class="service-icon">
                         <i class="fas fa-music"></i>
                     </div>
@@ -1728,8 +1729,16 @@
             'via-strengths': 'methods/via-strengths/via-strengths.html',
             'vision-board': 'methods/vision-board/vision-board.html',
             'walt-disney': 'methods/walt-disney/walt-disney.html',
-            'wheel-of-life': 'methods/wheel-of-life/index-wheel-of-life.html'
+            'wheel-of-life': 'methods/wheel-of-life/index-wheel-of-life.html',
+            'personality-song': 'persoenlichkeits-song-generator.html'
         };
+        
+        if (methodName === 'personality-song') {
+            if (window.SongGeneratorAuthGate && window.SongGeneratorAuthGate.openSongGenerator) {
+                window.SongGeneratorAuthGate.openSongGenerator();
+                return;
+            }
+        }
         
         const route = methodRoutes[methodName];
         if (route) {
@@ -2501,6 +2510,7 @@
     <script src="js/aws-profile-api.js"></script>
     <script src="js/user-progress-tracker.js"></script>
     <script src="js/personality-auth-integration.js"></script>
+    <script src="js/song-generator-auth-gate.js?v=20260528k"></script>
     <!-- Simple Translation -->
     <script src="js/simple-translation.js"></script>
     

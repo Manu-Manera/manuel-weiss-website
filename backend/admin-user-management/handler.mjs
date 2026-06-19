@@ -231,13 +231,14 @@ async function listUsers(params = {}) {
     }
   }
 
-  const command = new ListUsersCommand({
+  const listParams = {
     UserPoolId: process.env.USER_POOL_ID,
-    Limit: Math.min(limit, 60), // Cognito max
-    PaginationToken: paginationToken,
-    Filter: filter,
-    AttributesToGet: ['email', 'email_verified', 'name', 'phone_number']
-  });
+    Limit: Math.min(limit, 60),
+    PaginationToken: paginationToken
+  };
+  if (filter) listParams.Filter = filter;
+
+  const command = new ListUsersCommand(listParams);
 
   const response = await cognito.send(command);
   let users = response.Users || [];

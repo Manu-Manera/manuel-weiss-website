@@ -236,14 +236,19 @@ class AdminAuthSystem {
                         successMsg.classList.add('show');
                     }
                     
-                    // Redirect nach Login: ?redirect= nutzen oder /admin.html
+                    // Redirect nach Login: ?redirect= nutzen oder /admin.html (mit Cache-Bust)
                     setTimeout(() => {
                         const urlParams = new URLSearchParams(window.location.search);
                         const redirectPath = urlParams.get('redirect');
+                        const adminVersion = window.ADMIN_ASSET_VERSION || String(Date.now());
                         if (redirectPath && redirectPath.startsWith('/')) {
-                            window.location.href = redirectPath;
+                            const redirectUrl = new URL(redirectPath, window.location.origin);
+                            if (!redirectUrl.searchParams.has('v')) {
+                                redirectUrl.searchParams.set('v', adminVersion);
+                            }
+                            window.location.href = redirectUrl.pathname + redirectUrl.search + redirectUrl.hash;
                         } else {
-                            window.location.href = '/admin.html';
+                            window.location.href = `/admin.html?v=${encodeURIComponent(adminVersion)}`;
                         }
                     }, 1000);
                 } else {

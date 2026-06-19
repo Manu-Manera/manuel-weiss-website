@@ -98,31 +98,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; font-size: 15px; line-he
 .cast-role { font-size: 12px; color: var(--gray-500); line-height: 1.4; }
 .cast-quote { font-size: 12px; font-style: italic; color: var(--rm); margin-top: 6px; border-top: 1px solid var(--gray-200); padding-top: 6px; }
 
-/* ── FULLPAGE AGENDA ─────────────────────── */
-.agenda-fullpage-wrap {
-  width: 100vw; position: relative; left: 50%; right: 50%;
-  margin-left: -50vw; margin-right: -50vw;
-  min-height: 100vh;
-  padding: 40px max(24px, calc((100vw - 920px) / 2)) 48px;
-  box-sizing: border-box;
-  background: linear-gradient(168deg, #ecfdf5 0%, #ffffff 38%, #e5f3f8 100%);
-  border-top: 3px solid var(--rm); border-bottom: 3px solid var(--rm);
-  margin-top: 8px; margin-bottom: 28px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
-}
-.agenda-fullpage-inner { max-width: 920px; margin: 0 auto; }
-.agenda-fullpage-kicker { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--rm); margin-bottom: 10px; text-align: center; }
-.agenda-fullpage-title { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(26px, 4vw, 36px); font-weight: 700; color: var(--rm); text-align: center; margin-bottom: 8px; line-height: 1.2; }
-.agenda-fullpage-sub { text-align: center; font-size: 14px; color: var(--gray-600); margin-bottom: 32px; max-width: 640px; margin-left: auto; margin-right: auto; line-height: 1.5; }
-.agenda-fullpage-blocks { display: flex; flex-direction: column; gap: 0; }
-.agenda-fullpage-block { display: grid; grid-template-columns: 52px 1fr; gap: 16px 20px; align-items: start; padding: 22px 0; border-bottom: 1px solid var(--gray-300); }
-.agenda-fullpage-block:last-child { border-bottom: none; }
-.agenda-fullpage-num { width: 48px; height: 48px; border-radius: 10px; background: linear-gradient(135deg, var(--rm), var(--teal)); color: white; font-size: 20px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.agenda-fullpage-block h4 { font-size: 17px; font-weight: 700; color: var(--gray-900); margin: 0 0 10px; line-height: 1.3; }
-.agenda-fullpage-block ul { margin: 0; padding-left: 1.15em; font-size: 14px; color: var(--gray-700); line-height: 1.65; }
-.agenda-fullpage-block li { margin: 4px 0; }
-.agenda-fullpage-footnote { margin-top: 28px; padding: 14px 18px; background: rgba(255,255,255,0.75); border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 13px; color: var(--gray-600); line-height: 1.55; }
-
+/* Agenda Vollseite → demo-agenda-window.css */
 /* ── SCENE ───────────────────────────────── */
 .scene { background: white; border: 1px solid var(--gray-300); border-radius: var(--radius); margin-bottom: 20px; box-shadow: var(--shadow); overflow: hidden; }
 .scene-header { display: flex; align-items: stretch; border-bottom: 1px solid var(--gray-200); }
@@ -199,13 +175,6 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 ════════════════════════════════════════ */
 #edit-toolbar { position:fixed;top:56px;right:20px;z-index:1000;display:flex;flex-direction:column;align-items:stretch;gap:6px;max-width:min(380px,94vw);background:rgba(255,255,255,0.97);border:1px solid var(--gray-300);border-radius:14px;padding:6px 8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);backdrop-filter:blur(8px);font-family:'Inter',sans-serif; }
 .edit-toolbar-main { display:flex;align-items:center;gap:6px;flex-wrap:wrap; }
-.edit-format-bar { display:none;flex-wrap:wrap;gap:4px;align-items:center;padding-top:4px;border-top:1px solid var(--gray-200); }
-.edit-mode-active .edit-format-bar { display:flex; }
-.edit-fmt-btn { min-width:28px;padding:4px 8px;border:1px solid var(--gray-300);border-radius:6px;background:var(--gray-100);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;color:var(--gray-800);line-height:1.2; }
-.edit-fmt-btn:hover { background:var(--gray-200);border-color:var(--gray-400); }
-.edit-fmt-btn:active { transform:scale(0.97); }
-.edit-fmt-sep { width:1px;height:18px;background:var(--gray-300);margin:0 2px;flex-shrink:0; }
-.edit-fmt-hint { font-size:10px;color:var(--gray-500);width:100%;margin-top:2px;line-height:1.3; }
 .edit-versions-panel { display:none;position:fixed;inset:0;z-index:10002;background:rgba(15,23,42,0.45);align-items:flex-end;justify-content:flex-end;padding:16px;box-sizing:border-box; }
 .edit-versions-panel.open { display:flex; }
 .edit-versions-panel-inner { background:#fff;border-radius:14px;border:1px solid var(--gray-300);max-width:min(420px,96vw);max-height:min(520px,78vh);overflow:hidden;display:flex;flex-direction:column;box-shadow:0 16px 48px rgba(0,0,0,0.22);font-family:'Inter',sans-serif; }
@@ -364,6 +333,9 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
   .cast-grid, .closing-grid { grid-template-columns: 1fr; }
 }
 </style>
+<link rel="stylesheet" href="demo-agenda-window.css">
+<link rel="stylesheet" href="demo-edit-format.css">
+<script src="demo-edit-format.js"></script>
 </head>
 <body>
 
@@ -1038,6 +1010,7 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: va
 </div>
 </template>
 
+<script src="demo-script-export-word.js"></script>
 <script>
 /* ═══════════════════════════════════════════════════
    LANGUAGE SWITCHER
@@ -1071,7 +1044,7 @@ let hasUnsavedChanges = false;
 document.addEventListener('DOMContentLoaded', () => {
   loadSaved();
   createEditToolbar();
-  initFormatToolbar();
+  initFormatToolbar({ onChange: markUnsaved });
 
   window.addEventListener('beforeunload', (e) => {
     if (editMode && hasUnsavedChanges) {
@@ -1091,6 +1064,7 @@ function createEditToolbar() {
         <span id="edit-icon">✏️</span>
         <span id="edit-label">Bearbeiten</span>
       </button>
+      <button type="button" class="edit-actions-btn demo-export-word-btn" onclick="DemoWordExport.export()" title="Demo-Skript als Word exportieren (aktuelle Sprache)">📄 Word</button>
       <div id="edit-extra" style="display:none;align-items:center;gap:6px;flex-wrap:wrap;">
         <button class="edit-actions-btn edit-save-btn" onclick="saveAll()">💾 Speichern</button>
         <button type="button" class="edit-actions-btn edit-versions-btn" onclick="toggleRmVersionsPanel()" title="Letzte gespeicherte Stände (AWS)">📜 <span id="edit-versions-btn-label-rm"></span></button>
@@ -1105,70 +1079,6 @@ function createEditToolbar() {
   if (rmVerLbl) rmVerLbl.textContent = rmLang() === 'de' ? 'Versionen' : 'Versions';
 }
 
-function initFormatToolbar() {
-  const bar = document.getElementById('edit-format-bar');
-  if (!bar || bar.dataset.wired) return;
-  bar.dataset.wired = '1';
-
-  const addBtn = (label, title, fn) => {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'edit-fmt-btn';
-    b.textContent = label;
-    b.title = title;
-    b.addEventListener('mousedown', e => { e.preventDefault(); });
-    b.addEventListener('click', () => { fn(); markUnsaved(); });
-    bar.appendChild(b);
-  };
-
-  addBtn('B', 'Fett (Strg+B)', () => { document.execCommand('bold'); });
-  addBtn('K', 'Kursiv (Strg+I)', () => { document.execCommand('italic'); });
-  addBtn('N', 'Normal — Formatierung der Auswahl entfernen', () => {
-    document.execCommand('removeFormat');
-    try { document.execCommand('unlink'); } catch (e) { /* ignore */ }
-    const sel = window.getSelection();
-    if (sel.rangeCount) {
-      const c = sel.getRangeAt(0).commonAncestorContainer;
-      const editable = (c.nodeType === 3 ? c.parentElement : c);
-      const root = editable ? (editable.closest('[contenteditable]') || editable) : null;
-      if (root) {
-        root.querySelectorAll('font').forEach(f => {
-          while (f.firstChild) f.parentNode.insertBefore(f.firstChild, f);
-          f.remove();
-        });
-        root.querySelectorAll('[style]').forEach(el => {
-          el.style.removeProperty('font-size');
-          if (!el.getAttribute('style').trim()) el.removeAttribute('style');
-        });
-      }
-    }
-  });
-
-  const sep = document.createElement('span');
-  sep.className = 'edit-fmt-sep';
-  sep.setAttribute('aria-hidden', 'true');
-  bar.appendChild(sep);
-
-  addBtn('A+', 'Schrift grösser', () => {
-    try {
-      if (document.queryCommandSupported && document.queryCommandSupported('increaseFontSize')) {
-        document.execCommand('increaseFontSize');
-      } else { document.execCommand('fontSize', false, '4'); }
-    } catch (e) { document.execCommand('fontSize', false, '4'); }
-  });
-  addBtn('A−', 'Schrift kleiner', () => {
-    try {
-      if (document.queryCommandSupported && document.queryCommandSupported('decreaseFontSize')) {
-        document.execCommand('decreaseFontSize');
-      } else { document.execCommand('fontSize', false, '2'); }
-    } catch (e) { document.execCommand('fontSize', false, '2'); }
-  });
-
-  const hint = document.createElement('div');
-  hint.className = 'edit-fmt-hint';
-  hint.textContent = 'Text markieren, dann Format wählen — gilt für alle bearbeitbaren Bereiche.';
-  bar.appendChild(hint);
-}
 
 /* ── Toggle ─────────────────────────────────────── */
 function toggleEditMode() {
@@ -2090,9 +2000,26 @@ function removeAgendaEditing() {
 
 const WEBSITE_API_BASE = 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
 const DEMO_SCRIPT_API_URL = `${WEBSITE_API_BASE}/demo-script/bpafg`;
+const DEMO_PRESIGNED_CONFIG_KEY = 'bpafg';
+
+/** Presigned PUT — nur Fallback; URLs in /config/demo-presigned-fallback.json (nicht im Git). */
+let PRESIGNED_PUT_URL = null;
+
+async function ensureDemoPresignedPutUrl() {
+  if (PRESIGNED_PUT_URL) return PRESIGNED_PUT_URL;
+  try {
+    const r = await fetch('/config/demo-presigned-fallback.json', { cache: 'no-store' });
+    if (!r.ok) return null;
+    const cfg = await r.json();
+    PRESIGNED_PUT_URL = cfg[DEMO_PRESIGNED_CONFIG_KEY] || null;
+  } catch (e) {
+    console.warn('Demo presigned config:', e);
+  }
+  return PRESIGNED_PUT_URL;
+}
+
 const DEMO_SCRIPT_EDIT_PASSWORD = 'tempus-demo-edit-2024';
 
-const PRESIGNED_PUT_URL = 'https://manuel-weiss-website.s3.amazonaws.com/data/tempus-demo-bpafg-state.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQR3HB4M3MG2WEBUJ%2F20260521%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20260521T153354Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=05fbfc41f710377760ee068b60143d4118a84332ac36b8578822d1911e82a57a';
 
 /* Immer S3 direkt — nicht manuel-weiss.ch/data/… (CloudFront-Cache, nicht geräteübergreifend frisch). */
 const STATE_READ_URL =
@@ -2417,6 +2344,12 @@ async function saveAll(opts = {}) {
     }
 
     if (!apiOk) {
+      await ensureDemoPresignedPutUrl();
+      if (!PRESIGNED_PUT_URL) {
+        localStorage.setItem(STORAGE_KEY, payload);
+        console.warn('Cloud-Sync: API und Presigned-Fallback nicht verfügbar — nur lokal gespeichert.');
+        return;
+      }
       const res = await fetch(PRESIGNED_PUT_URL, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -2599,11 +2532,15 @@ function resetAll() {
       reset: true,
       schemaVersion: RM_STATE_SCHEMA_VERSION
     });
-    fetch(PRESIGNED_PUT_URL, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: resetBody
-    }).catch(() => {});
+    ensureDemoPresignedPutUrl().then((url) => {
+      if (url) {
+        fetch(url, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: resetBody
+        }).catch(() => {});
+      }
+    });
     localStorage.removeItem(STORAGE_KEY);
     location.reload();
   }
@@ -2815,5 +2752,6 @@ function insertNewBox(bt) {
   }, 60);
 }
 </script>
+<script src="demo-agenda-window.js" data-agenda-id="bpafg-training-agenda" data-demo-label="BPAFG"></script>
 </body>
 </html>

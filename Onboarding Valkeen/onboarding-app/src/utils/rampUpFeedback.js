@@ -20,6 +20,74 @@ function slugId(name, index = 0) {
   return base ? `${base}-${index}` : `person-${Date.now()}`;
 }
 
+/** Generate unique session ID */
+function generateSessionId() {
+  return `session-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+/** Create a new feedback session with default values */
+export function createFeedbackSession(title = '', personName = '') {
+  const now = new Date().toISOString();
+  const session = {
+    id: generateSessionId(),
+    createdAt: now,
+    updatedAt: now,
+    data: emptyRampUpFeedback(),
+  };
+  if (title) session.data.meta.title = title;
+  if (personName) {
+    session.data.participants = [{ id: 'primary', name: personName, role: '' }];
+    session.data.meta.primaryParticipantId = 'primary';
+  }
+  return session;
+}
+
+/** Normalize feedbackSessions array (migration from single rampUpFeedback) */
+export function normalizeFeedbackSessions(sessions, legacyRampUpFeedback) {
+  if (Array.isArray(sessions) && sessions.length > 0) {
+    return sessions.map((s) => ({
+      id: s.id || generateSessionId(),
+      createdAt: s.createdAt || new Date().toISOString(),
+      updatedAt: s.updatedAt || s.createdAt || new Date().toISOString(),
+      data: normalizeRampUpFeedback(s.data),
+    }));
+  }
+  if (legacyRampUpFeedback && typeof legacyRampUpFeedback === 'object') {
+    const hasContent =
+      legacyRampUpFeedback.meta?.title ||
+      legacyRampUpFeedback.participants?.some((p) => p.name) ||
+      legacyRampUpFeedback.prep?.openingLine !== OPENING_LINE_DEFAULT;
+    if (hasContent) {
+      return [
+        {
+          id: 'migrated-session',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          data: normalizeRampUpFeedback(legacyRampUpFeedback),
+        },
+      ];
+    }
+  }
+  return [];
+}
+
+/** Get session summary for display in list */
+export function getSessionSummary(session) {
+  const data = session?.data || {};
+  const meta = data.meta || {};
+  const participants = data.participants || [];
+  const primaryPerson = participants.find((p) => p.id === meta.primaryParticipantId) || participants[0];
+  return {
+    id: session.id,
+    title: meta.title || 'Unbenannt',
+    personName: primaryPerson?.name || '—',
+    personRole: primaryPerson?.role || '',
+    reviewDate: meta.reviewDate || '',
+    createdAt: session.createdAt,
+    updatedAt: session.updatedAt,
+  };
+}
+
 export function emptyRampUpFeedback() {
   const participants = DEFAULT_PARTICIPANTS.map((p) => ({ ...p }));
   const byParticipant = Object.fromEntries(

@@ -421,7 +421,7 @@
     hiphop: { label: 'Hip-Hop', tags: ['boom bap hip hop', 'lo-fi beats'] },
     reggae: { label: 'Reggae / Dub', tags: ['roots reggae', 'dub groove'] },
     funk: { label: 'Funk', tags: ['neo funk', 'slap bass'] },
-    jazz: { label: 'Jazz / Neo-Soul', tags: ['neo soul', 'jazz hop'] },
+    jazz: { label: 'Jazz / Neo-Soul', tags: ['neo soul', 'jazz hop', 'Rhodes piano', 'smoky lounge', 'live drums', 'warm bass'] },
     rock: { label: 'Rock / Indie', tags: ['indie rock', 'alt rock'] },
     pop: { label: 'Pop / Mainstream', tags: ['modern pop', 'radio friendly'] }
   };
@@ -810,10 +810,18 @@
     var accent = GENRE_ACCENTS[prefs.genreAccent];
     var vocal = VOCAL_MODES[prefs.vocalMode];
     if (accent && accent.tags && accent.tags.length) {
-      mods.genreHints = accent.tags.concat(mods.genreHints || []).slice(0, 5);
+      if (prefs.genreAccent === 'jazz') {
+        mods.genreHints = accent.tags.concat(
+          (mods.genreHints || []).filter(function (h) {
+            return h && !/electro|techno|edm|house|synthwave|minimal techno|deep house/i.test(h);
+          })
+        ).slice(0, 6);
+      } else {
+        mods.genreHints = accent.tags.concat(mods.genreHints || []).slice(0, 6);
+      }
     }
     if (vocal && vocal.tags && vocal.tags.length) {
-      mods.styleTags = (mods.moodWords || []).concat(vocal.tags);
+      mods.moodWords = (mods.moodWords || []).concat(vocal.tags);
     }
     if (vocal && vocal.instrumental === true) {
       mods.instrumental = true;

@@ -47,6 +47,19 @@ function startMethod(methodId) {
         'personality-song': 'persoenlichkeits-song-generator.html'
     };
     
+    if (methodId === 'personality-song') {
+        if (window.SongGeneratorAuthGate && window.SongGeneratorAuthGate.openSongGenerator) {
+            window.SongGeneratorAuthGate.openSongGenerator();
+            return;
+        }
+        if (!window.awsAuth?.isLoggedIn?.() && !window.realUserAuth?.isLoggedIn?.()) {
+            if (window.authModals?.showLogin) window.authModals.showLogin();
+            else if (window.awsAuth?.showLoginModal) window.awsAuth.showLoginModal();
+            else alert('Bitte melde dich an, um den Persönlichkeits-Song zu erstellen.');
+            return;
+        }
+    }
+    
     // Debug: Log all available methods
     console.log('Available methods:', Object.keys(methodUrls));
     console.log('Looking for method:', methodId);

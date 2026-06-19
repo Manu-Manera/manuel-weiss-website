@@ -1,0 +1,27 @@
+{
+  "cloudfrontAliasHint": "In AWS Console → CloudFront → Alternate domain names + ACM cert (us-east-1)",
+  "tenants": [
+    {
+      "slug": "siemens-healthineers",
+      "legacySlugs": ["shs"],
+      "customer": "Siemens Healthineers",
+      "hosts": ["shs-kickoff-studio.ch", "www.shs-kickoff-studio.ch"],
+      "preferredOrigin": "https://shs-kickoff-studio.ch",
+      "presenterPath": "/onboarding/kickoff-presenter/siemens-healthineers"
+    },
+    {
+      "slug": "horizon",
+      "customer": "Horizon Program",
+      "hosts": ["horizon-kickoff-studio.ch", "www.horizon-kickoff-studio.ch"],
+      "preferredOrigin": "https://horizon-kickoff-studio.ch",
+      "presenterPath": "/onboarding/kickoff-presenter/horizon"
+    },
+    {
+      "slug": "knauf",
+      "customer": "Knauf",
+      "hosts": ["knauf-kickoff-studio.ch", "www.knauf-kickoff-studio.ch"],
+      "preferredOrigin": "https://knauf-kickoff-studio.ch",
+      "presenterPath": "/onboarding/kickoff-presenter/knauf"
+    }
+  ]
+}

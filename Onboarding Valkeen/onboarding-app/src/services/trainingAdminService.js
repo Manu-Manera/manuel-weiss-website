@@ -449,3 +449,31 @@ export async function getRecorderSteps() {
     return [];
   }
 }
+
+/** Drag-Sequenz auf dem aktiven Tempus-Tab ausführen (Extension erforderlich). */
+export async function runMouseDragViaExtension(drags, options = {}) {
+  try {
+    const response = await extensionSend({
+      type: 'EXT_MOUSE_DRAG',
+      drags,
+      steps: options.steps,
+      stepDelayMs: options.stepDelayMs,
+      pauseBeforeMs: options.pauseBeforeMs,
+      pauseAfterMs: options.pauseAfterMs,
+      tabId: options.tabId
+    });
+    return response ?? { ok: false, error: 'Extension nicht erreichbar' };
+  } catch (e) {
+    return { ok: false, error: e?.message || 'Extension-Fehler' };
+  }
+}
+
+/** Einmal auf Tempus klicken lassen und clientX/clientY zurückgeben. */
+export async function pickMouseCoordViaExtension() {
+  try {
+    const response = await extensionSend({ type: 'EXT_MOUSE_PICK_COORD' });
+    return response ?? { ok: false, error: 'Extension nicht erreichbar' };
+  } catch (e) {
+    return { ok: false, error: e?.message || 'Extension-Fehler' };
+  }
+}

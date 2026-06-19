@@ -9,6 +9,10 @@ keys/
 .env.local
 .env.*.local
 
+# Demo presigned URLs (niemals committen — enthält temporäre S3-Signaturen)
+config/demo-presigned-fallback.json
+config/tempus-demo-pm-media-slots.json
+
 # Local credentials (never commit)
 .credentials/
 *.local.json

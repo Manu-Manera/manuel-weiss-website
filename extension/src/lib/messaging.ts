@@ -13,6 +13,28 @@ export type RuntimeMessage =
   | { type: 'EXT_STOP_TOUR' }
   | { type: 'EXT_OPEN_RECORDER' }
   | { type: 'EXT_GET_RECORDING' }
+  | {
+      type: 'EXT_MOUSE_DRAG';
+      drags: Array<{ fromX: number; fromY: number; toX: number; toY: number }>;
+      steps?: number;
+      stepDelayMs?: number;
+      pauseBeforeMs?: number;
+      pauseAfterMs?: number;
+      tabId?: number;
+    }
+  | { type: 'EXT_MOUSE_PICK_COORD'; tabId?: number }
+  /* === Service Worker → Content-Script (Maus) === */
+  | {
+      type: 'MOUSE_DRAG';
+      drags: Array<{ fromX: number; fromY: number; toX: number; toY: number }>;
+      steps?: number;
+      stepDelayMs?: number;
+      pauseBeforeMs?: number;
+      pauseAfterMs?: number;
+    }
+  | { type: 'MOUSE_PICK_COORD' }
+  | { type: 'MOUSE_PICK_RESULT'; x: number; y: number }
+  | { type: 'MOUSE_DRAG_RESULT'; result: { ok: boolean; error?: string; stepsRun: number; lastElement?: string } }
   /* === Popup/Side-Panel → Service Worker === */
   | { type: 'GET_AUTH' }
   | { type: 'CLEAR_AUTH' }

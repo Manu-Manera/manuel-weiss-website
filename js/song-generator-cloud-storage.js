@@ -135,7 +135,9 @@
       userMeta: state.userMeta,
       importedNarrative: state.importedNarrative || '',
       favorites: Array.isArray(state.favorites)
-        ? state.favorites.slice(0, window.SongFavorites ? window.SongFavorites.MAX_FAVORITES : 50)
+        ? (window.SongFavorites
+          ? window.SongFavorites.sanitizeList(state.favorites)
+          : state.favorites.slice(0, 50))
         : [],
       voiceProfile: state.voiceProfile || null,
       voiceWizard: state.voiceWizard || null,
@@ -273,10 +275,13 @@
     if (typeof snap.step === 'number') state.step = snap.step;
     if (Array.isArray(snap.favorites)) {
       if (window.SongFavorites) {
-        state.favorites = window.SongFavorites.mergeLists(state.favorites, snap.favorites);
+        /* snap = Cloud, state.favorites = lokal – localList hat Vorrang */
+        state.favorites = window.SongFavorites.mergeLists(snap.favorites, state.favorites);
       } else {
         state.favorites = snap.favorites.slice();
       }
+    } else if (window.SongFavorites && Array.isArray(state.favorites)) {
+      state.favorites = window.SongFavorites.sanitizeList(state.favorites);
     }
     if (snap.voiceProfile) {
       state.voiceProfile = mergeVoiceProfiles(state.voiceProfile, snap.voiceProfile);
@@ -379,11 +384,13 @@
   }
 
   async function loadAndMergeFavorites(stateFavorites, localFavorites) {
-    var merged = Array.isArray(stateFavorites) ? stateFavorites : [];
+    var merged = [];
     if (window.SongFavorites) {
-      merged = window.SongFavorites.mergeLists(merged, localFavorites || []);
+      merged = window.SongFavorites.mergeLists(stateFavorites || [], localFavorites || []);
     } else if (Array.isArray(localFavorites) && localFavorites.length) {
       merged = localFavorites.slice();
+    } else if (Array.isArray(stateFavorites)) {
+      merged = stateFavorites.slice();
     }
     if (!isLoggedIn() || !window.SongFavorites) return merged;
     try {
@@ -393,7 +400,7 @@
       const library = await loadAudioLibrary();
       merged = window.SongFavorites.mergeLists(library.favorites, merged);
     } catch (_e) {}
-    return merged;
+    return window.SongFavorites.sanitizeList(merged);
   }
 
   async function writeWorkflowStep(stepName, body, token) {
@@ -471,7 +478,11 @@
     if (!isLoggedIn() || !window.SongFavorites) return null;
     try {
       let library = await loadAudioLibrary();
-      const next = window.SongFavorites.reorder(library.favorites || [], fromIndex, toIndex);
+      const base = window.SongFavorites.mergeLists(
+        library.favorites || [],
+        state && state.favorites ? state.favorites : []
+      );
+      const next = window.SongFavorites.reorder(base, fromIndex, toIndex);
       library.favorites = next;
       library.updatedAt = new Date().toISOString();
       const token = await getAuthToken();
@@ -569,18 +580,26 @@
       state.audioIdentity = identity;
       if (window.SongFavorites) {
         var stepFav = await loadFavoritesStep();
+        var prevFav = window.SongFavorites.sanitizeList(state.favorites || []);
         var mergedFav = window.SongFavorites.mergeLists(
           window.SongFavorites.mergeLists(library.favorites, stepFav),
-          state.favorites || []
+          prevFav
         );
-        state.favorites = mergedFav;
-        if (JSON.stringify(mergedFav) !== JSON.stringify(library.favorites || [])) {
-          library.favorites = mergedFav;
-          library.updatedAt = new Date().toISOString();
-          await writeWorkflowStep('audioLibrary', library, token);
+        mergedFav = window.SongFavorites.sanitizeList(mergedFav);
+        if (!mergedFav.length && prevFav.length) {
+          mergedFav = prevFav;
         }
+        state.favorites = mergedFav;
         if (mergedFav.length) {
+          if (JSON.stringify(mergedFav) !== JSON.stringify(library.favorites || [])) {
+            library.favorites = mergedFav;
+            library.updatedAt = new Date().toISOString();
+            await writeWorkflowStep('audioLibrary', library, token);
+          }
           await saveFavoritesStep(mergedFav);
+          if (window.SongFavorites.backupToSession) {
+            window.SongFavorites.backupToSession(mergedFav);
+          }
         }
       } else if (Array.isArray(library.favorites) && library.favorites.length) {
         state.favorites = library.favorites;

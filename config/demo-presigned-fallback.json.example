@@ -1,0 +1,6 @@
+{
+  "pm": "https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-demo-pm-state.json?X-Amz-...",
+  "rm": "https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-demo-rm-state.json?X-Amz-...",
+  "bpafg": "https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-demo-bpafg-state.json?X-Amz-...",
+  "team-resources": "https://manuel-weiss-website.s3.eu-central-1.amazonaws.com/data/tempus-demo-team-resources-state.json?X-Amz-..."
+}

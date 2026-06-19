@@ -11,6 +11,8 @@
     
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/persoenlichkeitsentwicklung-uebersicht.css?v=20260528j">
+    <link rel="stylesheet" href="css/unified-auth-system.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -24,7 +26,7 @@
         .aktivitaeten-hero {
             background: linear-gradient(135deg, #475569 0%, #64748b 50%, #94a3b8 100%);
             color: white;
-            padding: 4rem 0;
+            padding: 6.5rem 0 4rem;
             text-align: center;
         }
         
@@ -556,6 +558,49 @@
     </style>
 </head>
 <body class="aktivitaeten-page">
+    <nav class="navbar navbar-slim">
+        <div class="nav-container">
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Start</a>
+                <a href="aktivitaeten-uebersicht.html" class="nav-link active">Aktivitäten</a>
+                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
+                <a href="applications/index.html" class="nav-link">Bewerbungsmanager</a>
+                <a href="applications/coaching.html" class="nav-link">Coaching</a>
+                <button id="authButton" class="nav-auth-btn" type="button">
+                    <i class="fas fa-user"></i>
+                    <span id="authButtonText">Anmelden</span>
+                </button>
+                <div class="user-dropdown" id="userDropdown" style="display: none;">
+                    <a href="user-profile.html" class="dropdown-item"><i class="fas fa-user-circle"></i> Mein Profil</a>
+                    <a href="persoenlichkeitsentwicklung-uebersicht.html" class="dropdown-item"><i class="fas fa-th-large"></i> Methoden</a>
+                    <hr class="dropdown-divider">
+                    <button class="dropdown-item" id="logoutBtn" type="button"><i class="fas fa-sign-out-alt"></i> Abmelden</button>
+                </div>
+            </div>
+
+            <button class="mobile-hamburger" id="mobileHamburger" type="button" aria-label="Menü öffnen">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+        <div class="mobile-menu-fullscreen" id="mobileMenuFullscreen">
+            <div class="mobile-menu-content">
+                <a href="index.html" class="mobile-menu-link">Start</a>
+                <a href="aktivitaeten-uebersicht.html" class="mobile-menu-link active">Aktivitäten</a>
+                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="mobile-menu-link">Persönlichkeitsentwicklung</a>
+                <a href="applications/index.html" class="mobile-menu-link">Bewerbungsmanager</a>
+                <a href="applications/coaching.html" class="mobile-menu-link">Coaching</a>
+                <button id="mobileAuthButton" class="mobile-auth-btn" type="button">
+                    <i class="fas fa-user"></i>
+                    <span id="mobileAuthButtonText">Anmelden</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
     <!-- Hero -->
     <section class="aktivitaeten-hero">
         <div class="container">
@@ -639,8 +684,9 @@
                     <button type="button" class="services-scroll-btn services-scroll-prev" aria-controls="servicesScrollViewport" aria-label="Nach links scrollen"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
                     <div class="services-scroll-viewport" id="servicesScrollViewport" tabindex="0">
                         <div class="services-scroll-track">
-                <!-- Persönlichkeits-Song Generator -->
-                <div class="service-card" onclick="window.location.href='persoenlichkeits-song-generator.html'">
+                <!-- Persönlichkeits-Song Generator – nur nach Anmeldung -->
+                <div class="service-card" data-auth-gate="song-generator" hidden style="display:none"
+                     onclick="SongGeneratorAuthGate.openSongGenerator()">
                     <div class="service-icon">
                         <i class="fas fa-music"></i>
                     </div>
@@ -986,5 +1032,112 @@
     })();
     </script>
     <script src="js/aws-config.js"></script>
+    <script>
+      window.AWS_CONFIG = window.AWS_CONFIG || {
+        userPoolId: 'eu-central-1_8gP4gLK9r',
+        clientId: '7kc5tt6a23fgh53d60vkefm812',
+        region: 'eu-central-1',
+        apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod'
+      };
+    </script>
+    <script src="js/user-dropdown-controller.js?v=20260527g"></script>
+    <script src="js/unified-aws-auth.js?v=20260527g"></script>
+    <script src="js/unified-auth-modals.js?v=20260112"></script>
+    <script src="js/real-user-auth-system.js?v=20260110"></script>
+    <script src="js/song-generator-auth-gate.js?v=20260528k"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        var mh = document.getElementById('mobileHamburger');
+        var mo = document.getElementById('mobileMenuOverlay');
+        var mf = document.getElementById('mobileMenuFullscreen');
+        function toggleMobileMenu() {
+          mo && mo.classList.toggle('active');
+          mf && mf.classList.toggle('active');
+          document.body.style.overflow = mf && mf.classList.contains('active') ? 'hidden' : '';
+        }
+        mh && mh.addEventListener('click', toggleMobileMenu);
+        mo && mo.addEventListener('click', toggleMobileMenu);
+        mf && mf.querySelectorAll('.mobile-menu-link').forEach(function (link) {
+          link.addEventListener('click', toggleMobileMenu);
+        });
+
+        var authButton = document.getElementById('authButton');
+        var mobileAuthButton = document.getElementById('mobileAuthButton');
+        var logoutBtn = document.getElementById('logoutBtn');
+
+        function showLoginModal() {
+          if (window.authModals && window.authModals.showLogin) return window.authModals.showLogin();
+          if (window.awsAuth && window.awsAuth.showLoginModal) return window.awsAuth.showLoginModal();
+        }
+
+        authButton && authButton.addEventListener('click', function (e) {
+          if (!e.isTrusted) return;
+          if (authButton.classList.contains('logged-in')) return;
+          e.preventDefault();
+          e.stopPropagation();
+          showLoginModal();
+        });
+        mobileAuthButton && mobileAuthButton.addEventListener('click', function () {
+          if (mobileAuthButton.classList.contains('logged-in')) return;
+          toggleMobileMenu();
+          showLoginModal();
+        });
+
+        var lastLoggedIn = null;
+        function updateAuthUI() {
+          var loggedIn = (window.realUserAuth && window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn()) ||
+            (window.awsAuth && window.awsAuth.isLoggedIn && window.awsAuth.isLoggedIn()) || false;
+          if (loggedIn) {
+            var u = (window.realUserAuth && window.realUserAuth.getCurrentUser && window.realUserAuth.getCurrentUser()) ||
+              (window.awsAuth && window.awsAuth.getCurrentUser && window.awsAuth.getCurrentUser()) || {};
+            var name = (u.name && u.name !== 'Test User') ? u.name
+              : (u.email ? String(u.email).split('@')[0] : 'Profil');
+            if (authButton) {
+              authButton.classList.add('logged-in');
+              authButton.innerHTML = '<i class="fas fa-user-check"></i> <span>' + name + '</span>';
+            }
+            if (mobileAuthButton) {
+              mobileAuthButton.classList.add('logged-in');
+              mobileAuthButton.innerHTML = '<i class="fas fa-user-check"></i> <span>' + name + '</span>';
+            }
+          } else {
+            if (authButton) {
+              authButton.classList.remove('logged-in');
+              authButton.innerHTML = '<i class="fas fa-user"></i> <span>Anmelden</span>';
+            }
+            if (mobileAuthButton) {
+              mobileAuthButton.classList.remove('logged-in');
+              mobileAuthButton.innerHTML = '<i class="fas fa-user"></i> <span>Anmelden</span>';
+            }
+            if (window.UserDropdownController) window.UserDropdownController.closeAll();
+          }
+          if (lastLoggedIn !== null && lastLoggedIn !== loggedIn) {
+            window.dispatchEvent(new CustomEvent('songGenerator:authChanged', { detail: { loggedIn: loggedIn } }));
+            window.dispatchEvent(new CustomEvent('authStateChanged', { detail: { isAuthenticated: loggedIn } }));
+          }
+          lastLoggedIn = loggedIn;
+          if (window.SongGeneratorAuthGate && window.SongGeneratorAuthGate.syncGatedTiles) {
+            window.SongGeneratorAuthGate.syncGatedTiles();
+          }
+        }
+
+        logoutBtn && logoutBtn.addEventListener('click', async function () {
+          try {
+            if (window.realUserAuth && window.realUserAuth.logout) await window.realUserAuth.logout();
+            else if (window.awsAuth && window.awsAuth.logout) await window.awsAuth.logout();
+          } catch (_e) {}
+          localStorage.removeItem('aws_auth_session');
+          localStorage.removeItem('awsUserSession');
+          localStorage.removeItem('awsAuthTokens');
+          if (window.UserDropdownController) window.UserDropdownController.closeAll();
+          window.location.reload();
+        });
+
+        updateAuthUI();
+        setTimeout(updateAuthUI, 1200);
+        window.addEventListener('userLoggedIn', updateAuthUI);
+        window.addEventListener('authStateChanged', updateAuthUI);
+      });
+    </script>
 </body>
 </html>

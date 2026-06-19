@@ -7,6 +7,11 @@ import {
   useState,
 } from 'react';
 import { loadProgress, saveProgress } from '../services/awsService';
+import {
+  emptyRampUpFeedback,
+  normalizeRampUpFeedback,
+  normalizeFeedbackSessions,
+} from '../utils/rampUpFeedback';
 
 /** @typedef {{ id: string, customerLabel: string, tileAnswers: Record<string, Record<string, string>>, updatedAt?: string }} KotterCustomerProfile */
 /** @typedef {{ activeProfileId: string | null, profiles: Record<string, KotterCustomerProfile> }} ChangeWorkshopKotter */
@@ -27,6 +32,17 @@ const DEFAULT_PROGRESS = {
   changeWorkshopKotter: {
     activeProfileId: null,
     profiles: {},
+  },
+  /** Ramp-Up Review / Feedback Framework (Marc-Gespräch) - Legacy, wird migriert */
+  rampUpFeedback: emptyRampUpFeedback(),
+  /** Feedback Sessions - Mehrere Gespräche pro Person speichern */
+  feedbackSessions: [],
+  feedbackActiveSessionId: null,
+  /** Produktivitäts-Tracker - Artefakte und Arbeitsergebnisse */
+  productivityTracker: {
+    artifacts: [],
+    customers: ['Horizon', 'Cistec', 'Knauf', 'HR Campus', 'Akyurek', 'Lonza', 'Bayer', 'Intern'],
+    projects: [],
   },
 };
 
@@ -49,6 +65,13 @@ function normalizeValkeenTagesvertrag(raw) {
 
 function mergeProgressFromStorage(cloudOrLocal) {
   const fixedScores = fixQuizScores(cloudOrLocal.quizScores || {});
+  const feedbackSessions = normalizeFeedbackSessions(
+    cloudOrLocal.feedbackSessions,
+    cloudOrLocal.rampUpFeedback
+  );
+  const feedbackActiveSessionId =
+    cloudOrLocal.feedbackActiveSessionId ||
+    (feedbackSessions.length > 0 ? feedbackSessions[0].id : null);
   const merged = {
     ...DEFAULT_PROGRESS,
     ...cloudOrLocal,
@@ -67,8 +90,25 @@ function mergeProgressFromStorage(cloudOrLocal) {
     },
     changeWorkshopKotter: normalizeChangeWorkshopKotter(cloudOrLocal.changeWorkshopKotter),
     valkeenTagesvertrag: normalizeValkeenTagesvertrag(cloudOrLocal.valkeenTagesvertrag),
+    rampUpFeedback: normalizeRampUpFeedback(cloudOrLocal.rampUpFeedback),
+    feedbackSessions,
+    feedbackActiveSessionId,
+    productivityTracker: normalizeProductivityTracker(cloudOrLocal.productivityTracker),
   };
   return merged;
+}
+
+function normalizeProductivityTracker(raw) {
+  const defaultCustomers = ['Horizon', 'Cistec', 'Knauf', 'HR Campus', 'Akyurek', 'Lonza', 'Bayer', 'Intern'];
+  if (!raw || typeof raw !== 'object') {
+    return { artifacts: [], customers: defaultCustomers, projects: [] };
+  }
+  const artifacts = Array.isArray(raw.artifacts) ? raw.artifacts : [];
+  const customers = Array.isArray(raw.customers) && raw.customers.length > 0 
+    ? raw.customers 
+    : defaultCustomers;
+  const projects = Array.isArray(raw.projects) ? raw.projects : [];
+  return { artifacts, customers, projects };
 }
 
 function fixQuizScores(quizScores) {
@@ -245,6 +285,14 @@ export function ProgressProvider({ children }) {
       scenarioProgress: {},
       changeWorkshopKotter: { activeProfileId: null, profiles: {} },
       valkeenTagesvertrag: { days: {}, weeks: {} },
+      rampUpFeedback: emptyRampUpFeedback(),
+      feedbackSessions: [],
+      feedbackActiveSessionId: null,
+      productivityTracker: {
+        artifacts: [],
+        customers: ['Horizon', 'Cistec', 'Knauf', 'HR Campus', 'Akyurek', 'Lonza', 'Bayer', 'Intern'],
+        projects: [],
+      },
     };
     setProgressState(emptyProgress);
     localStorage.setItem('onboarding-progress', JSON.stringify(emptyProgress));

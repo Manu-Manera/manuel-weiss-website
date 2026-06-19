@@ -44,6 +44,12 @@ class AIInvestmentSection {
      */
     async loadAIDashboard() {
         try {
+            const currentSection = window.location.hash.replace('#', '') || 'dashboard';
+            if (currentSection !== 'ai-investments') {
+                console.log('[AI Investment] Überspringe Dashboard-Render für Section:', currentSection);
+                return;
+            }
+
             // Dashboard HTML generieren
             const dashboardHTML = this.generateDashboardHTML();
             
@@ -51,6 +57,7 @@ class AIInvestmentSection {
             const contentContainer = document.getElementById('admin-content');
             if (contentContainer) {
                 contentContainer.innerHTML = dashboardHTML;
+                contentContainer.setAttribute('data-section', 'ai-investments');
             }
             
             // Dashboard Daten laden
@@ -727,20 +734,6 @@ window.aiInvestment = {
         }
     }
 };
-
-// Section initialisieren wenn DOM bereit
-document.addEventListener('DOMContentLoaded', () => {
-    // Warten bis AdminApp verfügbar ist
-    const initSection = () => {
-        if (window.AdminApp && window.AdminApp.sections) {
-            window.AdminApp.sections.aiInvestment = new AIInvestmentSection();
-            window.AdminApp.sections.aiInvestment.init();
-        } else {
-            setTimeout(initSection, 100);
-        }
-    };
-    initSection();
-});
 
 // Global verfügbar machen
 window.AIInvestmentSection = AIInvestmentSection;

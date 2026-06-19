@@ -57,7 +57,7 @@
     audio.className = 'sg-audio-player sg-persistent-audio-el';
     audio.setAttribute('playsinline', '');
     audio.setAttribute('webkit-playsinline', '');
-    audio.preload = 'auto';
+    audio.preload = 'metadata';
     audio.controls = true;
     audio.addEventListener('ended', onEnded);
     audio.addEventListener('error', onAudioError);
@@ -292,7 +292,7 @@
     var srcChanged = !isSameUrl(audio.src, url);
     if (srcChanged) {
       audio.pause();
-      audio.preload = 'auto';
+      audio.preload = 'metadata';
       audio.src = url;
       try { audio.load(); } catch (_e) {}
     }
@@ -441,9 +441,8 @@
       audio.src = state.url;
       audio.currentTime = saved.currentTime || 0;
       updateBar();
-      if (!saved.paused) {
-        tryAutoPlay(false);
-      }
+      placeAudioElement();
+      // Kein Autoplay nach Reload – verhindert Minuten-Ladeblocker auf abgelaufenen Suno-URLs
     } catch (_e) {}
   }
 

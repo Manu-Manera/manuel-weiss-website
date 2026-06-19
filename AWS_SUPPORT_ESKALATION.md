@@ -70,7 +70,7 @@ I am writing to request restoration of Lambda access to my AWS account (Account 
 Background:
 - On January 12, 2026, AWS Security alerted me about a potentially compromised access key
 - I immediately completed all required security measures:
-  1. ✅ Rotated and deleted the exposed access key (AKIAQR3HB4M3JM24NYXH)
+  1. ✅ Rotated and deleted the exposed access key (AKIA…REDACTED)
   2. ✅ Reviewed CloudTrail logs - no unauthorized activity found
   3. ✅ Reviewed all resources across all regions - no unwanted resources found
   4. ✅ Enabled MFA on root account

@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "agendaSteps": [
+    { "id": "context", "label": "Kontext", "labelEn": "Context" },
+    { "id": "workshop", "label": "Workshop-Vorbereitung", "labelEn": "Workshop prep" },
+    { "id": "integrations", "label": "Integrationen", "labelEn": "Integrations", "optional": true },
+    { "id": "close", "label": "Abschluss", "labelEn": "Finish" }
+  ],
+  "sections": [
+    {
+      "id": "purpose",
+      "agendaId": "context",
+      "title": "Zweck & Ziele",
+      "questions": [
+        {
+          "key": "purpose.main",
+          "label": "Hauptzweck der Implementierung von Tempus Resource",
+          "multiline": true,
+          "required": true
+        },
+        {
+          "key": "purpose.goals",
+          "label": "3–5 Hauptziele, die Sie erreichen möchten",
+          "multiline": true,
+          "required": true
+        },
+        {
+          "key": "purpose.challenges",
+          "label": "Welche Herausforderungen soll Tempus lösen helfen?",
+          "multiline": true,
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "current-future",
+      "agendaId": "context",
+      "title": "Ist- und Soll-Zustand",
+      "questions": [
+        {
+          "key": "state.current",
+          "label": "Wie läuft Ihr aktueller Ressourcen- und Planungsprozess ab?",
+          "multiline": true,
+          "required": true
+        },
+        {
+          "key": "state.gaps",
+          "label": "Hauptschwachstellen oder Ineffizienzen",
+          "multiline": true,
+          "required": false
+        },
+        {
+          "key": "state.future",
+          "label": "Was soll sich im zukünftigen Zustand verbessern?",
+          "multiline": true,
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "team",
+      "agendaId": "workshop",
+      "title": "Projektteam & Verantwortlichkeiten",
+      "questions": [
+        {
+          "key": "team.inner",
+          "label": "Wer gehört zum inneren Implementierungs-Projektteam?",
+          "multiline": true,
+          "required": true
+        },
+        {
+          "key": "team.champions",
+          "label": "Tempus-Champions (Hauptnutzer / Multiplikatoren)",
+          "multiline": true,
+          "required": false
+        },
+        {
+          "key": "team.owner",
+          "label": "System Owner nach Go-Live",
+          "multiline": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "data-migration",
+      "agendaId": "workshop",
+      "title": "Daten & Migration",
+      "questions": [
+        {
+          "key": "data.migration.historical",
+          "label": "Sollen historische Daten nach Tempus migriert werden?",
+          "multiline": false,
+          "required": true
+        },
+        {
+          "key": "data.migration.scope",
+          "label": "Falls ja: welche Daten (Projekte, Zuweisungen, Ist-Aufwände …)?",
+          "multiline": true,
+          "required": false
+        }
+      ]
+    }
+  ]
+}

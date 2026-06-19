@@ -17,7 +17,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://*.prosymmetry.com/*"],
+      "matches": ["https://*.prosymmetry.com/*", "https://*.tempus-resource.com/*"],
       "js": ["src/content/index.ts"],
       "run_at": "document_idle",
       "all_frames": false
@@ -44,6 +44,7 @@
   ],
   "host_permissions": [
     "https://*.prosymmetry.com/*",
+    "https://*.tempus-resource.com/*",
     "https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/*",
     "https://manuel-weiss.ch/*"
   ],

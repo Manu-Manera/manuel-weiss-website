@@ -12,6 +12,10 @@ import {
   Trash2,
   FileDown,
   Languages,
+  ArrowLeft,
+  Calendar,
+  User,
+  FolderOpen,
 } from 'lucide-react';
 import { useProgress } from '../hooks/useLocalStorage';
 import { MEETING_NOTE_SECTIONS } from '../data/feedbackFrameworkDefaults';
@@ -24,7 +28,9 @@ import {
   SELF_ASSESSMENT_I18N,
 } from '../data/feedbackFrameworkI18n';
 import {
+  createFeedbackSession,
   emptyRampUpFeedback,
+  getSessionSummary,
   normalizeRampUpFeedback,
   participantNamesLabel,
   primaryParticipant,
@@ -55,35 +61,121 @@ export default function FeedbackFramework() {
   const progressRef = useRef(progress);
   progressRef.current = progress;
 
+  const [viewMode, setViewMode] = useState('overview');
+  const [activeSessionId, setActiveSessionId] = useState(null);
   const [activeTab, setActiveTab] = useState('prep');
   const [activeParticipantId, setActiveParticipantId] = useState(null);
   const [draft, setDraft] = useState(emptyRampUpFeedback);
   const [copied, setCopied] = useState(false);
   const [pdfBusy, setPdfBusy] = useState(false);
+  const [newSessionName, setNewSessionName] = useState('');
+  const [newSessionPerson, setNewSessionPerson] = useState('');
 
-  const locale = draft.meta.uiLocale === 'en' ? 'en' : 'de';
+  const locale = draft.meta?.uiLocale === 'en' ? 'en' : 'de';
   const t = (key) => feedbackUi(locale, key);
+
+  const sessions = progress.feedbackSessions || [];
 
   useEffect(() => {
     if (isLoading) return;
-    const normalized = normalizeRampUpFeedback(progressRef.current.rampUpFeedback);
-    setDraft(normalized);
-    setActiveParticipantId((prev) => {
-      if (prev && normalized.participants.some((p) => p.id === prev)) return prev;
-      return normalized.meta.primaryParticipantId || normalized.participants[0]?.id || null;
-    });
+    const savedActiveId = progressRef.current.feedbackActiveSessionId;
+    const allSessions = progressRef.current.feedbackSessions || [];
+    if (savedActiveId && allSessions.some((s) => s.id === savedActiveId)) {
+      setActiveSessionId(savedActiveId);
+      const session = allSessions.find((s) => s.id === savedActiveId);
+      if (session) {
+        const normalized = normalizeRampUpFeedback(session.data);
+        setDraft(normalized);
+        setActiveParticipantId(
+          normalized.meta.primaryParticipantId || normalized.participants[0]?.id || null
+        );
+        setViewMode('detail');
+      }
+    } else if (allSessions.length > 0) {
+      setViewMode('overview');
+    } else {
+      setViewMode('overview');
+    }
   }, [isLoading]);
+
+  const openSession = useCallback(
+    (sessionId, sessionsOverride) => {
+      const allSessions = sessionsOverride || sessions;
+      const session = allSessions.find((s) => s.id === sessionId);
+      if (!session) return;
+      const normalized = normalizeRampUpFeedback(session.data);
+      setDraft(normalized);
+      setActiveSessionId(sessionId);
+      setActiveParticipantId(
+        normalized.meta.primaryParticipantId || normalized.participants[0]?.id || null
+      );
+      setActiveTab('prep');
+      setViewMode('detail');
+      setProgress((p) => ({ ...p, feedbackActiveSessionId: sessionId }));
+    },
+    [sessions, setProgress]
+  );
+
+  const createSession = useCallback(() => {
+    const session = createFeedbackSession(
+      newSessionName || `Feedback ${new Date().toLocaleDateString('de-DE')}`,
+      newSessionPerson
+    );
+    const normalized = normalizeRampUpFeedback(session.data);
+    setDraft(normalized);
+    setActiveSessionId(session.id);
+    setActiveParticipantId(
+      normalized.meta.primaryParticipantId || normalized.participants[0]?.id || null
+    );
+    setActiveTab('prep');
+    setViewMode('detail');
+    setProgress((p) => ({
+      ...p,
+      feedbackSessions: [...(p.feedbackSessions || []), session],
+      feedbackActiveSessionId: session.id,
+    }));
+    setNewSessionName('');
+    setNewSessionPerson('');
+  }, [newSessionName, newSessionPerson, setProgress]);
+
+  const deleteSession = useCallback(
+    (sessionId) => {
+      if (!window.confirm('Dieses Gespräch wirklich löschen?')) return;
+      setProgress((p) => {
+        const next = (p.feedbackSessions || []).filter((s) => s.id !== sessionId);
+        return {
+          ...p,
+          feedbackSessions: next,
+          feedbackActiveSessionId:
+            p.feedbackActiveSessionId === sessionId ? (next[0]?.id || null) : p.feedbackActiveSessionId,
+        };
+      });
+      if (activeSessionId === sessionId) {
+        setViewMode('overview');
+        setActiveSessionId(null);
+      }
+    },
+    [activeSessionId, setProgress]
+  );
+
+  const backToOverview = useCallback(() => {
+    setViewMode('overview');
+  }, []);
 
   const persist = useCallback(
     (next) => {
       const normalized = normalizeRampUpFeedback(next);
       setDraft(normalized);
-      setProgress((p) => ({
-        ...p,
-        rampUpFeedback: normalized,
-      }));
+      if (!activeSessionId) return;
+      setProgress((p) => {
+        const now = new Date().toISOString();
+        const updatedSessions = (p.feedbackSessions || []).map((s) =>
+          s.id === activeSessionId ? { ...s, data: normalized, updatedAt: now } : s
+        );
+        return { ...p, feedbackSessions: updatedSessions };
+      });
     },
-    [setProgress]
+    [activeSessionId, setProgress]
   );
 
   const updateMeta = (patch) =>
@@ -254,11 +346,155 @@ export default function FeedbackFramework() {
     emerald: 'ring-emerald-400/25 focus-visible:ring-emerald-400/50',
   };
 
+  if (viewMode === 'overview') {
+    return (
+      <div className="w-full space-y-10 pb-24 text-white/90">
+        <header className="space-y-4 pt-4">
+          <div className="space-y-4">
+            <h1 className="text-2xl sm:text-3xl font-bold gradient-text leading-tight">
+              Feedback-Gespräche
+            </h1>
+            <p className="text-white/60 text-base leading-relaxed max-w-[62ch]">
+              Übersicht aller Ramp-Up Reviews und Feedback-Gespräche. Erstelle ein neues Gespräch
+              oder wähle ein bestehendes aus.
+            </p>
+          </div>
+        </header>
+
+        <section className={`${cardClass} space-y-6`}>
+          <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+            <Plus className="w-5 h-5" /> Neues Gespräch erstellen
+          </h2>
+          <div className="flex flex-wrap gap-4 items-end">
+            <div className="flex-1 min-w-[200px] space-y-2">
+              <label className={labelClass}>Titel des Gesprächs</label>
+              <input
+                className={fieldClass}
+                placeholder="z.B. Ramp-Up Review 3 Monate"
+                value={newSessionName}
+                onChange={(e) => setNewSessionName(e.target.value)}
+              />
+            </div>
+            <div className="flex-1 min-w-[200px] space-y-2">
+              <label className={labelClass}>Gesprächspartner</label>
+              <input
+                className={fieldClass}
+                placeholder="z.B. Marc Neckermann"
+                value={newSessionPerson}
+                onChange={(e) => setNewSessionPerson(e.target.value)}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={createSession}
+              className="flex items-center gap-2 px-6 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium transition-colors"
+            >
+              <Plus className="w-4 h-4" /> Erstellen
+            </button>
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+            <FolderOpen className="w-5 h-5" /> Gespeicherte Gespräche ({sessions.length})
+          </h2>
+          {sessions.length === 0 ? (
+            <div className={`${cardClass} text-center py-12`}>
+              <p className="text-white/50">Noch keine Gespräche vorhanden.</p>
+              <p className="text-white/40 text-sm mt-2">
+                Erstelle oben dein erstes Feedback-Gespräch.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {sessions.map((session) => {
+                const summary = getSessionSummary(session);
+                return (
+                  <div
+                    key={session.id}
+                    className={`${cardClass} hover:border-indigo-400/30 transition-colors cursor-pointer group relative`}
+                    onClick={() => openSession(session.id)}
+                  >
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteSession(session.id);
+                      }}
+                      className="absolute top-4 right-4 p-2 text-white/30 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label="Löschen"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                    <h3 className="font-semibold text-white mb-3 pr-8">{summary.title}</h3>
+                    <div className="space-y-2 text-sm text-white/60">
+                      <div className="flex items-center gap-2">
+                        <User className="w-4 h-4" />
+                        <span>
+                          {summary.personName}
+                          {summary.personRole && (
+                            <span className="text-white/40"> · {summary.personRole}</span>
+                          )}
+                        </span>
+                      </div>
+                      {summary.reviewDate && (
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4" />
+                          <span>{new Date(summary.reviewDate).toLocaleDateString('de-DE')}</span>
+                        </div>
+                      )}
+                      <div className="text-xs text-white/40 pt-2 border-t border-white/10">
+                        Zuletzt bearbeitet:{' '}
+                        {new Date(summary.updatedAt).toLocaleDateString('de-DE', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        <footer className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-2xl border border-white/[0.08] bg-black/25 px-6 py-5 text-sm">
+          <span className="flex items-start gap-3 text-white/55 max-w-xl">
+            <Cloud className="w-5 h-5 shrink-0 mt-0.5" />
+            Alle Gespräche werden automatisch in der Cloud gespeichert.
+          </span>
+          <span
+            className={`flex items-center gap-2 font-medium ${lastSyncError ? 'text-red-400' : 'text-emerald-400/95'}`}
+          >
+            {(isSyncing || isLoading) && <Loader2 className="w-4 h-4 animate-spin" />}
+            {lastSyncError
+              ? lastSyncError
+              : isLoading
+                ? 'Laden…'
+                : isSyncing
+                  ? 'Speichern…'
+                  : 'Gespeichert'}
+          </span>
+        </footer>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full space-y-10 pb-24 text-white/90">
       <header className="space-y-4 pt-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-4 flex-1 min-w-[240px]">
+            <button
+              type="button"
+              onClick={backToOverview}
+              className="flex items-center gap-2 text-sm text-indigo-300 hover:text-indigo-200 mb-2"
+            >
+              <ArrowLeft className="w-4 h-4" /> Zurück zur Übersicht
+            </button>
             <h1 className="text-2xl sm:text-3xl font-bold gradient-text leading-tight">
               {t('pageTitle')}
             </h1>

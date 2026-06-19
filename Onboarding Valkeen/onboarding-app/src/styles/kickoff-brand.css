@@ -1,0 +1,453 @@
+/**
+ * Valkeen 2026 Brand — Kick-off Studio (Prio 3)
+ * Quelle: pptx_design.py, Valkeen_2026_Master, valkeen.com Tonality
+ */
+.kickoff-shell {
+  --vk-primary: #0f4c81;
+  --vk-primary-light: #1a6bb3;
+  --vk-accent: #00a878;
+  --vk-teal: #0ea5e9;
+  --vk-text: #1e293b;
+  --vk-text-muted: #64748b;
+  --vk-surface: #0a1628;
+  --vk-surface-card: rgba(12, 28, 48, 0.72);
+  --vk-highlight: #7dffd4;
+  --vk-warning: #f59e0b;
+  --vk-danger: #ef4444;
+  --vk-rag-green: #22c55e;
+
+  --kickoff-primary: var(--vk-primary);
+  --kickoff-accent: var(--vk-accent);
+
+  --chapter-opening: var(--vk-teal);
+  --chapter-people: var(--vk-accent);
+  --chapter-delivery: var(--vk-primary-light);
+  --chapter-operating: var(--vk-primary);
+  --chapter-timesheets: #38bdf8;
+  --chapter-capacity: #10b981;
+  --chapter-data: #94a3b8;
+  --chapter-integrations: var(--vk-teal);
+  --chapter-close: var(--vk-accent);
+
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+}
+
+/* PPT-Header-Band: linker Accent-Streifen */
+.kickoff-topbar {
+  background: linear-gradient(105deg, var(--vk-primary) 0%, #0a3558 55%, #081f35 100%);
+  border-bottom: 2px solid rgba(0, 168, 120, 0.35);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+}
+
+.kickoff-topbar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--vk-accent), var(--vk-teal));
+}
+
+.kickoff-topbar {
+  position: relative;
+}
+
+.kickoff-brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-shrink: 0;
+}
+
+.kickoff-brand-logo img {
+  height: 2rem;
+  width: auto;
+  object-fit: contain;
+  filter: brightness(1.05);
+}
+
+.kickoff-brand-logo-divider {
+  width: 1px;
+  height: 1.75rem;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.kickoff-brand-logo-product {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--vk-highlight);
+  line-height: 1.2;
+}
+
+.kickoff-topbar-title {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Kapitel-Farben — Folien-Rail */
+.kickoff-chapter--opening .kickoff-slide-group-label { color: var(--chapter-opening); }
+.kickoff-chapter--people .kickoff-slide-group-label { color: var(--chapter-people); }
+.kickoff-chapter--delivery .kickoff-slide-group-label { color: var(--chapter-delivery); }
+.kickoff-chapter--operating .kickoff-slide-group-label { color: var(--chapter-operating); }
+.kickoff-chapter--timesheets .kickoff-slide-group-label { color: var(--chapter-timesheets); }
+.kickoff-chapter--capacity .kickoff-slide-group-label { color: var(--chapter-capacity); }
+.kickoff-chapter--data .kickoff-slide-group-label { color: var(--chapter-data); }
+.kickoff-chapter--integrations .kickoff-slide-group-label { color: var(--chapter-integrations); }
+.kickoff-chapter--close .kickoff-slide-group-label { color: var(--chapter-close); }
+
+.kickoff-chapter--opening .kickoff-slide-item.is-active { border-color: var(--chapter-opening); background: rgba(14, 165, 233, 0.18); }
+.kickoff-chapter--people .kickoff-slide-item.is-active { border-color: var(--chapter-people); }
+.kickoff-chapter--delivery .kickoff-slide-item.is-active { border-color: var(--chapter-delivery); background: rgba(26, 107, 179, 0.2); }
+.kickoff-chapter--operating .kickoff-slide-item.is-active { border-color: var(--chapter-operating); background: rgba(15, 76, 129, 0.35); }
+.kickoff-chapter--integrations .kickoff-slide-item.is-active { border-color: var(--chapter-integrations); background: rgba(14, 165, 233, 0.18); }
+.kickoff-chapter--close .kickoff-slide-item.is-active { border-color: var(--chapter-close); }
+
+/* Theory / Workshop Kicker */
+.kickoff-kind-badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-right: 0.35rem;
+  vertical-align: middle;
+}
+
+.kickoff-kind--theory {
+  background: rgba(15, 76, 129, 0.55);
+  color: #bae6fd;
+  border: 1px solid rgba(26, 107, 179, 0.5);
+}
+
+.kickoff-kind--workshop {
+  background: rgba(0, 168, 120, 0.25);
+  color: var(--vk-highlight);
+  border: 1px solid rgba(0, 168, 120, 0.45);
+}
+
+.kickoff-kind--integration {
+  background: rgba(14, 165, 233, 0.2);
+  color: #7dd3fc;
+  border: 1px solid rgba(14, 165, 233, 0.4);
+}
+
+/* Folien-Karte (PPT-Folienfläche) */
+.kickoff-slide-panel {
+  background: var(--vk-surface-card);
+  border: 1px solid rgba(0, 168, 120, 0.22);
+  border-radius: 16px;
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.12),
+    0 20px 48px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  min-width: 0;
+}
+
+.kickoff-slide-panel .kickoff-slide-header {
+  background: linear-gradient(90deg, rgba(15, 76, 129, 0.45) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 0.85rem;
+}
+
+.kickoff-slide-headline {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.kickoff-shell--presenter .kickoff-slide-headline {
+  font-size: clamp(1.45rem, 2.8vw, 2.15rem);
+}
+
+/* Visuals — PPT-Stil */
+.kickoff-viz {
+  border-left: 4px solid var(--vk-accent);
+}
+
+.kickoff-viz--integration {
+  border-left-color: var(--vk-teal);
+  padding: 0.5rem;
+  background: rgba(14, 165, 233, 0.08);
+}
+
+.kickoff-viz-architecture {
+  width: 100%;
+  max-height: 280px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: rgba(241, 245, 249, 0.95);
+  padding: 0.5rem;
+}
+
+.kickoff-viz-roles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.kickoff-viz-role-card {
+  text-align: center;
+  padding: 0.75rem 0.5rem;
+  border-radius: 10px;
+  background: rgba(15, 76, 129, 0.35);
+  border: 1px solid rgba(0, 168, 120, 0.3);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.kickoff-viz-role-card strong {
+  display: block;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--vk-highlight);
+  margin-bottom: 0.25rem;
+}
+
+.kickoff-viz-rr-flow {
+  display: flex;
+  align-items: stretch;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.kickoff-viz-rr-step {
+  flex: 1;
+  min-width: 5rem;
+  padding: 0.6rem;
+  border-radius: 8px;
+  background: rgba(0, 168, 120, 0.15);
+  border: 1px solid rgba(0, 168, 120, 0.35);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.kickoff-viz-rr-step-num {
+  display: block;
+  font-weight: 800;
+  color: var(--vk-accent);
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.kickoff-viz-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.kickoff-viz-metric {
+  padding: 0.85rem;
+  border-radius: 10px;
+  background: rgba(15, 76, 129, 0.4);
+  border-top: 3px solid var(--vk-accent);
+  text-align: center;
+}
+
+.kickoff-viz-metric-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--vk-highlight);
+}
+
+.kickoff-viz-metric-label {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin-top: 0.2rem;
+}
+
+.kickoff-viz-lane {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.kickoff-viz-lane-row {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.kickoff-viz-lane-bar {
+  height: 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.kickoff-viz-lane-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--vk-primary-light), var(--vk-accent));
+}
+
+.kickoff-viz-icon-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.kickoff-viz-icon-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.65rem;
+  border-radius: 8px;
+  background: rgba(15, 76, 129, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.78rem;
+}
+
+.kickoff-viz-icon-chip svg {
+  color: var(--vk-accent);
+  flex-shrink: 0;
+}
+
+.kickoff-table thead th {
+  background: var(--vk-primary);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 0.55rem 0.65rem;
+}
+
+.kickoff-table tbody td {
+  padding: 0.5rem 0.65rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.88rem;
+}
+
+.kickoff-option {
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.kickoff-option:hover {
+  border-color: rgba(0, 168, 120, 0.45);
+}
+
+.kickoff-settings-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(0, 168, 120, 0.25);
+}
+
+.kickoff-icon-btn {
+  display: inline-flex;
+  padding: 0.35rem;
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.kickoff-icon-btn:hover {
+  background: rgba(0, 168, 120, 0.25);
+}
+
+/* PPTX-Praxisbilder */
+.kickoff-slide-content-stack--with-figure {
+  display: grid;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .kickoff-slide-content-stack--with-figure {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  }
+
+  .kickoff-slide-content-stack--with-figure .kickoff-visual-primary {
+    position: sticky;
+    top: 0.5rem;
+  }
+
+  .kickoff-slide-content-stack--with-figure .kickoff-bullets {
+    margin: 0;
+    align-self: center;
+  }
+}
+
+.kickoff-visual-primary {
+  min-width: 0;
+}
+
+.kickoff-figure {
+  margin: 0;
+  min-width: 0;
+}
+
+.kickoff-figure-frame {
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(241, 245, 249, 0.96);
+  border: 1px solid rgba(0, 168, 120, 0.35);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28);
+}
+
+.kickoff-figure--screenshot .kickoff-figure-frame {
+  background: #f8fafc;
+  border-color: rgba(15, 76, 129, 0.35);
+}
+
+.kickoff-figure-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: min(52vh, 420px);
+  object-fit: contain;
+  object-position: center top;
+}
+
+.kickoff-figure--screenshot .kickoff-figure-img {
+  max-height: min(58vh, 480px);
+  object-fit: contain;
+}
+
+.kickoff-figure-caption {
+  margin: 0.5rem 0 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.35;
+  padding-left: 0.15rem;
+  border-left: 3px solid var(--vk-accent);
+}
+
+.kickoff-viz-phase-connector {
+  display: block;
+  position: absolute;
+  top: 1.1rem;
+  right: -0.45rem;
+  width: 0.5rem;
+  height: 2px;
+  background: var(--vk-accent);
+}
+
+@media (min-width: 961px) {
+  .kickoff-viz-phases .kickoff-viz-phase {
+    position: relative;
+  }
+  .kickoff-viz-phases .kickoff-viz-phase:not(:last-child) .kickoff-viz-phase-connector {
+    display: block;
+    width: calc(100% - 2.25rem);
+    height: 2px;
+    top: 1.1rem;
+    left: calc(50% + 1.1rem);
+    right: auto;
+  }
+}

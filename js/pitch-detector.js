@@ -182,22 +182,126 @@ class PitchDetector {
         return { frequency, clarity };
     }
 
-    playReferenceNote(midiNote, durationMs) {
-        if (!this.audioContext) return;
-        const freq = 440 * Math.pow(2, (midiNote - 69) / 12);
-        const osc = this.audioContext.createOscillator();
-        const gain = this.audioContext.createGain();
+    async ensureContext() {
+        if (!this.audioContext) {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            this.sampleRate = this.audioContext.sampleRate;
+        }
+        if (this.audioContext.state === 'suspended') {
+            await this.audioContext.resume();
+        }
+        return this.audioContext;
+    }
 
-        osc.type = 'sine';
+    playReferenceNote(midiNote, durationMs, volume) {
+        var self = this;
+        durationMs = durationMs || 700;
+        volume = volume == null ? 0.15 : volume;
+        this.ensureContext().then(function () {
+            self._playOsc(midiNote, durationMs, volume, self.audioContext.currentTime + 0.02);
+        }).catch(function () {});
+    }
+
+    _playOsc(midiNote, durationMs, volume, startAt) {
+        if (!this.audioContext) return null;
+        var freq = 440 * Math.pow(2, (midiNote - 69) / 12);
+        var osc = this.audioContext.createOscillator();
+        var gain = this.audioContext.createGain();
+        var dur = durationMs / 1000;
+        osc.type = 'triangle';
         osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0, this.audioContext.currentTime);
-        gain.gain.linearRampToValueAtTime(0.15, this.audioContext.currentTime + 0.05);
-        gain.gain.setValueAtTime(0.15, this.audioContext.currentTime + (durationMs / 1000) - 0.1);
-        gain.gain.linearRampToValueAtTime(0, this.audioContext.currentTime + (durationMs / 1000));
-
+        gain.gain.setValueAtTime(0, startAt);
+        gain.gain.linearRampToValueAtTime(volume, startAt + 0.04);
+        gain.gain.setValueAtTime(volume, startAt + Math.max(0.05, dur - 0.12));
+        gain.gain.linearRampToValueAtTime(0, startAt + dur);
         osc.connect(gain);
         gain.connect(this.audioContext.destination);
-        osc.start();
-        osc.stop(this.audioContext.currentTime + durationMs / 1000);
+        osc.start(startAt);
+        osc.stop(startAt + dur + 0.02);
+        return osc;
+    }
+
+    /** Melodie als Vorhörton – gibt Startzeit (audioContext) zurück */
+    playMelodySequence(notes, volume) {
+        var self = this;
+        volume = volume == null ? 0.14 : volume;
+        return this.ensureContext().then(function () {
+            var t = self.audioContext.currentTime + 0.08;
+            var oscs = [];
+            (notes || []).forEach(function (n) {
+                var o = self._playOsc(n.midi, n.durationMs, volume, t);
+                if (o) oscs.push(o);
+                t += n.durationMs / 1000;
+            });
+            return { startTime: self.audioContext.currentTime + 0.08, oscs: oscs };
+        });
     }
 }
+
+/** Leichter Vorhörton ohne Mikrofon – für «Vorhörton» vor Übungsstart */
+class ReferenceTonePlayer {
+    constructor() {
+        this.ctx = null;
+    }
+
+    async ensureContext() {
+        if (!this.ctx) {
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (this.ctx.state === 'suspended') {
+            await this.ctx.resume();
+        }
+        return this.ctx;
+    }
+
+    playNote(midiNote, durationMs, volume) {
+        var self = this;
+        durationMs = durationMs || 700;
+        volume = volume == null ? 0.18 : volume;
+        return this.ensureContext().then(function () {
+            var freq = 440 * Math.pow(2, (midiNote - 69) / 12);
+            var osc = self.ctx.createOscillator();
+            var gain = self.ctx.createGain();
+            var t0 = self.ctx.currentTime;
+            var dur = durationMs / 1000;
+            osc.type = 'triangle';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0, t0);
+            gain.gain.linearRampToValueAtTime(volume, t0 + 0.04);
+            gain.gain.setValueAtTime(volume, t0 + Math.max(0.05, dur - 0.1));
+            gain.gain.linearRampToValueAtTime(0, t0 + dur);
+            osc.connect(gain);
+            gain.connect(self.ctx.destination);
+            osc.start(t0);
+            osc.stop(t0 + dur + 0.02);
+        });
+    }
+
+    playMelody(notes, volume) {
+        var self = this;
+        volume = volume == null ? 0.14 : volume;
+        return this.ensureContext().then(function () {
+            var t = self.ctx.currentTime + 0.05;
+            (notes || []).forEach(function (n) {
+                var freq = 440 * Math.pow(2, (n.midi - 69) / 12);
+                var osc = self.ctx.createOscillator();
+                var gain = self.ctx.createGain();
+                var dur = n.durationMs / 1000;
+                osc.type = 'triangle';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0, t);
+                gain.gain.linearRampToValueAtTime(volume, t + 0.03);
+                gain.gain.setValueAtTime(volume, t + Math.max(0.04, dur - 0.1));
+                gain.gain.linearRampToValueAtTime(0, t + dur);
+                osc.connect(gain);
+                gain.connect(self.ctx.destination);
+                osc.start(t);
+                osc.stop(t + dur + 0.02);
+                t += dur;
+            });
+            return t - self.ctx.currentTime;
+        });
+    }
+}
+
+window.ReferenceTonePlayer = ReferenceTonePlayer;

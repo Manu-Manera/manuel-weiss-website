@@ -14,12 +14,15 @@ import {
   Brain,
   Settings,
   Users,
-  Dumbbell
+  Dumbbell,
+  Star,
+  FileText,
+  Building2
 } from 'lucide-react';
 import ProgressRing from '../components/ProgressRing';
 import { useProgress } from '../hooks/useLocalStorage';
 import { weeks, phases, milestones, practiceExercises, toolConfigExercises, scenarioExercises } from '../data/onboardingData';
-import { format, differenceInCalendarDays, startOfDay } from 'date-fns';
+import { format, differenceInCalendarDays, startOfDay, startOfWeek, endOfWeek } from 'date-fns';
 import { de } from 'date-fns/locale';
 
 export default function Dashboard() {
@@ -53,6 +56,22 @@ export default function Dashboard() {
     const totalToolExercises = toolConfigExercises?.reduce((sum, m) => sum + m.exercises.length, 0) || 0;
     const totalScenarios = scenarioExercises?.reduce((sum, c) => sum + c.scenarios.length, 0) || 0;
 
+    // Produktivitäts-Stats
+    const artifacts = progress.productivityTracker?.artifacts || [];
+    const today = new Date();
+    const weekStart = startOfWeek(today, { weekStartsOn: 1 });
+    const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
+    const weekArtifacts = artifacts.filter(a => {
+      const d = new Date(a.date);
+      return d >= weekStart && d <= weekEnd;
+    });
+    const todayArtifacts = artifacts.filter(a => {
+      const d = new Date(a.date);
+      return d.toDateString() === today.toDateString();
+    });
+    const totalImpact = weekArtifacts.reduce((sum, a) => sum + (a.impact || 0), 0);
+    const avgImpact = weekArtifacts.length > 0 ? (totalImpact / weekArtifacts.length).toFixed(1) : 0;
+
     return {
       totalProgress,
       completedTasks: completedTasks.length,
@@ -66,7 +85,13 @@ export default function Dashboard() {
       daysToMilestone: Math.max(0, nextMilestone ? nextMilestone.day - currentDay : 0),
       totalPracticeExercises,
       totalToolExercises,
-      totalScenarios
+      totalScenarios,
+      productivity: {
+        todayCount: todayArtifacts.length,
+        weekCount: weekArtifacts.length,
+        avgImpact,
+        totalArtifacts: artifacts.length,
+      }
     };
   }, [progress]);
 
@@ -288,6 +313,47 @@ export default function Dashboard() {
               </div>
             </div>
           </Link>
+        </div>
+      </div>
+
+      {/* Produktivität - NEU */}
+      <div>
+        <h2 className="text-sm sm:text-base font-semibold mb-3 sm:mb-4 flex items-center gap-2">
+          <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
+          Produktivität
+        </h2>
+        <div className="glass-card p-4 sm:p-5">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="text-center sm:text-left">
+              <p className="text-2xl sm:text-3xl font-bold text-emerald-400">{stats.productivity.todayCount}</p>
+              <p className="text-[10px] sm:text-xs text-white/50">Artefakte heute</p>
+            </div>
+            <div className="text-center sm:text-left">
+              <p className="text-2xl sm:text-3xl font-bold text-indigo-400">{stats.productivity.weekCount}</p>
+              <p className="text-[10px] sm:text-xs text-white/50">Diese Woche</p>
+            </div>
+            <div className="text-center sm:text-left">
+              <p className="text-2xl sm:text-3xl font-bold text-amber-400 flex items-center justify-center sm:justify-start gap-1">
+                {stats.productivity.avgImpact} <Star className="w-5 h-5 fill-amber-400" />
+              </p>
+              <p className="text-[10px] sm:text-xs text-white/50">Ø Impact</p>
+            </div>
+            <div className="flex items-center justify-center sm:justify-end">
+              <Link
+                to="/productivity"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-sm transition-colors"
+              >
+                <FileText className="w-4 h-4" />
+                Erfassen
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+          {stats.productivity.totalArtifacts > 0 && (
+            <p className="text-[10px] sm:text-xs text-white/40 mt-3 pt-3 border-t border-white/10">
+              Insgesamt {stats.productivity.totalArtifacts} Artefakte erfasst
+            </p>
+          )}
         </div>
       </div>
 

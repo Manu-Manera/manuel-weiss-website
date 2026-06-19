@@ -452,21 +452,26 @@
     to { transform: rotate(360deg); }
 }
 
-/* Modals */
-.modal {
+/* Modals (nur AI-Investment-Dashboard – nicht globale Admin-Modals überschreiben) */
+.ai-investment-dashboard .modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     z-index: 1000;
 }
 
-.modal-content {
+.ai-investment-dashboard .modal.open,
+.ai-investment-dashboard .modal.show {
+    display: flex;
+}
+
+.ai-investment-dashboard .modal-content {
     background: white;
     border-radius: 12px;
     max-width: 600px;
@@ -476,7 +481,7 @@
     box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
 }
 
-.modal-header {
+.ai-investment-dashboard .modal-header {
     padding: 1.5rem;
     border-bottom: 1px solid #e2e8f0;
     display: flex;
@@ -484,13 +489,13 @@
     align-items: center;
 }
 
-.modal-header h3 {
+.ai-investment-dashboard .modal-header h3 {
     margin: 0;
     font-size: 1.25rem;
     font-weight: 600;
 }
 
-.modal-close {
+.ai-investment-dashboard .modal-close {
     width: 32px;
     height: 32px;
     border: none;
@@ -504,12 +509,12 @@
     transition: all 0.2s;
 }
 
-.modal-close:hover {
+.ai-investment-dashboard .modal-close:hover {
     background: #e2e8f0;
     color: #1e293b;
 }
 
-.modal-body {
+.ai-investment-dashboard .modal-body {
     padding: 1.5rem;
     max-height: 60vh;
     overflow-y: auto;

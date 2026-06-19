@@ -35,7 +35,10 @@ window.AWS_CONFIG = {
     },
     
     // API Base URL (für Kompatibilität)
-    apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod'
+    apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
+
+    // Website API v1 (CDK Stack – Admin-User, Song-Access, …)
+    websiteApiV1Url: 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1'
 };
 
 // Initialize AWS with configuration

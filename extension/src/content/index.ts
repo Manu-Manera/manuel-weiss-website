@@ -11,6 +11,11 @@ import type { RuntimeMessage } from '../lib/messaging';
 import { applyTourState, startSpaWatcher } from './tour';
 import { installRecorder, setRecorderActive } from './recorder';
 import { showBanner, hideBanner } from './highlight';
+import {
+  installCoordinatePicker,
+  runDragSequence,
+  setCoordinatePickMode
+} from './mouse-automation';
 
 function subdomain(): string {
   const host = location.host;
@@ -20,6 +25,7 @@ function subdomain(): string {
 
 async function init(): Promise<void> {
   installRecorder();
+  installCoordinatePicker();
   startSpaWatcher();
 
   await chrome.runtime.sendMessage({
@@ -38,7 +44,16 @@ async function init(): Promise<void> {
     /* recOn nicht direkt, separater key – wir holen über storage events */
   }
 
-  chrome.runtime.onMessage.addListener((msg: RuntimeMessage) => {
+  chrome.runtime.onMessage.addListener((msg: RuntimeMessage, _sender, sendResponse) => {
+    if (msg.type === 'MOUSE_DRAG') {
+      void runDragSequence(msg.drags, {
+        steps: msg.steps,
+        stepDelayMs: msg.stepDelayMs,
+        pauseBeforeMs: msg.pauseBeforeMs,
+        pauseAfterMs: msg.pauseAfterMs
+      }).then((result) => sendResponse({ ok: true, data: result }));
+      return true;
+    }
     if (msg.type === 'TOUR_STATE') {
       void applyTourState(msg);
     } else if (msg.type === 'RECORDER_MODE_CHANGED') {
@@ -54,6 +69,16 @@ async function init(): Promise<void> {
       } else {
         hideBanner();
       }
+    } else if (msg.type === 'MOUSE_PICK_COORD') {
+      showBanner('Klicke auf Tempus – Koordinaten werden übernommen.');
+      setCoordinatePickMode(true, (x, y) => {
+        hideBanner();
+        void chrome.runtime.sendMessage({
+          type: 'MOUSE_PICK_RESULT',
+          x,
+          y
+        } satisfies RuntimeMessage).catch(() => undefined);
+      });
     }
   });
 }

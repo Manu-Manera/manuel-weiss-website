@@ -20,6 +20,34 @@ const TOUR_TABS = new Map<number, { tourId: string; customerId: string }>();
 const PROGRESS_BUFFER: Array<Parameters<typeof pushProgress>[2] & { customerId: string; userId: string }> = [];
 let flushTimer: ReturnType<typeof setTimeout> | null = null;
 
+const TEMPUS_TAB_URLS = ['https://*.prosymmetry.com/*', 'https://*.tempus-resource.com/*'];
+
+let pendingPickResolver: ((v: { x: number; y: number } | null) => void) | null = null;
+
+function isTempusUrl(url: string): boolean {
+  return /^https:\/\/[^/]+\.(prosymmetry|tempus-resource)\.com\//.test(url);
+}
+
+async function findTempusTab(preferredTabId?: number): Promise<chrome.tabs.Tab | null> {
+  if (preferredTabId != null) {
+    const t = await chrome.tabs.get(preferredTabId).catch(() => null);
+    if (t?.url && isTempusUrl(t.url)) return t;
+  }
+  const [active] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (active?.url && isTempusUrl(active.url)) return active;
+  const tabs = await chrome.tabs.query({ url: TEMPUS_TAB_URLS });
+  return tabs[0] ?? null;
+}
+
+function sendToTempusTab<T>(tabId: number, message: RuntimeMessage): Promise<T | null> {
+  return new Promise((resolve) => {
+    chrome.tabs.sendMessage(tabId, message, (response) => {
+      if (chrome.runtime.lastError) resolve(null);
+      else resolve((response as T) ?? null);
+    });
+  });
+}
+
 chrome.runtime.onInstalled.addListener(async () => {
   await chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
   const idx = await fetchCustomerIndex();
@@ -28,7 +56,7 @@ chrome.runtime.onInstalled.addListener(async () => {
 
 chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
   if (info.status === 'complete' && tab.url) {
-    if (/^https:\/\/[^/]+\.prosymmetry\.com\//.test(tab.url)) {
+    if (isTempusUrl(tab.url)) {
       try {
         await chrome.sidePanel.setOptions({
           tabId,
@@ -90,7 +118,7 @@ async function handleMessage(msg: RuntimeMessage, sender: chrome.runtime.Message
       const firstStep = bundle.tour.steps[0]?.id ?? null;
       await Storage.setCurrentStep(firstStep);
 
-      const tabs = await chrome.tabs.query({ url: 'https://*.prosymmetry.com/*' });
+      const tabs = await chrome.tabs.query({ url: TEMPUS_TAB_URLS });
       for (const tab of tabs) {
         if (tab.id) {
           TOUR_TABS.set(tab.id, { tourId: msg.tourId, customerId: msg.customerId });
@@ -109,7 +137,7 @@ async function handleMessage(msg: RuntimeMessage, sender: chrome.runtime.Message
     case 'STOP_TOUR_LOCAL': {
       await Storage.setActiveTour(null);
       await Storage.setCurrentStep(null);
-      const tabs = await chrome.tabs.query({ url: 'https://*.prosymmetry.com/*' });
+      const tabs = await chrome.tabs.query({ url: TEMPUS_TAB_URLS });
       for (const tab of tabs) {
         if (tab.id) {
           chrome.tabs.sendMessage(tab.id, {
@@ -164,7 +192,7 @@ async function handleMessage(msg: RuntimeMessage, sender: chrome.runtime.Message
 
     case 'TOGGLE_RECORDER': {
       await Storage.setRecorderOn(msg.on);
-      const tabs = await chrome.tabs.query({ url: 'https://*.prosymmetry.com/*' });
+      const tabs = await chrome.tabs.query({ url: TEMPUS_TAB_URLS });
       for (const tab of tabs) {
         if (tab.id) {
           chrome.tabs.sendMessage(tab.id, {
@@ -218,6 +246,55 @@ async function handleMessage(msg: RuntimeMessage, sender: chrome.runtime.Message
       return { ok: true, data: { on: true } };
     }
 
+    case 'EXT_MOUSE_DRAG': {
+      const tab = await findTempusTab(msg.tabId);
+      if (!tab?.id) {
+        return { ok: false, error: 'Kein Tempus-Tab offen (*.prosymmetry.com oder *.tempus-resource.com)' };
+      }
+      const response = await sendToTempusTab<RuntimeResponse>(tab.id, {
+        type: 'MOUSE_DRAG',
+        drags: msg.drags,
+        steps: msg.steps,
+        stepDelayMs: msg.stepDelayMs,
+        pauseBeforeMs: msg.pauseBeforeMs,
+        pauseAfterMs: msg.pauseAfterMs
+      });
+      if (!response) {
+        return { ok: false, error: 'Content-Script antwortet nicht – Seite neu laden oder Extension prüfen' };
+      }
+      return response;
+    }
+
+    case 'EXT_MOUSE_PICK_COORD': {
+      const tab = await findTempusTab(msg.tabId);
+      if (!tab?.id) {
+        return { ok: false, error: 'Kein Tempus-Tab offen' };
+      }
+      const coords = await new Promise<{ x: number; y: number } | null>((resolve) => {
+        pendingPickResolver = resolve;
+        setTimeout(() => {
+          if (pendingPickResolver === resolve) {
+            pendingPickResolver = null;
+            resolve(null);
+          }
+        }, 90_000);
+        void chrome.tabs.sendMessage(tab.id!, { type: 'MOUSE_PICK_COORD' } satisfies RuntimeMessage);
+      });
+      if (!coords) return { ok: false, error: 'Keine Koordinaten – Zeitüberschreitung oder Abbruch' };
+      return { ok: true, data: coords };
+    }
+
+    case 'MOUSE_PICK_RESULT': {
+      if (pendingPickResolver) {
+        pendingPickResolver({ x: msg.x, y: msg.y });
+        pendingPickResolver = null;
+      }
+      return { ok: true, data: { received: true } };
+    }
+
+    case 'MOUSE_DRAG_RESULT':
+    case 'MOUSE_DRAG':
+    case 'MOUSE_PICK_COORD':
     case 'CS_READY':
     case 'CS_STEP_RESULT':
     case 'CS_USER_REQUEST_HELP':

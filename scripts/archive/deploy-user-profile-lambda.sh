@@ -69,7 +69,7 @@ else
     
     aws lambda create-function \
         --function-name "$FUNCTION_NAME" \
-        --runtime nodejs20.x \
+        --runtime nodejs22.x \
         --role "$ROLE_ARN" \
         --handler handler.handler \
         --zip-file fileb://../user-profile.zip \
