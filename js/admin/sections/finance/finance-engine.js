@@ -265,8 +265,8 @@
   function healthScore(doc) {
     var parts = [];
 
-    // Sparquote: 20%+ = voll
-    var sr = savingsRate(doc);
+    // Sparquote: 20%+ = voll (auf Ist-Basis, falls Buchungen vorhanden)
+    var sr = effSavingsRate(doc);
     var srScore = clamp(sr / 0.2, 0, 1) * 25;
     parts.push({ key: 'savingsRate', label: 'Sparquote', value: sr, score: srScore, max: 25 });
 
@@ -276,7 +276,7 @@
     parts.push({ key: 'emergency', label: 'Notgroschen', value: em, score: emScore, max: 25 });
 
     // Schuldenquote (DTI): 0% = voll, >=40% = 0
-    var dti = debtToIncome(doc);
+    var dti = effDebtToIncome(doc);
     var dtiScore = dti == null ? 12.5 : clamp(1 - dti / 0.4, 0, 1) * 25;
     parts.push({ key: 'dti', label: 'Schuldenquote', value: dti, score: dtiScore, max: 25 });
 
@@ -298,11 +298,11 @@
    */
   function insights(doc) {
     var out = [];
-    var inc = monthlyIncome(doc);
-    var cf = cashflow(doc);
-    var sr = savingsRate(doc);
+    var inc = effIncome(doc);
+    var cf = effCashflow(doc);
+    var sr = effSavingsRate(doc);
     var em = emergencyMonths(doc);
-    var dti = debtToIncome(doc);
+    var dti = effDebtToIncome(doc);
     var debts = (doc && doc.debts) || [];
 
     if (inc <= 0) {
@@ -339,6 +339,93 @@
     } catch (e) { return (Math.round(v || 0)) + ' EUR'; }
   }
 
+  // ===================================================================
+  // IST-WERTE aus tatsächlichen Buchungen (transactions)
+  // Damit sich KPIs, Score, Budget und Meilensteine an die echten
+  // Kontoaktivitäten anpassen statt nur an die geplanten Werte.
+  // ===================================================================
+  var ACTUAL_WINDOW = 3; // Monate für den gleitenden Durchschnitt
+
+  function ymOf(t) { return String((t && t.date) || '').slice(0, 7); }
+
+  function txDistinctMonths(doc) {
+    var seen = {};
+    ((doc && doc.transactions) || []).forEach(function (t) { var m = ymOf(t); if (m) seen[m] = 1; });
+    return Object.keys(seen).sort().reverse();
+  }
+  function hasActuals(doc) { return ((doc && doc.transactions) || []).length > 0; }
+  function basisOf(doc) { return (doc && doc.settings && doc.settings.basis) || 'actual'; }
+
+  /** Ø Monatswert eines Buchungstyps über die letzten ACTUAL_WINDOW Monate mit Daten. */
+  function actualPerMonth(doc, type, maxMonths) {
+    if (!hasActuals(doc)) return null;
+    var months = txDistinctMonths(doc);
+    if (!months.length) return null;
+    var win = months.slice(0, maxMonths || ACTUAL_WINDOW);
+    var winSet = {};
+    win.forEach(function (m) { winSet[m] = 1; });
+    var sum = 0;
+    ((doc && doc.transactions) || []).forEach(function (t) {
+      if (t.type === type && winSet[ymOf(t)]) sum += num(t.amount);
+    });
+    return sum / win.length;
+  }
+
+  function actualMonthlyIncome(doc) { return actualPerMonth(doc, 'income', ACTUAL_WINDOW); }
+  function actualMonthlyExpenses(doc) { return actualPerMonth(doc, 'expense', ACTUAL_WINDOW); }
+
+  // „eff" = effektiver Wert je nach Basis: 'actual' (Ist, Fallback Plan), 'plan' = nur Plan.
+  function effIncome(doc) {
+    if (basisOf(doc) !== 'plan') { var a = actualMonthlyIncome(doc); if (a != null) return a; }
+    return monthlyIncome(doc);
+  }
+  function effExpenses(doc) {
+    if (basisOf(doc) !== 'plan') { var a = actualMonthlyExpenses(doc); if (a != null) return a; }
+    return monthlyExpenses(doc);
+  }
+  function effCashflow(doc) { return effIncome(doc) - effExpenses(doc); }
+  function effSavingsRate(doc) { var i = effIncome(doc); return i > 0 ? effCashflow(doc) / i : 0; }
+  function effDebtToIncome(doc) { var i = effIncome(doc); if (i <= 0) return null; return totalMinPayments(doc) / i; }
+
+  function effExpenseByCategory(doc) {
+    if (basisOf(doc) === 'plan' || !hasActuals(doc)) return expenseByCategory(doc);
+    var win = txDistinctMonths(doc).slice(0, ACTUAL_WINDOW);
+    if (!win.length) return expenseByCategory(doc);
+    var winSet = {};
+    win.forEach(function (m) { winSet[m] = 1; });
+    var map = {};
+    ((doc && doc.transactions) || []).forEach(function (t) {
+      if (t.type === 'expense' && winSet[ymOf(t)]) {
+        var c = t.category || 'Sonstiges';
+        map[c] = (map[c] || 0) + num(t.amount);
+      }
+    });
+    Object.keys(map).forEach(function (k) { map[k] = map[k] / win.length; });
+    return map;
+  }
+
+  var NEEDS_CATS = { 'Wohnen': 1, 'Versicherung': 1, 'Lebensmittel': 1, 'Kommunikation': 1, 'Gesundheit': 1, 'Transport': 1, 'Job-Werkzeug': 1 };
+  var DEBT_CATS = { 'Schulden/Tilgung': 1 };
+
+  function effBudget503020(doc) {
+    if (basisOf(doc) === 'plan' || !hasActuals(doc)) return budget503020(doc);
+    var inc = effIncome(doc);
+    var byCat = effExpenseByCategory(doc);
+    var needs = 0, wants = 0, debtRepay = 0;
+    Object.keys(byCat).forEach(function (c) {
+      if (NEEDS_CATS[c]) needs += byCat[c];
+      else if (DEBT_CATS[c]) debtRepay += byCat[c];
+      else if (c !== 'Einkommen') wants += byCat[c];
+    });
+    var saves = Math.max(0, effCashflow(doc)) + debtRepay;
+    return {
+      income: inc,
+      needs: { actual: needs, target: inc * 0.5 },
+      wants: { actual: wants, target: inc * 0.3 },
+      savings: { actual: saves, target: inc * 0.2 }
+    };
+  }
+
   // ---- Sanierungsplan / Meilensteine ----
   /**
    * Aktueller Ist-Wert einer Meilenstein-Metrik aus den Live-Finanzdaten.
@@ -349,8 +436,8 @@
       case 'debtFree':
       case 'debtBelow': return totalDebt(doc);
       case 'emergencyMonths': return emergencyMonths(doc);
-      case 'cashflowPositive': return cashflow(doc);
-      case 'savingsRate': return savingsRate(doc);
+      case 'cashflowPositive': return effCashflow(doc);
+      case 'savingsRate': return effSavingsRate(doc);
       case 'netWorthPositive': return netWorth(doc, priceMap);
       default: return null;
     }
@@ -428,6 +515,17 @@
     expenseByCategory: expenseByCategory,
     healthScore: healthScore,
     insights: insights,
+    hasActuals: hasActuals,
+    basisOf: basisOf,
+    actualMonthlyIncome: actualMonthlyIncome,
+    actualMonthlyExpenses: actualMonthlyExpenses,
+    effIncome: effIncome,
+    effExpenses: effExpenses,
+    effCashflow: effCashflow,
+    effSavingsRate: effSavingsRate,
+    effDebtToIncome: effDebtToIncome,
+    effExpenseByCategory: effExpenseByCategory,
+    effBudget503020: effBudget503020,
     planMetricValue: planMetricValue,
     evalMilestone: evalMilestone,
     planProgress: planProgress,

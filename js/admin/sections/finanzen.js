@@ -98,7 +98,7 @@
 
   FinanzenSection.prototype._defaultDoc = function () {
     return {
-      settings: { currency: 'EUR', emergencyFundTargetMonths: 3, extraDebtPayment: 0, cashBalance: 0 },
+      settings: { currency: 'EUR', emergencyFundTargetMonths: 3, extraDebtPayment: 0, cashBalance: 0, basis: 'actual', appliedDebtTx: {} },
       incomes: [], expenses: [], transactions: [], debts: [], holdings: [], goals: [], coachNotes: [],
       plan: { northStar: '', startDate: '', baselineDebt: 0, seeded: false, milestones: [] }
     };
@@ -261,6 +261,10 @@
       this.doc.settings.payoffStrategy = t.getAttribute('data-strategy');
       this.save(); this._recalc(); return;
     }
+    if (act === 'set-basis') {
+      this.doc.settings.basis = t.getAttribute('data-basis');
+      this.save(); this._renderAll(); return;
+    }
     // --- PDF-Import ---
     if (act === 'import-confirm') { this._confirmImport(); return; }
     if (act === 'import-clear') { this._importItems = null; this._renderTransactions(); return; }
@@ -422,13 +426,15 @@
     var d = this.doc, eng = E();
     var box = document.getElementById('fin-kpis');
     if (!box) return;
-    var cf = eng.cashflow(d);
+    var cf = eng.effCashflow(d);
     var nw = eng.netWorth(d, this.prices);
     var debt = eng.totalDebt(d);
-    var sr = eng.savingsRate(d);
+    var sr = eng.effSavingsRate(d);
     var score = eng.healthScore(d);
     var cmp = eng.comparePayoff(d);
     var freeDate = cmp.avalanche.payoffDate;
+    var basisActual = eng.basisOf(d) !== 'plan' && eng.hasActuals(d);
+    var cfSub = 'Sparquote ' + pct(sr) + (basisActual ? ' · Ist (Ø 3 Mon.)' : ' · Plan');
 
     function card(label, value, sub, tone) {
       return '<div class="fin-kpi ' + (tone || '') + '">' +
@@ -438,7 +444,7 @@
     }
     box.innerHTML =
       card('Nettovermögen', eur(nw), nw >= 0 ? 'Vermögen − Schulden' : 'Schulden überwiegen', nw >= 0 ? 'good' : 'bad') +
-      card('Cashflow / Monat', eur(cf), 'Sparquote ' + pct(sr), cf >= 0 ? 'good' : 'bad') +
+      card('Cashflow / Monat', eur(cf), cfSub, cf >= 0 ? 'good' : 'bad') +
       card('Gesamtschulden', eur(debt), debt > 0 ? ('Ø ' + eng.weightedApr(d).toFixed(1) + '% Zins') : 'Schuldenfrei 🎉', debt > 0 ? 'warn' : 'good') +
       card('Schuldenfrei', freeDate ? freeDate.toLocaleDateString('de-CH', { month: 'short', year: 'numeric' }) : (debt > 0 ? 'nie (Raten zu niedrig)' : '–'), freeDate ? 'mit Avalanche-Strategie' : '', freeDate || debt === 0 ? 'good' : 'bad') +
       card('Finanz-Score', score.total + '/100', score.rating, score.total >= 60 ? 'good' : score.total >= 40 ? 'warn' : 'bad');
@@ -464,7 +470,13 @@
     var pane = document.getElementById('fintab-overview');
     if (!pane) return;
     var score = eng.healthScore(d);
-    var b = eng.budget503020(d);
+    var b = eng.effBudget503020(d);
+    var basis = eng.basisOf(d);
+    function basisBtn(key, label) {
+      return '<button class="fin-basis-btn ' + (basis === key ? 'active' : '') + '" data-act="set-basis" data-basis="' + key + '">' + label + '</button>';
+    }
+    var basisToggle = '<div class="fin-basis-toggle"><span class="fin-hint">Berechnung:</span>' +
+      basisBtn('actual', 'Ist (echte Buchungen)') + basisBtn('plan', 'Plan (manuell)') + '</div>';
 
     var scoreBars = score.parts.map(function (p) {
       var w = Math.round(p.score / p.max * 100);
@@ -483,6 +495,7 @@
     }
 
     pane.innerHTML =
+      basisToggle +
       '<div class="fin-grid2">' +
         '<div class="fin-card">' +
           '<h3>Finanz-Gesundheit <span class="fin-score-pill ' + (score.total >= 60 ? 'good' : score.total >= 40 ? 'warn' : 'bad') + '">' + score.total + '/100 · ' + score.rating + '</span></h3>' +
@@ -520,7 +533,7 @@
 
     var catEl = document.getElementById('fin-chart-cat');
     if (catEl) {
-      var byCat = eng.expenseByCategory(d);
+      var byCat = eng.effExpenseByCategory(d);
       var labels = Object.keys(byCat);
       if (labels.length) {
         this._charts.cat = new Chart(catEl, {
@@ -923,10 +936,11 @@
   FinanzenSection.prototype._financeSummary = function () {
     var d = this.doc, eng = E();
     return {
-      monatl_einkommen: Math.round(eng.monthlyIncome(d)),
-      monatl_ausgaben: Math.round(eng.monthlyExpenses(d)),
-      cashflow: Math.round(eng.cashflow(d)),
-      sparquote_prozent: Math.round(eng.savingsRate(d) * 100),
+      basis: eng.basisOf(d) === 'plan' ? 'plan' : (eng.hasActuals(d) ? 'ist_buchungen_3mon' : 'plan_fallback'),
+      monatl_einkommen: Math.round(eng.effIncome(d)),
+      monatl_ausgaben: Math.round(eng.effExpenses(d)),
+      cashflow: Math.round(eng.effCashflow(d)),
+      sparquote_prozent: Math.round(eng.effSavingsRate(d) * 100),
       gesamtschulden: Math.round(eng.totalDebt(d)),
       schulden: d.debts.map(function (x) { return { name: x.name, restschuld: eng.num(x.balance), zins: eng.num(x.apr), rate: eng.num(x.minPayment) }; }),
       notgroschen_monate: eng.emergencyMonths(d),
@@ -1142,15 +1156,68 @@
     var self = this;
     var items = (this._importItems || []).filter(function (it) { return it.checked; });
     if (!items.length) { this._setImportStatus('<span class="warn">Nichts ausgewählt.</span>'); return; }
+    var added = [];
     items.forEach(function (it) {
-      self.doc.transactions.push({ id: uid(), date: it.date, type: it.type, amount: it.amount, category: it.category, note: it.note });
+      var t = { id: uid(), date: it.date, type: it.type, amount: it.amount, category: it.category, note: it.note };
+      self.doc.transactions.push(t);
+      added.push(t);
     });
     var n = items.length;
+    var report = this._applyDebtPayments(added);
     this._importItems = null;
     this.save();
     this._renderAll();
-    this._setImportStatus('<span class="good">' + n + ' Buchungen übernommen ✓</span> ' +
+    var debtMsg = report.length ? ' · <span class="warn">Kredite reduziert:</span> ' + report.join(', ') : '';
+    this._setImportStatus('<span class="good">' + n + ' Buchungen übernommen ✓</span>' + debtMsg + ' ' +
       '<button class="btn btn-outline btn-sm" data-act="import-tips"><i class="fas fa-wand-magic-sparkles"></i> Tipps zum weiteren Vorgehen</button>');
+  };
+
+  // Ordnet eine (Tilgungs-)Buchung einem Kredit zu – konservativ, um Fehlabzüge zu vermeiden.
+  FinanzenSection.prototype._matchDebtForTx = function (t) {
+    var debts = this.doc.debts || [];
+    if (!debts.length) return null;
+    var hay = ((t.note || '') + ' ' + (t.category || '')).toLowerCase();
+    // 1) Treffer über einen aussagekräftigen Token im Kreditnamen (z. B. "cembra", "kfw")
+    for (var i = 0; i < debts.length; i++) {
+      var toks = (debts[i].name || '').toLowerCase().split(/[^a-zäöüß0-9]+/).filter(function (w) { return w.length > 3; });
+      for (var j = 0; j < toks.length; j++) { if (hay.indexOf(toks[j]) >= 0) return debts[i]; }
+    }
+    // 2) Stichwort-Gruppen → Kredit, dessen Name das Schlüsselwort enthält
+    var groups = [['cembra', ['cembra']], ['kfw', ['kfw', 'darlehen']], ['kreditkarte', ['kreditkarte', 'kreditk', 'mastercard', ' visa']]];
+    for (var g = 0; g < groups.length; g++) {
+      var words = groups[g][1];
+      for (var k = 0; k < words.length; k++) {
+        if (hay.indexOf(words[k]) >= 0) {
+          var key = groups[g][0];
+          var hit = debts.find(function (dd) { return (dd.name || '').toLowerCase().indexOf(key) >= 0; });
+          if (hit) return hit;
+        }
+      }
+    }
+    // 3) Kategorie „Schulden/Tilgung" + genau ein Kredit → eindeutig
+    if (t.category === 'Schulden/Tilgung' && debts.length === 1) return debts[0];
+    return null;
+  };
+
+  // Zieht erkannte Tilgungen von den Kreditsalden ab. Schutz gegen Doppelabzug
+  // über settings.appliedDebtTx (Buchungs-ID → Kredit-ID).
+  FinanzenSection.prototype._applyDebtPayments = function (txns) {
+    var self = this, eng = E();
+    this.doc.settings.appliedDebtTx = this.doc.settings.appliedDebtTx || {};
+    var applied = this.doc.settings.appliedDebtTx;
+    var report = [];
+    (txns || []).forEach(function (t) {
+      if (t.type !== 'expense') return;
+      if (applied[t.id]) return;
+      var debt = self._matchDebtForTx(t);
+      if (!debt) return;
+      var before = eng.num(debt.balance);
+      debt.balance = Math.max(0, before - eng.num(t.amount));
+      applied[t.id] = debt.id;
+      t.debtApplied = debt.id;
+      report.push(esc(debt.name) + ' −' + eur(t.amount));
+    });
+    return report;
   };
 
   // ---------------- Sanierungsplan ----------------
