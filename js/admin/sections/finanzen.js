@@ -261,6 +261,12 @@
       this.doc.settings.payoffStrategy = t.getAttribute('data-strategy');
       this.save(); this._recalc(); return;
     }
+    // --- PDF-Import ---
+    if (act === 'import-confirm') { this._confirmImport(); return; }
+    if (act === 'import-clear') { this._importItems = null; this._renderTransactions(); return; }
+    if (act === 'import-tips') {
+      var self = this; this.switchTab('coach'); setTimeout(function () { self._runAiCoach(); }, 60); return;
+    }
     // --- Sanierungsplan ---
     if (act === 'ms-toggle') { this._toggleMilestoneDone(t.getAttribute('data-ms-id')); return; }
     if (act === 'ms-claim') { this._toggleMilestoneReward(t.getAttribute('data-ms-id')); return; }
@@ -279,6 +285,17 @@
 
   FinanzenSection.prototype._onChange = function (e) {
     var el = e.target;
+    if (el.type === 'file' && el.getAttribute('data-import') === 'pdf') {
+      this._importPdfs(el.files); el.value = ''; return;
+    }
+    if (el.getAttribute && el.getAttribute('data-import') === 'redact') {
+      this._importRedact = el.checked; return;
+    }
+    if (el.hasAttribute && el.hasAttribute('data-imp-idx')) {
+      var idx = parseInt(el.getAttribute('data-imp-idx'), 10);
+      if (this._importItems && this._importItems[idx]) this._importItems[idx].checked = el.checked;
+      this._updateImportCount(); return;
+    }
     if (el.hasAttribute && el.hasAttribute('data-plan-field')) {
       this._updatePlan(el.getAttribute('data-plan-field'), el.value);
       return;
@@ -613,6 +630,7 @@
 
     var today = ym + '-' + String(now.getDate()).padStart(2, '0');
     pane.innerHTML =
+      this._importCardHtml() +
       '<div class="fin-card"><h3>Monatsvergleich · ' + monthLabel + '</h3>' +
         '<div class="fin-kpis" style="margin:.5rem 0 0">' +
           cmpCard('Ist-Einnahmen', istIn, planIn, true) +
@@ -991,6 +1009,148 @@
       .replace(/\n{2,}/g, '</p><p>')
       .replace(/\n/g, '<br>');
     return '<p>' + h + '</p>';
+  };
+
+  // ---------------- PDF-Import (Kontoauszüge) ----------------
+  FinanzenSection.prototype._importCardHtml = function () {
+    var redactChecked = (this._importRedact !== false) ? 'checked' : '';
+    return '<div class="fin-card fin-import">' +
+      '<h3><i class="fas fa-file-arrow-up"></i> Kontoauszug importieren ' +
+        '<span class="fin-hint" style="margin-left:auto">PDF wird lokal gelesen – die Datei verlässt dein Gerät nicht</span></h3>' +
+      '<div class="fin-import-drop">' +
+        '<label class="btn btn-primary"><i class="fas fa-upload"></i> PDF(s) auswählen' +
+          '<input type="file" accept="application/pdf" multiple data-import="pdf" hidden></label>' +
+        '<label class="fin-check"><input type="checkbox" data-import="redact" ' + redactChecked + '> ' +
+          'IBAN, Karten-/Kontonummern, Name &amp; Adresse vor der KI-Analyse entfernen <em>(empfohlen)</em></label>' +
+      '</div>' +
+      '<p class="fin-hint">So funktioniert es: die PDF wird im Browser ausgelesen, sensible Daten werden anonymisiert, ' +
+        'nur der bereinigte Text geht zur Buchungs-Erkennung an die KI. Danach prüfst du die Vorschau und übernimmst alles mit einem Klick.</p>' +
+      '<div id="fin-import-status" class="fin-import-status"></div>' +
+      '<div id="fin-import-preview">' + (this._importItems ? this._importPreviewHtml() : '') + '</div>' +
+    '</div>';
+  };
+
+  FinanzenSection.prototype._importPreviewHtml = function () {
+    var items = this._importItems || [];
+    if (!items.length) return '';
+    var rows = items.map(function (it, i) {
+      return '<tr class="' + (it.dup ? 'dup' : '') + '">' +
+        '<td><input type="checkbox" data-imp-idx="' + i + '"' + (it.checked ? ' checked' : '') + '></td>' +
+        '<td>' + esc(it.date) + '</td>' +
+        '<td>' + (it.type === 'income' ? '<span class="good">Einnahme</span>' : 'Ausgabe') + '</td>' +
+        '<td class="num">' + eur(it.amount) + '</td>' +
+        '<td>' + esc(it.category || '') + '</td>' +
+        '<td>' + esc(it.note || '') + (it.dup ? ' <span class="fin-import-dupflag">bereits erfasst</span>' : '') + '</td>' +
+        '<td class="fin-hint">' + esc(it.source || '') + '</td></tr>';
+    }).join('');
+    var checked = items.filter(function (it) { return it.checked; }).length;
+    return '<div class="fin-import-result">' +
+      '<table class="fin-table"><thead><tr><th></th><th>Datum</th><th>Art</th><th class="num">Betrag</th><th>Kategorie</th><th>Beschreibung</th><th>Quelle</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table>' +
+      '<div class="fin-import-actions">' +
+        '<button class="btn btn-primary" data-act="import-confirm"><i class="fas fa-check"></i> <span id="fin-import-count">' + checked + '</span> Buchungen übernehmen</button>' +
+        '<button class="btn btn-outline" data-act="import-clear">Verwerfen</button>' +
+        '<button class="btn btn-outline" data-act="import-tips"><i class="fas fa-wand-magic-sparkles"></i> Tipps zum weiteren Vorgehen</button>' +
+      '</div></div>';
+  };
+
+  FinanzenSection.prototype._setImportStatus = function (html) {
+    var el = document.getElementById('fin-import-status');
+    if (el) el.innerHTML = html;
+  };
+  FinanzenSection.prototype._updateImportCount = function () {
+    var n = (this._importItems || []).filter(function (it) { return it.checked; }).length;
+    var el = document.getElementById('fin-import-count');
+    if (el) el.textContent = n;
+  };
+
+  FinanzenSection.prototype._importPdfs = function (fileList) {
+    var self = this;
+    var files = Array.prototype.slice.call(fileList || []);
+    if (!files.length) return;
+    if (!window.FinanceImport) { this._setImportStatus('<span class="bad">Import-Modul nicht geladen.</span>'); return; }
+    this._setImportStatus('<i class="fas fa-spinner fa-spin"></i> Lese ' + files.length + ' PDF(s) lokal …');
+
+    this._aiKey().then(function (key) {
+      if (!key) throw new Error('Kein OpenAI-Key gefunden (Admin → API Keys → OpenAI).');
+      var all = [];
+      var seq = Promise.resolve();
+      files.forEach(function (file) {
+        seq = seq.then(function () {
+          self._setImportStatus('<i class="fas fa-spinner fa-spin"></i> Verarbeite „' + esc(file.name) + '" …');
+          return window.FinanceImport.extractPdfText(file).then(function (text) {
+            var clean = window.FinanceImport.redact(text, self._importRedact !== false);
+            return self._extractWithAI(key, clean).then(function (list) {
+              list.forEach(function (x) { x.source = file.name; all.push(x); });
+            });
+          });
+        });
+      });
+      return seq.then(function () { return all; });
+    }).then(function (all) {
+      var existing = {};
+      (self.doc.transactions || []).forEach(function (t) { existing[window.FinanceImport.dedupeKey(t)] = true; });
+      var seen = {};
+      all.forEach(function (it) {
+        var k = window.FinanceImport.dedupeKey(it);
+        it.dup = !!existing[k] || !!seen[k];
+        it.checked = !it.dup;
+        seen[k] = true;
+      });
+      all.sort(function (a, b) { return (b.date || '').localeCompare(a.date || ''); });
+      self._importItems = all;
+      var dupCount = all.filter(function (i) { return i.dup; }).length;
+      self._renderTransactions();
+      self._setImportStatus(all.length
+        ? '<span class="good">' + all.length + ' Buchungen erkannt' + (dupCount ? (' (' + dupCount + ' bereits erfasst, abgewählt)') : '') + '. Bitte prüfen und übernehmen.</span>'
+        : '<span class="warn">Keine Buchungen erkannt – ist es evtl. ein Bild-Scan? Dann bitte manuell erfassen.</span>');
+    }).catch(function (err) {
+      self._setImportStatus('<span class="bad">Fehler: ' + esc(err.message) + '</span>');
+    });
+  };
+
+  FinanzenSection.prototype._extractWithAI = function (key, text) {
+    var sys = 'Du bist ein präziser Parser für Bankkontoauszüge (Schweiz/Deutschland). ' +
+      'Extrahiere ALLE einzelnen Buchungen aus dem Text. Ignoriere Anfangssaldo, Schlusssaldo, Zwischensummen, ' +
+      'Gebühren-/Entgeltübersichten, Saldoübersichten und Werbung. ' +
+      'Gib AUSSCHLIESSLICH gültiges JSON zurück (keine Erklärungen). Schema: ' +
+      '{"transactions":[{"date":"YYYY-MM-DD","amount":<positive Zahl>,"direction":"in"|"out","category":"<Kategorie>","description":"<kurz, max 60 Zeichen>"}]}. ' +
+      'amount immer positiv. direction "in" für Gutschrift/Zahlungseingang, "out" für Belastung/Lastschrift/Kartenzahlung/Überweisung raus. ' +
+      'category ausschließlich aus: Wohnen, Versicherung, Lebensmittel, Abo, Kommunikation, Job-Werkzeug, Schulden/Tilgung, Transport, Gesundheit, Einkommen, Sonstiges. ' +
+      'Beträge im DE/CH-Format korrekt interpretieren (Punkt, Komma, Apostroph als Tausendertrennzeichen). Datum normalisieren zu YYYY-MM-DD (zweistellige Jahre als 20JJ).';
+    var user = 'Kontoauszug-Text:\n"""\n' + String(text || '').slice(0, 120000) + '\n"""';
+    return this._callOpenAI(key, {
+      messages: [{ role: 'system', content: sys }, { role: 'user', content: user }],
+      temperature: 0, max_tokens: 4000, response_format: { type: 'json_object' }
+    }, this._coachModels()).then(function (data) {
+      var txt = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+      var parsed = window.FinanceImport.parseJson(txt);
+      var list = (parsed && parsed.transactions) || [];
+      return list.map(function (x) {
+        return {
+          date: String(x.date || '').slice(0, 10),
+          type: (x.direction === 'in' ? 'income' : 'expense'),
+          amount: Math.abs(E().num(x.amount)),
+          category: x.category || 'Sonstiges',
+          note: x.description || ''
+        };
+      }).filter(function (x) { return x.amount > 0 && /^\d{4}-\d{2}-\d{2}$/.test(x.date); });
+    });
+  };
+
+  FinanzenSection.prototype._confirmImport = function () {
+    var self = this;
+    var items = (this._importItems || []).filter(function (it) { return it.checked; });
+    if (!items.length) { this._setImportStatus('<span class="warn">Nichts ausgewählt.</span>'); return; }
+    items.forEach(function (it) {
+      self.doc.transactions.push({ id: uid(), date: it.date, type: it.type, amount: it.amount, category: it.category, note: it.note });
+    });
+    var n = items.length;
+    this._importItems = null;
+    this.save();
+    this._renderAll();
+    this._setImportStatus('<span class="good">' + n + ' Buchungen übernommen ✓</span> ' +
+      '<button class="btn btn-outline btn-sm" data-act="import-tips"><i class="fas fa-wand-magic-sparkles"></i> Tipps zum weiteren Vorgehen</button>');
   };
 
   // ---------------- Sanierungsplan ----------------

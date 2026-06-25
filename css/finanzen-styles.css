@@ -113,6 +113,21 @@ input.fin-inp[type=number] { text-align:right; }
 .fin-history-del:hover { color:var(--fin-bad); background:#fef2f2; }
 .fin-history-item .fin-ai-plan { border:none; border-radius:0; }
 
+/* ---------- PDF-Import ---------- */
+.fin-import { border-color:#bfdbfe; background:linear-gradient(135deg,#eff6ff,#f8fafc); }
+.fin-import-drop { display:flex; gap:1rem; align-items:center; flex-wrap:wrap; margin:.25rem 0 .5rem; }
+.fin-import-drop .fin-check { font-size:.85rem; color:#334155; }
+.fin-import-drop .fin-check em { color:#16a34a; font-style:normal; font-weight:600; }
+.fin-import-status { min-height:1.2rem; font-size:.9rem; margin:.4rem 0; display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; }
+.fin-import-status .good { color:var(--fin-good); font-weight:600; }
+.fin-import-status .bad { color:var(--fin-bad); font-weight:600; }
+.fin-import-status .warn { color:var(--fin-warn); font-weight:600; }
+.fin-import-result { margin-top:.6rem; }
+.fin-import-result .fin-table td { font-size:.86rem; }
+.fin-import-result tr.dup { opacity:.55; }
+.fin-import-dupflag { font-size:.72rem; color:#b45309; background:#fef3c7; border-radius:6px; padding:.05rem .35rem; }
+.fin-import-actions { display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.9rem; padding-top:.9rem; border-top:1px dashed #e2e8f0; }
+
 /* ---------- Sanierungsplan ---------- */
 .fin-plan-hero { background:linear-gradient(135deg,#eef2ff,#f8fafc); border-color:#c7d2fe; }
 .fin-plan-hero-top { display:flex; gap:1.25rem; align-items:center; flex-wrap:wrap; }
