@@ -99,8 +99,41 @@
   FinanzenSection.prototype._defaultDoc = function () {
     return {
       settings: { currency: 'EUR', emergencyFundTargetMonths: 3, extraDebtPayment: 0, cashBalance: 0 },
-      incomes: [], expenses: [], transactions: [], debts: [], holdings: [], goals: [], coachNotes: []
+      incomes: [], expenses: [], transactions: [], debts: [], holdings: [], goals: [], coachNotes: [],
+      plan: { northStar: '', startDate: '', baselineDebt: 0, seeded: false, milestones: [] }
     };
+  };
+
+  // Persönliche Sanierungs-Vorlage – Phasen, Meilensteine & Motivationsanreize, abgestimmt auf Manuel.
+  // Nur Struktur/Ziele, keine sensiblen Ist-Beträge: Fortschritt rechnet sich aus den echten Daten.
+  FinanzenSection.prototype._planTemplate = function () {
+    function m(phase, title, desc, metric, target, reward) {
+      return { id: uid(), phase: phase, title: title, desc: desc, metric: metric, target: target, done: false, reward: reward, rewardClaimed: false };
+    }
+    return [
+      m('1 · Stabilisieren', 'Liquidität sichern', 'Konto wieder im Plus, monatlich bleibt etwas übrig – kein neues Kredit-Hopping.', 'cashflowPositive', 0,
+        'Ein bewusst entspannter Sonntag ohne Geld-Gedanken (Spaziergang + gutes Essen zu Hause).'),
+      m('1 · Stabilisieren', 'Voller Überblick', 'Alle Schulden, Zinsen, Raten & Fristen erfasst – das Schlimmste ist die Ungewissheit.', 'manual', 0,
+        'Lieblingskaffee + Haken dran. Du hast die Kontrolle zurück.'),
+      m('2 · Kontrolle gewinnen', 'München neutralisiert', 'Untervermietung deckt die Münchner Miete dauerhaft – sauber & mit schriftlicher Erlaubnis (Hund geklärt).', 'manual', 0,
+        'Ein Beachvolleyball-Abend mit Freunden.'),
+      m('2 · Kontrolle gewinnen', 'Ratenpläne stehen', 'Mit allen Gläubigern realistische Raten schriftlich vereinbart – kein offenes Inkasso, keine Betreibung.', 'manual', 0,
+        'Ein Feierabend-Apéro ohne schlechtes Gewissen.'),
+      m('2 · Kontrolle gewinnen', 'Beratung an Bord', 'Termin bei gemeinnütziger Schuldenberatung im Kanton Zürich wahrgenommen.', 'manual', 0,
+        'Ein freier Nachmittag nur für dich.'),
+      m('3 · Schulden drücken', 'Teure Schulden weg', 'Beide gekündigten Kreditkarten (höchste Zinsen) vollständig getilgt.', 'manual', 0,
+        'Ein schönes Essen auswärts – bewusst genießen.'),
+      m('3 · Schulden drücken', 'Unter 100\u2019000', 'Gesamtschulden erstmals unter 100\u2019000 CHF.', 'debtBelow', 100000,
+        'Ein Wochenend-Trip mit dem Wohnmobil (nah & günstig).'),
+      m('3 · Schulden drücken', 'Halbzeit', 'Gesamtschulden unter 50\u2019000 CHF – der Berg wird kleiner.', 'debtBelow', 50000,
+        'Ein größerer Wohnmobil-Trip oder ein Konzert.'),
+      m('4 · Freiheit', 'Notgroschen Stufe 1', 'Ein Monat Ausgaben als Sicherheitspuffer auf der Seite.', 'emergencyMonths', 1,
+        'Etwas Bleibendes, das dir lange Freude macht (bewusst gewählt).'),
+      m('4 · Freiheit', 'Schuldenfrei 🎉', 'Alle Kredite getilgt. Das große Ziel ist erreicht.', 'debtFree', 0,
+        'Die große Belohnung – worauf du die ganze Zeit hingearbeitet hast.'),
+      m('4 · Freiheit', 'Sicherheitspuffer', 'Notgroschen 3–6 Monatsausgaben – und der erste ETF-Sparplan läuft.', 'emergencyMonths', 3,
+        'Ruhe & Stolz. Ab jetzt baust du Vermögen auf statt Schulden ab.')
+    ];
   };
 
   FinanzenSection.prototype._normalize = function (doc) {
@@ -110,6 +143,15 @@
     ['incomes', 'expenses', 'transactions', 'debts', 'holdings', 'goals', 'coachNotes'].forEach(function (k) {
       if (!Array.isArray(d[k])) d[k] = [];
     });
+    d.plan = Object.assign({ northStar: '', startDate: '', baselineDebt: 0, seeded: false, milestones: [] }, d.plan || {});
+    if (!Array.isArray(d.plan.milestones)) d.plan.milestones = [];
+    // Erstbefüllung: Vorlage nur einmal laden, danach frei editierbar (kein erneutes Seeding).
+    if (!d.plan.seeded && !d.plan.milestones.length) {
+      d.plan.milestones = this._planTemplate();
+      d.plan.seeded = true;
+      if (!d.plan.northStar) d.plan.northStar = 'Schuldenfrei und finanziell frei – mit ruhigem Kopf und Spielraum für die Dinge, die mir wichtig sind.';
+      if (!d.plan.startDate) d.plan.startDate = new Date().toISOString().slice(0, 10);
+    }
     return d;
   };
 
@@ -219,10 +261,32 @@
       this.doc.settings.payoffStrategy = t.getAttribute('data-strategy');
       this.save(); this._recalc(); return;
     }
+    // --- Sanierungsplan ---
+    if (act === 'ms-toggle') { this._toggleMilestoneDone(t.getAttribute('data-ms-id')); return; }
+    if (act === 'ms-claim') { this._toggleMilestoneReward(t.getAttribute('data-ms-id')); return; }
+    if (act === 'ms-del') { this._removeMilestone(t.getAttribute('data-ms-id')); return; }
+    if (act === 'ms-add') { this._addMilestone(t); return; }
+    if (act === 'plan-baseline') { this.doc.plan.baselineDebt = E().totalDebt(this.doc); this.save(); this._renderPlan(); return; }
+    if (act === 'plan-template') {
+      if (window.confirm('Vorlage neu laden? Bestehende Meilensteine werden ersetzt.')) {
+        this.doc.plan.milestones = this._planTemplate();
+        this.doc.plan.seeded = true;
+        this.save(); this._renderPlan();
+      }
+      return;
+    }
   };
 
   FinanzenSection.prototype._onChange = function (e) {
     var el = e.target;
+    if (el.hasAttribute && el.hasAttribute('data-plan-field')) {
+      this._updatePlan(el.getAttribute('data-plan-field'), el.value);
+      return;
+    }
+    if (el.hasAttribute && el.hasAttribute('data-ms-id')) {
+      this._updateMilestone(el.getAttribute('data-ms-id'), el.getAttribute('data-ms-field'), el.value);
+      return;
+    }
     if (el.hasAttribute && el.hasAttribute('data-setting')) {
       this._updateSetting(el.getAttribute('data-setting'), el.type === 'checkbox' ? el.checked : el.value);
       return;
@@ -277,7 +341,7 @@
 
   FinanzenSection.prototype._renderActive = function () {
     var map = {
-      overview: '_renderOverview', cashflow: '_renderCashflow', transactions: '_renderTransactions',
+      overview: '_renderOverview', plan: '_renderPlan', cashflow: '_renderCashflow', transactions: '_renderTransactions',
       debts: '_renderDebts', portfolio: '_renderPortfolio', goals: '_renderGoals', coach: '_renderCoach'
     };
     var fn = map[this.activeTab];
@@ -297,6 +361,7 @@
     function setTxt(id, txt) { var el = document.getElementById(id); if (el) el.textContent = txt; }
 
     if (tab === 'overview') { this._renderOverview(); return; }
+    if (tab === 'plan') { this._renderPlan(); return; }
     if (tab === 'coach') { return; }
     if (tab === 'transactions') { this._renderTransactions(); return; }
 
@@ -926,6 +991,200 @@
       .replace(/\n{2,}/g, '</p><p>')
       .replace(/\n/g, '<br>');
     return '<p>' + h + '</p>';
+  };
+
+  // ---------------- Sanierungsplan ----------------
+  FinanzenSection.prototype._updatePlan = function (field, value) {
+    if (field === 'baselineDebt') this.doc.plan.baselineDebt = E().num(value);
+    else this.doc.plan[field] = value;
+    this.save();
+    if (field === 'baselineDebt') this._renderPlan();
+  };
+  FinanzenSection.prototype._updateMilestone = function (id, field, value) {
+    var m = this.doc.plan.milestones.find(function (x) { return x.id === id; });
+    if (!m) return;
+    if (field === 'target') m.target = E().num(value);
+    else m[field] = value;
+    this.save();
+    this._renderPlan();
+  };
+  FinanzenSection.prototype._toggleMilestoneDone = function (id) {
+    var m = this.doc.plan.milestones.find(function (x) { return x.id === id; });
+    if (!m) return;
+    m.done = !m.done;
+    this.save(); this._renderKpis(); this._renderPlan();
+  };
+  FinanzenSection.prototype._toggleMilestoneReward = function (id) {
+    var m = this.doc.plan.milestones.find(function (x) { return x.id === id; });
+    if (!m) return;
+    m.rewardClaimed = !m.rewardClaimed;
+    this.save(); this._renderPlan();
+  };
+  FinanzenSection.prototype._removeMilestone = function (id) {
+    this.doc.plan.milestones = this.doc.plan.milestones.filter(function (x) { return x.id !== id; });
+    this.save(); this._renderPlan();
+  };
+  FinanzenSection.prototype._addMilestone = function (btn) {
+    var box = btn.closest('.fin-addform');
+    if (!box) return;
+    var item = { id: uid(), done: false, rewardClaimed: false };
+    box.querySelectorAll('[data-new]').forEach(function (inp) {
+      var f = inp.getAttribute('data-new');
+      item[f] = f === 'target' ? E().num(inp.value) : inp.value;
+    });
+    if (!item.title) { var t = box.querySelector('[data-new="title"]'); if (t) t.focus(); return; }
+    if (!item.metric) item.metric = 'manual';
+    if (!item.phase) item.phase = 'Weitere Meilensteine';
+    this.doc.plan.milestones.push(item);
+    this.save(); this._renderPlan();
+  };
+
+  FinanzenSection.prototype._planMetrics = function () {
+    return [
+      ['manual', 'Manuell abhaken'],
+      ['debtBelow', 'Schulden unter … CHF'],
+      ['debtFree', 'Schuldenfrei'],
+      ['emergencyMonths', 'Notgroschen ≥ … Monate'],
+      ['cashflowPositive', 'Cashflow ≥ … / Monat'],
+      ['savingsRate', 'Sparquote ≥ … (0–1)'],
+      ['netWorthPositive', 'Nettovermögen ≥ … €']
+    ];
+  };
+
+  FinanzenSection.prototype._renderPlan = function () {
+    var d = this.doc, eng = E(), self = this;
+    var pane = document.getElementById('fintab-plan');
+    if (!pane) return;
+    var plan = d.plan;
+    var pp = eng.planProgress(d, this.prices);
+    var ms = plan.milestones || [];
+
+    // Nächster offener Meilenstein + aktuelle Phase + nächste Belohnung
+    var nextOpen = null;
+    for (var i = 0; i < ms.length; i++) {
+      if (!pp.items[ms[i].id] || !pp.items[ms[i].id].achieved) { nextOpen = ms[i]; break; }
+    }
+    var currentPhase = nextOpen ? nextOpen.phase : 'Alles erreicht 🎉';
+    var nextReward = nextOpen && nextOpen.reward ? nextOpen.reward : '';
+    var pctTxt = Math.round(pp.pct * 100);
+
+    function metricNow(m, ev) {
+      switch (m.metric) {
+        case 'debtBelow': case 'debtFree': return eur(ev.value || 0) + ' Schulden';
+        case 'emergencyMonths': return (ev.value == null ? '0' : Number(ev.value).toFixed(1)) + ' Monate';
+        case 'cashflowPositive': return eur(ev.value || 0) + ' / Monat';
+        case 'savingsRate': return Math.round((ev.value || 0) * 100) + '% Sparquote';
+        case 'netWorthPositive': return eur(ev.value || 0) + ' Nettovermögen';
+        default: return '';
+      }
+    }
+    function metricTarget(m) {
+      switch (m.metric) {
+        case 'debtBelow': return 'Ziel: < ' + eur(m.target);
+        case 'debtFree': return 'Ziel: 0 Schulden';
+        case 'emergencyMonths': return 'Ziel: ≥ ' + eng.num(m.target) + ' Monate';
+        case 'cashflowPositive': return 'Ziel: ≥ ' + eur(m.target) + ' / Monat';
+        case 'savingsRate': return 'Ziel: ≥ ' + Math.round(eng.num(m.target) * 100) + '%';
+        case 'netWorthPositive': return 'Ziel: ≥ ' + eur(m.target);
+        default: return '';
+      }
+    }
+    var metricOpts = this._planMetrics();
+    function metricSelect(m) {
+      return '<select class="fin-inp" data-ms-id="' + m.id + '" data-ms-field="metric">' +
+        metricOpts.map(function (o) { return '<option value="' + o[0] + '"' + (m.metric === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') +
+        '</select>';
+    }
+    var noTarget = { manual: 1, debtFree: 1 };
+
+    // Meilensteine nach Phase gruppiert (Reihenfolge wie im Array)
+    var html = '';
+    var lastPhase = null;
+    ms.forEach(function (m) {
+      var ev = pp.items[m.id] || { progress: 0, achieved: false, value: null };
+      if (m.phase !== lastPhase) {
+        html += '<div class="fin-ms-phase">' + esc(m.phase || 'Meilensteine') + '</div>';
+        lastPhase = m.phase;
+      }
+      var isCurrent = (nextOpen && nextOpen.id === m.id);
+      var stateClass = ev.achieved ? 'done' : (isCurrent ? 'current' : 'pending');
+      var icon = ev.achieved ? '<i class="fas fa-circle-check"></i>' : (isCurrent ? '<i class="fas fa-location-arrow"></i>' : '<i class="far fa-circle"></i>');
+      var w = Math.round(ev.progress * 100);
+
+      var statusLine;
+      if (m.metric === 'manual') {
+        statusLine = '<button class="fin-ms-check ' + (m.done ? 'on' : '') + '" data-act="ms-toggle" data-ms-id="' + m.id + '">' +
+          (m.done ? '<i class="fas fa-check"></i> erledigt' : 'als erledigt markieren') + '</button>';
+      } else {
+        statusLine = '<div class="fin-ms-metricnow"><span class="' + (ev.achieved ? 'good' : '') + '">' + metricNow(m, ev) + '</span>' +
+          '<span class="fin-hint">' + metricTarget(m) + '</span></div>' +
+          '<div class="fin-bar"><div class="fin-bar-fill" style="width:' + w + '%"></div></div>';
+      }
+
+      var targetField = noTarget[m.metric] ? '' :
+        '<input class="fin-inp fin-ms-target" data-ms-id="' + m.id + '" data-ms-field="target" type="number" step="any" value="' + esc(m.target) + '" title="Zielwert">';
+
+      html += '<div class="fin-ms ' + stateClass + '">' +
+        '<div class="fin-ms-mark">' + icon + '</div>' +
+        '<div class="fin-ms-body">' +
+          '<div class="fin-ms-head">' +
+            '<input class="fin-inp fin-ms-title" data-ms-id="' + m.id + '" data-ms-field="title" value="' + esc(m.title) + '">' +
+            delMsBtn(m.id) +
+          '</div>' +
+          '<textarea class="fin-inp fin-ms-desc" data-ms-id="' + m.id + '" data-ms-field="desc" rows="2">' + esc(m.desc || '') + '</textarea>' +
+          statusLine +
+          '<div class="fin-ms-config">' + metricSelect(m) + targetField + '</div>' +
+          '<div class="fin-ms-reward ' + (m.rewardClaimed ? 'claimed' : '') + '">' +
+            '<span class="fin-ms-gift">🎁</span>' +
+            '<input class="fin-inp" data-ms-id="' + m.id + '" data-ms-field="reward" value="' + esc(m.reward || '') + '" placeholder="Belohnung für diesen Meilenstein …">' +
+            '<button class="fin-ms-claim ' + (m.rewardClaimed ? 'on' : '') + '" data-act="ms-claim" data-ms-id="' + m.id + '" title="Belohnung eingelöst">' +
+              (m.rewardClaimed ? '<i class="fas fa-gift"></i> eingelöst' : 'eingelöst?') + '</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    });
+
+    function delMsBtn(id) {
+      return '<button class="fin-icon-btn danger" data-act="ms-del" data-ms-id="' + id + '" title="Meilenstein löschen"><i class="fas fa-trash"></i></button>';
+    }
+
+    var rewardBanner = nextReward
+      ? '<div class="fin-next-reward"><span class="fin-ms-gift">🎁</span> <strong>Nächste Belohnung:</strong> ' + esc(nextReward) + '</div>'
+      : '';
+
+    pane.innerHTML =
+      '<div class="fin-card fin-plan-hero">' +
+        '<div class="fin-plan-hero-top">' +
+          '<div class="fin-plan-ring" style="--p:' + pctTxt + '"><div class="fin-plan-ring-num">' + pctTxt + '%</div><div class="fin-plan-ring-sub">' + pp.count + '/' + pp.total + ' Meilensteine</div></div>' +
+          '<div class="fin-plan-hero-main">' +
+            '<label class="fin-plan-label">Mein Warum (North Star)</label>' +
+            '<textarea class="fin-inp fin-plan-north" data-plan-field="northStar" rows="2" placeholder="Wofür mache ich das?">' + esc(plan.northStar || '') + '</textarea>' +
+            '<div class="fin-plan-meta">' +
+              '<span class="fin-ms-phase-pill">Aktuelle Phase: <strong>' + esc(currentPhase) + '</strong></span>' +
+              '<label class="fin-field-inline">Start <input class="fin-inp" type="date" data-plan-field="startDate" value="' + esc(plan.startDate || '') + '"></label>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="fin-bar fin-plan-bar"><div class="fin-bar-fill" style="width:' + pctTxt + '%"></div></div>' +
+        rewardBanner +
+      '</div>' +
+      '<div class="fin-card">' +
+        '<h3>Meilensteine <span class="fin-hint" style="margin-left:auto">Fortschritt rechnet sich aus deinen echten Zahlen (Tabs „Kredite", „Sparziele" …)</span></h3>' +
+        '<div class="fin-plan-baseline">' +
+          '<label class="fin-field-inline">Startschulden für % <input class="fin-inp" type="number" step="any" data-plan-field="baselineDebt" value="' + esc(plan.baselineDebt || 0) + '"></label>' +
+          '<button class="btn btn-outline btn-sm" data-act="plan-baseline" title="Aktuelle Gesamtschulden als Startwert übernehmen"><i class="fas fa-crosshairs"></i> = aktuelle Schulden (' + eur(eng.totalDebt(d)) + ')</button>' +
+        '</div>' +
+        '<div class="fin-ms-list">' + (html || '<p class="fin-hint">Noch keine Meilensteine.</p>') + '</div>' +
+        '<div class="fin-addform">' +
+          newInp('title', 'Titel des Meilensteins') +
+          newInp('phase', 'Phase (z. B. 3 · Schulden drücken)') +
+          '<select class="fin-inp" data-new="metric">' + metricOpts.map(function (o) { return '<option value="' + o[0] + '">' + o[1] + '</option>'; }).join('') + '</select>' +
+          newInp('target', 'Zielwert', 'number', 'step="any"') +
+          newInp('reward', 'Belohnung') +
+          '<button class="btn btn-primary btn-sm" data-act="ms-add"><i class="fas fa-plus"></i> Meilenstein</button>' +
+        '</div>' +
+        '<div style="margin-top:.75rem"><button class="btn btn-outline btn-sm" data-act="plan-template"><i class="fas fa-rotate"></i> Vorlage neu laden</button></div>' +
+      '</div>';
   };
 
   window.FinanzenSection = FinanzenSection;

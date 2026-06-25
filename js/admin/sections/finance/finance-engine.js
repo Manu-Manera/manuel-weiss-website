@@ -339,6 +339,70 @@
     } catch (e) { return (Math.round(v || 0)) + ' EUR'; }
   }
 
+  // ---- Sanierungsplan / Meilensteine ----
+  /**
+   * Aktueller Ist-Wert einer Meilenstein-Metrik aus den Live-Finanzdaten.
+   * Erlaubt, Projekt-Meilensteine automatisch mit echten Zahlen zu verknüpfen.
+   */
+  function planMetricValue(doc, metric, priceMap) {
+    switch (metric) {
+      case 'debtFree':
+      case 'debtBelow': return totalDebt(doc);
+      case 'emergencyMonths': return emergencyMonths(doc);
+      case 'cashflowPositive': return cashflow(doc);
+      case 'savingsRate': return savingsRate(doc);
+      case 'netWorthPositive': return netWorth(doc, priceMap);
+      default: return null;
+    }
+  }
+
+  /**
+   * Wertet einen Meilenstein aus: erreicht? Fortschritt 0..1? aktueller Wert?
+   * 'manual' = reiner Haken; alle anderen Metriken werden aus den Daten berechnet.
+   */
+  function evalMilestone(doc, m, priceMap) {
+    var baseline = num(doc && doc.plan && doc.plan.baselineDebt);
+    if (!m.metric || m.metric === 'manual') {
+      return { value: null, met: !!m.done, achieved: !!m.done, progress: m.done ? 1 : 0 };
+    }
+    var v = planMetricValue(doc, m.metric, priceMap);
+    var t = num(m.target);
+    var met = false, progress = 0;
+    if (m.metric === 'debtFree') {
+      met = v <= 0.005;
+      progress = baseline > 0 ? clamp(1 - v / baseline, 0, 1) : (met ? 1 : 0);
+    } else if (m.metric === 'debtBelow') {
+      met = v <= t;
+      if (baseline > t) progress = clamp((baseline - v) / (baseline - t), 0, 1);
+      else progress = met ? 1 : clamp(t / (v || t), 0, 1);
+    } else if (m.metric === 'emergencyMonths') {
+      var ev = v == null ? 0 : v;
+      met = ev >= t; progress = t > 0 ? clamp(ev / t, 0, 1) : (met ? 1 : 0);
+    } else if (m.metric === 'cashflowPositive') {
+      met = v >= t; progress = met ? 1 : 0;
+    } else if (m.metric === 'savingsRate') {
+      met = v >= t; progress = t > 0 ? clamp(v / t, 0, 1) : (met ? 1 : 0);
+    } else if (m.metric === 'netWorthPositive') {
+      met = v >= t; progress = met ? 1 : 0;
+    }
+    return { value: v, met: met, achieved: met, progress: progress };
+  }
+
+  /** Gesamtfortschritt des Sanierungsprojekts über alle Meilensteine. */
+  function planProgress(doc, priceMap) {
+    var ms = (doc && doc.plan && doc.plan.milestones) || [];
+    if (!ms.length) return { count: 0, total: 0, pct: 0, items: {} };
+    var items = {};
+    var sum = 0, achieved = 0;
+    ms.forEach(function (m) {
+      var ev = evalMilestone(doc, m, priceMap);
+      items[m.id] = ev;
+      sum += ev.progress;
+      if (ev.achieved) achieved += 1;
+    });
+    return { count: achieved, total: ms.length, pct: sum / ms.length, items: items };
+  }
+
   window.FinanceEngine = {
     toMonthly: toMonthly,
     monthlyIncome: monthlyIncome,
@@ -364,6 +428,9 @@
     expenseByCategory: expenseByCategory,
     healthScore: healthScore,
     insights: insights,
+    planMetricValue: planMetricValue,
+    evalMilestone: evalMilestone,
+    planProgress: planProgress,
     fmtEur: fmtEur,
     num: num
   };
