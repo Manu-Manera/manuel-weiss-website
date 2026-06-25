@@ -38,6 +38,7 @@
 .fin-hint { color:#94a3b8; font-size:.82rem; font-weight:400; }
 
 /* Tabellen */
+.fin-scroll-hint { display:none; }
 .fin-table { width:100%; border-collapse:collapse; font-size:.9rem; }
 .fin-table th { text-align:left; color:#94a3b8; font-weight:600; font-size:.78rem; text-transform:uppercase; letter-spacing:.03em; padding:.4rem .5rem; border-bottom:1px solid #e2e8f0; }
 .fin-table td { padding:.35rem .5rem; border-bottom:1px solid #f1f5f9; vertical-align:middle; }
@@ -250,3 +251,75 @@ input.fin-inp[type=number] { text-align:right; }
 .fin-ai-plan h4 { margin:.8rem 0 .35rem; color:#4f46e5; font-size:1rem; }
 .fin-ai-plan ul { margin:.35rem 0 .35rem 1.1rem; }
 .fin-ai-plan p { margin:.5rem 0; }
+
+/* ========================================================= */
+/* MOBILE-OPTIMIERUNG (Handy / kleine Tablets)               */
+/* ========================================================= */
+@media (max-width: 768px) {
+  /* Kopfbereich gestapelt */
+  .finanzen-section .section-header { flex-direction:column; align-items:stretch; gap:.6rem; }
+  .finanzen-section .section-header h2 { font-size:1.3rem; }
+  .fin-header-actions { width:100%; justify-content:space-between; }
+  .fin-save-status { min-width:0; text-align:left; flex:1; }
+
+  /* Tabs: eine Zeile, horizontal wischbar (statt mehrzeilig) */
+  .fin-tabs { flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; gap:.15rem; margin-bottom:1rem; }
+  .fin-tabs::-webkit-scrollbar { display:none; }
+  .fin-tab { flex:0 0 auto; white-space:nowrap; padding:.6rem .8rem; font-size:.86rem; border-radius:8px; margin-bottom:0; border-bottom-width:2px; }
+
+  /* KPI-Kacheln: kompakt, 2 Spalten */
+  .fin-kpis { grid-template-columns:1fr 1fr; gap:.55rem; margin:.75rem 0 1rem; }
+  .fin-kpi { padding:.7rem .8rem; border-radius:12px; }
+  .fin-kpi-value { font-size:1.2rem; }
+  .fin-kpi-label { font-size:.68rem; }
+  .fin-kpi-sub { font-size:.7rem; }
+
+  /* Karten etwas schlanker */
+  .fin-card { padding:1rem; border-radius:12px; margin-bottom:1rem; }
+  .fin-card h3 { font-size:1rem; margin-bottom:.8rem; }
+  .fin-grid2 { gap:1rem; }
+
+  /* Editierbare Tabellen: intern horizontal scrollen statt quetschen */
+  .fin-table { font-size:.86rem; }
+  .fin-table th, .fin-table td { padding:.3rem .4rem; }
+  .fin-table .fin-inp { min-width:6rem; }
+  .fin-table select.fin-inp { min-width:7rem; }
+  .fin-scroll-hint { display:block; font-size:.74rem; color:#94a3b8; margin:-.3rem 0 .5rem; }
+
+  /* Add-Formulare: Felder volle Breite, Button volle Breite */
+  .fin-addform { gap:.45rem; }
+  .fin-addform .fin-inp { flex:1 1 100%; min-width:0; }
+  .fin-addform .btn { width:100%; }
+
+  /* Liquiditäts-Ampel */
+  .fin-liq { gap:.7rem; padding:.85rem; }
+  .fin-liq-emoji { font-size:1.5rem; }
+  .fin-liq-cta { width:100%; justify-content:center; }
+  .fin-liq-detail { grid-template-columns:1fr 1fr; gap:.5rem; }
+
+  /* Radar-Chips */
+  .fin-radar-sum { gap:.45rem; }
+  .fin-radar-chip { flex:1 1 calc(50% - .45rem); min-width:0; }
+
+  /* Briefe */
+  .fin-letter-btns .btn { flex:1 1 100%; }
+
+  /* Strategien & Ideen einspaltig */
+  .fin-strats, .fin-ideas { grid-template-columns:1fr; }
+
+  /* Sanierungsplan-Hero zentriert */
+  .fin-plan-hero-top { justify-content:center; text-align:center; }
+  .fin-plan-hero-main { flex-basis:100%; }
+
+  /* Sparziele-/Meilenstein-Eingaben nicht zu breit */
+  .fin-goal-head select, .fin-goal-amts .fin-inp { width:auto; flex:1; }
+}
+
+@media (max-width: 480px) {
+  .fin-kpi-value { font-size:1.05rem; }
+  .fin-radar-chip { flex-basis:100%; }
+  .fin-liq-detail { grid-template-columns:1fr 1fr; }
+  .fin-letter-area { font-size:.78rem; }
+  .fin-plan-ring { width:100px; height:100px; }
+  .fin-plan-ring-num { font-size:1.45rem; }
+}

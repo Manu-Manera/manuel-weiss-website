@@ -820,6 +820,7 @@
 
     pane.innerHTML =
       '<div class="fin-card"><h3>Einnahmen <span class="fin-sum good" id="fin-inc-sum">' + eur(eng.monthlyIncome(d)) + ' / Monat</span></h3>' +
+        '<span class="fin-scroll-hint">← Tabelle seitlich wischen →</span>' +
         '<table class="fin-table"><thead><tr><th>Quelle</th><th>Betrag</th><th>Rhythmus</th><th>Kategorie</th><th class="num">≈ €/Monat</th><th></th></tr></thead>' +
         '<tbody>' + (incRows || '') + '</tbody></table>' +
         '<div class="fin-addform"><input class="fin-inp" data-new="label" type="text" placeholder="z. B. Gehalt"> ' +
@@ -829,6 +830,7 @@
           '<button class="btn btn-primary btn-sm" data-act="add-row" data-coll="incomes"><i class="fas fa-plus"></i> Einnahme</button></div>' +
       '</div>' +
       '<div class="fin-card"><h3>Ausgaben <span class="fin-sum bad" id="fin-exp-sum">' + eur(eng.monthlyExpenses(d)) + ' / Monat</span></h3>' +
+        '<span class="fin-scroll-hint">← Tabelle seitlich wischen →</span>' +
         '<table class="fin-table"><thead><tr><th>Posten</th><th>Betrag</th><th>Rhythmus</th><th>Kategorie</th><th>essenziell</th><th class="num">≈ €/Monat</th><th></th></tr></thead>' +
         '<tbody>' + (expRows || '') + '</tbody></table>' +
         '<div class="fin-addform"><input class="fin-inp" data-new="label" type="text" placeholder="z. B. Miete"> ' +
@@ -885,6 +887,7 @@
         '</div>' +
         '<p class="fin-hint">„Plan" = deine laufenden Einnahmen/Ausgaben. „Ist" = tatsächliche Buchungen in diesem Monat.</p></div>' +
       '<div class="fin-card"><h3>Buchungen</h3>' +
+        '<span class="fin-scroll-hint">← Tabelle seitlich wischen →</span>' +
         '<table class="fin-table"><thead><tr><th>Datum</th><th>Art</th><th>Betrag</th><th>Kategorie</th><th>Notiz</th><th></th></tr></thead>' +
         '<tbody>' + (rows || '') + '</tbody></table>' +
         '<div class="fin-addform">' +
@@ -930,6 +933,7 @@
 
     pane.innerHTML =
       '<div class="fin-card"><h3>Kredite &amp; Schulden <span class="fin-sum bad" id="fin-debt-sum">' + eur(eng.totalDebt(d)) + '</span></h3>' +
+        '<span class="fin-scroll-hint">← Tabelle seitlich wischen →</span>' +
         '<table class="fin-table"><thead><tr><th>Name</th><th>Restschuld</th><th>Zins p.a.</th><th>Mindestrate</th><th></th></tr></thead>' +
         '<tbody>' + (rows || '') + '</tbody></table>' +
         '<div class="fin-addform">' + newInp('name', 'z. B. Autokredit') + newInp('balance', 'Restschuld', 'number', 'step="any" min="0"') +
@@ -977,6 +981,7 @@
         '<canvas id="fin-chart-alloc" height="180"></canvas></div>' +
       '<div class="fin-card"><h3>₿ Krypto <span class="fin-hint">Live-Kurse via CoinGecko</span>' +
         '<button class="btn btn-outline btn-sm" data-act="refresh-prices" style="margin-left:auto"><i class="fas fa-sync"></i> Kurse</button></h3>' +
+        '<span class="fin-scroll-hint">← Tabelle seitlich wischen →</span>' +
         '<table class="fin-table"><thead><tr><th>Symbol</th><th>Name</th><th>Menge</th><th>Ø Kaufpreis</th><th class="num">Kurs</th><th class="num">Wert</th><th class="num">G/V</th><th></th></tr></thead>' +
         '<tbody>' + (rows('crypto') || '') + '</tbody></table>' +
         '<div class="fin-addform">' + newInp('symbol', 'BTC') + newInp('name', 'Bitcoin') + newInp('quantity', 'Menge', 'number', 'step="any" min="0"') +
@@ -986,6 +991,7 @@
       '</div>' +
       '<div class="fin-card"><h3>📈 Aktien / ETFs <span class="fin-hint" id="fin-stock-hint">Live-Kurse via Finnhub (Symbol z. B. AAPL, MSFT)</span>' +
         '<button class="btn btn-outline btn-sm" data-act="refresh-stocks" style="margin-left:auto"><i class="fas fa-sync"></i> Kurse</button></h3>' +
+        '<span class="fin-scroll-hint">← Tabelle seitlich wischen →</span>' +
         '<table class="fin-table"><thead><tr><th>Symbol</th><th>Name</th><th>Menge</th><th>Ø Kaufpreis</th><th class="num">Kurs</th><th class="num">Wert</th><th class="num">G/V</th><th></th></tr></thead>' +
         '<tbody>' + (rows('stock') || '') + '</tbody></table>' +
         '<div class="fin-addform">' + newInp('symbol', 'AAPL') + newInp('name', 'Apple') + newInp('quantity', 'Menge', 'number', 'step="any" min="0"') +
