@@ -98,7 +98,7 @@
 
   FinanzenSection.prototype._defaultDoc = function () {
     return {
-      settings: { currency: 'EUR', emergencyFundTargetMonths: 3, extraDebtPayment: 0, cashBalance: 0, basis: 'actual', appliedDebtTx: {}, autoCashBalance: true, accountBalances: {} },
+      settings: { currency: 'CHF', emergencyFundTargetMonths: 3, extraDebtPayment: 0, cashBalance: 0, basis: 'actual', appliedDebtTx: {}, autoCashBalance: true, accountBalances: {} },
       incomes: [], expenses: [], transactions: [], debts: [], holdings: [], goals: [], coachNotes: [], actions: [],
       plan: { northStar: '', startDate: '', baselineDebt: 0, seeded: false, milestones: [] }
     };
@@ -153,6 +153,9 @@
     var d = doc && typeof doc === 'object' ? doc : {};
     var def = this._defaultDoc();
     d.settings = Object.assign(def.settings, d.settings || {});
+    // Migration: Alt-Default „EUR" → CHF (alle erfassten Beträge sind CHF).
+    if (d.settings.currency === 'EUR') d.settings.currency = 'CHF';
+    try { E().setDisplayCurrency(d.settings.currency || 'CHF'); } catch (e) { /* ignore */ }
     ['incomes', 'expenses', 'transactions', 'debts', 'holdings', 'goals', 'coachNotes', 'actions'].forEach(function (k) {
       if (!Array.isArray(d[k])) d[k] = [];
     });
@@ -564,12 +567,25 @@
         '<strong>Noch keine Prognose möglich.</strong><span>Importiere einen Kontoauszug (mit Schlusssaldo) und ein paar Monate Buchungen – dann sage ich dir hier zuverlässig, ob du diesen Monat durchkommst.</span></div></div>';
     }
     var dateStr = f.minDate.toLocaleDateString('de-CH', { day: '2-digit', month: 'long' });
-    var emoji = f.status === 'risk' ? '⚠️' : (f.status === 'tight' ? '🟡' : '🟢');
+    var alreadyNeg = f.start < 0;
+    var netUp = f.monthlyNet >= 0;
+    var trend = netUp
+      ? 'Gute Nachricht: dein Ist-Cashflow ist <strong>+' + eur(f.monthlyNet) + '/Monat</strong> – wenn das so bleibt, arbeitest du dich Schritt für Schritt raus.'
+      : 'Dein Ist-Cashflow ist aktuell <strong>' + eur(f.monthlyNet) + '/Monat</strong> – die Ausgaben müssen runter (siehe Abo-Radar in „Krise & Hilfe").';
+    // Anzeige-Status: schon im Minus, aber mit positivem Cashflow => gelb statt rot.
+    var displayStatus = f.status;
+    if (alreadyNeg && netUp) displayStatus = 'tight';
+    var emoji = displayStatus === 'risk' ? '⚠️' : (displayStatus === 'tight' ? '🟡' : '🟢');
     var headline, body;
-    if (f.status === 'risk') {
+    if (alreadyNeg) {
+      var dip = (f.minBal < f.start - 1)
+        ? ' Bis zum <strong>' + dateStr + '</strong> kann es noch auf ca. <strong>' + eur(f.minBal) + '</strong> sinken, bevor Geld reinkommt.'
+        : '';
+      headline = netUp ? 'Du bist im Minus – aber auf dem richtigen Weg raus.' : 'Du bist im Minus – jetzt gegensteuern.';
+      body = 'Dein Konto steht aktuell bei ca. <strong>' + eur(f.start) + '</strong>.' + dip + ' ' + trend + ' Konkrete nächste Schritte stehen unten in „Krise & Hilfe".';
+    } else if (f.status === 'risk') {
       headline = 'Diesen Monat wird es eng – aber wir haben einen Plan.';
-      body = 'Voraussichtlich rutschst du um den <strong>' + dateStr + '</strong> ins Minus; es fehlen ca. <strong>' + eur(f.shortfall) + '</strong>. ' +
-        'Das ist kein Weltuntergang – unten in „Krise & Hilfe" stehen die nächsten Schritte, die genau das auffangen.';
+      body = 'Voraussichtlich rutschst du um den <strong>' + dateStr + '</strong> ins Minus; es fehlen dann ca. <strong>' + eur(f.shortfall) + '</strong>. ' + trend;
     } else if (f.status === 'tight') {
       headline = 'Knapp, aber machbar.';
       body = 'Dein Tiefststand liegt bei ca. <strong>' + eur(f.minBal) + '</strong> um den <strong>' + dateStr + '</strong>. ' +
@@ -578,7 +594,7 @@
       headline = 'Diesen Monat kommst du durch. 🙌';
       body = 'Dein Konto bleibt voraussichtlich im Plus (Tiefststand ca. <strong>' + eur(f.minBal) + '</strong> um den <strong>' + dateStr + '</strong>). Atme durch – du machst das.';
     }
-    return '<div class="fin-liq fin-liq-' + f.status + '">' +
+    return '<div class="fin-liq fin-liq-' + displayStatus + '">' +
       '<div class="fin-liq-emoji">' + emoji + '</div>' +
       '<div class="fin-liq-body"><strong>' + headline + '</strong><span>' + body + '</span></div>' +
       (full ? '' : '<button class="btn btn-outline btn-sm fin-liq-cta" data-act="goto-crisis"><i class="fas fa-life-ring"></i> Hilfe &amp; nächste Schritte</button>') +
@@ -668,7 +684,7 @@
     }).join('');
     return sumRow +
       '<p class="fin-hint">Wenn du nur die <strong>kündbaren</strong> Posten beendest, sparst du rund <strong>' + eur(s.cancelable) + '/Monat (' + eur(s.cancelable * 12) + '/Jahr)</strong>.</p>' +
-      '<table class="fin-table fin-radar-table"><thead><tr><th>Posten</th><th>Typ</th><th class="num">≈ €/Monat</th><th class="num">≈ €/Jahr</th></tr></thead><tbody>' + rows + '</tbody></table>';
+      '<table class="fin-table fin-radar-table"><thead><tr><th>Posten</th><th>Typ</th><th class="num">≈ CHF/Monat</th><th class="num">≈ CHF/Jahr</th></tr></thead><tbody>' + rows + '</tbody></table>';
   };
 
   // Fertige, editierbare Schreiben (deterministisch, ohne KI).
@@ -786,7 +802,7 @@
           type: 'line',
           data: {
             labels: av.map(function (p) { return p.month; }),
-            datasets: [{ label: 'Restschuld (€)', data: av.map(function (p) { return Math.round(p.remaining); }), fill: true, tension: 0.25 }]
+            datasets: [{ label: 'Restschuld (CHF)', data: av.map(function (p) { return Math.round(p.remaining); }), fill: true, tension: 0.25 }]
           },
           options: { plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'Monat' } } } }
         });
@@ -821,7 +837,7 @@
     pane.innerHTML =
       '<div class="fin-card"><h3>Einnahmen <span class="fin-sum good" id="fin-inc-sum">' + eur(eng.monthlyIncome(d)) + ' / Monat</span></h3>' +
         '<span class="fin-scroll-hint">← Tabelle seitlich wischen →</span>' +
-        '<table class="fin-table"><thead><tr><th>Quelle</th><th>Betrag</th><th>Rhythmus</th><th>Kategorie</th><th class="num">≈ €/Monat</th><th></th></tr></thead>' +
+        '<table class="fin-table"><thead><tr><th>Quelle</th><th>Betrag</th><th>Rhythmus</th><th>Kategorie</th><th class="num">≈ CHF/Monat</th><th></th></tr></thead>' +
         '<tbody>' + (incRows || '') + '</tbody></table>' +
         '<div class="fin-addform"><input class="fin-inp" data-new="label" type="text" placeholder="z. B. Gehalt"> ' +
           newInp('amount', 'Betrag', 'number', 'step="any" min="0"') +
@@ -831,7 +847,7 @@
       '</div>' +
       '<div class="fin-card"><h3>Ausgaben <span class="fin-sum bad" id="fin-exp-sum">' + eur(eng.monthlyExpenses(d)) + ' / Monat</span></h3>' +
         '<span class="fin-scroll-hint">← Tabelle seitlich wischen →</span>' +
-        '<table class="fin-table"><thead><tr><th>Posten</th><th>Betrag</th><th>Rhythmus</th><th>Kategorie</th><th>essenziell</th><th class="num">≈ €/Monat</th><th></th></tr></thead>' +
+        '<table class="fin-table"><thead><tr><th>Posten</th><th>Betrag</th><th>Rhythmus</th><th>Kategorie</th><th>essenziell</th><th class="num">≈ CHF/Monat</th><th></th></tr></thead>' +
         '<tbody>' + (expRows || '') + '</tbody></table>' +
         '<div class="fin-addform"><input class="fin-inp" data-new="label" type="text" placeholder="z. B. Miete"> ' +
           newInp('amount', 'Betrag', 'number', 'step="any" min="0"') +
@@ -941,7 +957,7 @@
           '<button class="btn btn-primary btn-sm" data-act="add-row" data-coll="debts"><i class="fas fa-plus"></i> Kredit</button></div>' +
       '</div>' +
       '<div class="fin-card"><h3>Tilgungsstrategie &amp; Sondertilgung</h3>' +
-        '<label class="fin-field">Extra-Tilgung pro Monat (€) ' +
+        '<label class="fin-field">Extra-Tilgung pro Monat (CHF) ' +
           '<input class="fin-inp" data-setting="extraDebtPayment" type="number" step="any" min="0" value="' + esc(d.settings.extraDebtPayment) + '"></label>' +
         '<div id="fin-strats-box">' + this._stratsBoxHtml(d) + '</div>' +
         '<p class="fin-hint">Avalanche spart am meisten Zinsen; Snowball motiviert durch schnelle Erfolge.</p>' +
@@ -985,7 +1001,7 @@
         '<table class="fin-table"><thead><tr><th>Symbol</th><th>Name</th><th>Menge</th><th>Ø Kaufpreis</th><th class="num">Kurs</th><th class="num">Wert</th><th class="num">G/V</th><th></th></tr></thead>' +
         '<tbody>' + (rows('crypto') || '') + '</tbody></table>' +
         '<div class="fin-addform">' + newInp('symbol', 'BTC') + newInp('name', 'Bitcoin') + newInp('quantity', 'Menge', 'number', 'step="any" min="0"') +
-          newInp('avgBuyPrice', 'Ø Kaufpreis €', 'number', 'step="any" min="0"') +
+          newInp('avgBuyPrice', 'Ø Kaufpreis CHF', 'number', 'step="any" min="0"') +
           '<input type="hidden" data-new="assetType" value="crypto">' +
           '<button class="btn btn-primary btn-sm" data-act="add-row" data-coll="holdings"><i class="fas fa-plus"></i> Krypto</button></div>' +
       '</div>' +
@@ -1038,7 +1054,7 @@
           ['emergency,Notgroschen', 'savings,Sparen', 'custom,Sonstiges'].map(function (o) { var p = o.split(','); return '<option value="' + p[0] + '"' + (g.kind === p[0] ? ' selected' : '') + '>' + p[1] + '</option>'; }).join('') +
         '</select>' + delBtn('goals', g.id) + '</div>' +
         '<div class="fin-goal-amts">Gespart ' + inp('goals', g.id, 'saved', g.saved, 'number', 'step="any" min="0"') +
-          ' von ' + inp('goals', g.id, 'target', g.target, 'number', 'step="any" min="0"') + ' €</div>' +
+          ' von ' + inp('goals', g.id, 'target', g.target, 'number', 'step="any" min="0"') + ' CHF</div>' +
         '<div class="fin-bar"><div class="fin-bar-fill" data-goalbar="' + g.id + '" style="width:' + Math.round(prog * 100) + '%"></div></div>' +
         '<div class="fin-goal-sub" data-goalsub="' + g.id + '">' + Math.round(prog * 100) + '% erreicht</div></div>';
     }).join('');
@@ -1057,12 +1073,12 @@
       '<div class="fin-card"><h3>Notgroschen</h3>' +
         '<p>Reichweite aktuell: <strong id="fin-em-line" class="' + (em != null && em >= 3 ? 'good' : 'warn') + '">' + (em == null ? '–' : em.toFixed(1) + ' Monate') + '</strong> ' +
         '(Ziel: 3–6 Monatsausgaben). Bar-/Tagesgeld: ' +
-        '<input class="fin-inp" data-setting="cashBalance" type="number" step="any"' + (autoOn && accKeys.length ? ' readonly title="Wird automatisch aus importierten Auszügen gepflegt"' : '') + ' value="' + esc(d.settings.cashBalance) + '"> €</p>' +
+        '<input class="fin-inp" data-setting="cashBalance" type="number" step="any"' + (autoOn && accKeys.length ? ' readonly title="Wird automatisch aus importierten Auszügen gepflegt"' : '') + ' value="' + esc(d.settings.cashBalance) + '"> CHF</p>' +
         accLine +
         '<label class="fin-hint" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" data-setting="autoCashBalance"' + (autoOn ? ' checked' : '') + '> Kontostand automatisch aus Auszügen pflegen</label></div>' +
       '<div class="fin-card"><h3>Sparziele</h3>' + (rows || '<p class="fin-hint">Noch keine Ziele.</p>') +
-        '<div class="fin-addform">' + newInp('name', 'z. B. Notgroschen') + newInp('saved', 'gespart €', 'number', 'step="any" min="0"') +
-          newInp('target', 'Ziel €', 'number', 'step="any" min="0"') +
+        '<div class="fin-addform">' + newInp('name', 'z. B. Notgroschen') + newInp('saved', 'gespart CHF', 'number', 'step="any" min="0"') +
+          newInp('target', 'Ziel CHF', 'number', 'step="any" min="0"') +
           '<select class="fin-inp" data-new="kind"><option value="emergency">Notgroschen</option><option value="savings">Sparen</option><option value="custom">Sonstiges</option></select>' +
           '<button class="btn btn-primary btn-sm" data-act="add-row" data-coll="goals"><i class="fas fa-plus"></i> Ziel</button></div>' +
       '</div>';
@@ -1186,14 +1202,26 @@
 
   FinanzenSection.prototype._financeSummary = function () {
     var d = this.doc, eng = E();
+    var f = eng.liquidityForecast(d);
+    var rec = eng.recurringSummary(d);
+    var topFix = rec.items.filter(function (r) { return r.flow === 'out'; }).slice(0, 8)
+      .map(function (r) { return { posten: r.label, pro_monat: Math.round(r.monthly), typ: r.kind }; });
     return {
+      waehrung: 'CHF',
       basis: eng.basisOf(d) === 'plan' ? 'plan' : (eng.hasActuals(d) ? 'ist_buchungen_3mon' : 'plan_fallback'),
+      kontostand_aktuell: Math.round(eng.num(d.settings.cashBalance)),
+      aktuell_im_minus: eng.num(d.settings.cashBalance) < 0,
+      liquiditaet_status: f.available ? f.status : 'unbekannt',
+      liquiditaet_tiefststand: f.available ? Math.round(f.minBal) : null,
       monatl_einkommen: Math.round(eng.effIncome(d)),
       monatl_ausgaben: Math.round(eng.effExpenses(d)),
       cashflow: Math.round(eng.effCashflow(d)),
       sparquote_prozent: Math.round(eng.effSavingsRate(d) * 100),
       gesamtschulden: Math.round(eng.totalDebt(d)),
-      schulden: d.debts.map(function (x) { return { name: x.name, restschuld: eng.num(x.balance), zins: eng.num(x.apr), rate: eng.num(x.minPayment) }; }),
+      schulden: d.debts.map(function (x) { return { name: x.name, restschuld: Math.round(eng.num(x.balance)), zins: eng.num(x.apr), rate: Math.round(eng.num(x.minPayment)) }; }),
+      fixkosten_kuendbar_pro_monat: Math.round(rec.cancelable),
+      fixkosten_verhandelbar_pro_monat: Math.round(rec.negotiable),
+      groesste_fixkosten: topFix,
       notgroschen_monate: eng.emergencyMonths(d),
       nettovermoegen: Math.round(eng.netWorth(d, this.prices)),
       portfolio_wert: Math.round(eng.portfolioValue(d.holdings, this.prices)),
@@ -1241,15 +1269,19 @@
     this._aiKey().then(function (key) {
       if (!key) throw new Error('Kein OpenAI-Key gefunden (Admin → API Keys → OpenAI).');
       var summary = self._financeSummary();
-      var sys = 'Du bist ein erstklassiger, ehrlicher Finanzcoach für Privatpersonen im DACH-Raum. ' +
-        'Ziel des Nutzers: raus aus den Schulden und finanzielle Freiheit. ' +
-        'Antworte auf Deutsch, konkret, priorisiert und umsetzbar. Keine Rechts-/Steuerberatung, kein Disclaimer-Geschwurbel. ' +
-        'Struktur: 1) Lage in 2 Sätzen 2) Top-3-Sofortmaßnahmen 3) Schuldenplan 4) Spar-/Investitionsschritt 5) eine konkrete Einkommensidee passend zur Lage.';
-      var user = 'Hier meine Finanzdaten als JSON:\n' + JSON.stringify(summary, null, 2);
+      var sys = 'Du bist ein erstklassiger, ehrlicher und empathischer Finanzcoach (DACH-Raum). ' +
+        'Der Nutzer steckt in einer angespannten Schuldensituation und ist emotional belastet – sei warmherzig, aber klar. ' +
+        'ARBEITE STRIKT ZAHLENBASIERT: nutze ausschließlich die übergebenen Werte (Währung CHF), erfinde keine Zahlen, wiederhole die Rohdaten nicht. ' +
+        'Wenn "aktuell_im_minus" true ist oder der Cashflow negativ ist: Fokus auf Liquidität sichern, Ausgaben senken (nutze "groesste_fixkosten"/"fixkosten_kuendbar_pro_monat"), mit Gläubigern Raten/Stundung vereinbaren und Schuldenberatung – sprich NICHT über Investieren/ETFs. ' +
+        'Empfiehl Investieren NUR, wenn schuldenfrei oder Notgroschen vorhanden UND Cashflow klar positiv ist. ' +
+        'Tilgungsreihenfolge nach höchstem Zins (Avalanche). Beträge in CHF. Konkret, priorisiert, umsetzbar – kein Disclaimer-Geschwurbel, keine Floskeln. ' +
+        'Struktur (mit Markdown-Überschriften): 1) Lage ehrlich in 2 Sätzen 2) Top-3-Sofortmaßnahmen für DIESE Woche 3) Schuldenplan (Reihenfolge + warum) 4) Realistischer Liquiditäts-/Sparschritt 5) Eine konkrete Einkommensidee passend zur Lage.';
+      var user = 'Hier meine echten Finanzdaten als JSON (alle Beträge in CHF):\n' + JSON.stringify(summary, null, 2) +
+        '\n\nGib mir einen ehrlichen, umsetzbaren Plan – sprich mich direkt an.';
 
       return self._callOpenAI(key, {
         messages: [{ role: 'system', content: sys }, { role: 'user', content: user }],
-        temperature: 0.6, max_tokens: 900
+        temperature: 0.4, max_tokens: 950
       }, self._coachModels());
     }).then(function (data) {
       var txt = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
@@ -1559,7 +1591,7 @@
       ['emergencyMonths', 'Notgroschen ≥ … Monate'],
       ['cashflowPositive', 'Cashflow ≥ … / Monat'],
       ['savingsRate', 'Sparquote ≥ … (0–1)'],
-      ['netWorthPositive', 'Nettovermögen ≥ … €']
+      ['netWorthPositive', 'Nettovermögen ≥ … CHF']
     ];
   };
 

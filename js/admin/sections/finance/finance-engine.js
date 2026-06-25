@@ -333,10 +333,12 @@
     return out;
   }
 
+  var DISPLAY_CCY = 'CHF';
+  function setDisplayCurrency(c) { if (c) DISPLAY_CCY = c; }
   function fmtEur(v) {
     try {
-      return new Intl.NumberFormat('de-CH', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(v || 0);
-    } catch (e) { return (Math.round(v || 0)) + ' EUR'; }
+      return new Intl.NumberFormat('de-CH', { style: 'currency', currency: DISPLAY_CCY, maximumFractionDigits: 0 }).format(v || 0);
+    } catch (e) { return (Math.round(v || 0)) + ' ' + DISPLAY_CCY; }
   }
 
   // ===================================================================
@@ -668,6 +670,7 @@
     recurringSummary: recurringSummary,
     liquidityForecast: liquidityForecast,
     fmtEur: fmtEur,
+    setDisplayCurrency: setDisplayCurrency,
     num: num
   };
 })();
