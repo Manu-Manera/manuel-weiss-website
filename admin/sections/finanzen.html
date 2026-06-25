@@ -18,6 +18,7 @@
 
     <nav class="fin-tabs" role="tablist">
         <button class="fin-tab active" data-fintab="overview"><i class="fas fa-gauge-high"></i> Überblick</button>
+        <button class="fin-tab fin-tab-crisis" data-fintab="crisis"><i class="fas fa-life-ring"></i> Krise &amp; Hilfe</button>
         <button class="fin-tab" data-fintab="plan"><i class="fas fa-flag-checkered"></i> Sanierungsplan</button>
         <button class="fin-tab" data-fintab="cashflow"><i class="fas fa-right-left"></i> Einnahmen &amp; Ausgaben</button>
         <button class="fin-tab" data-fintab="transactions"><i class="fas fa-receipt"></i> Buchungen</button>
@@ -29,6 +30,7 @@
 
     <div class="fin-panes">
         <section id="fintab-overview" class="fin-pane" role="tabpanel"></section>
+        <section id="fintab-crisis" class="fin-pane" role="tabpanel" hidden></section>
         <section id="fintab-plan" class="fin-pane" role="tabpanel" hidden></section>
         <section id="fintab-cashflow" class="fin-pane" role="tabpanel" hidden></section>
         <section id="fintab-transactions" class="fin-pane" role="tabpanel" hidden></section>

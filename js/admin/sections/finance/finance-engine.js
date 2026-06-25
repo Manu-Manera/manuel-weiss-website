@@ -426,6 +426,141 @@
     };
   }
 
+  // ===================================================================
+  // WIEDERKEHRENDE POSTEN (Fixkosten/Abos) + LIQUIDITÄTS-PROGNOSE
+  // Erkennt Daueraufträge/Abos aus echten Buchungen und projiziert den
+  // Kontostand der nächsten Wochen ("Komme ich diesen Monat durch?").
+  // ===================================================================
+
+  // Schlüssel zur Gruppierung gleichartiger Buchungen (Händler-Signatur).
+  function recurKey(note) {
+    var s = String(note || '').toLowerCase();
+    s = s.replace(/\d{1,2}[.\/-]\d{1,2}[.\/-]\d{2,4}/g, ' ');   // Datumsangaben
+    s = s.replace(/[0-9*xX]{4,}/g, ' ');                          // Karten-/Kontonummern
+    s = s.replace(/[^a-zäöüéèà ]+/gi, ' ');                       // nur Buchstaben behalten
+    s = s.replace(/\s+/g, ' ').trim();
+    return s.split(' ').filter(Boolean).slice(0, 2).join(' ');
+  }
+
+  var CANCELABLE_KW = ['apple', 'itunes', 'cursor', 'openai', 'chatgpt', 'audible', 'netflix', 'spotify', 'gamma', 'prime', 'premium', 'paddle', 'icloud', 'youtube', 'disney', 'adobe', 'google', 'paypal', 'epost', 'sky', 'dazn'];
+  var NEGOTIABLE_KW = ['swica', 'helsana', 'axa', 'sanitas', 'css', 'concordia', 'versicherung', 'assura', 'salt', 'swisscom', 'sunrise', 'mobile', 'wingo', 'yallo', 'serafe', 'billag'];
+  var CANCELABLE_CATS = { 'Abo': 1, 'Unterhaltung': 1 };
+  var NEGOTIABLE_CATS = { 'Versicherung': 1, 'Kommunikation': 1 };
+
+  function classifyRecur(label, category) {
+    var l = String(label || '').toLowerCase();
+    function hit(arr) { return arr.some(function (k) { return l.indexOf(k) >= 0; }); }
+    if (CANCELABLE_CATS[category] || hit(CANCELABLE_KW)) return 'cancelable';
+    if (NEGOTIABLE_CATS[category] || hit(NEGOTIABLE_KW)) return 'negotiable';
+    return 'fixed';
+  }
+
+  /**
+   * Erkennt wiederkehrende Buchungen (≥2 verschiedene Monate) aus den letzten
+   * `windowMonths` Datenmonaten. Liefert je Posten einen geschätzten Monatsbetrag,
+   * Geldfluss (in/out), Klassifizierung (cancelable/negotiable/fixed) und Tag im Monat.
+   */
+  function detectRecurring(doc, windowMonths) {
+    var txs = (doc && doc.transactions) || [];
+    if (!txs.length) return [];
+    var months = txDistinctMonths(doc).slice(0, windowMonths || 4);
+    if (!months.length) return [];
+    var winSet = {};
+    months.forEach(function (m) { winSet[m] = 1; });
+
+    var groups = {};
+    txs.forEach(function (t) {
+      var ym = ymOf(t);
+      if (!winSet[ym]) return;
+      var key = recurKey(t.note || t.description || t.category || '');
+      if (!key) return;
+      var g = groups[key] || (groups[key] = {
+        key: key, total: 0, count: 0, monthsSet: {}, inCount: 0, outCount: 0,
+        lastDate: '', lastNote: '', cat: t.category || 'Sonstiges'
+      });
+      g.total += Math.abs(num(t.amount));
+      g.count += 1;
+      g.monthsSet[ym] = 1;
+      if (t.type === 'income') g.inCount += 1; else g.outCount += 1;
+      if ((t.date || '') >= g.lastDate) { g.lastDate = t.date || ''; g.lastNote = t.note || t.description || g.cat; g.cat = t.category || g.cat; }
+    });
+
+    var out = [];
+    Object.keys(groups).forEach(function (k) {
+      var g = groups[k];
+      var nMonths = Object.keys(g.monthsSet).length;
+      if (nMonths < 2) return;                 // nur echte Wiederkehrer
+      var monthly = g.total / nMonths;
+      if (monthly < 5) return;                 // Rauschen ausblenden
+      var flow = g.inCount > g.outCount ? 'in' : 'out';
+      var label = String(g.lastNote || g.key).replace(/\s+/g, ' ').trim().slice(0, 40);
+      var dom = parseInt(String(g.lastDate).slice(8, 10), 10) || 1;
+      out.push({
+        key: k, label: label, category: g.cat, flow: flow,
+        kind: flow === 'out' ? classifyRecur(label + ' ' + g.key, g.cat) : 'income',
+        monthly: monthly, occurrences: g.count, months: nMonths, dom: dom, lastDate: g.lastDate
+      });
+    });
+    out.sort(function (a, b) { return b.monthly - a.monthly; });
+    return out;
+  }
+
+  /** Summen des Fixkosten-/Abo-Radars je Klasse (nur Ausgaben). */
+  function recurringSummary(doc) {
+    var rec = detectRecurring(doc);
+    var s = { cancelable: 0, negotiable: 0, fixed: 0, income: 0, items: rec };
+    rec.forEach(function (r) {
+      if (r.flow === 'in') s.income += r.monthly;
+      else s[r.kind] += r.monthly;
+    });
+    s.totalOut = s.cancelable + s.negotiable + s.fixed;
+    // Konservatives Sparpotenzial: Abos ganz, Verhandelbares ~15%.
+    s.potentialSaving = s.cancelable + s.negotiable * 0.15;
+    return s;
+  }
+
+  /**
+   * Liquiditäts-Prognose: projiziert den Kontostand über `horizonDays` Tage
+   * anhand der wiederkehrenden Ein-/Auszahlungen. Findet den Tiefstpunkt und
+   * eine Ampel-Einstufung ("Komme ich diesen Monat durch?").
+   */
+  function liquidityForecast(doc, horizonDays) {
+    horizonDays = horizonDays || 45;
+    var rec = detectRecurring(doc);
+    var hasIncome = rec.some(function (r) { return r.flow === 'in'; });
+    if (!rec.length || !hasIncome) {
+      return { available: false };
+    }
+    var start = num(doc && doc.settings && doc.settings.cashBalance);
+    var events = rec.map(function (r) {
+      return { dom: r.dom, amount: r.flow === 'in' ? r.monthly : -r.monthly, label: r.label };
+    });
+
+    var today = new Date(); today.setHours(0, 0, 0, 0);
+    var bal = start;
+    var minBal = start, minDate = new Date(today);
+    var timeline = [];
+    for (var i = 0; i <= horizonDays; i++) {
+      var d = new Date(today); d.setDate(d.getDate() + i);
+      var dom = d.getDate();
+      events.forEach(function (e) { if (e.dom === dom && i > 0) bal += e.amount; });
+      if (bal < minBal) { minBal = bal; minDate = new Date(d); }
+      timeline.push({ date: new Date(d), balance: bal });
+    }
+
+    var essential = monthlyEssentialExpenses(doc);
+    var buffer = Math.max(300, essential * 0.25);
+    var status = minBal < 0 ? 'risk' : (minBal < buffer ? 'tight' : 'ok');
+    return {
+      available: true,
+      start: start, end: bal, minBal: minBal, minDate: minDate,
+      status: status, buffer: buffer,
+      shortfall: minBal < 0 ? -minBal : 0,
+      monthlyNet: effCashflow(doc),
+      timeline: timeline
+    };
+  }
+
   // ---- Sanierungsplan / Meilensteine ----
   /**
    * Aktueller Ist-Wert einer Meilenstein-Metrik aus den Live-Finanzdaten.
@@ -529,6 +664,9 @@
     planMetricValue: planMetricValue,
     evalMilestone: evalMilestone,
     planProgress: planProgress,
+    detectRecurring: detectRecurring,
+    recurringSummary: recurringSummary,
+    liquidityForecast: liquidityForecast,
     fmtEur: fmtEur,
     num: num
   };

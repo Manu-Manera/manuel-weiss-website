@@ -99,7 +99,7 @@
   FinanzenSection.prototype._defaultDoc = function () {
     return {
       settings: { currency: 'EUR', emergencyFundTargetMonths: 3, extraDebtPayment: 0, cashBalance: 0, basis: 'actual', appliedDebtTx: {}, autoCashBalance: true, accountBalances: {} },
-      incomes: [], expenses: [], transactions: [], debts: [], holdings: [], goals: [], coachNotes: [],
+      incomes: [], expenses: [], transactions: [], debts: [], holdings: [], goals: [], coachNotes: [], actions: [],
       plan: { northStar: '', startDate: '', baselineDebt: 0, seeded: false, milestones: [] }
     };
   };
@@ -136,13 +136,30 @@
     ];
   };
 
+  // Konkrete Sofort-Schritte gegen die akute Lage – als Checkliste, abhakbar & editierbar.
+  FinanzenSection.prototype._actionTemplate = function () {
+    function a(text, link, linkLabel) { return { id: uid(), text: text, done: false, link: link || '', linkLabel: linkLabel || '' }; }
+    return [
+      a('Cembra anrufen: Ratenstundung/-anpassung für die Rückstände vereinbaren (aktiv den Kontakt suchen nimmt den Druck raus).', 'tel:+41445765050', 'Cembra anrufen'),
+      a('Kostenlose Schuldenberatung im Kanton Zürich kontaktieren – professionell, vertraulich, kein Urteil.', 'https://schuldenberatung.ch', 'schuldenberatung.ch'),
+      a('München beenden: untervermieten oder kündigen – das ist der größte einzelne Spar-Hebel (doppelte Miete).', '', ''),
+      a('Inkasso klären (Infoscore, Universum Inkasso): schriftlich ein realistisches Ratenangebot machen.', '', ''),
+      a('Teure Abos/Tools kündigen – siehe Fixkosten- & Abo-Radar unten.', '', ''),
+      a('Mini-Notgroschen 1\u2019000 CHF aufbauen, bevor Sondertilgungen – verhindert neue Überziehungen.', '', '')
+    ];
+  };
+
   FinanzenSection.prototype._normalize = function (doc) {
     var d = doc && typeof doc === 'object' ? doc : {};
     var def = this._defaultDoc();
     d.settings = Object.assign(def.settings, d.settings || {});
-    ['incomes', 'expenses', 'transactions', 'debts', 'holdings', 'goals', 'coachNotes'].forEach(function (k) {
+    ['incomes', 'expenses', 'transactions', 'debts', 'holdings', 'goals', 'coachNotes', 'actions'].forEach(function (k) {
       if (!Array.isArray(d[k])) d[k] = [];
     });
+    if (!d.actions.length && !d.settings._actionsSeeded) {
+      d.actions = this._actionTemplate();
+      d.settings._actionsSeeded = true;
+    }
     d.plan = Object.assign({ northStar: '', startDate: '', baselineDebt: 0, seeded: false, milestones: [] }, d.plan || {});
     if (!Array.isArray(d.plan.milestones)) d.plan.milestones = [];
     // Erstbefüllung: Vorlage nur einmal laden, danach frei editierbar (kein erneutes Seeding).
@@ -271,6 +288,12 @@
     if (act === 'import-tips') {
       var self = this; this.switchTab('coach'); setTimeout(function () { self._runAiCoach(); }, 60); return;
     }
+    // --- Krise & Hilfe ---
+    if (act === 'goto-crisis') { this.switchTab('crisis'); return; }
+    if (act === 'action-add') { this._addAction(t); return; }
+    if (act === 'action-del') { this._removeAction(t.getAttribute('data-action-id')); return; }
+    if (act === 'gen-letter') { this._showLetter(t.getAttribute('data-letter')); return; }
+    if (act === 'copy-letter') { this._copyLetter(t); return; }
     // --- Sanierungsplan ---
     if (act === 'ms-toggle') { this._toggleMilestoneDone(t.getAttribute('data-ms-id')); return; }
     if (act === 'ms-claim') { this._toggleMilestoneReward(t.getAttribute('data-ms-id')); return; }
@@ -299,6 +322,10 @@
       var idx = parseInt(el.getAttribute('data-imp-idx'), 10);
       if (this._importItems && this._importItems[idx]) this._importItems[idx].checked = el.checked;
       this._updateImportCount(); return;
+    }
+    if (el.hasAttribute && el.hasAttribute('data-action-id')) {
+      this._toggleAction(el.getAttribute('data-action-id'), el.checked);
+      return;
     }
     if (el.hasAttribute && el.hasAttribute('data-plan-field')) {
       this._updatePlan(el.getAttribute('data-plan-field'), el.value);
@@ -362,7 +389,7 @@
 
   FinanzenSection.prototype._renderActive = function () {
     var map = {
-      overview: '_renderOverview', plan: '_renderPlan', cashflow: '_renderCashflow', transactions: '_renderTransactions',
+      overview: '_renderOverview', crisis: '_renderCrisis', plan: '_renderPlan', cashflow: '_renderCashflow', transactions: '_renderTransactions',
       debts: '_renderDebts', portfolio: '_renderPortfolio', goals: '_renderGoals', coach: '_renderCoach'
     };
     var fn = map[this.activeTab];
@@ -382,6 +409,7 @@
     function setTxt(id, txt) { var el = document.getElementById(id); if (el) el.textContent = txt; }
 
     if (tab === 'overview') { this._renderOverview(); return; }
+    if (tab === 'crisis') { this._renderCrisis(); return; }
     if (tab === 'plan') { this._renderPlan(); return; }
     if (tab === 'coach') { return; }
     if (tab === 'transactions') { this._renderTransactions(); return; }
@@ -495,6 +523,7 @@
     }
 
     pane.innerHTML =
+      this._liquidityBannerHtml() +
       basisToggle +
       '<div class="fin-grid2">' +
         '<div class="fin-card">' +
@@ -523,6 +552,210 @@
     return '<ul class="fin-insights">' + list.map(function (i) {
       return '<li class="fin-insight ' + i.severity + '"><strong>' + esc(i.title) + '</strong><span>' + esc(i.text) + '</span></li>';
     }).join('') + '</ul>';
+  };
+
+  // ---- Liquiditäts-Ampel: „Komme ich diesen Monat durch?" ----
+  FinanzenSection.prototype._liquidityBannerHtml = function (full) {
+    var d = this.doc, eng = E();
+    var f = eng.liquidityForecast(d);
+    if (!f.available) {
+      if (!full) return '';
+      return '<div class="fin-liq fin-liq-info"><div class="fin-liq-emoji">📥</div><div class="fin-liq-body">' +
+        '<strong>Noch keine Prognose möglich.</strong><span>Importiere einen Kontoauszug (mit Schlusssaldo) und ein paar Monate Buchungen – dann sage ich dir hier zuverlässig, ob du diesen Monat durchkommst.</span></div></div>';
+    }
+    var dateStr = f.minDate.toLocaleDateString('de-CH', { day: '2-digit', month: 'long' });
+    var emoji = f.status === 'risk' ? '⚠️' : (f.status === 'tight' ? '🟡' : '🟢');
+    var headline, body;
+    if (f.status === 'risk') {
+      headline = 'Diesen Monat wird es eng – aber wir haben einen Plan.';
+      body = 'Voraussichtlich rutschst du um den <strong>' + dateStr + '</strong> ins Minus; es fehlen ca. <strong>' + eur(f.shortfall) + '</strong>. ' +
+        'Das ist kein Weltuntergang – unten in „Krise & Hilfe" stehen die nächsten Schritte, die genau das auffangen.';
+    } else if (f.status === 'tight') {
+      headline = 'Knapp, aber machbar.';
+      body = 'Dein Tiefststand liegt bei ca. <strong>' + eur(f.minBal) + '</strong> um den <strong>' + dateStr + '</strong>. ' +
+        'Halte einen kleinen Puffer und vermeide diese Woche größere Ausgaben.';
+    } else {
+      headline = 'Diesen Monat kommst du durch. 🙌';
+      body = 'Dein Konto bleibt voraussichtlich im Plus (Tiefststand ca. <strong>' + eur(f.minBal) + '</strong> um den <strong>' + dateStr + '</strong>). Atme durch – du machst das.';
+    }
+    return '<div class="fin-liq fin-liq-' + f.status + '">' +
+      '<div class="fin-liq-emoji">' + emoji + '</div>' +
+      '<div class="fin-liq-body"><strong>' + headline + '</strong><span>' + body + '</span></div>' +
+      (full ? '' : '<button class="btn btn-outline btn-sm fin-liq-cta" data-act="goto-crisis"><i class="fas fa-life-ring"></i> Hilfe &amp; nächste Schritte</button>') +
+      '</div>';
+  };
+
+  // ---- Krise & Hilfe: Ampel + 3 Schritte + fertige Briefe + Abo-Radar ----
+  FinanzenSection.prototype._renderCrisis = function () {
+    var d = this.doc, eng = E();
+    var pane = document.getElementById('fintab-crisis');
+    if (!pane) return;
+
+    var f = eng.liquidityForecast(d);
+    var liqDetail = '';
+    if (f.available) {
+      liqDetail = '<div class="fin-liq-detail">' +
+        '<div><span class="fin-liq-k">Heute</span><strong>' + eur(f.start) + '</strong></div>' +
+        '<div><span class="fin-liq-k">Tiefststand</span><strong class="' + (f.minBal < 0 ? 'bad' : 'good') + '">' + eur(f.minBal) + '</strong></div>' +
+        '<div><span class="fin-liq-k">In ~45 Tagen</span><strong class="' + (f.end < 0 ? 'bad' : 'good') + '">' + eur(f.end) + '</strong></div>' +
+        '<div><span class="fin-liq-k">Cashflow/Monat</span><strong class="' + (f.monthlyNet < 0 ? 'bad' : 'good') + '">' + eur(f.monthlyNet) + '</strong></div>' +
+        '</div>';
+    }
+
+    pane.innerHTML =
+      '<div class="fin-card fin-crisis-intro">' +
+        '<p class="fin-crisis-lead">Du bist nicht allein damit – und es ist lösbar. Diese Seite zeigt dir <strong>nur die nächsten Schritte</strong>, nicht alle Baustellen auf einmal. Einer nach dem anderen.</p>' +
+      '</div>' +
+      '<div class="fin-card">' + this._liquidityBannerHtml(true) + liqDetail + '</div>' +
+      '<div class="fin-card"><h3>🎯 Deine nächsten Schritte</h3>' +
+        '<p class="fin-hint">Hak ab, was erledigt ist. Reihenfolge = Wirkung.</p>' +
+        this._actionsHtml() +
+        '<div class="fin-addform"><input class="fin-inp" data-new-action="text" type="text" placeholder="Eigener Schritt …" style="flex:1;min-width:220px">' +
+          '<button class="btn btn-primary btn-sm" data-act="action-add"><i class="fas fa-plus"></i> Schritt</button></div>' +
+      '</div>' +
+      '<div class="fin-card"><h3>✉️ Fertige Schreiben</h3>' +
+        '<p class="fin-hint">Auf Knopfdruck – du musst nur noch deine Vertragsnummer ergänzen und absenden.</p>' +
+        '<div class="fin-letter-btns">' +
+          '<button class="btn btn-outline btn-sm" data-act="gen-letter" data-letter="cembra"><i class="fas fa-file-lines"></i> Cembra: Ratenstundung</button>' +
+          '<button class="btn btn-outline btn-sm" data-act="gen-letter" data-letter="inkasso"><i class="fas fa-file-lines"></i> Inkasso: Ratenangebot</button>' +
+          '<button class="btn btn-outline btn-sm" data-act="gen-letter" data-letter="beratung"><i class="fas fa-file-lines"></i> Schuldenberatung: Termin</button>' +
+        '</div>' +
+        '<div id="fin-letter-out"></div>' +
+      '</div>' +
+      '<div class="fin-card"><h3>📡 Fixkosten- &amp; Abo-Radar</h3>' + this._radarHtml() + '</div>' +
+      '<div class="fin-card fin-crisis-help"><h3>🆘 Wenn es zu viel wird</h3>' +
+        '<p>Bei Geldsorgen mit Druck hilft reden – sofort und kostenlos:</p>' +
+        '<ul class="fin-help-list">' +
+          '<li><strong>Dargebotene Hand:</strong> Tel. <a href="tel:143">143</a> (24/7, anonym)</li>' +
+          '<li><strong>Schuldenberatung Schweiz:</strong> <a href="https://schuldenberatung.ch" target="_blank" rel="noopener">schuldenberatung.ch</a></li>' +
+          '<li><strong>Caritas / Budgetberatung:</strong> <a href="https://www.budgetberatung.ch" target="_blank" rel="noopener">budgetberatung.ch</a></li>' +
+        '</ul>' +
+      '</div>';
+  };
+
+  FinanzenSection.prototype._actionsHtml = function () {
+    var acts = this.doc.actions || [];
+    if (!acts.length) return '<p class="fin-hint">Noch keine Schritte – füge unten welche hinzu.</p>';
+    return '<ul class="fin-actions">' + acts.map(function (a) {
+      var link = a.link ? ' <a href="' + esc(a.link) + '"' + (/^https?:/.test(a.link) ? ' target="_blank" rel="noopener"' : '') + ' class="fin-action-link">' + esc(a.linkLabel || a.link) + '</a>' : '';
+      return '<li class="fin-action' + (a.done ? ' done' : '') + '">' +
+        '<label><input type="checkbox" data-action-id="' + a.id + '"' + (a.done ? ' checked' : '') + '>' +
+        '<span>' + esc(a.text) + link + '</span></label>' +
+        '<button class="fin-icon-btn danger" data-act="action-del" data-action-id="' + a.id + '" title="Entfernen"><i class="fas fa-trash"></i></button>' +
+      '</li>';
+    }).join('') + '</ul>';
+  };
+
+  FinanzenSection.prototype._radarHtml = function () {
+    var eng = E();
+    var s = eng.recurringSummary(this.doc);
+    if (!s.items.length) {
+      return '<p class="fin-hint">Sobald ein paar Monate Buchungen da sind, finde ich hier automatisch deine Abos & Fixkosten und zeige, wo du sparen kannst.</p>';
+    }
+    var labels = { cancelable: 'Kündbar (Abos/Tools)', negotiable: 'Verhandelbar (Versicherung/Telecom)', fixed: 'Fix (Miete/Kredit/…)' };
+    var tones = { cancelable: 'good', negotiable: 'warn', fixed: '' };
+    var sumRow = '<div class="fin-radar-sum">' +
+      '<div class="fin-radar-chip good"><span>Sofort kündbar</span><strong>' + eur(s.cancelable) + '/Mt</strong></div>' +
+      '<div class="fin-radar-chip warn"><span>Verhandelbar</span><strong>' + eur(s.negotiable) + '/Mt</strong></div>' +
+      '<div class="fin-radar-chip"><span>Fix</span><strong>' + eur(s.fixed) + '/Mt</strong></div>' +
+      '<div class="fin-radar-chip accent"><span>Sparpotenzial</span><strong>' + eur(s.potentialSaving) + '/Mt</strong></div>' +
+      '</div>';
+    var rows = s.items.filter(function (r) { return r.flow === 'out'; }).slice(0, 18).map(function (r) {
+      return '<tr class="fin-radar-' + r.kind + '"><td><span class="fin-radar-dot ' + (tones[r.kind] || '') + '"></span>' + esc(r.label) + '</td>' +
+        '<td>' + esc(labels[r.kind].split(' ')[0]) + '</td>' +
+        '<td class="num">' + eur(r.monthly) + '</td>' +
+        '<td class="num">' + eur(r.monthly * 12) + '</td></tr>';
+    }).join('');
+    return sumRow +
+      '<p class="fin-hint">Wenn du nur die <strong>kündbaren</strong> Posten beendest, sparst du rund <strong>' + eur(s.cancelable) + '/Monat (' + eur(s.cancelable * 12) + '/Jahr)</strong>.</p>' +
+      '<table class="fin-table fin-radar-table"><thead><tr><th>Posten</th><th>Typ</th><th class="num">≈ €/Monat</th><th class="num">≈ €/Jahr</th></tr></thead><tbody>' + rows + '</tbody></table>';
+  };
+
+  // Fertige, editierbare Schreiben (deterministisch, ohne KI).
+  FinanzenSection.prototype._letterText = function (type) {
+    var d = this.doc, eng = E();
+    var today = new Date().toLocaleDateString('de-CH');
+    var debt = eng.totalDebt(d);
+    var cembra = (d.debts || []).filter(function (x) { return /cembra/i.test(x.name || ''); })[0];
+    var cembraBal = cembra ? eur(eng.num(cembra.balance)) : '[Restschuld]';
+    if (type === 'cembra') {
+      return 'Absender: [Dein Name], [Strasse], [PLZ Ort]\n\n' +
+        'Cembra Money Bank AG\nKundendienst\n8048 Zürich\n\n' +
+        '[Ort], ' + today + '\n\n' +
+        'Betreff: Bitte um Ratenstundung / Anpassung – Vertrag Nr. [Vertragsnummer]\n\n' +
+        'Sehr geehrte Damen und Herren,\n\n' +
+        'mein Kreditvertrag bei Ihnen weist aktuell einen Saldo von rund ' + cembraBal + ' auf. ' +
+        'Aufgrund einer vorübergehend angespannten finanziellen Situation ist es mir derzeit nicht möglich, die Raten in voller Höhe fristgerecht zu leisten. ' +
+        'Ich möchte meinen Verpflichtungen aber unbedingt nachkommen und suche aktiv eine Lösung.\n\n' +
+        'Ich bitte Sie daher um eine der folgenden Möglichkeiten:\n' +
+        '  • vorübergehende Stundung der Raten für [z. B. 2–3] Monate, oder\n' +
+        '  • dauerhafte Senkung der monatlichen Rate auf einen für mich tragbaren Betrag von CHF [Wunschrate].\n\n' +
+        'Eine realistische, verlässliche Rate ist mir wichtiger als ein Versprechen, das ich nicht halten kann. ' +
+        'Bitte teilen Sie mir mit, welche Unterlagen Sie benötigen. Für ein kurzes Telefonat stehe ich gerne zur Verfügung.\n\n' +
+        'Vielen Dank für Ihr Entgegenkommen.\n\nFreundliche Grüsse\n[Dein Name]';
+    }
+    if (type === 'inkasso') {
+      return 'Absender: [Dein Name], [Strasse], [PLZ Ort]\n\n' +
+        '[Inkasso-Firma]\n[Adresse]\n\n' +
+        '[Ort], ' + today + '\n\n' +
+        'Betreff: Ratenzahlungsvorschlag – Aktenzeichen [Nummer]\n\n' +
+        'Sehr geehrte Damen und Herren,\n\n' +
+        'ich nehme Bezug auf Ihre Forderung über [Betrag]. Die Forderung ist mir bekannt und ich bestreite sie nicht. ' +
+        'Aufgrund meiner derzeitigen finanziellen Lage kann ich den Betrag nicht auf einmal begleichen.\n\n' +
+        'Ich biete Ihnen eine monatliche Ratenzahlung von CHF [z. B. 50–100] an, beginnend ab [Datum]. ' +
+        'Ich bitte Sie, in dieser Zeit auf weitere Betreibungs-/Mahnkosten zu verzichten.\n\n' +
+        'Bitte bestätigen Sie mir die Ratenvereinbarung kurz schriftlich. Vielen Dank.\n\n' +
+        'Freundliche Grüsse\n[Dein Name]';
+    }
+    return 'Anfrage Schuldenberatung\n\n' +
+      'Guten Tag\n\n' +
+      'Ich möchte gerne einen Beratungstermin vereinbaren. Meine Situation kurz zusammengefasst:\n' +
+      '  • Einkommen: ca. ' + eur(eng.effIncome(d)) + ' / Monat\n' +
+      '  • Gesamtschulden: ca. ' + eur(debt) + '\n' +
+      '  • Aktuell: Rückstände bei einem Kreditgeber und [Inkasso/Betreibung ja/nein].\n\n' +
+      'Ich wohne im Kanton Zürich. Bitte teilen Sie mir mit, wie ein erstes (kostenloses) Gespräch ablaufen kann und welche Unterlagen ich mitbringen soll.\n\n' +
+      'Vielen Dank und freundliche Grüsse\n[Dein Name]\n[Telefon / E-Mail]';
+  };
+
+  FinanzenSection.prototype._toggleAction = function (id, done) {
+    var a = (this.doc.actions || []).find(function (x) { return x.id === id; });
+    if (!a) return;
+    a.done = !!done;
+    this.save();
+    this._renderCrisis();
+  };
+  FinanzenSection.prototype._removeAction = function (id) {
+    this.doc.actions = (this.doc.actions || []).filter(function (x) { return x.id !== id; });
+    this.save();
+    this._renderCrisis();
+  };
+  FinanzenSection.prototype._addAction = function (btn) {
+    var box = btn.closest('.fin-addform');
+    var inp = box && box.querySelector('[data-new-action="text"]');
+    var txt = inp && inp.value.trim();
+    if (!txt) { if (inp) inp.focus(); return; }
+    this.doc.actions = this.doc.actions || [];
+    this.doc.actions.push({ id: uid(), text: txt, done: false, link: '', linkLabel: '' });
+    this.save();
+    this._renderCrisis();
+  };
+  FinanzenSection.prototype._showLetter = function (type) {
+    var out = document.getElementById('fin-letter-out');
+    if (!out) return;
+    var txt = this._letterText(type);
+    out.innerHTML = '<textarea class="fin-letter-area" rows="16">' + esc(txt) + '</textarea>' +
+      '<div class="fin-letter-actions"><button class="btn btn-primary btn-sm" data-act="copy-letter"><i class="fas fa-copy"></i> Text kopieren</button>' +
+      '<span class="fin-hint">Bearbeite die [Platzhalter] und sende es ab.</span></div>';
+  };
+  FinanzenSection.prototype._copyLetter = function (btn) {
+    var out = document.getElementById('fin-letter-out');
+    var area = out && out.querySelector('.fin-letter-area');
+    if (!area) return;
+    area.select();
+    var done = function () { btn.innerHTML = '<i class="fas fa-check"></i> Kopiert'; setTimeout(function () { btn.innerHTML = '<i class="fas fa-copy"></i> Text kopieren'; }, 1800); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(area.value).then(done, function () { try { document.execCommand('copy'); done(); } catch (e) {} });
+    } else { try { document.execCommand('copy'); done(); } catch (e) {} }
   };
 
   FinanzenSection.prototype._drawCharts = function () {
