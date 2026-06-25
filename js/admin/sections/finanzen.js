@@ -98,7 +98,7 @@
 
   FinanzenSection.prototype._defaultDoc = function () {
     return {
-      settings: { currency: 'EUR', emergencyFundTargetMonths: 3, extraDebtPayment: 0, cashBalance: 0, basis: 'actual', appliedDebtTx: {} },
+      settings: { currency: 'EUR', emergencyFundTargetMonths: 3, extraDebtPayment: 0, cashBalance: 0, basis: 'actual', appliedDebtTx: {}, autoCashBalance: true, accountBalances: {} },
       incomes: [], expenses: [], transactions: [], debts: [], holdings: [], goals: [], coachNotes: [],
       plan: { northStar: '', startDate: '', baselineDebt: 0, seeded: false, milestones: [] }
     };
@@ -267,7 +267,7 @@
     }
     // --- PDF-Import ---
     if (act === 'import-confirm') { this._confirmImport(); return; }
-    if (act === 'import-clear') { this._importItems = null; this._renderTransactions(); return; }
+    if (act === 'import-clear') { this._importItems = null; this._importStatements = null; this._renderTransactions(); return; }
     if (act === 'import-tips') {
       var self = this; this.switchTab('coach'); setTimeout(function () { self._runAiCoach(); }, 60); return;
     }
@@ -804,11 +804,23 @@
         '<div class="fin-goal-sub" data-goalsub="' + g.id + '">' + Math.round(prog * 100) + '% erreicht</div></div>';
     }).join('');
 
+    var acc = d.settings.accountBalances || {};
+    var accKeys = Object.keys(acc);
+    var autoOn = d.settings.autoCashBalance !== false;
+    var accLine = accKeys.length
+      ? '<p class="fin-hint">Konten (zuletzt importiert): ' + accKeys.map(function (k) {
+          var a = acc[k];
+          return '<strong class="' + (E().num(a.balance) < 0 ? 'warn' : 'good') + '">' + esc(a.label || k) + ' ' + eur(E().num(a.balance)) + (a.currency ? ' ' + esc(a.currency) : '') + '</strong>' + (a.date ? ' <span style="opacity:.7">(' + esc(a.date) + ')</span>' : '');
+        }).join(' · ') + '</p>'
+      : '';
+
     pane.innerHTML =
       '<div class="fin-card"><h3>Notgroschen</h3>' +
         '<p>Reichweite aktuell: <strong id="fin-em-line" class="' + (em != null && em >= 3 ? 'good' : 'warn') + '">' + (em == null ? '–' : em.toFixed(1) + ' Monate') + '</strong> ' +
         '(Ziel: 3–6 Monatsausgaben). Bar-/Tagesgeld: ' +
-        '<input class="fin-inp" data-setting="cashBalance" type="number" step="any" min="0" value="' + esc(d.settings.cashBalance) + '"> €</p></div>' +
+        '<input class="fin-inp" data-setting="cashBalance" type="number" step="any"' + (autoOn && accKeys.length ? ' readonly title="Wird automatisch aus importierten Auszügen gepflegt"' : '') + ' value="' + esc(d.settings.cashBalance) + '"> €</p>' +
+        accLine +
+        '<label class="fin-hint" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" data-setting="autoCashBalance"' + (autoOn ? ' checked' : '') + '> Kontostand automatisch aus Auszügen pflegen</label></div>' +
       '<div class="fin-card"><h3>Sparziele</h3>' + (rows || '<p class="fin-hint">Noch keine Ziele.</p>') +
         '<div class="fin-addform">' + newInp('name', 'z. B. Notgroschen') + newInp('saved', 'gespart €', 'number', 'step="any" min="0"') +
           newInp('target', 'Ziel €', 'number', 'step="any" min="0"') +
@@ -1085,6 +1097,7 @@
     if (!window.FinanceImport) { this._setImportStatus('<span class="bad">Import-Modul nicht geladen.</span>'); return; }
     this._setImportStatus('<i class="fas fa-spinner fa-spin"></i> Lese ' + files.length + ' PDF(s) lokal …');
 
+    this._importStatements = [];
     this._aiKey().then(function (key) {
       if (!key) throw new Error('Kein OpenAI-Key gefunden (Admin → API Keys → OpenAI).');
       var all = [];
@@ -1094,8 +1107,9 @@
           self._setImportStatus('<i class="fas fa-spinner fa-spin"></i> Verarbeite „' + esc(file.name) + '" …');
           return window.FinanceImport.extractPdfText(file).then(function (text) {
             var clean = window.FinanceImport.redact(text, self._importRedact !== false);
-            return self._extractWithAI(key, clean).then(function (list) {
-              list.forEach(function (x) { x.source = file.name; all.push(x); });
+            return self._extractWithAI(key, clean).then(function (res) {
+              (res.items || []).forEach(function (x) { x.source = file.name; all.push(x); });
+              if (res.statement) { res.statement.source = file.name; self._importStatements.push(res.statement); }
             });
           });
         });
@@ -1125,10 +1139,12 @@
 
   FinanzenSection.prototype._extractWithAI = function (key, text) {
     var sys = 'Du bist ein präziser Parser für Bankkontoauszüge (Schweiz/Deutschland). ' +
-      'Extrahiere ALLE einzelnen Buchungen aus dem Text. Ignoriere Anfangssaldo, Schlusssaldo, Zwischensummen, ' +
+      'Extrahiere ALLE einzelnen Buchungen aus dem Text. Ignoriere Anfangssaldo, Zwischensummen, ' +
       'Gebühren-/Entgeltübersichten, Saldoübersichten und Werbung. ' +
       'Gib AUSSCHLIESSLICH gültiges JSON zurück (keine Erklärungen). Schema: ' +
-      '{"transactions":[{"date":"YYYY-MM-DD","amount":<positive Zahl>,"direction":"in"|"out","category":"<Kategorie>","description":"<kurz, max 60 Zeichen>"}]}. ' +
+      '{"statement":{"account":"<Kurzname der Bank/Konto, z.B. UBS oder DKB>","currency":"CHF|EUR","closingBalance":<Schlusssaldo als Zahl, negativ wenn im Minus, sonst null>,"closingDate":"YYYY-MM-DD oder null"},' +
+      '"transactions":[{"date":"YYYY-MM-DD","amount":<positive Zahl>,"direction":"in"|"out","category":"<Kategorie>","description":"<kurz, max 60 Zeichen>"}]}. ' +
+      'closingBalance ist der Endkontostand des Auszugs (z.B. „Schlusssaldo", „Kontostand am …"); wenn nicht eindeutig vorhanden, null. ' +
       'amount immer positiv. direction "in" für Gutschrift/Zahlungseingang, "out" für Belastung/Lastschrift/Kartenzahlung/Überweisung raus. ' +
       'category ausschließlich aus: Wohnen, Versicherung, Lebensmittel, Abo, Kommunikation, Job-Werkzeug, Schulden/Tilgung, Transport, Gesundheit, Einkommen, Sonstiges. ' +
       'Beträge im DE/CH-Format korrekt interpretieren (Punkt, Komma, Apostroph als Tausendertrennzeichen). Datum normalisieren zu YYYY-MM-DD (zweistellige Jahre als 20JJ).';
@@ -1138,9 +1154,9 @@
       temperature: 0, max_tokens: 4000, response_format: { type: 'json_object' }
     }, this._coachModels()).then(function (data) {
       var txt = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
-      var parsed = window.FinanceImport.parseJson(txt);
-      var list = (parsed && parsed.transactions) || [];
-      return list.map(function (x) {
+      var parsed = window.FinanceImport.parseJson(txt) || {};
+      var list = parsed.transactions || [];
+      var items = list.map(function (x) {
         return {
           date: String(x.date || '').slice(0, 10),
           type: (x.direction === 'in' ? 'income' : 'expense'),
@@ -1149,6 +1165,9 @@
           note: x.description || ''
         };
       }).filter(function (x) { return x.amount > 0 && /^\d{4}-\d{2}-\d{2}$/.test(x.date); });
+      var st = parsed.statement || null;
+      if (st && (st.closingBalance === null || st.closingBalance === undefined || st.closingBalance === '')) st = null;
+      return { items: items, statement: st };
     });
   };
 
@@ -1164,12 +1183,39 @@
     });
     var n = items.length;
     var report = this._applyDebtPayments(added);
+    var balReport = this._applyAccountBalances(this._importStatements);
     this._importItems = null;
+    this._importStatements = null;
     this.save();
     this._renderAll();
     var debtMsg = report.length ? ' · <span class="warn">Kredite reduziert:</span> ' + report.join(', ') : '';
-    this._setImportStatus('<span class="good">' + n + ' Buchungen übernommen ✓</span>' + debtMsg + ' ' +
+    var balMsg = balReport.length ? ' · <span class="good">Kontostand:</span> ' + balReport.join(', ') : '';
+    this._setImportStatus('<span class="good">' + n + ' Buchungen übernommen ✓</span>' + debtMsg + balMsg + ' ' +
       '<button class="btn btn-outline btn-sm" data-act="import-tips"><i class="fas fa-wand-magic-sparkles"></i> Tipps zum weiteren Vorgehen</button>');
+  };
+
+  // Pflegt den Kontostand automatisch aus den Schlusssalden der Auszüge (je Konto, neuester gewinnt).
+  FinanzenSection.prototype._applyAccountBalances = function (statements) {
+    var self = this, eng = E();
+    if (this.doc.settings.autoCashBalance === false) return [];
+    var sts = (statements || []).filter(function (s) { return s && s.closingBalance != null; });
+    if (!sts.length) return [];
+    this.doc.settings.accountBalances = this.doc.settings.accountBalances || {};
+    var acc = this.doc.settings.accountBalances;
+    var report = [];
+    sts.forEach(function (s) {
+      var key = String(s.account || 'Konto').trim() || 'Konto';
+      var prev = acc[key];
+      var newDate = s.closingDate || '';
+      if (!prev || !prev.date || newDate >= prev.date) {
+        acc[key] = { label: key, currency: s.currency || '', balance: eng.num(s.closingBalance), date: newDate };
+        report.push(esc(key) + ' ' + eur(eng.num(s.closingBalance)));
+      }
+    });
+    var sum = 0;
+    Object.keys(acc).forEach(function (k) { sum += eng.num(acc[k].balance); });
+    this.doc.settings.cashBalance = Math.round(sum * 100) / 100;
+    return report;
   };
 
   // Ordnet eine (Tilgungs-)Buchung einem Kredit zu – konservativ, um Fehlabzüge zu vermeiden.
