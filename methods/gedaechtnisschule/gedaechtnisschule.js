@@ -183,6 +183,17 @@ class GedaechtnisSchule {
         };
     }
 
+    _handleDeepLink() {
+        try {
+            const sp = new URLSearchParams(window.location.search);
+            const start = sp.get('start');
+            if (!start) return;
+            if (GS_TRAINERS[start]) { this.go('practice'); this._startTrainer(start, 'practice'); }
+            else if (start === 'srs') { this.go('srs'); }
+            else if (['arena', 'exams', 'journal', 'practice'].includes(start)) { this.go(start); }
+        } catch (e) { /* ignore */ }
+    }
+
     _seedShapes() {
         const o = {};
         GS_NUMSHAPES.forEach(s => { o[s.d] = { emoji: s.emoji, word: s.word }; });
@@ -215,6 +226,7 @@ class GedaechtnisSchule {
         if (!Array.isArray(this.state.palaces)) this.state.palaces = [];
         this._bindNav();
         this.render();
+        this._handleDeepLink();
     }
 
     _seedDecks() {

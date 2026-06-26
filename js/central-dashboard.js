@@ -158,6 +158,7 @@
                     streak: ssState.streak || 0,
                     days: (ssState.practiceDays || []).length,
                     senses: activeSenses,
+                    today: ssState.lastPracticeDate === new Date().toISOString().slice(0, 10),
                     ts: wrap && wrap.updatedAt
                 };
             }
@@ -179,7 +180,7 @@
                         (dk.cards || []).forEach(c => { if (new Date(c.due).getTime() <= now) due++; });
                     });
                 } catch (e) { /* ignore */ }
-                mem = { xp, streak: memState.streak || 0, disc: activeDisc, due, ts: mwrap && mwrap.updatedAt };
+                mem = { xp, streak: memState.streak || 0, disc: activeDisc, due, today: memState.lastPracticeDate === new Date().toISOString().slice(0, 10), ts: mwrap && mwrap.updatedAt };
             }
 
             // Bewerbungen
@@ -193,7 +194,7 @@
             let voice = null;
             try {
                 const v = JSON.parse(localStorage.getItem('st_progress') || 'null');
-                if (v) voice = { level: v.currentLevel || 1, xp: v.totalXP || 0, streak: v.streak || 0, sessions: v.sessionsCompleted || 0 };
+                if (v) voice = { level: v.currentLevel || 1, xp: v.totalXP || 0, streak: v.streak || 0, sessions: v.sessionsCompleted || 0, today: (v.lastPracticeDate || v.lastSessionDate || '').slice(0, 10) === new Date().toISOString().slice(0, 10) };
             } catch (e) { /* ignore */ }
 
             recent.sort((a, b) => String(b.ts || '').localeCompare(String(a.ts || '')));
@@ -235,6 +236,72 @@
                 <p class="cd-card-sub">${esc(opts.sub)}</p>
                 <div class="cd-stats">${stats}</div>
                 ${action}
+            </div>`;
+        }
+
+        /* ---------------- Daily Brain (modulübergreifende Tages-Challenge) ---------------- */
+        dailyBrain(d) {
+            const today = new Date().toISOString().slice(0, 10);
+            const yest = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+            const doy = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+
+            const memTrainers = [
+                { id: 'zahlenreise', label: 'Zahlen-Reise: lege Ziffern auf deiner Route ab' },
+                { id: 'speednum', label: 'Speed Numbers: präge dir eine Ziffernfolge ein' },
+                { id: 'nback', label: 'Dual-N-Back: fordere dein Arbeitsgedächtnis' },
+                { id: 'words', label: 'Wortliste: merke dir Wörter in Reihenfolge' },
+                { id: 'names', label: 'Namen & Gesichter: ordne Namen zu' },
+                { id: 'loci', label: 'Gedächtnispalast: Begriffe an Stationen ablegen' }
+            ];
+            const memT = memTrainers[doy % memTrainers.length];
+
+            const missions = [
+                { key: 'mem', icon: '🧠', accent: '#818cf8', title: 'Gedächtnis', task: memT.label,
+                  href: 'methods/gedaechtnisschule/index-gedaechtnisschule.html?start=' + memT.id, done: !!(d.mem && d.mem.today) },
+                { key: 'ss', icon: '✋', accent: '#e0b04a', title: 'Sinne', task: 'Eine Wahrnehmungs-Übung in der Schule der Sinne',
+                  href: 'methods/sinnesschule/index-sinnesschule.html', done: !!(d.ss && d.ss.today) },
+                { key: 'voice', icon: '🎤', accent: '#ec4899', title: 'Stimme', task: 'Eine kurze Einheit im Stimmtraining',
+                  href: 'singing-trainer.html', done: !!(d.voice && d.voice.today) }
+            ];
+            const doneCount = missions.filter(m => m.done).length;
+            const qualifies = doneCount >= 2;
+
+            // Streak persistent (lokal pro Gerät)
+            let db = {};
+            try { db = JSON.parse(localStorage.getItem('cd_dailybrain') || '{}') || {}; } catch (e) { db = {}; }
+            if (qualifies && db.lastQualified !== today) {
+                db.streak = (db.lastQualified === yest ? (db.streak || 0) : 0) + 1;
+                db.lastQualified = today;
+                try { localStorage.setItem('cd_dailybrain', JSON.stringify(db)); } catch (e) { /* ignore */ }
+            }
+            let streak = db.streak || 0;
+            if (db.lastQualified !== today && db.lastQualified !== yest) streak = 0;
+
+            const allDone = doneCount === missions.length;
+            return `
+            <div class="cd-daily ${allDone ? 'complete' : ''}">
+                <div class="cd-daily-top">
+                    <div>
+                        <div class="cd-daily-kicker"><i class="fas fa-bolt"></i> Daily Brain · ${new Date().toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long' })}</div>
+                        <h2 class="cd-daily-title">${allDone ? 'Heute gemeistert – stark! 🎉' : 'Deine 3 Mini-Aufgaben für heute'}</h2>
+                    </div>
+                    <div class="cd-daily-streak" title="Tage in Folge mit mindestens 2 erledigten Aufgaben">
+                        <span class="n">${streak}</span><span class="l">🔥 Tage</span>
+                    </div>
+                </div>
+                <div class="cd-daily-progress"><div class="cd-daily-progress-fill" style="width:${Math.round(doneCount / missions.length * 100)}%"></div></div>
+                <div class="cd-missions">
+                    ${missions.map(m => `
+                        <a class="cd-mission ${m.done ? 'done' : ''}" href="${m.href}" style="--m:${m.accent}">
+                            <span class="cd-mission-check"><i class="fas ${m.done ? 'fa-circle-check' : 'fa-circle'}"></i></span>
+                            <span class="cd-mission-icon">${m.icon}</span>
+                            <span class="cd-mission-body">
+                                <span class="cd-mission-title">${m.title}${m.done ? ' · erledigt' : ''}</span>
+                                <span class="cd-mission-task">${esc(m.task)}</span>
+                            </span>
+                            <i class="fas fa-arrow-right cd-mission-go"></i>
+                        </a>`).join('')}
+                </div>
             </div>`;
         }
 
@@ -321,6 +388,7 @@
                 <h2>Willkommen zurück${name ? ', ' + esc(name) : ''} 👋</h2>
                 <p>Hier fließt alles zusammen – dein ganzer Weg auf einen Blick.${d.lastActive ? ' Zuletzt aktiv ' + relTime(d.lastActive) + '.' : ''}</p>
             </div>
+            ${this.dailyBrain(d)}
             <div class="cd-grid">${cards.join('')}</div>
             <div class="cd-more">
                 <span class="cd-more-label">Weitere Bereiche</span>
