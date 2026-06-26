@@ -151,6 +151,25 @@ function GS_emblem(g) {
     return '🌱';
 }
 
+/* ---------------- Arena-Ligen (Saison-Wertung) ---------------- */
+const GS_LEAGUES = [
+    { id: 'holz', name: 'Holz-Liga', icon: '🪵', min: 0, color: '#a8a29e' },
+    { id: 'bronze', name: 'Bronze-Liga', icon: '🥉', min: 60, color: '#d97706' },
+    { id: 'silber', name: 'Silber-Liga', icon: '🥈', min: 150, color: '#94a3b8' },
+    { id: 'gold', name: 'Gold-Liga', icon: '🥇', min: 320, color: '#e0b04a' },
+    { id: 'platin', name: 'Platin-Liga', icon: '💠', min: 600, color: '#22d3ee' },
+    { id: 'diamant', name: 'Diamant-Liga', icon: '💎', min: 1000, color: '#818cf8' },
+    { id: 'meister', name: 'Meister-Liga', icon: '👑', min: 1600, color: '#f472b6' }
+];
+function GS_leagueFor(xp) {
+    let l = GS_LEAGUES[0];
+    for (const x of GS_LEAGUES) { if (xp >= x.min) l = x; }
+    return l;
+}
+function GS_nextLeague(xp) {
+    return GS_LEAGUES.find(x => x.min > xp) || null;
+}
+
 /* ---------------- Starter-Decks (Spaced Repetition) ---------------- */
 const GS_STARTER_DECKS = [
     { id: 'cap', name: 'Welt-Hauptstädte', cards: [
@@ -180,6 +199,7 @@ class GedaechtnisSchule {
         this.mode = 'practice';
         this.exam = null;
         this.leaderboard = null;
+        this.arenaMode = 'season';
         this.state = this._defaultState();
     }
 
@@ -1541,11 +1561,22 @@ class GedaechtnisSchule {
     _renderArena() {
         const total = this._totalXP();
         const loggedIn = this._isLoggedIn();
+        const weekly = this._weeklyXp();
+        const league = GS_leagueFor(weekly);
+        const next = GS_nextLeague(weekly);
         const head = `
         <div class="ss-hero">
             <div class="ss-kicker">Arena · anonym</div>
             <h1>Wer hat das stärkste Gedächtnis?</h1>
-            <p>Miss dich anonym mit allen Übenden. Verglichen wird deine <strong>Gedächtniskraft</strong> – die Summe aus Training und bestandenen Prüfungen. Niemand sieht, wer du bist; nur dein Pseudonym.</p>
+            <p>Miss dich anonym mit allen Übenden. Jede Woche startet eine neue <strong>Saison</strong> – sammle Gedächtniskraft und steige in höhere <strong>Ligen</strong> auf. Niemand sieht, wer du bist; nur dein Pseudonym.</p>
+        </div>`;
+        const seasonPanel = `
+        <div class="ss-panel gm-season" style="--lg:${league.color}">
+            <div class="gm-season-top">
+                <div class="gm-league-badge"><span class="ic">${league.icon}</span><div><div class="nm">${league.name}</div><div class="meta">Saison ${this._isoWeekKey()} · endet in ${this._seasonCountdown()}</div></div></div>
+                <div class="gm-season-xp"><div class="v">${weekly.toLocaleString('de-DE')}</div><div class="l">Saison-Kraft</div></div>
+            </div>
+            ${next ? `<div class="gm-league-prog"><div class="bar"><span style="width:${Math.min(100, Math.round((weekly - league.min) / (next.min - league.min) * 100))}%"></span></div><div class="lbl">Noch ${(next.min - weekly).toLocaleString('de-DE')} bis ${next.icon} ${next.name}</div></div>` : `<div class="gm-league-prog"><div class="lbl">Höchste Liga erreicht – verteidige deinen Thron! 👑</div></div>`}
         </div>`;
         const aliasPanel = `
         <div class="ss-panel">
@@ -1553,9 +1584,10 @@ class GedaechtnisSchule {
             <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
                 <div style="font-size:22px;font-weight:800">${this._esc(this.state.alias)}</div>
                 <button class="ss-btn ss-btn-ghost" id="gs-alias-reroll" style="padding:8px 14px;font-size:13px"><i class="fas fa-dice"></i> Neu würfeln</button>
+                <button class="ss-btn ss-btn-ghost" id="gs-arena-share" style="padding:8px 14px;font-size:13px"><i class="fas fa-user-plus"></i> Freunde herausfordern</button>
             </div>
             <div style="margin-top:14px;display:flex;gap:20px;flex-wrap:wrap">
-                <div><div style="font-size:24px;font-weight:800">${total.toLocaleString('de-DE')}</div><div style="color:var(--ss-text-dim);font-size:12px">Deine Gedächtniskraft</div></div>
+                <div><div style="font-size:24px;font-weight:800">${total.toLocaleString('de-DE')}</div><div style="color:var(--ss-text-dim);font-size:12px">Gesamt-Gedächtniskraft</div></div>
                 <div><div style="font-size:24px;font-weight:800;color:#e0b04a">${this._overallTitle()}</div><div style="color:var(--ss-text-dim);font-size:12px">Titel (Grad ${this._overallGrade()})</div></div>
             </div>
             ${loggedIn
@@ -1567,16 +1599,22 @@ class GedaechtnisSchule {
         </div>`;
         const board = `
         <div class="ss-panel">
-            <h3><i class="fas fa-ranking-star"></i> Rangliste der stärksten Gedächtnisse</h3>
+            <h3><i class="fas fa-ranking-star"></i> Rangliste</h3>
+            <div class="gm-arena-tabs">
+                <button class="gm-arena-tab ${this.arenaMode === 'season' ? 'active' : ''}" data-mode="season"><i class="fas fa-calendar-week"></i> Diese Saison</button>
+                <button class="gm-arena-tab ${this.arenaMode === 'all' ? 'active' : ''}" data-mode="all"><i class="fas fa-infinity"></i> Ewige Bestenliste</button>
+            </div>
             <div id="gs-lb-list"><div class="ss-empty"><i class="fas fa-circle-notch fa-spin"></i>Lade Rangliste …</div></div>
         </div>`;
-        return head + aliasPanel + board;
+        return head + seasonPanel + aliasPanel + board;
     }
     _afterArena() {
         const reroll = document.getElementById('gs-alias-reroll');
         if (reroll) reroll.addEventListener('click', () => { this.state.alias = this._generateAlias(); this._save(); this.render(); });
         const login = document.getElementById('gs-arena-login');
         if (login) login.addEventListener('click', () => this._openLogin());
+        const share = document.getElementById('gs-arena-share');
+        if (share) share.addEventListener('click', () => this._shareChallenge());
         const submit = document.getElementById('gs-arena-submit');
         if (submit) submit.addEventListener('click', async () => {
             submit.disabled = true;
@@ -1586,8 +1624,23 @@ class GedaechtnisSchule {
             this._toast('In der Arena eingetragen!', 'gold');
             this.render();
         });
+        document.querySelectorAll('.gm-arena-tab').forEach(t => t.addEventListener('click', () => {
+            this.arenaMode = t.dataset.mode;
+            document.querySelectorAll('.gm-arena-tab').forEach(x => x.classList.toggle('active', x === t));
+            document.getElementById('gs-lb-list').innerHTML = '<div class="ss-empty"><i class="fas fa-circle-notch fa-spin"></i>Lade Rangliste …</div>';
+            this._lbRefresh();
+        }));
         if (this._isLoggedIn() && this._totalXP() > 0) this._lbSubmit();
         this._lbRefresh();
+    }
+    async _shareChallenge() {
+        const url = location.origin + location.pathname + '?start=arena';
+        const text = `Tritt gegen mich in der Gedächtnis-Arena an! Aktuell: ${this._overallTitle()} · ${GS_leagueFor(this._weeklyXp()).name}.`;
+        try {
+            if (navigator.share) { await navigator.share({ title: 'Gedächtnis-Arena', text, url }); return; }
+            await navigator.clipboard.writeText(text + ' ' + url);
+            this._toast('Einladungs-Link kopiert!', 'success');
+        } catch (e) { this._toast('Link: ' + url, 'success'); }
     }
     _lbBase() {
         const base = (window.AWS_APP_CONFIG && window.AWS_APP_CONFIG.API_BASE) || 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
@@ -1596,18 +1649,25 @@ class GedaechtnisSchule {
     async _lbSubmit() {
         const id = this._identityId();
         if (!id) return;
+        const title = this._overallTitle();
+        const post = (game, score) => fetch(this._lbBase(), {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ game, userId: id, name: this.state.alias, title, score })
+        });
         try {
-            await fetch(this._lbBase(), {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ game: GS_METHOD, userId: id, name: this.state.alias, title: this._overallTitle(), score: this._totalXP() })
-            });
+            // Ewige Bestenliste (Gesamt) + Saison-Bestenliste (Wochen-Kraft)
+            await Promise.all([
+                post(GS_METHOD, this._totalXP()),
+                post(this._seasonGame(), this._weeklyXp())
+            ]);
         } catch (e) { console.warn('Arena-Submit fehlgeschlagen:', e); }
     }
     async _lbRefresh() {
         const listEl = document.getElementById('gs-lb-list');
         if (!listEl) return;
+        const game = this.arenaMode === 'season' ? this._seasonGame() : GS_METHOD;
         try {
-            const res = await fetch(this._lbBase() + '?game=' + GS_METHOD + '&limit=25');
+            const res = await fetch(this._lbBase() + '?game=' + encodeURIComponent(game) + '&limit=25');
             const data = await res.json();
             this.leaderboard = (data && data.highscores) || [];
         } catch (e) { this.leaderboard = []; console.warn('Arena-Load fehlgeschlagen:', e); }
@@ -1615,10 +1675,13 @@ class GedaechtnisSchule {
         if (board.length === 0) { listEl.innerHTML = `<div class="ss-empty"><i class="fas fa-trophy"></i>Noch keine Einträge. Sei die / der Erste!</div>`; return; }
         const myAlias = this.state.alias;
         const medals = ['🥇', '🥈', '🥉'];
+        const season = this.arenaMode === 'season';
         listEl.innerHTML = `<div class="ss-lb">${board.map((e, i) => {
             const mine = e.name === myAlias;
             const rank = i < 3 ? medals[i] : (i + 1);
-            return `<div class="ss-lb-row ${mine ? 'me' : ''}"><div class="ss-lb-rank">${rank}</div><div class="ss-lb-name">${this._esc(e.name)}${e.title ? `<span class="ss-lb-title">${this._esc(e.title)}</span>` : ''}</div><div class="ss-lb-score">${Number(e.score).toLocaleString('de-DE')}</div></div>`;
+            const lg = season ? GS_leagueFor(Number(e.score)) : null;
+            const sub = lg ? `<span class="ss-lb-title">${lg.icon} ${lg.name}</span>` : (e.title ? `<span class="ss-lb-title">${this._esc(e.title)}</span>` : '');
+            return `<div class="ss-lb-row ${mine ? 'me' : ''}"><div class="ss-lb-rank">${rank}</div><div class="ss-lb-name">${this._esc(e.name)}${sub}</div><div class="ss-lb-score">${Number(e.score).toLocaleString('de-DE')}</div></div>`;
         }).join('')}</div>`;
     }
 
@@ -1627,6 +1690,28 @@ class GedaechtnisSchule {
         if (this.timer) { clearInterval(this.timer); this.timer = null; }
         if (this._keyHandler) { document.removeEventListener('keydown', this._keyHandler); this._keyHandler = null; }
         try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+    }
+    _isoWeekKey(d) {
+        d = d ? new Date(d) : new Date();
+        const dt = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+        const dayNum = (dt.getUTCDay() + 6) % 7;
+        dt.setUTCDate(dt.getUTCDate() - dayNum + 3);
+        const firstThu = new Date(Date.UTC(dt.getUTCFullYear(), 0, 4));
+        const week = 1 + Math.round(((dt - firstThu) / 86400000 - 3 + ((firstThu.getUTCDay() + 6) % 7)) / 7);
+        return dt.getUTCFullYear() + '-W' + String(week).padStart(2, '0');
+    }
+    _weeklyXp() {
+        const wk = this._isoWeekKey();
+        return (this.state.log || []).filter(e => this._isoWeekKey(e.date) === wk).reduce((s, e) => s + (e.xp || 0), 0);
+    }
+    _seasonGame() { return GS_METHOD + '@' + this._isoWeekKey(); }
+    _seasonCountdown() {
+        const now = new Date();
+        const day = (now.getDay() + 6) % 7; // Montag = 0
+        const end = new Date(now); end.setHours(0, 0, 0, 0); end.setDate(end.getDate() + (7 - day));
+        const ms = end - now;
+        const d = Math.floor(ms / 86400000), h = Math.floor((ms % 86400000) / 3600000);
+        return d > 0 ? `${d} Tg ${h} Std` : `${h} Std`;
     }
     _norm(s) { return (s == null ? '' : String(s)).trim().toLowerCase().replace(/\s+/g, ' '); }
     _esc(s) { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
