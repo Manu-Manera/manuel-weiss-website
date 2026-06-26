@@ -127,20 +127,20 @@ class UserProfile {
                 console.error('❌ Tab-Elemente nach', maxAttempts, 'Versuchen nicht gefunden. Verwende Standard-Tab.');
                 // Fallback: Standard-Tab aktivieren
                 const hash = window.location.hash.slice(1);
-                if (!hash || !['personal', 'applications', 'settings', 'progress', 'achievements', 'training', 'nutrition', 'coach', 'journal'].includes(hash)) {
-                    this.switchTab('personal');
+                if (!hash || !['overview', 'personal', 'applications', 'settings', 'progress', 'achievements', 'training', 'nutrition', 'coach', 'journal'].includes(hash)) {
+                    this.switchTab('overview');
                 }
                 return;
             }
         }
         
         const hash = window.location.hash.slice(1); // Remove the #
-        if (hash && ['personal', 'applications', 'settings', 'progress', 'achievements', 'training', 'nutrition', 'coach', 'journal'].includes(hash)) {
+        if (hash && ['overview', 'personal', 'applications', 'settings', 'progress', 'achievements', 'training', 'nutrition', 'coach', 'journal'].includes(hash)) {
             console.log('📍 Navigating to tab:', hash);
             this.switchTab(hash);
         } else if (!hash) {
-            // Default to personal tab if no hash
-            this.switchTab('personal');
+            // Default to overview tab if no hash
+            this.switchTab('overview');
         }
     }
 
@@ -418,6 +418,11 @@ class UserProfile {
 
             this.currentTab = tabName;
             console.log(`✅ Tab gewechselt zu: ${tabName}`);
+
+            // Aktualisiere den zentralen Überblick beim Wechsel dorthin
+            if (tabName === 'overview' && window.centralDashboard) {
+                window.centralDashboard.refresh();
+            }
 
             // Update progress display if switching to progress tab
             if (tabName === 'progress') {

@@ -8,6 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Mein Profil | Manuel Weiss</title>
     <link rel="stylesheet" href="css/user-profile.css?v=20260527e">
+    <link rel="stylesheet" href="css/central-dashboard.css?v=20260627a">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -71,7 +72,11 @@
             <!-- Profile Tabs -->
             <section class="profile-tabs">
                 <div class="tab-nav">
-                    <button class="tab-btn active" data-tab="personal">
+                    <button class="tab-btn active" data-tab="overview">
+                        <i class="fas fa-compass"></i>
+                        Überblick
+                    </button>
+                    <button class="tab-btn" data-tab="personal">
                         <i class="fas fa-user"></i>
                         Persönliche Daten
                     </button>
@@ -112,8 +117,15 @@
 
             <!-- Tab Content -->
             <div class="tab-content">
+                <!-- Überblick / Central Dashboard Tab -->
+                <div class="tab-panel active" id="overview">
+                    <div id="centralDashboard">
+                        <div class="cd-loading"><i class="fas fa-circle-notch fa-spin"></i> Dein Überblick wird geladen …</div>
+                    </div>
+                </div>
+
                 <!-- Personal Data Tab -->
-                <div class="tab-panel active" id="personal">
+                <div class="tab-panel" id="personal">
                     <div class="form-section">
                         <h3><i class="fas fa-user"></i> Persönliche Informationen</h3>
                         <div class="form-grid">
@@ -1118,6 +1130,7 @@
     <script src="js/success-checkmark.js?v=20260112"></script>
     <script src="js/workflow-api.js?v=20260114f"></script>
     <script src="js/user-profile.js?v=20260527f"></script>
+    <script src="js/central-dashboard.js?v=20260627a"></script>
     <script>
         // Tab Data Loading Functions
         async function loadTrainingTabData() {

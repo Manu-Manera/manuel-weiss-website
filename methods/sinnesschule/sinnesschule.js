@@ -247,91 +247,91 @@ const SS_EXAMS = {
 const SS_EMP_SCENARIOS = [
     { s: 'Eine Freundin erzählt von einem Streit mit ihrer Mutter. Sie wirkt gefasst, aber ihre Stimme zittert leicht.',
       o: [
-        'Das zerreißt dich bestimmt innerlich.',
-        'Du wirkst gefasst – und zugleich höre ich etwas Zittriges. Was davon ist gerade näher an dir?',
-        'Ich kenne das, bei mir war das ganz genauso.',
-        'Wichtig ist, dass ihr bald wieder ins Reden kommt.'
+        'Das zerreißt dich bestimmt innerlich, ich kenne dieses Gefühl gut.',
+        'Du wirkst gefasst, und doch höre ich etwas Zittriges – was ist näher?',
+        'Bei mir war das früher ganz genauso, irgendwann ging es vorbei.',
+        'Wichtig ist vor allem, dass ihr beide möglichst bald wieder ins Reden kommt.'
       ], a: 1,
       w: 'Empathie heißt hier: die Doppelbotschaft – gefasst und zugleich bewegt – benennen und offen rückfragen, statt die Intensität zu projizieren, von sich selbst zu reden oder gleich in die Lösung zu springen.' },
 
     { s: 'Ein Freund sagt am Telefon mehrmals „alles gut", wechselt aber schnell das Thema, wenn du nachfragst.',
       o: [
-        'Wenn er sagt, alles gut, dann ist das so.',
-        'Bestimmt ist es nichts Ernstes.',
-        'Ich spüre, du weichst dem Thema aus – ich dränge nicht, bin aber da, wenn du magst.',
-        'Jetzt sag schon, was wirklich los ist.'
+        'Wenn er sagt, alles sei gut, dann glaube ich ihm das einfach.',
+        'Das wird schon nichts Ernstes sein, mach dir keine großen Sorgen.',
+        'Ich spüre, du weichst aus – ich dränge nicht, bin aber da.',
+        'Jetzt sag mir doch endlich, was wirklich mit dir los ist.'
       ], a: 2,
       w: 'Das Signal – das Ausweichen – ernst nehmen, ohne zu drängen: Präsenz anbieten, statt die Worte für bare Münze zu nehmen, zu beschwichtigen oder Druck zu machen.' },
 
     { s: 'Ein Kollege bekommt eine Beförderung, auf die du selbst gehofft hattest. Er strahlt und erzählt begeistert.',
       o: [
-        'Ich freue mich total für dich! – während du innerlich sinkst.',
-        'Glückwunsch – ich merke, ich habe gemischte Gefühle und freue mich trotzdem ehrlich für dich.',
-        'Die Stelle ist doch eh ein Haufen Stress.',
-        'Hattest du da nicht ohnehin einen Vorteil?'
+        'Ich freue mich wirklich total für dich, ganz ohne den kleinsten Hintergedanken!',
+        'Glückwunsch – ich merke gemischte Gefühle und freue mich trotzdem ehrlich.',
+        'Glückwunsch, auch wenn die Stelle bestimmt jede Menge Stress bringt.',
+        'Glückwunsch, du hattest durch den Chef ja ohnehin einen Vorteil.'
       ], a: 1,
       w: 'Reife Empathie schließt Ehrlichkeit mit dir selbst ein: die eigene Regung wahrnehmen und trotzdem zugewandt bleiben – statt sie zu verleugnen, zu relativieren oder den anderen abzuwerten.' },
 
     { s: 'Eine Freundin weint nach einer Trennung. Du spürst, wie dich ihre Trauer stark mitzieht.',
       o: [
-        'Du weinst so sehr mit, dass du selbst kaum noch sprechen kannst.',
-        'Lass uns rausgehen, das lenkt dich ab.',
-        'Du findest bald jemand Besseren.',
-        'Du bleibst still bei ihr, fühlst mit – und hältst innerlich: „Ich bin bei ihr, nicht sie."'
+        'Du weinst so sehr mit, dass du selbst kaum noch reden kannst.',
+        'Komm, lass uns rausgehen, das lenkt dich bestimmt schnell ab.',
+        'Mach dir bloß keine Sorgen, du findest ganz sicher bald jemand viel Besseren.',
+        'Du bleibst still bei ihr, fühlst mit und bleibst doch innerlich stabil.'
       ], a: 3,
       w: 'Der schmale Grat: emotionale Empathie ohne Abstand zieht dich hinein, Ablenkung und Trost-Floskeln überspringen das Gefühl. Mitgefühl bleibt da – mit innerem Halt.' },
 
     { s: 'Deine Partnerin erzählt aufgeregt von einem Projekt. Du bist müde und unkonzentriert.',
       o: [
-        'Mhm, klingt gut. – während du nebenbei aufs Handy schaust.',
-        'Können wir das später machen?',
-        'Ich merke, ich bin gerade müde und will dir wirklich zuhören – gibst du mir zehn Minuten?',
-        'Du zwingst dich zuzuhören und wirst innerlich gereizt.'
+        '„Mhm, klingt gut" – während dein Blick immer wieder zum Handy wandert.',
+        '„Können wir das vielleicht später machen?" – ohne weitere Erklärung dazu.',
+        '„Ich bin gerade müde, will aber zuhören – gibst du mir zehn Minuten?"',
+        'Du hörst dich zwingend an und wirst dabei innerlich immer gereizter.'
       ], a: 2,
       w: 'Echte Nähe braucht Ehrlichkeit über den eigenen Zustand – statt Pseudo-Zuhören, grundlosem Abweisen oder dich zu übergehen, bis Groll entsteht.' },
 
     { s: 'Ein Teamkollege wird im Meeting ungewohnt still, nachdem seine Idee abgelehnt wurde.',
       o: [
-        'Nimm es nicht persönlich, war doch nur Feedback.',
-        'Deine Idee war top, die anderen verstehen das nur nicht.',
-        'Er wirkt ruhig, also ist ihm das wohl egal.',
-        'Mir ist aufgefallen, dass du danach still geworden bist – wie geht es dir damit?'
+        'Nimm es bloß nicht persönlich, das war doch nur sachliches Feedback.',
+        'Deine Idee war richtig gut, die anderen haben sie nur nicht verstanden.',
+        'Er wirkt ganz ruhig, also ist ihm die Ablehnung vermutlich egal.',
+        'Mir fällt auf, dass du still geworden bist – wie geht es dir damit?'
       ], a: 3,
       w: 'Die Veränderung wahrnehmen und behutsam ansprechen – statt zu verharmlosen, reflexhaft Partei gegen andere zu ergreifen oder das stille Signal zu übersehen.' },
 
     { s: 'Deine Mutter ruft zum dritten Mal an, obwohl du mitten in einer dringenden Aufgabe steckst.',
       o: [
-        'Du gehst genervt ran und klingst knapp.',
-        'Mama, ich stecke gerade fest – darf ich dich in einer Stunde in Ruhe zurückrufen?',
-        'Du ignorierst den Anruf, um Streit zu vermeiden.',
+        'Du gehst genervt ran und klingst dabei ziemlich kurz angebunden.',
+        '„Ich stecke gerade fest – ruf ich dich in einer Stunde zurück?"',
+        'Du gehst nicht ran, nur um bloß keinen Streit zu riskieren.',
         'Du brichst alles ab, auch wenn du dadurch deine Deadline reißt.'
       ], a: 1,
       w: 'Empathie ohne Selbstverlust: die eigene Grenze klar und warm setzen – statt den Stress in die Beziehung kippen zu lassen, zu vermeiden oder dich selbst aufzugeben.' },
 
     { s: 'Eine Bekannte erzählt stolz von etwas, das dir eher unbedeutend erscheint.',
       o: [
-        'Ach, das ist doch nichts Besonderes.',
-        'Bei mir war das damals viel größer.',
-        'Ich sehe, dass dir das richtig viel bedeutet – erzähl mehr.',
-        'Du nickst höflich, bist aber innerlich abwesend.'
+        'Ach komm, das ist doch nun wirklich überhaupt nichts Besonderes.',
+        'Bei mir war das damals ehrlich gesagt eine ganze Nummer größer.',
+        'Ich sehe, dass dir das richtig viel bedeutet – erzähl mehr davon.',
+        'Du nickst freundlich und höflich, bist innerlich aber ganz woanders.'
       ], a: 2,
       w: 'Empathie misst mit ihrem Maßstab, nicht mit deinem: den Wert aus ihrer Welt sehen – statt abzuwerten, zu übertrumpfen oder nur höflich abwesend zu bleiben.' },
 
     { s: 'Jemand reagiert in einer Diskussion plötzlich gereizt auf eine eigentlich harmlose Frage.',
       o: [
-        'Warum bist du denn gleich so aggressiv?',
-        'Ich glaube, ich habe da einen wunden Punkt getroffen – das war nicht meine Absicht.',
-        'Du wirst selbst gereizt und schießt zurück.',
-        'Du sagst lieber gar nichts mehr.'
+        'Warum reagierst du jetzt gleich so aggressiv auf eine harmlose Frage?',
+        'Ich glaube, ich habe da einen wunden Punkt berührt.',
+        'Du wirst selbst gereizt und schießt sofort genauso scharf zurück.',
+        'Du ziehst dich zurück und sagst lieber gar nichts mehr dazu.'
       ], a: 1,
       w: 'Hinter der Gereiztheit eine Verletzung vermuten und benennen, ohne dich klein zu machen – statt zu etikettieren, die Erregung zu spiegeln oder dich ganz zurückzuziehen.' },
 
     { s: 'Dein Gegenüber sagt „mir geht es gut", seufzt dabei aber hörbar.',
       o: [
-        'Schön, dass es dir gut geht!',
-        'Jeder hat mal einen schlechten Tag.',
+        'Schön zu hören, dass bei dir gerade wirklich einmal alles in Ordnung ist.',
+        'Ach, jeder von uns hat doch mal einen richtig schlechten Tag.',
         'Die Worte sagen „gut", der Seufzer klingt anders – magst du erzählen?',
-        'Komm, raus mit der Sprache, was ist los?'
+        'Komm schon, raus mit der Sprache, was ist denn wirklich los?'
       ], a: 2,
       w: 'Bei einer Diskrepanz zählt oft das Körpersignal mehr als die Worte: die Lücke sanft benennen – statt den Worten zu glauben, allgemein abzutun oder zu drängen.' }
 ];
