@@ -363,6 +363,71 @@ body {
 .ss-swatch:hover { transform: scale(1.06); }
 .ss-swatch.picked { border-color: #fff; }
 
+/* ---------------- Interaktive Spiele (Hören / Innensinn / Missionen) ---------------- */
+.ss-game { margin: 8px 0 4px; }
+.ss-game-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.ss-game-head strong { font-size: 15px; }
+.ss-game-head span { color: var(--ss-text-dim); font-size: 13px; }
+
+/* Tonhöhen-Spiel */
+.ss-pitch-pads { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+.ss-pitch-pad {
+    aspect-ratio: 1; border-radius: 16px; cursor: pointer;
+    background: var(--ss-bg-soft); border: 1px solid var(--ss-line); color: var(--ss-text);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    font-family: var(--ss-font); transition: transform .12s, border-color .12s, background .12s;
+}
+.ss-pitch-pad i { font-size: 22px; color: var(--accent, var(--ss-accent)); }
+.ss-pitch-pad b { font-size: 13px; color: var(--ss-text-dim); }
+.ss-pitch-pad:hover { border-color: var(--accent, var(--ss-accent)); transform: translateY(-2px); }
+.ss-pitch-pad.playing { background: var(--accent, var(--ss-accent)); border-color: var(--accent, var(--ss-accent)); transform: scale(1.05); }
+.ss-pitch-pad.playing i, .ss-pitch-pad.playing b { color: #fff; }
+.ss-pitch-all { margin-bottom: 16px; }
+.ss-pitch-answer { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.ss-pitch-answer > span { color: var(--ss-text-dim); font-size: 14px; }
+.ss-ans-row { display: flex; gap: 10px; }
+.ss-ans {
+    width: 48px; height: 48px; border-radius: 12px; cursor: pointer;
+    background: var(--ss-bg-soft); border: 1px solid var(--ss-line); color: var(--ss-text);
+    font-family: var(--ss-font); font-size: 16px; font-weight: 700; transition: all .15s;
+}
+.ss-ans:hover:not(:disabled) { border-color: var(--accent, var(--ss-accent)); transform: translateY(-2px); }
+.ss-ans:disabled { cursor: default; }
+.ss-ans.correct { border-color: var(--ss-green); background: rgba(52,211,153,.16); color: #d1fae5; }
+.ss-ans.wrong { border-color: #ef4444; background: rgba(239,68,68,.14); color: #fecaca; }
+
+/* Zeitgefühl-Spiel */
+.ss-time-target { text-align: center; font-size: 17px; color: var(--ss-text-dim); margin-bottom: 18px; }
+.ss-time-target b { color: var(--ss-text); font-size: 20px; }
+.ss-time-orb {
+    width: 150px; height: 150px; border-radius: 50%; margin: 0 auto 20px;
+    display: flex; align-items: center; justify-content: center; font-size: 26px; color: #fff;
+    background: radial-gradient(circle at 30% 30%, var(--accent, var(--ss-accent)), rgba(99,102,241,.4));
+    box-shadow: 0 0 40px rgba(99,102,241,.25); transition: transform .4s;
+}
+.ss-time-orb.running { animation: ssPulse 2s ease-in-out infinite; }
+@keyframes ssPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+.ss-game-panel .ss-time-orb + .ss-btn, .ss-time-target ~ .ss-btn { display: block; margin: 0 auto; }
+.ss-time-fb { text-align: center; margin-top: 16px; color: var(--ss-text-dim); font-size: 15px; min-height: 22px; }
+.ss-time-fb b { color: var(--ss-text); }
+
+/* Wahrnehmungs-Mission */
+.ss-mission-title { font-size: 18px; font-weight: 700; color: var(--ss-text); }
+.ss-mission .sub { margin: 6px 0 16px; }
+.ss-mission-items { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+.ss-mission-item {
+    display: flex; align-items: center; gap: 12px; cursor: pointer;
+    background: var(--ss-bg-soft); border: 1px solid var(--ss-line);
+    padding: 14px 16px; border-radius: 12px; color: var(--ss-text); transition: all .15s;
+}
+.ss-mission-item input { width: 20px; height: 20px; accent-color: var(--accent, var(--ss-accent)); flex-shrink: 0; }
+.ss-mission-item:hover { border-color: var(--accent, var(--ss-accent)); }
+.ss-mission-item.checked { border-color: var(--ss-green); background: rgba(52,211,153,.08); }
+.ss-mission-item.checked span { color: var(--ss-text-dim); text-decoration: line-through; }
+
+/* Runden-Prüfung (Riechen/Schmecken/Tasten) */
+.ss-rounds-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+
 /* ---------------- Szenario-Prüfung (Empathie) ---------------- */
 .ss-scenario {
     font-size: 18px; line-height: 1.6; color: var(--ss-text);

@@ -116,6 +116,8 @@ const SS_EXERCISES = {
         ]}
     ],
     hoeren: [
+        { id: 'hoeren_tonhoehe', icon: '🎚️', title: 'Tonhöhen-Schärfe', dur: 120, xp: 24, game: 'pitch', gameLabel: 'Interaktives Hörspiel',
+          intro: 'Höre die Töne und finde den höchsten. Es wird Runde für Runde feiner.' },
         { id: 'hoeren_landschaft', icon: '🎧', title: 'Klanglandschaft', dur: 180, xp: 25, steps: [
             { text: 'Schließe die Augen. Lausche nur dem nächsten Geräusch um dich.', sec: 40 },
             { text: 'Erweitere deinen Hörraum – was klingt mittlerer Entfernung?', sec: 50 },
@@ -133,6 +135,7 @@ const SS_EXERCISES = {
         ]}
     ],
     riechen: [
+        { id: 'riechen_safari', icon: '🗺️', title: 'Duft-Safari', dur: 150, xp: 24, game: 'challenge', gameLabel: 'Wahrnehmungs-Mission' },
         { id: 'riechen_blind', icon: '🌿', title: 'Blind-Riechen', dur: 150, xp: 22, steps: [
             { text: 'Nimm einen Duft (Gewürz, Kraut, Kaffee) mit geschlossenen Augen auf.', sec: 40 },
             { text: 'Benenne, was du riechst – und was darunter liegt.', sec: 55 },
@@ -144,6 +147,7 @@ const SS_EXERCISES = {
         ]}
     ],
     schmecken: [
+        { id: 'schmecken_safari', icon: '🗺️', title: 'Aroma-Safari', dur: 150, xp: 24, game: 'challenge', gameLabel: 'Wahrnehmungs-Mission' },
         { id: 'schmecken_langsam', icon: '🍵', title: 'Der lange Bissen', dur: 150, xp: 22, steps: [
             { text: 'Nimm einen kleinen Bissen oder Schluck. Noch nicht schlucken.', sec: 20 },
             { text: 'Spüre zuerst die Süße, dann die Säure.', sec: 45 },
@@ -157,6 +161,7 @@ const SS_EXERCISES = {
         ]}
     ],
     tasten: [
+        { id: 'tasten_safari', icon: '🗺️', title: 'Tast-Safari', dur: 150, xp: 24, game: 'challenge', gameLabel: 'Wahrnehmungs-Mission' },
         { id: 'tasten_material', icon: '🪵', title: 'Materialien lesen', dur: 150, xp: 22, steps: [
             { text: 'Schließe die Augen und ertaste einen Gegenstand.', sec: 40 },
             { text: 'Trenne Temperatur, Textur und Gewicht voneinander.', sec: 60 },
@@ -168,6 +173,8 @@ const SS_EXERCISES = {
         ]}
     ],
     innensinn: [
+        { id: 'innensinn_zeitgefuehl', icon: '⏳', title: 'Zeitgefühl', dur: 120, xp: 24, game: 'time', gameLabel: 'Interaktive Wahrnehmung',
+          intro: 'Schätze eine Zeitspanne – ganz ohne zu zählen. Spüre, wie lange sich Zeit anfühlt.' },
         { id: 'innensinn_bodyscan', icon: '🧘', title: 'Körperscan', dur: 240, xp: 30, steps: [
             { text: 'Schließe die Augen. Spüre den Kontakt deines Körpers zur Unterlage.', sec: 40 },
             { text: 'Wandere mit der Aufmerksamkeit von den Füßen aufwärts.', sec: 70 },
@@ -222,19 +229,46 @@ const SS_EXERCISES = {
     ]
 };
 
+/* ---------------- Wahrnehmungs-Missionen (Riechen/Schmecken/Tasten) ----------------
+   Zufällig gezogen, damit jede Übung neu und überraschend ist. Jede Mission hat
+   3 kleine Aufgaben zum Abhaken – ein Spiel statt einer Textwand. */
+const SS_CHALLENGES = {
+    riechen: [
+        { title: 'Küchen-Safari', items: ['Finde einen süßlichen Duft', 'Finde einen herb-erdigen Duft', 'Finde einen frisch-spritzigen Duft'] },
+        { title: 'Drei Schichten', items: ['Rieche etwas und finde die oberste Duftnote', 'Spüre die Note darunter', 'Finde, was ganz im Hintergrund bleibt'] },
+        { title: 'Erinnerungs-Duft', items: ['Rieche an etwas Alltäglichem', 'Lass eine Erinnerung auftauchen', 'Benenne, woran genau der Duft dich erinnert'] },
+        { title: 'Natur vs. Künstlich', items: ['Finde einen natürlichen Duft', 'Finde einen künstlichen Duft', 'Beschreibe den feinen Unterschied'] }
+    ],
+    schmecken: [
+        { title: 'Fünf Grundaromen', items: ['Finde etwas Süßes oder Salziges', 'Spüre Säure oder Bitterkeit', 'Suche das Umami / die Tiefe'] },
+        { title: 'Der lange Nachklang', items: ['Nimm einen kleinen Bissen', 'Halte ihn und beobachte den ersten Eindruck', 'Verfolge den Nachgeschmack bis er verschwindet'] },
+        { title: 'Temperatur-Spiel', items: ['Koste etwas Warmes oder Kaltes', 'Achte, wie Temperatur den Geschmack verändert', 'Benenne, was sich verschiebt'] },
+        { title: 'Textur & Geschmack', items: ['Spüre die Textur im Mund', 'Trenne sie vom reinen Geschmack', 'Beschreibe beides getrennt'] }
+    ],
+    tasten: [
+        { title: 'Material-Detektiv', items: ['Ertaste blind drei Oberflächen', 'Sortiere von rau nach glatt', 'Finde die feinste Unebenheit'] },
+        { title: 'Temperatur-Reise', items: ['Berühre etwas Kühles', 'Berühre etwas Warmes', 'Spüre, wie schnell deine Haut sich anpasst'] },
+        { title: 'Gewicht & Druck', items: ['Halte zwei Dinge in den Händen', 'Spüre den Gewichtsunterschied', 'Variiere bewusst deinen Druck'] },
+        { title: 'Kanten lesen', items: ['Wähle einen Gegenstand', 'Folge jeder Kante mit der Fingerkuppe', 'Finde eine Stelle, die du übersehen hattest'] }
+    ]
+};
+
 /* ---------------- Prüfungen ---------------- */
 const SS_EXAMS = {
     sehen:     { type: 'color', title: 'Prüfung des Sehens', protocol: 'Finde in jeder Runde das Feld, dessen Farbe minimal abweicht. Es wird mit jeder Runde feiner – und mit jeder Stufe schwerer.' },
-    hoeren:    { type: 'count', target: 8, unit: 'Klangschichten', title: 'Prüfung des Hörens',
-                 protocol: 'Schließe 90 Sekunden die Augen und zähle so viele klar unterscheidbare Klangschichten wie möglich (nah, mittel, fern). Trage danach deine ehrliche Zahl ein.' },
-    riechen:   { type: 'count', target: 6, unit: 'Düfte', title: 'Prüfung des Riechens',
-                 protocol: 'Lass dir blind mehrere Düfte reichen (Gewürze, Kräuter, Obst). Identifiziere so viele wie möglich und trage die Zahl der korrekt erkannten ein.' },
-    schmecken: { type: 'count', target: 5, unit: 'Aromen', title: 'Prüfung des Schmeckens',
-                 protocol: 'Koste blind eine Speise und benenne ihre einzelnen Aromen/Komponenten. Trage ein, wie viele du klar unterscheiden konntest.' },
-    tasten:    { type: 'count', target: 8, unit: 'Materialien', title: 'Prüfung des Tastens',
-                 protocol: 'Lass dir blind verschiedene Materialien geben. Trage ein, wie viele du allein durch Tasten korrekt erkannt hast.' },
-    innensinn: { type: 'scale', title: 'Prüfung des Innensinns',
-                 protocol: 'Führe einen 3-minütigen Körperscan durch. Bewerte danach ehrlich, wie klar und vollständig du deinen Körper von innen wahrnehmen konntest.' },
+    hoeren:    { type: 'pitch', title: 'Prüfung des Hörens',
+                 protocol: 'Höre in jeder Runde mehrere Töne und finde den höchsten. Der Abstand wird mit jeder Runde und jeder Stufe feiner.' },
+    riechen:   { type: 'rounds', target: 6, unit: 'Düfte', title: 'Prüfung des Riechens',
+                 prompts: ['Lass dir blind einen Duft reichen', 'Erkenne ein Gewürz mit geschlossenen Augen', 'Unterscheide zwei ähnliche Kräuter', 'Finde die verborgene zweite Duftnote', 'Erkenne ein Obst nur am Geruch', 'Ordne einen Duft: süß, herb oder frisch?'],
+                 protocol: 'In jeder Runde riechst du blind und entscheidest ehrlich, ob du richtig lagst. Tippe „erkannt" oder „daneben".' },
+    schmecken: { type: 'rounds', target: 5, unit: 'Aromen', title: 'Prüfung des Schmeckens',
+                 prompts: ['Koste blind und benenne das Hauptaroma', 'Erkenne eine versteckte Zutat', 'Unterscheide süß von leicht säuerlich', 'Finde eine bittere oder salzige Note', 'Erkenne die Umami-Tiefe'],
+                 protocol: 'In jeder Runde kostest du blind und entscheidest ehrlich, ob du das Aroma korrekt erkannt hast.' },
+    tasten:    { type: 'rounds', target: 6, unit: 'Materialien', title: 'Prüfung des Tastens',
+                 prompts: ['Erkenne ein Material blind am Griff', 'Unterscheide zwei ähnliche Texturen', 'Schätze die Temperatur einer Oberfläche', 'Erkenne einen Gegenstand nur durch Tasten', 'Finde die rauere von zwei Flächen', 'Erkenne ein Gewicht im Vergleich'],
+                 protocol: 'In jeder Runde ertastest du blind und entscheidest ehrlich, ob du richtig erkannt hast.' },
+    innensinn: { type: 'time', title: 'Prüfung des Innensinns',
+                 protocol: 'Schätze in jeder Runde eine Zeitspanne – ohne zu zählen. Je näher du an der Zielzeit bist, desto höher die Punktzahl.' },
     empathie:  { type: 'scenario', title: 'Prüfung der Empathie',
                  protocol: 'Wähle in jeder Situation die Deutung, die am ehesten empathisch ist – die tiefer schaut, statt das Verhalten persönlich zu nehmen, zu urteilen oder vorschnell zu „reparieren".' }
 };
@@ -655,7 +689,7 @@ class Sinnesschule {
                         <div class="ic">${ex.icon}</div>
                         <div class="body">
                             <div class="title">${ex.title}</div>
-                            <div class="desc">${ex.breath ? 'Geführte Atem-Übung' : ex.steps.length + ' Schritte'} · +${ex.xp} Schärfe</div>
+                            <div class="desc">${ex.breath ? 'Geführte Atem-Übung' : ex.game ? (ex.gameLabel || 'Interaktiv') : ex.steps.length + ' Schritte'} · +${ex.xp} Schärfe</div>
                         </div>
                         <div class="dur">${Math.round(ex.dur / 60)} Min</div>
                     </div>`).join('')}
@@ -683,6 +717,8 @@ class Sinnesschule {
     _startExercise(exId) {
         const ex = this._findExercise(exId);
         if (!ex) return;
+        this._stopTimer();
+        if (ex.game) return this._startGame(ex);
         const s = SS_SENSE_MAP[this.activeSense];
         const R = 110, C = 2 * Math.PI * R;
 
@@ -752,6 +788,157 @@ class Sinnesschule {
             }
         }
         if (!stopped) this._completeExercise(ex);
+    }
+
+    /* ---------------- Audio-Helfer ---------------- */
+    _audio() {
+        if (!this._ac) {
+            try { this._ac = new (window.AudioContext || window.webkitAudioContext)(); }
+            catch (e) { this._ac = null; }
+        }
+        if (this._ac && this._ac.state === 'suspended') { try { this._ac.resume(); } catch (e) { /* ignore */ } }
+        return this._ac;
+    }
+    _playTone(freq, ms = 600, type = 'sine') {
+        const ctx = this._audio();
+        if (!ctx) return;
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.type = type; o.frequency.value = freq;
+        const t0 = ctx.currentTime, dur = ms / 1000;
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(0.28, t0 + 0.02);
+        g.gain.setValueAtTime(0.28, t0 + dur - 0.06);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+        o.start(t0); o.stop(t0 + dur + 0.02);
+    }
+
+    /* ---------------- Interaktive Übungs-Spiele ---------------- */
+    _startGame(ex) {
+        const s = SS_SENSE_MAP[this.activeSense];
+        const main = document.getElementById('ss-main');
+        main.innerHTML = `
+        <div class="ss-panel ss-player ss-game-panel" style="--accent:${s.accent}">
+            <h2>${ex.icon} ${ex.title}</h2>
+            ${ex.intro ? `<p class="sub">${this._esc(ex.intro)}</p>` : ''}
+            <div id="ss-game" class="ss-game"></div>
+            <div class="ss-player-controls">
+                <button class="ss-btn ss-btn-ghost" id="ss-stop"><i class="fas fa-xmark"></i> Beenden</button>
+            </div>
+        </div>`;
+        document.getElementById('ss-stop').addEventListener('click', () => this.render());
+        const finish = () => this._completeExercise(ex);
+        if (ex.game === 'pitch') this._pitchStage({ mount: 'ss-game', rounds: 6, grade: this._grade(this.activeSense), onFinish: finish });
+        else if (ex.game === 'time') this._timeStage({ mount: 'ss-game', rounds: 3, onFinish: finish });
+        else if (ex.game === 'challenge') this._challengeStage(ex, 'ss-game', finish);
+        else this.render();
+    }
+
+    // Tonhöhen-Unterscheidung (Hören) – wird mit Runde & Grad feiner
+    _pitchStage(opts) {
+        const pads = 4;
+        const st = { round: 0, correct: 0 };
+        const render = () => {
+            const el = document.getElementById(opts.mount);
+            if (!el) return;
+            if (st.round >= opts.rounds) { opts.onFinish(Math.round(st.correct / opts.rounds * 100)); return; }
+            const base = 300 + Math.random() * 180;
+            const cents = Math.max(9, 80 - st.round * 7 - (opts.grade || 0) * 2.5);
+            const higher = Math.floor(Math.random() * pads);
+            const freqs = Array.from({ length: pads }, (_, i) => i === higher ? base * Math.pow(2, cents / 1200) : base);
+            el.innerHTML = `
+                <div class="ss-game-head"><strong>Runde ${st.round + 1}/${opts.rounds}</strong><span>Welcher Ton ist am höchsten?</span></div>
+                <div class="ss-pitch-pads">
+                    ${freqs.map((_, i) => `<button class="ss-pitch-pad" data-i="${i}"><i class="fas fa-volume-high"></i><b>${i + 1}</b></button>`).join('')}
+                </div>
+                <button class="ss-btn ss-btn-ghost ss-pitch-all"><i class="fas fa-play"></i> Alle nacheinander</button>
+                <div class="ss-pitch-answer"><span>Deine Antwort:</span><div class="ss-ans-row">${freqs.map((_, i) => `<button class="ss-ans" data-ans="${i}">${i + 1}</button>`).join('')}</div></div>`;
+            const playPad = (i, ms) => { const p = el.querySelector(`.ss-pitch-pad[data-i="${i}"]`); if (p) { p.classList.add('playing'); setTimeout(() => p.classList.remove('playing'), ms); } this._playTone(freqs[i], ms); };
+            el.querySelectorAll('.ss-pitch-pad').forEach(p => p.addEventListener('click', () => playPad(+p.dataset.i, 650)));
+            el.querySelector('.ss-pitch-all').addEventListener('click', () => freqs.forEach((_, i) => setTimeout(() => playPad(i, 480), i * 620)));
+            el.querySelectorAll('.ss-ans').forEach(a => a.addEventListener('click', () => {
+                const ans = +a.dataset.ans;
+                if (ans === higher) st.correct++;
+                el.querySelectorAll('.ss-ans').forEach(b => {
+                    const i = +b.dataset.ans;
+                    if (i === higher) b.classList.add('correct');
+                    else if (i === ans) b.classList.add('wrong');
+                    b.disabled = true;
+                });
+                this._playTone(freqs[higher], 420);
+                st.round++;
+                setTimeout(render, 750);
+            }));
+        };
+        render();
+    }
+
+    // Zeitgefühl (Innensinn) – Zeitspanne ohne Zählen schätzen
+    _timeStage(opts) {
+        const targets = [8, 12, 15, 18, 22, 25, 30].sort(() => Math.random() - 0.5).slice(0, opts.rounds);
+        const st = { round: 0, errs: [] };
+        const render = () => {
+            const el = document.getElementById(opts.mount);
+            if (!el) return;
+            if (st.round >= opts.rounds) {
+                const avg = st.errs.reduce((a, b) => a + b, 0) / st.errs.length;
+                opts.onFinish(Math.max(0, Math.round(100 - avg * 100)));
+                return;
+            }
+            const target = targets[st.round];
+            el.innerHTML = `
+                <div class="ss-game-head"><strong>Runde ${st.round + 1}/${opts.rounds}</strong><span>Nicht zählen – nur fühlen!</span></div>
+                <div class="ss-time-target">Schätze <b>${target} Sekunden</b></div>
+                <div class="ss-time-orb" id="ss-time-orb">Bereit</div>
+                <button class="ss-btn ss-btn-primary" id="ss-time-go"><i class="fas fa-play"></i> Start</button>
+                <div class="ss-time-fb" id="ss-time-fb"></div>`;
+            let t0 = null;
+            const orb = el.querySelector('#ss-time-orb');
+            const btn = el.querySelector('#ss-time-go');
+            btn.addEventListener('click', () => {
+                if (t0 === null) {
+                    t0 = performance.now();
+                    orb.classList.add('running'); orb.textContent = '…';
+                    btn.innerHTML = '<i class="fas fa-hand"></i> Jetzt!';
+                } else {
+                    const elapsed = (performance.now() - t0) / 1000;
+                    const err = Math.min(1, Math.abs(elapsed - target) / target);
+                    st.errs.push(err);
+                    orb.classList.remove('running');
+                    btn.disabled = true;
+                    const fb = el.querySelector('#ss-time-fb');
+                    if (fb) fb.innerHTML = `Du: <b>${elapsed.toFixed(1)}s</b> · Ziel ${target}s · Abweichung ${Math.round(err * 100)}%`;
+                    st.round++;
+                    setTimeout(render, 1500);
+                }
+            });
+        };
+        render();
+    }
+
+    // Wahrnehmungs-Mission (Riechen/Schmecken/Tasten) – zufällig, mit Checkliste
+    _challengeStage(ex, mount, onFinish) {
+        const pool = SS_CHALLENGES[this.activeSense] || [];
+        const m = pool.length ? pool[Math.floor(Math.random() * pool.length)] : { title: 'Mission', items: ['Nimm etwas bewusst wahr'] };
+        const el = document.getElementById(mount);
+        if (!el) return;
+        el.innerHTML = `
+            <div class="ss-mission">
+                <div class="ss-mission-title">🗺️ ${this._esc(m.title)}</div>
+                <p class="sub">Erledige die drei kleinen Aufgaben in deiner Umgebung und hake sie ab. Jedes Mal erwartet dich eine neue Mission.</p>
+                <div class="ss-mission-items">
+                    ${m.items.map((it, i) => `<label class="ss-mission-item"><input type="checkbox" data-i="${i}"><span>${this._esc(it)}</span></label>`).join('')}
+                </div>
+                <button class="ss-btn ss-btn-primary" id="ss-mission-done" disabled><i class="fas fa-check"></i> Mission abschließen</button>
+            </div>`;
+        const boxes = [...el.querySelectorAll('.ss-mission-item input')];
+        const doneBtn = el.querySelector('#ss-mission-done');
+        const upd = () => {
+            boxes.forEach(b => b.closest('.ss-mission-item').classList.toggle('checked', b.checked));
+            doneBtn.disabled = !boxes.every(b => b.checked);
+        };
+        boxes.forEach(b => b.addEventListener('change', upd));
+        doneBtn.addEventListener('click', () => onFinish(100));
     }
 
     _completeExercise(ex) {
@@ -871,9 +1058,65 @@ class Sinnesschule {
         this.activeSense = senseId;
         const exam = SS_EXAMS[senseId];
         if (exam.type === 'color') return this._examColor(senseId);
+        if (exam.type === 'pitch') return this._examPitch(senseId);
+        if (exam.type === 'time') return this._examTime(senseId);
+        if (exam.type === 'rounds') return this._examRounds(senseId);
         if (exam.type === 'count') return this._examCount(senseId);
         if (exam.type === 'scale') return this._examScale(senseId);
         if (exam.type === 'scenario') return this._examScenario(senseId);
+    }
+
+    _examStageShell(senseId) {
+        const s = SS_SENSE_MAP[senseId];
+        const grade = this._grade(senseId);
+        document.getElementById('ss-main').innerHTML = `
+        <div class="ss-panel" style="--accent:${s.accent}">
+            <h2>${s.icon} ${SS_EXAMS[senseId].title}</h2>
+            <p class="sub">${SS_EXAMS[senseId].protocol} · Bestehen ab ${SS_reqExam(grade)} Punkten.</p>
+            <div id="ss-exam-stage"></div>
+        </div>`;
+        return grade;
+    }
+
+    // Hör-Prüfung (interaktives Tonhöhen-Spiel)
+    _examPitch(senseId) {
+        const grade = this._examStageShell(senseId);
+        const rounds = Math.min(6 + Math.floor(grade / 3), 14);
+        this._pitchStage({ mount: 'ss-exam-stage', rounds, grade, onFinish: (score) => this._finishExam(score) });
+    }
+
+    // Innensinn-Prüfung (Zeitgefühl)
+    _examTime(senseId) {
+        this._examStageShell(senseId);
+        this._timeStage({ mount: 'ss-exam-stage', rounds: 4, onFinish: (score) => this._finishExam(score) });
+    }
+
+    // Riechen/Schmecken/Tasten-Prüfung (rundenbasierte Blind-Challenge, zufällige Aufgaben)
+    _examRounds(senseId) {
+        this._examStageShell(senseId);
+        const exam = SS_EXAMS[senseId];
+        const total = exam.target;
+        const prompts = (exam.prompts || []).slice().sort(() => Math.random() - 0.5);
+        const st = { round: 0, correct: 0 };
+        const render = () => {
+            const el = document.getElementById('ss-exam-stage');
+            if (!el) return;
+            if (st.round >= total) { this._finishExam(Math.round(st.correct / total * 100)); return; }
+            const prompt = prompts[st.round % prompts.length] || 'Nimm bewusst wahr';
+            el.innerHTML = `
+                <div class="ss-game-head"><strong>Runde ${st.round + 1}/${total}</strong><span>Sei ehrlich zu dir</span></div>
+                <div class="ss-mission-title" style="margin:6px 0 18px">${this._esc(prompt)}</div>
+                <div class="ss-rounds-btns">
+                    <button class="ss-btn ss-btn-primary" data-ok="1"><i class="fas fa-check"></i> Erkannt</button>
+                    <button class="ss-btn ss-btn-ghost" data-ok="0"><i class="fas fa-xmark"></i> Daneben</button>
+                </div>`;
+            el.querySelectorAll('[data-ok]').forEach(b => b.addEventListener('click', () => {
+                if (+b.dataset.ok) st.correct++;
+                st.round++;
+                render();
+            }));
+        };
+        render();
     }
 
     // --- Empathie-Prüfung (Szenarien, kognitive Empathie) ---
