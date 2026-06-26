@@ -987,6 +987,104 @@ class GedaechtnisSchule {
         render();
     }
 
+    /* ===================== TRAINER: PAO-SYSTEM (Weltmeister-Technik) ===================== */
+    _tPao(grade) {
+        this._gameShell('PAO-System', '🎬',
+            'Jede Ziffer hat eine <strong>Person</strong>, eine <strong>Aktion</strong> und ein <strong>Objekt</strong>. Verschmilz drei Ziffern zu EINER Szene: <em>Person</em> der ersten, <em>Aktion</em> der zweiten, <em>Objekt</em> der dritten – z. B. <strong>1-5-3</strong> → Einstein <em>schlägt</em> einen Dreizack. So presst du 3 Ziffern in ein Bild. Mach die Tabelle zu deiner eigenen.',
+            'gs-game');
+        const body = document.getElementById('gs-game');
+        const render = () => {
+            body.innerHTML = `
+                <div class="gm-pao-table">
+                    <div class="gm-pao-row gm-pao-head"><span class="d">#</span><span>Person</span><span>Aktion</span><span>Objekt</span></div>
+                    ${GS_PAO.map(s0 => { const s = this._pao(s0.d); return `<div class="gm-pao-row"><span class="d">${s0.d}</span><input class="gm-pao-in" data-d="${s0.d}" data-f="p" value="${this._esc(s.p)}"><input class="gm-pao-in" data-d="${s0.d}" data-f="a" value="${this._esc(s.a)}"><input class="gm-pao-in" data-d="${s0.d}" data-f="o" value="${this._esc(s.o)}"></div>`; }).join('')}
+                </div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+                    <button class="ss-btn ss-btn-primary" id="gs-pao-run"><i class="fas fa-play"></i> Szenen-Drill starten</button>
+                    <button class="ss-btn ss-btn-ghost" id="gs-pao-reset"><i class="fas fa-rotate-left"></i> Standard wiederherstellen</button>
+                </div>
+                <div id="gs-pao-area" style="margin-top:16px"></div>`;
+            body.querySelectorAll('.gm-pao-in').forEach(inp => inp.addEventListener('change', () => { const v = inp.value.trim(); if (v) this._setPao(+inp.dataset.d, { [inp.dataset.f]: v }); }));
+            body.querySelector('#gs-pao-reset').addEventListener('click', () => { this.state.pao = this._seedPao(); this._save(); render(); });
+            body.querySelector('#gs-pao-run').addEventListener('click', () => this._paoDrill(body.querySelector('#gs-pao-area'), grade));
+        };
+        render();
+    }
+    _paoDrill(area, grade) {
+        const triples = (this.mode === 'exam' ? 4 : 3) + Math.floor(grade / 4);
+        const scenes = Array.from({ length: triples }, () => [Math.floor(Math.random() * 10), Math.floor(Math.random() * 10), Math.floor(Math.random() * 10)]);
+        const showMs = Math.max(9000, 16000 - grade * 150) + triples * 1700;
+        let left = Math.round(showMs / 1000);
+        area.innerHTML = `
+            <div class="gm-countdown">Szenen einprägen – noch <span class="gm-bigtimer" id="gs-pao-t">${left}</span> s</div>
+            <div class="gm-pao-scenes">${scenes.map(t => { const P = this._pao(t[0]), A = this._pao(t[1]), O = this._pao(t[2]); return `<div class="gm-pao-scene"><span class="num">${t.join('')}</span><span class="txt"><b>${this._esc(P.p)}</b> ${this._esc(A.a)} <b>${this._esc(O.o)}</b></span></div>`; }).join('')}</div>
+            <button class="ss-btn ss-btn-ghost" id="gs-pao-ready">Bereit – Ziffern abrufen</button>`;
+        const tEl = area.querySelector('#gs-pao-t');
+        const toRecall = () => {
+            this._stopTimer();
+            area.innerHTML = `
+                <div class="gm-head"><strong>Welche Ziffern steckten in jeder Szene?</strong></div>
+                <div class="gm-pao-scenes">${scenes.map((t, i) => `<div class="gm-pao-scene recall"><span class="num">Szene ${i + 1}</span><div class="gm-pao-inputs">${t.map((_, j) => `<input data-i="${i}" data-j="${j}" inputmode="numeric" maxlength="1">`).join('')}</div></div>`).join('')}</div>
+                <button class="ss-btn ss-btn-primary" id="gs-pao-check"><i class="fas fa-check"></i> Auswerten</button>`;
+            const inputs = [...area.querySelectorAll('input')];
+            inputs[0] && inputs[0].focus();
+            inputs.forEach((inp, idx) => inp.addEventListener('input', () => { if (inp.value && idx < inputs.length - 1) inputs[idx + 1].focus(); }));
+            area.querySelector('#gs-pao-check').addEventListener('click', () => {
+                let correct = 0, total = 0;
+                scenes.forEach((t, i) => t.forEach((d, j) => {
+                    total++;
+                    const inp = area.querySelector(`input[data-i="${i}"][data-j="${j}"]`);
+                    const ok = String(d) === inp.value.trim();
+                    inp.classList.add(ok ? 'ok' : 'bad');
+                    if (ok) correct++;
+                }));
+                this._finishTrainer(correct / total * 100, `${correct}/${total} Ziffern · ${triples} Szenen`);
+            });
+        };
+        this.timer = setInterval(() => { left--; if (tEl) tEl.textContent = left; if (left <= 0) toRecall(); }, 1000);
+        area.querySelector('#gs-pao-ready').addEventListener('click', toRecall);
+    }
+
+    /* ===================== TRAINER: DOMINIC-SYSTEM ===================== */
+    _tDominic() {
+        this._gameShell('Dominic-System', '🎩',
+            'Jede Ziffer wird ein Buchstabe: <strong>1=A · 2=B · 3=C · 4=D · 5=E · 6=S · 7=G · 8=H · 9=N · 0=O</strong>. Zwei Ziffern ergeben die Initialen einer Person – <strong>15 = A.E. = Albert Einstein</strong>, die dann etwas Typisches tut. Lerne die Tabelle und übe im Drill.',
+            'gs-game');
+        const body = document.getElementById('gs-game');
+        body.innerHTML = `
+            <div class="gm-major-table">
+                ${GS_DOMINIC.map(m => `<div class="gm-major-cell"><div class="d">${m.d}</div><div class="c">${m.l}</div><div class="ex">${m.ex}</div></div>`).join('')}
+            </div>
+            <div class="gm-pao-examples">${GS_DOMINIC_EXAMPLES.map(e => `<span><b>${e.num}</b> → ${e.init} → ${this._esc(e.person)}</span>`).join('')}</div>
+            <button class="ss-btn ss-btn-primary" id="gs-dom-drill"><i class="fas fa-play"></i> Drill starten (10 Fragen)</button>
+            <div id="gs-dom-area" style="margin-top:16px"></div>`;
+        body.querySelector('#gs-dom-drill').addEventListener('click', () => this._dominicDrill(body.querySelector('#gs-dom-area')));
+    }
+    _dominicDrill(area) {
+        const rounds = 10;
+        const st = { i: 0, correct: 0 };
+        const render = () => {
+            if (st.i >= rounds) { this._finishTrainer(st.correct / rounds * 100, `${st.correct}/${rounds} richtig`); return; }
+            const d = Math.floor(Math.random() * 10);
+            const opts = [GS_DOMINIC[d]];
+            while (opts.length < 4) { const c = GS_DOMINIC[Math.floor(Math.random() * 10)]; if (!opts.includes(c)) opts.push(c); }
+            opts.sort(() => Math.random() - 0.5);
+            area.innerHTML = `
+                <div class="gm-head"><strong>Frage ${st.i + 1}/${rounds}</strong><span class="meta">Welcher Buchstabe gehört zur Ziffer?</span></div>
+                <div class="gm-memorize" style="min-height:90px"><div class="gm-digit">${d}</div></div>
+                <div class="ss-options">${opts.map(o => `<button class="ss-option" data-d="${o.d}">${o.l}</button>`).join('')}</div>`;
+            area.querySelectorAll('.ss-option').forEach(b => b.addEventListener('click', () => {
+                const chosen = +b.dataset.d;
+                area.querySelectorAll('.ss-option').forEach(x => { const xd = +x.dataset.d; if (xd === d) x.classList.add('correct'); else if (xd === chosen) x.classList.add('wrong'); x.disabled = true; });
+                if (chosen === d) st.correct++;
+                this._haptic(chosen === d ? 'ok' : 'err');
+                st.i++;
+                setTimeout(render, 650);
+            }));
+        };
+        render();
+    }
+
     /* ===================== TRAINER: ZAHLEN-REISE (Eselswelt-Methode) ===================== */
     _tZahlenreise(grade) {
         const route = this._pickPalace();
@@ -1124,6 +1222,45 @@ class GedaechtnisSchule {
         };
         this.timer = setInterval(() => { left--; if (tEl) tEl.textContent = left; if (left <= 0) toRecall(); }, 1000);
         body.querySelector('#gs-w-ready').addEventListener('click', toRecall);
+    }
+
+    /* ===================== TRAINER: GESCHICHTEN-KETTE (Link-Methode) ===================== */
+    _tStory(grade) {
+        const count = (this.mode === 'exam' ? 8 : 6) + Math.floor(grade / 2);
+        const showMs = Math.max(9000, (this.mode === 'exam' ? 14000 : 19000) - grade * 250) + count * 700;
+        this._gameShell('Geschichten-Kette', '🪢',
+            'Die <strong>Link-Methode</strong>: verbinde die Wörter zu EINER absurden, lebendigen Geschichte – jedes Wort handelt direkt mit dem nächsten. Je verrückter und bewegter die Szene, desto fester sitzt sie. Danach erzählst du die Kette der Reihe nach ab.',
+            'gs-game');
+        const pool = GS_WORDS.slice().sort(() => Math.random() - 0.5).slice(0, count);
+        const body = document.getElementById('gs-game');
+        let left = Math.round(showMs / 1000);
+        body.innerHTML = `
+            <div class="gm-countdown">Kette bauen & einprägen – noch <span class="gm-bigtimer" id="gs-st-t">${left}</span> s</div>
+            <div class="gm-chain">${pool.map((w, i) => `<div class="gm-chain-link"><span class="n">${i + 1}</span><span class="w">${w}</span></div>${i < pool.length - 1 ? '<span class="gm-chain-join"><i class="fas fa-link"></i></span>' : ''}`).join('')}</div>
+            <p class="sub" style="margin-top:10px"><i class="fas fa-lightbulb"></i> Beispiel-Verknüpfung: „${pool[0]} stößt gegen ${pool[1]}, daraus springt ${pool[2] || '…'} …"</p>
+            <button class="ss-btn ss-btn-ghost" id="gs-st-ready">Bereit – Kette abrufen</button>`;
+        const tEl = body.querySelector('#gs-st-t');
+        const toRecall = () => {
+            this._stopTimer();
+            body.innerHTML = `
+                <div class="gm-head"><strong>Erzähle die Kette ab – Wort für Wort</strong></div>
+                <div class="gm-recall-rows">${pool.map((_, i) => `<div class="gm-recall-row"><span class="num">${i + 1}</span><input data-i="${i}" autocomplete="off"></div>`).join('')}</div>
+                <button class="ss-btn ss-btn-primary" id="gs-st-check"><i class="fas fa-check"></i> Auswerten</button>`;
+            const inputs = [...body.querySelectorAll('input')];
+            inputs[0] && inputs[0].focus();
+            body.querySelector('#gs-st-check').addEventListener('click', () => {
+                let correct = 0;
+                inputs.forEach((inp, i) => {
+                    const ok = this._norm(inp.value) === this._norm(pool[i]);
+                    inp.closest('.gm-recall-row').classList.add(ok ? 'ok' : 'bad');
+                    if (!ok) { const r = inp.closest('.gm-recall-row'); if (!r.querySelector('.truth')) { const s = document.createElement('span'); s.className = 'truth'; s.textContent = '→ ' + pool[i]; r.appendChild(s); } }
+                    if (ok) correct++;
+                });
+                this._finishTrainer(correct / count * 100, `${correct}/${count} Glieder richtig`);
+            });
+        };
+        this.timer = setInterval(() => { left--; if (tEl) tEl.textContent = left; if (left <= 0) toRecall(); }, 1000);
+        body.querySelector('#gs-st-ready').addEventListener('click', toRecall);
     }
 
     /* ===================== TRAINER: NAMEN & GESICHTER ===================== */
