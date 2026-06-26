@@ -143,6 +143,26 @@
 .gm-major-cell .c { font-size: 14px; color: var(--ss-text); margin-top: 2px; font-weight: 600; }
 .gm-major-cell .ex { font-size: 12px; color: var(--ss-text-dim); margin-top: 4px; }
 
+/* ---------------- Zahl-Form-System ---------------- */
+.gm-shapes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin: 14px 0; }
+.gm-shape-cell { background: var(--ss-bg-soft); border: 1px solid var(--ss-line); border-radius: 14px; padding: 12px; text-align: center; }
+.gm-shape-cell .head { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px; }
+.gm-shape-cell .em { font-size: 34px; line-height: 1; }
+.gm-shape-cell .d { font-size: 20px; font-weight: 800; color: var(--gm-accent); }
+.gm-shape-cell input {
+    width: 100%; text-align: center; background: var(--ss-card); border: 1px solid var(--ss-line);
+    color: var(--ss-text); border-radius: 8px; padding: 7px 6px; font-family: var(--ss-font); font-size: 14px; margin-top: 6px;
+}
+.gm-shape-cell input:focus { outline: none; border-color: var(--gm-accent); }
+.gm-shape-cell .gm-shape-emoji { font-size: 20px; }
+
+/* Routen-Editor */
+.gm-route-input {
+    width: 100%; background: var(--ss-bg-soft); border: 1px solid var(--ss-line); color: var(--ss-text);
+    border-radius: 10px; padding: 11px 14px; font-family: var(--ss-font); font-size: 15px;
+}
+.gm-route-input:focus { outline: none; border-color: var(--gm-accent); }
+
 /* ---------------- Spaced Repetition ---------------- */
 .gm-deck-list { display: flex; flex-direction: column; gap: 12px; }
 .gm-deck {

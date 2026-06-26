@@ -53,8 +53,8 @@ const GS_DISCIPLINES = [
       tags: ['Dual-N-Back', 'Zahlenspanne'], blurb: 'Die Kapazität, Information aktiv im Kopf zu halten und zu verarbeiten – das Fundament jeder Denkleistung.',
       trainers: ['nback', 'span'], exam: 'nback' },
     { id: 'zahlen', name: 'Zahlen-Gedächtnis', short: 'Zahlen', icon: '🔢', accent: '#22d3ee', soft: 'rgba(34,211,238,.16)', glow: 'rgba(34,211,238,.18)',
-      tags: ['Speed Numbers', 'Major-System'], blurb: 'Lange Ziffernfolgen in Sekunden einprägen – verwandle Zahlen mit dem Major-System in Bilder.',
-      trainers: ['speednum', 'major'], exam: 'speednum' },
+      tags: ['Speed Numbers', 'Zahl-Form-System', 'Major-System'], blurb: 'Lange Ziffernfolgen in Sekunden einprägen – verwandle Ziffern in Bilder (Zahl-Form- und Major-System).',
+      trainers: ['speednum', 'shapes', 'major'], exam: 'speednum' },
     { id: 'woerter', name: 'Wörter', short: 'Wörter', icon: '📝', accent: '#34d399', soft: 'rgba(52,211,153,.16)', glow: 'rgba(52,211,153,.18)',
       tags: ['Wortlisten', 'Geschichten-Kette'], blurb: 'Wortlisten in exakter Reihenfolge behalten – die Urübung aller Mnemotechnik.',
       trainers: ['words'], exam: 'words' },
@@ -62,8 +62,8 @@ const GS_DISCIPLINES = [
       tags: ['Gesichter', 'Alltagsnah'], blurb: 'Die alltäglichste – und meistgefürchtete – Gedächtnisleistung: Namen zu Gesichtern behalten.',
       trainers: ['names'], exam: 'names' },
     { id: 'palast', name: 'Gedächtnispalast', short: 'Palast', icon: '🏛️', accent: '#e0b04a', soft: 'rgba(224,176,74,.16)', glow: 'rgba(224,176,74,.18)',
-      tags: ['Loci-Methode', 'Routen'], blurb: 'Die Königsdisziplin der Gedächtniskunst: lege Inhalte an Orten einer vertrauten Route ab.',
-      trainers: ['loci'], exam: 'loci' },
+      tags: ['Loci-Methode', 'Zahlen-Reise', 'Eigene Routen'], blurb: 'Die Königsdisziplin: lege Inhalte – auch Zahlen als Bilder – an Orten einer vertrauten Route ab. Baue eigene Routen.',
+      trainers: ['loci', 'zahlenreise'], exam: 'loci' },
     { id: 'karten', name: 'Spielkarten', short: 'Karten', icon: '🃏', accent: '#f472b6', soft: 'rgba(244,114,182,.16)', glow: 'rgba(244,114,182,.18)',
       tags: ['Kartenfolge', 'Speed Cards'], blurb: 'Die Reihenfolge gemischter Karten merken – Paradedisziplin der Gedächtnis-Weltmeister.',
       trainers: ['cards'], exam: 'cards' },
@@ -77,10 +77,12 @@ const GS_TRAINERS = {
     nback:    { disc: 'arbeitsgedaechtnis', icon: '🔁', title: 'Dual-N-Back', xp: 30, blurb: 'Erkenne, wenn Position und Buchstabe mit dem Reiz N Schritte zuvor übereinstimmen.' },
     span:     { disc: 'arbeitsgedaechtnis', icon: '↔️', title: 'Zahlenspanne', xp: 20, blurb: 'Gib Ziffernfolgen vorwärts und rückwärts wieder – die klassische Spanne.' },
     speednum: { disc: 'zahlen', icon: '⚡', title: 'Speed Numbers', xp: 26, blurb: 'Präge dir eine Ziffernfolge in begrenzter Zeit ein und gib sie wieder.' },
+    shapes:   { disc: 'zahlen', icon: '🖼️', title: 'Zahl-Form-System', xp: 16, blurb: 'Gib jeder Ziffer ein festes Bild (1 = Kerze, 3 = Dreizack …) – erfinde deine eigenen und drille sie.' },
     major:    { disc: 'zahlen', icon: '🔤', title: 'Major-System-Trainer', xp: 16, blurb: 'Übersetze Ziffern blitzschnell in Konsonanten – das Tor zu unbegrenztem Zahlengedächtnis.' },
     words:    { disc: 'woerter', icon: '📚', title: 'Wortliste merken', xp: 24, blurb: 'Behalte eine Liste von Wörtern in exakter Reihenfolge.' },
     names:    { disc: 'namen', icon: '😊', title: 'Namen & Gesichter', xp: 24, blurb: 'Ordne Gesichtern die richtigen Namen zu.' },
     loci:     { disc: 'palast', icon: '🗺️', title: 'Palast-Route', xp: 28, blurb: 'Lege Begriffe an den Stationen einer Route ab und rufe sie geordnet ab.' },
+    zahlenreise: { disc: 'palast', icon: '🧭', title: 'Zahlen-Reise', xp: 32, blurb: 'Deine „Eselswelt"-Technik: verwandle Ziffern in Bilder und lege sie auf deiner Route ab – so merkst du dir ganze Zahlen.' },
     cards:    { disc: 'karten', icon: '🃏', title: 'Kartenfolge', xp: 26, blurb: 'Merke dir die Reihenfolge gemischter Spielkarten.' }
 };
 
@@ -111,6 +113,24 @@ const GS_MAJOR = [
     { d: 9, c: 'p, b', ex: 'gespiegeltes „p" ~ 9' }
 ];
 const GS_MAJOR_WORDS = { '0': 'Tasse', '1': 'Tee', '2': 'Noah', '3': 'Oma', '4': 'Ohr', '5': 'Aal', '6': 'Schuh', '7': 'Kuh', '8': 'Efeu', '9': 'Bauer' };
+
+/* ---------------- Zahl-Form-System (Methode aus „Eselswelt") ----------------
+   Jede Ziffer bekommt ein festes Bild, das ihrer Form ähnelt. Der Nutzer kann
+   jedes Bild durch ein eigenes ersetzen – selbst erfundene Bilder wirken am
+   stärksten (Generationseffekt). Die Bilder werden später auf einer vertrauten
+   Route abgelegt (Loci-/Wegmethode) → so merkt man sich beliebig lange Zahlen. */
+const GS_NUMSHAPES = [
+    { d: 0, emoji: '🥚', word: 'Ei' },
+    { d: 1, emoji: '🕯️', word: 'Kerze' },
+    { d: 2, emoji: '🦢', word: 'Schwan' },
+    { d: 3, emoji: '🔱', word: 'Dreizack' },
+    { d: 4, emoji: '⛵', word: 'Segel' },
+    { d: 5, emoji: '✋', word: 'Hand' },
+    { d: 6, emoji: '🍒', word: 'Kirsche' },
+    { d: 7, emoji: '🚩', word: 'Fahne' },
+    { d: 8, emoji: '⛄', word: 'Schneemann' },
+    { d: 9, emoji: '🎈', word: 'Ballon' }
+];
 
 /* ---------------- Starter-Decks (Spaced Repetition) ---------------- */
 const GS_STARTER_DECKS = [
@@ -157,14 +177,42 @@ class GedaechtnisSchule {
             totalMinutes: 0,
             log: [],
             practiceDays: [],
-            srs: { decks: null, reviewsToday: 0, reviewsDate: null, totalReviews: 0 }
+            srs: { decks: null, reviewsToday: 0, reviewsDate: null, totalReviews: 0 },
+            numShapes: null,
+            palaces: []
         };
+    }
+
+    _seedShapes() {
+        const o = {};
+        GS_NUMSHAPES.forEach(s => { o[s.d] = { emoji: s.emoji, word: s.word }; });
+        return o;
+    }
+    _numShape(d) {
+        const s = (this.state.numShapes && this.state.numShapes[d]) || GS_NUMSHAPES[d];
+        return { emoji: (s && s.emoji) || '•', word: (s && s.word) || String(d) };
+    }
+    _setNumShape(d, patch) {
+        if (!this.state.numShapes) this.state.numShapes = this._seedShapes();
+        this.state.numShapes[d] = Object.assign({}, this._numShape(d), patch);
+        this._save();
+    }
+    _allPalaces() {
+        return [...(this.state.palaces || []), ...GS_PALACES];
+    }
+    _pickPalace() {
+        const custom = (this.state.palaces || []).filter(p => p.stations && p.stations.length >= 4);
+        if (custom.length && Math.random() < 0.7) return custom[Math.floor(Math.random() * custom.length)];
+        const all = [...custom, ...GS_PALACES.filter(p => p.stations.length >= 4)];
+        return all[Math.floor(Math.random() * all.length)];
     }
 
     async init() {
         await this._load();
         if (!this.state.alias) this.state.alias = this._generateAlias();
         if (!this.state.srs.decks) this.state.srs.decks = this._seedDecks();
+        if (!this.state.numShapes) this.state.numShapes = this._seedShapes();
+        if (!Array.isArray(this.state.palaces)) this.state.palaces = [];
         this._bindNav();
         this.render();
     }
@@ -418,6 +466,7 @@ class GedaechtnisSchule {
                         <div class="dur">+${t.xp}</div>
                     </div>`).join('')}
             </div>
+            ${this.activeDisc === 'palast' ? `<button class="ss-btn ss-btn-ghost ss-btn-block" id="gs-manage-routes" style="margin-top:14px"><i class="fas fa-map-signs"></i> Eigene Routen verwalten (${(this.state.palaces || []).length})</button>` : ''}
         </div>`;
     }
 
@@ -426,6 +475,8 @@ class GedaechtnisSchule {
         document.querySelectorAll('.ss-exercise-item').forEach(item => item.addEventListener('click', () => this._startTrainer(item.dataset.trainer, 'practice')));
         const examBtn = document.getElementById('gs-goto-exam');
         if (examBtn) examBtn.addEventListener('click', () => this.go('exams'));
+        const routesBtn = document.getElementById('gs-manage-routes');
+        if (routesBtn) routesBtn.addEventListener('click', () => this._palaceManager());
     }
 
     /* ===================== TRAINER-DISPATCH ===================== */
@@ -440,10 +491,12 @@ class GedaechtnisSchule {
             case 'nback': return this._tNback(g);
             case 'span': return this._tSpan(g);
             case 'speednum': return this._tSpeedNum(g);
+            case 'shapes': return this._tShapes(g);
             case 'major': return this._tMajor(g);
             case 'words': return this._tWords(g);
             case 'names': return this._tNames(g);
             case 'loci': return this._tLoci(g);
+            case 'zahlenreise': return this._tZahlenreise(g);
             case 'cards': return this._tCards(g);
         }
     }
@@ -650,7 +703,7 @@ class GedaechtnisSchule {
         const count = (this.mode === 'exam' ? 14 : 10) + grade * 2;
         const showMs = Math.max(4000, (this.mode === 'exam' ? 9000 : 13000) - grade * 350);
         this._gameShell('Speed Numbers', '⚡',
-            `Präge dir <strong>${count} Ziffern</strong> ein – du hast dafür ${Math.round(showMs / 1000)} Sekunden. Tipp: bilde aus je zwei Ziffern ein Bild (Major-System).`,
+            `Präge dir <strong>${count} Ziffern</strong> ein – du hast dafür ${Math.round(showMs / 1000)} Sekunden. Tipp: verwandle jede Ziffer in ihr Bild (Zahl-Form-System) und lege sie auf deiner Route ab.`,
             'gs-game');
         const seq = Array.from({ length: count }, () => Math.floor(Math.random() * 10));
         const body = document.getElementById('gs-game');
@@ -718,6 +771,174 @@ class GedaechtnisSchule {
             }));
         };
         render();
+    }
+
+    /* ===================== TRAINER: ZAHL-FORM-SYSTEM ===================== */
+    _tShapes() {
+        this._gameShell('Zahl-Form-System', '🖼️',
+            'Jede Ziffer bekommt ein festes Bild – aus der <strong>1</strong> wird eine Kerze, aus der <strong>3</strong> ein Dreizack, aus der <strong>5</strong> eine Hand. <strong>Erfinde deine eigenen Bilder</strong> (selbst erdachte merkt man am besten) und lege sie später auf deiner Route ab.',
+            'gs-game');
+        const body = document.getElementById('gs-game');
+        const render = () => {
+            body.innerHTML = `
+                <div class="gm-shapes-grid">
+                    ${GS_NUMSHAPES.map(s0 => { const s = this._numShape(s0.d); return `
+                        <div class="gm-shape-cell">
+                            <div class="head"><span class="em">${s.emoji}</span><span class="d">${s0.d}</span></div>
+                            <input class="gm-shape-emoji" data-de="${s0.d}" value="${this._esc(s.emoji)}" maxlength="4" title="Symbol/Emoji">
+                            <input class="gm-shape-word" data-d="${s0.d}" value="${this._esc(s.word)}" title="Bild-Wort">
+                        </div>`; }).join('')}
+                </div>
+                <p class="sub" style="margin-top:8px"><i class="fas fa-lightbulb"></i> Tippe Bild oder Wort an, um es durch dein eigenes zu ersetzen – das ist wissenschaftlich am wirksamsten (Generationseffekt).</p>
+                <div style="display:flex;gap:10px;flex-wrap:wrap">
+                    <button class="ss-btn ss-btn-primary" id="gs-shapes-drill"><i class="fas fa-play"></i> Drill starten (10 Fragen)</button>
+                    <button class="ss-btn ss-btn-ghost" id="gs-shapes-reset"><i class="fas fa-rotate-left"></i> Standard wiederherstellen</button>
+                </div>
+                <div id="gs-shapes-drillarea" style="margin-top:16px"></div>`;
+            body.querySelectorAll('.gm-shape-word').forEach(inp => inp.addEventListener('change', () => { const v = inp.value.trim(); if (v) this._setNumShape(+inp.dataset.d, { word: v }); }));
+            body.querySelectorAll('.gm-shape-emoji').forEach(inp => inp.addEventListener('change', () => { const v = inp.value.trim(); if (v) { this._setNumShape(+inp.dataset.de, { emoji: v }); render(); } }));
+            body.querySelector('#gs-shapes-drill').addEventListener('click', () => this._shapesDrill(body.querySelector('#gs-shapes-drillarea')));
+            body.querySelector('#gs-shapes-reset').addEventListener('click', () => { this.state.numShapes = this._seedShapes(); this._save(); render(); });
+        };
+        render();
+    }
+
+    _shapeOptions(correct) {
+        const ds = [correct];
+        while (ds.length < 4) { const x = Math.floor(Math.random() * 10); if (!ds.includes(x)) ds.push(x); }
+        return ds.sort(() => Math.random() - 0.5).map(d => ({ d, ...this._numShape(d) }));
+    }
+
+    _shapesDrill(area) {
+        const rounds = 10;
+        const st = { i: 0, correct: 0 };
+        const render = () => {
+            if (st.i >= rounds) { this._finishTrainer(st.correct / rounds * 100, `${st.correct}/${rounds} richtig`); return; }
+            const d = Math.floor(Math.random() * 10);
+            const s = this._numShape(d);
+            const opts = this._shapeOptions(d);
+            const d2w = Math.random() < 0.5;
+            if (d2w) {
+                area.innerHTML = `
+                    <div class="gm-head"><strong>Frage ${st.i + 1}/${rounds}</strong><span class="meta">Welches Bild gehört zur Ziffer?</span></div>
+                    <div class="gm-memorize" style="min-height:90px"><div class="gm-digit">${d}</div></div>
+                    <div class="ss-options">${opts.map(o => `<button class="ss-option" data-d="${o.d}">${o.emoji} ${this._esc(o.word)}</button>`).join('')}</div>`;
+            } else {
+                area.innerHTML = `
+                    <div class="gm-head"><strong>Frage ${st.i + 1}/${rounds}</strong><span class="meta">Welche Ziffer steckt hinter dem Bild?</span></div>
+                    <div class="gm-memorize" style="min-height:90px;gap:8px"><div style="font-size:52px">${s.emoji}</div><div class="gm-word-chip">${this._esc(s.word)}</div></div>
+                    <div class="ss-options">${opts.map(o => `<button class="ss-option" data-d="${o.d}">${o.d}</button>`).join('')}</div>`;
+            }
+            area.querySelectorAll('.ss-option').forEach(b => b.addEventListener('click', () => {
+                const chosen = +b.dataset.d;
+                area.querySelectorAll('.ss-option').forEach(x => { const xd = +x.dataset.d; if (xd === d) x.classList.add('correct'); else if (xd === chosen) x.classList.add('wrong'); x.disabled = true; });
+                if (chosen === d) st.correct++;
+                st.i++;
+                setTimeout(render, 650);
+            }));
+        };
+        render();
+    }
+
+    /* ===================== TRAINER: ZAHLEN-REISE (Eselswelt-Methode) ===================== */
+    _tZahlenreise(grade) {
+        const route = this._pickPalace();
+        const maxLen = Math.min(route.stations.length, (this.mode === 'exam' ? 6 : 4) + Math.floor(grade / 3));
+        const stations = route.stations.slice(0, maxLen);
+        const digits = Array.from({ length: stations.length }, () => Math.floor(Math.random() * 10));
+        const showMs = Math.max(7000, 18000 - grade * 200) + stations.length * 900;
+        this._gameShell('Zahlen-Reise', '🧭',
+            `Deine Technik aus „Eselswelt": Route <strong>${this._esc(route.name)}</strong>${route.id ? ' (deine Route)' : ''}. Verwandle jede Ziffer in ihr Bild und lege es lebendig an der Station ab – sieh, wie z. B. die Kerze auf der Bettdecke brennt. Danach gehst du die Route ab und liest die Zahl wieder ab.`,
+            'gs-game');
+        const body = document.getElementById('gs-game');
+        let left = Math.round(showMs / 1000);
+        body.innerHTML = `
+            <div class="gm-countdown">Bilder ablegen – noch <span class="gm-bigtimer" id="gs-zr-t">${left}</span> s</div>
+            <div class="gm-loci-route">${stations.map((s, i) => { const sh = this._numShape(digits[i]); return `<div class="gm-loci-station"><div class="pin">${i + 1}</div><div class="place">${this._esc(s)}</div><div class="item">${sh.emoji} ${this._esc(sh.word)} <b style="color:var(--ss-text)">(${digits[i]})</b></div></div>`; }).join('')}</div>
+            <button class="ss-btn ss-btn-ghost" id="gs-zr-ready">Bereit – Zahl abrufen</button>`;
+        const tEl = body.querySelector('#gs-zr-t');
+        const toRecall = () => {
+            this._stopTimer();
+            body.innerHTML = `
+                <div class="gm-head"><strong>Gehe die Route ab – welche Ziffer lag wo?</strong></div>
+                <div class="gm-loci-route">${stations.map((s, i) => `<div class="gm-loci-station"><div class="pin">${i + 1}</div><div class="place">${this._esc(s)}</div><input data-i="${i}" inputmode="numeric" maxlength="1" placeholder="?" style="max-width:84px;text-align:center;font-size:20px;font-weight:700"></div>`).join('')}</div>
+                <button class="ss-btn ss-btn-primary" id="gs-zr-check"><i class="fas fa-check"></i> Auswerten</button>`;
+            const inputs = [...body.querySelectorAll('input')];
+            inputs[0] && inputs[0].focus();
+            inputs.forEach((inp, idx) => inp.addEventListener('input', () => { if (inp.value && idx < inputs.length - 1) inputs[idx + 1].focus(); }));
+            body.querySelector('#gs-zr-check').addEventListener('click', () => {
+                let correct = 0;
+                inputs.forEach((inp, i) => { const ok = String(digits[i]) === inp.value.trim(); inp.closest('.gm-loci-station').classList.add(ok ? 'ok' : 'bad'); if (ok) correct++; });
+                this._finishTrainer(correct / stations.length * 100, `Zahl ${digits.join('')} · ${correct}/${stations.length} richtig`);
+            });
+        };
+        this.timer = setInterval(() => { left--; if (tEl) tEl.textContent = left; if (left <= 0) toRecall(); }, 1000);
+        body.querySelector('#gs-zr-ready').addEventListener('click', toRecall);
+    }
+
+    /* ===================== ROUTEN-VERWALTUNG (eigene Wege) ===================== */
+    _palaceManager() {
+        this._stopTimer();
+        const main = document.getElementById('ss-main');
+        const custom = this.state.palaces || [];
+        main.innerHTML = `
+        <div class="ss-panel" style="--accent:#e0b04a">
+            <h2>🗺️ Deine eigenen Routen</h2>
+            <p class="sub">Eine Route ist ein Weg, den du blind kennst – z. B. von der Bettdecke morgens bis zur Uni. Je vertrauter, desto besser. Lege die Stationen in der Reihenfolge an, in der du sie abgehst. Deine Routen werden in „Palast-Route" und „Zahlen-Reise" verwendet.</p>
+            <div class="gm-deck-list">
+                ${custom.map(p => `<div class="gm-deck"><div class="icon"><i class="fas fa-route"></i></div><div class="body"><div class="name">${this._esc(p.name)}</div><div class="stats">${p.stations.length} Stationen · ${this._esc(p.stations.slice(0, 3).join(', '))}…</div></div><button class="ss-btn ss-btn-ghost gs-route-del" data-id="${p.id}" style="padding:8px 12px;font-size:13px"><i class="fas fa-trash"></i></button></div>`).join('')}
+                ${GS_PALACES.map(p => `<div class="gm-deck" style="opacity:.75"><div class="icon" style="background:var(--ss-line)"><i class="fas fa-bookmark"></i></div><div class="body"><div class="name">${this._esc(p.name)}</div><div class="stats">Vorlage · ${p.stations.length} Stationen</div></div></div>`).join('')}
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+                <button class="ss-btn ss-btn-primary" id="gs-route-new"><i class="fas fa-plus"></i> Neue Route erstellen</button>
+                <button class="ss-btn ss-btn-ghost" id="gs-route-back"><i class="fas fa-arrow-left"></i> Zurück</button>
+            </div>
+        </div>`;
+        main.querySelector('#gs-route-back').addEventListener('click', () => { this.activeDisc = 'palast'; this.go('practice'); });
+        main.querySelector('#gs-route-new').addEventListener('click', () => this._routeEditor());
+        main.querySelectorAll('.gs-route-del').forEach(b => b.addEventListener('click', () => {
+            this.state.palaces = (this.state.palaces || []).filter(p => p.id !== b.dataset.id);
+            this._save();
+            this._palaceManager();
+        }));
+    }
+
+    _routeEditor() {
+        const main = document.getElementById('ss-main');
+        main.innerHTML = `
+        <div class="ss-panel" style="--accent:#e0b04a">
+            <h2>🧭 Neue Route</h2>
+            <div class="ss-field"><label>Name der Route</label><input class="gm-route-input" id="gs-rname" placeholder="z. B. Mein Weg zur Uni" autocomplete="off"></div>
+            <p class="sub">Stationen in Reihenfolge (mindestens 4):</p>
+            <div class="gm-recall-rows" id="gs-rstations"></div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+                <button class="ss-btn ss-btn-ghost" id="gs-radd"><i class="fas fa-plus"></i> Station</button>
+                <button class="ss-btn ss-btn-primary" id="gs-rsave"><i class="fas fa-check"></i> Route speichern</button>
+                <button class="ss-btn ss-btn-ghost" id="gs-rcancel">Abbrechen</button>
+            </div>
+        </div>`;
+        const wrap = main.querySelector('#gs-rstations');
+        const addRow = (val) => {
+            const i = wrap.children.length;
+            const div = document.createElement('div');
+            div.className = 'gm-recall-row';
+            div.innerHTML = `<span class="num">${i + 1}</span><input class="gm-route-input" value="${this._esc(val || '')}" placeholder="Station ${i + 1}" autocomplete="off">`;
+            wrap.appendChild(div);
+        };
+        for (let i = 0; i < 6; i++) addRow('');
+        main.querySelector('#gs-radd').addEventListener('click', () => addRow(''));
+        main.querySelector('#gs-rcancel').addEventListener('click', () => this._palaceManager());
+        main.querySelector('#gs-rsave').addEventListener('click', () => {
+            const name = main.querySelector('#gs-rname').value.trim();
+            const stations = [...wrap.querySelectorAll('input')].map(i => i.value.trim()).filter(Boolean);
+            if (!name) { this._toast('Bitte einen Namen vergeben', 'error'); return; }
+            if (stations.length < 4) { this._toast('Mindestens 4 Stationen nötig', 'error'); return; }
+            this.state.palaces.push({ id: 'r' + Date.now(), name, stations });
+            this._save();
+            this._toast('Route gespeichert!', 'success');
+            this._palaceManager();
+        });
+        main.querySelector('#gs-rname').focus();
     }
 
     /* ===================== TRAINER: WÖRTER ===================== */
@@ -806,7 +1027,7 @@ class GedaechtnisSchule {
     /* ===================== TRAINER: GEDÄCHTNISPALAST (LOCI) ===================== */
     _tLoci(grade) {
         const count = (this.mode === 'exam' ? 7 : 5) + Math.floor(grade / 3);
-        const palace = GS_PALACES[Math.floor(Math.random() * GS_PALACES.length)];
+        const palace = this._pickPalace();
         const stations = palace.stations.slice(0, Math.min(count, palace.stations.length));
         const items = GS_WORDS.slice().sort(() => Math.random() - 0.5).slice(0, stations.length);
         const showMs = Math.max(6000, 16000 - grade * 250) + stations.length * 800;
