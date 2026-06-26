@@ -61,20 +61,36 @@ const SS_SENSES = [
 ];
 const SS_SENSE_MAP = Object.fromEntries(SS_SENSES.map(s => [s.id, s]));
 
-/* ---------------- Verbundene Persönlichkeitsentwicklungs-Methoden ---------------- */
+/* ---------------- Verbundene Persönlichkeitsentwicklungs-Methoden ----------------
+   Als geführter Pfad nach Empathie-Aspekt: jede Methode vertieft einen Teilbereich. */
 const SS_LINKED_METHODS = {
     empathie: [
-        { label: 'Emotionale Intelligenz', href: '../emotional-intelligence/emotional-intelligence.html' },
-        { label: 'Gewaltfreie Kommunikation', href: '../nonviolent-communication/nonviolent-communication.html' },
-        { label: 'Aktiv-Empathisch Kommunizieren', href: '../aek-communication/aek-communication.html' },
-        { label: 'Johari-Fenster', href: '../johari-window/johari-window.html' },
-        { label: 'Achtsamkeit', href: '../mindfulness/mindfulness.html' }
+        { tag: 'Kognitiv', label: 'Johari-Fenster', href: '../johari-window/johari-window.html',
+          desc: 'Blinde Flecken erkennen – Selbst- und Fremdbild abgleichen, um andere klarer zu verstehen.' },
+        { tag: 'Kognitiv', label: 'Zirkuläres Interview', href: '../circular-interview/circular-interview.html',
+          desc: 'Perspektiven wechseln durch zirkuläre Fragen – die Welt aus den Augen des anderen sehen.' },
+        { tag: 'Emotional', label: 'Emotionale Intelligenz', href: '../emotional-intelligence/emotional-intelligence.html',
+          desc: 'Gefühle – eigene wie fremde – genauer wahrnehmen und präzise benennen.' },
+        { tag: 'Zuhören', label: 'Gewaltfreie Kommunikation', href: '../nonviolent-communication/nonviolent-communication.html',
+          desc: 'Beobachtung, Gefühl, Bedürfnis, Bitte – empathisch sprechen und hören.' },
+        { tag: 'Zuhören', label: 'Aktiv-Empathisch Kommunizieren', href: '../aek-communication/aek-communication.html',
+          desc: 'Aktives Zuhören und Spiegeln gezielt als Fähigkeit trainieren.' },
+        { tag: 'Innerer Halt', label: 'Achtsamkeit', href: '../mindfulness/mindfulness.html',
+          desc: 'Stabil bleiben – mitfühlen, ohne sich im Gefühl des anderen zu verlieren.' },
+        { tag: 'Innerer Halt', label: 'Die fünf Säulen der Identität', href: '../five-pillars/five-pillars.html',
+          desc: 'Den eigenen Stand stärken, der Mitgefühl ohne Selbstverlust erst möglich macht.' }
     ],
     innensinn: [
-        { label: 'Achtsamkeit & Meditation', href: '../mindfulness/mindfulness.html' }
+        { tag: 'Vertiefen', label: 'Achtsamkeit & Meditation', href: '../mindfulness/mindfulness.html',
+          desc: 'Körper, Atem und Gegenwart bewusst spüren – die Heimat des Innensinns.' },
+        { tag: 'Reflexion', label: 'Journaling', href: '../journaling/journaling.html',
+          desc: 'Inneres Erleben schriftlich klären und immer feiner unterscheiden.' }
     ],
     hoeren: [
-        { label: 'Kommunikation', href: '../communication/communication.html' }
+        { tag: 'Anwenden', label: 'Kommunikation', href: '../communication/communication.html',
+          desc: 'Bewusst hören im Gespräch – die Basis echter Verständigung.' },
+        { tag: 'Anwenden', label: 'Aktiv-Empathisch Kommunizieren', href: '../aek-communication/aek-communication.html',
+          desc: 'Zuhören als trainierbare Fähigkeit schärfen.' }
     ]
 };
 
@@ -223,27 +239,101 @@ const SS_EXAMS = {
                  protocol: 'Wähle in jeder Situation die Deutung, die am ehesten empathisch ist – die tiefer schaut, statt das Verhalten persönlich zu nehmen, zu urteilen oder vorschnell zu „reparieren".' }
 };
 
-/* Empathie-Szenarien: jeweils eine klar empathische Option (correct) + Distraktoren
-   (personalisierend / urteilend / vorschnell lösend). */
+/* Empathie-Szenarien (fein): alle vier Optionen klingen zugewandt oder plausibel.
+   Nur EINE trifft die feine Balance – präzise Wahrnehmung, tentativ, präsent,
+   eigene Regung haltend. Die Distraktoren sind die subtilen Fallen:
+   projizieren, sich übergehen / verschmelzen, von sich reden, vorschnell lösen/trösten,
+   Worte über Körpersignale stellen. `w` erklärt das Warum nach der Antwort. */
 const SS_EMP_SCENARIOS = [
-    { s: 'Ein Kollege antwortet auf deine Nachricht nur knapp mit „Ok." und meldet sich danach nicht mehr.',
-      o: ['Er hat etwas gegen mich', 'Vielleicht ist er gerade gestresst oder hat anderes im Kopf', 'Er ist einfach unhöflich', 'Ich habe sicher etwas falsch gemacht'], a: 1 },
-    { s: 'Eine Freundin sagt einen Plan kurzfristig ab und klingt dabei gereizt.',
-      o: ['Sie nimmt mich nicht ernst', 'Sie ist unzuverlässig', 'Vielleicht ist sie überfordert und braucht gerade Ruhe', 'Ich sollte beleidigt sein'], a: 2 },
-    { s: 'Dein Partner wird still, nachdem du begeistert von einem Erfolg erzählt hast.',
-      o: ['Er gönnt es mir nicht', 'Vielleicht beschäftigt ihn gerade etwas Eigenes', 'Er ist neidisch', 'Ich habe zu viel geredet'], a: 1 },
-    { s: 'Ein Kind schreit im Supermarkt und lässt sich nicht beruhigen.',
-      o: ['Schlechte Erziehung', 'Das Kind ist wahrscheinlich überreizt oder müde', 'Die Eltern sind unfähig', 'Es will nur manipulieren'], a: 1 },
-    { s: 'Jemand reagiert in einer Diskussion plötzlich sehr defensiv.',
-      o: ['Er hat einfach unrecht', 'Vielleicht fühlt er sich angegriffen oder nicht gesehen', 'Er ist aggressiv', 'Ich muss jetzt härter argumentieren'], a: 1 },
-    { s: 'Ein Freund erzählt von einem Problem und du spürst sofort den Drang, Lösungen zu nennen.',
-      o: ['Sofort Tipps geben', 'Erst fragen, ob er Rat, Zuhören oder einfach Ruhe möchte', 'Das Thema wechseln', 'Sagen, dass es halb so schlimm ist'], a: 1 },
-    { s: 'Jemand weint und du merkst, wie dich seine Trauer stark mitzieht.',
-      o: ['Mit ihm zusammen zusammenbrechen', 'Wahrnehmen, mitfühlen – aber innerlich stabil bei ihm bleiben', 'Dich abwenden, um dich zu schützen', 'Schnell aufmuntern, damit es aufhört'], a: 1 },
-    { s: 'Eine Kollegin lobt deine Arbeit auffällig überschwänglich.',
-      o: ['Sie meint es bestimmt nicht ehrlich', 'Vielleicht sucht sie selbst Anerkennung oder Verbindung', 'Sie will sicher etwas von mir', 'Das ist übertrieben und nervig'], a: 1 },
-    { s: 'Ein naher Mensch zieht sich seit Tagen zurück und sagt „mir geht\'s gut".',
-      o: ['Dann ist ja alles in Ordnung', 'Vielleicht fällt es ihm schwer, über etwas zu sprechen', 'Er will mich nur in Ruhe lassen', 'Ich frage besser nicht nach'], a: 1 }
+    { s: 'Eine Freundin erzählt von einem Streit mit ihrer Mutter. Sie wirkt gefasst, aber ihre Stimme zittert leicht.',
+      o: [
+        'Das zerreißt dich bestimmt innerlich.',
+        'Du wirkst gefasst – und zugleich höre ich etwas Zittriges. Was davon ist gerade näher an dir?',
+        'Ich kenne das, bei mir war das ganz genauso.',
+        'Wichtig ist, dass ihr bald wieder ins Reden kommt.'
+      ], a: 1,
+      w: 'Empathie heißt hier: die Doppelbotschaft – gefasst und zugleich bewegt – benennen und offen rückfragen, statt die Intensität zu projizieren, von sich selbst zu reden oder gleich in die Lösung zu springen.' },
+
+    { s: 'Ein Freund sagt am Telefon mehrmals „alles gut", wechselt aber schnell das Thema, wenn du nachfragst.',
+      o: [
+        'Wenn er sagt, alles gut, dann ist das so.',
+        'Bestimmt ist es nichts Ernstes.',
+        'Ich spüre, du weichst dem Thema aus – ich dränge nicht, bin aber da, wenn du magst.',
+        'Jetzt sag schon, was wirklich los ist.'
+      ], a: 2,
+      w: 'Das Signal – das Ausweichen – ernst nehmen, ohne zu drängen: Präsenz anbieten, statt die Worte für bare Münze zu nehmen, zu beschwichtigen oder Druck zu machen.' },
+
+    { s: 'Ein Kollege bekommt eine Beförderung, auf die du selbst gehofft hattest. Er strahlt und erzählt begeistert.',
+      o: [
+        'Ich freue mich total für dich! – während du innerlich sinkst.',
+        'Glückwunsch – ich merke, ich habe gemischte Gefühle und freue mich trotzdem ehrlich für dich.',
+        'Die Stelle ist doch eh ein Haufen Stress.',
+        'Hattest du da nicht ohnehin einen Vorteil?'
+      ], a: 1,
+      w: 'Reife Empathie schließt Ehrlichkeit mit dir selbst ein: die eigene Regung wahrnehmen und trotzdem zugewandt bleiben – statt sie zu verleugnen, zu relativieren oder den anderen abzuwerten.' },
+
+    { s: 'Eine Freundin weint nach einer Trennung. Du spürst, wie dich ihre Trauer stark mitzieht.',
+      o: [
+        'Du weinst so sehr mit, dass du selbst kaum noch sprechen kannst.',
+        'Lass uns rausgehen, das lenkt dich ab.',
+        'Du findest bald jemand Besseren.',
+        'Du bleibst still bei ihr, fühlst mit – und hältst innerlich: „Ich bin bei ihr, nicht sie."'
+      ], a: 3,
+      w: 'Der schmale Grat: emotionale Empathie ohne Abstand zieht dich hinein, Ablenkung und Trost-Floskeln überspringen das Gefühl. Mitgefühl bleibt da – mit innerem Halt.' },
+
+    { s: 'Deine Partnerin erzählt aufgeregt von einem Projekt. Du bist müde und unkonzentriert.',
+      o: [
+        'Mhm, klingt gut. – während du nebenbei aufs Handy schaust.',
+        'Können wir das später machen?',
+        'Ich merke, ich bin gerade müde und will dir wirklich zuhören – gibst du mir zehn Minuten?',
+        'Du zwingst dich zuzuhören und wirst innerlich gereizt.'
+      ], a: 2,
+      w: 'Echte Nähe braucht Ehrlichkeit über den eigenen Zustand – statt Pseudo-Zuhören, grundlosem Abweisen oder dich zu übergehen, bis Groll entsteht.' },
+
+    { s: 'Ein Teamkollege wird im Meeting ungewohnt still, nachdem seine Idee abgelehnt wurde.',
+      o: [
+        'Nimm es nicht persönlich, war doch nur Feedback.',
+        'Deine Idee war top, die anderen verstehen das nur nicht.',
+        'Er wirkt ruhig, also ist ihm das wohl egal.',
+        'Mir ist aufgefallen, dass du danach still geworden bist – wie geht es dir damit?'
+      ], a: 3,
+      w: 'Die Veränderung wahrnehmen und behutsam ansprechen – statt zu verharmlosen, reflexhaft Partei gegen andere zu ergreifen oder das stille Signal zu übersehen.' },
+
+    { s: 'Deine Mutter ruft zum dritten Mal an, obwohl du mitten in einer dringenden Aufgabe steckst.',
+      o: [
+        'Du gehst genervt ran und klingst knapp.',
+        'Mama, ich stecke gerade fest – darf ich dich in einer Stunde in Ruhe zurückrufen?',
+        'Du ignorierst den Anruf, um Streit zu vermeiden.',
+        'Du brichst alles ab, auch wenn du dadurch deine Deadline reißt.'
+      ], a: 1,
+      w: 'Empathie ohne Selbstverlust: die eigene Grenze klar und warm setzen – statt den Stress in die Beziehung kippen zu lassen, zu vermeiden oder dich selbst aufzugeben.' },
+
+    { s: 'Eine Bekannte erzählt stolz von etwas, das dir eher unbedeutend erscheint.',
+      o: [
+        'Ach, das ist doch nichts Besonderes.',
+        'Bei mir war das damals viel größer.',
+        'Ich sehe, dass dir das richtig viel bedeutet – erzähl mehr.',
+        'Du nickst höflich, bist aber innerlich abwesend.'
+      ], a: 2,
+      w: 'Empathie misst mit ihrem Maßstab, nicht mit deinem: den Wert aus ihrer Welt sehen – statt abzuwerten, zu übertrumpfen oder nur höflich abwesend zu bleiben.' },
+
+    { s: 'Jemand reagiert in einer Diskussion plötzlich gereizt auf eine eigentlich harmlose Frage.',
+      o: [
+        'Warum bist du denn gleich so aggressiv?',
+        'Ich glaube, ich habe da einen wunden Punkt getroffen – das war nicht meine Absicht.',
+        'Du wirst selbst gereizt und schießt zurück.',
+        'Du sagst lieber gar nichts mehr.'
+      ], a: 1,
+      w: 'Hinter der Gereiztheit eine Verletzung vermuten und benennen, ohne dich klein zu machen – statt zu etikettieren, die Erregung zu spiegeln oder dich ganz zurückzuziehen.' },
+
+    { s: 'Dein Gegenüber sagt „mir geht es gut", seufzt dabei aber hörbar.',
+      o: [
+        'Schön, dass es dir gut geht!',
+        'Jeder hat mal einen schlechten Tag.',
+        'Die Worte sagen „gut", der Seufzer klingt anders – magst du erzählen?',
+        'Komm, raus mit der Sprache, was ist los?'
+      ], a: 2,
+      w: 'Bei einer Diskrepanz zählt oft das Körpersignal mehr als die Worte: die Lücke sanft benennen – statt den Worten zu glauben, allgemein abzutun oder zu drängen.' }
 ];
 
 /* ---------------- Philosophie ---------------- */
@@ -533,10 +623,20 @@ class Sinnesschule {
         const linked = SS_LINKED_METHODS[this.activeSense] || [];
         const linkedHtml = linked.length ? `
         <div class="ss-panel" style="--accent:${s.accent};--accent-soft:${s.soft}">
-            <h3><i class="fas fa-link"></i> Vertiefe deinen Weg</h3>
-            <p class="sub">Diese Disziplin fließt nahtlos in deine Persönlichkeitsentwicklung. Vertiefe sie mit passenden Methoden:</p>
-            <div class="ss-link-grid">
-                ${linked.map(m => `<a class="ss-link-chip" href="${m.href}"><i class="fas fa-arrow-right-long"></i> ${m.label}</a>`).join('')}
+            <h3><i class="fas fa-route"></i> Vertiefe deinen Weg</h3>
+            <p class="sub">${this.activeSense === 'empathie'
+                ? 'Empathie fließt nahtlos in deine Persönlichkeitsentwicklung. Dieser Pfad vertieft jeden Aspekt – vom Verstehen über das Fühlen bis zum inneren Halt:'
+                : 'Diese Disziplin fließt nahtlos in deine Persönlichkeitsentwicklung. Vertiefe sie mit passenden Methoden:'}</p>
+            <div class="ss-link-list">
+                ${linked.map(m => `
+                <a class="ss-link-item" href="${m.href}">
+                    <span class="ss-link-tag">${this._esc(m.tag || '')}</span>
+                    <span class="ss-link-body">
+                        <span class="ss-link-label">${this._esc(m.label)}</span>
+                        <span class="ss-link-desc">${this._esc(m.desc || '')}</span>
+                    </span>
+                    <i class="fas fa-arrow-right-long"></i>
+                </a>`).join('')}
             </div>
         </div>` : '';
 
@@ -805,11 +905,13 @@ class Sinnesschule {
         stage.innerHTML = `
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
                 <strong>Situation ${ex.round + 1}/${ex.total}</strong>
+                <span style="color:var(--ss-text-dim);font-size:13px">Was ist am ehesten empathisch?</span>
             </div>
             <div class="ss-scenario">${this._esc(item.s)}</div>
             <div class="ss-options">
                 ${order.map(op => `<button class="ss-option" data-idx="${op.idx}">${this._esc(op.text)}</button>`).join('')}
-            </div>`;
+            </div>
+            <div id="ss-scenario-feedback"></div>`;
 
         stage.querySelectorAll('.ss-option').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -817,14 +919,28 @@ class Sinnesschule {
                 ex.locked = true;
                 const chosen = +btn.dataset.idx;
                 const correct = item.a;
+                const right = chosen === correct;
                 stage.querySelectorAll('.ss-option').forEach(b => {
                     const i = +b.dataset.idx;
                     if (i === correct) b.classList.add('correct');
                     else if (i === chosen) b.classList.add('wrong');
                     b.disabled = true;
                 });
-                if (chosen === correct) ex.correct++;
-                setTimeout(() => { ex.round++; this._renderScenarioRound(); }, 950);
+                if (right) ex.correct++;
+
+                const last = ex.round >= ex.total - 1;
+                const fb = document.getElementById('ss-scenario-feedback');
+                if (fb) {
+                    fb.innerHTML = `
+                    <div class="ss-scenario-why ${right ? 'right' : 'wrong'}">
+                        <div class="head">${right ? '<i class="fas fa-check-circle"></i> Fein wahrgenommen' : '<i class="fas fa-lightbulb"></i> Schau genauer hin'}</div>
+                        <p>${this._esc(item.w)}</p>
+                    </div>
+                    <button class="ss-btn ss-btn-primary" id="ss-scenario-next">${last ? '<i class="fas fa-flag-checkered"></i> Auswerten' : 'Weiter'} <i class="fas fa-arrow-right-long"></i></button>`;
+                    const next = document.getElementById('ss-scenario-next');
+                    next.addEventListener('click', () => { ex.round++; this._renderScenarioRound(); });
+                    next.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
             });
         });
     }
