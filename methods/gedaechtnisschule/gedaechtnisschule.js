@@ -495,10 +495,49 @@ class GedaechtnisSchule {
             <button class="ss-btn ss-btn-primary" id="gs-goto-srs">Jetzt wiederholen</button>
         </div></div>` : ''}
 
+        ${this._coachPanel()}
+
         <h2 style="margin:8px 0 14px;font-size:20px">Deine Disziplinen</h2>
         <div class="ss-grid">
             ${GS_DISCIPLINES.map(d => this._discCard(d)).join('')}
         </div>`;
+    }
+
+    /* ===================== KI-COACH (Schwächen-Analyse) ===================== */
+    _coachAdvice() {
+        const recs = [];
+        const due = this._dueCount();
+        if (due > 0) recs.push({ icon: '🗂️', title: 'Karteikarten wiederholen', reason: `${due} Karte(n) sind fällig – jetzt wiederholen, bevor die Vergessenskurve zuschlägt.`, view: 'srs' });
+        const discs = GS_DISCIPLINES.filter(d => !d.isSrs);
+        const examReady = discs.find(d => this._needsExam(d.id));
+        if (examReady) recs.push({ icon: '🏅', title: `Prüfung offen: ${examReady.name}`, reason: 'Du hast genug trainiert – die Prüfung öffnet die Tür zum nächsten Grad.', disc: examReady.id, view: 'exams' });
+        const untrained = discs.find(d => (this.state.disc[d.id].sessions || 0) === 0);
+        if (untrained) recs.push({ icon: untrained.icon, title: `Neu entdecken: ${untrained.name}`, reason: 'Diese Disziplin hast du noch nicht trainiert – ein rundes Gedächtnis braucht alle Bereiche.', trainer: untrained.trainers[0], disc: untrained.id });
+        const trained = discs.filter(d => (this.state.disc[d.id].sessions || 0) > 0);
+        if (trained.length) {
+            const weak = [...trained].sort((a, b) => this._grade(a.id) - this._grade(b.id))[0];
+            recs.push({ icon: weak.icon, title: `Schwäche stärken: ${weak.name}`, reason: `Dein niedrigster trainierter Grad (Grad ${this._grade(weak.id)}). Gezieltes Üben hier bringt den größten Sprung.`, trainer: weak.trainers[0], disc: weak.id });
+        }
+        if ((this.state.streak || 0) === 0) recs.push({ icon: '🔥', title: 'Streak starten', reason: 'Schon eine kurze Einheit heute startet deine Serie – Konstanz schlägt Intensität.', trainer: 'speednum', disc: 'zahlen' });
+        return recs.slice(0, 3);
+    }
+    _coachPanel() {
+        const recs = this._coachAdvice();
+        this._coachRecs = recs;
+        if (!recs.length) return '';
+        return `
+        <div class="ss-panel gm-coach">
+            <h3 style="margin:0 0 4px"><i class="fas fa-wand-magic-sparkles"></i> Dein Coach</h3>
+            <p class="sub" style="margin:0 0 14px">Analysiert deine Daten und schlägt vor, was dich gerade am weitesten bringt.</p>
+            <div class="gm-coach-list">
+                ${recs.map((r, i) => `<button class="gm-coach-rec" data-i="${i}"><span class="ic">${r.icon}</span><span class="body"><span class="t">${this._esc(r.title)}</span><span class="r">${this._esc(r.reason)}</span></span><i class="fas fa-arrow-right go"></i></button>`).join('')}
+            </div>
+        </div>`;
+    }
+    _coachDo(r) {
+        if (!r) return;
+        if (r.trainer) { if (r.disc) this.activeDisc = r.disc; this.go('practice'); this._startTrainer(r.trainer, 'practice'); return; }
+        if (r.view) { if (r.disc) this.activeDisc = r.disc; this.go(r.view); return; }
     }
 
     _discCard(d) {
@@ -536,6 +575,7 @@ class GedaechtnisSchule {
         });
         const g = document.getElementById('gs-goto-srs');
         if (g) g.addEventListener('click', () => this.go('srs'));
+        document.querySelectorAll('.gm-coach-rec').forEach(b => b.addEventListener('click', () => this._coachDo(this._coachRecs[+b.dataset.i])));
         document.querySelectorAll('.gm-theme-dot').forEach(dot => dot.addEventListener('click', () => {
             this.state.theme = dot.dataset.theme;
             this._save();
@@ -1335,7 +1375,10 @@ class GedaechtnisSchule {
         <div class="ss-panel">
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
                 <h3 style="margin:0"><i class="fas fa-layer-group"></i> Deine Stapel</h3>
-                <button class="ss-btn ss-btn-ghost" id="gs-deck-new" style="padding:8px 14px;font-size:14px"><i class="fas fa-plus"></i> Neuer Stapel</button>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                    <button class="ss-btn ss-btn-ghost" id="gs-deck-ai" style="padding:8px 14px;font-size:14px"><i class="fas fa-wand-magic-sparkles"></i> Karten aus Text</button>
+                    <button class="ss-btn ss-btn-ghost" id="gs-deck-new" style="padding:8px 14px;font-size:14px"><i class="fas fa-plus"></i> Neuer Stapel</button>
+                </div>
             </div>
             <div class="gm-deck-list" style="margin-top:14px">
                 ${decks.map(dk => {
@@ -1360,6 +1403,8 @@ class GedaechtnisSchule {
         if (start) start.addEventListener('click', () => this._srsReview());
         const nw = document.getElementById('gs-deck-new');
         if (nw) nw.addEventListener('click', () => this._srsNewDeck());
+        const ai = document.getElementById('gs-deck-ai');
+        if (ai) ai.addEventListener('click', () => this._srsGenerate());
         document.querySelectorAll('.gs-deck-add').forEach(b => b.addEventListener('click', (e) => { e.stopPropagation(); this._srsAddCard(b.dataset.deck); }));
         document.querySelectorAll('.gm-deck').forEach(d => d.addEventListener('click', () => this._srsAddCard(d.dataset.deck)));
     }
@@ -1494,6 +1539,100 @@ class GedaechtnisSchule {
         this.state.srs.decks.push({ id: 'd' + Date.now(), name, createdAt: new Date().toISOString(), cards: [] });
         this._save();
         this.render();
+    }
+
+    /* ----- Karteikarten aus Text erzeugen ----- */
+    _srsGenerate() {
+        const main = document.getElementById('ss-main');
+        const decks = this.state.srs.decks || [];
+        main.innerHTML = `
+        <div class="ss-panel" style="--accent:#a78bfa">
+            <h2><i class="fas fa-wand-magic-sparkles"></i> Karten aus Text erzeugen</h2>
+            <p class="sub">Füge einen Text ein (Notizen, Definitionen, Vokabeln). Der Generator erkennt Definitionen und „Begriff – Erklärung"-Zeilen und erzeugt sonst Lückenkarten. Du prüfst alles, bevor es im Stapel landet.</p>
+            <div class="ss-field"><label>Stapel</label>
+                <select class="ss-select" id="gs-gen-deck">
+                    ${decks.map(d => `<option value="${d.id}">${this._esc(d.name)}</option>`).join('')}
+                    <option value="__new">+ Neuer Stapel …</option>
+                </select>
+            </div>
+            <div class="ss-field"><label>Dein Text</label><textarea class="ss-textarea" id="gs-gen-text" rows="8" placeholder="Die Mitochondrien sind die Kraftwerke der Zelle.&#10;Photosynthese: Umwandlung von Licht in chemische Energie.&#10;Wasser = H2O"></textarea></div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button class="ss-btn ss-btn-primary" id="gs-gen-run"><i class="fas fa-bolt"></i> Karten generieren</button>
+                <button class="ss-btn ss-btn-ghost" id="gs-gen-back">Zurück</button>
+            </div>
+            <div id="gs-gen-preview" style="margin-top:18px"></div>
+        </div>`;
+        main.querySelector('#gs-gen-back').addEventListener('click', () => this.go('srs'));
+        main.querySelector('#gs-gen-run').addEventListener('click', () => {
+            const text = main.querySelector('#gs-gen-text').value;
+            const cards = this._cardsFromText(text);
+            const prev = main.querySelector('#gs-gen-preview');
+            if (!cards.length) { prev.innerHTML = `<div class="ss-empty"><i class="fas fa-circle-info"></i>Keine Karten erkannt. Schreibe Sätze wie „A ist B" oder „Begriff: Erklärung".</div>`; return; }
+            this._genCards = cards;
+            prev.innerHTML = `<p class="sub">${cards.length} Karten erkannt – wähle ab, was du nicht brauchst:</p>
+                <div class="gm-gen-list">${cards.map((c, i) => `<label class="gm-gen-card"><input type="checkbox" data-i="${i}" checked><span class="gm-gen-body"><b>${this._esc(c.front)}</b><span class="bk">${this._esc(c.back)}</span></span></label>`).join('')}</div>
+                <button class="ss-btn ss-btn-gold ss-btn-block" id="gs-gen-add" style="margin-top:14px"><i class="fas fa-plus"></i> Ausgewählte Karten hinzufügen</button>`;
+            prev.querySelector('#gs-gen-add').addEventListener('click', () => {
+                const chosen = [...prev.querySelectorAll('input:checked')].map(x => this._genCards[+x.dataset.i]).filter(Boolean);
+                if (!chosen.length) { this._toast('Nichts ausgewählt', 'error'); return; }
+                let deckId = main.querySelector('#gs-gen-deck').value;
+                if (deckId === '__new') {
+                    const nm = (prompt('Name des neuen Stapels:') || 'Aus Text').trim() || 'Aus Text';
+                    const nd = { id: 'd' + Date.now(), name: nm, createdAt: new Date().toISOString(), cards: [] };
+                    this.state.srs.decks.push(nd); deckId = nd.id;
+                }
+                const deck = this.state.srs.decks.find(d => d.id === deckId);
+                chosen.forEach((c, k) => deck.cards.push({ id: deckId + '_' + Date.now() + '_' + k, front: c.front, back: c.back, due: new Date().toISOString(), stability: 0, difficulty: 5, reps: 0, lapses: 0, last: null, state: 'new' }));
+                this._save();
+                this._toast(`${chosen.length} Karten hinzugefügt!`, 'success');
+                this.go('srs');
+            });
+        });
+    }
+
+    _cardsFromText(text) {
+        const out = [], seen = new Set();
+        const push = (f, b) => {
+            f = (f || '').trim().replace(/\s+/g, ' ');
+            b = (b || '').trim().replace(/\s+/g, ' ').replace(/[.;,]$/, '');
+            if (f.length < 3 || b.length < 1 || b.length > 200) return;
+            const k = f.toLowerCase(); if (seen.has(k)) return; seen.add(k);
+            out.push({ front: f, back: b });
+        };
+        const lines = (text || '').split(/\n+/);
+        for (let line of lines) {
+            line = line.trim();
+            if (line.length < 4) continue;
+            const m = line.match(/^(.{2,80}?)\s*[:\u2013\-=]\s*(.{2,})$/);
+            if (m && m[1].split(/\s+/).length <= 6) { push('Was ist ' + m[1].replace(/[.?!]$/, '') + '?', m[2]); continue; }
+            const sentences = line.split(/(?<=[.!?])\s+/);
+            for (let s of sentences) {
+                s = s.trim();
+                if (s.length < 12) continue;
+                const d = s.match(/^(.{2,70}?)\s+(?:ist|sind|war|waren|bezeichnet|bedeutet|heißt|nennt man|beschreibt)\s+(.{3,})$/i);
+                if (d && d[1].split(/\s+/).length <= 8) {
+                    const plural = /\bsind|waren\b/i.test(s);
+                    push('Was ' + (plural ? 'sind' : 'ist') + ' ' + d[1].replace(/^(der|die|das|ein|eine|the|a)\s+/i, '') + '?', d[2].replace(/[.?!]$/, ''));
+                    continue;
+                }
+                const cz = this._clozeFrom(s);
+                if (cz) push(cz.q, cz.a);
+            }
+        }
+        return out.slice(0, 30);
+    }
+    _clozeFrom(s) {
+        const words = s.split(/\s+/);
+        const cand = [];
+        words.forEach((w, i) => {
+            const clean = w.replace(/[.,;:!?()"'»«]/g, '');
+            if (!clean) return;
+            if (/^\d[\d.,]*$/.test(clean) || (i > 0 && /^[A-ZÄÖÜ][A-Za-zäöüß]{3,}$/.test(clean))) cand.push({ i, clean });
+        });
+        if (!cand.length) return null;
+        const pick = cand[Math.floor(cand.length / 2)];
+        const q = words.map((w, i) => i === pick.i ? w.replace(pick.clean, '_____') : w).join(' ');
+        return { q, a: pick.clean };
     }
     _srsAddCard(deckId) {
         const deck = this.state.srs.decks.find(d => d.id === deckId);

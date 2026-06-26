@@ -143,6 +143,30 @@
 .gm-major-cell .c { font-size: 14px; color: var(--ss-text); margin-top: 2px; font-weight: 600; }
 .gm-major-cell .ex { font-size: 12px; color: var(--ss-text-dim); margin-top: 4px; }
 
+/* ---------------- KI-Coach & Karten-Generator ---------------- */
+.gm-coach { background: linear-gradient(135deg, color-mix(in srgb, var(--gm-accent) 12%, var(--ss-card)), var(--ss-card)); }
+.gm-coach-list { display: flex; flex-direction: column; gap: 10px; }
+.gm-coach-rec {
+    display: flex; align-items: center; gap: 14px; text-align: left; width: 100%; cursor: pointer;
+    background: var(--ss-bg-soft); border: 1px solid var(--ss-line); border-radius: 14px; padding: 14px 16px;
+    color: var(--ss-text); font-family: var(--ss-font); transition: transform .14s, border-color .14s;
+}
+.gm-coach-rec:hover { transform: translateX(3px); border-color: var(--gm-accent); }
+.gm-coach-rec .ic { font-size: 26px; flex-shrink: 0; width: 34px; text-align: center; }
+.gm-coach-rec .body { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.gm-coach-rec .t { font-weight: 700; font-size: 15px; }
+.gm-coach-rec .r { font-size: 13px; color: var(--ss-text-dim); line-height: 1.45; margin-top: 2px; }
+.gm-coach-rec .go { color: var(--gm-accent); flex-shrink: 0; }
+
+.gm-gen-list { display: flex; flex-direction: column; gap: 8px; max-height: 360px; overflow-y: auto; padding-right: 4px; }
+.gm-gen-card {
+    display: flex; align-items: flex-start; gap: 12px; cursor: pointer;
+    background: var(--ss-bg-soft); border: 1px solid var(--ss-line); border-radius: 12px; padding: 12px 14px;
+}
+.gm-gen-card input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--gm-accent); flex-shrink: 0; }
+.gm-gen-body { display: flex; flex-direction: column; gap: 3px; font-size: 14px; }
+.gm-gen-body .bk { color: var(--ss-text-dim); font-size: 13px; }
+
 /* ---------------- Arena: Saison & Ligen ---------------- */
 .gm-season { border-color: color-mix(in srgb, var(--lg) 45%, var(--ss-line)); }
 .gm-season-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
