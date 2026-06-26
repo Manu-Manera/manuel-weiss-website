@@ -132,6 +132,25 @@ const GS_NUMSHAPES = [
     { d: 9, emoji: '🎈', word: 'Ballon' }
 ];
 
+/* ---------------- Dojo-Themes (persönlicher Stil) ---------------- */
+const GS_THEMES = [
+    { id: 'indigo', name: 'Indigo', a: '#8b5cf6', a2: '#6366f1', gm: '#818cf8' },
+    { id: 'smaragd', name: 'Smaragd', a: '#10b981', a2: '#059669', gm: '#34d399' },
+    { id: 'amber', name: 'Bernstein', a: '#f59e0b', a2: '#d97706', gm: '#e0b04a' },
+    { id: 'rose', name: 'Rosé', a: '#f43f5e', a2: '#e11d48', gm: '#fb7185' },
+    { id: 'ozean', name: 'Ozean', a: '#06b6d4', a2: '#0891b2', gm: '#22d3ee' },
+    { id: 'mitternacht', name: 'Mitternacht', a: '#a78bfa', a2: '#7c3aed', gm: '#c4b5fd' }
+];
+// Rang-Emblem wächst mit dem Gesamtgrad
+function GS_emblem(g) {
+    if (g >= 12) return '👑';
+    if (g >= 9) return '💎';
+    if (g >= 6) return '⭐';
+    if (g >= 3) return '🔥';
+    if (g >= 1) return '🌿';
+    return '🌱';
+}
+
 /* ---------------- Starter-Decks (Spaced Repetition) ---------------- */
 const GS_STARTER_DECKS = [
     { id: 'cap', name: 'Welt-Hauptstädte', cards: [
@@ -179,9 +198,19 @@ class GedaechtnisSchule {
             practiceDays: [],
             srs: { decks: null, reviewsToday: 0, reviewsDate: null, totalReviews: 0 },
             numShapes: null,
-            palaces: []
+            palaces: [],
+            theme: 'indigo'
         };
     }
+
+    _applyTheme() {
+        const t = GS_THEMES.find(x => x.id === this.state.theme) || GS_THEMES[0];
+        const r = document.documentElement.style;
+        r.setProperty('--ss-accent', t.a);
+        r.setProperty('--ss-accent-2', t.a2);
+        r.setProperty('--gm-accent', t.gm);
+    }
+    _rankEmblem() { return GS_emblem(this._overallGrade()); }
 
     _handleDeepLink() {
         try {
@@ -224,6 +253,8 @@ class GedaechtnisSchule {
         if (!this.state.srs.decks) this.state.srs.decks = this._seedDecks();
         if (!this.state.numShapes) this.state.numShapes = this._seedShapes();
         if (!Array.isArray(this.state.palaces)) this.state.palaces = [];
+        if (!this.state.theme) this.state.theme = 'indigo';
+        this._applyTheme();
         this._bindNav();
         this.render();
         this._handleDeepLink();
@@ -392,10 +423,18 @@ class GedaechtnisSchule {
         const total = this._totalXP();
         const due = this._dueCount();
         return `
-        <div class="ss-hero">
-            <div class="ss-kicker">Dein Gedächtnis-Dojo</div>
-            <h1>Schule dein Gedächtnis – ein Leben lang</h1>
-            <p>Sieben Disziplinen, von Arbeitsgedächtnis und Mnemotechnik über Gedächtnissport bis zur wissenschaftlichen Spaced Repetition. Trainiere täglich, lege Prüfungen ab und steige in einen Grad auf, der nie endet.</p>
+        <div class="ss-hero gm-hero-id">
+            <div class="gm-hero-emblem" title="Dein Rang wächst mit deinem Grad">${this._rankEmblem()}</div>
+            <div class="gm-hero-body">
+                <div class="ss-kicker">Dein Gedächtnis-Dojo · ${this._overallTitle()}</div>
+                <h1>Schule dein Gedächtnis – ein Leben lang</h1>
+                <p>Sieben Disziplinen, von Arbeitsgedächtnis und Mnemotechnik über Gedächtnissport bis zur wissenschaftlichen Spaced Repetition. Trainiere täglich, lege Prüfungen ab und steige in einen Grad auf, der nie endet.</p>
+            </div>
+        </div>
+
+        <div class="gm-theme-row">
+            <span class="gm-theme-label"><i class="fas fa-palette"></i> Dojo-Stil</span>
+            ${GS_THEMES.map(t => `<button class="gm-theme-dot ${this.state.theme === t.id ? 'active' : ''}" data-theme="${t.id}" title="${t.name}" style="background:linear-gradient(135deg,${t.a2},${t.a})"></button>`).join('')}
         </div>
 
         <div class="ss-stats">
@@ -451,6 +490,12 @@ class GedaechtnisSchule {
         });
         const g = document.getElementById('gs-goto-srs');
         if (g) g.addEventListener('click', () => this.go('srs'));
+        document.querySelectorAll('.gm-theme-dot').forEach(dot => dot.addEventListener('click', () => {
+            this.state.theme = dot.dataset.theme;
+            this._save();
+            this._applyTheme();
+            this.render();
+        }));
     }
 
     /* ===================== PRACTICE ===================== */
