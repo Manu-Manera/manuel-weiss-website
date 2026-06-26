@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Die Schule der Sinne | Manuel Weiss</title>
+    <meta name="description" content="Ein lebenslanger Meisterschaftsweg zur Schulung der Sinne – tägliche Praxis, Graduierungen, Prüfungen und ein Wahrnehmungs-Logbuch.">
+    <link rel="stylesheet" href="sinnesschule.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Sync-Status Badge -->
+    <div class="ss-sync-badge" id="ss-sync-badge" title="Speicher-Status">
+        <i class="fas fa-cloud-slash"></i>
+        <span id="ss-sync-text">Lokal gespeichert</span>
+    </div>
+
+    <header class="ss-topbar">
+        <button class="ss-back" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
+            <i class="fas fa-arrow-left"></i> Übersicht
+        </button>
+        <div class="ss-brand">
+            <span class="ss-brand-mark">道</span>
+            <span class="ss-brand-name">Die Schule der Sinne</span>
+        </div>
+        <nav class="ss-nav" id="ss-nav">
+            <button class="ss-nav-btn active" data-view="dashboard"><i class="fas fa-torii-gate"></i><span>Dojo</span></button>
+            <button class="ss-nav-btn" data-view="practice"><i class="fas fa-spa"></i><span>Übung</span></button>
+            <button class="ss-nav-btn" data-view="exams"><i class="fas fa-medal"></i><span>Prüfungen</span></button>
+            <button class="ss-nav-btn" data-view="journal"><i class="fas fa-feather"></i><span>Logbuch</span></button>
+            <button class="ss-nav-btn" data-view="journey"><i class="fas fa-route"></i><span>Reise</span></button>
+        </nav>
+    </header>
+
+    <main id="ss-main" class="ss-main">
+        <!-- Wird von sinnesschule.js gerendert -->
+        <div class="ss-loading"><i class="fas fa-circle-notch fa-spin"></i> Lade deinen Weg …</div>
+    </main>
+
+    <!-- Toast Container -->
+    <div id="ss-toast" class="ss-toast"></div>
+
+    <!-- ============================================ -->
+    <!-- AWS Konfiguration & Cloud-Persistenz         -->
+    <!-- ============================================ -->
+    <script>
+        window.AWS_CONFIG = {
+            region: 'eu-central-1',
+            userPoolId: 'eu-central-1_8gP4gLK9r',
+            clientId: '7kc5tt6a23fgh53d60vkefm812'
+        };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
+    <script src="/js/aws-profile-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+
+    <!-- App -->
+    <script src="sinnesschule.js"></script>
+</body>
+</html>
