@@ -1,0 +1,192 @@
+/* =========================================================
+   Die Schule des Gedächtnisses – spezifische Spiel-Styles.
+   Baut auf sinnesschule.css auf (gleiche Variablen & ss-* Klassen).
+   ========================================================= */
+
+.gm-body .ss-brand-mark { color: #818cf8; }
+
+/* Memory-Akzent für Hero-Mark etc. */
+:root { --gm-accent: #818cf8; }
+
+/* ---------------- Disziplin-Karten (Zusatzinfos) ---------------- */
+.gm-disc-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.gm-tag {
+    font-size: 11px; font-weight: 600; letter-spacing: .03em;
+    color: var(--accent, var(--ss-accent));
+    background: var(--accent-soft, rgba(129,140,248,.14));
+    border-radius: 999px; padding: 3px 9px;
+}
+
+/* ---------------- Generische Spiel-Bühne ---------------- */
+.gm-stage { margin: 6px 0; }
+.gm-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+.gm-head strong { font-size: 15px; }
+.gm-head .meta { color: var(--ss-text-dim); font-size: 13px; }
+
+.gm-phase-label { text-align: center; color: var(--ss-text-dim); font-size: 14px; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 10px; }
+
+/* großes, zentriertes Merk-Display (Zahlen / Wörter / Karten) */
+.gm-memorize {
+    min-height: 160px; display: flex; align-items: center; justify-content: center;
+    flex-wrap: wrap; gap: 14px; padding: 24px;
+    background: var(--ss-bg-soft); border: 1px solid var(--ss-line); border-radius: 18px;
+    margin-bottom: 18px;
+}
+.gm-digit {
+    font-size: 44px; font-weight: 800; font-variant-numeric: tabular-nums;
+    color: var(--ss-text); min-width: 46px; text-align: center;
+    font-family: 'SFMono-Regular', ui-monospace, Menlo, monospace;
+}
+.gm-digit.grouped { padding: 0 6px; }
+.gm-word-chip {
+    font-size: 22px; font-weight: 700; color: var(--ss-text);
+    background: var(--ss-card); border: 1px solid var(--ss-line);
+    border-radius: 12px; padding: 10px 18px;
+}
+.gm-countdown {
+    font-size: 14px; color: var(--ss-text-dim); text-align: center; margin-bottom: 12px;
+}
+.gm-bigtimer {
+    display: inline-block; min-width: 64px; padding: 4px 14px; border-radius: 999px;
+    background: var(--accent-soft, rgba(129,140,248,.14)); color: var(--accent, var(--ss-accent));
+    font-weight: 800; font-size: 18px; font-variant-numeric: tabular-nums;
+}
+
+/* Recall-Eingaben */
+.gm-recall-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.gm-recall-grid input {
+    width: 100%; text-align: center; font-size: 20px; font-weight: 700;
+    background: var(--ss-bg-soft); border: 1px solid var(--ss-line); color: var(--ss-text);
+    border-radius: 10px; padding: 10px 4px; font-family: var(--ss-font);
+}
+.gm-recall-grid input:focus { outline: none; border-color: var(--accent, var(--ss-accent)); }
+.gm-recall-grid input.ok { border-color: var(--ss-green); background: rgba(52,211,153,.12); }
+.gm-recall-grid input.bad { border-color: #ef4444; background: rgba(239,68,68,.12); }
+
+.gm-recall-rows { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.gm-recall-row { display: flex; align-items: center; gap: 10px; }
+.gm-recall-row .num { width: 28px; color: var(--ss-text-dim); font-weight: 700; text-align: right; }
+.gm-recall-row input {
+    flex: 1; background: var(--ss-bg-soft); border: 1px solid var(--ss-line); color: var(--ss-text);
+    border-radius: 10px; padding: 11px 14px; font-family: var(--ss-font); font-size: 15px;
+}
+.gm-recall-row input:focus { outline: none; border-color: var(--accent, var(--ss-accent)); }
+.gm-recall-row .truth { font-size: 13px; color: var(--ss-text-dim); }
+.gm-recall-row.ok input { border-color: var(--ss-green); }
+.gm-recall-row.bad input { border-color: #ef4444; }
+
+/* ---------------- N-Back ---------------- */
+.gm-nback-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    max-width: 320px; margin: 0 auto 20px; aspect-ratio: 1;
+}
+.gm-nback-cell {
+    aspect-ratio: 1; border-radius: 14px; background: var(--ss-bg-soft);
+    border: 1px solid var(--ss-line); transition: background .12s, transform .12s;
+    display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 800; color: #fff;
+}
+.gm-nback-cell.active { background: var(--gm-accent); border-color: var(--gm-accent); transform: scale(1.04); box-shadow: 0 0 24px rgba(129,140,248,.4); }
+.gm-nback-letter { text-align: center; font-size: 22px; min-height: 30px; margin-bottom: 10px; color: var(--ss-text-dim); letter-spacing: .3em; }
+.gm-nback-controls { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.gm-match-btn { position: relative; }
+.gm-match-btn.hit { border-color: var(--ss-green) !important; }
+.gm-match-btn.miss { border-color: #ef4444 !important; }
+
+/* ---------------- Namen & Gesichter ---------------- */
+.gm-faces { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 14px; margin-bottom: 18px; }
+.gm-face-card { text-align: center; background: var(--ss-bg-soft); border: 1px solid var(--ss-line); border-radius: 16px; padding: 16px 10px; }
+.gm-avatar {
+    width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 10px;
+    display: flex; align-items: center; justify-content: center; font-size: 32px;
+}
+.gm-face-name { font-weight: 700; font-size: 15px; }
+.gm-face-card input {
+    width: 100%; margin-top: 8px; text-align: center; background: var(--ss-card);
+    border: 1px solid var(--ss-line); color: var(--ss-text); border-radius: 8px; padding: 8px;
+    font-family: var(--ss-font); font-size: 14px;
+}
+.gm-face-card input.ok { border-color: var(--ss-green); }
+.gm-face-card input.bad { border-color: #ef4444; }
+.gm-face-card .truth { font-size: 12px; color: var(--ss-text-dim); margin-top: 4px; }
+
+/* ---------------- Spielkarten ---------------- */
+.gm-cards { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.gm-card {
+    width: 60px; height: 84px; border-radius: 10px; background: #fff; color: #111;
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+    font-size: 22px; font-weight: 700; box-shadow: 0 4px 10px rgba(0,0,0,.3); user-select: none;
+}
+.gm-card.red { color: #dc2626; }
+.gm-card.pick { cursor: pointer; border: 2px solid transparent; transition: transform .1s, border-color .1s; }
+.gm-card.pick:hover { transform: translateY(-4px); border-color: var(--gm-accent); }
+.gm-card.chosen { outline: 3px solid var(--gm-accent); opacity: .45; }
+.gm-card-slots { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 16px; min-height: 90px; }
+.gm-card-slot { width: 60px; height: 84px; border-radius: 10px; border: 2px dashed var(--ss-line); display: flex; align-items: center; justify-content: center; color: var(--ss-text-faint); font-size: 12px; }
+
+/* ---------------- Gedächtnispalast (Loci) ---------------- */
+.gm-loci-route { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.gm-loci-station {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--ss-bg-soft); border: 1px solid var(--ss-line); border-radius: 12px; padding: 12px 16px;
+}
+.gm-loci-station .pin { width: 30px; height: 30px; border-radius: 50%; background: var(--gm-accent); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+.gm-loci-station .place { font-weight: 600; flex: 1; }
+.gm-loci-station .item { color: var(--gm-accent); font-weight: 700; }
+.gm-loci-station input { flex: 1; background: var(--ss-card); border: 1px solid var(--ss-line); color: var(--ss-text); border-radius: 8px; padding: 9px 12px; font-family: var(--ss-font); }
+.gm-loci-station.ok { border-color: var(--ss-green); }
+.gm-loci-station.bad { border-color: #ef4444; }
+
+/* ---------------- Major-System Tabelle ---------------- */
+.gm-major-table { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); gap: 10px; margin: 14px 0; }
+.gm-major-cell { background: var(--ss-bg-soft); border: 1px solid var(--ss-line); border-radius: 12px; padding: 12px; text-align: center; }
+.gm-major-cell .d { font-size: 26px; font-weight: 800; color: var(--gm-accent); }
+.gm-major-cell .c { font-size: 14px; color: var(--ss-text); margin-top: 2px; font-weight: 600; }
+.gm-major-cell .ex { font-size: 12px; color: var(--ss-text-dim); margin-top: 4px; }
+
+/* ---------------- Spaced Repetition ---------------- */
+.gm-deck-list { display: flex; flex-direction: column; gap: 12px; }
+.gm-deck {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--ss-bg-soft); border: 1px solid var(--ss-line); border-radius: 14px; padding: 16px 18px;
+}
+.gm-deck .icon { width: 44px; height: 44px; border-radius: 12px; background: var(--gm-accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.gm-deck .body { flex: 1; }
+.gm-deck .name { font-weight: 700; font-size: 16px; }
+.gm-deck .stats { color: var(--ss-text-dim); font-size: 13px; margin-top: 3px; }
+.gm-deck .due-badge { background: var(--gm-accent); color: #fff; border-radius: 999px; padding: 4px 11px; font-size: 13px; font-weight: 700; }
+.gm-deck .due-badge.zero { background: var(--ss-line); color: var(--ss-text-dim); }
+
+.gm-review-card {
+    background: var(--ss-bg-soft); border: 1px solid var(--ss-line); border-radius: 18px;
+    padding: 40px 24px; text-align: center; margin-bottom: 16px; min-height: 180px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+}
+.gm-review-front { font-size: 26px; font-weight: 700; color: var(--ss-text); }
+.gm-review-back { font-size: 20px; color: var(--gm-accent); font-weight: 600; border-top: 1px solid var(--ss-line); padding-top: 18px; width: 100%; }
+.gm-grade-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.gm-grade-btn { padding: 14px 8px; border-radius: 12px; border: 1px solid var(--ss-line); background: var(--ss-bg-soft); color: var(--ss-text); cursor: pointer; font-family: var(--ss-font); font-weight: 600; transition: all .15s; }
+.gm-grade-btn small { display: block; font-size: 11px; color: var(--ss-text-dim); margin-top: 3px; font-weight: 500; }
+.gm-grade-btn:hover { transform: translateY(-2px); }
+.gm-grade-btn[data-g="1"]:hover { border-color: #ef4444; }
+.gm-grade-btn[data-g="2"]:hover { border-color: #f59e0b; }
+.gm-grade-btn[data-g="3"]:hover { border-color: var(--ss-green); }
+.gm-grade-btn[data-g="4"]:hover { border-color: #38bdf8; }
+
+/* Vergessenskurve */
+.gm-curve { background: var(--ss-bg-soft); border: 1px solid var(--ss-line); border-radius: 14px; padding: 18px; margin-top: 8px; }
+.gm-curve svg { width: 100%; height: auto; display: block; }
+.gm-curve .axis { stroke: var(--ss-line); stroke-width: 1; }
+.gm-curve .curve-line { fill: none; stroke: var(--gm-accent); stroke-width: 2.5; }
+.gm-curve .curve-fill { fill: rgba(129,140,248,.12); }
+.gm-curve .dot { fill: var(--gm-accent); }
+
+/* Stat-Reihe */
+.gm-statline { display: flex; gap: 22px; flex-wrap: wrap; margin: 4px 0 18px; }
+.gm-statline .s { display: flex; flex-direction: column; }
+.gm-statline .s b { font-size: 22px; font-weight: 800; }
+.gm-statline .s span { font-size: 12px; color: var(--ss-text-dim); }
+
+@media (max-width: 560px) {
+    .gm-digit { font-size: 34px; min-width: 34px; }
+    .gm-grade-btns { grid-template-columns: repeat(2, 1fr); }
+}

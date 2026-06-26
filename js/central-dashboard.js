@@ -96,7 +96,7 @@
         return d.toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' });
     }
 
-    const EXCLUDE_FROM_PERSONALITY = new Set(['sinnesschule']);
+    const EXCLUDE_FROM_PERSONALITY = new Set(['sinnesschule', 'gedaechtnisschule']);
 
     /* ---------------- Dashboard ---------------- */
     class CentralDashboard {
@@ -162,6 +162,26 @@
                 };
             }
 
+            // Gedächtnistraining
+            let mem = null;
+            const mwrap = workflows.gedaechtnisschule && workflows.gedaechtnisschule.results;
+            const memState = mwrap ? (mwrap.results || (mwrap.startedAt ? mwrap : null)) : null;
+            if (memState && memState.disc) {
+                let xp = 0, activeDisc = 0, due = 0;
+                Object.keys(memState.disc).forEach(id => {
+                    const x = (memState.disc[id] && memState.disc[id].xp) || 0;
+                    xp += x;
+                    if (x > 0) activeDisc++;
+                });
+                try {
+                    const now = Date.now();
+                    ((memState.srs && memState.srs.decks) || []).forEach(dk => {
+                        (dk.cards || []).forEach(c => { if (new Date(c.due).getTime() <= now) due++; });
+                    });
+                } catch (e) { /* ignore */ }
+                mem = { xp, streak: memState.streak || 0, disc: activeDisc, due, ts: mwrap && mwrap.updatedAt };
+            }
+
             // Bewerbungen
             const apps = (all && Array.isArray(all.applications)) ? all.applications : [];
             const appOpen = apps.filter(a => {
@@ -178,7 +198,7 @@
 
             recent.sort((a, b) => String(b.ts || '').localeCompare(String(a.ts || '')));
 
-            return { pStarted, pCompleted, ss, apps, appOpen, voice, lastActive, recent: recent.slice(0, 6) };
+            return { pStarted, pCompleted, ss, mem, apps, appOpen, voice, lastActive, recent: recent.slice(0, 6) };
         }
 
         renderLoading() {
@@ -241,6 +261,17 @@
                     { v: num(d.ss.senses) + '/7', l: 'Disziplinen' }
                 ] : [{ v: '0', l: 'noch nicht gestartet' }],
                 cta: d.ss ? 'Weiter trainieren' : 'Jetzt starten', href: 'methods/sinnesschule/index-sinnesschule.html'
+            }));
+
+            cards.push(this.card({
+                accent: '#818cf8', icon: 'fa-brain', title: 'Gedächtnistraining',
+                sub: d.mem ? 'Die Schule des Gedächtnisses' : 'Schule dein Gedächtnis',
+                stats: d.mem ? [
+                    { v: num(d.mem.xp), l: 'Gedächtniskraft' },
+                    { v: (d.mem.streak > 0 ? '🔥 ' : '') + num(d.mem.streak), l: 'Tage Streak' },
+                    { v: num(d.mem.due), l: 'Karten fällig' }
+                ] : [{ v: '0', l: 'noch nicht gestartet' }],
+                cta: d.mem ? 'Weiter trainieren' : 'Jetzt starten', href: 'methods/gedaechtnisschule/index-gedaechtnisschule.html'
             }));
 
             cards.push(this.card({
