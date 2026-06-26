@@ -363,6 +363,37 @@ body {
 .ss-swatch:hover { transform: scale(1.06); }
 .ss-swatch.picked { border-color: #fff; }
 
+/* ---------------- Szenario-Prüfung (Empathie) ---------------- */
+.ss-scenario {
+    font-size: 18px; line-height: 1.6; color: var(--ss-text);
+    background: var(--ss-bg-soft); border: 1px solid var(--ss-line);
+    border-left: 3px solid var(--accent, var(--ss-accent));
+    border-radius: 12px; padding: 18px 20px; margin-bottom: 16px;
+}
+.ss-options { display: grid; gap: 10px; }
+.ss-option {
+    text-align: left; background: var(--ss-bg-soft); border: 1px solid var(--ss-line);
+    color: var(--ss-text); padding: 14px 16px; border-radius: 12px; cursor: pointer;
+    font-family: var(--ss-font); font-size: 15px; transition: all .15s;
+}
+.ss-option:hover:not(:disabled) { border-color: var(--ss-accent); transform: translateX(3px); }
+.ss-option:disabled { cursor: default; }
+.ss-option.correct { border-color: var(--ss-green); background: rgba(52,211,153,.14); color: #d1fae5; }
+.ss-option.wrong { border-color: #ef4444; background: rgba(239,68,68,.12); color: #fecaca; }
+
+/* ---------------- Verbundene Methoden ---------------- */
+.ss-link-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.ss-link-chip {
+    display: inline-flex; align-items: center; gap: 9px;
+    background: var(--accent-soft, rgba(139,92,246,.15));
+    border: 1px solid var(--ss-line);
+    color: var(--ss-text); text-decoration: none;
+    padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500;
+    transition: all .2s;
+}
+.ss-link-chip i { color: var(--accent, var(--ss-accent)); font-size: 13px; }
+.ss-link-chip:hover { border-color: var(--accent, var(--ss-accent)); transform: translateY(-2px); }
+
 /* ---------------- Arena / Leaderboard ---------------- */
 .ss-lb { display: flex; flex-direction: column; gap: 8px; }
 .ss-lb-row {

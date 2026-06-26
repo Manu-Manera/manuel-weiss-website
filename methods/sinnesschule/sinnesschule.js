@@ -56,9 +56,27 @@ const SS_SENSES = [
     { id: 'riechen',   name: 'Riechen',   icon: '👃', accent: '#f472b6', soft: 'rgba(244,114,182,.16)', glow: 'rgba(244,114,182,.18)' },
     { id: 'schmecken', name: 'Schmecken', icon: '👅', accent: '#fb923c', soft: 'rgba(251,146,60,.16)',  glow: 'rgba(251,146,60,.18)' },
     { id: 'tasten',    name: 'Tasten',    icon: '🖐️', accent: '#34d399', soft: 'rgba(52,211,153,.16)',  glow: 'rgba(52,211,153,.18)' },
-    { id: 'innensinn', name: 'Innensinn', icon: '🌀', accent: '#e0b04a', soft: 'rgba(224,176,74,.16)',  glow: 'rgba(224,176,74,.18)' }
+    { id: 'innensinn', name: 'Innensinn', icon: '🌀', accent: '#e0b04a', soft: 'rgba(224,176,74,.16)',  glow: 'rgba(224,176,74,.18)' },
+    { id: 'empathie',  name: 'Empathie',  icon: '🫂', accent: '#fb7185', soft: 'rgba(251,113,133,.16)', glow: 'rgba(251,113,133,.18)' }
 ];
 const SS_SENSE_MAP = Object.fromEntries(SS_SENSES.map(s => [s.id, s]));
+
+/* ---------------- Verbundene Persönlichkeitsentwicklungs-Methoden ---------------- */
+const SS_LINKED_METHODS = {
+    empathie: [
+        { label: 'Emotionale Intelligenz', href: '../emotional-intelligence/emotional-intelligence.html' },
+        { label: 'Gewaltfreie Kommunikation', href: '../nonviolent-communication/nonviolent-communication.html' },
+        { label: 'Aktiv-Empathisch Kommunizieren', href: '../aek-communication/aek-communication.html' },
+        { label: 'Johari-Fenster', href: '../johari-window/johari-window.html' },
+        { label: 'Achtsamkeit', href: '../mindfulness/mindfulness.html' }
+    ],
+    innensinn: [
+        { label: 'Achtsamkeit & Meditation', href: '../mindfulness/mindfulness.html' }
+    ],
+    hoeren: [
+        { label: 'Kommunikation', href: '../communication/communication.html' }
+    ]
+};
 
 /* ---------------- Übungen (Dojo) ---------------- */
 const SS_EXERCISES = {
@@ -152,6 +170,39 @@ const SS_EXERCISES = {
             { text: 'Sitze still. Versuche, deinen Herzschlag ohne Berührung zu spüren.', sec: 60 },
             { text: 'Findest du ihn in der Brust? Im Hals? In den Fingerspitzen?', sec: 60 }
         ]}
+    ],
+    empathie: [
+        { id: 'empathie_perspektive', icon: '🧠', title: 'Perspektivwechsel (kognitiv)', dur: 180, xp: 25, steps: [
+            { text: 'Denk an eine Reaktion eines Menschen, die dich zuletzt irritiert hat.', sec: 35 },
+            { text: 'Frage dich nicht „Was ist mit dem falsch?", sondern: „Was könnte dahinterstehen?"', sec: 50 },
+            { text: 'Welche Angst, Erwartung, Verletzung oder Sorge wäre denkbar?', sec: 50 },
+            { text: 'Du musst nichts entschuldigen – du schaust nur tiefer als auf das Verhalten.', sec: 45 }
+        ]},
+        { id: 'empathie_granularitaet', icon: '🎭', title: 'Gefühls-Granularität', dur: 150, xp: 22, steps: [
+            { text: 'Spüre nach: Was fühlst du genau in diesem Moment?', sec: 30 },
+            { text: 'Benenne es präzise: traurig, gereizt, beschämt, nervös, berührt, neidisch …', sec: 45 },
+            { text: 'Erinnere ein Gespräch. Was fühlte die andere Person – so genau wie möglich?', sec: 45 },
+            { text: 'Je feiner du eigene Gefühle erkennst, desto feiner erkennst du sie bei anderen.', sec: 30 }
+        ]},
+        { id: 'empathie_mitgefuehl', icon: '🫂', title: 'Mitgefühl mit innerem Halt', dur: 180, xp: 26, steps: [
+            { text: 'Denk an jemanden, dem es gerade nicht gut geht.', sec: 35 },
+            { text: 'Lass dich berühren – fühle ein Stück weit mit.', sec: 45 },
+            { text: 'Sage innerlich: „Ich bin bei dir, aber ich bin nicht du."', sec: 45 },
+            { text: 'Bleib stabil und frage dich: „Was wäre jetzt wirklich hilfreich?"', sec: 55 }
+        ]},
+        { id: 'empathie_zuhoeren', icon: '👂', title: 'Aktives Zuhören (Spiegeln)', dur: 150, xp: 22, steps: [
+            { text: 'Nimm dir vor: Im nächsten Gespräch erst spiegeln, dann bewerten.', sec: 30 },
+            { text: 'Gib das Gehörte zurück: „Du warst nicht nur genervt, sondern eher enttäuscht?"', sec: 60 },
+            { text: '„Ja, genau" = du warst nah dran. Eine Korrektur = du lernst dazu.', sec: 60 }
+        ]},
+        { id: 'empathie_regulation', icon: '🛟', title: 'Selbstregulation bei Überempathie', dur: 120, xp: 18, breath: {
+            repeats: 5,
+            phases: [
+                { label: 'Einatmen – „Ich nehme wahr"', action: 'inhale', sec: 4 },
+                { label: 'Halten', action: 'hold', sec: 2 },
+                { label: 'Ausatmen – „ohne es zu übernehmen"', action: 'exhale', sec: 6 }
+            ]
+        }}
     ]
 };
 
@@ -167,8 +218,33 @@ const SS_EXAMS = {
     tasten:    { type: 'count', target: 8, unit: 'Materialien', title: 'Prüfung des Tastens',
                  protocol: 'Lass dir blind verschiedene Materialien geben. Trage ein, wie viele du allein durch Tasten korrekt erkannt hast.' },
     innensinn: { type: 'scale', title: 'Prüfung des Innensinns',
-                 protocol: 'Führe einen 3-minütigen Körperscan durch. Bewerte danach ehrlich, wie klar und vollständig du deinen Körper von innen wahrnehmen konntest.' }
+                 protocol: 'Führe einen 3-minütigen Körperscan durch. Bewerte danach ehrlich, wie klar und vollständig du deinen Körper von innen wahrnehmen konntest.' },
+    empathie:  { type: 'scenario', title: 'Prüfung der Empathie',
+                 protocol: 'Wähle in jeder Situation die Deutung, die am ehesten empathisch ist – die tiefer schaut, statt das Verhalten persönlich zu nehmen, zu urteilen oder vorschnell zu „reparieren".' }
 };
+
+/* Empathie-Szenarien: jeweils eine klar empathische Option (correct) + Distraktoren
+   (personalisierend / urteilend / vorschnell lösend). */
+const SS_EMP_SCENARIOS = [
+    { s: 'Ein Kollege antwortet auf deine Nachricht nur knapp mit „Ok." und meldet sich danach nicht mehr.',
+      o: ['Er hat etwas gegen mich', 'Vielleicht ist er gerade gestresst oder hat anderes im Kopf', 'Er ist einfach unhöflich', 'Ich habe sicher etwas falsch gemacht'], a: 1 },
+    { s: 'Eine Freundin sagt einen Plan kurzfristig ab und klingt dabei gereizt.',
+      o: ['Sie nimmt mich nicht ernst', 'Sie ist unzuverlässig', 'Vielleicht ist sie überfordert und braucht gerade Ruhe', 'Ich sollte beleidigt sein'], a: 2 },
+    { s: 'Dein Partner wird still, nachdem du begeistert von einem Erfolg erzählt hast.',
+      o: ['Er gönnt es mir nicht', 'Vielleicht beschäftigt ihn gerade etwas Eigenes', 'Er ist neidisch', 'Ich habe zu viel geredet'], a: 1 },
+    { s: 'Ein Kind schreit im Supermarkt und lässt sich nicht beruhigen.',
+      o: ['Schlechte Erziehung', 'Das Kind ist wahrscheinlich überreizt oder müde', 'Die Eltern sind unfähig', 'Es will nur manipulieren'], a: 1 },
+    { s: 'Jemand reagiert in einer Diskussion plötzlich sehr defensiv.',
+      o: ['Er hat einfach unrecht', 'Vielleicht fühlt er sich angegriffen oder nicht gesehen', 'Er ist aggressiv', 'Ich muss jetzt härter argumentieren'], a: 1 },
+    { s: 'Ein Freund erzählt von einem Problem und du spürst sofort den Drang, Lösungen zu nennen.',
+      o: ['Sofort Tipps geben', 'Erst fragen, ob er Rat, Zuhören oder einfach Ruhe möchte', 'Das Thema wechseln', 'Sagen, dass es halb so schlimm ist'], a: 1 },
+    { s: 'Jemand weint und du merkst, wie dich seine Trauer stark mitzieht.',
+      o: ['Mit ihm zusammen zusammenbrechen', 'Wahrnehmen, mitfühlen – aber innerlich stabil bei ihm bleiben', 'Dich abwenden, um dich zu schützen', 'Schnell aufmuntern, damit es aufhört'], a: 1 },
+    { s: 'Eine Kollegin lobt deine Arbeit auffällig überschwänglich.',
+      o: ['Sie meint es bestimmt nicht ehrlich', 'Vielleicht sucht sie selbst Anerkennung oder Verbindung', 'Sie will sicher etwas von mir', 'Das ist übertrieben und nervig'], a: 1 },
+    { s: 'Ein naher Mensch zieht sich seit Tagen zurück und sagt „mir geht\'s gut".',
+      o: ['Dann ist ja alles in Ordnung', 'Vielleicht fällt es ihm schwer, über etwas zu sprechen', 'Er will mich nur in Ruhe lassen', 'Ich frage besser nicht nach'], a: 1 }
+];
 
 /* ---------------- Philosophie ---------------- */
 const SS_QUOTES = [
@@ -349,7 +425,7 @@ class Sinnesschule {
     }
 
     _totalXP() { return SS_SENSES.reduce((a, s) => a + (this.state.senses[s.id].xp || 0), 0); }
-    _overallGrade() { return SS_gradeFromXP(Math.round(this._totalXP() / 6)); }
+    _overallGrade() { return SS_gradeFromXP(Math.round(this._totalXP() / SS_SENSES.length)); }
     _overallTitle() { return SS_titleFor(this._overallGrade()); }
 
     /* ---------------- Navigation ---------------- */
@@ -392,7 +468,7 @@ class Sinnesschule {
         <div class="ss-hero">
             <div class="ss-kicker">Lebenslanger Weg · seit ${this._fmtDate(this.state.startedAt)}</div>
             <h1>Schule deine Sinne, schule deine Wahrnehmung</h1>
-            <p>Sechs Disziplinen, ein endloser Aufstieg. Wähle täglich einen Sinn, übe ihn bewusst und öffne durch Prüfungen die Tür zur nächsten Stufe. Der Weg endet nie – er wird nur tiefer.</p>
+            <p>Sieben Disziplinen – von den fünf Sinnen über den Innensinn bis zur Empathie. Wähle täglich eine, übe sie bewusst und öffne durch Prüfungen die Tür zur nächsten Stufe. Der Weg endet nie – er wird nur tiefer.</p>
         </div>
 
         <div class="ss-stats">
@@ -454,6 +530,15 @@ class Sinnesschule {
         const grade = this._grade(this.activeSense);
         const exs = SS_EXERCISES[this.activeSense] || [];
         const needsExam = this._needsExam(this.activeSense);
+        const linked = SS_LINKED_METHODS[this.activeSense] || [];
+        const linkedHtml = linked.length ? `
+        <div class="ss-panel" style="--accent:${s.accent};--accent-soft:${s.soft}">
+            <h3><i class="fas fa-link"></i> Vertiefe deinen Weg</h3>
+            <p class="sub">Diese Disziplin fließt nahtlos in deine Persönlichkeitsentwicklung. Vertiefe sie mit passenden Methoden:</p>
+            <div class="ss-link-grid">
+                ${linked.map(m => `<a class="ss-link-chip" href="${m.href}"><i class="fas fa-arrow-right-long"></i> ${m.label}</a>`).join('')}
+            </div>
+        </div>` : '';
 
         return `
         <div class="ss-sense-picker">
@@ -475,7 +560,8 @@ class Sinnesschule {
                         <div class="dur">${Math.round(ex.dur / 60)} Min</div>
                     </div>`).join('')}
             </div>
-        </div>`;
+        </div>
+        ${linkedHtml}`;
     }
 
     _afterPractice() {
@@ -687,6 +773,60 @@ class Sinnesschule {
         if (exam.type === 'color') return this._examColor(senseId);
         if (exam.type === 'count') return this._examCount(senseId);
         if (exam.type === 'scale') return this._examScale(senseId);
+        if (exam.type === 'scenario') return this._examScenario(senseId);
+    }
+
+    // --- Empathie-Prüfung (Szenarien, kognitive Empathie) ---
+    _examScenario(senseId) {
+        const s = SS_SENSE_MAP[senseId];
+        const grade = this._grade(senseId);
+        const rounds = Math.min(SS_EMP_SCENARIOS.length, 6 + Math.floor(grade / 4));
+        const pool = SS_EMP_SCENARIOS.slice().sort(() => Math.random() - 0.5).slice(0, rounds);
+        this.exam = { round: 0, total: pool.length, correct: 0, pool, locked: false };
+        const main = document.getElementById('ss-main');
+        main.innerHTML = `
+        <div class="ss-panel" style="--accent:${s.accent}">
+            <h2>${s.icon} ${SS_EXAMS[senseId].title}</h2>
+            <p class="sub">${SS_EXAMS[senseId].protocol} · Bestehen ab ${SS_reqExam(grade)} Punkten.</p>
+            <div id="ss-exam-stage"></div>
+        </div>`;
+        this._renderScenarioRound();
+    }
+
+    _renderScenarioRound() {
+        const ex = this.exam;
+        const stage = document.getElementById('ss-exam-stage');
+        if (ex.round >= ex.total) return this._finishExam(Math.round(ex.correct / ex.total * 100));
+
+        const item = ex.pool[ex.round];
+        ex.locked = false;
+        const order = item.o.map((text, idx) => ({ text, idx })).sort(() => Math.random() - 0.5);
+
+        stage.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                <strong>Situation ${ex.round + 1}/${ex.total}</strong>
+            </div>
+            <div class="ss-scenario">${this._esc(item.s)}</div>
+            <div class="ss-options">
+                ${order.map(op => `<button class="ss-option" data-idx="${op.idx}">${this._esc(op.text)}</button>`).join('')}
+            </div>`;
+
+        stage.querySelectorAll('.ss-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (ex.locked) return;
+                ex.locked = true;
+                const chosen = +btn.dataset.idx;
+                const correct = item.a;
+                stage.querySelectorAll('.ss-option').forEach(b => {
+                    const i = +b.dataset.idx;
+                    if (i === correct) b.classList.add('correct');
+                    else if (i === chosen) b.classList.add('wrong');
+                    b.disabled = true;
+                });
+                if (chosen === correct) ex.correct++;
+                setTimeout(() => { ex.round++; this._renderScenarioRound(); }, 950);
+            });
+        });
     }
 
     // --- Farb-Prüfung (interaktiv, skaliert mit Grad) ---
