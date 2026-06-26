@@ -396,6 +396,32 @@ class GedaechtnisSchule {
         document.querySelectorAll('.ss-nav-btn').forEach(btn => {
             btn.addEventListener('click', () => this.go(btn.dataset.view));
         });
+        this._bindSwipe();
+    }
+    _bindSwipe() {
+        const main = document.getElementById('ss-main');
+        if (!main || main._swipeBound) return;
+        main._swipeBound = true;
+        let x0 = null, y0 = null;
+        main.addEventListener('touchstart', e => {
+            if (e.touches.length !== 1) { x0 = null; return; }
+            x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+        }, { passive: true });
+        main.addEventListener('touchend', e => {
+            if (x0 == null) return;
+            const t = e.changedTouches[0];
+            const dx = t.clientX - x0, dy = t.clientY - y0;
+            x0 = null;
+            if (Math.abs(dx) < 65 || Math.abs(dy) > 55) return;
+            if (this.timer) return; // nicht während eines laufenden Spiels/Trainers
+            const views = [...document.querySelectorAll('#ss-nav .ss-nav-btn')].map(b => b.dataset.view);
+            const cur = views.indexOf(this.view);
+            if (cur < 0) return;
+            const next = dx < 0 ? cur + 1 : cur - 1;
+            if (next < 0 || next >= views.length) return;
+            this._haptic('light');
+            this.go(views[next]);
+        }, { passive: true });
     }
     go(view) {
         this.view = view;
