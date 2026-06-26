@@ -357,6 +357,8 @@ body {
     content: ''; position: absolute; inset: 10px; border-radius: 50%; background: var(--ss-card);
 }
 .ss-score-circle .val { position: relative; font-size: 34px; font-weight: 800; }
+.ss-score-circle { animation: ssPop .55s cubic-bezier(.18,.9,.32,1.2) both; }
+@keyframes ssPop { 0% { transform: scale(.7); opacity: 0; } 60% { transform: scale(1.07); } 100% { transform: scale(1); opacity: 1; } }
 
 .ss-swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px,1fr)); gap: 10px; margin: 18px 0; }
 .ss-swatch { aspect-ratio: 1; border-radius: 12px; cursor: pointer; border: 3px solid transparent; transition: transform .12s, border-color .12s; }

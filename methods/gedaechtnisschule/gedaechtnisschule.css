@@ -143,6 +143,20 @@
 .gm-major-cell .c { font-size: 14px; color: var(--ss-text); margin-top: 2px; font-weight: 600; }
 .gm-major-cell .ex { font-size: 12px; color: var(--ss-text-dim); margin-top: 4px; }
 
+/* ---------------- Lebendiges Feedback (Animationen) ---------------- */
+.ss-score-circle { animation: gmPop .55s cubic-bezier(.18,.9,.32,1.2) both; }
+@keyframes gmPop { 0% { transform: scale(.7); opacity: 0; } 60% { transform: scale(1.07); } 100% { transform: scale(1); opacity: 1; } }
+
+@keyframes gmFlashOk { 0% { box-shadow: 0 0 0 0 rgba(52,211,153,.5); } 100% { box-shadow: 0 0 0 8px rgba(52,211,153,0); } }
+@keyframes gmFlashBad { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-5px); } 60% { transform: translateX(5px); } }
+.gm-recall-row.ok, .gm-loci-station.ok, .gm-recall-grid input.ok { animation: gmFlashOk .5s ease; }
+.gm-recall-row.bad, .gm-loci-station.bad { animation: gmFlashBad .35s ease; }
+.ss-option.correct { animation: gmFlashOk .5s ease; }
+
+/* sanftes Einblenden jeder Trainer-Stage */
+.gm-stage > * { animation: gmFadeUp .3s ease both; }
+@keyframes gmFadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
 /* ---------------- Zahl-Form-System ---------------- */
 .gm-shapes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin: 14px 0; }
 .gm-shape-cell { background: var(--ss-bg-soft); border: 1px solid var(--ss-line); border-radius: 14px; padding: 12px; text-align: center; }

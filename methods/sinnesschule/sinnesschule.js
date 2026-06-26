@@ -953,8 +953,8 @@ class Sinnesschule {
         this._save();
         this._chime();
 
-        if (after > before) this._showLevelUp(id, after);
-        else this._toast(`+${ex.xp} Schärfe · ${SS_SENSE_MAP[id].name}`, 'success');
+        if (after > before) { this._haptic('level'); this._celebrate(); this._showLevelUp(id, after); }
+        else { this._haptic('ok'); this._toast(`+${ex.xp} Schärfe · ${SS_SENSE_MAP[id].name}`, 'success'); }
 
         this._openReflection(ex);
     }
@@ -1308,6 +1308,8 @@ class Sinnesschule {
         const after = this._grade(senseId);
         this._save();
         this._chime(passed);
+        if (passed) { this._haptic('level'); this._celebrate(); }
+        else this._haptic('err');
 
         const deg = Math.round(score * 3.6);
         const main = document.getElementById('ss-main');
@@ -1606,6 +1608,38 @@ class Sinnesschule {
         t.className = 'ss-toast show' + (type ? ' ' + type : '');
         clearTimeout(this._toastTimer);
         this._toastTimer = setTimeout(() => t.className = 'ss-toast', 2200);
+    }
+
+    _haptic(type) {
+        try {
+            if (!navigator.vibrate) return;
+            const p = { light: 12, ok: [0, 22], err: [0, 45, 35, 45], level: [0, 30, 40, 30, 40, 70] }[type] || 12;
+            navigator.vibrate(p);
+        } catch (e) { /* ignore */ }
+    }
+
+    _celebrate() {
+        try {
+            if (!document.getElementById('ss-celebrate-style')) {
+                const st = document.createElement('style');
+                st.id = 'ss-celebrate-style';
+                st.textContent = '@keyframes ssConfFall{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(110vh) rotate(var(--rot));opacity:.15}}.ss-conf{position:fixed;top:-16px;width:10px;height:14px;border-radius:2px;z-index:99999;pointer-events:none;will-change:transform;animation:ssConfFall var(--dur) cubic-bezier(.25,.6,.45,1) forwards}';
+                document.head.appendChild(st);
+            }
+            const colors = ['#818cf8', '#22d3ee', '#34d399', '#fb923c', '#e0b04a', '#f472b6', '#a78bfa'];
+            for (let i = 0; i < 44; i++) {
+                const c = document.createElement('div');
+                c.className = 'ss-conf';
+                c.style.left = (Math.random() * 100) + 'vw';
+                c.style.top = (-16 - Math.random() * 60) + 'px';
+                c.style.background = colors[i % colors.length];
+                c.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+                c.style.setProperty('--dur', (1.3 + Math.random() * 1.4) + 's');
+                if (Math.random() < 0.4) c.style.borderRadius = '50%';
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 2900);
+            }
+        } catch (e) { /* ignore */ }
     }
 
     _chime(big) {

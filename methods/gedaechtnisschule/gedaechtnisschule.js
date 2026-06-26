@@ -548,6 +548,8 @@ class GedaechtnisSchule {
         this.state.log = this.state.log.slice(0, 120);
         this._save();
         this._chime(after > before);
+        if (after > before) { this._haptic('level'); this._celebrate(); }
+        else this._haptic(score >= 70 ? 'ok' : 'light');
         this._showTrainerResult(score, xp, detail, after > before, after);
     }
 
@@ -778,6 +780,7 @@ class GedaechtnisSchule {
                 const chosen = +b.dataset.d;
                 area.querySelectorAll('.ss-option').forEach(x => { const xd = +x.dataset.d; if (xd === d) x.classList.add('correct'); else if (xd === chosen) x.classList.add('wrong'); x.disabled = true; });
                 if (chosen === d) st.correct++;
+                this._haptic(chosen === d ? 'ok' : 'err');
                 st.i++;
                 setTimeout(render, 650);
             }));
@@ -845,6 +848,7 @@ class GedaechtnisSchule {
                 const chosen = +b.dataset.d;
                 area.querySelectorAll('.ss-option').forEach(x => { const xd = +x.dataset.d; if (xd === d) x.classList.add('correct'); else if (xd === chosen) x.classList.add('wrong'); x.disabled = true; });
                 if (chosen === d) st.correct++;
+                this._haptic(chosen === d ? 'ok' : 'err');
                 st.i++;
                 setTimeout(render, 650);
             }));
@@ -1187,6 +1191,8 @@ class GedaechtnisSchule {
         const after = this._grade(id);
         this._save();
         this._chime(passed);
+        if (passed) { this._haptic('level'); this._celebrate(); }
+        else this._haptic('err');
         const deg = Math.round(score * 3.6);
         const main = document.getElementById('ss-main');
         main.innerHTML = `
@@ -1563,6 +1569,38 @@ class GedaechtnisSchule {
         clearTimeout(this._toastTimer);
         this._toastTimer = setTimeout(() => t.className = 'ss-toast', 2200);
     }
+    _haptic(type) {
+        try {
+            if (!navigator.vibrate) return;
+            const p = { light: 12, ok: [0, 22], err: [0, 45, 35, 45], level: [0, 30, 40, 30, 40, 70] }[type] || 12;
+            navigator.vibrate(p);
+        } catch (e) { /* ignore */ }
+    }
+
+    _celebrate() {
+        try {
+            if (!document.getElementById('gs-celebrate-style')) {
+                const st = document.createElement('style');
+                st.id = 'gs-celebrate-style';
+                st.textContent = '@keyframes gsConfFall{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(110vh) rotate(var(--rot));opacity:.15}}.gs-conf{position:fixed;top:-16px;width:10px;height:14px;border-radius:2px;z-index:99999;pointer-events:none;will-change:transform;animation:gsConfFall var(--dur) cubic-bezier(.25,.6,.45,1) forwards}';
+                document.head.appendChild(st);
+            }
+            const colors = ['#818cf8', '#22d3ee', '#34d399', '#fb923c', '#e0b04a', '#f472b6', '#a78bfa'];
+            for (let i = 0; i < 44; i++) {
+                const c = document.createElement('div');
+                c.className = 'gs-conf';
+                c.style.left = (Math.random() * 100) + 'vw';
+                c.style.top = (-16 - Math.random() * 60) + 'px';
+                c.style.background = colors[i % colors.length];
+                c.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+                c.style.setProperty('--dur', (1.3 + Math.random() * 1.4) + 's');
+                if (Math.random() < 0.4) c.style.borderRadius = '50%';
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 2900);
+            }
+        } catch (e) { /* ignore */ }
+    }
+
     _chime(big) {
         try {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
