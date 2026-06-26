@@ -1,19 +1,53 @@
 /* =========================================================
    Die Schule der Sinne
    Ein lebenslanger Meisterschaftsweg zur Schulung der Sinne.
-   Persistenz: window.workflowAPI (DynamoDB, geräteübergreifend)
-   mit automatischem localStorage-Fallback.
+
+   - Graduierung ohne sichtbares Limit: superlineare XP-Kurve,
+     jede Stufe kostet spürbar mehr (battle-fähig fürs ganze Leben).
+   - Aufstieg ist an Prüfungen gekoppelt ("Tür" zur nächsten Stufe).
+   - Anonyme Arena: Vergleich der "Schärfe" unter Pseudonym.
+
+   Persistenz: window.workflowAPI (DynamoDB) + localStorage-Fallback.
+   Rangliste: /snowflake-highscores?game=sinnesschule (anonym).
    ========================================================= */
 
 const SS_METHOD = 'sinnesschule';
 
-/* ---------------- Graduierungen (Kyū → Dan) ---------------- */
-const SS_GRADES = [
+/* ---------------- Graduierungs-System (→ ∞) ---------------- */
+const SS_TITLES = [
     'Erwachen', 'Aufmerksamkeit', 'Unterscheidung', 'Schärfe', 'Feinheit',
-    'Tiefe', 'Präsenz', 'Klarheit', 'Meisterschaft', 'Vollendung'
+    'Tiefe', 'Präsenz', 'Klarheit', 'Meisterschaft', 'Vollendung',
+    'Großmeister', 'Hüter der Sinne', 'Seher', 'Lauschender', 'Spürender',
+    'Wahrer Kenner', 'Erleuchteter Sinn', 'Wandler der Wahrnehmung', 'Zeitloser', 'Vollkommener'
 ];
-// XP nötig, um die jeweilige Stufe zu VERLASSEN (Index = aktuelle Stufe 1..9)
-const SS_GRADE_XP = [0, 150, 350, 650, 1050, 1550, 2150, 2850, 3650, 4600];
+
+// XP, um von Stufe g zur Stufe g+1 zu gelangen – wächst superlinear.
+function SS_gap(g) { return Math.round(120 * Math.pow(g, 1.45)); }
+
+// Kumulierte XP, um Stufe g überhaupt zu erreichen (g>=1 → 0 bei g=1).
+const _ssTcache = [0, 0];
+function SS_T(g) {
+    if (g < 1) return 0;
+    for (let k = _ssTcache.length; k <= g; k++) _ssTcache[k] = _ssTcache[k - 1] + SS_gap(k - 1);
+    return _ssTcache[g];
+}
+function SS_gradeFromXP(xp) {
+    let g = 1;
+    while (g < 2000 && xp >= SS_T(g + 1)) g++;
+    return g;
+}
+function SS_roman(n) {
+    if (n <= 0) return '';
+    const map = [[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
+    let r = ''; for (const [v, s] of map) while (n >= v) { r += s; n -= v; } return r;
+}
+function SS_titleFor(g) {
+    if (g <= SS_TITLES.length) return SS_TITLES[g - 1];
+    const tier = g - SS_TITLES.length; // 1, 2, 3 …
+    return `${SS_TITLES[SS_TITLES.length - 1]} ${SS_roman(tier + 1)}`;
+}
+// Geforderte Prüfungs-Punktzahl, um die nächste Stufe zu öffnen – steigt mit der Stufe.
+function SS_reqExam(g) { return Math.min(96, 64 + g * 2); }
 
 /* ---------------- Die sechs Disziplinen ---------------- */
 const SS_SENSES = [
@@ -123,7 +157,7 @@ const SS_EXERCISES = {
 
 /* ---------------- Prüfungen ---------------- */
 const SS_EXAMS = {
-    sehen:     { type: 'color', title: 'Prüfung des Sehens', protocol: 'Finde in jeder Runde das Feld, dessen Farbe minimal abweicht. Es wird mit jeder Runde feiner.' },
+    sehen:     { type: 'color', title: 'Prüfung des Sehens', protocol: 'Finde in jeder Runde das Feld, dessen Farbe minimal abweicht. Es wird mit jeder Runde feiner – und mit jeder Stufe schwerer.' },
     hoeren:    { type: 'count', target: 8, unit: 'Klangschichten', title: 'Prüfung des Hörens',
                  protocol: 'Schließe 90 Sekunden die Augen und zähle so viele klar unterscheidbare Klangschichten wie möglich (nah, mittel, fern). Trage danach deine ehrliche Zahl ein.' },
     riechen:   { type: 'count', target: 6, unit: 'Düfte', title: 'Prüfung des Riechens',
@@ -145,6 +179,10 @@ const SS_QUOTES = [
     { t: 'Übe, als hättest du alle Zeit – und als wäre dieser Atemzug der einzige.', w: 'Die Schule der Sinne' }
 ];
 
+/* ---------------- Pseudonym-Generator (anonym) ---------------- */
+const SS_ALIAS_ADJ = ['Stiller', 'Wacher', 'Feiner', 'Klarer', 'Tiefer', 'Leiser', 'Heller', 'Geduldiger', 'Wandernder', 'Zeitloser', 'Lauschender', 'Spürender', 'Scharfer', 'Sanfter', 'Wahrer'];
+const SS_ALIAS_NOUN = ['Fuchs', 'Kranich', 'Luchs', 'Falke', 'Wolf', 'Reiher', 'Dachs', 'Eule', 'Hirsch', 'Otter', 'Marder', 'Rabe', 'Steinbock', 'Wal', 'Mönch'];
+
 /* =========================================================
    App
    ========================================================= */
@@ -154,16 +192,18 @@ class Sinnesschule {
         this.activeSense = 'sehen';
         this.timer = null;
         this.exam = null;
+        this.leaderboard = null;
         this.state = this._defaultState();
     }
 
     _defaultState() {
         const senses = {};
         SS_SENSES.forEach(s => {
-            senses[s.id] = { xp: 0, grade: 1, sessions: 0, examsPassed: {}, examScores: [] };
+            senses[s.id] = { xp: 0, sessions: 0, doorGrade: 0, bestExam: 0, examScores: [] };
         });
         return {
             startedAt: new Date().toISOString().slice(0, 10),
+            alias: null,
             senses,
             streak: 0,
             lastPracticeDate: null,
@@ -176,6 +216,7 @@ class Sinnesschule {
 
     async init() {
         await this._load();
+        if (!this.state.alias) this.state.alias = this._generateAlias();
         this._bindNav();
         this.render();
     }
@@ -197,13 +238,11 @@ class Sinnesschule {
     }
 
     async _load() {
-        // 1. Sofort lokal
         try {
             const local = JSON.parse(localStorage.getItem('ss_state'));
             if (local && local.startedAt) this.state = this._merge(this._defaultState(), local);
         } catch (e) { /* ignore */ }
 
-        // 2. Cloud (überschreibt, wenn vorhanden & neuer)
         try {
             if (window.workflowAPI) {
                 const res = await window.workflowAPI.getWorkflowResults(SS_METHOD);
@@ -214,8 +253,6 @@ class Sinnesschule {
                 }
             }
         } catch (e) { console.warn('Cloud-Load fehlgeschlagen:', e); }
-
-        this._refreshStreak();
     }
 
     async _save() {
@@ -223,7 +260,7 @@ class Sinnesschule {
         let synced = false;
         try {
             if (window.workflowAPI) {
-                const loggedIn = window.realUserAuth && window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn();
+                const loggedIn = this._isLoggedIn();
                 await window.workflowAPI.saveWorkflowResults(SS_METHOD, this.state);
                 synced = !!loggedIn;
             }
@@ -246,15 +283,34 @@ class Sinnesschule {
         }
     }
 
-    /* ---------------- Streak ---------------- */
-    _refreshStreak() {
-        const today = this._today();
-        const yest = this._dayOffset(-1);
-        if (this.state.lastPracticeDate && this.state.lastPracticeDate < yest) {
-            // Streak ruht (kein harter Reset – sanfter Weg über die Jahre)
-        }
+    /* ---------------- Identität / Anmeldung ---------------- */
+    _isLoggedIn() {
+        try { return !!(window.realUserAuth && window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn()); }
+        catch (e) { return false; }
+    }
+    _identityId() {
+        try {
+            if (!this._isLoggedIn()) return null;
+            const u = window.realUserAuth.getCurrentUser ? window.realUserAuth.getCurrentUser() : null;
+            return (u && (u.id || u.sub || u.email)) || null;
+        } catch (e) { return null; }
+    }
+    _openLogin() {
+        try {
+            if (window.realUserAuth && window.realUserAuth.showAuthModal) return window.realUserAuth.showAuthModal();
+            if (window.realUserAuth && window.realUserAuth.openModal) return window.realUserAuth.openModal();
+        } catch (e) { /* ignore */ }
+        this._toast('Bitte melde dich über die Website an.');
     }
 
+    _generateAlias() {
+        const a = SS_ALIAS_ADJ[Math.floor(Math.random() * SS_ALIAS_ADJ.length)];
+        const n = SS_ALIAS_NOUN[Math.floor(Math.random() * SS_ALIAS_NOUN.length)];
+        const num = Math.floor(1000 + Math.random() * 9000);
+        return `${a} ${n} #${num}`;
+    }
+
+    /* ---------------- Praxis-Tage / Streak ---------------- */
     _registerPracticeDay(minutes) {
         const today = this._today();
         const yest = this._dayOffset(-1);
@@ -274,49 +330,27 @@ class Sinnesschule {
     _today() { return new Date().toISOString().slice(0, 10); }
     _dayOffset(d) { return new Date(Date.now() + d * 86400000).toISOString().slice(0, 10); }
 
-    /* ---------------- Graduierung ---------------- */
-    _addXP(senseId, xp) {
-        const s = this.state.senses[senseId];
-        s.xp += xp;
-        return this._checkAdvance(senseId);
+    /* ---------------- Graduierung (→ ∞) ---------------- */
+    _rawGrade(id) { return SS_gradeFromXP(this.state.senses[id].xp); }
+    _grade(id) { return Math.min(this._rawGrade(id), (this.state.senses[id].doorGrade || 0) + 1); }
+    _needsExam(id) { return this._rawGrade(id) > this._grade(id); }
+    _title(id) { return SS_titleFor(this._grade(id)); }
+
+    _gradeProgress(id) {
+        if (this._needsExam(id)) return 100;
+        const g = this._grade(id);
+        const base = SS_T(g), next = SS_T(g + 1);
+        const xp = this.state.senses[id].xp;
+        return Math.max(0, Math.min(100, Math.round(((xp - base) / (next - base)) * 100)));
+    }
+    _xpToNext(id) {
+        const g = this._grade(id);
+        return Math.max(0, SS_T(g + 1) - this.state.senses[id].xp);
     }
 
-    _checkAdvance(senseId) {
-        const s = this.state.senses[senseId];
-        if (s.grade >= 10) return null;
-        const need = SS_GRADE_XP[s.grade];
-        const examOk = (s.examsPassed[s.grade] || 0) >= 70;
-        if (s.xp >= need && examOk) {
-            s.grade++;
-            return s.grade;
-        }
-        return null;
-    }
-
-    _canAdvanceButNeedsExam(senseId) {
-        const s = this.state.senses[senseId];
-        if (s.grade >= 10) return false;
-        return s.xp >= SS_GRADE_XP[s.grade] && (s.examsPassed[s.grade] || 0) < 70;
-    }
-
-    _gradeProgress(senseId) {
-        const s = this.state.senses[senseId];
-        if (s.grade >= 10) return 100;
-        const prev = SS_GRADE_XP[s.grade - 1] || 0;
-        const next = SS_GRADE_XP[s.grade];
-        return Math.min(100, Math.round(((s.xp - prev) / (next - prev)) * 100));
-    }
-
-    _masteryPercent(senseId) {
-        const s = this.state.senses[senseId];
-        const maxXP = SS_GRADE_XP[9];
-        return Math.min(100, Math.round((s.xp / maxXP) * 100));
-    }
-
-    _overallMastery() {
-        const sum = SS_SENSES.reduce((acc, s) => acc + this._masteryPercent(s.id), 0);
-        return Math.round(sum / SS_SENSES.length);
-    }
+    _totalXP() { return SS_SENSES.reduce((a, s) => a + (this.state.senses[s.id].xp || 0), 0); }
+    _overallGrade() { return SS_gradeFromXP(Math.round(this._totalXP() / 6)); }
+    _overallTitle() { return SS_titleFor(this._overallGrade()); }
 
     /* ---------------- Navigation ---------------- */
     _bindNav() {
@@ -342,6 +376,7 @@ class Sinnesschule {
             case 'exams':     main.innerHTML = this._renderExams(); this._afterExams(); break;
             case 'journal':   main.innerHTML = this._renderJournal(); this._afterJournal(); break;
             case 'journey':   main.innerHTML = this._renderJourney(); break;
+            case 'arena':     main.innerHTML = this._renderArena(); this._afterArena(); break;
         }
         this._setSyncBadge(document.getElementById('ss-sync-badge')?.classList.contains('synced'));
     }
@@ -357,14 +392,14 @@ class Sinnesschule {
         <div class="ss-hero">
             <div class="ss-kicker">Lebenslanger Weg · seit ${this._fmtDate(this.state.startedAt)}</div>
             <h1>Schule deine Sinne, schule deine Wahrnehmung</h1>
-            <p>Sechs Disziplinen, zehn Graduierungen, ein Leben Zeit. Wähle täglich einen Sinn, übe ihn bewusst und steige durch bestandene Prüfungen vom <em>Erwachen</em> bis zur <em>Vollendung</em>.</p>
+            <p>Sechs Disziplinen, ein endloser Aufstieg. Wähle täglich einen Sinn, übe ihn bewusst und öffne durch Prüfungen die Tür zur nächsten Stufe. Der Weg endet nie – er wird nur tiefer.</p>
         </div>
 
         <div class="ss-stats">
             <div class="ss-stat"><div class="ss-stat-value">${this.state.streak > 0 ? '<span class="flame">🔥</span> ' : ''}${this.state.streak || 0}</div><div class="ss-stat-label">Tage in Folge</div></div>
             <div class="ss-stat"><div class="ss-stat-value">${days}</div><div class="ss-stat-label">Übungstage</div></div>
             <div class="ss-stat"><div class="ss-stat-value">${hours}h ${mins}m</div><div class="ss-stat-label">Gesamte Praxis</div></div>
-            <div class="ss-stat"><div class="ss-stat-value">${this._overallMastery()}%</div><div class="ss-stat-label">Meisterschaft</div></div>
+            <div class="ss-stat"><div class="ss-stat-value">${this._totalXP().toLocaleString('de-DE')}</div><div class="ss-stat-label">Schärfe gesamt</div></div>
         </div>
 
         <p class="ss-section-title">Deine Disziplinen</p>
@@ -378,26 +413,30 @@ class Sinnesschule {
 
     _senseCard(s) {
         const st = this.state.senses[s.id];
+        const grade = this._grade(s.id);
         const prog = this._gradeProgress(s.id);
-        const needsExam = this._canAdvanceButNeedsExam(s.id);
-        const pips = Array.from({ length: 10 }, (_, i) => `<span class="ss-pip ${i < st.grade ? 'filled' : ''}"></span>`).join('');
+        const needsExam = this._needsExam(s.id);
         return `
         <div class="ss-sense-card" data-sense="${s.id}" style="--accent:${s.accent};--accent-soft:${s.soft};--accent-glow:${s.glow}">
             <div class="ss-sense-head">
                 <div class="ss-sense-icon">${s.icon}</div>
                 <div>
                     <div class="ss-sense-name">${s.name}</div>
-                    <div class="ss-sense-grade-name">${st.grade}. ${SS_GRADES[st.grade - 1]}</div>
+                    <div class="ss-sense-grade-name">${SS_titleFor(grade)}</div>
                 </div>
-                <div class="ss-sense-rank">${st.grade}/10</div>
+                <div class="ss-sense-rank">${this._romanGrade(grade)}</div>
             </div>
             <div class="ss-progress-track"><div class="ss-progress-fill" style="width:${prog}%"></div></div>
             <div class="ss-sense-meta">
-                <span>${st.xp} XP</span>
-                <span>${needsExam ? '⚑ Prüfung offen' : (st.grade >= 10 ? 'Vollendet' : `noch ${Math.max(0, SS_GRADE_XP[st.grade] - st.xp)} XP`)}</span>
+                <span>${st.xp.toLocaleString('de-DE')} Schärfe</span>
+                <span>${needsExam ? '⚑ Prüfung öffnet die Tür' : `noch ${this._xpToNext(s.id).toLocaleString('de-DE')}`}</span>
             </div>
-            <div class="ss-pips">${pips}</div>
         </div>`;
+    }
+
+    _romanGrade(g) {
+        // dezente Stufenanzeige (Grad), nie ein Maximum – nur ein wachsender Rang
+        return 'Grad ' + g;
     }
 
     _afterDashboard() {
@@ -412,9 +451,9 @@ class Sinnesschule {
     /* ===================== PRACTICE (Dojo) ===================== */
     _renderPractice() {
         const s = SS_SENSE_MAP[this.activeSense];
-        const st = this.state.senses[this.activeSense];
+        const grade = this._grade(this.activeSense);
         const exs = SS_EXERCISES[this.activeSense] || [];
-        const needsExam = this._canAdvanceButNeedsExam(this.activeSense);
+        const needsExam = this._needsExam(this.activeSense);
 
         return `
         <div class="ss-sense-picker">
@@ -422,16 +461,16 @@ class Sinnesschule {
         </div>
 
         <div class="ss-panel" style="--accent:${s.accent};--accent-soft:${s.soft}">
-            <h2>${s.icon} ${s.name} — ${st.grade}. ${SS_GRADES[st.grade - 1]}</h2>
-            <p class="sub">Wähle eine Übung und führe sie bewusst aus. Jede abgeschlossene Übung bringt XP und einen Logbuch-Eintrag.</p>
-            ${needsExam ? `<div style="background:rgba(224,176,74,.12);border:1px solid rgba(224,176,74,.35);color:#e0b04a;padding:12px 16px;border-radius:12px;margin-bottom:16px;font-size:14px"><i class="fas fa-medal"></i> Du hast genug XP für die nächste Stufe – lege die <strong>Prüfung des ${s.name}s</strong> ab, um aufzusteigen. <button class="ss-btn ss-btn-gold" style="margin-left:10px;padding:6px 14px;font-size:13px" id="ss-goto-exam">Zur Prüfung</button></div>` : ''}
+            <h2>${s.icon} ${s.name} — ${SS_titleFor(grade)} (Grad ${grade})</h2>
+            <p class="sub">Wähle eine Übung und führe sie bewusst aus. Jede abgeschlossene Übung bringt Schärfe-Punkte und einen Logbuch-Eintrag.</p>
+            ${needsExam ? `<div style="background:rgba(224,176,74,.12);border:1px solid rgba(224,176,74,.35);color:#e0b04a;padding:12px 16px;border-radius:12px;margin-bottom:16px;font-size:14px"><i class="fas fa-medal"></i> Du hast genug geübt – die <strong>Prüfung des ${s.name}s</strong> öffnet die Tür zum nächsten Grad. <button class="ss-btn ss-btn-gold" style="margin-left:10px;padding:6px 14px;font-size:13px" id="ss-goto-exam">Zur Prüfung</button></div>` : ''}
             <div class="ss-exercise-list">
                 ${exs.map(ex => `
                     <div class="ss-exercise-item" data-ex="${ex.id}">
                         <div class="ic">${ex.icon}</div>
                         <div class="body">
                             <div class="title">${ex.title}</div>
-                            <div class="desc">${ex.breath ? 'Geführte Atem-Übung' : ex.steps.length + ' Schritte'} · +${ex.xp} XP</div>
+                            <div class="desc">${ex.breath ? 'Geführte Atem-Übung' : ex.steps.length + ' Schritte'} · +${ex.xp} Schärfe</div>
                         </div>
                         <div class="dur">${Math.round(ex.dur / 60)} Min</div>
                     </div>`).join('')}
@@ -459,9 +498,9 @@ class Sinnesschule {
         const ex = this._findExercise(exId);
         if (!ex) return;
         const s = SS_SENSE_MAP[this.activeSense];
-        const main = document.getElementById('ss-main');
         const R = 110, C = 2 * Math.PI * R;
 
+        const main = document.getElementById('ss-main');
         main.innerHTML = `
         <div class="ss-panel ss-player" style="--accent:${s.accent}">
             <h2>${ex.icon} ${ex.title}</h2>
@@ -530,21 +569,20 @@ class Sinnesschule {
     }
 
     _completeExercise(ex) {
+        const id = this.activeSense;
+        const before = this._grade(id);
         const minutes = Math.max(1, Math.round(ex.dur / 60));
         this._registerPracticeDay(minutes);
-        const newGrade = this._addXP(this.activeSense, ex.xp);
-        this.state.senses[this.activeSense].sessions++;
+        this.state.senses[id].xp += ex.xp;
+        this.state.senses[id].sessions++;
+        const after = this._grade(id);
 
-        // Logbuch-Eintrag-Vorschlag
         this._save();
         this._chime();
 
-        if (newGrade) {
-            this._showLevelUp(this.activeSense, newGrade);
-        } else {
-            this._toast(`+${ex.xp} XP · ${SS_SENSE_MAP[this.activeSense].name}`, 'success');
-        }
-        // Reflexion anbieten
+        if (after > before) this._showLevelUp(id, after);
+        else this._toast(`+${ex.xp} Schärfe · ${SS_SENSE_MAP[id].name}`, 'success');
+
         this._openReflection(ex);
     }
 
@@ -593,16 +631,12 @@ class Sinnesschule {
     _showLevelUp(senseId, grade) {
         const s = SS_SENSE_MAP[senseId];
         let ov = document.querySelector('.ss-levelup');
-        if (!ov) {
-            ov = document.createElement('div');
-            ov.className = 'ss-levelup';
-            document.body.appendChild(ov);
-        }
+        if (!ov) { ov = document.createElement('div'); ov.className = 'ss-levelup'; document.body.appendChild(ov); }
         ov.innerHTML = `
         <div class="ss-levelup-card">
             <div class="seal">${s.icon}</div>
             <h2>Aufstieg!</h2>
-            <p>${s.name} · ${grade}. Stufe<br><strong style="color:#e0b04a;font-size:18px">${SS_GRADES[grade - 1]}</strong></p>
+            <p>${s.name} · Grad ${grade}<br><strong style="color:#e0b04a;font-size:18px">${SS_titleFor(grade)}</strong></p>
             <button class="ss-btn ss-btn-gold ss-btn-lg" id="ss-lvl-ok">Weiter auf dem Weg</button>
         </div>`;
         ov.classList.add('show');
@@ -615,25 +649,27 @@ class Sinnesschule {
         return `
         <div class="ss-hero">
             <div class="ss-kicker">Prüfungen</div>
-            <h1>Zeige deine Schärfe</h1>
-            <p>Jede Disziplin hat ihre Prüfung. Bestehe sie (≥ 70 Punkte), um – sobald du genug geübt hast – in die nächste Stufe aufzusteigen. Deine Ergebnisse werden über die Jahre festgehalten.</p>
+            <h1>Öffne die nächste Tür</h1>
+            <p>Jede Disziplin hat ihre Prüfung. Bestehe sie, um – wenn du genug geübt hast – in den nächsten Grad aufzusteigen. Die geforderte Punktzahl steigt mit jedem Grad: ein Weg, der nie zu Ende geht.</p>
         </div>
         <div class="ss-grid">
             ${SS_SENSES.map(s => {
                 const st = this.state.senses[s.id];
+                const grade = this._grade(s.id);
+                const req = SS_reqExam(grade);
                 const best = st.examScores.length ? Math.max(...st.examScores.map(e => e.score)) : 0;
-                const passedCurrent = (st.examsPassed[st.grade] || 0) >= 70;
+                const needsExam = this._needsExam(s.id);
                 return `
                 <div class="ss-sense-card" data-exam="${s.id}" style="--accent:${s.accent};--accent-soft:${s.soft};--accent-glow:${s.glow}">
                     <div class="ss-sense-head">
                         <div class="ss-sense-icon">${s.icon}</div>
                         <div>
                             <div class="ss-sense-name">${SS_EXAMS[s.id].title}</div>
-                            <div class="ss-sense-grade-name">${st.examScores.length} Versuche · Best: ${best}</div>
+                            <div class="ss-sense-grade-name">${st.examScores.length} Versuche · Best ${best}</div>
                         </div>
-                        <div class="ss-sense-rank">${passedCurrent ? '✓' : st.grade}</div>
+                        <div class="ss-sense-rank">≥ ${req}</div>
                     </div>
-                    <p class="ss-sense-meta" style="margin-top:8px">${st.grade >= 10 ? 'Stufe vollendet' : (passedCurrent ? 'Prüfung dieser Stufe bestanden' : 'Prüfung ablegen')}</p>
+                    <p class="ss-sense-meta" style="margin-top:8px">${needsExam ? '⚑ Tür wartet auf dich' : `Grad ${grade} · ${SS_titleFor(grade)}`}</p>
                 </div>`;
             }).join('')}
         </div>`;
@@ -653,15 +689,17 @@ class Sinnesschule {
         if (exam.type === 'scale') return this._examScale(senseId);
     }
 
-    // --- Farb-Prüfung (interaktiv) ---
+    // --- Farb-Prüfung (interaktiv, skaliert mit Grad) ---
     _examColor(senseId) {
         const s = SS_SENSE_MAP[senseId];
-        this.exam = { round: 0, total: 8, correct: 0 };
+        const grade = this._grade(senseId);
+        const rounds = Math.min(8 + Math.floor(grade / 2), 20);
+        this.exam = { round: 0, total: rounds, correct: 0, grade };
         const main = document.getElementById('ss-main');
         main.innerHTML = `
         <div class="ss-panel" style="--accent:${s.accent}">
             <h2>${s.icon} ${SS_EXAMS[senseId].title}</h2>
-            <p class="sub">${SS_EXAMS[senseId].protocol}</p>
+            <p class="sub">${SS_EXAMS[senseId].protocol} · Bestehen ab ${SS_reqExam(grade)} Punkten.</p>
             <div id="ss-exam-stage"></div>
         </div>`;
         this._renderColorRound();
@@ -676,7 +714,8 @@ class Sinnesschule {
         const hue = Math.floor(Math.random() * 360);
         const sat = 45 + Math.random() * 20;
         const light = 50 + Math.random() * 10;
-        const delta = Math.max(3, 22 - ex.round * 2.5); // wird feiner
+        // wird mit Runde UND Grad feiner
+        const delta = Math.max(2.2, 20 - ex.round * 2 - ex.grade * 0.6);
         const odd = Math.floor(Math.random() * count);
         const base = `hsl(${hue}, ${sat}%, ${light}%)`;
         const oddC = `hsl(${hue}, ${sat}%, ${light + delta}%)`;
@@ -692,22 +731,22 @@ class Sinnesschule {
         stage.querySelectorAll('.ss-swatch').forEach(sw => {
             sw.addEventListener('click', () => {
                 if (+sw.dataset.i === odd) ex.correct++;
-                else { sw.style.outline = '3px solid #ef4444'; }
+                else sw.style.outline = '3px solid #ef4444';
                 ex.round++;
                 setTimeout(() => this._renderColorRound(), 180);
             });
         });
     }
 
-    // --- Zähl-Prüfung (Protokoll + Eingabe) ---
     _examCount(senseId) {
         const s = SS_SENSE_MAP[senseId];
         const exam = SS_EXAMS[senseId];
+        const grade = this._grade(senseId);
         const main = document.getElementById('ss-main');
         main.innerHTML = `
         <div class="ss-panel" style="--accent:${s.accent}">
             <h2>${s.icon} ${exam.title}</h2>
-            <p class="sub">${exam.protocol}</p>
+            <p class="sub">${exam.protocol} · Bestehen ab ${SS_reqExam(grade)} Punkten.</p>
             <div class="ss-field">
                 <label>Wie viele ${exam.unit} konntest du klar unterscheiden / erkennen?</label>
                 <div class="ss-slider-row">
@@ -727,15 +766,15 @@ class Sinnesschule {
         });
     }
 
-    // --- Skala-Prüfung (Selbstbewertung) ---
     _examScale(senseId) {
         const s = SS_SENSE_MAP[senseId];
         const exam = SS_EXAMS[senseId];
+        const grade = this._grade(senseId);
         const main = document.getElementById('ss-main');
         main.innerHTML = `
         <div class="ss-panel" style="--accent:${s.accent}">
             <h2>${s.icon} ${exam.title}</h2>
-            <p class="sub">${exam.protocol}</p>
+            <p class="sub">${exam.protocol} · Bestehen ab ${SS_reqExam(grade)} Punkten.</p>
             <div class="ss-field">
                 <label>Klarheit deiner inneren Wahrnehmung (0–10)</label>
                 <div class="ss-slider-row">
@@ -755,15 +794,19 @@ class Sinnesschule {
         const senseId = this.activeSense;
         const s = SS_SENSE_MAP[senseId];
         const st = this.state.senses[senseId];
-        st.examScores.push({ date: this._today(), grade: st.grade, score });
-        const passed = score >= 70;
-        if (passed) {
-            const prevBest = st.examsPassed[st.grade] || 0;
-            if (score > prevBest) st.examsPassed[st.grade] = score;
-        }
-        // Prüfungen geben auch XP
-        const xpGain = Math.round(score / 2);
-        const newGrade = this._addXP(senseId, xpGain);
+        const before = this._grade(senseId);
+        const req = SS_reqExam(before);
+
+        st.examScores.push({ date: this._today(), grade: before, score });
+        if (score > (st.bestExam || 0)) st.bestExam = score;
+
+        const passed = score >= req;
+        if (passed) st.doorGrade = Math.max(st.doorGrade || 0, before); // Tür von 'before' → 'before+1' geöffnet
+
+        const xpGain = Math.round(score); // Prüfungen geben kräftig Schärfe
+        st.xp += xpGain;
+
+        const after = this._grade(senseId);
         this._save();
         this._chime(passed);
 
@@ -774,9 +817,9 @@ class Sinnesschule {
             <h2>${s.icon} Prüfungsergebnis</h2>
             <div class="ss-score-circle" style="--deg:${deg}deg"><span class="val">${score}</span></div>
             <p class="sub" style="text-align:center">${passed
-                ? '<strong style="color:#34d399">Bestanden!</strong> +' + xpGain + ' XP'
-                : 'Noch nicht bestanden (≥ 70 nötig). Übe weiter – jeder Versuch zählt und wird festgehalten.'}</p>
-            ${newGrade ? `<p style="color:#e0b04a;font-weight:600">Aufstieg in Stufe ${newGrade}: ${SS_GRADES[newGrade - 1]}!</p>` : ''}
+                ? '<strong style="color:#34d399">Tür geöffnet!</strong> +' + xpGain + ' Schärfe'
+                : `Noch nicht bestanden (≥ ${req} nötig). +${xpGain} Schärfe. Übe weiter – jeder Versuch zählt und wird festgehalten.`}</p>
+            ${after > before ? `<p style="color:#e0b04a;font-weight:600">Aufstieg in Grad ${after}: ${SS_titleFor(after)}!</p>` : ''}
             <div class="ss-player-controls">
                 <button class="ss-btn ss-btn-ghost" id="ss-exam-retry">Nochmal</button>
                 <button class="ss-btn ss-btn-primary" id="ss-exam-back">Zur Übersicht</button>
@@ -784,7 +827,7 @@ class Sinnesschule {
         </div>`;
         main.querySelector('#ss-exam-retry').addEventListener('click', () => this._startExam(senseId));
         main.querySelector('#ss-exam-back').addEventListener('click', () => this.go('dashboard'));
-        if (newGrade) setTimeout(() => this._showLevelUp(senseId, newGrade), 400);
+        if (after > before) setTimeout(() => this._showLevelUp(senseId, after), 400);
     }
 
     /* ===================== JOURNAL ===================== */
@@ -853,10 +896,6 @@ class Sinnesschule {
         const yearRows = years.map(y => {
             const cells = [];
             for (let w = 0; w < 53; w++) {
-                // Repräsentativer Tag pro Woche (vereinfachte Jahres-Heatmap)
-                const date = new Date(y, 0, 1 + w * 7);
-                const ds = date.toISOString().slice(0, 10);
-                // markiere Woche, wenn an irgendeinem Tag dieser Woche geübt wurde
                 let lit = false;
                 for (let d = 0; d < 7; d++) {
                     const dd = new Date(y, 0, 1 + w * 7 + d).toISOString().slice(0, 10);
@@ -868,13 +907,13 @@ class Sinnesschule {
         }).join('');
 
         const masteryRows = SS_SENSES.map(s => {
-            const st = this.state.senses[s.id];
-            const pct = this._masteryPercent(s.id);
+            const grade = this._grade(s.id);
+            const prog = this._gradeProgress(s.id);
             return `
             <div class="ss-mastery-row">
                 <div class="name">${s.icon} ${s.name}</div>
-                <div class="bar"><span style="width:${pct}%"></span></div>
-                <div class="rank">${st.grade}. ${SS_GRADES[st.grade - 1]}</div>
+                <div class="bar"><span style="width:${prog}%"></span></div>
+                <div class="rank">Grad ${grade}</div>
             </div>`;
         }).join('');
 
@@ -885,7 +924,7 @@ class Sinnesschule {
         <div class="ss-hero">
             <div class="ss-kicker">Deine Reise</div>
             <h1>Ein Leben der Wahrnehmung</h1>
-            <p>Begonnen ${this._fmtDate(this.state.startedAt)} · ${days} Übungstage über ${yearsActive} ${yearsActive === 1 ? 'Jahr' : 'Jahre'}. Der Weg ist nicht eilig – er ist stetig.</p>
+            <p>Begonnen ${this._fmtDate(this.state.startedAt)} · ${days} Übungstage über ${yearsActive} ${yearsActive === 1 ? 'Jahr' : 'Jahre'}. Der Weg ist nicht eilig – er ist stetig und ohne Ende.</p>
         </div>
 
         <div class="ss-panel">
@@ -904,6 +943,129 @@ class Sinnesschule {
         </div>
 
         <div class="ss-quote">„${SS_QUOTES[4].t}"<span class="who">— ${SS_QUOTES[4].w}</span></div>`;
+    }
+
+    /* ===================== ARENA (anonyme Rangliste) ===================== */
+    _renderArena() {
+        const total = this._totalXP();
+        const loggedIn = this._isLoggedIn();
+
+        const head = `
+        <div class="ss-hero">
+            <div class="ss-kicker">Arena · anonym</div>
+            <h1>Wer hat die feinsten Sinne?</h1>
+            <p>Miss dich anonym mit allen Übenden. Verglichen wird deine <strong>Schärfe</strong> – die Summe aus Praxis und bestandenen Prüfungen. Niemand sieht, wer du bist; nur dein selbstgewähltes Pseudonym.</p>
+        </div>`;
+
+        const aliasPanel = `
+        <div class="ss-panel">
+            <h3><i class="fas fa-user-secret"></i> Dein Pseudonym</h3>
+            <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+                <div style="font-size:22px;font-weight:800">${this._esc(this.state.alias)}</div>
+                <button class="ss-btn ss-btn-ghost" id="ss-alias-reroll" style="padding:8px 14px;font-size:13px"><i class="fas fa-dice"></i> Neu würfeln</button>
+            </div>
+            <div style="margin-top:14px;display:flex;gap:20px;flex-wrap:wrap">
+                <div><div style="font-size:24px;font-weight:800">${total.toLocaleString('de-DE')}</div><div style="color:var(--ss-text-dim);font-size:12px">Deine Schärfe</div></div>
+                <div><div style="font-size:24px;font-weight:800;color:#e0b04a">${this._overallTitle()}</div><div style="color:var(--ss-text-dim);font-size:12px">Dein Titel (Grad ${this._overallGrade()})</div></div>
+            </div>
+            ${loggedIn
+                ? `<button class="ss-btn ss-btn-gold ss-btn-block" id="ss-arena-submit" style="margin-top:18px"><i class="fas fa-trophy"></i> In die Arena eintragen / aktualisieren</button>`
+                : `<div style="margin-top:18px;background:rgba(99,102,241,.12);border:1px solid var(--ss-line);padding:14px 16px;border-radius:12px;color:var(--ss-text-dim);font-size:14px">
+                     <i class="fas fa-lock"></i> Melde dich an, um anonym anzutreten – so bleibt dein Rang geräteübergreifend erhalten.
+                     <button class="ss-btn ss-btn-primary" id="ss-arena-login" style="margin-top:10px;padding:9px 16px;font-size:14px">Anmelden</button>
+                   </div>`}
+        </div>`;
+
+        const board = `
+        <div class="ss-panel">
+            <h3><i class="fas fa-ranking-star"></i> Rangliste der feinsten Sinne</h3>
+            <div id="ss-lb-list"><div class="ss-empty"><i class="fas fa-circle-notch fa-spin"></i>Lade Rangliste …</div></div>
+        </div>`;
+
+        return head + aliasPanel + board;
+    }
+
+    _afterArena() {
+        const reroll = document.getElementById('ss-alias-reroll');
+        if (reroll) reroll.addEventListener('click', () => {
+            this.state.alias = this._generateAlias();
+            this._save();
+            this.render();
+        });
+        const login = document.getElementById('ss-arena-login');
+        if (login) login.addEventListener('click', () => this._openLogin());
+        const submit = document.getElementById('ss-arena-submit');
+        if (submit) submit.addEventListener('click', async () => {
+            submit.disabled = true;
+            submit.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Wird eingetragen …';
+            await this._lbSubmit();
+            await this._lbRefresh();
+            this._toast('In der Arena eingetragen!', 'gold');
+            this.render();
+        });
+
+        // Auto-Submit, wenn eingeloggt und Schärfe vorhanden – hält den Rang aktuell
+        if (this._isLoggedIn() && this._totalXP() > 0) this._lbSubmit();
+        this._lbRefresh();
+    }
+
+    _lbBase() {
+        const base = (window.AWS_APP_CONFIG && window.AWS_APP_CONFIG.API_BASE) || 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
+        return base.replace(/\/$/, '') + '/snowflake-highscores';
+    }
+
+    async _lbSubmit() {
+        const id = this._identityId();
+        if (!id) return;
+        try {
+            await fetch(this._lbBase(), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    game: 'sinnesschule',
+                    userId: id,
+                    name: this.state.alias,
+                    title: this._overallTitle(),
+                    score: this._totalXP()
+                })
+            });
+        } catch (e) { console.warn('Arena-Submit fehlgeschlagen:', e); }
+    }
+
+    async _lbRefresh() {
+        const listEl = document.getElementById('ss-lb-list');
+        if (!listEl) return;
+        try {
+            const res = await fetch(this._lbBase() + '?game=sinnesschule&limit=25');
+            const data = await res.json();
+            this.leaderboard = (data && data.highscores) || [];
+        } catch (e) {
+            this.leaderboard = [];
+            console.warn('Arena-Load fehlgeschlagen:', e);
+        }
+        this._renderLeaderboardList();
+    }
+
+    _renderLeaderboardList() {
+        const listEl = document.getElementById('ss-lb-list');
+        if (!listEl) return;
+        const board = this.leaderboard || [];
+        if (board.length === 0) {
+            listEl.innerHTML = `<div class="ss-empty"><i class="fas fa-trophy"></i>Noch keine Einträge. Sei die / der Erste!</div>`;
+            return;
+        }
+        const myAlias = this.state.alias;
+        const medals = ['🥇', '🥈', '🥉'];
+        listEl.innerHTML = `<div class="ss-lb">${board.map((e, i) => {
+            const mine = e.name === myAlias;
+            const rank = i < 3 ? medals[i] : (i + 1);
+            return `
+            <div class="ss-lb-row ${mine ? 'me' : ''}">
+                <div class="ss-lb-rank">${rank}</div>
+                <div class="ss-lb-name">${this._esc(e.name)}${e.title ? `<span class="ss-lb-title">${this._esc(e.title)}</span>` : ''}</div>
+                <div class="ss-lb-score">${Number(e.score).toLocaleString('de-DE')}</div>
+            </div>`;
+        }).join('')}</div>`;
     }
 
     /* ===================== Utils ===================== */
@@ -935,7 +1097,7 @@ class Sinnesschule {
     }
 
     _esc(str) {
-        const d = document.createElement('div'); d.textContent = str; return d.innerHTML;
+        const d = document.createElement('div'); d.textContent = str == null ? '' : String(str); return d.innerHTML;
     }
 
     _toast(msg, type) {

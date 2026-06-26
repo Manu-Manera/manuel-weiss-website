@@ -1,11 +1,19 @@
 /**
- * AWS Lambda: Snowflake / Blüten-Spiel Highscores
- * GET öffentlich: nur Name, Score, Datum (keine E-Mail).
- * GET mit Header X-Admin-Highscore-Secret + Env HIGHSCORE_ADMIN_SECRET: alle Einträge inkl. E-Mail (nur für Admin-Panel).
+ * AWS Lambda: Highscores (Snowflake-Spiel + weitere "games" via ?game=)
+ *
+ * Mehrere Ranglisten in EINER Tabelle, getrennt über das Feld `game`:
+ *   - Ohne `game`  → Snowflake-Spiel (Rückwärtskompatibel; Items ohne game-Feld).
+ *   - game=sinnesschule → anonyme "Schule der Sinne"-Rangliste.
+ *
+ * Pro Nutzer EIN Eintrag, wenn `game` UND `userId` mitgegeben werden
+ * (id = `${game}#${userId}` → PutCommand überschreibt / Upsert, Bestwert bleibt erhalten).
+ *
+ * GET öffentlich: nur name, score, title, date (keine E-Mail, keine userId).
+ * GET mit Header X-Admin-Highscore-Secret + Env HIGHSCORE_ADMIN_SECRET: alle Felder.
  */
 
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient, PutCommand, ScanCommand, DeleteCommand } = require('@aws-sdk/lib-dynamodb');
+const { DynamoDBDocumentClient, PutCommand, GetCommand, ScanCommand, DeleteCommand } = require('@aws-sdk/lib-dynamodb');
 
 const CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*',
@@ -41,6 +49,11 @@ function isAdminRequest(event) {
     return provided === secret;
 }
 
+// Welche "game"-Rangliste ist gemeint? Items ohne game-Feld zählen als 'snowflake'.
+function gameOf(item) {
+    return item.game || 'snowflake';
+}
+
 exports.handler = async (event) => {
     if (event.httpMethod === 'OPTIONS') {
         return { statusCode: 200, headers: CORS_HEADERS, body: '' };
@@ -48,37 +61,30 @@ exports.handler = async (event) => {
 
     try {
         if (event.httpMethod === 'GET') {
-            const result = await docClient.send(new ScanCommand({
-                TableName: TABLE_NAME
-            }));
+            const qs = event.queryStringParameters || {};
+            const game = qs.game ? String(qs.game).slice(0, 40) : null;
+            const limit = Math.min(parseInt(qs.limit, 10) || (game ? 25 : 10), 100);
 
-            const items = result.Items || [];
+            const result = await docClient.send(new ScanCommand({ TableName: TABLE_NAME }));
+            const allItems = result.Items || [];
             const admin = isAdminRequest(event);
 
-            let highscores = items.map((item) => {
-                const base = {
-                    name: item.name,
-                    score: item.score,
-                    date: item.date
-                };
+            const filtered = allItems.filter((it) => {
+                const g = gameOf(it);
+                return game ? g === game : g === 'snowflake';
+            });
+
+            let highscores = filtered.map((item) => {
+                const base = { name: item.name, score: item.score, date: item.date };
+                if (item.title) base.title = item.title;
                 if (admin) {
-                    return {
-                        ...base,
-                        id: item.id,
-                        timestamp: item.timestamp,
-                        email: item.email || ''
-                    };
+                    return { ...base, id: item.id, timestamp: item.timestamp, email: item.email || '', game: gameOf(item) };
                 }
                 return base;
             });
 
             highscores.sort((a, b) => b.score - a.score);
-
-            if (!admin) {
-                highscores = highscores.slice(0, 10);
-            } else {
-                highscores = highscores.slice(0, 500);
-            }
+            highscores = highscores.slice(0, admin ? 500 : limit);
 
             return {
                 statusCode: 200,
@@ -112,35 +118,55 @@ exports.handler = async (event) => {
                 };
             }
 
+            const game = body.game ? String(body.game).slice(0, 40) : null;
+            const userId = body.userId ? String(body.userId).slice(0, 80) : null;
+            const title = body.title ? String(body.title).slice(0, 40) : null;
             const emailClean = sanitizeEmail(body.email);
-            const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+            // Upsert pro Nutzer, wenn game + userId vorhanden (sonst neuer Eintrag wie bisher)
+            const upsert = !!(game && userId);
+            const id = upsert
+                ? `${game}#${userId}`
+                : `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+            let finalScore = Number(score);
+
+            // Bestwert behalten: bestehenden Eintrag lesen
+            if (upsert) {
+                try {
+                    const existing = await docClient.send(new GetCommand({ TableName: TABLE_NAME, Key: { id } }));
+                    if (existing.Item && typeof existing.Item.score === 'number' && existing.Item.score > finalScore) {
+                        finalScore = existing.Item.score;
+                    }
+                } catch (e) { /* ignore */ }
+            }
 
             const item = {
                 id,
-                name: String(name).substring(0, 20),
-                score: Number(score),
+                name: String(name).substring(0, 24),
+                score: finalScore,
                 date: new Date().toLocaleDateString('de-DE'),
                 timestamp: Date.now()
             };
-            if (emailClean) {
-                item.email = emailClean;
-            }
+            if (game) item.game = game;
+            if (title) item.title = title;
+            if (emailClean) item.email = emailClean;
 
-            await docClient.send(new PutCommand({
-                TableName: TABLE_NAME,
-                Item: item
-            }));
+            await docClient.send(new PutCommand({ TableName: TABLE_NAME, Item: item }));
 
-            console.log('Highscore saved:', { id, name: item.name, score: item.score, hasEmail: !!emailClean });
+            console.log('Highscore saved:', { id, game: game || 'snowflake', name: item.name, score: item.score });
 
+            // Rangliste der passenden game-Gruppe zurückgeben
             const scan = await docClient.send(new ScanCommand({ TableName: TABLE_NAME }));
-            let highscores = (scan.Items || []).map((i) => ({
-                name: i.name,
-                score: i.score,
-                date: i.date
-            }));
+            let highscores = (scan.Items || [])
+                .filter((it) => (game ? gameOf(it) === game : gameOf(it) === 'snowflake'))
+                .map((i) => {
+                    const b = { name: i.name, score: i.score, date: i.date };
+                    if (i.title) b.title = i.title;
+                    return b;
+                });
             highscores.sort((a, b) => b.score - a.score);
-            highscores = highscores.slice(0, 10);
+            highscores = highscores.slice(0, game ? 25 : 10);
 
             return {
                 statusCode: 200,
@@ -150,28 +176,25 @@ exports.handler = async (event) => {
         }
 
         if (event.httpMethod === 'DELETE') {
-            const scanResult = await docClient.send(new ScanCommand({
-                TableName: TABLE_NAME
-            }));
+            // Nur Admin darf löschen; optional auf eine game-Gruppe begrenzt
+            if (!isAdminRequest(event)) {
+                return { statusCode: 403, headers: CORS_HEADERS, body: JSON.stringify({ error: 'Forbidden' }) };
+            }
+            const qs = event.queryStringParameters || {};
+            const game = qs.game ? String(qs.game).slice(0, 40) : null;
 
-            const items = scanResult.Items || [];
-            console.log(`Deleting ${items.length} highscores...`);
+            const scanResult = await docClient.send(new ScanCommand({ TableName: TABLE_NAME }));
+            const items = (scanResult.Items || []).filter((it) => (game ? gameOf(it) === game : true));
+            console.log(`Deleting ${items.length} highscores (game=${game || 'all'})...`);
 
             for (const item of items) {
-                await docClient.send(new DeleteCommand({
-                    TableName: TABLE_NAME,
-                    Key: { id: item.id }
-                }));
+                await docClient.send(new DeleteCommand({ TableName: TABLE_NAME, Key: { id: item.id } }));
             }
 
             return {
                 statusCode: 200,
                 headers: CORS_HEADERS,
-                body: JSON.stringify({
-                    success: true,
-                    message: `${items.length} Highscores gelöscht`,
-                    highscores: []
-                })
+                body: JSON.stringify({ success: true, message: `${items.length} Highscores gelöscht`, highscores: [] })
             };
         }
 
