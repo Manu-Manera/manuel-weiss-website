@@ -174,3 +174,160 @@
     width: 32px; height: 32px; border-radius: 8px; font-size: 14px; transition: background .14s, color .14s;
 }
 .ks-habit-row .ic-btn:hover { background: var(--ss-line); color: var(--ss-text); }
+
+/* ============================================================
+   COACH · ONBOARDING · INSIGHTS · RITUAL · MODAL
+   ============================================================ */
+
+/* ---------- Onboarding ---------- */
+.ks-onb { display: flex; flex-direction: column; gap: 22px; }
+.ks-onb-block h3 { margin: 0 0 10px; font-size: 16px; }
+.ks-onb-row { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+@media (max-width: 560px) { .ks-onb-row { grid-template-columns: 1fr; } }
+.ks-opt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.ks-opt-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.ks-opt {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    background: var(--ss-bg-soft); border: 2px solid var(--ss-line); border-radius: 14px;
+    padding: 14px 10px; cursor: pointer; color: var(--ss-text); font-family: var(--ss-font);
+    font-size: 14px; font-weight: 600; transition: border-color .15s, background .15s, transform .12s; text-align: center;
+}
+.ks-opt .ic { font-size: 26px; line-height: 1; }
+.ks-opt:hover { border-color: var(--ks-accent); transform: translateY(-2px); }
+.ks-opt.active { border-color: var(--ks-accent); background: color-mix(in srgb, var(--ks-accent) 14%, var(--ss-bg-soft)); }
+.ks-opt.locked { opacity: .7; cursor: default; border-style: dashed; }
+.ks-opt.locked:hover { transform: none; }
+.ks-stepper { display: flex; align-items: center; gap: 16px; }
+.ks-stepper button {
+    width: 44px; height: 44px; border-radius: 12px; border: 2px solid var(--ss-line);
+    background: var(--ss-bg-soft); color: var(--ss-text); font-size: 22px; cursor: pointer; transition: border-color .15s;
+}
+.ks-stepper button:hover { border-color: var(--ks-accent); }
+.ks-stepper .val { font-size: 28px; font-weight: 800; min-width: 36px; text-align: center; color: var(--ks-accent); }
+.ks-time-input {
+    background: var(--ss-bg-soft); border: 2px solid var(--ss-line); border-radius: 12px;
+    padding: 12px 14px; color: var(--ss-text); font-family: var(--ss-font); font-size: 16px;
+}
+.ks-time-input:focus { outline: none; border-color: var(--ks-accent); }
+
+/* ---------- Coach ---------- */
+.ks-coach-hero { position: relative; }
+.ks-coach-edit { position: absolute; top: 18px; right: 18px; }
+@media (max-width: 560px) { .ks-coach-edit { position: static; margin-top: 12px; } }
+.ks-coach-session { --accent: var(--ks-accent); border-color: color-mix(in srgb, var(--ks-accent) 35%, var(--ss-line)); }
+.ks-coach-session-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 16px; }
+.ks-done-badge { color: var(--ks-accent); font-weight: 700; font-size: 14px; white-space: nowrap; }
+.ks-coach-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+.ks-coach-ex {
+    display: flex; align-items: center; gap: 14px; background: var(--ss-bg-soft);
+    border: 1px solid var(--ss-line); border-radius: 14px; padding: 12px 14px;
+}
+.ks-coach-ex .n {
+    width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; background: var(--ks-accent); color: #04130c;
+    display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px;
+}
+.ks-coach-ex .ic { font-size: 24px; flex-shrink: 0; }
+.ks-coach-ex .b { flex: 1; min-width: 0; }
+.ks-coach-ex .b .t { font-weight: 700; font-size: 15px; }
+.ks-coach-ex .b .s { font-size: 12px; color: var(--ss-text-dim); }
+.ks-rest { display: flex; align-items: flex-start; gap: 16px; }
+.ks-rest .ic { font-size: 40px; line-height: 1; }
+.ks-feedback-opts { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+
+/* Wochen-Übersicht */
+.ks-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+.ks-week-day { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.ks-week-day .dow { font-size: 11px; color: var(--ss-text-dim); font-weight: 600; }
+.ks-week-day .cell {
+    width: 100%; aspect-ratio: 1; max-width: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; background: var(--ss-bg-soft); border: 1px solid var(--ss-line); color: var(--ss-text-dim);
+}
+.ks-week-day.planned .cell { border-color: color-mix(in srgb, var(--ks-accent) 40%, var(--ss-line)); color: var(--ss-text); }
+.ks-week-day.done .cell { background: var(--ks-accent); border-color: var(--ks-accent); color: #04130c; }
+.ks-week-day.rest .cell { opacity: .55; }
+.ks-week-day.today .cell { box-shadow: 0 0 0 3px color-mix(in srgb, var(--ks-accent) 30%, transparent); }
+
+/* ---------- Ritual ---------- */
+.ks-ritual { margin-top: 22px; }
+.ks-ritual-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ks-ritual-count { font-size: 13px; font-weight: 700; color: var(--ks-accent); }
+.ks-ritual-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.ks-ritual-item {
+    display: flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none;
+    background: var(--ss-bg-soft); border: 1px solid var(--ss-line); border-radius: 14px;
+    padding: 14px 8px; color: var(--ss-text); font-family: var(--ss-font); cursor: pointer; transition: border-color .15s, transform .12s;
+}
+.ks-ritual-item:hover { border-color: var(--ks-accent); transform: translateY(-2px); }
+.ks-ritual-item .ic { font-size: 26px; line-height: 1; }
+.ks-ritual-item .nm { font-weight: 700; font-size: 14px; }
+.ks-ritual-item .st { font-size: 11px; color: var(--ss-text-dim); }
+.ks-ritual-item.done { border-color: var(--ks-accent); background: color-mix(in srgb, var(--ks-accent) 12%, var(--ss-bg-soft)); }
+.ks-ritual-item.done .st { color: var(--ks-accent); }
+
+/* ---------- Insights ---------- */
+.ks-insights-grid { display: grid; grid-template-columns: 240px 1fr; gap: 22px; align-items: start; }
+@media (max-width: 620px) { .ks-insights-grid { grid-template-columns: 1fr; } }
+.ks-radar { width: 100%; max-width: 240px; display: block; margin: 0 auto; }
+.ks-radar-ring { fill: none; stroke: var(--ss-line); stroke-width: 1; }
+.ks-radar-axis { stroke: var(--ss-line); stroke-width: 1; }
+.ks-radar-data { fill: color-mix(in srgb, var(--ks-accent) 28%, transparent); stroke: var(--ks-accent); stroke-width: 2; }
+.ks-radar-dot { fill: var(--ks-accent); }
+.ks-radar-lbl { font-size: 16px; }
+.ks-radar-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; justify-content: center; margin-top: 6px; }
+.ks-radar-legend span { font-size: 11px; color: var(--ss-text-dim); }
+.ks-week-stats { display: flex; gap: 10px; margin-bottom: 14px; }
+.ks-week-stats div { flex: 1; background: var(--ss-bg-soft); border: 1px solid var(--ss-line); border-radius: 12px; padding: 10px; text-align: center; }
+.ks-week-stats .n { display: block; font-size: 20px; font-weight: 800; color: var(--ks-accent); }
+.ks-week-stats .l { display: block; font-size: 11px; color: var(--ss-text-dim); margin-top: 2px; }
+.ks-disc-bars { display: flex; flex-direction: column; gap: 8px; }
+.ks-disc-bar { display: flex; align-items: center; gap: 10px; }
+.ks-disc-bar .lbl { font-size: 16px; width: 22px; text-align: center; }
+.ks-disc-bar .track { flex: 1; height: 10px; background: var(--ss-bg-soft); border-radius: 999px; overflow: hidden; }
+.ks-disc-bar .fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width .4s; }
+.ks-disc-bar .v { font-size: 12px; color: var(--ss-text-dim); width: 16px; text-align: right; }
+
+/* Heatmap */
+.ks-heatmap { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 4px; }
+.ks-hm-col { display: flex; flex-direction: column; gap: 4px; }
+.ks-hm-cell { width: 14px; height: 14px; border-radius: 4px; background: var(--ss-bg-soft); border: 1px solid var(--ss-line); }
+.ks-hm-cell.l0 { background: var(--ss-bg-soft); }
+.ks-hm-cell.l1 { background: color-mix(in srgb, var(--ks-accent) 35%, var(--ss-bg-soft)); border-color: transparent; }
+.ks-hm-cell.l2 { background: color-mix(in srgb, var(--ks-accent) 65%, var(--ss-bg-soft)); border-color: transparent; }
+.ks-hm-cell.l3 { background: var(--ks-accent); border-color: transparent; }
+.ks-hm-cell.future { opacity: .25; }
+.ks-hm-legend { display: flex; align-items: center; gap: 5px; margin-top: 8px; font-size: 11px; color: var(--ss-text-dim); }
+
+/* ---------- Modal ---------- */
+.ks-modal-overlay {
+    position: fixed; inset: 0; z-index: 10000; background: rgba(4, 10, 8, .6);
+    display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px);
+}
+.ks-modal {
+    width: 100%; max-width: 480px; background: var(--ss-bg, #0e1714); border: 1px solid var(--ss-line);
+    border-radius: 18px; padding: 24px; box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+}
+.ks-modal h3 { margin: 0 0 12px; font-size: 18px; }
+.ks-modal-label { display: block; font-size: 14px; color: var(--ss-text-dim); margin-bottom: 8px; }
+.ks-modal-input {
+    width: 100%; background: var(--ss-bg-soft); border: 1px solid var(--ss-line); border-radius: 12px;
+    padding: 12px 14px; color: var(--ss-text); font-family: var(--ss-font); font-size: 15px; resize: vertical;
+}
+.ks-modal-input:focus { outline: none; border-color: var(--ks-accent); }
+.ks-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+
+/* Equipment-Badges in der Trainingsliste */
+.ks-equip-badge {
+    display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .03em; vertical-align: middle;
+    color: var(--ks-accent); background: color-mix(in srgb, var(--ks-accent) 14%, transparent);
+    border-radius: 999px; padding: 2px 8px; margin-left: 6px;
+}
+.ks-locked-hint {
+    margin-top: 14px; font-size: 13px; color: var(--ss-text-dim);
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.ks-locked-hint i { color: var(--ss-text-dim); }
+.ks-link-btn { background: none; border: none; color: var(--ks-accent); font-weight: 600; cursor: pointer; font-family: var(--ss-font); font-size: 13px; padding: 0; text-decoration: underline; }
+
+@media (prefers-reduced-motion: reduce) {
+    .ks-opt, .ks-ritual-item, .ks-disc-bar .fill { transition: none; }
+}
