@@ -1,240 +1,160 @@
-<div class="workflow-container">
-    <div class="workflow-header">
-        <button class="btn btn-secondary" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
-            <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
-        </button>
-    </div>
-    <div class="workflow-intro">
-        <h3>Journaling: Dein Weg zur Selbstreflexion</h3>
-        <p>Entdecke die Kraft des Schreibens für deine persönliche Entwicklung. Journaling hilft dir, Klarheit zu gewinnen, Muster zu erkennen und dein Wachstum zu dokumentieren.</p>
-        <div class="workflow-features">
-            <span class="feature-badge">Journaling-Setup</span>
-            <span class="feature-badge">Reflexions-Techniken</span>
-            <span class="feature-badge">Muster erkennen</span>
-            <span class="feature-badge">Wachstum dokumentieren</span>
-        </div>
-    
-    <div class="workflow-progress">
-        <div class="progress-step active" data-step="1">
-            <div class="step-number">1</div>
-            <div class="step-title">Journaling-Setup</div>
-        <div class="progress-step" data-step="2">
-            <div class="step-number">2</div>
-            <div class="step-title">Reflexions-Techniken</div>
-        <div class="progress-step" data-step="3">
-            <div class="step-number">3</div>
-            <div class="step-title">Muster erkennen</div>
-        <div class="progress-step" data-step="4">
-            <div class="step-number">4</div>
-            <div class="step-title">Wachstum dokumentieren</div>
-    <!-- Step 1: Journaling-Setup -->
-    <div class="workflow-step active" data-step="1">
-        <div class="step-header">
-            <h3>Schritt 1: Journaling-Setup</h3>
-            <p>Richte dein persönliches Journaling-System ein und finde deinen idealen Schreibstil.</p>
-        
-        <div class="journaling-setup">
-            <div class="setup-intro">
-                <h4>📝 Dein Journaling-Setup</h4>
-                <p>Ein gutes Setup ist der Grundstein für erfolgreiches Journaling. Finde heraus, was für dich am besten funktioniert.</p>
-            </div>
-            
-            <div class="journaling-style">
-                <h4>🎨 Journaling-Stil wählen</h4>
-                <div class="style-options">
-                    <div class="style-option">
-                        <input type="radio" name="journaling-style" value="freeform" id="freeform">
-                        <label for="freeform">
-                            <h5>Freies Schreiben</h5>
-                            <p>Schreibe alles auf, was dir in den Sinn kommt - ohne Struktur oder Regeln.</p>
-                        </label>
-                    </div>
-                        <input type="radio" name="journaling-style" value="structured" id="structured">
-                        <label for="structured">
-                            <h5>Strukturiertes Journaling</h5>
-                            <p>Folge einem festen Format mit vordefinierten Fragen und Bereichen.</p>
-                        <input type="radio" name="journaling-style" value="gratitude" id="gratitude">
-                        <label for="gratitude">
-                            <h5>Dankbarkeits-Journal</h5>
-                            <p>Fokussiere dich auf positive Erlebnisse und Dinge, für die du dankbar bist.</p>
-                        <input type="radio" name="journaling-style" value="reflection" id="reflection">
-                        <label for="reflection">
-                            <h5>Reflexions-Journal</h5>
-                            <p>Analysiere deine Erfahrungen und lerne daraus für die Zukunft.</p>
-                </div>
-            <div class="frequency-options">
-                <h4>⏰ Häufigkeit festlegen</h4>
-                <div class="frequency-grid">
-                    <div class="frequency-option">
-                        <input type="radio" name="frequency" value="daily" id="daily">
-                        <label for="daily">
-                            <h5>Täglich</h5>
-                            <p>Jeden Tag schreiben für maximale Kontinuität</p>
-                        <input type="radio" name="frequency" value="weekly" id="weekly">
-                        <label for="weekly">
-                            <h5>Wöchentlich</h5>
-                            <p>Einmal pro Woche eine ausführliche Reflexion</p>
-                        <input type="radio" name="frequency" value="flexible" id="flexible">
-                        <label for="flexible">
-                            <h5>Flexibel</h5>
-                            <p>Schreibe, wenn du das Bedürfnis dazu hast</p>
-            <div class="journaling-preferences">
-                <h4>⚙️ Deine Präferenzen</h4>
-                <div class="preferences-grid">
-                    <div class="preference-item">
-                        <label>Bevorzugte Tageszeit:</label>
-                        <select id="preferred-time">
-                            <option value="morning">Morgens</option>
-                            <option value="evening">Abends</option>
-                            <option value="flexible">Flexibel</option>
-                        </select>
-                        <label>Schreibdauer (Minuten):</label>
-                        <input type="number" id="writing-duration" min="5" max="60" value="15">
-                        <label>Schreibmedium:</label>
-                        <select id="writing-medium">
-                            <option value="digital">Digital (Computer/Tablet)</option>
-                            <option value="analog">Analog (Stift & Papier)</option>
-                            <option value="both">Beides</option>
-    <!-- Step 2: Reflexions-Techniken -->
-    <div class="workflow-step" data-step="2">
-            <h3>Schritt 2: Reflexions-Techniken</h3>
-            <p>Lerne verschiedene Journaling-Techniken kennen und finde die, die zu dir passt.</p>
-        <div class="reflection-techniques">
-            <div class="techniques-intro">
-                <h4>🔍 Reflexions-Techniken</h4>
-                <p>Verschiedene Techniken helfen dir, tiefere Einblicke in dich selbst zu gewinnen.</p>
-            <div class="techniques-grid">
-                <div class="technique-card">
-                    <h5>📝 5-Minuten-Reflexion</h5>
-                    <p>Eine schnelle tägliche Reflexion mit drei einfachen Fragen:</p>
-                    <ul>
-                        <li>Was war heute gut?</li>
-                        <li>Was war herausfordernd?</li>
-                        <li>Was habe ich gelernt?</li>
-                    </ul>
-                    <button class="btn btn-outline" data-action="start-quick-reflection">Jetzt starten</button>
-                
-                    <h5>🎯 Ziel-Reflexion</h5>
-                    <p>Reflektiere über deine Ziele und Fortschritte:</p>
-                        <li>Welche Ziele verfolge ich?</li>
-                        <li>Was habe ich heute dafür getan?</li>
-                        <li>Was kann ich morgen besser machen?</li>
-                    <button class="btn btn-outline" data-action="start-goal-reflection">Jetzt starten</button>
-                    <h5>💭 Gefühls-Tagebuch</h5>
-                    <p>Dokumentiere deine Emotionen und deren Auslöser:</p>
-                        <li>Wie fühle ich mich gerade?</li>
-                        <li>Was hat dieses Gefühl ausgelöst?</li>
-                        <li>Wie kann ich damit umgehen?</li>
-                    <button class="btn btn-outline" data-action="start-emotion-reflection">Jetzt starten</button>
-                    <h5>🤔 Problem-Lösung</h5>
-                    <p>Analysiere Probleme systematisch:</p>
-                        <li>Was ist das Problem genau?</li>
-                        <li>Welche Lösungsansätze gibt es?</li>
-                        <li>Was ist der nächste Schritt?</li>
-                    <button class="btn btn-outline" data-action="start-problem-reflection">Jetzt starten</button>
-                    <h5>🙏 Dankbarkeits-Übung</h5>
-                    <p>Fokussiere dich auf das Positive:</p>
-                        <li>Wofür bin ich heute dankbar?</li>
-                        <li>Was hat mich heute zum Lächeln gebracht?</li>
-                        <li>Welche kleinen Freuden gab es?</li>
-                    <button class="btn btn-outline" data-action="start-gratitude-reflection">Jetzt starten</button>
-                    <h5>🔮 Zukunftsvision</h5>
-                    <p>Stelle dir deine Zukunft vor:</p>
-                        <li>Wo möchte ich in einem Jahr sein?</li>
-                        <li>Was muss ich dafür tun?</li>
-                        <li>Welche Hindernisse gibt es?</li>
-                    <button class="btn btn-outline" data-action="start-vision-reflection">Jetzt starten</button>
-    <!-- Step 3: Muster erkennen -->
-    <div class="workflow-step" data-step="3">
-            <h3>Schritt 3: Muster erkennen</h3>
-            <p>Analysiere deine Einträge und erkenne wiederkehrende Muster in deinen Gedanken und Verhaltensweisen.</p>
-        <div class="pattern-recognition">
-            <div class="pattern-intro">
-                <h4>🔍 Muster erkennen</h4>
-                <p>Durch regelmäßiges Journaling kannst du Muster in deinen Gedanken, Gefühlen und Verhaltensweisen erkennen.</p>
-            <div class="pattern-analysis">
-                <h4>📊 Muster-Analyse</h4>
-                <div class="analysis-tools">
-                    <div class="tool-card">
-                        <h5>📈 Gefühls-Trends</h5>
-                        <p>Analysiere deine emotionalen Muster über Zeit</p>
-                        <div class="emotion-tracking" id="emotion-tracking">
-                            <p>Füge Einträge hinzu, um Gefühls-Trends zu sehen.</p>
-                        </div>
-                    
-                        <h5>🔄 Wiederkehrende Themen</h5>
-                        <p>Identifiziere Themen, die häufig in deinen Einträgen vorkommen</p>
-                        <div class="theme-analysis" id="theme-analysis">
-                            <p>Füge Einträge hinzu, um wiederkehrende Themen zu identifizieren.</p>
-                        <h5>⏰ Zeitliche Muster</h5>
-                        <p>Erkenne, wann bestimmte Gefühle oder Gedanken auftreten</p>
-                        <div class="time-patterns" id="time-patterns">
-                            <p>Füge Einträge hinzu, um zeitliche Muster zu erkennen.</p>
-            <div class="pattern-insights">
-                <h4>💡 Erkenntnisse</h4>
-                <div class="insights-container" id="pattern-insights">
-                    <p>Füge Einträge hinzu, um Erkenntnisse über deine Muster zu erhalten.</p>
-    <!-- Step 4: Wachstum dokumentieren -->
-    <div class="workflow-step" data-step="4">
-            <h3>Schritt 4: Wachstum dokumentieren</h3>
-            <p>Dokumentiere dein persönliches Wachstum und feiere deine Fortschritte.</p>
-        <div class="growth-documentation">
-            <div class="growth-intro">
-                <h4>🌱 Wachstum dokumentieren</h4>
-                <p>Dokumentiere deine Fortschritte und feiere deine Erfolge.</p>
-            <div class="growth-tracking">
-                <h4>📈 Wachstums-Tracking</h4>
-                <div class="tracking-areas">
-                    <div class="tracking-card">
-                        <h5>🎯 Ziel-Fortschritte</h5>
-                        <div class="progress-tracking" id="goal-progress">
-                            <p>Dokumentiere deine Fortschritte bei verschiedenen Zielen.</p>
-                        <h5>💪 Persönliche Entwicklung</h5>
-                        <div class="development-tracking" id="personal-development">
-                            <p>Verfolge deine persönliche Entwicklung und neue Fähigkeiten.</p>
-                        <h5>🏆 Erfolge feiern</h5>
-                        <div class="achievements-tracking" id="achievements">
-                            <p>Dokumentiere und feiere deine Erfolge, auch die kleinen.</p>
-            <div class="growth-summary">
-                <h4>📊 Wachstums-Zusammenfassung</h4>
-                <div class="summary-stats">
-                    <div class="stat-item">
-                        <span class="stat-number" id="total-entries">0</span>
-                        <span class="stat-label">Journal-Einträge</span>
-                        <span class="stat-number" id="growth-areas">0</span>
-                        <span class="stat-label">Wachstumsbereiche</span>
-                        <span class="stat-number" id="achievements-count">0</span>
-                        <span class="stat-label">Erfolge</span>
-    <!-- Navigation -->
-    <div class="workflow-navigation">
-        <div class="nav-buttons">
-            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
-                <i class="fas fa-arrow-left"></i> Zurück
-            </button>
-            <div class="progress-info">
-                <span id="current-step">Schritt 1</span> von <span id="total-steps">4</span>
-            <button class="btn btn-primary" id="next-btn" data-action="next-step">
-                Weiter <i class="fas fa-arrow-right"></i>
-</div>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journaling | Manuel Weiss</title>
+    <meta name="description" content="Geführtes Journaling mit täglichen Impulsen, Stimmungs-Check und Verlauf – schreibend Klarheit gewinnen.">
+    <link rel="stylesheet" href="../_kit/method-light.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>:root { --mk-accent: #22c55e; --mk-accent-2: #84cc16; --mk-accent-soft: rgba(34,197,94,.12); }</style>
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-feather"></i></span><span>Journaling</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
+    </header>
 
-<!-- Global Auth System -->
-<script src="../../js/aws-config.js"></script>
-    <script src="js/global-auth-system.js"></script><script src="../../js/unified-auth-manager.js"></script>
-    
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-feather"></i></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <h1>Schreib dich klar</h1>
+            <p>Journaling sortiert Gedanken, senkt Stress und macht Fortschritt sichtbar. Schon 5 Minuten am Tag genügen. Lass dich von einem Impuls leiten – oder schreib einfach drauflos.</p>
+            <div class="mk-badges"><span class="mk-badge">Tages-Impulse</span><span class="mk-badge">Stimmungs-Check</span><span class="mk-badge">Verlauf</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Heute schreiben</h2>
+                <div class="mk-result" style="margin-bottom:16px;">
+                    <h4><i class="fas fa-lightbulb"></i> Impuls</h4>
+                    <div id="jr-prompt" style="font-size:17px;"></div>
+                    <button class="mk-btn mk-btn-ghost mk-btn-sm" id="jr-newprompt" style="margin-top:10px;"><i class="fas fa-shuffle"></i> Anderer Impuls</button>
+                </div>
+                <div class="mk-field">
+                    <label>Wie geht es dir gerade? <span id="jr-mood-emoji">🙂</span></label>
+                    <div class="mk-range-wrap">
+                        <input class="mk-range" type="range" min="1" max="10" id="jr-mood" value="6">
+                        <span class="mk-range-val" id="jr-mood-val">6</span>
+                    </div>
+                </div>
+                <div class="mk-field">
+                    <label>Dein Eintrag</label>
+                    <textarea class="mk-textarea" id="jr-text" style="min-height:180px;" placeholder="Schreib frei – niemand korrigiert dich. Es geht ums Denken, nicht um schöne Sätze."></textarea>
+                </div>
+                <button class="mk-btn mk-btn-primary" id="jr-save"><i class="fas fa-floppy-disk"></i> Eintrag speichern</button>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>Dein Tagebuch</h2>
+                <p class="mk-sub" id="jr-stats"></p>
+                <div id="jr-entries"></div>
+                <button class="mk-btn mk-btn-outline" id="jr-export" style="margin-top:14px;"><i class="fas fa-download"></i> Alles exportieren</button>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
+            <span class="info" id="mk-step-info">Schritt 1 von 2</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
     <script>
-        // Load auth modals
-        async function loadAuthModals() {
-            try {
-                const response = await fetch('components/unified-auth-modals.html');
-                const html = await response.text();
-                document.getElementById('authModalsContainer').innerHTML = html;
-            } catch (error) {
-                console.error('Error loading auth modals:', error);
-            }
-        }
-        
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAuthModals();
-        });
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
     </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js"></script>
+    <script>
+        const PROMPTS = [
+            'Wofür bist du heute dankbar?',
+            'Was hat dich heute zum Lächeln gebracht?',
+            'Welche Entscheidung beschäftigt dich gerade – und warum?',
+            'Was würdest du deinem jüngeren Ich heute raten?',
+            'Welche kleine Sache hast du heute gut gemacht?',
+            'Was hat dir heute Energie gegeben, was hat sie geraubt?',
+            'Wovor hast du gerade Angst – und was wäre das Schlimmste daran?',
+            'Was möchtest du morgen anders machen?',
+            'Wann hast du dich heute am lebendigsten gefühlt?',
+            'Welcher Gedanke kreist immer wieder? Schreib ihn aus.',
+            'Was würdest du tun, wenn du nicht scheitern könntest?',
+            'Wem möchtest du etwas sagen, das du noch nicht gesagt hast?'
+        ];
+        const MOOD = ['😣','😟','😕','😐','🙂','🙂','😊','😄','😁','🤩'];
+
+        (async function () {
+            await MethodKit.init({
+                method: 'journaling',
+                accent: '#22c55e', accent2: '#84cc16',
+                steps: [{icon:'✍️',label:'Schreiben'},{icon:'📖',label:'Verlauf'}],
+                defaultState: { entries: [], promptIdx: 0 }
+            });
+            const S = MethodKit.state;
+
+            function showPrompt() { document.getElementById('jr-prompt').textContent = PROMPTS[S.promptIdx % PROMPTS.length]; }
+            document.getElementById('jr-newprompt').addEventListener('click', () => { S.promptIdx = (S.promptIdx + 1) % PROMPTS.length; MethodKit.save(); showPrompt(); });
+            showPrompt();
+
+            const mood = document.getElementById('jr-mood');
+            function syncMood() { document.getElementById('jr-mood-val').textContent = mood.value; document.getElementById('jr-mood-emoji').textContent = MOOD[mood.value-1]; }
+            mood.addEventListener('input', syncMood); syncMood();
+
+            document.getElementById('jr-save').addEventListener('click', () => {
+                const text = document.getElementById('jr-text').value.trim();
+                if (!text) { MethodKit.toast('Schreib zuerst etwas', 'error'); return; }
+                S.entries.unshift({ id: MethodKit.uid(), date: new Date().toISOString(), prompt: document.getElementById('jr-prompt').textContent, mood: parseInt(mood.value,10), text });
+                MethodKit.save();
+                document.getElementById('jr-text').value = '';
+                MethodKit.toast('Eintrag gespeichert', 'success');
+                renderEntries();
+            });
+
+            function streak() {
+                if (!S.entries.length) return 0;
+                const days = new Set(S.entries.map(e => new Date(e.date).toDateString()));
+                let s = 0, d = new Date();
+                while (days.has(d.toDateString())) { s++; d.setDate(d.getDate()-1); }
+                return s;
+            }
+            function renderEntries() {
+                const host = document.getElementById('jr-entries');
+                document.getElementById('jr-stats').textContent = `${S.entries.length} Einträge · 🔥 ${streak()} Tage in Folge`;
+                if (!S.entries.length) { host.innerHTML = '<div class="mk-empty">Noch keine Einträge. Schreib deinen ersten in Schritt 1.</div>'; return; }
+                host.innerHTML = S.entries.map(e => `
+                    <div class="mk-card" style="box-shadow:none; margin-bottom:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <strong>${new Date(e.date).toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'short',year:'numeric'})} ${MOOD[(e.mood||5)-1]||''}</strong>
+                            <button class="mk-iconbtn" data-del="${e.id}"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <div style="color:var(--mk-accent); font-size:13px; margin:4px 0 8px;">${MethodKit.esc(e.prompt||'')}</div>
+                        <div style="white-space:pre-wrap;">${MethodKit.esc(e.text)}</div>
+                    </div>`).join('');
+                host.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => {
+                    if (!confirm('Eintrag löschen?')) return;
+                    S.entries = S.entries.filter(x => x.id !== b.dataset.del); MethodKit.save(); renderEntries();
+                }));
+            }
+            MethodKit.onStep = function (n) { if (n === 2) renderEntries(); };
+
+            document.getElementById('jr-export').addEventListener('click', () => {
+                let t = 'MEIN TAGEBUCH\n=============\n\n';
+                S.entries.forEach(e => { t += `--- ${new Date(e.date).toLocaleString('de-DE')} (Stimmung ${e.mood}/10) ---\nImpuls: ${e.prompt}\n${e.text}\n\n`; });
+                MethodKit.exportText('mein-tagebuch.txt', t);
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -1,243 +1,148 @@
-<div class="workflow-container">
-    <div class="workflow-header">
-        <button class="btn btn-secondary" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
-            <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
-        </button>
-    </div>
-    <div class="workflow-intro">
-        <h3>Vision Board: Deine Zukunft visualisieren</h3>
-        <p>Erstelle dein persönliches Vision Board und visualisiere deine Träume und Ziele. Ein Vision Board hilft dir, deine Wünsche zu manifestieren und motiviert dich, deine Ziele zu erreichen.</p>
-        <div class="workflow-features">
-            <span class="feature-badge">Vision entwickeln</span>
-            <span class="feature-badge">Bilder sammeln</span>
-            <span class="feature-badge">Board erstellen</span>
-            <span class="feature-badge">Vision leben</span>
-        </div>
-    
-    <div class="workflow-progress">
-        <div class="progress-step active" data-step="1">
-            <div class="step-number">1</div>
-            <div class="step-title">Vision entwickeln</div>
-        <div class="progress-step" data-step="2">
-            <div class="step-number">2</div>
-            <div class="step-title">Bilder sammeln</div>
-        <div class="progress-step" data-step="3">
-            <div class="step-number">3</div>
-            <div class="step-title">Board erstellen</div>
-        <div class="progress-step" data-step="4">
-            <div class="step-number">4</div>
-            <div class="step-title">Vision leben</div>
-    <!-- Step 1: Vision entwickeln -->
-    <div class="workflow-step active" data-step="1">
-        <div class="step-header">
-            <h3>Schritt 1: Vision entwickeln</h3>
-            <p>Entwickle eine klare Vision für deine Zukunft. Was möchtest du in verschiedenen Lebensbereichen erreichen?</p>
-        
-        <div class="vision-development">
-            <div class="vision-intro">
-                <h4>🔮 Deine Vision entwickeln</h4>
-                <p>Eine klare Vision ist der erste Schritt zur Verwirklichung deiner Träume. Lass deiner Fantasie freien Lauf!</p>
-            </div>
-            
-            <div class="vision-categories">
-                <div class="vision-category">
-                    <h5>💼 Beruf & Karriere</h5>
-                    <textarea placeholder="Wie sieht dein Traumjob aus? Welche Position möchtest du erreichen? Was für ein Arbeitsumfeld wünschst du dir?" rows="4"></textarea>
-                </div>
-                
-                    <h5>💰 Finanzen & Wohlstand</h5>
-                    <textarea placeholder="Wie viel Geld möchtest du verdienen? Welche finanziellen Ziele hast du? Wie möchtest du dein Geld investieren?" rows="4"></textarea>
-                    <h5>🏠 Lebensstil & Wohnen</h5>
-                    <textarea placeholder="Wo möchtest du leben? Wie soll dein Zuhause aussehen? Welchen Lebensstil führst du gerne?" rows="4"></textarea>
-                    <h5>👥 Beziehungen & Familie</h5>
-                    <textarea placeholder="Wie stellst du dir deine Beziehungen vor? Möchtest du eine Familie gründen? Welche Art von Menschen umgeben dich?" rows="4"></textarea>
-                    <h5>🏃‍♂️ Gesundheit & Fitness</h5>
-                    <textarea placeholder="Wie möchtest du dich fühlen? Welche sportlichen Ziele hast du? Wie sieht deine ideale Gesundheit aus?" rows="4"></textarea>
-                    <h5>🎨 Hobbys & Leidenschaften</h5>
-                    <textarea placeholder="Welche Hobbys möchtest du ausüben? Welche neuen Fähigkeiten erlernen? Was macht dir wirklich Spaß?" rows="4"></textarea>
-                    <h5>🌍 Reisen & Abenteuer</h5>
-                    <textarea placeholder="Wohin möchtest du reisen? Welche Abenteuer erleben? Welche Kulturen entdecken?" rows="4"></textarea>
-                    <h5>🎯 Persönliche Entwicklung</h5>
-                    <textarea placeholder="Welche Eigenschaften möchtest du entwickeln? Welche Fähigkeiten erlernen? Wie möchtest du als Person wachsen?" rows="4"></textarea>
-            <div class="vision-summary">
-                <h4>📝 Vision-Zusammenfassung</h4>
-                <textarea id="vision-summary" placeholder="Fasse deine Vision in wenigen Sätzen zusammen. Was ist dein größter Traum?" rows="3"></textarea>
-    <!-- Step 2: Bilder sammeln -->
-    <div class="workflow-step" data-step="2">
-            <h3>Schritt 2: Bilder sammeln</h3>
-            <p>Sammle Bilder, die deine Vision repräsentieren. Diese werden dein Vision Board zum Leben erwecken.</p>
-        <div class="image-collection">
-            <div class="collection-intro">
-                <h4>🖼️ Bilder sammeln</h4>
-                <p>Bilder haben eine starke emotionale Wirkung. Sammle Bilder, die deine Vision und deine Gefühle dazu ausdrücken.</p>
-            <div class="image-sources">
-                <h4>📚 Bildquellen</h4>
-                <div class="sources-grid">
-                    <div class="source-card">
-                        <h5>🌐 Online-Quellen</h5>
-                        <ul>
-                            <li>Pinterest</li>
-                            <li>Unsplash</li>
-                            <li>Pexels</li>
-                            <li>Google Bilder</li>
-                        </ul>
-                    </div>
-                    
-                        <h5>📰 Printmedien</h5>
-                            <li>Zeitschriften</li>
-                            <li>Kataloge</li>
-                            <li>Bücher</li>
-                            <li>Prospekte</li>
-                        <h5>📸 Eigene Fotos</h5>
-                            <li>Urlaubsfotos</li>
-                            <li>Inspirierende Orte</li>
-                            <li>Erfolgsmomente</li>
-                            <li>Motivierende Situationen</li>
-            <div class="image-categories">
-                <h4>🎨 Bildkategorien</h4>
-                <div class="categories-grid">
-                    <div class="category-item">
-                        <h5>💼 Beruf & Karriere</h5>
-                        <div class="image-placeholder" data-category="career">
-                            <i class="fas fa-plus"></i>
-                            <span>Bilder hinzufügen</span>
-                        </div>
-                        <h5>💰 Finanzen</h5>
-                        <div class="image-placeholder" data-category="finances">
-                        <h5>🏠 Lebensstil</h5>
-                        <div class="image-placeholder" data-category="lifestyle">
-                        <h5>👥 Beziehungen</h5>
-                        <div class="image-placeholder" data-category="relationships">
-                        <h5>🏃‍♂️ Gesundheit</h5>
-                        <div class="image-placeholder" data-category="health">
-                        <h5>🎨 Hobbys</h5>
-                        <div class="image-placeholder" data-category="hobbies">
-    <!-- Step 3: Board erstellen -->
-    <div class="workflow-step" data-step="3">
-            <h3>Schritt 3: Board erstellen</h3>
-            <p>Erstelle dein Vision Board und arrangiere deine Bilder in einer inspirierenden Anordnung.</p>
-        <div class="board-creation">
-            <div class="creation-intro">
-                <h4>🎨 Vision Board erstellen</h4>
-                <p>Arrangiere deine Bilder in einer Weise, die dich inspiriert und motiviert.</p>
-            <div class="board-options">
-                <h4>📐 Board-Optionen</h4>
-                <div class="options-grid">
-                    <div class="option-card">
-                        <h5>🖼️ Physisches Board</h5>
-                        <p>Erstelle ein echtes Vision Board mit Pappe, Kleber und deinen Bildern.</p>
-                            <li>Große Pappe oder Korkwand</li>
-                            <li>Kleber oder Pins</li>
-                            <li>Schere</li>
-                            <li>Deine gesammelten Bilder</li>
-                        <button class="btn btn-outline" data-action="show-physical-board-guide">Anleitung anzeigen</button>
-                        <h5>💻 Digitales Board</h5>
-                        <p>Erstelle ein digitales Vision Board mit Online-Tools.</p>
-                            <li>Canva</li>
-                            <li>PowerPoint</li>
-                            <li>Photoshop</li>
-                        <button class="btn btn-outline" data-action="show-digital-board-guide">Anleitung anzeigen</button>
-            <div class="board-layout">
-                <h4>🎯 Board-Layout</h4>
-                <div class="layout-options">
-                    <div class="layout-option">
-                        <input type="radio" name="layout" value="grid" id="grid-layout">
-                        <label for="grid-layout">
-                            <h5>📊 Grid-Layout</h5>
-                            <p>Ordne Bilder in einem gleichmäßigen Raster an</p>
-                        </label>
-                        <input type="radio" name="layout" value="flow" id="flow-layout">
-                        <label for="flow-layout">
-                            <h5>🌊 Fließendes Layout</h5>
-                            <p>Arrangiere Bilder in einer natürlichen, fließenden Anordnung</p>
-                        <input type="radio" name="layout" value="center" id="center-layout">
-                        <label for="center-layout">
-                            <h5>🎯 Zentriertes Layout</h5>
-                            <p>Platziere das wichtigste Bild in der Mitte</p>
-            <div class="board-preview">
-                <h4>👀 Board-Vorschau</h4>
-                <div class="preview-container" id="board-preview">
-                    <div class="preview-placeholder">
-                        <i class="fas fa-image"></i>
-                        <p>Wähle ein Layout, um eine Vorschau zu sehen</p>
-    <!-- Step 4: Vision leben -->
-    <div class="workflow-step" data-step="4">
-            <h3>Schritt 4: Vision leben</h3>
-            <p>Integriere dein Vision Board in deinen Alltag und nutze es als tägliche Motivation.</p>
-        <div class="vision-living">
-            <div class="living-intro">
-                <h4>🌟 Vision leben</h4>
-                <p>Ein Vision Board ist nur der Anfang. Jetzt geht es darum, deine Vision in die Realität umzusetzen.</p>
-            <div class="integration-tips">
-                <h4>💡 Integration in den Alltag</h4>
-                <div class="tips-grid">
-                    <div class="tip-card">
-                        <h5>👀 Sichtbare Platzierung</h5>
-                        <p>Platziere dein Vision Board an einem Ort, wo du es täglich siehst.</p>
-                            <li>Über deinem Schreibtisch</li>
-                            <li>Im Schlafzimmer</li>
-                            <li>Als Handy-Hintergrund</li>
-                            <li>Als Desktop-Wallpaper</li>
-                        <h5>⏰ Tägliche Betrachtung</h5>
-                        <p>Nimm dir täglich Zeit, um dein Vision Board zu betrachten.</p>
-                            <li>Morgens nach dem Aufstehen</li>
-                            <li>Vor wichtigen Entscheidungen</li>
-                            <li>Bei Motivationsverlust</li>
-                            <li>Vor dem Schlafengehen</li>
-                        <h5>🎯 Aktionsplan erstellen</h5>
-                        <p>Entwickle konkrete Schritte zur Verwirklichung deiner Vision.</p>
-                            <li>Kleine, erreichbare Ziele setzen</li>
-                            <li>Zeitpläne erstellen</li>
-                            <li>Fortschritte dokumentieren</li>
-                            <li>Anpassungen vornehmen</li>
-            <div class="action-plan">
-                <h4>📋 Aktionsplan</h4>
-                <div class="plan-builder">
-                    <div class="plan-input">
-                        <input type="text" id="action-input" placeholder="Neue Aktion hinzufügen...">
-                        <button class="btn btn-primary" data-action="add-action">Hinzufügen</button>
-                    <div class="actions-list" id="actions-list">
-                        <p>Füge Aktionen hinzu, um deine Vision zu verwirklichen.</p>
-            <div class="vision-reminders">
-                <h4>⏰ Erinnerungen einrichten</h4>
-                <div class="reminder-options">
-                    <div class="reminder-option">
-                        <input type="checkbox" id="daily-reminder">
-                        <label for="daily-reminder">Tägliche Erinnerung zum Betrachten des Vision Boards</label>
-                        <input type="checkbox" id="weekly-review">
-                        <label for="weekly-review">Wöchentliche Überprüfung der Fortschritte</label>
-                        <input type="checkbox" id="monthly-update">
-                        <label for="monthly-update">Monatliche Aktualisierung des Vision Boards</label>
-    <!-- Navigation -->
-    <div class="workflow-navigation">
-        <div class="nav-buttons">
-            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
-                <i class="fas fa-arrow-left"></i> Zurück
-            </button>
-            <div class="progress-info">
-                <span id="current-step">Schritt 1</span> von <span id="total-steps">4</span>
-            <button class="btn btn-primary" id="next-btn" data-action="next-step">
-                Weiter <i class="fas fa-arrow-right"></i>
-</div>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vision-Board | Manuel Weiss</title>
+    <meta name="description" content="Gestalte ein lebendiges Bild deiner Zukunft – ein digitales Vision-Board mit Bausteinen für jeden Lebensbereich.">
+    <link rel="stylesheet" href="../_kit/method-light.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --mk-accent: #0ea5e9; --mk-accent-2: #6366f1; --mk-accent-soft: rgba(14,165,233,.12); }
+        .vb-board { display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); }
+        .vb-tile { border-radius:var(--mk-radius-sm); padding:18px; color:#fff; min-height:130px; display:flex; flex-direction:column; box-shadow:var(--mk-shadow); }
+        .vb-tile .ic { font-size:32px; } .vb-tile .t { font-weight:700; margin-top:8px; } .vb-tile .d { font-size:13px; opacity:.92; margin-top:4px; }
+    </style>
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-images"></i></span><span>Vision-Board</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
+    </header>
 
-<!-- Global Auth System -->
-<script src="../../js/aws-config.js"></script>
-    <script src="js/global-auth-system.js"></script><script src="../../js/unified-auth-manager.js"></script>
-    
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-images"></i></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <h1>Mal dir deine Zukunft</h1>
+            <p>Was du dir lebhaft vorstellst, ziehst du eher an. Ein Vision-Board macht deine Ziele sichtbar und emotional greifbar. Formuliere dein großes Bild und fülle es mit Bausteinen.</p>
+            <div class="mk-badges"><span class="mk-badge">Big Picture</span><span class="mk-badge">Lebensbereiche</span><span class="mk-badge">Visuell</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Dein großes Bild</h2>
+                <p class="mk-sub">Versetz dich in deine Zukunft. Schreib im Präsens – als wäre es schon wahr.</p>
+                <div class="mk-field">
+                    <label>In 3 Jahren …</label>
+                    <textarea class="mk-textarea" data-mk-field="headline" placeholder="z. B. „Ich lebe in einer hellen Wohnung am Wasser, arbeite an Projekten, die mich begeistern, und bin körperlich fit."" style="min-height:120px;"></textarea>
+                </div>
+                <div class="mk-field">
+                    <label>Wie fühlt sich dieses Leben an? (ein Wort)</label>
+                    <input class="mk-input" data-mk-field="feeling" placeholder="z. B. frei, lebendig, ruhig, stolz">
+                </div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>Bausteine hinzufügen</h2>
+                <p class="mk-sub">Für jeden Lebensbereich ein konkretes Bild deiner Vision.</p>
+                <label class="mk-label">Bereich</label>
+                <div class="mk-chips" id="vb-areas" style="margin:8px 0 16px;"></div>
+                <div class="mk-field"><label>Titel</label><input class="mk-input" id="vb-title" placeholder="z. B. „Eigenes Studio""></div>
+                <div class="mk-field"><label>Beschreibung</label><textarea class="mk-textarea" id="vb-desc" placeholder="Was genau stellst du dir vor?"></textarea></div>
+                <button class="mk-btn mk-btn-ghost mk-btn-sm" id="vb-add"><i class="fas fa-plus"></i> Baustein hinzufügen</button>
+                <div id="vb-list" style="margin-top:18px;"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>Dein Vision-Board</h2>
+                <p class="mk-sub" id="vb-headline-disp"></p>
+                <div class="vb-board" id="vb-board"></div>
+                <button class="mk-btn mk-btn-primary" id="vb-export" style="margin-top:18px;"><i class="fas fa-download"></i> Als Text exportieren</button>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
+            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
     <script>
-        // Load auth modals
-        async function loadAuthModals() {
-            try {
-                const response = await fetch('components/unified-auth-modals.html');
-                const html = await response.text();
-                document.getElementById('authModalsContainer').innerHTML = html;
-            } catch (error) {
-                console.error('Error loading auth modals:', error);
-            }
-        }
-        
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAuthModals();
-        });
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
     </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js"></script>
+    <script>
+        const AREAS = [
+            {id:'beruf',ic:'💼',label:'Beruf',c:'#6366f1'},{id:'gesundheit',ic:'💪',label:'Gesundheit',c:'#22c55e'},
+            {id:'beziehung',ic:'❤️',label:'Beziehungen',c:'#ef4444'},{id:'reisen',ic:'✈️',label:'Reisen',c:'#0ea5e9'},
+            {id:'zuhause',ic:'🏡',label:'Zuhause',c:'#f59e0b'},{id:'finanzen',ic:'💰',label:'Finanzen',c:'#10b981'},
+            {id:'lernen',ic:'📚',label:'Lernen',c:'#8b5cf6'},{id:'kreativ',ic:'🎨',label:'Kreativität',c:'#ec4899'},
+            {id:'koerper',ic:'🧘',label:'Innere Ruhe',c:'#14b8a6'},{id:'abenteuer',ic:'🏔️',label:'Abenteuer',c:'#f97316'}
+        ];
+        function area(id){ return AREAS.find(a=>a.id===id)||AREAS[0]; }
+
+        (async function () {
+            await MethodKit.init({
+                method: 'vision-board',
+                accent: '#0ea5e9', accent2: '#6366f1',
+                steps: [{icon:'🌅',label:'Big Picture'},{icon:'🧩',label:'Bausteine'},{icon:'🖼️',label:'Board'}],
+                defaultState: { headline:'', feeling:'', cards:[], pickArea:'beruf' }
+            });
+            MethodKit.bindFields();
+            const S = MethodKit.state;
+
+            const areaHost = document.getElementById('vb-areas');
+            function renderAreas(){
+                areaHost.innerHTML = AREAS.map(a=>`<button class="mk-chip ${S.pickArea===a.id?'selected':''}" data-a="${a.id}">${a.ic} ${a.label}</button>`).join('');
+                areaHost.querySelectorAll('[data-a]').forEach(el=>el.addEventListener('click',()=>{ S.pickArea=el.dataset.a; MethodKit.save(); renderAreas(); }));
+            }
+            renderAreas();
+
+            function renderList(){
+                const host=document.getElementById('vb-list');
+                if(!S.cards.length){ host.innerHTML='<div class="mk-empty">Noch keine Bausteine.</div>'; return; }
+                host.innerHTML=S.cards.map(c=>{ const a=area(c.area); return `<div class="mk-row"><div class="grow">${a.ic} <strong>${MethodKit.esc(c.title)}</strong> <span style="color:var(--mk-muted);font-size:13px;">${MethodKit.esc(c.desc||'')}</span></div><button class="mk-iconbtn" data-del="${c.id}"><i class="fas fa-trash"></i></button></div>`; }).join('');
+                host.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ S.cards=S.cards.filter(x=>x.id!==b.dataset.del); MethodKit.save(); renderList(); }));
+            }
+            document.getElementById('vb-add').addEventListener('click',()=>{
+                const t=document.getElementById('vb-title'), d=document.getElementById('vb-desc');
+                if(!t.value.trim()){ MethodKit.toast('Bitte Titel eingeben','error'); return; }
+                S.cards.push({ id:MethodKit.uid(), area:S.pickArea, title:t.value.trim(), desc:d.value.trim() });
+                t.value=''; d.value=''; MethodKit.save(); renderList(); MethodKit.toast('Baustein hinzugefügt','success');
+            });
+            renderList();
+
+            function renderBoard(){
+                document.getElementById('vb-headline-disp').textContent = S.headline ? `„${S.headline}"${S.feeling?' · '+S.feeling:''}` : '';
+                const host=document.getElementById('vb-board');
+                if(!S.cards.length){ host.innerHTML='<div class="mk-empty" style="grid-column:1/-1">Füge in Schritt 2 Bausteine hinzu.</div>'; return; }
+                host.innerHTML=S.cards.map(c=>{ const a=area(c.area); return `<div class="vb-tile" style="background:linear-gradient(135deg,${a.c},${a.c}cc)"><span class="ic">${a.ic}</span><span class="t">${MethodKit.esc(c.title)}</span><span class="d">${MethodKit.esc(c.desc||'')}</span></div>`; }).join('');
+            }
+            MethodKit.onStep=function(n){ if(n===3) renderBoard(); };
+
+            document.getElementById('vb-export').addEventListener('click',()=>{
+                let t=`MEIN VISION-BOARD\n=================\n\nGroßes Bild: ${S.headline||'–'}\nGefühl: ${S.feeling||'–'}\n\nBausteine:\n`;
+                S.cards.forEach(c=>{ const a=area(c.area); t+=`  ${a.ic} ${a.label} – ${c.title}: ${c.desc||''}\n`; });
+                MethodKit.exportText('mein-vision-board.txt', t);
+            });
+        })();
+    </script>
+</body>
+</html>

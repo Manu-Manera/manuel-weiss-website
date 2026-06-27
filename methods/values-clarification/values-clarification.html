@@ -3,234 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Werte-Klärung - Interaktiver Workflow | Manuel Weiss</title>
-    <link rel="stylesheet" href="values-clarification-modern.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Werte-Klärung | Manuel Weiss</title>
+    <meta name="description" content="Finde heraus, was dir wirklich wichtig ist: Entdecke deine Kernwerte, grenze sie auf die wichtigsten ein und richte dein Leben danach aus.">
+    <link rel="stylesheet" href="../_kit/method-light.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>:root { --mk-accent: #14b8a6; --mk-accent-2: #06b6d4; --mk-accent-soft: rgba(20,184,166,.12); }</style>
 </head>
-<body>
-    <!-- Modern Navigation -->
-    <nav class="modern-nav">
-        <div class="nav-container">
-            <a href="../../persoenlichkeitsentwicklung-uebersicht.html" class="nav-back">
-                <i class="fas fa-arrow-left"></i>
-                <span>Zurück zur Übersicht</span>
-            </a>
-            <div class="nav-progress">
-                <div class="progress-circle">
-                    <span class="progress-text">0%</span>
-                </div>
-            </div>
-        </div>
-    </nav>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-compass"></i></span><span>Werte-Klärung</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
+    </header>
 
-    <!-- Hero Section -->
-    <section class="values-hero">
-        <div class="hero-container">
-            <div class="hero-content">
-                <div class="hero-badge">
-                    <i class="fas fa-heart"></i>
-                    <span>Werte-Klärung</span>
-                </div>
-                <h1 class="hero-title">Entdecke deine <span class="gradient-text">wahren Werte</span></h1>
-                <p class="hero-subtitle">Finde heraus, was dir wirklich wichtig ist durch gezielte Fragen oder direkte Auswahl</p>
-                
-                <div class="hero-features">
-                    <div class="feature-card">
-                        <i class="fas fa-question-circle"></i>
-                        <span>8 gezielte Fragen</span>
-                    </div>
-                    <div class="feature-card">
-                        <i class="fas fa-magic"></i>
-                        <span>KI-gestützte Analyse</span>
-                    </div>
-                    <div class="feature-card">
-                        <i class="fas fa-hand-pointer"></i>
-                        <span>Manuelle Auswahl</span>
-                    </div>
-                    <div class="feature-card">
-                        <i class="fas fa-balance-scale"></i>
-                        <span>Konflikt-Detektor</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-compass"></i></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <h1>Was ist dir wirklich wichtig?</h1>
+            <p>Werte sind dein innerer Kompass. Wenn du sie kennst, fallen Entscheidungen leichter und dein Leben fühlt sich stimmiger an. In vier Schritten findest du deine Kernwerte – und prüfst, wie sehr du sie schon lebst.</p>
+            <div class="mk-badges"><span class="mk-badge">Kernwerte</span><span class="mk-badge">Priorisierung</span><span class="mk-badge">Alltagscheck</span></div>
+        </section>
 
-    <!-- Modern Progress Steps -->
-    <section class="progress-section">
-        <div class="progress-container">
-            <div class="progress-track">
-                <div class="progress-step active" data-step="1">
-                    <div class="step-indicator">
-                        <div class="step-number">1</div>
-                        <div class="step-icon"><i class="fas fa-search"></i></div>
-        </div>
-                    <div class="step-content">
-                        <h3>Werte-Entdeckung</h3>
-                        <p>Entdecke deine wichtigsten Werte</p>
-                    </div>
-                </div>
-                
-                <div class="progress-step" data-step="2">
-                    <div class="step-indicator">
-                        <div class="step-number">2</div>
-                        <div class="step-icon"><i class="fas fa-sort-amount-down"></i></div>
-                    </div>
-                    <div class="step-content">
-                        <h3>Werte-Ranking</h3>
-                        <p>Priorisiere deine Werte</p>
-                    </div>
-                </div>
-                
-                <div class="progress-step" data-step="3">
-                    <div class="step-indicator">
-                        <div class="step-number">3</div>
-                        <div class="step-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                    </div>
-                    <div class="step-content">
-                        <h3>Konflikt-Analyse</h3>
-                        <p>Erkenne Werte-Konflikte</p>
-                    </div>
-                </div>
-                
-                <div class="progress-step" data-step="4">
-                    <div class="step-indicator">
-                        <div class="step-number">4</div>
-                        <div class="step-icon"><i class="fas fa-life-ring"></i></div>
-                    </div>
-                    <div class="step-content">
-                        <h3>Lebensbereiche</h3>
-                        <p>Werte in verschiedenen Bereichen</p>
-                    </div>
-                </div>
-                
-                <div class="progress-step" data-step="5">
-                    <div class="step-indicator">
-                        <div class="step-number">5</div>
-                        <div class="step-icon"><i class="fas fa-chart-line"></i></div>
-                    </div>
-                    <div class="step-content">
-                        <h3>Werte-Tracking</h3>
-                        <p>Verfolge deine Fortschritte</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        <div class="mk-progress" id="mk-progress"></div>
 
-    <!-- Step 1: Werte-Entdeckung -->
-    <section class="workflow-step active" data-step="1">
-        <div class="step-container">
-            <div class="step-header">
-                <h2>Schritt 1: Werte-Entdeckung</h2>
-                <p>Entdecke deine wichtigsten Werte durch gezielte Fragen oder wähle sie manuell aus.</p>
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Welche Werte sprechen dich an?</h2>
+                <p class="mk-sub">Wähle alles, was sich für dich stimmig anfühlt – ruhig großzügig. Wir grenzen später ein.</p>
+                <div class="mk-chips" id="vc-pool"></div>
+                <div class="mk-field" style="margin-top:18px;">
+                    <label>Fehlt ein Wert? Hier ergänzen</label>
+                    <div style="display:flex; gap:10px;">
+                        <input class="mk-input" id="vc-custom" placeholder="Eigener Wert …">
+                        <button class="mk-btn mk-btn-ghost" id="vc-add"><i class="fas fa-plus"></i></button>
                     </div>
+                </div>
+                <div class="mk-savebadge" style="margin-top:8px;"><span id="vc-count">0</span> ausgewählt</div>
+            </div>
+        </section>
 
-            <div class="discovery-options">
-                <div class="discovery-card">
-                    <div class="card-icon"><i class="fas fa-question-circle"></i></div>
-                    <h4>Interaktiver Fragen-Workflow</h4>
-                    <p>Beantworte 8 gezielte Fragen, um deine wichtigsten Werte automatisch zu entdecken.</p>
-                    <button class="btn-primary" id="startQuestionsBtn">
-                        <i class="fas fa-play"></i> Fragen starten
-                    </button>
-                </div>
-                
-                <div class="discovery-card">
-                    <div class="card-icon"><i class="fas fa-hand-pointer"></i></div>
-                    <h4>Manuelle Auswahl</h4>
-                    <p>Durchsuche unsere Werte-Bibliothek und wähle deine wichtigsten Werte direkt aus.</p>
-                    <button class="btn-secondary" id="startManualBtn">
-                        <i class="fas fa-search"></i> Manuell auswählen
-                    </button>
-                </div>
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>Grenze auf deine Top 5 ein</h2>
+                <p class="mk-sub">Stell dir vor, du müsstest loslassen. Welche 5 Werte würdest du <em>niemals</em> aufgeben? Tippe sie an.</p>
+                <div class="mk-chips" id="vc-selected"></div>
+                <div class="mk-result" style="margin-top:16px;"><h4>Deine Top 5</h4><div id="vc-top-list">Noch keine ausgewählt.</div></div>
             </div>
-            
-            <div id="questionContainer" class="question-container" style="display: none;">
-                <!-- Questions will be loaded here -->
-            </div>
-        </div>
-    </section>
-    
-    <!-- Step 2: Werte-Ranking -->
-    <section class="workflow-step" data-step="2">
-        <div class="step-container">
-        <div class="step-header">
-                <h2>Schritt 2: Werte-Ranking</h2>
-                <p>Ordne deine ausgewählten Werte nach Priorität. Was ist dir am wichtigsten?</p>
-        </div>
-            <div class="step-content">
-                <div id="rankingList" class="ranking-list">
-                    <!-- Values for ranking will be loaded here -->
-                </div>
-                <p class="drag-info"><i class="fas fa-hand-rock"></i> Ziehe die Werte, um sie zu sortieren.</p>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Step 3: Konflikt-Analyse -->
-    <section class="workflow-step" data-step="3">
-        <div class="step-container">
-            <div class="step-header">
-                <h2>Schritt 3: Konflikt-Analyse</h2>
-                <p>Erkenne potenzielle Konflikte zwischen deinen Werten und finde Lösungen.</p>
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>Warum zählt jeder dieser Werte?</h2>
+                <p class="mk-sub">Ein Wert wird stark, wenn du ihn mit einer eigenen Bedeutung füllst.</p>
+                <div id="vc-meaning"></div>
             </div>
-            <div class="step-content">
-                <div id="conflictAnalysis" class="conflict-analysis">
-                    <!-- Conflict analysis will be displayed here -->
-                </div>
-                <button class="btn-primary" id="runConflictAnalysisBtn"><i class="fas fa-brain"></i> KI-Konflikt-Analyse starten</button>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Step 4: Lebensbereiche -->
-    <section class="workflow-step" data-step="4">
-        <div class="step-container">
-            <div class="step-header">
-                <h2>Schritt 4: Werte in Lebensbereichen</h2>
-                <p>Verbinde deine Werte mit verschiedenen Lebensbereichen, um ihre Relevanz zu verstehen.</p>
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>Wie sehr lebst du sie schon?</h2>
+                <p class="mk-sub">Sei ehrlich – die Lücke zwischen Wert und Alltag zeigt dir, wo Veränderung lohnt.</p>
+                <div id="vc-lived"></div>
             </div>
-            <div class="step-content">
-                <div id="lifeAreasMapping" class="life-areas-mapping">
-                    <!-- Life areas mapping will be displayed here -->
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>Dein Werte-Kompass</h2>
+                <p class="mk-sub">Das ist dein Fundament. Wo eine Zahl niedrig ist, liegt deine nächste Chance.</p>
+                <div id="vc-summary"></div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;">
+                    <button class="mk-btn mk-btn-primary" id="vc-export"><i class="fas fa-download"></i> Kompass herunterladen</button>
+                    <button class="mk-btn mk-btn-outline" id="vc-reset"><i class="fas fa-rotate-left"></i> Neu beginnen</button>
                 </div>
             </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
-    </section>
+    </main>
 
-    <!-- Step 5: Werte-Tracking -->
-    <section class="workflow-step" data-step="5">
-        <div class="step-container">
-            <div class="step-header">
-                <h2>Schritt 5: Werte-Tracking & Reflexion</h2>
-                <p>Verfolge, wie gut du deine Werte im Alltag lebst und reflektieren deine Erfahrungen.</p>
-            </div>
-            <div class="step-content">
-                <div id="valueTrackingDashboard" class="value-tracking-dashboard">
-                    <!-- Value tracking dashboard will be displayed here -->
-                </div>
-                <button class="btn-secondary" id="exportReportBtn"><i class="fas fa-file-export"></i> Bericht exportieren</button>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Workflow Navigation -->
-    <div class="workflow-navigation" style="display: none;">
-        <button class="btn-secondary" id="prevStepBtn" style="display: none;"><i class="fas fa-arrow-left"></i> Zurück</button>
-        <button class="btn-primary" id="nextStepBtn">Weiter <i class="fas fa-arrow-right"></i></button>
-    </div>
+    <div class="mk-toast" id="mk-toast"></div>
 
-    <!-- Global Notification -->
-    <div id="notificationContainer" class="notification-container"></div>
-
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
-    <script src="../../js/aws-config.js"></script>
-    <script src="../../js/real-aws-auth.js"></script>
-    <script src="../../js/global-auth-system.js"></script>
-    <script src="../../js/personality-auth-integration.js"></script>
-    <script src="values-ranking-workflow.js"></script>
-    <script src="values-questions-workflow.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js"></script>
+    <script>
+        const VALUES = ['Freiheit','Sicherheit','Familie','Gesundheit','Erfolg','Kreativität','Ehrlichkeit','Abenteuer','Wachstum','Verbundenheit','Gerechtigkeit','Unabhängigkeit','Anerkennung','Spiritualität','Wohlstand','Harmonie','Mut','Loyalität','Disziplin','Großzügigkeit','Neugier','Authentizität','Verantwortung','Gelassenheit','Leistung','Mitgefühl','Humor','Tradition','Nachhaltigkeit','Lernen','Liebe','Respekt','Abwechslung','Einfluss'];
+
+        (async function () {
+            await MethodKit.init({
+                method: 'values-clarification',
+                accent: '#14b8a6', accent2: '#06b6d4',
+                steps: [{icon:'🧭',label:'Entdecken'},{icon:'⭐',label:'Top 5'},{icon:'💬',label:'Bedeutung'},{icon:'📊',label:'Alltag'},{icon:'🏁',label:'Kompass'}],
+                defaultState: { pool: [], selected: [], top: [], meaning: {}, lived: {} }
+            });
+            const S = MethodKit.state;
+            if (!S.pool || !S.pool.length) S.pool = VALUES.slice();
+            else { VALUES.forEach(v => { if (S.pool.indexOf(v) < 0) S.pool.push(v); }); }
+
+            const poolHost = document.getElementById('vc-pool');
+            function renderPool() {
+                poolHost.innerHTML = S.pool.map(v => `<button class="mk-chip ${S.selected.indexOf(v)>-1?'selected':''}" data-v="${MethodKit.esc(v)}">${MethodKit.esc(v)}</button>`).join('');
+                poolHost.querySelectorAll('[data-v]').forEach(el => el.addEventListener('click', () => {
+                    const v = el.dataset.v, i = S.selected.indexOf(v);
+                    if (i > -1) { S.selected.splice(i, 1); S.top = S.top.filter(t => t !== v); }
+                    else S.selected.push(v);
+                    MethodKit.save(); renderPool(); document.getElementById('vc-count').textContent = S.selected.length;
+                }));
+                document.getElementById('vc-count').textContent = S.selected.length;
+            }
+            document.getElementById('vc-add').addEventListener('click', () => {
+                const i = document.getElementById('vc-custom');
+                const v = i.value.trim(); if (!v) return;
+                if (S.pool.indexOf(v) < 0) S.pool.push(v);
+                if (S.selected.indexOf(v) < 0) S.selected.push(v);
+                i.value = ''; MethodKit.save(); renderPool();
+            });
+            renderPool();
+
+            const selHost = document.getElementById('vc-selected');
+            function renderSelected() {
+                if (!S.selected.length) { selHost.innerHTML = '<div class="mk-empty">Gehe zurück zu Schritt 1 und wähle einige Werte.</div>'; }
+                else selHost.innerHTML = S.selected.map(v => `<button class="mk-chip ${S.top.indexOf(v)>-1?'selected':''}" data-t="${MethodKit.esc(v)}">${S.top.indexOf(v)>-1?'⭐ ':''}${MethodKit.esc(v)}</button>`).join('');
+                selHost.querySelectorAll('[data-t]').forEach(el => el.addEventListener('click', () => {
+                    const v = el.dataset.t, i = S.top.indexOf(v);
+                    if (i > -1) S.top.splice(i, 1);
+                    else { if (S.top.length >= 5) { MethodKit.toast('Maximal 5 – tippe einen ab, um zu tauschen', 'error'); return; } S.top.push(v); }
+                    MethodKit.save(); renderSelected(); renderTopList();
+                }));
+            }
+            function renderTopList() {
+                document.getElementById('vc-top-list').innerHTML = S.top.length ? S.top.map((v,i)=>`<strong>${i+1}. ${MethodKit.esc(v)}</strong>`).join(' · ') : 'Noch keine ausgewählt.';
+            }
+
+            function renderMeaning() {
+                const host = document.getElementById('vc-meaning');
+                if (!S.top.length) { host.innerHTML = '<div class="mk-empty">Wähle zuerst deine Top 5 in Schritt 2.</div>'; return; }
+                host.innerHTML = S.top.map(v => `
+                    <div class="mk-field">
+                        <label>⭐ ${MethodKit.esc(v)} — was bedeutet das für dich?</label>
+                        <textarea class="mk-textarea" data-m="${MethodKit.esc(v)}" placeholder="Woran merkst du, dass du diesen Wert lebst?">${MethodKit.esc(S.meaning[v]||'')}</textarea>
+                    </div>`).join('');
+                host.querySelectorAll('[data-m]').forEach(el => el.addEventListener('input', () => { S.meaning[el.dataset.m] = el.value; MethodKit.save(); }));
+            }
+
+            function renderLived() {
+                const host = document.getElementById('vc-lived');
+                if (!S.top.length) { host.innerHTML = '<div class="mk-empty">Wähle zuerst deine Top 5 in Schritt 2.</div>'; return; }
+                host.innerHTML = S.top.map(v => `
+                    <div class="mk-field">
+                        <label>${MethodKit.esc(v)}</label>
+                        <div class="mk-range-wrap">
+                            <input class="mk-range" type="range" min="1" max="10" data-l="${MethodKit.esc(v)}" value="${S.lived[v]||5}">
+                            <span class="mk-range-val" data-lv="${MethodKit.esc(v)}">${S.lived[v]||5}</span>
+                        </div>
+                    </div>`).join('');
+                host.querySelectorAll('[data-l]').forEach(el => el.addEventListener('input', () => {
+                    S.lived[el.dataset.l] = parseInt(el.value, 10);
+                    host.querySelector(`[data-lv="${CSS.escape(el.dataset.l)}"]`).textContent = el.value;
+                    MethodKit.save();
+                }));
+            }
+
+            function renderSummary() {
+                const host = document.getElementById('vc-summary');
+                if (!S.top.length) { host.innerHTML = '<div class="mk-empty">Noch keine Top-Werte definiert.</div>'; return; }
+                host.innerHTML = S.top.map((v,i) => {
+                    const lv = S.lived[v] || 5;
+                    return `<div class="mk-row"><div class="grow"><strong>${i+1}. ${MethodKit.esc(v)}</strong>${S.meaning[v]?`<div style="color:var(--mk-muted);font-size:13px;">${MethodKit.esc(S.meaning[v])}</div>`:''}</div><span class="mk-range-val">${lv}/10</span></div>`;
+                }).join('');
+            }
+
+            MethodKit.onStep = function (n) {
+                if (n === 2) { renderSelected(); renderTopList(); }
+                if (n === 3) renderMeaning();
+                if (n === 4) renderLived();
+                if (n === 5) renderSummary();
+            };
+
+            document.getElementById('vc-export').addEventListener('click', () => {
+                let t = `MEIN WERTE-KOMPASS\n==================\n\nTop-Werte:\n`;
+                S.top.forEach((v,i) => { t += `  ${i+1}. ${v} — gelebt: ${S.lived[v]||'–'}/10\n     ${S.meaning[v]||''}\n`; });
+                MethodKit.exportText('mein-werte-kompass.txt', t);
+            });
+            document.getElementById('vc-reset').addEventListener('click', () => {
+                if (!confirm('Wirklich neu beginnen?')) return;
+                MethodKit.state = { pool: VALUES.slice(), selected: [], top: [], meaning: {}, lived: {}, __step: 1 };
+                MethodKit.save({ now: true }); location.reload();
+            });
+        })();
+    </script>
 </body>
 </html>
