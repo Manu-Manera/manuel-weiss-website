@@ -3,659 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Johari Window - Selbst- und Fremdbild</title>
-    <link rel="stylesheet" href="../../css/ikigai-planner.css">
-    <link rel="stylesheet" href="johari-window.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/unified-auth-system.css">
-
-    <!-- Progress Badge Styles -->
+    <title>Johari-Fenster | Manuel Weiss</title>
+    <meta name="description" content="Entdecke blinde Flecken und verborgene Seiten: Vergleiche dein Selbstbild mit dem Fremdbild und erweitere deinen offenen Bereich.">
+    <link rel="stylesheet" href="../_kit/method-light.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .user-progress-badge {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background: white;
-            border-radius: 8px;
-            padding: 12px 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            font-size: 14px;
-            min-width: 200px;
-        }
-        
-        .user-progress-badge .user-info,
-        .user-progress-badge .progress-sync {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #4a5568;
-        }
-        
-        .user-progress-badge i {
-            font-size: 16px;
-            color: #667eea;
-        }
-        
-        @media (max-width: 768px) {
-            .user-progress-badge {
-                top: auto;
-                bottom: 20px;
-                right: 10px;
-                left: 10px;
-                min-width: auto;
-            }
-        }
+        :root { --mk-accent: #06b6d4; --mk-accent-2: #3b82f6; --mk-accent-soft: rgba(6,182,212,.12); }
+        .jo-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+        .jo-cell { border-radius:var(--mk-radius-sm); padding:14px; border:1.5px solid var(--mk-line); min-height:90px; }
+        .jo-open { background:rgba(6,182,212,.08); border-color:rgba(6,182,212,.4); }
+        .jo-blind { background:rgba(245,158,11,.09); border-color:rgba(245,158,11,.4); }
+        .jo-hidden { background:rgba(139,92,246,.08); border-color:rgba(139,92,246,.4); }
+        .jo-unknown { background:var(--mk-surface-2); }
+        .jo-cell h4 { margin:0 0 6px; font-size:13px; }
+        .jo-tag { display:inline-block; background:#fff; border:1px solid var(--mk-line); border-radius:999px; padding:2px 9px; font-size:12px; margin:0 4px 4px 0; }
+        @media (max-width:520px){ .jo-grid{grid-template-columns:1fr;} }
     </style>
 </head>
-<body data-page-id="johari-window">
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-window-restore"></i></span><span>Johari-Fenster</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
+    </header>
 
-    <!-- Progress Badge -->
-    <div class="user-progress-badge" style="display: none;">
-        <div class="user-info">
-            <i class="fas fa-user-circle"></i>
-            <span>Nicht angemeldet</span>
-        </div>
-        <div class="progress-sync">
-            <i class="fas fa-cloud-off-alt"></i>
-            <span>Fortschritt lokal</span>
-        </div>
-    </div>
-    <div class="johari-method">
-        <div class="method-header">
-            <div class="method-icon">
-                <i class="fas fa-window-maximize"></i>
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-window-restore"></i></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <h1>Was andere sehen – und du nicht</h1>
+            <p>Das Johari-Fenster macht den Unterschied zwischen Selbst- und Fremdbild sichtbar. So entdeckst du blinde Flecken, entscheidest, was du teilen willst, und wächst über deinen offenen Bereich.</p>
+            <div class="mk-badges"><span class="mk-badge">Selbstbild</span><span class="mk-badge">Fremdbild</span><span class="mk-badge">Blinde Flecken</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>So sehe ich mich</h2>
+                <p class="mk-sub">Wähle die Eigenschaften, die auf dich zutreffen.</p>
+                <div class="mk-chips" id="jo-self"></div>
             </div>
-            <div class="method-title">
-                <h1>Johari Window</h1>
-                <p>Selbst- und Fremdbild analysieren für bessere Selbsterkenntnis</p>
-        </div>
+        </section>
 
-        <div class="workflow-header">
-            <button class="btn btn-secondary" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
-                <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
-            </button>
-        <div class="workflow-progress">
-            <div class="progress-step active" data-step="1">
-                <div class="step-number">1</div>
-                <div class="step-title">Selbstbild</div>
-            <div class="progress-step" data-step="2">
-                <div class="step-number">2</div>
-                <div class="step-title">Fremdbild</div>
-            <div class="progress-step" data-step="3">
-                <div class="step-number">3</div>
-                <div class="step-title">Blinder Fleck</div>
-            <div class="progress-step" data-step="4">
-                <div class="step-number">4</div>
-                <div class="step-title">Unbekanntes</div>
-            <div class="progress-step" data-step="5">
-                <div class="step-number">5</div>
-                <div class="step-title">Integration</div>
-        <div class="workflow-content">
-            <!-- Step 1: Selbstbild -->
-            <div class="workflow-step active" id="step-1">
-                <div class="step-header">
-                    <h2>Schritt 1: Selbstbild - Was du über dich weißt</h2>
-                    <p>Identifiziere deine eigenen Stärken, Schwächen und Eigenschaften</p>
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>So sehen mich andere</h2>
+                <p class="mk-sub">Wähle, was andere über dich sagen würden (oder dir schon gesagt haben). Am ehrlichsten wird es, wenn du jemanden wirklich fragst.</p>
+                <div class="mk-chips" id="jo-others"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>Dein Johari-Fenster</h2>
+                <div class="jo-grid">
+                    <div class="jo-cell jo-open"><h4>🪟 Offen <span style="color:var(--mk-faint)">(ich & andere)</span></h4><div id="jo-c-open"></div></div>
+                    <div class="jo-cell jo-blind"><h4>🙈 Blinder Fleck <span style="color:var(--mk-faint)">(nur andere)</span></h4><div id="jo-c-blind"></div></div>
+                    <div class="jo-cell jo-hidden"><h4>🔒 Verborgen <span style="color:var(--mk-faint)">(nur ich)</span></h4><div id="jo-c-hidden"></div></div>
+                    <div class="jo-cell jo-unknown"><h4>❓ Unbekannt <span style="color:var(--mk-faint)">(Potenzial)</span></h4><div id="jo-c-unknown"></div></div>
                 </div>
-                <div class="step-content">
-                    <div class="phase-description">
-                        <h3><i class="fas fa-user"></i> Was ist das Selbstbild?</h3>
-                        <p>Das Selbstbild ist die Art, wie du dich selbst siehst. Es umfasst deine bewussten Eigenschaften, Stärken, Schwächen und Verhaltensweisen.</p>
-                    </div>
-                    <div class="exercise-section">
-                        <h3><i class="fas fa-tasks"></i> Übung: Selbstbild-Analyse</h3>
-                        <div class="exercise-content">
-                            <div class="self-image-analysis">
-                                <h4>Persönliche Eigenschaften</h4>
-                                <div class="trait-categories">
-                                    <div class="trait-category">
-                                        <h5>Stärken und Talente</h5>
-                                        <div class="trait-list">
-                                            <div class="trait-item">
-                                                <input type="checkbox" id="strength-1">
-                                                <label for="strength-1">Kommunikativ</label>
-                                                <textarea placeholder="Beschreibe, wie sich diese Stärke zeigt..."></textarea>
-                                            </div>
-                                                <input type="checkbox" id="strength-2">
-                                                <label for="strength-2">Zuverlässig</label>
-                                                <input type="checkbox" id="strength-3">
-                                                <label for="strength-3">Kreativ</label>
-                                                <input type="checkbox" id="strength-4">
-                                                <label for="strength-4">Analytisch</label>
-                                                <input type="checkbox" id="strength-5">
-                                                <label for="strength-5">Empathisch</label>
-                                        </div>
-                                    </div>
-                                        <h5>Schwächen und Entwicklungsfelder</h5>
-                                                <input type="checkbox" id="weakness-1">
-                                                <label for="weakness-1">Perfektionismus</label>
-                                                <textarea placeholder="Beschreibe, wie sich diese Schwäche zeigt..."></textarea>
-                                                <input type="checkbox" id="weakness-2">
-                                                <label for="weakness-2">Prokrastination</label>
-                                                <input type="checkbox" id="weakness-3">
-                                                <label for="weakness-3">Konfliktvermeidung</label>
-                                                <input type="checkbox" id="weakness-4">
-                                                <label for="weakness-4">Ungeduld</label>
-                                                <input type="checkbox" id="weakness-5">
-                                                <label for="weakness-5">Kritikempfindlichkeit</label>
-                                </div>
-                                <h4>Verhaltensmuster</h4>
-                                <div class="behavior-patterns">
-                                    <div class="pattern-item">
-                                        <label>Wie reagierst du unter Stress?</label>
-                                        <textarea placeholder="Beschreibe deine typischen Stressreaktionen..."></textarea>
-                                        <label>Wie verhältst du dich in Konflikten?</label>
-                                        <textarea placeholder="Beschreibe dein Konfliktverhalten..."></textarea>
-                                        <label>Wie gehst du mit Kritik um?</label>
-                                        <textarea placeholder="Beschreibe deine Reaktion auf Kritik..."></textarea>
-                                        <label>Wie verhältst du dich in Gruppen?</label>
-                                        <textarea placeholder="Beschreibe dein Gruppenverhalten..."></textarea>
-                                <h4>Werte und Überzeugungen</h4>
-                                <div class="values-beliefs">
-                                    <div class="value-item">
-                                        <label>Was sind deine wichtigsten Werte?</label>
-                                        <textarea placeholder="Liste deine wichtigsten Werte auf..."></textarea>
-                                        <label>Welche Überzeugungen leiten dich?</label>
-                                        <textarea placeholder="Beschreibe deine wichtigsten Überzeugungen..."></textarea>
-                                        <label>Was motiviert dich?</label>
-                                        <textarea placeholder="Was treibt dich an?"></textarea>
-                            </div>
-                        </div>
-                    <div class="tips-section">
-                        <h3><i class="fas fa-lightbulb"></i> Tipps für die Selbstbild-Analyse</h3>
-                        <div class="tips-grid">
-                            <div class="tip-item">
-                                <i class="fas fa-heart"></i>
-                                <h4>Ehrlich sein</h4>
-                                <p>Sei ehrlich zu dir selbst, auch wenn es unangenehm ist.</p>
-                                <i class="fas fa-balance-scale"></i>
-                                <h4>Ausgewogen betrachten</h4>
-                                <p>Betrachte sowohl Stärken als auch Schwächen objektiv.</p>
-                                <i class="fas fa-history"></i>
-                                <h4>Vergangenheit reflektieren</h4>
-                                <p>Denke an konkrete Situationen aus der Vergangenheit.</p>
-                                <i class="fas fa-eye"></i>
-                                <h4>Selbstbeobachtung</h4>
-                                <p>Beobachte dich selbst in verschiedenen Situationen.</p>
-                    <div class="examples-section">
-                        <h3><i class="fas fa-book-open"></i> Beispiele</h3>
-                        <div class="example-item">
-                            <h4>Stärke: Kommunikativ</h4>
-                            <p><strong>Beschreibung:</strong> "Ich kann gut erklären und andere für meine Ideen begeistern. In Meetings fühle ich mich wohl und kann komplexe Sachverhalte verständlich darstellen."</p>
-                            <h4>Schwäche: Perfektionismus</h4>
-                            <p><strong>Beschreibung:</strong> "Ich verbringe zu viel Zeit mit Details und kann schwer loslassen. Manchmal verzögert das meine Projekte."</p>
-            <!-- Step 2: Fremdbild -->
-            <div class="workflow-step" id="step-2">
-                    <h2>Schritt 2: Fremdbild - Was andere über dich wissen</h2>
-                    <p>Erkenne, wie andere dich wahrnehmen und welche Eigenschaften sie dir zuschreiben</p>
-                        <h3><i class="fas fa-users"></i> Was ist das Fremdbild?</h3>
-                        <p>Das Fremdbild ist die Art, wie andere dich wahrnehmen. Es kann sich vom Selbstbild unterscheiden und bietet wertvolle Erkenntnisse.</p>
-                        <h3><i class="fas fa-tasks"></i> Übung: Fremdbild-Analyse</h3>
-                            <div class="external-image-analysis">
-                                <h4>Feedback sammeln</h4>
-                                <div class="feedback-sources">
-                                    <div class="source-category">
-                                        <h5>Berufliches Umfeld</h5>
-                                        <div class="feedback-item">
-                                            <label>Kollegen</label>
-                                            <textarea placeholder="Was sagen deine Kollegen über dich?"></textarea>
-                                            <label>Vorgesetzte</label>
-                                            <textarea placeholder="Welches Feedback hast du von Vorgesetzten erhalten?"></textarea>
-                                            <label>Mitarbeiter</label>
-                                            <textarea placeholder="Wie sehen dich deine Mitarbeiter?"></textarea>
-                                        <h5>Privates Umfeld</h5>
-                                            <label>Familie</label>
-                                            <textarea placeholder="Was sagt deine Familie über dich?"></textarea>
-                                            <label>Freunde</label>
-                                            <textarea placeholder="Wie beschreiben dich deine Freunde?"></textarea>
-                                            <label>Partner</label>
-                                            <textarea placeholder="Welches Feedback gibt dir dein Partner/deine Partnerin?"></textarea>
-                                <h4>Wahrnehmungsmuster</h4>
-                                <div class="perception-patterns">
-                                        <label>Wie wirst du in verschiedenen Situationen wahrgenommen?</label>
-                                        <textarea placeholder="Beschreibe, wie andere dich in verschiedenen Kontexten sehen..."></textarea>
-                                        <label>Welche Eigenschaften werden dir zugeschrieben?</label>
-                                        <textarea placeholder="Liste Eigenschaften auf, die andere dir zuschreiben..."></textarea>
-                                        <label>Welche Erwartungen haben andere an dich?</label>
-                                        <textarea placeholder="Welche Erwartungen spürst du von anderen?"></textarea>
-                                <h4>Körpersprache und Ausstrahlung</h4>
-                                <div class="body-language">
-                                    <div class="language-item">
-                                        <label>Wie wirkst du auf andere?</label>
-                                        <textarea placeholder="Beschreibe deine Ausstrahlung und Wirkung..."></textarea>
-                                        <label>Welche Körpersprache zeigst du?</label>
-                                        <textarea placeholder="Wie verhältst du dich körperlich?"></textarea>
-                                        <label>Wie kommunizierst du?</label>
-                                        <textarea placeholder="Beschreibe deinen Kommunikationsstil..."></textarea>
-                        <h3><i class="fas fa-lightbulb"></i> Tipps für die Fremdbild-Analyse</h3>
-                                <i class="fas fa-comments"></i>
-                                <h4>Feedback einholen</h4>
-                                <p>Bitte andere um ehrliches, konstruktives Feedback.</p>
-                                <i class="fas fa-search"></i>
-                                <h4>Beobachten</h4>
-                                <p>Beobachte, wie andere auf dich reagieren.</p>
-                                <h4>Verschiedene Quellen</h4>
-                                <p>Hole Feedback aus verschiedenen Lebensbereichen.</p>
-                                <h4>Offen bleiben</h4>
-                                <p>Sei offen für überraschende Erkenntnisse.</p>
-                            <h4>Kollegen-Feedback</h4>
-                            <p><strong>Feedback:</strong> "Du bist sehr strukturiert und organisiert, manchmal aber auch etwas starr in deinen Ansätzen."</p>
-                            <h4>Freunde-Feedback</h4>
-                            <p><strong>Feedback:</strong> "Du bist ein guter Zuhörer und immer da, wenn man dich braucht. Du machst dir aber oft zu viele Sorgen."</p>
-            <!-- Step 3: Blinder Fleck -->
-            <div class="workflow-step" id="step-3">
-                    <h2>Schritt 3: Blinder Fleck - Was andere sehen, du aber nicht</h2>
-                    <p>Entdecke Eigenschaften, die andere an dir bemerken, die dir aber nicht bewusst sind</p>
-                        <h3><i class="fas fa-eye-slash"></i> Was ist der Blinde Fleck?</h3>
-                        <p>Der Blinde Fleck umfasst Eigenschaften und Verhaltensweisen, die andere an dir bemerken, die dir aber selbst nicht bewusst sind.</p>
-                        <h3><i class="fas fa-tasks"></i> Übung: Blinder Fleck entdecken</h3>
-                            <div class="blind-spot-analysis">
-                                <h4>Direktes Feedback einholen</h4>
-                                <div class="feedback-request">
-                                    <div class="request-item">
-                                        <label>Frage an Kollegen: "Was fällt dir an mir auf, was ich vielleicht nicht über mich weiß?"</label>
-                                        <textarea placeholder="Notiere die Antworten..."></textarea>
-                                        <label>Frage an Freunde: "Wie würdest du mich beschreiben, wenn ich nicht dabei wäre?"</label>
-                                        <label>Frage an Familie: "Welche Eigenschaften habe ich, die mir vielleicht nicht bewusst sind?"</label>
-                                <h4>Indirekte Beobachtungen</h4>
-                                <div class="indirect-observations">
-                                    <div class="observation-item">
-                                        <label>Wie reagieren andere auf dich?</label>
-                                        <textarea placeholder="Beobachte Reaktionen und Verhaltensweisen anderer..."></textarea>
-                                        <label>Welche Rollen werden dir zugeschrieben?</label>
-                                        <textarea placeholder="Welche Rollen übernimmst du automatisch?"></textarea>
-                                        <label>Was wird von dir erwartet?</label>
-                                        <textarea placeholder="Welche Erwartungen spürst du?"></textarea>
-                                <h4>Verhaltensmuster erkennen</h4>
-                                        <label>Welche Gewohnheiten hast du, die dir nicht bewusst sind?</label>
-                                        <textarea placeholder="Identifiziere unbewusste Gewohnheiten..."></textarea>
-                                        <label>Wie verhältst du dich in Stresssituationen?</label>
-                                        <textarea placeholder="Beschreibe unbewusste Stressreaktionen..."></textarea>
-                                        <textarea placeholder="Welche körperlichen Signale sendest du?"></textarea>
-                                <h4>Blinde Flecken kategorisieren</h4>
-                                <div class="blind-spot-categories">
-                                    <div class="category-item">
-                                        <h5>Positive blinde Flecken</h5>
-                                        <textarea placeholder="Welche positiven Eigenschaften sehen andere, die dir nicht bewusst sind?"></textarea>
-                                        <h5>Negative blinde Flecken</h5>
-                                        <textarea placeholder="Welche negativen Eigenschaften sehen andere, die dir nicht bewusst sind?"></textarea>
-                                        <h5>Neutrale blinde Flecken</h5>
-                                        <textarea placeholder="Welche neutralen Eigenschaften sehen andere, die dir nicht bewusst sind?"></textarea>
-                        <h3><i class="fas fa-lightbulb"></i> Tipps für die Entdeckung des Blinden Flecks</h3>
-                                <i class="fas fa-video"></i>
-                                <h4>Videoaufnahmen</h4>
-                                <p>Lass dich in verschiedenen Situationen filmen.</p>
-                                <h4>360°-Feedback</h4>
-                                <p>Hole strukturiertes Feedback von verschiedenen Personen.</p>
-                                <i class="fas fa-mirror"></i>
-                                <h4>Selbstreflexion</h4>
-                                <p>Reflektiere über deine Verhaltensmuster.</p>
-                                <h4>Offenheit</h4>
-                            <h4>Positiver blinder Fleck</h4>
-                            <p><strong>Erkenntnis:</strong> "Andere sagen, ich bin sehr inspirierend und motivierend, obwohl ich mich selbst als eher zurückhaltend sehe."</p>
-                            <h4>Negativer blinder Fleck</h4>
-                            <p><strong>Erkenntnis:</strong> "Ich merke nicht, dass ich oft unterbreche, wenn andere sprechen. Das stört andere, aber mir ist es nicht bewusst."</p>
-            <!-- Step 4: Unbekanntes -->
-            <div class="workflow-step" id="step-4">
-                    <h2>Schritt 4: Unbekanntes - Was niemand weiß</h2>
-                    <p>Erkunde unbewusste Potenziale und versteckte Talente</p>
-                        <h3><i class="fas fa-question-circle"></i> Was ist das Unbekannte?</h3>
-                        <p>Das Unbekannte umfasst Potenziale, Talente und Eigenschaften, die weder dir noch anderen bewusst sind. Diese zu entdecken kann zu überraschenden Erkenntnissen führen.</p>
-                        <h3><i class="fas fa-tasks"></i> Übung: Unbekanntes erkunden</h3>
-                            <div class="unknown-exploration">
-                                <h4>Neue Erfahrungen sammeln</h4>
-                                <div class="new-experiences">
-                                    <div class="experience-item">
-                                        <label>Welche Aktivitäten hast du noch nie ausprobiert?</label>
-                                        <textarea placeholder="Liste Aktivitäten auf, die du gerne ausprobieren würdest..."></textarea>
-                                        <label>Was würdest du tun, wenn du keine Angst hättest?</label>
-                                        <textarea placeholder="Beschreibe deine Wünsche ohne Ängste..."></textarea>
-                                        <label>Welche Träume hast du, die du noch nie verfolgt hast?</label>
-                                        <textarea placeholder="Liste deine unverfolgten Träume auf..."></textarea>
-                                <h4>Versteckte Talente entdecken</h4>
-                                <div class="hidden-talents">
-                                    <div class="talent-item">
-                                        <label>Welche Fähigkeiten könntest du haben, ohne es zu wissen?</label>
-                                        <textarea placeholder="Überlege, welche Talente in dir schlummern könnten..."></textarea>
-                                        <label>Was machen andere, was dich interessiert?</label>
-                                        <textarea placeholder="Welche Fähigkeiten anderer faszinieren dich?"></textarea>
-                                        <label>Welche Hobbys könnten zu dir passen?</label>
-                                        <textarea placeholder="Überlege, welche neuen Hobbys zu dir passen könnten..."></textarea>
-                                <h4>Unbewusste Potenziale</h4>
-                                <div class="unconscious-potential">
-                                    <div class="potential-item">
-                                        <label>In welchen Bereichen könntest du noch wachsen?</label>
-                                        <textarea placeholder="Identifiziere Wachstumsbereiche..."></textarea>
-                                        <label>Welche Herausforderungen könntest du meistern?</label>
-                                        <textarea placeholder="Überlege, welche Herausforderungen du angehen könntest..."></textarea>
-                                        <label>Was würde dich überraschen, wenn du es könntest?</label>
-                                        <textarea placeholder="Stelle dir vor, was dich überraschen würde..."></textarea>
-                                <h4>Experimente planen</h4>
-                                <div class="experiments">
-                                    <div class="experiment-item">
-                                        <label>Welche Experimente möchtest du durchführen?</label>
-                                        <textarea placeholder="Plane konkrete Experimente zur Selbsterkundung..."></textarea>
-                                        <label>Wie kannst du neue Erfahrungen sammeln?</label>
-                                        <textarea placeholder="Überlege, wie du neue Erfahrungen sammeln kannst..."></textarea>
-                                        <label>Welche Risiken bist du bereit einzugehen?</label>
-                                        <textarea placeholder="Definiere deine Risikobereitschaft..."></textarea>
-                        <h3><i class="fas fa-lightbulb"></i> Tipps für die Erkundung des Unbekannten</h3>
-                                <i class="fas fa-rocket"></i>
-                                <h4>Experimentieren</h4>
-                                <p>Probiere neue Dinge aus und experimentiere.</p>
-                                <h4>Neugierde</h4>
-                                <p>Bleibe neugierig und offen für Neues.</p>
-                                <i class="fas fa-users"></i>
-                                <h4>Andere beobachten</h4>
-                                <p>Beobachte andere und lerne von ihnen.</p>
-                                <i class="fas fa-star"></i>
-                                <h4>Träume verfolgen</h4>
-                                <p>Verfolge deine Träume und Wünsche.</p>
-                            <h4>Verstecktes Talent</h4>
-                            <p><strong>Entdeckung:</strong> "Ich habe nie gedacht, dass ich gut im Zeichnen bin, aber als ich es ausprobiert habe, war ich überrascht von meinen Fähigkeiten."</p>
-                            <h4>Unbewusstes Potenzial</h4>
-                            <p><strong>Entdeckung:</strong> "Ich dachte, ich bin nicht kreativ, aber in einem Workshop habe ich gemerkt, dass ich sehr innovative Ideen entwickeln kann."</p>
-            <!-- Step 5: Integration -->
-            <div class="workflow-step" id="step-5">
-                    <h2>Schritt 5: Integration - Alles zusammenführen</h2>
-                    <p>Integriere alle Erkenntnisse und entwickle einen Aktionsplan</p>
-                        <h3><i class="fas fa-puzzle-piece"></i> Was ist Integration?</h3>
-                        <p>Integration bedeutet, alle Erkenntnisse aus den vier Bereichen des Johari-Fensters zusammenzuführen und daraus konkrete Handlungsschritte abzuleiten.</p>
-                        <h3><i class="fas fa-tasks"></i> Übung: Integration und Aktionsplan</h3>
-                            <div class="integration-analysis">
-                                <h4>Erkenntnisse zusammenfassen</h4>
-                                <div class="insights-summary">
-                                    <div class="insight-item">
-                                        <label>Wichtigste Erkenntnisse aus dem Selbstbild:</label>
-                                        <textarea placeholder="Fasse deine wichtigsten Selbsterkenntnisse zusammen..."></textarea>
-                                        <label>Wichtigste Erkenntnisse aus dem Fremdbild:</label>
-                                        <textarea placeholder="Fasse deine wichtigsten Fremdbild-Erkenntnisse zusammen..."></textarea>
-                                        <label>Wichtigste Erkenntnisse aus dem Blinden Fleck:</label>
-                                        <textarea placeholder="Fasse deine wichtigsten Blinden-Fleck-Erkenntnisse zusammen..."></textarea>
-                                        <label>Wichtigste Erkenntnisse aus dem Unbekannten:</label>
-                                        <textarea placeholder="Fasse deine wichtigsten Unbekannten-Erkenntnisse zusammen..."></textarea>
-                                <h4>Widersprüche und Übereinstimmungen</h4>
-                                <div class="contradictions-alignment">
-                                    <div class="analysis-item">
-                                        <label>Wo stimmen Selbstbild und Fremdbild überein?</label>
-                                        <textarea placeholder="Identifiziere Übereinstimmungen..."></textarea>
-                                        <label>Wo gibt es Widersprüche zwischen Selbstbild und Fremdbild?</label>
-                                        <textarea placeholder="Identifiziere Widersprüche..."></textarea>
-                                        <label>Welche Überraschungen gab es?</label>
-                                        <textarea placeholder="Beschreibe überraschende Erkenntnisse..."></textarea>
-                                <h4>Entwicklungsbereiche identifizieren</h4>
-                                <div class="development-areas">
-                                    <div class="area-item">
-                                        <label>Welche Bereiche möchtest du entwickeln?</label>
-                                        <textarea placeholder="Identifiziere konkrete Entwicklungsbereiche..."></textarea>
-                                        <label>Welche Stärken möchtest du ausbauen?</label>
-                                        <textarea placeholder="Identifiziere Stärken zum Ausbauen..."></textarea>
-                                        <label>Welche Schwächen möchtest du angehen?</label>
-                                        <textarea placeholder="Identifiziere Schwächen zum Angehen..."></textarea>
-                                <h4>Aktionsplan erstellen</h4>
-                                <div class="action-plan">
-                                    <div class="plan-item">
-                                        <label>Kurzfristige Ziele (1-3 Monate):</label>
-                                        <textarea placeholder="Definiere kurzfristige Entwicklungsziele..."></textarea>
-                                        <label>Mittelfristige Ziele (3-12 Monate):</label>
-                                        <textarea placeholder="Definiere mittelfristige Entwicklungsziele..."></textarea>
-                                        <label>Langfristige Ziele (1+ Jahre):</label>
-                                        <textarea placeholder="Definiere langfristige Entwicklungsziele..."></textarea>
-                                        <label>Konkrete Schritte:</label>
-                                        <textarea placeholder="Definiere konkrete Handlungsschritte..."></textarea>
-                                <h4>Unterstützung und Ressourcen</h4>
-                                <div class="support-resources">
-                                    <div class="resource-item">
-                                        <label>Wer kann dich unterstützen?</label>
-                                        <textarea placeholder="Identifiziere Unterstützer..."></textarea>
-                                        <label>Welche Ressourcen brauchst du?</label>
-                                        <textarea placeholder="Identifiziere benötigte Ressourcen..."></textarea>
-                                        <label>Wie wirst du deinen Fortschritt messen?</label>
-                                        <textarea placeholder="Definiere Erfolgskriterien..."></textarea>
-                        <h3><i class="fas fa-lightbulb"></i> Tipps für die Integration</h3>
-                                <i class="fas fa-calendar"></i>
-                                <h4>Regelmäßige Reflexion</h4>
-                                <p>Reflektiere regelmäßig über deine Entwicklung.</p>
-                                <p>Hole regelmäßig Feedback von anderen ein.</p>
-                                <i class="fas fa-chart-line"></i>
-                                <h4>Fortschritt verfolgen</h4>
-                                <p>Verfolge deinen Fortschritt systematisch.</p>
-                                <h4>Geduldig sein</h4>
-                                <p>Entwicklung braucht Zeit und Geduld.</p>
-                            <h4>Entwicklungsplan</h4>
-                            <p><strong>Ziel:</strong> Bessere Kommunikation</p>
-                            <p><strong>Schritte:</strong> Aktives Zuhören üben, Feedback einholen, Kommunikationskurse besuchen</p>
-                            <p><strong>Zeitrahmen:</strong> 6 Monate</p>
-                            <h4>Stärken ausbauen</h4>
-                            <p><strong>Stärke:</strong> Kreativität</p>
-                            <p><strong>Plan:</strong> Regelmäßig kreative Projekte starten, Kreativitätsworkshops besuchen</p>
-                            <p><strong>Ziel:</strong> Kreativität in den Beruf integrieren</p>
-        <div class="workflow-navigation">
-            <button id="prev-step" class="btn btn-secondary" data-action="previous-step">
-                <i class="fas fa-arrow-left"></i> Zurück
-            <button id="next-step" class="btn btn-primary" data-action="next-step">
-                Weiter <i class="fas fa-arrow-right"></i>
-        <div class="method-footer">
-            <div class="progress-summary">
-                <h3>Dein Fortschritt</h3>
-                <div class="progress-stats">
-                    <div class="stat-item">
-                        <span class="stat-label">Schritte abgeschlossen:</span>
-                        <span class="stat-value" id="completed-steps">0/5</span>
-                        <span class="stat-label">Erkenntnisse gesammelt:</span>
-                        <span class="stat-value" id="insights-collected">0</span>
-    </div>
-    <script src="johari-window.js"></script>
-    
-    <!-- Multi-User Integration for Johari Window -->
-    <script src="../../js/base-logger.js"></script>
-    <script type="module">
-        import '../../js/unified-auth-manager.js';
-        import '../../js/user-progress-tracker.js';
-        
-        // Wait for systems and method to initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(initJohariMultiUser, 1500);
-        });
-        function initJohariMultiUser() {
-            console.log('🔧 Initializing Johari Window Multi-User Features');
-            
-            if (!window.GlobalAuth) {
-                console.warn('Global Auth not available');
-                return;
-            }
-            // Check if user is authenticated
-            if (!window.GlobalAuth.isAuthenticated()) {
-                showAuthRequiredMessage();
-            // Setup progress tracking
-            setupProgressTracking();
-            // Load existing progress
-            loadUserProgress();
-            // Setup auto-save
-            setupAutoSave();
-            console.log('✅ Johari Window Multi-User ready');
-        }
-        function showAuthRequiredMessage() {
-            const container = document.querySelector('.johari-method');
-            if (!container) return;
-            const overlay = document.createElement('div');
-            overlay.style.cssText = `
-                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-                background: rgba(0,0,0,0.8); z-index: 10000;
-                display: flex; align-items: center; justify-content: center;
-            `;
-            overlay.innerHTML = `
-                <div style="
-                    background: white; padding: 2rem; border-radius: 12px;
-                    text-align: center; max-width: 500px; margin: 2rem;
-                    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-                ">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
-                    <h2 style="margin: 0 0 1rem; color: #1f2937;">Anmeldung erforderlich</h2>
-                    <p style="margin: 0 0 2rem; color: #6b7280; line-height: 1.6;">
-                        Um Ihren Fortschritt beim Johari-Window zu speichern und später fortzusetzen, 
-                        müssen Sie sich anmelden.
-                    </p>
-                    <div style="display: flex; gap: 1rem; justify-content: center;">
-                        <button onclick="window.GlobalAuth.showNotification('Klicken Sie rechts oben auf Anmelden', 'info')" 
-                                style="background: #3b82f6; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 500;">
-                            <i class="fas fa-sign-in-alt"></i> Anmelden
-                        </button>
-                        <button onclick="this.parentElement.parentElement.parentElement.remove()" 
-                                style="background: #6b7280; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 500;">
-                            Ohne Anmeldung fortsetzen
-            document.body.appendChild(overlay);
-        function setupProgressTracking() {
-            const methodId = 'johari-window';
-            // Track method initialization
-            if (window.ProgressTracker) {
-                window.ProgressTracker.completeMethodStep(methodId, 'initialized', {
-                    totalSteps: 5,
-                    methodName: 'Johari-Window'
-                });
-            // Monitor workflow steps
-            const observer = new MutationObserver((mutations) => {
-                mutations.forEach((mutation) => {
-                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                        const step = mutation.target.closest('[data-step]');
-                        if (step && step.classList.contains('active')) {
-                            const stepNumber = step.getAttribute('data-step');
-                            trackStepProgress(stepNumber);
-                        }
-                    }
-            });
-            // Observe progress steps
-            document.querySelectorAll('.progress-step').forEach(step => {
-                observer.observe(step, { attributes: true });
-        function trackStepProgress(stepNumber) {
-            if (!window.ProgressTracker) return;
-            const stepNames = {
-                '1': 'selbstbild',
-                '2': 'fremdbild',
-                '3': 'blinder_fleck',
-                '4': 'unbekanntes',
-                '5': 'integration'
-            };
-            const stepId = stepNames[stepNumber];
-            if (stepId) {
-                window.ProgressTracker.completeMethodStep('johari-window', stepId, {
-                    stepNumber: parseInt(stepNumber),
-                    stepName: stepNames[stepNumber],
-                    completedAt: new Date().toISOString()
-                
-                console.log(`📊 Johari step completed: ${stepId}`);
-        function loadUserProgress() {
-            const progress = window.ProgressTracker.getMethodProgress('johari-window');
-            if (!progress || !progress.results) return;
-            console.log('📋 Loading Johari progress:', progress);
-            // Restore form data if available
-            Object.keys(progress.results).forEach(stepId => {
-                const stepData = progress.results[stepId];
-                restoreStepData(stepId, stepData);
-            // Show progress notification
-            window.GlobalAuth?.showNotification(`Fortschritt geladen: ${progress.currentStep}/5 Schritte`, 'info');
-        function restoreStepData(stepId, data) {
-            // This would be specific to each step's form elements
-            // For now, just log that we're restoring data
-            console.log(`🔄 Restoring data for step: ${stepId}`, data);
-            // Example: Restore textarea content
-            if (data.content) {
-                const textareas = document.querySelectorAll(`[data-step-id="${stepId}"] textarea`);
-                textareas.forEach(textarea => {
-                    if (!textarea.value) {
-                        textarea.value = data.content;
-        function setupAutoSave() {
-            // Auto-save form data every 30 seconds
-            setInterval(saveCurrentProgress, 30000);
-            // Save on form changes
-            document.addEventListener('input', debounce(saveCurrentProgress, 5000));
-            document.addEventListener('change', saveCurrentProgress);
-        function saveCurrentProgress() {
-            if (!window.ProgressTracker || !window.GlobalAuth?.isAuthenticated()) return;
-            const currentStep = document.querySelector('.progress-step.active');
-            if (!currentStep) return;
-            const stepNumber = currentStep.getAttribute('data-step');
-            const stepContainer = document.querySelector(`[data-step="${stepNumber}"]`);
-            if (stepContainer) {
-                const formData = extractFormData(stepContainer);
-                if (Object.keys(formData).length > 0) {
-                    const stepNames = {
-                        '1': 'selbstbild',
-                        '2': 'fremdbild', 
-                        '3': 'blinder_fleck',
-                        '4': 'unbekanntes',
-                        '5': 'integration'
-                    };
-                    
-                    window.ProgressTracker.completeMethodStep('johari-window', stepNames[stepNumber], {
-                        stepNumber: parseInt(stepNumber),
-                        formData,
-                        autoSaved: true,
-                        savedAt: new Date().toISOString()
-                    });
-                    console.log('💾 Auto-saved Johari progress');
-                }
-        function extractFormData(container) {
-            const data = {};
-            // Extract text inputs
-            container.querySelectorAll('input[type="text"], textarea').forEach(input => {
-                if (input.value.trim()) {
-                    data[input.name || input.id || 'unnamed'] = input.value.trim();
-            // Extract checkboxes and radio buttons
-            container.querySelectorAll('input[type="checkbox"]:checked, input[type="radio"]:checked').forEach(input => {
-                if (!data.selections) data.selections = [];
-                data.selections.push(input.value || input.name || input.id);
-            return data;
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-        // Export completion function for method-specific use
-        window.completeJohariMethod = function(finalResults) {
-                window.ProgressTracker.saveMethodResult('johari-window', {
-                    ...finalResults,
-                    completedAt: new Date().toISOString(),
-                window.GlobalAuth?.showNotification('🎉 Johari-Window erfolgreich abgeschlossen!', 'success');
-        };
-    </script>
-    <!-- Auth Modals Container -->
-    <div id="authModalsContainer"></div>
-    <script src="js/global-auth-system.js"></script>
+                <div class="mk-field" style="margin-top:16px;"><label>💡 Was im blinden Fleck überrascht dich?</label><textarea class="mk-textarea" data-mk-field="reflectBlind" placeholder="Welches Fremdbild war dir neu?"></textarea></div>
+                <div class="mk-field"><label>🔓 Was aus dem Verborgenen möchtest du mehr zeigen?</label><textarea class="mk-textarea" data-mk-field="reflectHidden" placeholder="Wo lohnt sich mehr Offenheit?"></textarea></div>
+                <button class="mk-btn mk-btn-primary" id="jo-export"><i class="fas fa-download"></i> Fenster herunterladen</button>
+            </div>
+        </section>
 
-    <!-- AWS Configuration -->
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
+            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
     <script>
-        window.AWS_CONFIG = {
-            region: 'eu-central-1',
-            userPoolId: 'eu-central-1_8gP4gLK9r',
-            clientId: '7kc5tt6a23fgh53d60vkefm812',
-            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-            dynamoDB: {
-                tableName: 'mawps-user-profiles',
-                region: 'eu-central-1'
-            },
-            s3: {
-                bucket: 'mawps-user-files-1760106396',
-                region: 'eu-central-1'
-            }
-        };
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
     </script>
-    
-    <!-- AWS SDK -->
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
-    
-    <!-- Auth & Progress Tracking -->
-    <script src="/js/aws-profile-api.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
-    <script src="/js/user-progress-tracker.js"></script>
-    <script src="/js/personality-auth-integration.js"></script>
+    <script src="../_kit/method-kit.js"></script>
+    <script>
+        const ADJ = ['freundlich','klug','mutig','geduldig','kreativ','zuverlässig','humorvoll','energisch','ruhig','durchsetzungsstark','einfühlsam','organisiert','spontan','ehrgeizig','bescheiden','selbstbewusst','hilfsbereit','ehrlich','neugierig','gelassen','willensstark','aufmerksam','optimistisch','anpassungsfähig'];
+        (async function () {
+            await MethodKit.init({
+                method: 'johari-window',
+                accent: '#06b6d4', accent2: '#3b82f6',
+                steps: [{icon:'🙂',label:'Selbstbild'},{icon:'👥',label:'Fremdbild'},{icon:'🪟',label:'Fenster'}],
+                defaultState: { self:[], others:[], reflectBlind:'', reflectHidden:'' }
+            });
+            MethodKit.bindFields();
+            const S = MethodKit.state;
+
+            function renderChips(kind, host){
+                host.innerHTML=ADJ.map(a=>`<button class="mk-chip ${S[kind].indexOf(a)>-1?'selected':''}" data-a="${a}">${a}</button>`).join('');
+                host.querySelectorAll('[data-a]').forEach(el=>el.addEventListener('click',()=>{ const a=el.dataset.a,i=S[kind].indexOf(a); if(i>-1)S[kind].splice(i,1); else S[kind].push(a); MethodKit.save(); renderChips(kind,host); }));
+            }
+            renderChips('self', document.getElementById('jo-self'));
+            renderChips('others', document.getElementById('jo-others'));
+
+            function tags(arr){ return arr.length?arr.map(a=>`<span class="jo-tag">${a}</span>`).join(''):'<span style="color:var(--mk-faint);font-size:13px;">–</span>'; }
+            function renderWindow(){
+                const open=S.self.filter(a=>S.others.indexOf(a)>-1);
+                const hidden=S.self.filter(a=>S.others.indexOf(a)<0);
+                const blind=S.others.filter(a=>S.self.indexOf(a)<0);
+                const unknown=ADJ.filter(a=>S.self.indexOf(a)<0 && S.others.indexOf(a)<0);
+                document.getElementById('jo-c-open').innerHTML=tags(open);
+                document.getElementById('jo-c-blind').innerHTML=tags(blind);
+                document.getElementById('jo-c-hidden').innerHTML=tags(hidden);
+                document.getElementById('jo-c-unknown').innerHTML=tags(unknown);
+                return {open,hidden,blind,unknown};
+            }
+            MethodKit.onStep=function(n){ if(n===3) renderWindow(); };
+
+            document.getElementById('jo-export').addEventListener('click',()=>{
+                const w=renderWindow();
+                const t=`JOHARI-FENSTER\n==============\n\nOffen (ich & andere): ${w.open.join(', ')||'–'}\nBlinder Fleck (nur andere): ${w.blind.join(', ')||'–'}\nVerborgen (nur ich): ${w.hidden.join(', ')||'–'}\nUnbekannt (Potenzial): ${w.unknown.join(', ')||'–'}\n\nÜberraschung im blinden Fleck: ${S.reflectBlind||'–'}\nMehr zeigen aus dem Verborgenen: ${S.reflectHidden||'–'}\n`;
+                MethodKit.exportText('mein-johari-fenster.txt', t);
+            });
+        })();
+    </script>
 </body>
 </html>

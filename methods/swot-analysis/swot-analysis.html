@@ -1,256 +1,146 @@
-<div class="workflow-container">
-    <div class="workflow-header">
-        <button class="btn btn-secondary" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
-            <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
-        </button>
-    </div>
-    <div class="workflow-intro">
-        <h3>SWOT-Analyse: Deine Stärken, Schwächen, Chancen und Risiken</h3>
-        <p>Analysiere systematisch deine Stärken, Schwächen, Chancen und Risiken. Diese bewährte Methode hilft dir, deine Situation ganzheitlich zu betrachten und strategische Entscheidungen zu treffen.</p>
-        <div class="workflow-features">
-            <span class="feature-badge">Stärken-Analyse</span>
-            <span class="feature-badge">Schwächen-Identifikation</span>
-            <span class="feature-badge">Chancen-Erkennung</span>
-            <span class="feature-badge">Risiken-Bewertung</span>
-        </div>
-    
-    <div class="workflow-progress">
-        <div class="progress-step active" data-step="1">
-            <div class="step-number">1</div>
-            <div class="step-title">Stärken analysieren</div>
-        <div class="progress-step" data-step="2">
-            <div class="step-number">2</div>
-            <div class="step-title">Schwächen identifizieren</div>
-        <div class="progress-step" data-step="3">
-            <div class="step-number">3</div>
-            <div class="step-title">Chancen erkennen</div>
-        <div class="progress-step" data-step="4">
-            <div class="step-number">4</div>
-            <div class="step-title">Risiken bewerten</div>
-    <!-- Step 1: Stärken analysieren -->
-    <div class="workflow-step active" data-step="1">
-        <div class="step-header">
-            <h3>Schritt 1: Stärken analysieren</h3>
-            <p>Identifiziere deine persönlichen Stärken, Fähigkeiten und Ressourcen. Was machst du besonders gut?</p>
-        
-        <div class="swot-analysis">
-            <div class="analysis-intro">
-                <h4>💪 Deine Stärken</h4>
-                <p>Stärken sind deine positiven Eigenschaften, Fähigkeiten und Ressourcen, die dir einen Vorteil verschaffen.</p>
-            </div>
-            
-            <div class="strengths-categories">
-                <div class="strength-category">
-                    <h5>🎯 Persönliche Stärken</h5>
-                    <p>Deine Charaktereigenschaften und Soft Skills</p>
-                    <div class="strength-list">
-                        <div class="strength-item">
-                            <input type="text" placeholder="z.B. 'Kommunikationsfähigkeit'" class="strength-input">
-                            <button class="btn btn-sm btn-danger" data-action="remove-strength">×</button>
-                        </div>
-                    </div>
-                    <button class="btn btn-secondary" data-action="add-strength" data-param="personal">+ Stärke hinzufügen</button>
-                </div>
-                
-                    <h5>🔧 Fachliche Stärken</h5>
-                    <p>Deine beruflichen Fähigkeiten und Expertise</p>
-                            <input type="text" placeholder="z.B. 'Projektmanagement'" class="strength-input">
-                    <button class="btn btn-secondary" data-action="add-strength" data-param="professional">+ Stärke hinzufügen</button>
-                    <h5>🎓 Ausbildungsstärken</h5>
-                    <p>Deine Bildung, Zertifikate und Qualifikationen</p>
-                            <input type="text" placeholder="z.B. 'Master-Abschluss in Wirtschaft'" class="strength-input">
-                    <button class="btn btn-secondary" data-action="add-strength" data-param="education">+ Stärke hinzufügen</button>
-                    <h5>🤝 Netzwerk-Stärken</h5>
-                    <p>Deine Beziehungen und Kontakte</p>
-                            <input type="text" placeholder="z.B. 'Großes berufliches Netzwerk'" class="strength-input">
-                    <button class="btn btn-secondary" data-action="add-strength" data-param="network">+ Stärke hinzufügen</button>
-            <div class="strengths-summary">
-                <h4>📊 Stärken-Zusammenfassung</h4>
-                <div class="summary-stats">
-                    <div class="stat-item">
-                        <span class="stat-number" id="total-strengths">0</span>
-                        <span class="stat-label">Gesamtstärken</span>
-                        <span class="stat-number" id="top-category">-</span>
-                        <span class="stat-label">Stärkste Kategorie</span>
-    <!-- Step 2: Schwächen identifizieren -->
-    <div class="workflow-step" data-step="2">
-            <h3>Schritt 2: Schwächen identifizieren</h3>
-            <p>Erkenne ehrlich deine Schwächen und Entwicklungsbereiche. Nur wer seine Schwächen kennt, kann sie überwinden.</p>
-        <div class="weaknesses-analysis">
-                <h4>⚠️ Deine Schwächen</h4>
-                <p>Schwächen sind Bereiche, in denen du dich verbessern könntest oder die dir im Weg stehen.</p>
-            <div class="weaknesses-categories">
-                <div class="weakness-category">
-                    <h5>🎯 Persönliche Schwächen</h5>
-                    <p>Charaktereigenschaften, die dich behindern</p>
-                    <div class="weakness-list">
-                        <div class="weakness-item">
-                            <input type="text" placeholder="z.B. 'Prokrastination'" class="weakness-input">
-                            <button class="btn btn-sm btn-danger" data-action="remove-weakness">×</button>
-                    <button class="btn btn-secondary" data-action="add-weakness" data-param="personal">+ Schwäche hinzufügen</button>
-                    <h5>🔧 Fachliche Schwächen</h5>
-                    <p>Bereiche, in denen dir Wissen oder Fähigkeiten fehlen</p>
-                            <input type="text" placeholder="z.B. 'Programmierung'" class="weakness-input">
-                    <button class="btn btn-secondary" data-action="add-weakness" data-param="professional">+ Schwäche hinzufügen</button>
-                    <h5>🎓 Ausbildungsdefizite</h5>
-                    <p>Fehlende Qualifikationen oder Zertifikate</p>
-                            <input type="text" placeholder="z.B. 'Fremdsprachen'" class="weakness-input">
-                    <button class="btn btn-secondary" data-action="add-weakness" data-param="education">+ Schwäche hinzufügen</button>
-                    <h5>🤝 Netzwerk-Schwächen</h5>
-                    <p>Begrenzte Kontakte oder Beziehungen</p>
-                            <input type="text" placeholder="z.B. 'Wenig Branchenkontakte'" class="weakness-input">
-                    <button class="btn btn-secondary" data-action="add-weakness" data-param="network">+ Schwäche hinzufügen</button>
-            <div class="weaknesses-summary">
-                <h4>📊 Schwächen-Zusammenfassung</h4>
-                        <span class="stat-number" id="total-weaknesses">0</span>
-                        <span class="stat-label">Gesamtschwächen</span>
-                        <span class="stat-number" id="improvement-areas">0</span>
-                        <span class="stat-label">Verbesserungsbereiche</span>
-    <!-- Step 3: Chancen erkennen -->
-    <div class="workflow-step" data-step="3">
-            <h3>Schritt 3: Chancen erkennen</h3>
-            <p>Identifiziere externe Faktoren und Trends, die dir neue Möglichkeiten eröffnen könnten.</p>
-        <div class="opportunities-analysis">
-                <h4>🚀 Deine Chancen</h4>
-                <p>Chancen sind externe Faktoren, die dir positive Entwicklungsmöglichkeiten bieten.</p>
-            <div class="opportunities-categories">
-                <div class="opportunity-category">
-                    <h5>💼 Berufliche Chancen</h5>
-                    <p>Möglichkeiten in deinem Berufsfeld</p>
-                    <div class="opportunity-list">
-                        <div class="opportunity-item">
-                            <input type="text" placeholder="z.B. 'Neue Technologien in der Branche'" class="opportunity-input">
-                            <button class="btn btn-sm btn-danger" data-action="remove-opportunity">×</button>
-                    <button class="btn btn-secondary" data-action="add-opportunity" data-param="professional">+ Chance hinzufügen</button>
-                    <h5>📈 Marktchancen</h5>
-                    <p>Trends und Entwicklungen am Markt</p>
-                            <input type="text" placeholder="z.B. 'Wachsender Markt für Nachhaltigkeit'" class="opportunity-input">
-                    <button class="btn btn-secondary" data-action="add-opportunity" data-param="market">+ Chance hinzufügen</button>
-                    <h5>🎓 Bildungsmöglichkeiten</h5>
-                    <p>Neue Lern- und Weiterbildungsmöglichkeiten</p>
-                            <input type="text" placeholder="z.B. 'Online-Kurse für neue Skills'" class="opportunity-input">
-                    <button class="btn btn-secondary" data-action="add-opportunity" data-param="education">+ Chance hinzufügen</button>
-                    <h5>🤝 Netzwerk-Chancen</h5>
-                    <p>Möglichkeiten für neue Kontakte und Beziehungen</p>
-                            <input type="text" placeholder="z.B. 'Neue Networking-Events'" class="opportunity-input">
-                    <button class="btn btn-secondary" data-action="add-opportunity" data-param="network">+ Chance hinzufügen</button>
-            <div class="opportunities-summary">
-                <h4>📊 Chancen-Zusammenfassung</h4>
-                        <span class="stat-number" id="total-opportunities">0</span>
-                        <span class="stat-label">Gesamtchancen</span>
-                        <span class="stat-number" id="high-potential">0</span>
-                        <span class="stat-label">Hochpotenzial-Chancen</span>
-    <!-- Step 4: Risiken bewerten -->
-    <div class="workflow-step" data-step="4">
-            <h3>Schritt 4: Risiken bewerten</h3>
-            <p>Analysiere externe Bedrohungen und Risiken, die deine Ziele gefährden könnten.</p>
-        <div class="risks-analysis">
-                <h4>⚠️ Deine Risiken</h4>
-                <p>Risiken sind externe Faktoren, die deine Erfolge gefährden könnten.</p>
-            <div class="risks-categories">
-                <div class="risk-category">
-                    <h5>💼 Berufliche Risiken</h5>
-                    <p>Bedrohungen in deinem Berufsfeld</p>
-                    <div class="risk-list">
-                        <div class="risk-item">
-                            <input type="text" placeholder="z.B. 'Automatisierung im Beruf'" class="risk-input">
-                            <select class="risk-level">
-                                <option value="low">Niedrig</option>
-                                <option value="medium">Mittel</option>
-                                <option value="high">Hoch</option>
-                            </select>
-                            <button class="btn btn-sm btn-danger" data-action="remove-risk">×</button>
-                    <button class="btn btn-secondary" data-action="add-risk" data-param="professional">+ Risiko hinzufügen</button>
-                    <h5>📈 Marktrisiken</h5>
-                    <p>Bedrohungen durch Marktveränderungen</p>
-                            <input type="text" placeholder="z.B. 'Wirtschaftskrise'" class="risk-input">
-                    <button class="btn btn-secondary" data-action="add-risk" data-param="market">+ Risiko hinzufügen</button>
-                    <h5>🎓 Bildungsrisiken</h5>
-                    <p>Risiken durch fehlende Qualifikationen</p>
-                            <input type="text" placeholder="z.B. 'Veraltete Skills'" class="risk-input">
-                    <button class="btn btn-secondary" data-action="add-risk" data-param="education">+ Risiko hinzufügen</button>
-                    <h5>🤝 Netzwerk-Risiken</h5>
-                    <p>Risiken durch begrenzte Kontakte</p>
-                            <input type="text" placeholder="z.B. 'Verlust wichtiger Kontakte'" class="risk-input">
-                    <button class="btn btn-secondary" data-action="add-risk" data-param="network">+ Risiko hinzufügen</button>
-            <div class="risks-summary">
-                <h4>📊 Risiken-Zusammenfassung</h4>
-                        <span class="stat-number" id="total-risks">0</span>
-                        <span class="stat-label">Gesamtrisiken</span>
-                        <span class="stat-number" id="high-risks">0</span>
-                        <span class="stat-label">Hohe Risiken</span>
-            <div class="swot-matrix">
-                <h4>🎯 SWOT-Matrix</h4>
-                <div class="matrix-grid">
-                    <div class="matrix-cell strengths">
-                        <h5>Stärken</h5>
-                        <div class="cell-content" id="strengths-content">
-                            <p>Fülle die Stärken aus, um sie hier zu sehen.</p>
-                    <div class="matrix-cell weaknesses">
-                        <h5>Schwächen</h5>
-                        <div class="cell-content" id="weaknesses-content">
-                            <p>Fülle die Schwächen aus, um sie hier zu sehen.</p>
-                    <div class="matrix-cell opportunities">
-                        <h5>Chancen</h5>
-                        <div class="cell-content" id="opportunities-content">
-                            <p>Fülle die Chancen aus, um sie hier zu sehen.</p>
-                    <div class="matrix-cell risks">
-                        <h5>Risiken</h5>
-                        <div class="cell-content" id="risks-content">
-                            <p>Fülle die Risiken aus, um sie hier zu sehen.</p>
-            <div class="action-strategies">
-                <h4>🎯 Handlungsstrategien</h4>
-                <div class="strategies-grid">
-                    <div class="strategy-card so-strategy">
-                        <h5>SO-Strategie (Stärken + Chancen)</h5>
-                        <p>Nutze deine Stärken, um Chancen zu ergreifen.</p>
-                        <div class="strategy-content" id="so-strategies">
-                            <p>Fülle Stärken und Chancen aus, um Strategien zu sehen.</p>
-                    <div class="strategy-card wo-strategy">
-                        <h5>WO-Strategie (Schwächen + Chancen)</h5>
-                        <p>Überwinde Schwächen, um Chancen zu nutzen.</p>
-                        <div class="strategy-content" id="wo-strategies">
-                            <p>Fülle Schwächen und Chancen aus, um Strategien zu sehen.</p>
-                    <div class="strategy-card st-strategy">
-                        <h5>ST-Strategie (Stärken + Risiken)</h5>
-                        <p>Nutze deine Stärken, um Risiken abzuwehren.</p>
-                        <div class="strategy-content" id="st-strategies">
-                            <p>Fülle Stärken und Risiken aus, um Strategien zu sehen.</p>
-                    <div class="strategy-card wt-strategy">
-                        <h5>WT-Strategie (Schwächen + Risiken)</h5>
-                        <p>Minimiere Schwächen und vermeide Risiken.</p>
-                        <div class="strategy-content" id="wt-strategies">
-                            <p>Fülle Schwächen und Risiken aus, um Strategien zu sehen.</p>
-    <!-- Navigation -->
-    <div class="workflow-navigation">
-        <div class="nav-buttons">
-            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
-                <i class="fas fa-arrow-left"></i> Zurück
-            </button>
-            <div class="progress-info">
-                <span id="current-step">Schritt 1</span> von <span id="total-steps">4</span>
-            <button class="btn btn-primary" id="next-btn" data-action="next-step">
-                Weiter <i class="fas fa-arrow-right"></i>
-</div>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWOT-Analyse | Manuel Weiss</title>
+    <meta name="description" content="Analysiere Stärken, Schwächen, Chancen und Risiken – und leite daraus konkrete Strategien ab. Interaktiv und Schritt für Schritt.">
+    <link rel="stylesheet" href="../_kit/method-light.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --mk-accent: #3b82f6; --mk-accent-2: #06b6d4; --mk-accent-soft: rgba(59,130,246,.12); }
+        .sw-quad { border-radius:var(--mk-radius-sm); padding:16px; border:1.5px solid var(--mk-line); }
+        .sw-quad h3 { display:flex; align-items:center; gap:8px; }
+        .sw-S { background:rgba(34,197,94,.07); border-color:rgba(34,197,94,.4); }
+        .sw-W { background:rgba(239,68,68,.06); border-color:rgba(239,68,68,.35); }
+        .sw-O { background:rgba(59,130,246,.07); border-color:rgba(59,130,246,.4); }
+        .sw-T { background:rgba(245,158,11,.08); border-color:rgba(245,158,11,.4); }
+        .sw-add { display:flex; gap:8px; margin-top:10px; }
+    </style>
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-table-cells-large"></i></span><span>SWOT-Analyse</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
+    </header>
 
-<!-- Global Auth System -->
-<script src="../../js/aws-config.js"></script>
-    <script src="js/global-auth-system.js"></script><script src="../../js/unified-auth-manager.js"></script>
-    
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-table-cells-large"></i></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <h1>Klarheit durch vier Felder</h1>
+            <p>Die SWOT-Analyse stellt deine inneren Stärken und Schwächen den äußeren Chancen und Risiken gegenüber. Aus der Kombination entstehen konkrete Strategien – nicht nur eine Liste.</p>
+            <div class="mk-badges"><span class="mk-badge">Stärken/Schwächen</span><span class="mk-badge">Chancen/Risiken</span><span class="mk-badge">Strategien</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Worum geht es?</h2>
+                <p class="mk-sub">Benenne, was du analysierst – dann füll die vier Felder.</p>
+                <div class="mk-field"><input class="mk-input" data-mk-field="context" placeholder="z. B. „Meine Bewerbung als Projektleiter" oder „Meine Selbstständigkeit""></div>
+                <div class="mk-grid-2" id="sw-grid"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>Strategien ableiten</h2>
+                <p class="mk-sub">Hier entsteht der eigentliche Wert: Kombiniere die Felder.</p>
+                <div id="sw-strat"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>Deine SWOT auf einen Blick</h2>
+                <div id="sw-summary"></div>
+                <button class="mk-btn mk-btn-primary" id="sw-export" style="margin-top:16px;"><i class="fas fa-download"></i> SWOT herunterladen</button>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
+            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
     <script>
-        // Load auth modals
-        async function loadAuthModals() {
-            try {
-                const response = await fetch('components/unified-auth-modals.html');
-                const html = await response.text();
-                document.getElementById('authModalsContainer').innerHTML = html;
-            } catch (error) {
-                console.error('Error loading auth modals:', error);
-            }
-        }
-        
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAuthModals();
-        });
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
     </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js"></script>
+    <script>
+        const QUAD = [
+            {k:'S',ic:'💪',label:'Stärken',hint:'intern · positiv'},
+            {k:'W',ic:'🔧',label:'Schwächen',hint:'intern · negativ'},
+            {k:'O',ic:'🌱',label:'Chancen',hint:'extern · positiv'},
+            {k:'T',ic:'⚠️',label:'Risiken',hint:'extern · negativ'}
+        ];
+        (async function () {
+            await MethodKit.init({
+                method: 'swot-analysis',
+                accent: '#3b82f6', accent2: '#06b6d4',
+                steps: [{icon:'▦',label:'Matrix'},{icon:'♟️',label:'Strategien'},{icon:'🏁',label:'Überblick'}],
+                defaultState: { context:'', S:[],W:[],O:[],T:[], strat:{so:'',st:'',wo:'',wt:''} }
+            });
+            MethodKit.bindFields();
+            const S = MethodKit.state;
+
+            const grid=document.getElementById('sw-grid');
+            grid.innerHTML=QUAD.map(q=>`
+                <div class="sw-quad sw-${q.k}">
+                    <h3>${q.ic} ${q.label} <span style="font-size:12px;color:var(--mk-faint);font-weight:500;">${q.hint}</span></h3>
+                    <div id="sw-list-${q.k}"></div>
+                    <div class="sw-add"><input class="mk-input" id="sw-in-${q.k}" placeholder="Hinzufügen …"><button class="mk-btn mk-btn-ghost" data-q="${q.k}"><i class="fas fa-plus"></i></button></div>
+                </div>`).join('');
+            function renderQuad(k){
+                const host=document.getElementById('sw-list-'+k);
+                if(!S[k].length){ host.innerHTML='<div style="color:var(--mk-faint);font-size:13px;">noch leer</div>'; return; }
+                host.innerHTML=S[k].map((x,i)=>`<div class="mk-row" style="padding:6px 10px;margin-bottom:6px;"><div class="grow" style="font-size:14px;">${MethodKit.esc(x)}</div><button class="mk-iconbtn" data-d="${k}|${i}"><i class="fas fa-xmark"></i></button></div>`).join('');
+                host.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',()=>{ const [kk,ii]=b.dataset.d.split('|'); S[kk].splice(+ii,1); MethodKit.save(); renderQuad(kk); }));
+            }
+            grid.querySelectorAll('[data-q]').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.q, i=document.getElementById('sw-in-'+k); if(!i.value.trim())return; S[k].push(i.value.trim()); i.value=''; MethodKit.save(); renderQuad(k); }));
+            QUAD.forEach(q=>renderQuad(q.k));
+
+            function list(k){ return S[k].length?S[k].join(', '):'–'; }
+            function renderStrat(){
+                const host=document.getElementById('sw-strat');
+                const defs=[
+                    {k:'so',t:'SO · Stärken × Chancen',d:`Wie nutzt du deine Stärken (${list('S')}), um Chancen (${list('O')}) zu ergreifen?`},
+                    {k:'st',t:'ST · Stärken × Risiken',d:`Wie setzt du Stärken (${list('S')}) ein, um Risiken (${list('T')}) abzuwehren?`},
+                    {k:'wo',t:'WO · Schwächen × Chancen',d:`Wie baust du Schwächen (${list('W')}) ab, indem du Chancen (${list('O')}) nutzt?`},
+                    {k:'wt',t:'WT · Schwächen × Risiken',d:`Wie schützt du dich, wo Schwächen (${list('W')}) auf Risiken (${list('T')}) treffen?`}
+                ];
+                host.innerHTML=defs.map(x=>`<div class="mk-field"><label>${x.t}</label><div class="hint">${x.d}</div><textarea class="mk-textarea" data-st="${x.k}" placeholder="Deine Strategie …">${MethodKit.esc(S.strat[x.k]||'')}</textarea></div>`).join('');
+                host.querySelectorAll('[data-st]').forEach(el=>el.addEventListener('input',()=>{ S.strat[el.dataset.st]=el.value; MethodKit.save(); }));
+            }
+            function renderSummary(){
+                const host=document.getElementById('sw-summary');
+                host.innerHTML=`<div class="mk-result" style="margin-bottom:14px;"><h4>${MethodKit.esc(S.context||'SWOT-Analyse')}</h4></div>`+
+                    `<div class="mk-grid-2">`+QUAD.map(q=>`<div class="sw-quad sw-${q.k}"><h3>${q.ic} ${q.label}</h3><ul style="margin:6px 0 0;padding-left:18px;">${S[q.k].map(x=>`<li>${MethodKit.esc(x)}</li>`).join('')||'<li style="color:var(--mk-faint)">–</li>'}</ul></div>`).join('')+`</div>`+
+                    `<h3 style="margin-top:16px;">♟️ Strategien</h3>`+
+                    [['so','SO'],['st','ST'],['wo','WO'],['wt','WT']].map(([k,l])=>S.strat[k]?`<div class="mk-row"><div class="grow"><strong>${l}:</strong> ${MethodKit.esc(S.strat[k])}</div></div>`:'').join('');
+            }
+            MethodKit.onStep=function(n){ if(n===2) renderStrat(); if(n===3) renderSummary(); };
+
+            document.getElementById('sw-export').addEventListener('click',()=>{
+                let t=`SWOT-ANALYSE\n============\n\nThema: ${S.context||'–'}\n\n`;
+                QUAD.forEach(q=>{ t+=`${q.label}:\n${S[q.k].map(x=>'  - '+x).join('\n')||'  –'}\n\n`; });
+                t+=`Strategien:\n  SO: ${S.strat.so}\n  ST: ${S.strat.st}\n  WO: ${S.strat.wo}\n  WT: ${S.strat.wt}\n`;
+                MethodKit.exportText('meine-swot-analyse.txt', t);
+            });
+        })();
+    </script>
+</body>
+</html>

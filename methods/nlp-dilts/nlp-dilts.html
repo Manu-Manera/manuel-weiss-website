@@ -3,498 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NLP Dilts - Die 6 Ebenen der Veränderung</title>
-    <link rel="stylesheet" href="../../css/ikigai-planner.css">
-    <link rel="stylesheet" href="nlp-dilts.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/unified-auth-system.css">
-
-    <!-- Progress Badge Styles -->
-    <style>
-        .user-progress-badge {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background: white;
-            border-radius: 8px;
-            padding: 12px 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            font-size: 14px;
-            min-width: 200px;
-        }
-        
-        .user-progress-badge .user-info,
-        .user-progress-badge .progress-sync {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #4a5568;
-        }
-        
-        .user-progress-badge i {
-            font-size: 16px;
-            color: #667eea;
-        }
-        
-        @media (max-width: 768px) {
-            .user-progress-badge {
-                top: auto;
-                bottom: 20px;
-                right: 10px;
-                left: 10px;
-                min-width: auto;
-            }
-        }
-    </style>
+    <title>Logische Ebenen (Dilts) | Manuel Weiss</title>
+    <meta name="description" content="Die logischen Ebenen nach Robert Dilts: Betrachte eine Veränderung von der Umgebung bis zur Sinnfrage – und bring alle Ebenen in Einklang.">
+    <link rel="stylesheet" href="../_kit/method-light.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>:root { --mk-accent: #6366f1; --mk-accent-2: #8b5cf6; --mk-accent-soft: rgba(99,102,241,.12); }</style>
 </head>
-<body data-page-id="nlp-dilts">
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-layer-group"></i></span><span>Logische Ebenen</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
+    </header>
 
-    <!-- Progress Badge -->
-    <div class="user-progress-badge" style="display: none;">
-        <div class="user-info">
-            <i class="fas fa-user-circle"></i>
-            <span>Nicht angemeldet</span>
-        </div>
-        <div class="progress-sync">
-            <i class="fas fa-cloud-off-alt"></i>
-            <span>Fortschritt lokal</span>
-        </div>
-    </div>
-    <div class="nlp-dilts-method">
-        <div class="method-header">
-            <div class="method-icon">
-                <i class="fas fa-layer-group"></i>
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-layer-group"></i></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · NLP</div>
+            <h1>Veränderung auf allen Ebenen</h1>
+            <p>Robert Dilts beschreibt sechs Ebenen – von der Umgebung bis zum Sinn. Probleme lösen sich oft, wenn man sie eine Ebene höher betrachtet. Geh dein Thema von unten nach oben durch und bring alles in Einklang.</p>
+            <div class="mk-badges"><span class="mk-badge">6 Ebenen</span><span class="mk-badge">Ausrichtung</span><span class="mk-badge">Tiefer Hebel</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Dein Thema</h2>
+                <p class="mk-sub">Eine Veränderung, ein Ziel oder eine Herausforderung.</p>
+                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="topic" placeholder="z. B. „Ich will souveräner vor Gruppen sprechen""></textarea></div>
             </div>
-            <div class="method-title">
-                <h1>NLP Dilts</h1>
-                <p>Die 6 Ebenen der Veränderung für tiefgreifende Transformation</p>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>Die sechs Ebenen</h2>
+                <p class="mk-sub">Beantworte sie der Reihe nach – von konkret (unten) zu sinnstiftend (oben).</p>
+                <div id="nd-levels"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>Ausrichtung & Hebel</h2>
+                <div id="nd-recap"></div>
+                <div class="mk-field" style="margin-top:14px;"><label>Auf welcher Ebene liegt dein größter Hebel?</label><textarea class="mk-textarea" data-mk-field="lever" placeholder="Wo bringt eine Veränderung am meisten?"></textarea></div>
+                <div class="mk-field"><label>Wichtigste Erkenntnis</label><textarea class="mk-textarea" data-mk-field="insight"></textarea></div>
+                <button class="mk-btn mk-btn-primary" id="nd-export"><i class="fas fa-download"></i> Herunterladen</button>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
+            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
+    </main>
 
-        <div class="workflow-header">
-            <button class="btn btn-secondary" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
-                <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
-            </button>
-        <div class="workflow-progress">
-            <div class="progress-step active" data-step="1">
-                <div class="step-number">1</div>
-                <div class="step-title">Ebenen-Analyse</div>
-            <div class="progress-step" data-step="2">
-                <div class="step-number">2</div>
-                <div class="step-title">Veränderungsstrategien</div>
-            <div class="progress-step" data-step="3">
-                <div class="step-number">3</div>
-                <div class="step-title">Ziel-Alignment</div>
-            <div class="progress-step" data-step="4">
-                <div class="step-number">4</div>
-                <div class="step-title">Transformation</div>
-            <div class="progress-step" data-step="5">
-                <div class="step-number">5</div>
-                <div class="step-title">Integration</div>
-        <div class="workflow-content">
-            <!-- Step 1: Ebenen-Analyse -->
-            <div class="workflow-step active" id="step-1">
-                <div class="step-header">
-                    <h2>Schritt 1: Die 6 Ebenen der Dilts-Pyramide</h2>
-                    <p>Analysiere deine aktuelle Situation auf allen 6 Ebenen</p>
-                </div>
-                <div class="step-content">
-                    <div class="phase-description">
-                        <h3><i class="fas fa-layer-group"></i> Was ist die Dilts-Pyramide?</h3>
-                        <p>Die Dilts-Pyramide zeigt 6 Ebenen der Veränderung. Jede Ebene beeinflusst die darunter liegenden Ebenen. Veränderungen auf höheren Ebenen haben größere Auswirkungen.</p>
-                    </div>
-                    <div class="exercise-section">
-                        <h3><i class="fas fa-tasks"></i> Übung: Ebenen-Analyse</h3>
-                        <div class="exercise-content">
-                            <div class="dilts-pyramid">
-                                <div class="pyramid-level spirituality">
-                                    <div class="level-header">
-                                        <h4>🌍 Ebene 6: Spiritualität</h4>
-                                        <p>Wofür bin ich hier? Was ist mein höherer Zweck?</p>
-                                    </div>
-                                    <div class="level-content">
-                                        <div class="level-questions">
-                                            <div class="question-item">
-                                                <label>Was ist mein höherer Zweck im Leben?</label>
-                                                <textarea placeholder="Beschreibe deinen höheren Zweck..."></textarea>
-                                            </div>
-                                                <label>Wofür stehe ich ein?</label>
-                                                <textarea placeholder="Wofür kämpfst du?"></textarea>
-                                                <label>Welchen Beitrag leiste ich zur Welt?</label>
-                                                <textarea placeholder="Wie trägst du zur Welt bei?"></textarea>
-                                        </div>
-                                </div>
-                                <div class="pyramid-level identity">
-                                        <h4>👤 Ebene 5: Identität</h4>
-                                        <p>Wer bin ich? Wie sehe ich mich selbst?</p>
-                                                <label>Wer bin ich?</label>
-                                                <textarea placeholder="Beschreibe deine Identität..."></textarea>
-                                                <label>Wie sehe ich mich selbst?</label>
-                                                <textarea placeholder="Wie definierst du dich?"></textarea>
-                                                <label>Welche Rollen habe ich?</label>
-                                                <textarea placeholder="Welche Rollen spielst du?"></textarea>
-                                <div class="pyramid-level beliefs">
-                                        <h4>💭 Ebene 4: Überzeugungen & Werte</h4>
-                                        <p>Was glaube ich? Was ist mir wichtig?</p>
-                                                <label>Was sind meine wichtigsten Werte?</label>
-                                                <textarea placeholder="Liste deine wichtigsten Werte auf..."></textarea>
-                                                <label>Welche Überzeugungen habe ich?</label>
-                                                <textarea placeholder="Was glaubst du über dich und die Welt?"></textarea>
-                                                <label>Was ist mir wirklich wichtig?</label>
-                                                <textarea placeholder="Was ist dir am wichtigsten?"></textarea>
-                                <div class="pyramid-level capabilities">
-                                        <h4>🧠 Ebene 3: Fähigkeiten & Kompetenzen</h4>
-                                        <p>Was kann ich? Welche Fähigkeiten habe ich?</p>
-                                                <label>Welche Fähigkeiten habe ich?</label>
-                                                <textarea placeholder="Liste deine Fähigkeiten auf..."></textarea>
-                                                <label>Was kann ich besonders gut?</label>
-                                                <textarea placeholder="Was sind deine Stärken?"></textarea>
-                                                <label>Welche Kompetenzen möchte ich entwickeln?</label>
-                                                <textarea placeholder="Was möchtest du lernen?"></textarea>
-                                <div class="pyramid-level behavior">
-                                        <h4>🎭 Ebene 2: Verhalten</h4>
-                                        <p>Was tue ich? Wie verhalte ich mich?</p>
-                                                <label>Wie verhalte ich mich in verschiedenen Situationen?</label>
-                                                <textarea placeholder="Beschreibe dein Verhalten..."></textarea>
-                                                <label>Welche Gewohnheiten habe ich?</label>
-                                                <textarea placeholder="Welche Gewohnheiten hast du?"></textarea>
-                                                <label>Was tue ich regelmäßig?</label>
-                                                <textarea placeholder="Was machst du regelmäßig?"></textarea>
-                                <div class="pyramid-level environment">
-                                        <h4>🌍 Ebene 1: Umgebung</h4>
-                                        <p>Wo bin ich? Was umgibt mich?</p>
-                                                <label>In welcher Umgebung lebe ich?</label>
-                                                <textarea placeholder="Beschreibe deine Umgebung..."></textarea>
-                                                <label>Welche Menschen umgeben mich?</label>
-                                                <textarea placeholder="Wer ist in deinem Umfeld?"></textarea>
-                                                <label>Welche Ressourcen stehen mir zur Verfügung?</label>
-                                                <textarea placeholder="Welche Ressourcen hast du?"></textarea>
-                            </div>
-                        </div>
-                    <div class="tips-section">
-                        <h3><i class="fas fa-lightbulb"></i> Tipps für die Ebenen-Analyse</h3>
-                        <div class="tips-grid">
-                            <div class="tip-item">
-                                <i class="fas fa-arrow-up"></i>
-                                <h4>Von unten nach oben</h4>
-                                <p>Beginne mit der Umgebung und arbeite dich nach oben vor.</p>
-                                <i class="fas fa-search"></i>
-                                <h4>Ehrlich sein</h4>
-                                <p>Sei ehrlich zu dir selbst bei jeder Ebene.</p>
-                                <i class="fas fa-link"></i>
-                                <h4>Zusammenhänge sehen</h4>
-                                <p>Erkenne, wie die Ebenen sich gegenseitig beeinflussen.</p>
-                                <i class="fas fa-heart"></i>
-                                <h4>Gefühle einbeziehen</h4>
-                                <p>Beziehe deine Gefühle in die Analyse ein.</p>
-                    <div class="examples-section">
-                        <h3><i class="fas fa-book-open"></i> Beispiele</h3>
-                        <div class="example-item">
-                            <h4>Spiritualität</h4>
-                            <p><strong>Zweck:</strong> "Ich bin hier, um anderen zu helfen und die Welt zu einem besseren Ort zu machen."</p>
-                            <h4>Identität</h4>
-                            <p><strong>Selbstbild:</strong> "Ich bin ein kreativer Problemlöser und ein fürsorglicher Freund."</p>
-            <!-- Step 2: Veränderungsstrategien -->
-            <div class="workflow-step" id="step-2">
-                    <h2>Schritt 2: Veränderungsstrategien entwickeln</h2>
-                    <p>Entwickle Strategien für Veränderungen auf jeder Ebene</p>
-                        <h3><i class="fas fa-cogs"></i> Was sind Veränderungsstrategien?</h3>
-                        <p>Veränderungsstrategien zeigen dir, wie du auf jeder Ebene der Dilts-Pyramide gezielt Veränderungen herbeiführen kannst.</p>
-                        <h3><i class="fas fa-tasks"></i> Übung: Strategien entwickeln</h3>
-                            <div class="change-strategies">
-                                <h4>Veränderungen auf Ebene 6: Spiritualität</h4>
-                                <div class="strategy-level">
-                                    <div class="strategy-item">
-                                        <label>Wie kannst du deinen höheren Zweck klären?</label>
-                                        <textarea placeholder="Strategien zur Zweckklärung..."></textarea>
-                                        <label>Wie kannst du deine spirituelle Verbindung stärken?</label>
-                                        <textarea placeholder="Strategien zur spirituellen Entwicklung..."></textarea>
-                                        <label>Wie kannst du deinen Beitrag zur Welt vergrößern?</label>
-                                        <textarea placeholder="Strategien zur Beitragsvergrößerung..."></textarea>
-                                <h4>Veränderungen auf Ebene 5: Identität</h4>
-                                        <label>Wie kannst du deine Identität stärken?</label>
-                                        <textarea placeholder="Strategien zur Identitätsstärkung..."></textarea>
-                                        <label>Wie kannst du neue Rollen entwickeln?</label>
-                                        <textarea placeholder="Strategien zur Rollenentwicklung..."></textarea>
-                                        <label>Wie kannst du dein Selbstbild verbessern?</label>
-                                        <textarea placeholder="Strategien zur Selbstbildverbesserung..."></textarea>
-                                <h4>Veränderungen auf Ebene 4: Überzeugungen & Werte</h4>
-                                        <label>Wie kannst du limitierende Überzeugungen ändern?</label>
-                                        <textarea placeholder="Strategien zur Überzeugungsänderung..."></textarea>
-                                        <label>Wie kannst du deine Werte leben?</label>
-                                        <textarea placeholder="Strategien zur Werteverwirklichung..."></textarea>
-                                        <label>Wie kannst du neue positive Überzeugungen entwickeln?</label>
-                                        <textarea placeholder="Strategien zur Überzeugungsentwicklung..."></textarea>
-                                <h4>Veränderungen auf Ebene 3: Fähigkeiten & Kompetenzen</h4>
-                                        <label>Wie kannst du neue Fähigkeiten entwickeln?</label>
-                                        <textarea placeholder="Strategien zur Fähigkeitsentwicklung..."></textarea>
-                                        <label>Wie kannst du bestehende Kompetenzen stärken?</label>
-                                        <textarea placeholder="Strategien zur Kompetenzstärkung..."></textarea>
-                                        <label>Wie kannst du deine Talente nutzen?</label>
-                                        <textarea placeholder="Strategien zur Talentnutzung..."></textarea>
-                                <h4>Veränderungen auf Ebene 2: Verhalten</h4>
-                                        <label>Wie kannst du neue Gewohnheiten entwickeln?</label>
-                                        <textarea placeholder="Strategien zur Gewohnheitsentwicklung..."></textarea>
-                                        <label>Wie kannst du unerwünschtes Verhalten ändern?</label>
-                                        <textarea placeholder="Strategien zur Verhaltensänderung..."></textarea>
-                                        <label>Wie kannst du positive Verhaltensmuster etablieren?</label>
-                                        <textarea placeholder="Strategien zur Musteretablierung..."></textarea>
-                                <h4>Veränderungen auf Ebene 1: Umgebung</h4>
-                                        <label>Wie kannst du deine Umgebung optimieren?</label>
-                                        <textarea placeholder="Strategien zur Umgebungsoptimierung..."></textarea>
-                                        <label>Wie kannst du dein Netzwerk erweitern?</label>
-                                        <textarea placeholder="Strategien zur Netzwerkerweiterung..."></textarea>
-                                        <label>Wie kannst du deine Ressourcen besser nutzen?</label>
-                                        <textarea placeholder="Strategien zur Ressourcennutzung..."></textarea>
-                        <h3><i class="fas fa-lightbulb"></i> Tipps für Veränderungsstrategien</h3>
-                                <h4>Von oben nach unten</h4>
-                                <p>Veränderungen auf höheren Ebenen wirken stärker.</p>
-                                <i class="fas fa-target"></i>
-                                <h4>Spezifisch sein</h4>
-                                <p>Mache deine Strategien konkret und umsetzbar.</p>
-                                <i class="fas fa-clock"></i>
-                                <h4>Zeitrahmen setzen</h4>
-                                <p>Definiere realistische Zeitrahmen für deine Strategien.</p>
-                                <h4>Motivation beachten</h4>
-                                <p>Stelle sicher, dass deine Strategien motivierend sind.</p>
-                            <p><strong>Strategie:</strong> "Ich meditiere täglich 10 Minuten, um meinen höheren Zweck zu klären."</p>
-                            <h4>Verhalten</h4>
-                            <p><strong>Strategie:</strong> "Ich ersetze negative Gedanken durch positive Affirmationen."</p>
-            <!-- Step 3: Ziel-Alignment -->
-            <div class="workflow-step" id="step-3">
-                    <h2>Schritt 3: Ziel-Alignment über alle Ebenen</h2>
-                    <p>Stelle sicher, dass deine Ziele auf allen Ebenen ausgerichtet sind</p>
-                        <h3><i class="fas fa-bullseye"></i> Was ist Ziel-Alignment?</h3>
-                        <p>Ziel-Alignment bedeutet, dass deine Ziele auf allen 6 Ebenen der Dilts-Pyramide harmonisch zusammenwirken und sich gegenseitig unterstützen.</p>
-                        <h3><i class="fas fa-tasks"></i> Übung: Ziel-Alignment prüfen</h3>
-                            <div class="goal-alignment">
-                                <h4>Dein Hauptziel</h4>
-                                <div class="main-goal">
-                                    <label>Was ist dein Hauptziel?</label>
-                                    <textarea placeholder="Formuliere dein Hauptziel klar und präzise..."></textarea>
-                                <h4>Alignment-Check auf allen Ebenen</h4>
-                                <div class="alignment-check">
-                                    <div class="alignment-level">
-                                        <h5>🌍 Ebene 6: Spiritualität</h5>
-                                        <div class="check-item">
-                                            <label>Unterstützt dein Ziel deinen höheren Zweck?</label>
-                                            <textarea placeholder="Wie unterstützt dein Ziel deinen höheren Zweck?"></textarea>
-                                            <label>Trägt dein Ziel zu deinem spirituellen Wachstum bei?</label>
-                                            <textarea placeholder="Wie trägt dein Ziel zu deinem spirituellen Wachstum bei?"></textarea>
-                                        <h5>👤 Ebene 5: Identität</h5>
-                                            <label>Passt dein Ziel zu deiner Identität?</label>
-                                            <textarea placeholder="Wie passt dein Ziel zu deiner Identität?"></textarea>
-                                            <label>Unterstützt dein Ziel deine Rollen?</label>
-                                            <textarea placeholder="Wie unterstützt dein Ziel deine Rollen?"></textarea>
-                                        <h5>💭 Ebene 4: Überzeugungen & Werte</h5>
-                                            <label>Entspricht dein Ziel deinen Werten?</label>
-                                            <textarea placeholder="Wie entspricht dein Ziel deinen Werten?"></textarea>
-                                            <label>Unterstützt dein Ziel deine Überzeugungen?</label>
-                                            <textarea placeholder="Wie unterstützt dein Ziel deine Überzeugungen?"></textarea>
-                                        <h5>🧠 Ebene 3: Fähigkeiten & Kompetenzen</h5>
-                                            <label>Nutzt dein Ziel deine Fähigkeiten?</label>
-                                            <textarea placeholder="Wie nutzt dein Ziel deine Fähigkeiten?"></textarea>
-                                            <label>Entwickelt dein Ziel neue Kompetenzen?</label>
-                                            <textarea placeholder="Welche neuen Kompetenzen entwickelst du?"></textarea>
-                                        <h5>🎭 Ebene 2: Verhalten</h5>
-                                            <label>Führt dein Ziel zu positivem Verhalten?</label>
-                                            <textarea placeholder="Welches positive Verhalten führt dein Ziel herbei?"></textarea>
-                                            <label>Unterstützt dein Ziel gesunde Gewohnheiten?</label>
-                                            <textarea placeholder="Welche gesunden Gewohnheiten unterstützt dein Ziel?"></textarea>
-                                        <h5>🌍 Ebene 1: Umgebung</h5>
-                                            <label>Verbessert dein Ziel deine Umgebung?</label>
-                                            <textarea placeholder="Wie verbessert dein Ziel deine Umgebung?"></textarea>
-                                            <label>Nutzt dein Ziel deine Ressourcen optimal?</label>
-                                            <textarea placeholder="Wie nutzt dein Ziel deine Ressourcen optimal?"></textarea>
-                                <h4>Alignment-Probleme identifizieren</h4>
-                                <div class="alignment-problems">
-                                    <div class="problem-item">
-                                        <label>Wo gibt es Konflikte zwischen den Ebenen?</label>
-                                        <textarea placeholder="Identifiziere Konflikte zwischen den Ebenen..."></textarea>
-                                        <label>Welche Ebenen unterstützen dein Ziel nicht?</label>
-                                        <textarea placeholder="Welche Ebenen behindern dein Ziel?"></textarea>
-                                        <label>Was musst du ändern, um Alignment zu erreichen?</label>
-                                        <textarea placeholder="Was musst du ändern?"></textarea>
-                        <h3><i class="fas fa-lightbulb"></i> Tipps für Ziel-Alignment</h3>
-                                <i class="fas fa-check-circle"></i>
-                                <h4>Harmonie prüfen</h4>
-                                <p>Stelle sicher, dass alle Ebenen harmonisch zusammenwirken.</p>
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <h4>Konflikte lösen</h4>
-                                <p>Löse Konflikte zwischen den Ebenen.</p>
-                                <i class="fas fa-sync"></i>
-                                <h4>Regelmäßig prüfen</h4>
-                                <p>Prüfe regelmäßig das Alignment deiner Ziele.</p>
-                                <h4>Authentisch bleiben</h4>
-                                <p>Stelle sicher, dass deine Ziele authentisch sind.</p>
-                            <h4>Gutes Alignment</h4>
-                            <p><strong>Ziel:</strong> "Ich werde ein erfolgreicher Coach."</p>
-                            <p><strong>Alignment:</strong> Unterstützt den höheren Zweck (anderen helfen), passt zur Identität (Helfer), entspricht den Werten (Wachstum), nutzt Fähigkeiten (Kommunikation), führt zu positivem Verhalten (Zuhören), verbessert die Umgebung (Netzwerk).</p>
-                            <h4>Schlechtes Alignment</h4>
-                            <p><strong>Ziel:</strong> "Ich werde reich."</p>
-                            <p><strong>Problem:</strong> Konflikt mit Werten (Gemeinschaft vs. Individualismus), passt nicht zur Identität (Fürsorger), führt zu negativem Verhalten (Gier).</p>
-            <!-- Step 4: Transformation -->
-            <div class="workflow-step" id="step-4">
-                    <h2>Schritt 4: Transformation umsetzen</h2>
-                    <p>Setze deine Veränderungen systematisch um</p>
-                        <h3><i class="fas fa-magic"></i> Was ist Transformation?</h3>
-                        <p>Transformation ist der Prozess der systematischen Umsetzung von Veränderungen auf allen Ebenen der Dilts-Pyramide.</p>
-                        <h3><i class="fas fa-tasks"></i> Übung: Transformation planen</h3>
-                            <div class="transformation-plan">
-                                <h4>Transformationsplan erstellen</h4>
-                                <div class="transformation-steps">
-                                    <div class="step-item">
-                                        <label>Schritt 1: Welche Ebene beginnst du zuerst?</label>
-                                        <textarea placeholder="Begründe deine Wahl..."></textarea>
-                                        <label>Schritt 2: Welche konkreten Aktionen führst du durch?</label>
-                                        <textarea placeholder="Definiere konkrete Aktionen..."></textarea>
-                                        <label>Schritt 3: Wie misst du deinen Fortschritt?</label>
-                                        <textarea placeholder="Definiere Erfolgskriterien..."></textarea>
-                                        <label>Schritt 4: Wie gehst du mit Rückschlägen um?</label>
-                                        <textarea placeholder="Definiere Strategien für Rückschläge..."></textarea>
-                                <h4>Unterstützungssystem aufbauen</h4>
-                                <div class="support-system">
-                                    <div class="support-item">
-                                        <label>Wer kann dich unterstützen?</label>
-                                        <textarea placeholder="Identifiziere Unterstützer..."></textarea>
-                                        <label>Welche Ressourcen brauchst du?</label>
-                                        <textarea placeholder="Identifiziere benötigte Ressourcen..."></textarea>
-                                        <label>Wie hältst du dich motiviert?</label>
-                                        <textarea placeholder="Definiere Motivationsstrategien..."></textarea>
-                                <h4>Zeitplan erstellen</h4>
-                                <div class="timeline">
-                                    <div class="timeline-item">
-                                        <label>Woche 1-2: Was machst du in den ersten Wochen?</label>
-                                        <textarea placeholder="Definiere die ersten Schritte..."></textarea>
-                                        <label>Monat 1-3: Was erreichst du in den ersten Monaten?</label>
-                                        <textarea placeholder="Definiere kurzfristige Ziele..."></textarea>
-                                        <label>Monat 3-12: Was erreichst du langfristig?</label>
-                                        <textarea placeholder="Definiere langfristige Ziele..."></textarea>
-                        <h3><i class="fas fa-lightbulb"></i> Tipps für die Transformation</h3>
-                                <i class="fas fa-play"></i>
-                                <h4>Klein anfangen</h4>
-                                <p>Beginne mit kleinen, erreichbaren Schritten.</p>
-                                <i class="fas fa-calendar"></i>
-                                <h4>Konsistent sein</h4>
-                                <p>Sei konsistent in deinen Bemühungen.</p>
-                                <i class="fas fa-users"></i>
-                                <h4>Unterstützung suchen</h4>
-                                <p>Suche Unterstützung von anderen.</p>
-                                <h4>Geduldig sein</h4>
-                                <p>Transformation braucht Zeit und Geduld.</p>
-                            <h4>Transformation beginnen</h4>
-                            <p><strong>Erster Schritt:</strong> "Ich beginne mit der Umgebungsebene und räume meinen Arbeitsplatz auf."</p>
-                            <p><strong>Nächster Schritt:</strong> "Dann arbeite ich an meinen Gewohnheiten und etabliere eine Morgenroutine."</p>
-                            <h4>Unterstützungssystem</h4>
-                            <p><strong>Unterstützer:</strong> "Mein Partner unterstützt mich bei der Transformation."</p>
-                            <p><strong>Ressourcen:</strong> "Ich nutze Bücher, Kurse und Coaching für die Transformation."</p>
-            <!-- Step 5: Integration -->
-            <div class="workflow-step" id="step-5">
-                    <h2>Schritt 5: Integration und Nachhaltigkeit</h2>
-                    <p>Integriere deine Transformation in dein Leben</p>
-                        <h3><i class="fas fa-puzzle-piece"></i> Was ist Integration?</h3>
-                        <p>Integration bedeutet, deine Transformation nachhaltig in dein Leben zu integrieren und sicherzustellen, dass die Veränderungen dauerhaft sind.</p>
-                        <h3><i class="fas fa-tasks"></i> Übung: Integration sicherstellen</h3>
-                            <div class="integration-plan">
-                                <h4>Nachhaltigkeit sicherstellen</h4>
-                                <div class="sustainability">
-                                    <div class="sustainability-item">
-                                        <label>Wie machst du deine Veränderungen dauerhaft?</label>
-                                        <textarea placeholder="Definiere Strategien für Nachhaltigkeit..."></textarea>
-                                        <label>Wie verhinderst du Rückschritte?</label>
-                                        <textarea placeholder="Definiere Präventionsstrategien..."></textarea>
-                                        <label>Wie hältst du deine Motivation aufrecht?</label>
-                                <h4>Neue Identität etablieren</h4>
-                                <div class="identity-establishment">
-                                    <div class="identity-item">
-                                        <label>Wie etablierst du deine neue Identität?</label>
-                                        <textarea placeholder="Definiere Strategien zur Identitätsetablierung..."></textarea>
-                                        <label>Wie kommunizierst du deine Veränderungen?</label>
-                                        <textarea placeholder="Definiere Kommunikationsstrategien..."></textarea>
-                                        <label>Wie integrierst du deine neuen Rollen?</label>
-                                        <textarea placeholder="Definiere Rollenintegrationsstrategien..."></textarea>
-                                <h4>Kontinuierliche Entwicklung</h4>
-                                <div class="continuous-development">
-                                    <div class="development-item">
-                                        <label>Wie entwickelst du dich kontinuierlich weiter?</label>
-                                        <textarea placeholder="Definiere Entwicklungsstrategien..."></textarea>
-                                        <label>Wie passt du dich an neue Herausforderungen an?</label>
-                                        <textarea placeholder="Definiere Anpassungsstrategien..."></textarea>
-                                        <label>Wie bleibst du offen für neue Möglichkeiten?</label>
-                                        <textarea placeholder="Definiere Offenheitsstrategien..."></textarea>
-                                <h4>Reflexion und Anpassung</h4>
-                                <div class="reflection-adaptation">
-                                    <div class="reflection-item">
-                                        <label>Wie reflektierst du regelmäßig über deine Entwicklung?</label>
-                                        <textarea placeholder="Definiere Reflexionsstrategien..."></textarea>
-                                        <label>Wie passt du deine Strategien an?</label>
-                                        <label>Wie lernst du aus deinen Erfahrungen?</label>
-                                        <textarea placeholder="Definiere Lernstrategien..."></textarea>
-                        <h3><i class="fas fa-lightbulb"></i> Tipps für die Integration</h3>
-                                <h4>Kontinuierlich arbeiten</h4>
-                                <p>Arbeite kontinuierlich an deiner Entwicklung.</p>
-                                <i class="fas fa-mirror"></i>
-                                <h4>Regelmäßig reflektieren</h4>
-                                <p>Reflektiere regelmäßig über deine Fortschritte.</p>
-                                <h4>Gemeinschaft suchen</h4>
-                                <p>Suche eine Gemeinschaft von Gleichgesinnten.</p>
-                                <h4>Freude finden</h4>
-                                <p>Finde Freude an deiner Entwicklung.</p>
-                            <h4>Nachhaltigkeit</h4>
-                            <p><strong>Strategie:</strong> "Ich führe ein Entwicklungstagebuch und reflektiere wöchentlich über meine Fortschritte."</p>
-                            <h4>Neue Identität</h4>
-                            <p><strong>Strategie:</strong> "Ich stelle mich als 'Entwicklungscoach' vor und lebe diese Rolle aktiv."</p>
-        <div class="workflow-navigation">
-            <button id="prev-step" class="btn btn-secondary" data-action="previous-step">
-                <i class="fas fa-arrow-left"></i> Zurück
-            <button id="next-step" class="btn btn-primary" data-action="next-step">
-                Weiter <i class="fas fa-arrow-right"></i>
-        <div class="method-footer">
-            <div class="progress-summary">
-                <h3>Dein Fortschritt</h3>
-                <div class="progress-stats">
-                    <div class="stat-item">
-                        <span class="stat-label">Schritte abgeschlossen:</span>
-                        <span class="stat-value" id="completed-steps">0/5</span>
-                        <span class="stat-label">Ebenen analysiert:</span>
-                        <span class="stat-value" id="levels-analyzed">0/6</span>
-    </div>
-    <script src="nlp-dilts.js"></script>
-    <!-- Global Auth System -->
-    <script src="../../js/aws-config.js"></script>
-    <script src="js/global-auth-system.js"></script>    <script src="../../js/unified-auth-manager.js"></script>
-    
-    <!-- Auth Modals Container -->
-    <div id="authModalsContainer"></div>
+    <div class="mk-toast" id="mk-toast"></div>
 
-    <!-- AWS Configuration -->
     <script>
-        window.AWS_CONFIG = {
-            region: 'eu-central-1',
-            userPoolId: 'eu-central-1_8gP4gLK9r',
-            clientId: '7kc5tt6a23fgh53d60vkefm812',
-            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-            dynamoDB: {
-                tableName: 'mawps-user-profiles',
-                region: 'eu-central-1'
-            },
-            s3: {
-                bucket: 'mawps-user-files-1760106396',
-                region: 'eu-central-1'
-            }
-        };
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
     </script>
-    
-    <!-- AWS SDK -->
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
-    
-    <!-- Auth & Progress Tracking -->
-    <script src="/js/aws-profile-api.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
-    <script src="/js/user-progress-tracker.js"></script>
-    <script src="/js/personality-auth-integration.js"></script>
+    <script src="../_kit/method-kit.js"></script>
+    <script>
+        const LEVELS = [
+            {id:'env',ic:'🌍',t:'Umgebung',q:'Wo, wann und mit wem? Welche äußeren Umstände spielen eine Rolle?'},
+            {id:'beh',ic:'🚶',t:'Verhalten',q:'Was genau tust du (oder nicht)? Welche konkreten Handlungen?'},
+            {id:'cap',ic:'🛠️',t:'Fähigkeiten',q:'Welche Fähigkeiten und Strategien setzt du ein – oder bräuchtest du?'},
+            {id:'val',ic:'❤️',t:'Werte & Glaubenssätze',q:'Was ist dir dabei wichtig? Welche Überzeugung treibt dich – oder hält dich zurück?'},
+            {id:'id',ic:'🪞',t:'Identität',q:'Wer bist du in diesem Kontext? „Ich bin jemand, der …"'},
+            {id:'pur',ic:'✨',t:'Zugehörigkeit & Sinn',q:'Wozu das alles? Für wen/was über dich hinaus tust du es?'}
+        ];
+        (async function () {
+            await MethodKit.init({
+                method: 'nlp-dilts',
+                accent: '#6366f1', accent2: '#8b5cf6',
+                steps: [{icon:'🎯',label:'Thema'},{icon:'🪜',label:'Ebenen'},{icon:'✨',label:'Ausrichtung'}],
+                defaultState: { topic:'', levels:{}, lever:'', insight:'' }
+            });
+            MethodKit.bindFields();
+            const S = MethodKit.state;
+
+            const host=document.getElementById('nd-levels');
+            host.innerHTML=LEVELS.map(l=>`<div class="mk-field"><label>${l.ic} ${l.t}</label><div class="hint">${l.q}</div><textarea class="mk-textarea" data-l="${l.id}" placeholder="…">${MethodKit.esc(S.levels[l.id]||'')}</textarea></div>`).join('');
+            host.querySelectorAll('[data-l]').forEach(el=>el.addEventListener('input',()=>{ S.levels[el.dataset.l]=el.value; MethodKit.save(); }));
+
+            MethodKit.onStep=function(n){ if(n===3){
+                document.getElementById('nd-recap').innerHTML=`<div class="mk-result"><h4>${MethodKit.esc(S.topic||'Dein Thema')}</h4></div>`+
+                    LEVELS.map(l=>S.levels[l.id]?`<div class="mk-row"><div class="grow"><strong>${l.ic} ${l.t}:</strong> ${MethodKit.esc(S.levels[l.id])}</div></div>`:'').join('');
+            }};
+            document.getElementById('nd-export').addEventListener('click',()=>{
+                let t=`LOGISCHE EBENEN (DILTS)\n=======================\n\nThema: ${S.topic}\n\n`;
+                LEVELS.forEach(l=>t+=`${l.t}: ${S.levels[l.id]||'–'}\n`);
+                t+=`\nGrößter Hebel: ${S.lever}\nErkenntnis: ${S.insight}\n`;
+                MethodKit.exportText('meine-logischen-ebenen.txt', t);
+            });
+        })();
+    </script>
 </body>
 </html>

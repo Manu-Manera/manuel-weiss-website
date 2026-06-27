@@ -3,414 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rubikon-Modell - Handlungsphasen</title>
-    <link rel="stylesheet" href="../../css/ikigai-planner.css">
-    <link rel="stylesheet" href="rubikon-model.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/unified-auth-system.css">
-
-    <!-- Progress Badge Styles -->
-    <style>
-        .user-progress-badge {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background: white;
-            border-radius: 8px;
-            padding: 12px 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            font-size: 14px;
-            min-width: 200px;
-        }
-        
-        .user-progress-badge .user-info,
-        .user-progress-badge .progress-sync {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #4a5568;
-        }
-        
-        .user-progress-badge i {
-            font-size: 16px;
-            color: #667eea;
-        }
-        
-        @media (max-width: 768px) {
-            .user-progress-badge {
-                top: auto;
-                bottom: 20px;
-                right: 10px;
-                left: 10px;
-                min-width: auto;
-            }
-        }
-    </style>
+    <title>Rubikon-Modell | Manuel Weiss</title>
+    <meta name="description" content="Vom Wunsch zur Tat: Das Rubikon-Modell führt dich vom Abwägen über die verbindliche Entscheidung und das Planen bis zum Handeln und Bewerten.">
+    <link rel="stylesheet" href="../_kit/method-light.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>:root { --mk-accent: #3b82f6; --mk-accent-2: #6366f1; --mk-accent-soft: rgba(59,130,246,.12); }</style>
 </head>
-<body data-page-id="rubikon-model">
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-water"></i></span><span>Rubikon-Modell</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
+    </header>
 
-    <!-- Progress Badge -->
-    <div class="user-progress-badge" style="display: none;">
-        <div class="user-info">
-            <i class="fas fa-user-circle"></i>
-            <span>Nicht angemeldet</span>
-        </div>
-        <div class="progress-sync">
-            <i class="fas fa-cloud-off-alt"></i>
-            <span>Fortschritt lokal</span>
-        </div>
-    </div>
-    <div class="rubikon-method">
-        <div class="method-header">
-            <div class="method-icon">
-                <i class="fas fa-river"></i>
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-water"></i></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Motivationspsychologie</div>
+            <h1>Den Rubikon überschreiten</h1>
+            <p>Zwischen Wunsch und Tat liegt ein Fluss. Das Rubikon-Modell bringt dich sicher hinüber: erst abwägen, dann verbindlich entscheiden, planen, handeln – und am Ende bewerten.</p>
+            <div class="mk-badges"><span class="mk-badge">Abwägen</span><span class="mk-badge">Entscheiden</span><span class="mk-badge">Handeln</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>1 · Abwägen</h2>
+                <p class="mk-sub">Noch ist alles offen. Welche Wünsche/Optionen hast du – und was spricht dafür und dagegen?</p>
+                <div class="mk-field"><label>Worum geht es?</label><input class="mk-input" data-mk-field="topic" placeholder="z. B. „Soll ich die Weiterbildung machen?""></div>
+                <div class="mk-field"><label>👍 Was spricht dafür?</label><textarea class="mk-textarea" data-mk-field="pro"></textarea></div>
+                <div class="mk-field"><label>👎 Was spricht dagegen?</label><textarea class="mk-textarea" data-mk-field="contra"></textarea></div>
+                <div class="mk-field"><label>Wie wichtig ist es dir?</label><div class="mk-range-wrap"><input class="mk-range" type="range" min="1" max="10" data-mk-field="importance" value="5"><span class="mk-range-val" data-mk-rangeval="importance">5</span></div></div>
+                <div class="mk-field"><label>Wie wahrscheinlich ist Erfolg?</label><div class="mk-range-wrap"><input class="mk-range" type="range" min="1" max="10" data-mk-field="chance" value="5"><span class="mk-range-val" data-mk-rangeval="chance">5</span></div></div>
             </div>
-            <div class="method-title">
-                <h1>Rubikon-Modell</h1>
-                <p>Die vier Phasen der Handlungssteuerung verstehen und nutzen</p>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card" style="border-left:4px solid var(--mk-accent);">
+                <h2>2 · Den Rubikon überschreiten</h2>
+                <p class="mk-sub">Jetzt fällt die Entscheidung – und ab hier wird nicht mehr abgewogen, sondern umgesetzt.</p>
+                <div class="mk-field"><label>Ich entscheide mich für:</label><textarea class="mk-textarea" data-mk-field="decision" placeholder="Formuliere klar und verbindlich."></textarea></div>
+                <label class="mk-option" style="display:flex; gap:12px; align-items:center;" id="rk-commit-wrap">
+                    <input type="checkbox" id="rk-commit" style="width:20px;height:20px;accent-color:var(--mk-accent);">
+                    <span><strong>Ich überschreite den Rubikon.</strong> Ich verpflichte mich auf diese Entscheidung.</span>
+                </label>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>3 · Planen</h2>
+                <p class="mk-sub">Konkrete Wenn-Dann-Pläne machen Handeln fast automatisch.</p>
+                <div class="mk-field"><label>Wann & wo startest du?</label><input class="mk-input" data-mk-field="whenwhere" placeholder="z. B. „Montag, 8 Uhr, am Schreibtisch""></div>
+                <div class="mk-field"><label>Wenn-Dann-Plan</label><textarea class="mk-textarea" data-mk-field="ifthen" placeholder="„Wenn [Situation/Hindernis], dann [Handlung]." – z. B. Wenn ich keine Lust habe, dann mache ich nur die ersten 5 Minuten."></textarea></div>
+                <div class="mk-field"><label>Welche Hindernisse erwartest du – und wie begegnest du ihnen?</label><textarea class="mk-textarea" data-mk-field="obstacles"></textarea></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Handeln</h2>
+                <p class="mk-sub">Die kleinste Handlung, die du sofort tun kannst, um loszulegen.</p>
+                <div class="mk-field"><label>Mein allererster Schritt (heute/morgen)</label><input class="mk-input" data-mk-field="firststep" placeholder="So klein, dass du ihn garantiert schaffst."></div>
+                <div class="mk-field"><label>Woran erkennst du, dass du dran bleibst?</label><textarea class="mk-textarea" data-mk-field="evidence"></textarea></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Bewerten</h2>
+                <p class="mk-sub">Lege jetzt fest, woran du später Erfolg misst – und behalte deinen Plan im Blick.</p>
+                <div class="mk-field"><label>Erfolg sieht für mich so aus:</label><textarea class="mk-textarea" data-mk-field="success"></textarea></div>
+                <div id="rk-summary"></div>
+                <button class="mk-btn mk-btn-primary" id="rk-export" style="margin-top:14px;"><i class="fas fa-download"></i> Plan herunterladen</button>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
+    </main>
 
-        <div class="workflow-header">
-            <button class="btn btn-secondary" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
-                <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
-            </button>
-        <div class="workflow-progress">
-            <div class="progress-step active" data-step="1">
-                <div class="step-number">1</div>
-                <div class="step-title">Prädezisionale Phase</div>
-            <div class="progress-step" data-step="2">
-                <div class="step-number">2</div>
-                <div class="step-title">Präaktionale Phase</div>
-            <div class="progress-step" data-step="3">
-                <div class="step-number">3</div>
-                <div class="step-title">Aktionale Phase</div>
-            <div class="progress-step" data-step="4">
-                <div class="step-number">4</div>
-                <div class="step-title">Postaktionale Phase</div>
-        <div class="workflow-content">
-            <!-- Step 1: Prädezisionale Phase -->
-            <div class="workflow-step active" id="step-1">
-                <div class="step-header">
-                    <h2>Schritt 1: Prädezisionale Phase</h2>
-                    <p>Die Phase der Abwägung und Entscheidungsfindung</p>
-                </div>
-                <div class="step-content">
-                    <div class="phase-description">
-                        <h3><i class="fas fa-balance-scale"></i> Was passiert in dieser Phase?</h3>
-                        <p>In der prädezisionalen Phase wägen wir verschiedene Handlungsoptionen ab und treffen eine bewusste Entscheidung. Es ist die Phase des "Soll ich oder soll ich nicht?"</p>
-                    </div>
-                    <div class="exercise-section">
-                        <h3><i class="fas fa-tasks"></i> Übung: Entscheidungsanalyse</h3>
-                        <div class="exercise-content">
-                            <div class="decision-input">
-                                <label for="decision-topic">Worüber möchtest du eine Entscheidung treffen?</label>
-                                <textarea id="decision-topic" placeholder="Beschreibe deine Entscheidungssituation..."></textarea>
-                            </div>
-                            <div class="options-analysis">
-                                <h4>Optionen analysieren</h4>
-                                <div class="option-item">
-                                    <label>Option 1:</label>
-                                    <input type="text" id="option-1" placeholder="Erste Handlungsoption">
-                                    <div class="pros-cons">
-                                        <div class="pros">
-                                            <label>Vorteile:</label>
-                                            <textarea placeholder="Was spricht dafür?"></textarea>
-                                        </div>
-                                        <div class="cons">
-                                            <label>Nachteile:</label>
-                                            <textarea placeholder="Was spricht dagegen?"></textarea>
-                                    </div>
-                                </div>
-                                    <label>Option 2:</label>
-                                    <input type="text" id="option-2" placeholder="Zweite Handlungsoption">
-                                    <label>Option 3:</label>
-                                    <input type="text" id="option-3" placeholder="Dritte Handlungsoption">
-                            <div class="decision-criteria">
-                                <h4>Entscheidungskriterien definieren</h4>
-                                <div class="criteria-list">
-                                    <div class="criteria-item">
-                                        <input type="text" placeholder="Kriterium 1 (z.B. Zeitaufwand)">
-                                        <select>
-                                            <option value="1">Sehr wichtig</option>
-                                            <option value="2">Wichtig</option>
-                                            <option value="3">Mittel</option>
-                                            <option value="4">Weniger wichtig</option>
-                                        </select>
-                                        <input type="text" placeholder="Kriterium 2 (z.B. Kosten)">
-                                        <input type="text" placeholder="Kriterium 3 (z.B. Risiko)">
-                        </div>
-                    <div class="tips-section">
-                        <h3><i class="fas fa-lightbulb"></i> Tipps für die Prädezisionale Phase</h3>
-                        <div class="tips-grid">
-                            <div class="tip-item">
-                                <i class="fas fa-clock"></i>
-                                <h4>Zeit nehmen</h4>
-                                <p>Nimm dir ausreichend Zeit für die Abwägung. Eile führt oft zu schlechten Entscheidungen.</p>
-                                <i class="fas fa-users"></i>
-                                <h4>Andere einbeziehen</h4>
-                                <p>Hole dir Rat von vertrauenswürdigen Personen, die bereits ähnliche Entscheidungen getroffen haben.</p>
-                                <i class="fas fa-chart-line"></i>
-                                <h4>Langfristig denken</h4>
-                                <p>Überlege, wie sich deine Entscheidung in 1, 5 oder 10 Jahren auswirken könnte.</p>
-                                <i class="fas fa-heart"></i>
-                                <h4>Werte beachten</h4>
-                                <p>Stelle sicher, dass deine Entscheidung mit deinen persönlichen Werten übereinstimmt.</p>
-                    <div class="examples-section">
-                        <h3><i class="fas fa-book-open"></i> Beispiele</h3>
-                        <div class="example-item">
-                            <h4>Berufswechsel</h4>
-                            <p><strong>Situation:</strong> Du überlegst, ob du den Job wechseln sollst.</p>
-                            <p><strong>Optionen:</strong> Bleiben, Wechseln, Selbstständig werden</p>
-                            <p><strong>Kriterien:</strong> Gehalt, Arbeitsklima, Entwicklungsmöglichkeiten, Work-Life-Balance</p>
-                            <h4>Studium</h4>
-                            <p><strong>Situation:</strong> Du musst dich für einen Studiengang entscheiden.</p>
-                            <p><strong>Optionen:</strong> Verschiedene Fächer an verschiedenen Unis</p>
-                            <p><strong>Kriterien:</strong> Interesse, Berufsaussichten, Standort, Kosten</p>
-            <!-- Step 2: Präaktionale Phase -->
-            <div class="workflow-step" id="step-2">
-                    <h2>Schritt 2: Präaktionale Phase</h2>
-                    <p>Die Phase der Planung und Vorbereitung</p>
-                        <h3><i class="fas fa-cogs"></i> Was passiert in dieser Phase?</h3>
-                        <p>Nach der Entscheidung beginnt die Planungsphase. Du entwickelst konkrete Schritte, sammelst Ressourcen und bereitest die Umsetzung vor.</p>
-                        <h3><i class="fas fa-tasks"></i> Übung: Aktionsplan erstellen</h3>
-                            <div class="action-plan">
-                                <h4>Deine Entscheidung:</h4>
-                                <textarea id="final-decision" placeholder="Was hast du entschieden?"></textarea>
-                                <h4>Ziel definieren</h4>
-                                <div class="goal-definition">
-                                    <label>Was möchtest du erreichen?</label>
-                                    <textarea id="goal-description" placeholder="Beschreibe dein Ziel konkret und messbar..."></textarea>
-                                    
-                                    <label>Bis wann möchtest du es erreichen?</label>
-                                    <input type="date" id="goal-deadline">
-                                    <label>Wie wirst du messen, dass du es erreicht hast?</label>
-                                    <textarea id="success-metrics" placeholder="Definiere messbare Erfolgskriterien..."></textarea>
-                                <h4>Schritte planen</h4>
-                                <div class="steps-planning">
-                                    <div class="step-item">
-                                        <div class="step-header">
-                                            <input type="text" placeholder="Schritt 1" class="step-title">
-                                            <input type="date" class="step-deadline">
-                                        <textarea placeholder="Was genau musst du tun? Welche Ressourcen brauchst du?"></textarea>
-                                        <div class="step-resources">
-                                            <label>Benötigte Ressourcen:</label>
-                                            <input type="text" placeholder="Zeit, Geld, Personen, Materialien...">
-                                            <input type="text" placeholder="Schritt 2" class="step-title">
-                                            <input type="text" placeholder="Schritt 3" class="step-title">
-                                <h4>Ressourcen sammeln</h4>
-                                <div class="resources-section">
-                                    <div class="resource-category">
-                                        <h5>Finanzielle Ressourcen</h5>
-                                        <textarea placeholder="Welches Budget brauchst du? Woher kommt das Geld?"></textarea>
-                                        <h5>Zeitliche Ressourcen</h5>
-                                        <textarea placeholder="Wie viel Zeit brauchst du? Wann hast du Zeit?"></textarea>
-                                        <h5>Personelle Ressourcen</h5>
-                                        <textarea placeholder="Wer kann dir helfen? Welche Expertise brauchst du?"></textarea>
-                                        <h5>Materielle Ressourcen</h5>
-                                        <textarea placeholder="Welche Tools, Materialien oder Ausrüstung brauchst du?"></textarea>
-                        <h3><i class="fas fa-lightbulb"></i> Tipps für die Präaktionale Phase</h3>
-                                <i class="fas fa-list-check"></i>
-                                <h4>SMART-Ziele</h4>
-                                <p>Mache deine Ziele spezifisch, messbar, erreichbar, relevant und terminiert.</p>
-                                <i class="fas fa-buffer"></i>
-                                <h4>Puffer einplanen</h4>
-                                <p>Plane 20-30% mehr Zeit ein als du denkst, dass du brauchst.</p>
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <h4>Risiken bedenken</h4>
-                                <p>Überlege, was schiefgehen könnte und wie du darauf reagierst.</p>
-                                <i class="fas fa-calendar-check"></i>
-                                <h4>Meilensteine setzen</h4>
-                                <p>Teile große Ziele in kleinere, überprüfbare Meilensteine auf.</p>
-                            <h4>Fitness-Ziel</h4>
-                            <p><strong>Ziel:</strong> 10kg abnehmen in 6 Monaten</p>
-                            <p><strong>Schritte:</strong> Ernährungsplan erstellen, Trainingsplan entwickeln, Arzt konsultieren</p>
-                            <p><strong>Ressourcen:</strong> Zeit für Training, Geld für gesunde Ernährung, Motivation</p>
-                            <h4>Sprache lernen</h4>
-                            <p><strong>Ziel:</strong> B2-Level in Spanisch in 1 Jahr</p>
-                            <p><strong>Schritte:</strong> Kurs buchen, täglich üben, Sprachpartner finden</p>
-                            <p><strong>Ressourcen:</strong> Zeit täglich, Geld für Kurs, Apps, Bücher</p>
-            <!-- Step 3: Aktionale Phase -->
-            <div class="workflow-step" id="step-3">
-                    <h2>Schritt 3: Aktionale Phase</h2>
-                    <p>Die Phase der Umsetzung und Ausführung</p>
-                        <h3><i class="fas fa-play"></i> Was passiert in dieser Phase?</h3>
-                        <p>Jetzt geht es ans Handeln! Du setzt deine Pläne um, überwindest Hindernisse und bleibst am Ball, auch wenn es schwierig wird.</p>
-                        <h3><i class="fas fa-tasks"></i> Übung: Umsetzung verfolgen</h3>
-                            <div class="implementation-tracking">
-                                <h4>Fortschritt verfolgen</h4>
-                                <div class="progress-overview">
-                                    <div class="progress-item">
-                                        <label>Gesamtfortschritt:</label>
-                                        <div class="progress-bar">
-                                            <div class="progress-fill" style="width: 0%"></div>
-                                        <span class="progress-text">0%</span>
-                                <h4>Tägliche Aktionen</h4>
-                                <div class="daily-actions">
-                                    <div class="action-item">
-                                        <input type="checkbox" id="action-1">
-                                        <label for="action-1">Aktion 1: <span class="action-description">Was musst du heute tun?</span></label>
-                                        <input type="text" class="action-description-input" placeholder="Beschreibe deine heutige Aktion...">
-                                        <input type="checkbox" id="action-2">
-                                        <label for="action-2">Aktion 2: <span class="action-description">Was musst du heute tun?</span></label>
-                                        <input type="checkbox" id="action-3">
-                                        <label for="action-3">Aktion 3: <span class="action-description">Was musst du heute tun?</span></label>
-                                <h4>Hindernisse und Lösungen</h4>
-                                <div class="obstacles-section">
-                                    <div class="obstacle-item">
-                                        <label>Hindernis:</label>
-                                        <input type="text" placeholder="Was steht dir im Weg?">
-                                        <label>Lösung:</label>
-                                        <textarea placeholder="Wie kannst du es überwinden?"></textarea>
-                                <h4>Motivation aufrechterhalten</h4>
-                                <div class="motivation-section">
-                                    <div class="motivation-strategy">
-                                        <h5>Warum ist dir das wichtig?</h5>
-                                        <textarea placeholder="Erinnere dich an deine Gründe und deine Vision..."></textarea>
-                                        <h5>Belohnungen für Meilensteine</h5>
-                                        <textarea placeholder="Wie belohnst du dich für erreichte Zwischenziele?"></textarea>
-                                        <h5>Unterstützung suchen</h5>
-                                        <textarea placeholder="Wer kann dich unterstützen? Wie kannst du um Hilfe bitten?"></textarea>
-                        <h3><i class="fas fa-lightbulb"></i> Tipps für die Aktionale Phase</h3>
-                                <i class="fas fa-calendar-day"></i>
-                                <h4>Täglich handeln</h4>
-                                <p>Kleine, tägliche Schritte sind besser als große, unregelmäßige Aktionen.</p>
-                                <i class="fas fa-redo"></i>
-                                <h4>Flexibel bleiben</h4>
-                                <p>Passe deine Pläne an, wenn sich die Umstände ändern.</p>
-                                <h4>Unterstützung nutzen</h4>
-                                <p>Suche dir Verbündete und teile deine Fortschritte mit anderen.</p>
-                                <i class="fas fa-trophy"></i>
-                                <h4>Erfolge feiern</h4>
-                                <p>Erkenne und feiere auch kleine Fortschritte.</p>
-                            <h4>Projekt umsetzen</h4>
-                            <p><strong>Umsetzung:</strong> Täglich 1 Stunde an dem Projekt arbeiten</p>
-                            <p><strong>Hindernisse:</strong> Zeitmangel, Perfektionismus</p>
-                            <p><strong>Lösungen:</strong> Zeit blocken, "Gut genug" akzeptieren</p>
-                            <h4>Gewohnheit etablieren</h4>
-                            <p><strong>Umsetzung:</strong> Jeden Morgen 10 Minuten meditieren</p>
-                            <p><strong>Hindernisse:</strong> Vergessen, Müdigkeit</p>
-                            <p><strong>Lösungen:</strong> Erinnerung stellen, einfachere Alternative</p>
-            <!-- Step 4: Postaktionale Phase -->
-            <div class="workflow-step" id="step-4">
-                    <h2>Schritt 4: Postaktionale Phase</h2>
-                    <p>Die Phase der Reflexion und des Lernens</p>
-                        <h3><i class="fas fa-search"></i> Was passiert in dieser Phase?</h3>
-                        <p>Nach der Umsetzung reflektierst du über den Prozess, lernst aus Erfolgen und Misserfolgen und bereitest dich auf zukünftige Entscheidungen vor.</p>
-                        <h3><i class="fas fa-tasks"></i> Übung: Reflexion und Lernen</h3>
-                            <div class="reflection-section">
-                                <h4>Ergebnis bewerten</h4>
-                                <div class="result-evaluation">
-                                    <label>Hast du dein Ziel erreicht?</label>
-                                    <select id="goal-achieved">
-                                        <option value="yes">Ja, vollständig</option>
-                                        <option value="partially">Teilweise</option>
-                                        <option value="no">Nein</option>
-                                    </select>
-                                    <label>Wie zufrieden bist du mit dem Ergebnis? (1-10)</label>
-                                    <input type="range" id="satisfaction" min="1" max="10" value="5">
-                                    <span id="satisfaction-value">5</span>
-                                    <label>Was war das beste Ergebnis?</label>
-                                    <textarea id="best-result" placeholder="Beschreibe die positiven Aspekte..."></textarea>
-                                    <label>Was hätte besser laufen können?</label>
-                                    <textarea id="improvements" placeholder="Was würdest du beim nächsten Mal anders machen?"></textarea>
-                                <h4>Prozess analysieren</h4>
-                                <div class="process-analysis">
-                                    <div class="analysis-category">
-                                        <h5>Was hat gut funktioniert?</h5>
-                                        <textarea placeholder="Welche Strategien, Tools oder Verhaltensweisen haben geholfen?"></textarea>
-                                        <h5>Was war schwierig?</h5>
-                                        <textarea placeholder="Welche Hindernisse oder Herausforderungen gab es?"></textarea>
-                                        <h5>Was hast du über dich gelernt?</h5>
-                                        <textarea placeholder="Welche neuen Erkenntnisse hast du über dich selbst gewonnen?"></textarea>
-                                        <h5>Was würdest du beim nächsten Mal anders machen?</h5>
-                                        <textarea placeholder="Konkrete Verbesserungen für zukünftige Projekte..."></textarea>
-                                <h4>Lektionen für die Zukunft</h4>
-                                <div class="lessons-section">
-                                    <div class="lesson-item">
-                                        <h5>Lektion 1:</h5>
-                                        <textarea placeholder="Was ist die wichtigste Erkenntnis aus diesem Prozess?"></textarea>
-                                        <h5>Lektion 2:</h5>
-                                        <textarea placeholder="Welche Fähigkeiten hast du entwickelt?"></textarea>
-                                        <h5>Lektion 3:</h5>
-                                        <textarea placeholder="Wie kannst du diese Erfahrung für zukünftige Ziele nutzen?"></textarea>
-                                <h4>Nächste Schritte</h4>
-                                <div class="next-steps">
-                                    <label>Was ist dein nächstes Ziel?</label>
-                                    <textarea id="next-goal" placeholder="Basierend auf deinen Erfahrungen, was möchtest du als nächstes angehen?"></textarea>
-                                    <label>Wie wirst du deine neuen Erkenntnisse anwenden?</label>
-                                    <textarea id="apply-lessons" placeholder="Konkrete Pläne für die Anwendung deiner Lektionen..."></textarea>
-                        <h3><i class="fas fa-lightbulb"></i> Tipps für die Postaktionale Phase</h3>
-                                <h4>Zeit für Reflexion</h4>
-                                <p>Nimm dir bewusst Zeit für die Reflexion, auch wenn das Ergebnis nicht perfekt war.</p>
-                                <i class="fas fa-balance-scale"></i>
-                                <h4>Ehrlich sein</h4>
-                                <p>Sei ehrlich zu dir selbst über Erfolge und Misserfolge.</p>
-                                <i class="fas fa-graduation-cap"></i>
-                                <h4>Lernen dokumentieren</h4>
-                                <p>Schreibe deine Erkenntnisse auf, damit du sie später nutzen kannst.</p>
-                                <i class="fas fa-forward"></i>
-                                <h4>Nach vorne schauen</h4>
-                                <p>Nutze die Erkenntnisse für zukünftige Ziele und Entscheidungen.</p>
-                            <h4>Erfolgreiches Projekt</h4>
-                            <p><strong>Ergebnis:</strong> Ziel erreicht, aber länger gedauert als geplant</p>
-                            <p><strong>Lektion:</strong> Realistischere Zeitplanung nötig</p>
-                            <p><strong>Nächster Schritt:</strong> Bessere Puffer einplanen</p>
-                            <h4>Teilweise erfolgreich</h4>
-                            <p><strong>Ergebnis:</strong> 70% des Ziels erreicht</p>
-                            <p><strong>Lektion:</strong> Motivation in der Mitte verloren</p>
-                            <p><strong>Nächster Schritt:</strong> Unterstützungssystem aufbauen</p>
-        <div class="workflow-navigation">
-            <button id="prev-step" class="btn btn-secondary" data-action="previous-step">
-                <i class="fas fa-arrow-left"></i> Zurück
-            <button id="next-step" class="btn btn-primary" data-action="next-step">
-                Weiter <i class="fas fa-arrow-right"></i>
-        <div class="method-footer">
-            <div class="progress-summary">
-                <h3>Dein Fortschritt</h3>
-                <div class="progress-stats">
-                    <div class="stat-item">
-                        <span class="stat-label">Phasen abgeschlossen:</span>
-                        <span class="stat-value" id="completed-phases">0/4</span>
-                        <span class="stat-label">Entscheidungen getroffen:</span>
-                        <span class="stat-value" id="decisions-made">0</span>
-    </div>
-    <script src="rubikon-model.js"></script>
-    <!-- Global Auth System -->
-    <script src="../../js/aws-config.js"></script>
-    <script src="js/global-auth-system.js"></script>    <script src="../../js/unified-auth-manager.js"></script>
-    
-    <!-- Auth Modals Container -->
-    <div id="authModalsContainer"></div>
+    <div class="mk-toast" id="mk-toast"></div>
 
-    <!-- AWS Configuration -->
     <script>
-        window.AWS_CONFIG = {
-            region: 'eu-central-1',
-            userPoolId: 'eu-central-1_8gP4gLK9r',
-            clientId: '7kc5tt6a23fgh53d60vkefm812',
-            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-            dynamoDB: {
-                tableName: 'mawps-user-profiles',
-                region: 'eu-central-1'
-            },
-            s3: {
-                bucket: 'mawps-user-files-1760106396',
-                region: 'eu-central-1'
-            }
-        };
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
     </script>
-    
-    <!-- AWS SDK -->
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
-    
-    <!-- Auth & Progress Tracking -->
-    <script src="/js/aws-profile-api.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
-    <script src="/js/user-progress-tracker.js"></script>
-    <script src="/js/personality-auth-integration.js"></script>
+    <script src="../_kit/method-kit.js"></script>
+    <script>
+        (async function () {
+            await MethodKit.init({
+                method: 'rubikon-model',
+                accent: '#3b82f6', accent2: '#6366f1',
+                steps: [{icon:'⚖️',label:'Abwägen'},{icon:'🌊',label:'Entscheiden'},{icon:'🗺️',label:'Planen'},{icon:'🚀',label:'Handeln'},{icon:'🏁',label:'Bewerten'}],
+                defaultState: { topic:'',pro:'',contra:'',importance:5,chance:5,decision:'',committed:false,whenwhere:'',ifthen:'',obstacles:'',firststep:'',evidence:'',success:'' }
+            });
+            MethodKit.bindFields();
+            const S = MethodKit.state;
+            const commit=document.getElementById('rk-commit');
+            commit.checked=!!S.committed;
+            commit.addEventListener('change',()=>{ S.committed=commit.checked; MethodKit.save(); if(commit.checked) MethodKit.toast('Rubikon überschritten! 🌊','success'); });
+
+            MethodKit.onStep=function(n){ if(n===5){
+                document.getElementById('rk-summary').innerHTML=`<div class="mk-result" style="margin-top:8px;"><h4>Deine Entscheidung</h4>${MethodKit.esc(S.decision)||'–'}${S.committed?' ✅':''}<div style="margin-top:8px;color:var(--mk-muted);">Erster Schritt: ${MethodKit.esc(S.firststep)||'–'}</div></div>`;
+            }};
+            document.getElementById('rk-export').addEventListener('click',()=>{
+                const t=`RUBIKON-MODELL\n==============\n\nThema: ${S.topic}\nDafür: ${S.pro}\nDagegen: ${S.contra}\nWichtigkeit: ${S.importance}/10 · Erfolgschance: ${S.chance}/10\n\nEntscheidung: ${S.decision} ${S.committed?'(verbindlich)':''}\n\nStart: ${S.whenwhere}\nWenn-Dann: ${S.ifthen}\nHindernisse: ${S.obstacles}\n\nErster Schritt: ${S.firststep}\nDranbleiben: ${S.evidence}\n\nErfolg: ${S.success}\n`;
+                MethodKit.exportText('mein-rubikon-plan.txt', t);
+            });
+        })();
+    </script>
 </body>
 </html>
