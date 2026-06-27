@@ -18,7 +18,7 @@
     </div>
 
     <header class="ss-topbar">
-        <button class="ss-back" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
+        <button class="ss-back" onclick="(function(){var r=document.referrer||'';window.location.href=r.indexOf('aktivitaeten-uebersicht')>-1?'../../aktivitaeten-uebersicht.html':'../../persoenlichkeitsentwicklung-uebersicht.html';})()">
             <i class="fas fa-arrow-left"></i> Übersicht
         </button>
         <div class="ss-brand">
