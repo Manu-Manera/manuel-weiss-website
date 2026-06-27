@@ -222,6 +222,55 @@ const KS_TRAINERS = {
         ] }
 };
 
+/* ---------------- Veränderungs-Reise (Verhaltensänderung lernen) ----------------
+   Acht Phasen, die zusammen den vollständigen Kreislauf gelingender
+   Veränderung lehren – nach den Prinzipien von Tiny Habits (BJ Fogg),
+   Atomic Habits (James Clear), Wenn-Dann-Vorsätzen und identitätsbasierten
+   Gewohnheiten. Statt eines starren Plans lernt man, sich zu ändern und es
+   in den Alltag zu integrieren. */
+const KS_JOURNEY = [
+    { id: 'tiny', icon: '🌱', title: 'Winziger Anfang', req: 'action',
+      principle: 'Mach es so klein, dass du nicht Nein sagen kannst.',
+      lesson: 'Motivation schwankt – Gewohnheiten nicht. Der größte Fehler ist, zu groß zu starten. Schrumpfe deine Wunsch-Handlung, bis sie selbst an einem schlechten Tag in unter 60 Sekunden gelingt: <strong>eine</strong> Kniebeuge, <strong>ein</strong> Glas Wasser, <strong>zwei</strong> Minuten Dehnen. Die Größe kommt später von selbst – erst zählt, dass du es <em>jeden</em> Tag tust.',
+      task: 'Lege in der Werkstatt eine Gewohnheit mit einer winzigen Handlung an.',
+      examples: ['1 Kniebeuge nach dem Aufstehen', '1 Glas Wasser vor dem Kaffee', '2 Minuten dehnen vor dem Duschen'] },
+    { id: 'anchor', icon: '⚓', title: 'Auslöser verankern', req: 'cue',
+      principle: 'Hänge die neue Handlung an eine feste Routine.',
+      lesson: 'Neue Gewohnheiten brauchen einen verlässlichen Auslöser. Statt „irgendwann am Tag" nutze einen <strong>Wenn-Dann-Vorsatz</strong>: „<em>Nachdem</em> ich [bestehende Routine erledigt habe], <em>werde</em> ich [winzige Handlung tun]." Bestehende Routinen wie Zähneputzen, Kaffee oder Mittagspause sind dein Anker – sie passieren ohnehin zuverlässig.',
+      task: 'Ergänze bei deiner Gewohnheit einen konkreten Auslöser (Anker).',
+      examples: ['Nach dem Zähneputzen → 5 Kniebeugen', 'Nach dem ersten Kaffee → 1 Glas Wasser', 'Nach dem Mittagessen → 3 Min Spaziergang'] },
+    { id: 'celebrate', icon: '🎉', title: 'Sofort feiern', req: 'reward',
+      principle: 'Eine kleine Feier verankert die Gewohnheit im Gehirn.',
+      lesson: 'Was sich gut anfühlt, wird wiederholt. Gönn dir direkt nach der Handlung eine <strong>Mini-Feier</strong>: ein „Yes!", eine geballte Faust, ein Lächeln im Spiegel. Diese sofortige positive Emotion – nicht erst das Ergebnis in Wochen – sagt deinem Gehirn: „Das machen wir wieder."',
+      task: 'Lege bei deiner Gewohnheit eine sofortige Belohnung oder Feier fest.',
+      examples: ['Faust ballen und „Stark!" denken', 'Tief durchatmen und lächeln', 'Das Häkchen bewusst setzen'] },
+    { id: 'environment', icon: '🏠', title: 'Umgebung gestalten', req: 'env',
+      principle: 'Mach das Gute leicht und das Schlechte mühsam.',
+      lesson: 'Willenskraft verliert auf Dauer gegen die Umgebung. Gestalte deinen Raum so, dass die gute Handlung der <strong>Weg des geringsten Widerstands</strong> ist: Sportkleidung sichtbar bereitlegen, die Wasserflasche auf den Schreibtisch, Obst in Sichtweite – und Süßes außer Reichweite.',
+      task: 'Beschreibe eine Veränderung deiner Umgebung, die die Handlung erleichtert.',
+      examples: ['Sportschuhe neben die Tür stellen', 'Wasserflasche auf den Schreibtisch', 'Süßigkeiten in den Keller räumen'] },
+    { id: 'stack', icon: '🧱', title: 'Gewohnheiten stapeln', req: 'stack',
+      principle: 'Wachse, indem du Neues an Bewährtes kettest.',
+      lesson: 'Wenn eine winzige Gewohnheit sitzt, baue darauf auf. <strong>Habit-Stacking</strong> verkettet Handlungen zu einer Routine: „Nach [Gewohnheit 1] mache ich [Gewohnheit 2]." So wird aus einer Kniebeuge mit der Zeit ein kurzes Morgen-Workout – ohne dass es sich nach Überwindung anfühlt.',
+      task: 'Lege eine zweite Gewohnheit an oder ergänze einen Stapel-Schritt.',
+      examples: ['Nach 5 Kniebeugen → 5 Liegestütze', 'Nach dem Wasser → 1 Stück Obst', 'Nach dem Dehnen → 3 tiefe Atemzüge'] },
+    { id: 'identity', icon: '🪞', title: 'Identität', req: 'identity',
+      principle: 'Werde die Person, die diese Gewohnheit lebt.',
+      lesson: 'Die stärksten Gewohnheiten gehören zu deiner <strong>Identität</strong>. Verschiebe den Fokus vom Ziel zur Person: nicht „Ich will abnehmen", sondern „Ich bin jemand, der sich täglich bewegt." Jede kleine Handlung ist eine Stimme für diese neue Identität. Formuliere sie als „Ich bin jemand, der …".',
+      task: 'Formuliere bei deiner Gewohnheit eine Identitäts-Aussage.',
+      examples: ['„Ich bin jemand, der seinen Körper pflegt."', '„Ich bin ein bewegter Mensch."', '„Ich bin jemand, der bewusst isst."'] },
+    { id: 'relapse', icon: '🛟', title: 'Rückfälle meistern', req: 'reflect',
+      principle: 'Verpasse nie zweimal hintereinander.',
+      lesson: 'Rückfälle gehören dazu – sie sind kein Scheitern, sondern Teil des Weges. Die Regel der Meister: „<strong>Never miss twice</strong>." Ein verpasster Tag ist ein Unfall, zwei sind der Beginn einer neuen schlechten Gewohnheit. Plane deinen Wiedereinstieg <em>im Voraus</em> und begegne dir mit Freundlichkeit statt Härte.',
+      task: 'Halte in der Reflexion deinen Wiedereinstiegs-Plan fest.',
+      examples: ['„Verpasse ich einen Tag, mache ich morgen die Mini-Version."', '„Ich starte sofort wieder – ohne Drama."'] },
+    { id: 'mastery', icon: '🏔️', title: 'Integration & Meisterschaft', req: 'none',
+      principle: 'Die Gewohnheit ist jetzt Teil deines Lebens.',
+      lesson: 'Du hast den Kreislauf der Veränderung einmal vollständig durchlaufen: klein anfangen, verankern, feiern, Umgebung gestalten, stapeln, Identität, Rückfälle meistern. Jetzt wird Veränderung zur Routine deines Lebens. Pflege deine Gewohnheiten weiter, skaliere behutsam – und beginne den Kreis für die nächste Gewohnheit von vorn.',
+      task: 'Lebe deine Gewohnheiten weiter und starte bei Bedarf eine neue Reise.',
+      examples: ['Eine neue winzige Gewohnheit hinzufügen', 'Bestehende behutsam vergrößern', 'Andere im Alltag inspirieren'] }
+];
+
 /* ---------------- Verbundene Pläne & Schwester-Schulen ---------------- */
 const KS_LINKS = [
     { icon: '🏋️', title: 'Trainingsplan-Generator', desc: 'Erstelle deinen individuellen Wochen-Trainingsplan.', href: '../../personal-training.html', disc: 'bewegung' },
@@ -236,6 +285,8 @@ class KoerperSchule {
         this.activeDisc = 'bewegung';
         this.timer = null;
         this.currentTrainer = null;
+        this.journeyTab = 'reise';
+        this.editingHabitId = null;
         this.state = this._defaultState();
     }
 
@@ -253,6 +304,7 @@ class KoerperSchule {
             log: [],
             practiceDays: [],
             habitsToday: { date: null, checks: {} },
+            journey: { phase: 0, ack: {}, habits: [], reflections: [] },
             theme: 'forest'
         };
     }
@@ -280,6 +332,7 @@ class KoerperSchule {
         if (!this.state.alias) this.state.alias = this._generateAlias();
         if (!this.state.theme) this.state.theme = 'forest';
         if (!this.state.habitsToday) this.state.habitsToday = { date: null, checks: {} };
+        this._journey();
         this._applyTheme();
         this._bindNav();
         this.render();
@@ -558,54 +611,276 @@ class KoerperSchule {
         document.querySelectorAll('.ss-exercise-item').forEach(item => item.addEventListener('click', () => this._startTrainer(item.dataset.trainer)));
     }
 
-    /* ===================== PLAN / VERBINDUNGEN ===================== */
+    /* ===================== VERÄNDERUNGS-REISE ===================== */
     _renderPlan() {
+        const tab = this.journeyTab || 'reise';
         return `
         <div class="ss-hero">
-            <div class="ss-kicker">Pläne &amp; Programme</div>
-            <h1>Vom kleinen Schritt zum großen Plan</h1>
-            <p>Die täglichen Einheiten halten dich in Bewegung. Wenn du tiefer einsteigen willst, erstelle dir hier einen vollständigen Trainings- oder Ernährungsplan – oder verbinde dein Ritual mit den Schwester-Schulen.</p>
+            <div class="ss-kicker">Veränderungs-Reise</div>
+            <h1>Lerne, dich zu ändern – und es zu leben</h1>
+            <p>Kein starrer Plan, sondern ein Weg: In kleinen Phasen verstehst du, wie Veränderung wirklich gelingt – und verankerst sie Schritt für Schritt in deinem Alltag, bis sie zu dir gehört.</p>
         </div>
+        <div class="ss-sense-picker ks-journey-tabs">
+            <button class="ss-chip ${tab === 'reise' ? 'active' : ''}" data-jtab="reise">🧭 Reise</button>
+            <button class="ss-chip ${tab === 'werkstatt' ? 'active' : ''}" data-jtab="werkstatt">🛠️ Werkstatt</button>
+            <button class="ss-chip ${tab === 'werkzeuge' ? 'active' : ''}" data-jtab="werkzeuge">📋 Werkzeuge</button>
+        </div>
+        ${tab === 'reise' ? this._journeyReise() : tab === 'werkstatt' ? this._journeyWerkstatt() : this._journeyWerkzeuge()}`;
+    }
+    _afterPlan() {
+        document.querySelectorAll('[data-jtab]').forEach(b => b.addEventListener('click', () => { this.journeyTab = b.dataset.jtab; this.editingHabitId = null; this.render(); }));
+        const tab = this.journeyTab || 'reise';
+        if (tab === 'reise') this._afterJourneyReise();
+        else if (tab === 'werkstatt') this._afterJourneyWerkstatt();
+        else this._afterJourneyWerkzeuge();
+    }
+
+    _journeyReise() {
+        const j = this._journey();
+        const idx = Math.min(j.phase || 0, KS_JOURNEY.length - 1);
+        const ph = KS_JOURNEY[idx];
+        const reqMet = this._reqMet(ph.req);
+        const acked = !!j.ack[idx];
+        const isLast = idx >= KS_JOURNEY.length - 1;
+        const canAdvance = acked && reqMet && !isLast;
+        const habits = j.habits || [];
+        const today = this._today();
+        return `
+        <div class="ss-stats">
+            <div class="ss-stat"><div class="ss-stat-num">${idx + 1}/${KS_JOURNEY.length}</div><div class="ss-stat-label">Phase</div></div>
+            <div class="ss-stat"><div class="ss-stat-num">${this._integrationDays()}</div><div class="ss-stat-label">Integrations-Tage</div></div>
+            <div class="ss-stat"><div class="ss-stat-num">${habits.length}</div><div class="ss-stat-label">Gewohnheiten</div></div>
+        </div>
+        <div class="ks-phase-path">
+            ${KS_JOURNEY.map((p, i) => `<div class="ks-phase-dot ${i < idx ? 'done' : i === idx ? 'current' : 'locked'}" title="${this._esc(p.title)}"><span class="ic">${i < idx ? '✓' : p.icon}</span><span class="lbl">${this._esc(p.title)}</span></div>`).join('')}
+        </div>
+        <div class="ss-panel ks-phase-card">
+            <div class="ks-phase-head"><span class="ic">${ph.icon}</span><div><div class="ss-kicker">Phase ${idx + 1} · ${isLast ? 'Dauerphase' : 'Lernschritt'}</div><h2 style="margin:2px 0">${ph.title}</h2><p class="ks-phase-principle">${this._esc(ph.principle)}</p></div></div>
+            <div class="ks-phase-lesson">${ph.lesson}</div>
+            <div class="ks-phase-examples"><span class="lbl">Beispiele:</span> ${ph.examples.map(e => `<span>${this._esc(e)}</span>`).join('')}</div>
+            <div class="ks-phase-task ${reqMet ? 'met' : ''}">
+                <i class="fas ${reqMet ? 'fa-circle-check' : 'fa-circle-dot'}"></i>
+                <div class="body"><strong>Deine Aufgabe</strong><div>${this._esc(ph.task)}</div></div>
+                ${ph.req !== 'none' && ph.req !== 'reflect' ? `<button class="ss-btn ss-btn-ghost" id="ks-go-werkstatt">Zur Werkstatt</button>` : ''}
+                ${ph.req === 'reflect' ? `<button class="ss-btn ss-btn-ghost" id="ks-go-reflect">Reflexion schreiben</button>` : ''}
+            </div>
+            <label class="ks-ack"><input type="checkbox" id="ks-ack" ${acked ? 'checked' : ''}> Ich habe diese Phase verstanden und beginne, sie zu leben.</label>
+            ${isLast
+                ? `<p class="sub" style="margin-top:8px"><i class="fas fa-infinity"></i> Du hast den Kreislauf der Veränderung gemeistert. Pflege deine Gewohnheiten – oder starte eine neue Reise.</p>`
+                : `<button class="ss-btn ss-btn-primary" id="ks-advance" ${canAdvance ? '' : 'disabled'}>Phase abschließen <i class="fas fa-arrow-right"></i></button>
+                   ${!reqMet ? `<p class="sub" style="margin-top:8px">Erledige zuerst die Aufgabe, um die nächste Phase freizuschalten.</p>` : ''}`}
+        </div>
+        ${habits.length ? `
+        <div class="ss-panel">
+            <h3 style="margin:0 0 4px"><i class="fas fa-list-check"></i> Heute leben</h3>
+            <p class="sub" style="margin:0 0 12px">Hake deine Mikro-Gewohnheiten ab – jeder Tag zählt für deine Integration.</p>
+            <div class="ks-habit-today">
+                ${habits.map(h => { const done = (h.days || []).includes(today); return `<button class="ks-today-habit ${done ? 'done' : ''}" data-hid="${h.id}"><span class="chk"><i class="fas ${done ? 'fa-circle-check' : 'fa-circle'}"></i></span><span class="tbody"><span class="t">${this._esc(h.title || h.action || 'Gewohnheit')}</span><span class="s">${h.cue ? 'Nach: ' + this._esc(h.cue) : this._esc(h.action || '')}</span></span><span class="streak">${this._habitStreak(h)}🔥</span></button>`; }).join('')}
+            </div>
+        </div>` : `<div class="ss-panel ks-plan-hint"><i class="fas fa-seedling"></i> Noch keine Gewohnheit. Lege in der <strong>Werkstatt</strong> deine erste winzige Gewohnheit an.</div>`}`;
+    }
+    _afterJourneyReise() {
+        const ack = document.getElementById('ks-ack');
+        if (ack) ack.addEventListener('change', () => { const j = this._journey(); const idx = Math.min(j.phase || 0, KS_JOURNEY.length - 1); j.ack[idx] = ack.checked; this._save(); this.render(); });
+        const adv = document.getElementById('ks-advance');
+        if (adv) adv.addEventListener('click', () => this._advancePhase());
+        const gw = document.getElementById('ks-go-werkstatt');
+        if (gw) gw.addEventListener('click', () => { this.journeyTab = 'werkstatt'; this.render(); });
+        const gr = document.getElementById('ks-go-reflect');
+        if (gr) gr.addEventListener('click', () => this._reflectPrompt());
+        document.querySelectorAll('.ks-today-habit').forEach(b => b.addEventListener('click', () => this._toggleHabitToday(b.dataset.hid)));
+    }
+
+    _journeyWerkstatt() {
+        const j = this._journey();
+        const editing = this.editingHabitId ? (j.habits || []).find(h => h.id === this.editingHabitId) : null;
+        const h = editing || {};
+        const domains = [['bewegung', '💪 Bewegung'], ['ernaehrung', '🥗 Ernährung'], ['yoga', '🧘 Yoga'], ['meditation', '🌬️ Meditation'], ['allgemein', '✨ Allgemein']];
+        return `
+        <div class="ss-panel">
+            <h2 style="margin:0 0 4px">🛠️ Gewohnheits-Werkstatt</h2>
+            <p class="sub" style="margin:0 0 14px">Designe deine Gewohnheit Schritt für Schritt. Du musst nicht alle Felder sofort füllen – jede Phase ergänzt eines.</p>
+            <div class="ks-form">
+                <label>Gewohnheit (Titel)<input id="kf-title" value="${this._esc(h.title || '')}" placeholder="z. B. Morgen-Kniebeugen"></label>
+                <label>Bereich<select id="kf-domain">${domains.map(d => `<option value="${d[0]}" ${(h.domain || 'bewegung') === d[0] ? 'selected' : ''}>${d[1]}</option>`).join('')}</select></label>
+                <label>🌱 Winzige Handlung<input id="kf-action" value="${this._esc(h.action || '')}" placeholder="z. B. 1 Kniebeuge"></label>
+                <label>⚓ Auslöser (nach welcher Routine?)<input id="kf-cue" value="${this._esc(h.cue || '')}" placeholder="z. B. nach dem Zähneputzen"></label>
+                <label>🎉 Sofort-Belohnung<input id="kf-reward" value="${this._esc(h.reward || '')}" placeholder="z. B. Faust ballen und lächeln"></label>
+                <label>🏠 Umgebung gestalten<input id="kf-env" value="${this._esc(h.env || '')}" placeholder="z. B. Sportschuhe bereitlegen"></label>
+                <label>🧱 Stapel-Schritt (was folgt danach?)<input id="kf-stack" value="${this._esc(h.stack || '')}" placeholder="z. B. danach 5 Liegestütze"></label>
+                <label>🪞 Identität<input id="kf-identity" value="${this._esc(h.identity || '')}" placeholder="Ich bin jemand, der …"></label>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">
+                <button class="ss-btn ss-btn-primary" id="kf-save"><i class="fas fa-check"></i> ${editing ? 'Änderungen speichern' : 'Gewohnheit anlegen'}</button>
+                ${editing ? `<button class="ss-btn ss-btn-ghost" id="kf-cancel">Abbrechen</button>` : ''}
+            </div>
+        </div>
+        ${(j.habits || []).length ? `
+        <div class="ss-panel">
+            <h3 style="margin:0 0 12px"><i class="fas fa-seedling"></i> Deine Gewohnheiten</h3>
+            <div class="ks-habit-list">
+                ${j.habits.map(hb => { const dm = KS_DISC_MAP[hb.domain]; const acc = dm ? dm.accent : '#34d399'; const done = (hb.days || []).includes(this._today()); return `
+                <div class="ks-habit-row" style="--accent:${acc}">
+                    <button class="chk ${done ? 'done' : ''}" data-hid="${hb.id}" title="Heute erledigt"><i class="fas ${done ? 'fa-circle-check' : 'fa-circle'}"></i></button>
+                    <div class="hbody">
+                        <div class="t">${this._esc(hb.title || hb.action || 'Gewohnheit')} <span class="streak">${this._habitStreak(hb)}🔥</span></div>
+                        <div class="s">${hb.cue ? '<i class="fas fa-anchor"></i> ' + this._esc(hb.cue) + ' → ' : ''}${this._esc(hb.action || '')}</div>
+                        ${hb.identity ? `<div class="idn">${this._esc(hb.identity)}</div>` : ''}
+                    </div>
+                    <div class="acts">
+                        <button class="ic-btn" data-edit="${hb.id}" title="Bearbeiten"><i class="fas fa-pen"></i></button>
+                        <button class="ic-btn" data-del="${hb.id}" title="Löschen"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`; }).join('')}
+            </div>
+        </div>` : ''}`;
+    }
+    _afterJourneyWerkstatt() {
+        const save = document.getElementById('kf-save');
+        if (save) save.addEventListener('click', () => this._saveHabit());
+        const cancel = document.getElementById('kf-cancel');
+        if (cancel) cancel.addEventListener('click', () => { this.editingHabitId = null; this.render(); });
+        document.querySelectorAll('.ks-habit-row .chk').forEach(b => b.addEventListener('click', () => this._toggleHabitToday(b.dataset.hid)));
+        document.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => { this.editingHabitId = b.dataset.edit; this.render(); window.scrollTo({ top: 0 }); }));
+        document.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => this._deleteHabit(b.dataset.del)));
+    }
+
+    _journeyWerkzeuge() {
+        return `
+        <div class="ss-panel ks-plan-hint" style="margin-bottom:16px"><i class="fas fa-lightbulb"></i> Werkzeuge unterstützen deine Reise: Ein Trainings- oder Ernährungsplan liefert <em>Inhalte</em>, auf die du die Veränderungs-Methode anwendest. Der Wandel selbst entsteht durch deine täglichen kleinen Schritte.</div>
         <div id="ks-plan-live" class="ks-plan-live"></div>
-        <h2 style="margin:8px 0 14px;font-size:20px">Programme &amp; Schwester-Schulen</h2>
+        <h3 style="margin:8px 0 12px"><i class="fas fa-toolbox"></i> Programme &amp; Schwester-Schulen</h3>
         <div class="ss-grid">
-            ${KS_LINKS.map(l => { const d = KS_DISC_MAP[l.disc]; return `
-            <a class="ss-sense-card ks-link-card" href="${l.href}" style="--accent:${d.accent};--accent-soft:${d.soft};--accent-glow:${d.glow}">
-                <div class="ss-sense-head">
-                    <div class="ss-sense-icon">${l.icon}</div>
-                    <div><div class="ss-sense-name">${l.title}</div></div>
-                    <i class="fas fa-arrow-up-right-from-square ss-sense-rank" style="font-size:15px"></i>
-                </div>
-                <p class="ss-sense-meta" style="margin:8px 0 0">${l.desc}</p>
-            </a>`; }).join('')}
+            ${KS_LINKS.map(l => { const d = KS_DISC_MAP[l.disc]; return `<a class="ss-sense-card ks-link-card" href="${l.href}" style="--accent:${d.accent};--accent-soft:${d.soft};--accent-glow:${d.glow}"><div class="ss-sense-head"><div class="ss-sense-icon">${l.icon}</div><div><div class="ss-sense-name">${l.title}</div></div><i class="fas fa-arrow-up-right-from-square ss-sense-rank" style="font-size:15px"></i></div><p class="ss-sense-meta" style="margin:8px 0 0">${l.desc}</p></a>`; }).join('')}
         </div>`;
     }
-    async _afterPlan() {
+    async _afterJourneyWerkzeuge() {
         const wrap = document.getElementById('ks-plan-live');
         if (!wrap) return;
         if (!this._isLoggedIn()) {
-            wrap.innerHTML = `<div class="ss-panel ks-plan-hint"><i class="fas fa-cloud"></i> Melde dich auf der Website an, damit deine erstellten Trainings- und Ernährungspläne hier geräteübergreifend erscheinen.</div>`;
+            wrap.innerHTML = `<div class="ss-panel ks-plan-hint"><i class="fas fa-cloud"></i> Melde dich an, damit erstellte Trainings- und Ernährungspläne hier erscheinen.</div>`;
             return;
         }
         wrap.innerHTML = `<div class="ss-panel ks-plan-hint"><i class="fas fa-circle-notch fa-spin"></i> Lade deine aktiven Pläne …</div>`;
         const panels = [];
-        try {
-            if (window.awsTrainingAPI) {
-                const plan = await window.awsTrainingAPI.getCurrentPlan().catch(() => null);
-                if (plan) panels.push(this._trainingPlanPanel(plan));
+        try { if (window.awsTrainingAPI) { const plan = await window.awsTrainingAPI.getCurrentPlan().catch(() => null); if (plan) panels.push(this._trainingPlanPanel(plan)); } } catch (e) { /* ignore */ }
+        try { if (window.awsNutritionAPI) { const np = await window.awsNutritionAPI.getCurrentPlan().catch(() => null); let s = null; try { s = await window.awsNutritionAPI.getTodaysSummary(); } catch (e) { /* ignore */ } if (np || s) panels.push(this._nutritionPlanPanel(np, s)); } } catch (e) { /* ignore */ }
+        wrap.innerHTML = panels.length ? panels.join('') : `<div class="ss-panel ks-plan-hint"><i class="fas fa-seedling"></i> Noch kein aktiver Plan erstellt.</div>`;
+    }
+
+    /* ---------------- Reise-Logik ---------------- */
+    _journey() {
+        if (!this.state.journey) this.state.journey = { phase: 0, ack: {}, habits: [], reflections: [] };
+        const j = this.state.journey;
+        if (!j.ack) j.ack = {};
+        if (!Array.isArray(j.habits)) j.habits = [];
+        if (!Array.isArray(j.reflections)) j.reflections = [];
+        if (typeof j.phase !== 'number') j.phase = 0;
+        return j;
+    }
+    _reqMet(req) {
+        const j = this._journey();
+        const H = j.habits;
+        switch (req) {
+            case 'action': return H.some(h => h.action);
+            case 'cue': return H.some(h => h.cue);
+            case 'reward': return H.some(h => h.reward);
+            case 'env': return H.some(h => h.env);
+            case 'stack': return H.length >= 2 || H.some(h => h.stack);
+            case 'identity': return H.some(h => h.identity);
+            case 'reflect': return j.reflections.some(r => (r.phase || 0) >= 6);
+            case 'none': return true;
+            default: return true;
+        }
+    }
+    _integrationDays() {
+        const j = this._journey();
+        const set = new Set();
+        j.habits.forEach(h => (h.days || []).forEach(d => set.add(d)));
+        return set.size;
+    }
+    _habitStreak(h) {
+        const setd = new Set(h.days || []);
+        if (!setd.size) return 0;
+        let cur = this._today();
+        if (!setd.has(cur)) cur = this._dayOffset(-1);
+        let streak = 0;
+        while (setd.has(cur)) { streak++; cur = new Date(new Date(cur).getTime() - 86400000).toISOString().slice(0, 10); }
+        return streak;
+    }
+    _saveHabit() {
+        const g = id => document.getElementById(id);
+        const get = id => (g(id) ? g(id).value.trim() : '');
+        const title = get('kf-title');
+        const action = get('kf-action');
+        if (!title && !action) { this._toast('Bitte mindestens Titel oder Handlung angeben', 'error'); return; }
+        const j = this._journey();
+        const data = { title, domain: (g('kf-domain') ? g('kf-domain').value : 'bewegung'), action, cue: get('kf-cue'), reward: get('kf-reward'), env: get('kf-env'), stack: get('kf-stack'), identity: get('kf-identity') };
+        if (this.editingHabitId) {
+            const h = j.habits.find(x => x.id === this.editingHabitId);
+            if (h) Object.assign(h, data);
+            this.editingHabitId = null;
+            this._toast('Gewohnheit aktualisiert', 'success');
+        } else {
+            j.habits.push(Object.assign({ id: 'h' + Date.now(), createdAt: this._today(), days: [] }, data));
+            this._toast('Gewohnheit angelegt', 'success');
+        }
+        this._save();
+        this.render();
+    }
+    _deleteHabit(id) {
+        const j = this._journey();
+        j.habits = j.habits.filter(h => h.id !== id);
+        if (this.editingHabitId === id) this.editingHabitId = null;
+        this._save();
+        this.render();
+    }
+    _toggleHabitToday(id) {
+        const j = this._journey();
+        const h = j.habits.find(x => x.id === id);
+        if (!h) return;
+        if (!Array.isArray(h.days)) h.days = [];
+        const today = this._today();
+        const i = h.days.indexOf(today);
+        if (i >= 0) {
+            h.days.splice(i, 1);
+        } else {
+            h.days.push(today);
+            h.lastDone = today;
+            const dm = KS_DISC_MAP[h.domain];
+            if (dm) {
+                this._registerPracticeDay(1);
+                this.state.disc[h.domain].xp += 6;
+                this.state.log.unshift({ id: Date.now(), date: today, disc: h.domain, trainer: 'Gewohnheit: ' + (h.title || h.action || ''), score: 100, detail: 'Veränderungs-Reise', xp: 6 });
+                this.state.log = this.state.log.slice(0, 120);
             }
-        } catch (e) { /* ignore */ }
-        try {
-            if (window.awsNutritionAPI) {
-                const nplan = await window.awsNutritionAPI.getCurrentPlan().catch(() => null);
-                let summary = null;
-                try { summary = await window.awsNutritionAPI.getTodaysSummary(); } catch (e) { /* ignore */ }
-                if (nplan || summary) panels.push(this._nutritionPlanPanel(nplan, summary));
-            }
-        } catch (e) { /* ignore */ }
-        wrap.innerHTML = panels.length
-            ? panels.join('')
-            : `<div class="ss-panel ks-plan-hint"><i class="fas fa-seedling"></i> Noch kein aktiver Plan. Erstelle unten deinen ersten Trainings- oder Ernährungsplan – er erscheint dann automatisch hier.</div>`;
+            this._haptic('ok');
+            this._chime(false);
+        }
+        this._save();
+        this.render();
+    }
+    _advancePhase() {
+        const j = this._journey();
+        const idx = Math.min(j.phase || 0, KS_JOURNEY.length - 1);
+        if (idx >= KS_JOURNEY.length - 1) return;
+        if (!j.ack[idx] || !this._reqMet(KS_JOURNEY[idx].req)) { this._toast('Aufgabe und Bestätigung zuerst abschließen', 'error'); return; }
+        j.phase = idx + 1;
+        this._save();
+        this._haptic('level');
+        this._celebrate();
+        this._toast('Neue Phase: ' + KS_JOURNEY[j.phase].title, 'gold');
+        this.render();
+    }
+    _reflectPrompt() {
+        const txt = window.prompt('Wie steigst du nach einem verpassten Tag wieder ein? (Dein Wiedereinstiegs-Plan)');
+        if (txt && txt.trim()) {
+            const j = this._journey();
+            j.reflections.unshift({ id: Date.now(), date: this._today(), phase: Math.min(j.phase || 0, KS_JOURNEY.length - 1), text: txt.trim() });
+            this._save();
+            this._toast('Reflexion gespeichert', 'success');
+            this.render();
+        }
     }
     _trainingPlanPanel(plan) {
         const d = KS_DISC_MAP.bewegung;
