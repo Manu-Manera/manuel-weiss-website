@@ -1,0 +1,57 @@
+/* =========================================================
+   Die Schule des Körpers – spezifische Styles.
+   Baut auf sinnesschule.css auf (gleiche Variablen & ss-* Klassen).
+   ========================================================= */
+.ks-body .ss-brand-mark { color: #34d399; }
+:root { --ks-accent: #34d399; }
+
+/* Tagesempfehlung */
+.ks-today { margin-bottom: 20px; }
+.ks-today-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+}
+.ks-today-head h3 { font-size: 19px; }
+
+/* Brücke zu anderen Schulen */
+.ks-bridge { margin-top: 22px; }
+.ks-bridge-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.ks-bridge-row .ss-btn { text-decoration: none; }
+
+/* Plan-/Link-Karten */
+.ks-link-card { text-decoration: none; color: inherit; display: block; }
+.ks-link-card:hover { transform: translateY(-3px); }
+
+/* Schrittzähler in geführten Sessions */
+.ks-step-count {
+    text-align: center; color: var(--ss-text-dim); font-size: 14px; font-weight: 600;
+    margin-top: 10px; letter-spacing: .02em;
+}
+
+/* Habit-Checkliste */
+.ks-habits { display: flex; flex-direction: column; gap: 10px; }
+.ks-habit {
+    display: flex; align-items: center; gap: 14px; cursor: pointer;
+    background: var(--ss-bg-soft); border: 1px solid var(--ss-line); border-radius: 14px;
+    padding: 14px 16px; transition: border-color .15s, background .15s;
+}
+.ks-habit:hover { border-color: var(--accent, var(--ks-accent)); }
+.ks-habit input { display: none; }
+.ks-habit .box {
+    width: 26px; height: 26px; flex-shrink: 0; border-radius: 8px;
+    border: 2px solid var(--ss-line); display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 13px; transition: all .15s;
+}
+.ks-habit .box i { opacity: 0; transform: scale(.5); transition: all .15s; }
+.ks-habit .txt { font-size: 15px; color: var(--ss-text); line-height: 1.4; }
+.ks-habit.checked {
+    background: color-mix(in srgb, var(--accent, var(--ks-accent)) 12%, var(--ss-bg-soft));
+    border-color: var(--accent, var(--ks-accent));
+}
+.ks-habit.checked .box {
+    background: var(--accent, var(--ks-accent)); border-color: var(--accent, var(--ks-accent));
+}
+.ks-habit.checked .box i { opacity: 1; transform: scale(1); }
+.ks-habit.checked .txt { color: var(--ss-text); }
+
+/* Atem-Orb Halten-Zustand (zwischen ein/aus) */
+.ss-breath-orb.hold { transform: scale(1.1); }

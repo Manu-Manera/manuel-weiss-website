@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Die Schule des Körpers | Manuel Weiss</title>
+    <meta name="description" content="Ein täglicher Trainingsweg für deinen Körper – Bewegung & Kraft, Ernährung, Yoga und Meditation & Atem in kleinen Schritten, verbunden mit deinem Geist-Training.">
+    <link rel="stylesheet" href="../sinnesschule/sinnesschule.css">
+    <link rel="stylesheet" href="koerperschule.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="gm-body ks-body">
+
+    <!-- Sync-Status Badge -->
+    <div class="ss-sync-badge" id="ss-sync-badge" title="Speicher-Status">
+        <i class="fas fa-cloud-slash"></i>
+        <span id="ss-sync-text">Lokal gespeichert</span>
+    </div>
+
+    <header class="ss-topbar">
+        <button class="ss-back" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
+            <i class="fas fa-arrow-left"></i> Übersicht
+        </button>
+        <div class="ss-brand">
+            <span class="ss-brand-mark">体</span>
+            <span class="ss-brand-name">Die Schule des Körpers</span>
+        </div>
+        <nav class="ss-nav" id="ss-nav">
+            <button class="ss-nav-btn active" data-view="dashboard"><i class="fas fa-heart-pulse"></i><span>Dojo</span></button>
+            <button class="ss-nav-btn" data-view="practice"><i class="fas fa-dumbbell"></i><span>Training</span></button>
+            <button class="ss-nav-btn" data-view="plan"><i class="fas fa-clipboard-list"></i><span>Pläne</span></button>
+            <button class="ss-nav-btn" data-view="journal"><i class="fas fa-feather"></i><span>Logbuch</span></button>
+        </nav>
+    </header>
+
+    <main id="ss-main" class="ss-main">
+        <div class="ss-loading"><i class="fas fa-circle-notch fa-spin"></i> Lade deinen Weg …</div>
+    </main>
+
+    <div id="ss-toast" class="ss-toast"></div>
+
+    <!-- AWS Konfiguration & Cloud-Persistenz -->
+    <script>
+        window.AWS_CONFIG = {
+            region: 'eu-central-1',
+            userPoolId: 'eu-central-1_8gP4gLK9r',
+            clientId: '7kc5tt6a23fgh53d60vkefm812'
+        };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
+    <script src="/js/aws-profile-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+
+    <!-- App -->
+    <script src="koerperschule.js"></script>
+</body>
+</html>

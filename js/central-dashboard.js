@@ -96,7 +96,7 @@
         return d.toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' });
     }
 
-    const EXCLUDE_FROM_PERSONALITY = new Set(['sinnesschule', 'gedaechtnisschule']);
+    const EXCLUDE_FROM_PERSONALITY = new Set(['sinnesschule', 'gedaechtnisschule', 'koerperschule']);
 
     /* ---------------- Dashboard ---------------- */
     class CentralDashboard {
@@ -183,6 +183,20 @@
                 mem = { xp, streak: memState.streak || 0, disc: activeDisc, due, today: memState.lastPracticeDate === new Date().toISOString().slice(0, 10), ts: mwrap && mwrap.updatedAt };
             }
 
+            // Körpertraining
+            let koer = null;
+            const kwrap = workflows.koerperschule && workflows.koerperschule.results;
+            const koerState = kwrap ? (kwrap.results || (kwrap.startedAt ? kwrap : null)) : null;
+            if (koerState && koerState.disc) {
+                let xp = 0, activeDisc = 0;
+                Object.keys(koerState.disc).forEach(id => {
+                    const x = (koerState.disc[id] && koerState.disc[id].xp) || 0;
+                    xp += x;
+                    if (x > 0) activeDisc++;
+                });
+                koer = { xp, streak: koerState.streak || 0, disc: activeDisc, sessions: koerState.totalSessions || 0, today: koerState.lastPracticeDate === new Date().toISOString().slice(0, 10), ts: kwrap && kwrap.updatedAt };
+            }
+
             // Bewerbungen
             const apps = (all && Array.isArray(all.applications)) ? all.applications : [];
             const appOpen = apps.filter(a => {
@@ -199,7 +213,7 @@
 
             recent.sort((a, b) => String(b.ts || '').localeCompare(String(a.ts || '')));
 
-            return { pStarted, pCompleted, ss, mem, apps, appOpen, voice, lastActive, recent: recent.slice(0, 6) };
+            return { pStarted, pCompleted, ss, mem, koer, apps, appOpen, voice, lastActive, recent: recent.slice(0, 6) };
         }
 
         renderLoading() {
@@ -255,9 +269,21 @@
             ];
             const memT = memTrainers[doy % memTrainers.length];
 
+            const bodyTrainers = [
+                { id: 'micro_move', label: '5-Minuten-Energie: kurzer Bewegungs-Boost' },
+                { id: 'box_breath', label: 'Box-Atmung: beruhige Körper & Geist' },
+                { id: 'sonnengruss', label: 'Sonnengruß: ein fließender Yoga-Flow' },
+                { id: 'tages_check', label: 'Tages-Check Ernährung: kleine Siege abhaken' },
+                { id: 'mobility', label: 'Gelenk-Mobilität: den Körper aufwecken' },
+                { id: 'fokus_atem', label: 'Atem-Fokus: eine stille Meditation' }
+            ];
+            const bodyT = bodyTrainers[doy % bodyTrainers.length];
+
             const missions = [
                 { key: 'mem', icon: '🧠', accent: '#818cf8', title: 'Gedächtnis', task: memT.label,
                   href: 'methods/gedaechtnisschule/index-gedaechtnisschule.html?start=' + memT.id, done: !!(d.mem && d.mem.today) },
+                { key: 'koer', icon: '💪', accent: '#34d399', title: 'Körper', task: bodyT.label,
+                  href: 'methods/koerperschule/index-koerperschule.html?start=' + bodyT.id, done: !!(d.koer && d.koer.today) },
                 { key: 'ss', icon: '✋', accent: '#e0b04a', title: 'Sinne', task: 'Eine Wahrnehmungs-Übung in der Schule der Sinne',
                   href: 'methods/sinnesschule/index-sinnesschule.html', done: !!(d.ss && d.ss.today) },
                 { key: 'voice', icon: '🎤', accent: '#ec4899', title: 'Stimme', task: 'Eine kurze Einheit im Stimmtraining',
@@ -282,8 +308,8 @@
             <div class="cd-daily ${allDone ? 'complete' : ''}">
                 <div class="cd-daily-top">
                     <div>
-                        <div class="cd-daily-kicker"><i class="fas fa-bolt"></i> Daily Brain · ${new Date().toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long' })}</div>
-                        <h2 class="cd-daily-title">${allDone ? 'Heute gemeistert – stark! 🎉' : 'Deine 3 Mini-Aufgaben für heute'}</h2>
+                        <div class="cd-daily-kicker"><i class="fas fa-bolt"></i> Tägliches Ritual · Körper &amp; Geist · ${new Date().toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long' })}</div>
+                        <h2 class="cd-daily-title">${allDone ? 'Heute rundum gemeistert – stark! 🎉' : 'Deine ' + missions.length + ' Mini-Rituale für heute'}</h2>
                     </div>
                     <div class="cd-daily-streak" title="Tage in Folge mit mindestens 2 erledigten Aufgaben">
                         <span class="n">${streak}</span><span class="l">🔥 Tage</span>
@@ -339,6 +365,17 @@
                     { v: num(d.mem.due), l: 'Karten fällig' }
                 ] : [{ v: '0', l: 'noch nicht gestartet' }],
                 cta: d.mem ? 'Weiter trainieren' : 'Jetzt starten', href: 'methods/gedaechtnisschule/index-gedaechtnisschule.html'
+            }));
+
+            cards.push(this.card({
+                accent: '#34d399', icon: 'fa-heart-pulse', title: 'Körpertraining',
+                sub: d.koer ? 'Die Schule des Körpers' : 'Bewegung, Ernährung, Yoga & Atem',
+                stats: d.koer ? [
+                    { v: num(d.koer.xp), l: 'Vitalkraft' },
+                    { v: (d.koer.streak > 0 ? '🔥 ' : '') + num(d.koer.streak), l: 'Tage Streak' },
+                    { v: num(d.koer.disc) + '/4', l: 'Disziplinen' }
+                ] : [{ v: '0', l: 'noch nicht gestartet' }],
+                cta: d.koer ? 'Weiter trainieren' : 'Jetzt starten', href: 'methods/koerperschule/index-koerperschule.html'
             }));
 
             cards.push(this.card({
