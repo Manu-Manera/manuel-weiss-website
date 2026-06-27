@@ -47,8 +47,15 @@
   }
 
   function isLoggedIn() {
-    if (global.awsAuth && global.awsAuth.isLoggedIn && global.awsAuth.isLoggedIn()) return true;
-    if (global.realUserAuth && global.realUserAuth.isLoggedIn && global.realUserAuth.isLoggedIn()) return true;
+    // Wenn ein Auth-System vorhanden ist, ist dessen Urteil maßgeblich (konsistent
+    // mit der Navigation). Nur wenn KEIN Auth-System geladen ist (z. B. interne
+    // Admin-Seiten), greift der Token-Fallback aus dem localStorage.
+    if (global.awsAuth && typeof global.awsAuth.isLoggedIn === 'function') {
+      return !!global.awsAuth.isLoggedIn();
+    }
+    if (global.realUserAuth && typeof global.realUserAuth.isLoggedIn === 'function') {
+      return !!global.realUserAuth.isLoggedIn();
+    }
     return !!getIdToken();
   }
 
