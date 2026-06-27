@@ -1,0 +1,380 @@
+/* =====================================================================
+   Method-Kit · Helles Design-System für die Persönlichkeitsentwicklungs-
+   Methoden. Modern, hell, ruhig – die helle Schwester der "Schulen".
+   Jede Methode setzt nur --mk-accent (+ optional --mk-accent-2) und nutzt
+   die Bausteine darunter.
+   ===================================================================== */
+
+:root {
+    --mk-bg: #f6f8fc;
+    --mk-bg-grad: radial-gradient(1200px 600px at 85% -10%, #eef2ff 0%, rgba(238,242,255,0) 60%),
+                  radial-gradient(900px 500px at 0% 0%, #ecfeff 0%, rgba(236,254,255,0) 55%),
+                  #f6f8fc;
+    --mk-surface: #ffffff;
+    --mk-surface-2: #f8fafc;
+    --mk-text: #0f172a;
+    --mk-muted: #64748b;
+    --mk-faint: #94a3b8;
+    --mk-line: #e6eaf1;
+    --mk-accent: #6366f1;
+    --mk-accent-2: #8b5cf6;
+    --mk-accent-soft: rgba(99, 102, 241, 0.10);
+    --mk-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
+    --mk-shadow-lg: 0 18px 48px rgba(15, 23, 42, 0.12);
+    --mk-radius: 18px;
+    --mk-radius-sm: 12px;
+    --mk-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body.mk-body {
+    margin: 0;
+    font-family: var(--mk-font);
+    color: var(--mk-text);
+    background: var(--mk-bg-grad);
+    background-attachment: fixed;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+}
+
+/* ---------------- Topbar ---------------- */
+.mk-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px clamp(16px, 4vw, 40px);
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(14px) saturate(1.3);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    border-bottom: 1px solid var(--mk-line);
+}
+.mk-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--mk-line);
+    background: var(--mk-surface);
+    color: var(--mk-muted);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .16s, color .16s, transform .12s;
+}
+.mk-back:hover { color: var(--mk-text); border-color: var(--mk-accent); transform: translateX(-2px); }
+.mk-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 15px;
+}
+.mk-brand .mk-brand-icon {
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 9px;
+    background: linear-gradient(135deg, var(--mk-accent), var(--mk-accent-2));
+    color: #fff;
+    font-size: 15px;
+}
+.mk-topbar-spacer { flex: 1; }
+
+/* ---------------- Shell / Layout ---------------- */
+.mk-shell {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: clamp(20px, 4vw, 36px) clamp(16px, 4vw, 40px) 80px;
+}
+
+/* ---------------- Hero ---------------- */
+.mk-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--mk-radius);
+    padding: clamp(22px, 4vw, 36px);
+    background:
+        linear-gradient(135deg, var(--mk-accent-soft), rgba(255,255,255,0)) ,
+        var(--mk-surface);
+    border: 1px solid var(--mk-line);
+    box-shadow: var(--mk-shadow);
+    margin-bottom: 22px;
+}
+.mk-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto auto;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle at 70% 30%, var(--mk-accent), transparent 70%);
+    opacity: 0.12;
+    pointer-events: none;
+}
+.mk-kicker {
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--mk-accent);
+    margin-bottom: 8px;
+}
+.mk-hero h1 {
+    margin: 0 0 10px;
+    font-size: clamp(24px, 4.5vw, 34px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+.mk-hero p { margin: 0; color: var(--mk-muted); max-width: 60ch; }
+.mk-hero-icon {
+    width: 56px; height: 56px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--mk-accent), var(--mk-accent-2));
+    color: #fff;
+    font-size: 26px;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 20px var(--mk-accent-soft);
+}
+.mk-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.mk-badge {
+    font-size: 12px; font-weight: 600;
+    color: var(--mk-accent);
+    background: var(--mk-accent-soft);
+    border-radius: 999px;
+    padding: 5px 12px;
+}
+
+/* ---------------- Progress / Steps ---------------- */
+.mk-progress {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 4px 2px 14px;
+    margin-bottom: 8px;
+    scrollbar-width: none;
+}
+.mk-progress::-webkit-scrollbar { display: none; }
+.mk-pstep {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 92px;
+    text-align: center;
+    cursor: pointer;
+    opacity: .55;
+    transition: opacity .16s;
+}
+.mk-pstep .dot {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    background: var(--mk-surface);
+    border: 2px solid var(--mk-line);
+    color: var(--mk-muted);
+    transition: all .18s;
+}
+.mk-pstep .lbl { font-size: 11px; font-weight: 600; color: var(--mk-faint); line-height: 1.25; }
+.mk-pstep.done { opacity: 1; }
+.mk-pstep.done .dot { background: var(--mk-accent-soft); border-color: var(--mk-accent); color: var(--mk-accent); }
+.mk-pstep.active { opacity: 1; }
+.mk-pstep.active .dot {
+    background: linear-gradient(135deg, var(--mk-accent), var(--mk-accent-2));
+    border-color: transparent; color: #fff;
+    box-shadow: 0 0 0 4px var(--mk-accent-soft);
+}
+.mk-pstep.active .lbl { color: var(--mk-text); }
+
+.mk-step { display: none; animation: mkfade .35s ease; }
+.mk-step.active { display: block; }
+@keyframes mkfade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ---------------- Cards / Panels ---------------- */
+.mk-card, .mk-panel {
+    background: var(--mk-surface);
+    border: 1px solid var(--mk-line);
+    border-radius: var(--mk-radius);
+    box-shadow: var(--mk-shadow);
+    padding: clamp(18px, 3vw, 26px);
+    margin-bottom: 18px;
+}
+.mk-card h2, .mk-panel h2 { margin: 0 0 6px; font-size: 20px; font-weight: 700; }
+.mk-card h3, .mk-panel h3 { margin: 0 0 8px; font-size: 16px; font-weight: 700; }
+.mk-sub { color: var(--mk-muted); margin: 0 0 18px; }
+
+.mk-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.mk-grid-2 { display: grid; gap: 14px; grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 600px) { .mk-grid-2 { grid-template-columns: 1fr; } }
+
+/* ---------------- Selectable option cards ---------------- */
+.mk-option {
+    text-align: left;
+    background: var(--mk-surface);
+    border: 1.5px solid var(--mk-line);
+    border-radius: var(--mk-radius-sm);
+    padding: 16px;
+    cursor: pointer;
+    transition: border-color .16s, transform .12s, box-shadow .16s, background .16s;
+    font: inherit;
+    color: inherit;
+    display: block;
+    width: 100%;
+}
+.mk-option:hover { border-color: var(--mk-accent); transform: translateY(-2px); box-shadow: var(--mk-shadow); }
+.mk-option.selected {
+    border-color: var(--mk-accent);
+    background: var(--mk-accent-soft);
+}
+.mk-option .ic { font-size: 24px; margin-bottom: 8px; display: block; }
+.mk-option .t { font-weight: 700; }
+.mk-option .d { font-size: 13px; color: var(--mk-muted); margin-top: 3px; }
+
+/* ---------------- Fields ---------------- */
+.mk-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.mk-field > label, .mk-label { font-size: 14px; font-weight: 600; color: var(--mk-text); }
+.mk-field .hint { font-size: 12px; color: var(--mk-faint); }
+.mk-input, .mk-textarea, .mk-select {
+    width: 100%;
+    background: var(--mk-surface-2);
+    border: 1.5px solid var(--mk-line);
+    border-radius: var(--mk-radius-sm);
+    padding: 11px 14px;
+    font: inherit;
+    font-size: 15px;
+    color: var(--mk-text);
+    transition: border-color .16s, background .16s;
+}
+.mk-textarea { min-height: 96px; resize: vertical; }
+.mk-input:focus, .mk-textarea:focus, .mk-select:focus {
+    outline: none;
+    border-color: var(--mk-accent);
+    background: #fff;
+    box-shadow: 0 0 0 3px var(--mk-accent-soft);
+}
+.mk-input::placeholder, .mk-textarea::placeholder { color: var(--mk-faint); }
+
+/* ---------------- Range slider ---------------- */
+.mk-range-wrap { display: flex; align-items: center; gap: 12px; }
+.mk-range { flex: 1; accent-color: var(--mk-accent); height: 6px; }
+.mk-range-val {
+    min-width: 38px; text-align: center;
+    font-weight: 700; color: var(--mk-accent);
+    background: var(--mk-accent-soft); border-radius: 8px; padding: 4px 8px;
+}
+
+/* ---------------- Buttons ---------------- */
+.mk-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    border: none;
+    border-radius: 999px;
+    padding: 11px 22px;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .12s, box-shadow .16s, background .16s, border-color .16s, opacity .16s;
+}
+.mk-btn:active { transform: scale(.97); }
+.mk-btn-primary {
+    background: linear-gradient(135deg, var(--mk-accent), var(--mk-accent-2));
+    color: #fff;
+    box-shadow: 0 8px 18px var(--mk-accent-soft);
+}
+.mk-btn-primary:hover { box-shadow: var(--mk-shadow-lg); }
+.mk-btn-primary:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+.mk-btn-ghost { background: var(--mk-accent-soft); color: var(--mk-accent); }
+.mk-btn-ghost:hover { background: color-mix(in srgb, var(--mk-accent) 18%, #fff); }
+.mk-btn-outline { background: var(--mk-surface); border: 1.5px solid var(--mk-line); color: var(--mk-text); }
+.mk-btn-outline:hover { border-color: var(--mk-accent); color: var(--mk-accent); }
+.mk-btn-outline:disabled { opacity: .4; cursor: not-allowed; }
+.mk-btn-danger { background: #fef2f2; color: #dc2626; }
+.mk-btn-sm { padding: 7px 14px; font-size: 13px; }
+
+/* ---------------- Step navigation bar ---------------- */
+.mk-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 10px;
+}
+.mk-nav .info { font-size: 14px; color: var(--mk-muted); font-weight: 600; }
+
+/* ---------------- Result / highlight box ---------------- */
+.mk-result {
+    background: linear-gradient(135deg, var(--mk-accent-soft), rgba(255,255,255,0));
+    border: 1px solid var(--mk-accent);
+    border-radius: var(--mk-radius-sm);
+    padding: 16px 18px;
+    color: var(--mk-text);
+}
+.mk-result h4 { margin: 0 0 6px; color: var(--mk-accent); font-size: 14px; }
+
+/* ---------------- Chips / tags ---------------- */
+.mk-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.mk-chip {
+    border: 1.5px solid var(--mk-line);
+    background: var(--mk-surface);
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 14px; font-weight: 600;
+    color: var(--mk-muted);
+    cursor: pointer;
+    transition: all .14s;
+}
+.mk-chip:hover { border-color: var(--mk-accent); color: var(--mk-accent); }
+.mk-chip.selected { background: var(--mk-accent); border-color: var(--mk-accent); color: #fff; }
+
+/* ---------------- List items (editable rows) ---------------- */
+.mk-row {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--mk-surface-2);
+    border: 1px solid var(--mk-line);
+    border-radius: var(--mk-radius-sm);
+    padding: 10px 12px;
+    margin-bottom: 8px;
+}
+.mk-row .grow { flex: 1; min-width: 0; }
+.mk-iconbtn {
+    border: none; background: transparent; cursor: pointer;
+    color: var(--mk-faint); width: 32px; height: 32px; border-radius: 8px;
+    transition: background .14s, color .14s;
+}
+.mk-iconbtn:hover { background: var(--mk-line); color: var(--mk-text); }
+
+/* ---------------- Empty state ---------------- */
+.mk-empty {
+    text-align: center; color: var(--mk-faint);
+    padding: 24px; border: 1.5px dashed var(--mk-line); border-radius: var(--mk-radius-sm);
+}
+
+/* ---------------- Toast ---------------- */
+.mk-toast {
+    position: fixed;
+    left: 50%; bottom: 26px;
+    transform: translateX(-50%) translateY(20px);
+    background: #0f172a; color: #fff;
+    padding: 12px 20px; border-radius: 999px;
+    font-size: 14px; font-weight: 600;
+    box-shadow: var(--mk-shadow-lg);
+    opacity: 0; pointer-events: none;
+    transition: opacity .2s, transform .2s;
+    z-index: 1000;
+}
+.mk-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.mk-toast.success { background: #059669; }
+.mk-toast.error { background: #dc2626; }
+
+/* ---------------- Save badge ---------------- */
+.mk-savebadge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600; color: var(--mk-faint);
+}
+.mk-savebadge i { color: var(--mk-accent); }

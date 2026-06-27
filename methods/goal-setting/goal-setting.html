@@ -1,317 +1,317 @@
-<div class="workflow-container">
-    <div class="workflow-header">
-        <button class="btn btn-secondary" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
-            <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
-        </button>
-    </div>
-    <div class="workflow-intro">
-        <h3>Ziel-Setting: Erreiche deine Träume mit der SMART-Methode</h3>
-        <p>Setze dir klare, erreichbare Ziele und entwickle einen konkreten Aktionsplan. Mit der bewährten SMART-Methode und modernen Zielsetzungstechniken wirst du deine Ziele systematisch erreichen.</p>
-        <div class="workflow-features">
-            <span class="feature-badge">SMART-Methode</span>
-            <span class="feature-badge">Aktionsplan</span>
-            <span class="feature-badge">Habit-Stacking</span>
-            <span class="feature-badge">Progress-Tracking</span>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ziel-Setting (SMART) | Manuel Weiss</title>
+    <meta name="description" content="Setze dir klare, erreichbare Ziele mit der SMART-Methode – Schritt für Schritt vom Wunsch zum konkreten Aktionsplan und festen Gewohnheiten.">
+    <link rel="stylesheet" href="../_kit/method-light.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --mk-accent: #f59e0b; --mk-accent-2: #f97316; --mk-accent-soft: rgba(245,158,11,.12); }
+    </style>
+</head>
+<body class="mk-body">
+
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
+        <div class="mk-brand">
+            <span class="mk-brand-icon"><i class="fas fa-bullseye"></i></span>
+            <span>Ziel-Setting</span>
         </div>
-    
-    <div class="workflow-progress">
-        <div class="progress-step active" data-step="1">
-            <div class="step-number">1</div>
-            <div class="step-title">Ziel-Identifikation</div>
-        <div class="progress-step" data-step="2">
-            <div class="step-number">2</div>
-            <div class="step-title">SMART-Formulierung</div>
-        <div class="progress-step" data-step="3">
-            <div class="step-number">3</div>
-            <div class="step-title">Aktionsplan</div>
-        <div class="progress-step" data-step="4">
-            <div class="step-number">4</div>
-            <div class="step-title">Habit-Stacking</div>
-        <div class="progress-step" data-step="5">
-            <div class="step-number">5</div>
-            <div class="step-title">Progress-Tracking</div>
-        <div class="progress-step" data-step="6">
-            <div class="step-number">6</div>
-            <div class="step-title">Ziel-Review</div>
-    <!-- Step 1: Ziel-Identifikation -->
-    <div class="workflow-step active" data-step="1">
-        <div class="step-header">
-            <h3>Schritt 1: Ziel-Identifikation</h3>
-            <p>Identifiziere deine wichtigsten Ziele in verschiedenen Lebensbereichen. Nutze die Ziel-Kategorien als Orientierung.</p>
-        
-        <div class="goal-identification-tools">
-            <div class="goal-categories">
-                <h4>🎯 Ziel-Kategorien</h4>
-                <div class="category-grid">
-                    <div class="goal-category" data-category="beruf">
-                        <div class="category-icon">💼</div>
-                        <h5>Beruf & Karriere</h5>
-                        <p>Ziele für deine berufliche Entwicklung</p>
-                    </div>
-                    <div class="goal-category" data-category="gesundheit">
-                        <div class="category-icon">💪</div>
-                        <h5>Gesundheit & Fitness</h5>
-                        <p>Ziele für deine körperliche und mentale Gesundheit</p>
-                    <div class="goal-category" data-category="beziehungen">
-                        <div class="category-icon">❤️</div>
-                        <h5>Beziehungen</h5>
-                        <p>Ziele für Familie, Freunde und Partnerschaft</p>
-                    <div class="goal-category" data-category="finanzen">
-                        <div class="category-icon">💰</div>
-                        <h5>Finanzen</h5>
-                        <p>Ziele für deine finanzielle Situation</p>
-                    <div class="goal-category" data-category="bildung">
-                        <div class="category-icon">📚</div>
-                        <h5>Bildung & Lernen</h5>
-                        <p>Ziele für deine persönliche Weiterbildung</p>
-                    <div class="goal-category" data-category="hobby">
-                        <div class="category-icon">🎨</div>
-                        <h5>Hobbys & Interessen</h5>
-                        <p>Ziele für deine Freizeit und Leidenschaften</p>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-bullseye"></i></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <h1>Vom Wunsch zum klaren Ziel</h1>
+            <p>Mit der bewährten SMART-Methode formst du aus einem vagen Wunsch ein präzises Ziel, einen konkreten Aktionsplan und feste Gewohnheiten – Schritt für Schritt.</p>
+            <div class="mk-badges">
+                <span class="mk-badge">SMART-Methode</span>
+                <span class="mk-badge">Aktionsplan</span>
+                <span class="mk-badge">Habit-Stacking</span>
+            </div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <!-- Schritt 1: Ziel wählen -->
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Welches Ziel willst du angehen?</h2>
+                <p class="mk-sub">Wähle einen Lebensbereich und beschreibe, was du dir wünschst – noch ganz frei.</p>
+                <label class="mk-label">Lebensbereich</label>
+                <div class="mk-chips" id="gs-cats" style="margin:8px 0 18px;"></div>
+                <div class="mk-field">
+                    <label>Mein Ziel (in einem Satz)</label>
+                    <input class="mk-input" data-mk-field="title" placeholder="z. B. „Ich möchte einen Halbmarathon laufen"">
+                </div>
+                <div class="mk-field">
+                    <label>Warum ist mir das wichtig?</label>
+                    <textarea class="mk-textarea" data-mk-field="why" placeholder="Was verändert sich in deinem Leben, wenn du es erreichst? Diese Motivation trägt dich durch schwere Tage."></textarea>
                 </div>
             </div>
-            
-            <div class="goals-summary">
-                <h4>📝 Deine Ziele</h4>
-                <div class="goals-list" id="goals-list">
-                    <div class="no-goals">
-                        <p>Klicke auf eine Kategorie, um dein erstes Ziel hinzuzufügen.</p>
-    <!-- Step 2: SMART-Formulierung -->
-    <div class="workflow-step" data-step="2">
-            <h3>Schritt 2: SMART-Formulierung</h3>
-            <p>Formuliere deine Ziele nach der SMART-Methode: Spezifisch, Messbar, Attraktiv, Realistisch, Terminiert.</p>
-        <div class="smart-goals">
-            <div class="smart-intro">
-                <h4>🎯 SMART-Methode</h4>
-                <p>Die SMART-Methode hilft dir, deine Ziele klar und erreichbar zu formulieren.</p>
-            <div class="smart-explanation">
-                <div class="smart-letter">
-                    <div class="letter">S</div>
-                    <div class="letter-content">
-                        <h5>Spezifisch</h5>
-                        <p>Was genau willst du erreichen? Je spezifischer, desto besser.</p>
-                    <div class="letter">M</div>
-                        <h5>Messbar</h5>
-                        <p>Wie kannst du den Fortschritt messen? Definiere konkrete Kriterien.</p>
-                    <div class="letter">A</div>
-                        <h5>Attraktiv</h5>
-                        <p>Warum ist dieses Ziel wichtig für dich? Was motiviert dich?</p>
-                    <div class="letter">R</div>
-                        <h5>Realistisch</h5>
-                        <p>Ist das Ziel mit deinen Ressourcen erreichbar? Sei ehrlich zu dir selbst.</p>
-                    <div class="letter">T</div>
-                        <h5>Terminiert</h5>
-                        <p>Bis wann willst du das Ziel erreicht haben? Setze einen klaren Zeitrahmen.</p>
-            <div class="smart-formulation">
-                <h4>📝 Ziel formulieren</h4>
-                <div class="goal-formulation" id="goal-formulation">
-                    <div class="formulation-step">
-                        <label>Ziel-Kategorie:</label>
-                        <select id="goal-category-select">
-                            <option value="">Kategorie wählen...</option>
-                            <option value="beruf">Beruf & Karriere</option>
-                            <option value="gesundheit">Gesundheit & Fitness</option>
-                            <option value="beziehungen">Beziehungen</option>
-                            <option value="finanzen">Finanzen</option>
-                            <option value="bildung">Bildung & Lernen</option>
-                            <option value="hobby">Hobbys & Interessen</option>
-                        </select>
-                    
-                    <div class="smart-criteria">
-                        <div class="criterion">
-                            <label>Spezifisch: Was genau willst du erreichen?</label>
-                            <textarea id="specific-goal" placeholder="Beschreibe dein Ziel so genau wie möglich..."></textarea>
-                        </div>
-                            <label>Messbar: Wie kannst du den Erfolg messen?</label>
-                            <textarea id="measurable-goal" placeholder="Definiere konkrete Kriterien und Zahlen..."></textarea>
-                            <label>Attraktiv: Warum ist dieses Ziel wichtig für dich?</label>
-                            <textarea id="attractive-goal" placeholder="Was motiviert dich? Welchen Nutzen hast du davon?"></textarea>
-                            <label>Realistisch: Ist das Ziel erreichbar?</label>
-                            <textarea id="realistic-goal" placeholder="Welche Ressourcen hast du? Welche Hindernisse gibt es?"></textarea>
-                            <label>Terminiert: Bis wann willst du das Ziel erreichen?</label>
-                            <textarea id="timed-goal" placeholder="Setze einen klaren Zeitrahmen..."></textarea>
-                    <div class="smart-result">
-                        <h5>🎯 Dein SMART-Ziel:</h5>
-                        <div class="smart-goal-text" id="smart-goal-text">
-                            Formuliere dein Ziel nach den SMART-Kriterien, um es hier zu sehen.
-                    <div class="formulation-actions">
-                        <button class="btn btn-primary" data-action="generate-smart-goal">SMART-Ziel generieren</button>
-                        <button class="btn btn-secondary" data-action="save-goal">Ziel speichern</button>
-    <!-- Step 3: Aktionsplan -->
-    <div class="workflow-step" data-step="3">
-            <h3>Schritt 3: Aktionsplan erstellen</h3>
-            <p>Zerlege dein Ziel in konkrete, umsetzbare Schritte. Erstelle einen detaillierten Aktionsplan mit Meilensteinen.</p>
-        <div class="action-plan-tools">
-            <div class="plan-overview">
-                <h4>📋 Aktionsplan für: <span id="current-goal-name">Wähle zuerst ein Ziel aus</span></h4>
-                <div class="plan-steps" id="plan-steps">
-                    <div class="no-plan">
-                        <p>Wähle ein Ziel aus Schritt 2, um den Aktionsplan zu erstellen.</p>
-            <div class="step-creator">
-                <h4>➕ Neuen Schritt hinzufügen</h4>
-                <div class="step-form">
-                    <div class="form-group">
-                        <label>Schritt-Titel:</label>
-                        <input type="text" id="step-title" placeholder="z.B. 'Bewerbungsunterlagen erstellen'">
-                        <label>Beschreibung:</label>
-                        <textarea id="step-description" placeholder="Beschreibe, was genau zu tun ist..."></textarea>
-                        <label>Frist:</label>
-                        <input type="date" id="step-deadline">
-                        <label>Priorität:</label>
-                        <select id="step-priority">
-                            <option value="hoch">Hoch</option>
-                            <option value="mittel">Mittel</option>
-                            <option value="niedrig">Niedrig</option>
-                        <label>Ressourcen benötigt:</label>
-                        <textarea id="step-resources" placeholder="Welche Ressourcen brauchst du? (Zeit, Geld, Material, etc.)"></textarea>
-                    <button class="btn btn-primary" data-action="add-action-step">Schritt hinzufügen</button>
-            <div class="milestones">
-                <h4>🏁 Meilensteine</h4>
-                <p>Definiere wichtige Zwischenziele, die dir zeigen, dass du auf dem richtigen Weg bist.</p>
-                <div class="milestones-list" id="milestones-list">
-                    <div class="no-milestones">
-                        <p>Füge Meilensteine hinzu, um deinen Fortschritt zu verfolgen.</p>
-                <div class="milestone-form">
-                    <input type="text" id="milestone-title" placeholder="Meilenstein-Titel">
-                    <input type="date" id="milestone-date">
-                    <button class="btn btn-secondary" data-action="add-milestone">Meilenstein hinzufügen</button>
-    <!-- Step 4: Habit-Stacking -->
-    <div class="workflow-step" data-step="4">
-            <h3>Schritt 4: Habit-Stacking</h3>
-            <p>Verwende bestehende Gewohnheiten als Anker für neue Verhaltensweisen. So integrierst du deine Ziele in deinen Alltag.</p>
-        <div class="habit-stacking-tools">
-            <div class="stacking-intro">
-                <h4>🔗 Habit-Stacking Prinzip</h4>
-                <p>Habit-Stacking bedeutet, neue Gewohnheiten an bestehende zu "ankern". Die Formel lautet:</p>
-                <div class="stacking-formula">
-                    <strong>Nach [bestehende Gewohnheit] werde ich [neue Gewohnheit]</strong>
-            <div class="existing-habits">
-                <h4>📋 Deine bestehenden Gewohnheiten</h4>
-                <p>Identifiziere Gewohnheiten, die du bereits regelmäßig machst:</p>
-                <div class="habits-list" id="existing-habits-list">
-                    <div class="habit-item">
-                        <input type="text" placeholder="z.B. 'Ich trinke morgens Kaffee'" class="habit-input">
-                        <button class="btn btn-sm btn-danger" data-action="remove-habit">×</button>
-                <button class="btn btn-secondary" data-action="add-existing-habit">+ Gewohnheit hinzufügen</button>
-            <div class="new-habits">
-                <h4>🎯 Neue Gewohnheiten für dein Ziel</h4>
-                <p>Welche neuen Gewohnheiten helfen dir, dein Ziel zu erreichen?</p>
-                <div class="habits-list" id="new-habits-list">
-                        <input type="text" placeholder="z.B. 'Ich lese 10 Seiten Fachliteratur'" class="habit-input">
-                <button class="btn btn-secondary" data-action="add-new-habit">+ Gewohnheit hinzufügen</button>
-            <div class="habit-stacks">
-                <h4>🔗 Deine Habit-Stacks</h4>
-                <p>Kombiniere bestehende und neue Gewohnheiten:</p>
-                <div class="stacks-list" id="stacks-list">
-                    <div class="no-stacks">
-                        <p>Erstelle deine ersten Habit-Stacks, indem du bestehende und neue Gewohnheiten kombinierst.</p>
-                <button class="btn btn-primary" data-action="generate-habit-stacks">Habit-Stacks generieren</button>
-    <!-- Step 5: Progress-Tracking -->
-    <div class="workflow-step" data-step="5">
-            <h3>Schritt 5: Progress-Tracking</h3>
-            <p>Verfolge deinen Fortschritt systematisch und passe deinen Plan bei Bedarf an.</p>
-        <div class="progress-tracking-tools">
-            <div class="tracking-dashboard">
-                <h4>📊 Fortschritts-Dashboard</h4>
-                <div class="progress-cards">
-                    <div class="progress-card">
-                        <h5>Ziele gesetzt</h5>
-                        <div class="progress-number" id="goals-set">0</div>
-                        <h5>Schritte abgeschlossen</h5>
-                        <div class="progress-number" id="steps-completed">0</div>
-                        <h5>Meilensteine erreicht</h5>
-                        <div class="progress-number" id="milestones-reached">0</div>
-                        <h5>Gewohnheiten etabliert</h5>
-                        <div class="progress-number" id="habits-established">0</div>
-            <div class="daily-tracking">
-                <h4>📅 Tägliches Tracking</h4>
-                <div class="tracking-form">
-                        <label>Datum:</label>
-                        <input type="date" id="tracking-date" value="">
-                        <label>Was hast du heute für dein Ziel getan?</label>
-                        <textarea id="daily-action" placeholder="Beschreibe deine heutigen Aktionen..."></textarea>
-                        <label>Wie fühlst du dich bezüglich deines Fortschritts? (1-10)</label>
-                        <input type="range" id="progress-feeling" min="1" max="10" value="5">
-                        <span id="feeling-value">5</span>
-                        <label>Hindernisse oder Herausforderungen:</label>
-                        <textarea id="challenges" placeholder="Was hat dich heute behindert?"></textarea>
-                    <button class="btn btn-primary" data-action="save-daily-progress">Fortschritt speichern</button>
-            <div class="progress-history">
-                <h4>📈 Fortschritts-Verlauf</h4>
-                <div class="history-list" id="progress-history">
-                    <div class="no-history">
-                        <p>Beginne mit dem täglichen Tracking, um deinen Fortschritt zu verfolgen.</p>
-    <!-- Step 6: Ziel-Review -->
-    <div class="workflow-step" data-step="6">
-            <h3>Schritt 6: Ziel-Review</h3>
-            <p>Reflektiere über deine Fortschritte, lerne aus deinen Erfahrungen und passe deine Ziele bei Bedarf an.</p>
-        <div class="goal-review-tools">
-            <div class="review-period">
-                <h4>📅 Review-Zeitraum</h4>
-                <div class="period-selector">
-                    <button class="btn btn-outline active" data-action="select-review-period" data-param="weekly">Wöchentlich</button>
-                    <button class="btn btn-outline" data-action="select-review-period" data-param="monthly">Monatlich</button>
-                    <button class="btn btn-outline" data-action="select-review-period" data-param="quarterly">Vierteljährlich</button>
-            <div class="review-questions">
-                <h4>🤔 Reflexionsfragen</h4>
-                <div class="question-group">
-                    <h5>Fortschritt bewerten</h5>
-                    <div class="question-item">
-                        <label>Wie zufrieden bist du mit deinem Fortschritt? (1-10)</label>
-                        <input type="range" id="satisfaction-rating" min="1" max="10" value="5">
-                        <span id="satisfaction-value">5</span>
-                        <label>Was hat am besten funktioniert?</label>
-                        <textarea id="what-worked" placeholder="Beschreibe deine Erfolge..."></textarea>
-                        <label>Was war herausfordernd?</label>
-                        <textarea id="what-challenged" placeholder="Was hat nicht funktioniert?"></textarea>
-                
-                    <h5>Ziel-Anpassung</h5>
-                        <label>Ist dein Ziel noch relevant und wichtig für dich?</label>
-                        <select id="goal-relevance">
-                            <option value="yes">Ja, absolut</option>
-                            <option value="somewhat">Teilweise</option>
-                            <option value="no">Nein, nicht mehr</option>
-                        <label>Möchtest du dein Ziel anpassen?</label>
-                        <textarea id="goal-adjustments" placeholder="Welche Änderungen möchtest du vornehmen?"></textarea>
-                    <h5>Nächste Schritte</h5>
-                        <label>Was sind deine nächsten 3 Prioritäten?</label>
-                        <textarea id="next-priorities" placeholder="Liste deine nächsten Schritte auf..."></textarea>
-                        <label>Welche Unterstützung brauchst du?</label>
-                        <textarea id="needed-support" placeholder="Wer oder was kann dir helfen?"></textarea>
-            <div class="review-actions">
-                <button class="btn btn-primary" data-action="save-review">Review speichern</button>
-                <button class="btn btn-secondary" data-action="export-goal-summary">Ziel-Zusammenfassung exportieren</button>
-                <button class="btn btn-outline" data-action="create-new-goal">Neues Ziel erstellen</button>
-    <!-- Navigation -->
-    <div class="workflow-navigation">
-        <div class="nav-buttons">
-            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
-                <i class="fas fa-arrow-left"></i> Zurück
-            </button>
-            <div class="progress-info">
-                <span id="current-step">Schritt 1</span> von <span id="total-steps">6</span>
-            <button class="btn btn-primary" id="next-btn" data-action="next-step">
-                Weiter <i class="fas fa-arrow-right"></i>
-</div>
+        </section>
 
-<!-- Global Auth System -->
-<script src="../../js/aws-config.js"></script>
-    <script src="js/global-auth-system.js"></script><script src="../../js/unified-auth-manager.js"></script>
-    
+        <!-- Schritt 2: SMART -->
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>Mach dein Ziel SMART</h2>
+                <p class="mk-sub">Beantworte die fünf Kriterien. Daraus formen wir automatisch dein scharfes Ziel.</p>
+                <div class="mk-field">
+                    <label><strong>S</strong> · Spezifisch — was genau willst du erreichen?</label>
+                    <textarea class="mk-textarea" data-mk-field="s" placeholder="So konkret wie möglich …"></textarea>
+                </div>
+                <div class="mk-field">
+                    <label><strong>M</strong> · Messbar — woran erkennst du den Erfolg?</label>
+                    <textarea class="mk-textarea" data-mk-field="m" placeholder="Konkrete Zahl, Menge, Häufigkeit …"></textarea>
+                </div>
+                <div class="mk-field">
+                    <label><strong>A</strong> · Attraktiv — warum lohnt es sich?</label>
+                    <textarea class="mk-textarea" data-mk-field="a" placeholder="Welcher Nutzen, welche Freude steckt drin?"></textarea>
+                </div>
+                <div class="mk-field">
+                    <label><strong>R</strong> · Realistisch — ist es mit deinen Ressourcen machbar?</label>
+                    <textarea class="mk-textarea" data-mk-field="r" placeholder="Welche Mittel hast du, welche Hürden gibt es?"></textarea>
+                </div>
+                <div class="mk-field">
+                    <label><strong>T</strong> · Terminiert — bis wann?</label>
+                    <input class="mk-input" type="date" data-mk-field="t">
+                </div>
+                <div class="mk-result" id="gs-smart">
+                    <h4><i class="fas fa-wand-magic-sparkles"></i> Dein SMART-Ziel</h4>
+                    <div id="gs-smart-text">Fülle die Felder aus – hier erscheint dein formuliertes Ziel.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Schritt 3: Aktionsplan -->
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>Dein Aktionsplan</h2>
+                <p class="mk-sub">Zerlege das Ziel in konkrete, kleine Schritte. Jeder abgehakte Schritt bringt dich näher.</p>
+                <div class="mk-grid-2" style="align-items:end;">
+                    <div class="mk-field" style="margin:0;">
+                        <label>Nächster Schritt</label>
+                        <input class="mk-input" id="gs-action-text" placeholder="z. B. „Laufschuhe kaufen"">
+                    </div>
+                    <div class="mk-field" style="margin:0;">
+                        <label>Bis wann</label>
+                        <input class="mk-input" type="date" id="gs-action-date">
+                    </div>
+                </div>
+                <button class="mk-btn mk-btn-ghost mk-btn-sm" id="gs-add-action" style="margin-top:12px;"><i class="fas fa-plus"></i> Schritt hinzufügen</button>
+                <div id="gs-actions" style="margin-top:18px;"></div>
+            </div>
+        </section>
+
+        <!-- Schritt 4: Gewohnheiten -->
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>Verankere es als Gewohnheit</h2>
+                <p class="mk-sub">Hänge eine neue Mini-Gewohnheit an etwas, das du sowieso täglich tust (Habit-Stacking).</p>
+                <div class="mk-field">
+                    <label>Nach dieser bestehenden Gewohnheit …</label>
+                    <input class="mk-input" id="gs-habit-anchor" placeholder="z. B. „Nachdem ich morgens Kaffee gemacht habe"">
+                </div>
+                <div class="mk-field">
+                    <label>… werde ich</label>
+                    <input class="mk-input" id="gs-habit-action" placeholder="z. B. „meine Laufsachen anziehen"">
+                </div>
+                <button class="mk-btn mk-btn-ghost mk-btn-sm" id="gs-add-habit"><i class="fas fa-plus"></i> Gewohnheit hinzufügen</button>
+                <div id="gs-habits" style="margin-top:18px;"></div>
+            </div>
+        </section>
+
+        <!-- Schritt 5: Überblick -->
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>Dein Ziel auf einen Blick</h2>
+                <p class="mk-sub">Hier ist dein kompletter Plan. Lade ihn dir herunter und häng ihn sichtbar auf.</p>
+                <div id="gs-summary"></div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;">
+                    <button class="mk-btn mk-btn-primary" id="gs-export"><i class="fas fa-download"></i> Plan herunterladen</button>
+                    <button class="mk-btn mk-btn-outline" id="gs-reset"><i class="fas fa-rotate-left"></i> Neu beginnen</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <!-- AWS Konfiguration & Cloud-Persistenz -->
     <script>
-        // Load auth modals
-        async function loadAuthModals() {
-            try {
-                const response = await fetch('components/unified-auth-modals.html');
-                const html = await response.text();
-                document.getElementById('authModalsContainer').innerHTML = html;
-            } catch (error) {
-                console.error('Error loading auth modals:', error);
-            }
-        }
-        
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAuthModals();
-        });
+        window.AWS_CONFIG = {
+            region: 'eu-central-1',
+            userPoolId: 'eu-central-1_8gP4gLK9r',
+            clientId: '7kc5tt6a23fgh53d60vkefm812',
+            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod'
+        };
     </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js"></script>
+
+    <script>
+        const CATS = [
+            { id: 'beruf', label: '💼 Beruf & Karriere' },
+            { id: 'gesundheit', label: '💪 Gesundheit & Fitness' },
+            { id: 'beziehungen', label: '❤️ Beziehungen' },
+            { id: 'finanzen', label: '💰 Finanzen' },
+            { id: 'bildung', label: '📚 Bildung & Lernen' },
+            { id: 'hobby', label: '🎨 Hobbys & Interessen' },
+            { id: 'persoenlich', label: '🌱 Persönliches Wachstum' }
+        ];
+
+        (async function () {
+            await MethodKit.init({
+                method: 'goal-setting',
+                accent: '#f59e0b', accent2: '#f97316',
+                steps: [
+                    { icon: '🎯', label: 'Ziel' },
+                    { icon: '✨', label: 'SMART' },
+                    { icon: '🪜', label: 'Aktionsplan' },
+                    { icon: '🔁', label: 'Gewohnheit' },
+                    { icon: '🏁', label: 'Überblick' }
+                ],
+                defaultState: { title: '', why: '', category: '', s: '', m: '', a: '', r: '', t: '', actions: [], habits: [] }
+            });
+            MethodKit.bindFields();
+
+            // Kategorien
+            const catHost = document.getElementById('gs-cats');
+            catHost.innerHTML = CATS.map(c => `<button class="mk-chip" data-cat="${c.id}">${c.label}</button>`).join('');
+            function syncCats() {
+                catHost.querySelectorAll('[data-cat]').forEach(el =>
+                    el.classList.toggle('selected', el.dataset.cat === MethodKit.state.category));
+            }
+            catHost.querySelectorAll('[data-cat]').forEach(el => el.addEventListener('click', () => {
+                MethodKit.state.category = el.dataset.cat; syncCats(); MethodKit.save();
+            }));
+            syncCats();
+
+            // SMART-Text live
+            function renderSmart() {
+                const s = MethodKit.state;
+                const out = document.getElementById('gs-smart-text');
+                if (!s.s && !s.m && !s.t) { out.textContent = 'Fülle die Felder aus – hier erscheint dein formuliertes Ziel.'; return; }
+                let txt = s.s || 'Mein Ziel';
+                if (s.m) txt += `. Erfolg messe ich an: ${s.m}`;
+                if (s.t) { const d = new Date(s.t); txt += `. Fertig bis: ${isNaN(d) ? s.t : d.toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' })}`; }
+                if (s.a) txt += `. Das motiviert mich, weil: ${s.a}`;
+                out.textContent = txt + '.';
+            }
+            document.querySelectorAll('[data-mk-field]').forEach(el => el.addEventListener('input', renderSmart));
+            renderSmart();
+
+            // Aktionsplan
+            function renderActions() {
+                const host = document.getElementById('gs-actions');
+                const a = MethodKit.state.actions || [];
+                if (!a.length) { host.innerHTML = '<div class="mk-empty">Noch keine Schritte. Füge deinen ersten konkreten Schritt hinzu.</div>'; return; }
+                host.innerHTML = a.map(x => `
+                    <div class="mk-row">
+                        <button class="mk-iconbtn" data-toggle="${x.id}" title="erledigt">
+                            <i class="fas ${x.done ? 'fa-circle-check' : 'fa-circle'}" style="color:${x.done ? 'var(--mk-accent)' : 'var(--mk-faint)'}"></i>
+                        </button>
+                        <div class="grow" style="${x.done ? 'text-decoration:line-through;color:var(--mk-faint);' : ''}">
+                            ${MethodKit.esc(x.text)}${x.date ? ` <span style="color:var(--mk-faint);font-size:13px;">· bis ${new Date(x.date).toLocaleDateString('de-DE')}</span>` : ''}
+                        </div>
+                        <button class="mk-iconbtn" data-del="${x.id}" title="löschen"><i class="fas fa-trash"></i></button>
+                    </div>`).join('');
+                host.querySelectorAll('[data-toggle]').forEach(b => b.addEventListener('click', () => {
+                    const it = MethodKit.state.actions.find(z => z.id === b.dataset.toggle);
+                    if (it) { it.done = !it.done; MethodKit.save(); renderActions(); }
+                }));
+                host.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => {
+                    MethodKit.state.actions = MethodKit.state.actions.filter(z => z.id !== b.dataset.del);
+                    MethodKit.save(); renderActions();
+                }));
+            }
+            document.getElementById('gs-add-action').addEventListener('click', () => {
+                const t = document.getElementById('gs-action-text');
+                if (!t.value.trim()) { MethodKit.toast('Bitte Schritt eingeben', 'error'); return; }
+                MethodKit.state.actions = MethodKit.state.actions || [];
+                MethodKit.state.actions.push({ id: MethodKit.uid(), text: t.value.trim(), date: document.getElementById('gs-action-date').value, done: false });
+                t.value = ''; document.getElementById('gs-action-date').value = '';
+                MethodKit.save(); renderActions(); MethodKit.toast('Schritt hinzugefügt', 'success');
+            });
+            renderActions();
+
+            // Gewohnheiten
+            function renderHabits() {
+                const host = document.getElementById('gs-habits');
+                const h = MethodKit.state.habits || [];
+                if (!h.length) { host.innerHTML = '<div class="mk-empty">Noch keine Gewohnheit verankert.</div>'; return; }
+                host.innerHTML = h.map(x => `
+                    <div class="mk-row">
+                        <div class="grow">Nach <strong>${MethodKit.esc(x.anchor)}</strong> werde ich <strong>${MethodKit.esc(x.action)}</strong>.</div>
+                        <button class="mk-iconbtn" data-del="${x.id}" title="löschen"><i class="fas fa-trash"></i></button>
+                    </div>`).join('');
+                host.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => {
+                    MethodKit.state.habits = MethodKit.state.habits.filter(z => z.id !== b.dataset.del);
+                    MethodKit.save(); renderHabits();
+                }));
+            }
+            document.getElementById('gs-add-habit').addEventListener('click', () => {
+                const an = document.getElementById('gs-habit-anchor'), ac = document.getElementById('gs-habit-action');
+                if (!an.value.trim() || !ac.value.trim()) { MethodKit.toast('Bitte beide Felder ausfüllen', 'error'); return; }
+                MethodKit.state.habits = MethodKit.state.habits || [];
+                MethodKit.state.habits.push({ id: MethodKit.uid(), anchor: an.value.trim(), action: ac.value.trim() });
+                an.value = ''; ac.value = '';
+                MethodKit.save(); renderHabits(); MethodKit.toast('Gewohnheit hinzugefügt', 'success');
+            });
+            renderHabits();
+
+            // Überblick
+            function renderSummary() {
+                const s = MethodKit.state;
+                const cat = (CATS.find(c => c.id === s.category) || {}).label || '–';
+                const actions = (s.actions || []).map(a => `<li>${a.done ? '✅' : '⬜'} ${MethodKit.esc(a.text)}${a.date ? ` (bis ${new Date(a.date).toLocaleDateString('de-DE')})` : ''}</li>`).join('') || '<li style="color:var(--mk-faint)">noch keine</li>';
+                const habits = (s.habits || []).map(h => `<li>Nach <strong>${MethodKit.esc(h.anchor)}</strong> → <strong>${MethodKit.esc(h.action)}</strong></li>`).join('') || '<li style="color:var(--mk-faint)">noch keine</li>';
+                document.getElementById('gs-summary').innerHTML = `
+                    <div class="mk-result" style="margin-bottom:14px;">
+                        <h4>🎯 Ziel</h4>
+                        <div><strong>${MethodKit.esc(s.title) || '–'}</strong> <span style="color:var(--mk-muted)">· ${cat}</span></div>
+                        ${s.why ? `<div style="color:var(--mk-muted);margin-top:6px;">${MethodKit.esc(s.why)}</div>` : ''}
+                    </div>
+                    <h3>🪜 Aktionsplan</h3><ul>${actions}</ul>
+                    <h3 style="margin-top:14px;">🔁 Gewohnheiten</h3><ul>${habits}</ul>`;
+            }
+
+            MethodKit.onStep = function (n) { if (n === 5) renderSummary(); };
+
+            // Export
+            document.getElementById('gs-export').addEventListener('click', () => {
+                const s = MethodKit.state;
+                const cat = (CATS.find(c => c.id === s.category) || {}).label || '–';
+                let txt = `MEIN ZIEL-PLAN\n==============\n\nZiel: ${s.title || '–'}\nBereich: ${cat}\nWarum: ${s.why || '–'}\n\nSMART:\n  Spezifisch: ${s.s || '–'}\n  Messbar: ${s.m || '–'}\n  Attraktiv: ${s.a || '–'}\n  Realistisch: ${s.r || '–'}\n  Termin: ${s.t || '–'}\n\nAktionsplan:\n`;
+                (s.actions || []).forEach(a => { txt += `  [${a.done ? 'x' : ' '}] ${a.text}${a.date ? ' (bis ' + a.date + ')' : ''}\n`; });
+                txt += `\nGewohnheiten:\n`;
+                (s.habits || []).forEach(h => { txt += `  Nach "${h.anchor}" werde ich "${h.action}".\n`; });
+                MethodKit.exportText('mein-ziel-plan.txt', txt);
+            });
+
+            // Reset
+            document.getElementById('gs-reset').addEventListener('click', () => {
+                if (!confirm('Wirklich neu beginnen? Alle Eingaben dieses Ziels werden gelöscht.')) return;
+                MethodKit.state = { title: '', why: '', category: '', s: '', m: '', a: '', r: '', t: '', actions: [], habits: [], __step: 1 };
+                MethodKit.save({ now: true });
+                location.reload();
+            });
+        })();
+    </script>
+</body>
+</html>
