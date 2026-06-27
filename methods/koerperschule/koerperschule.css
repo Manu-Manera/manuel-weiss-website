@@ -55,3 +55,17 @@
 
 /* Atem-Orb Halten-Zustand (zwischen ein/aus) */
 .ss-breath-orb.hold { transform: scale(1.1); }
+
+/* Live-Pläne (aus der Cloud) */
+.ks-plan-live { margin-bottom: 18px; display: flex; flex-direction: column; gap: 14px; }
+.ks-plan-hint { color: var(--ss-text-dim); font-size: 14px; display: flex; align-items: center; gap: 10px; }
+.ks-plan-card-head { display: flex; align-items: center; gap: 14px; }
+.ks-plan-card-head .ic { font-size: 30px; flex-shrink: 0; }
+.ks-plan-card-head .t { font-weight: 700; font-size: 17px; }
+.ks-plan-card-head .s { font-size: 13px; color: var(--ss-text-dim); }
+.ks-plan-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.ks-plan-meta span {
+    background: var(--ss-bg-soft); border: 1px solid var(--ss-line); border-radius: 999px;
+    padding: 6px 12px; font-size: 13px; color: var(--ss-text);
+}
+.ks-plan-meta span i { color: var(--accent, var(--ks-accent)); margin-right: 5px; }

@@ -566,6 +566,8 @@ class KoerperSchule {
             <h1>Vom kleinen Schritt zum großen Plan</h1>
             <p>Die täglichen Einheiten halten dich in Bewegung. Wenn du tiefer einsteigen willst, erstelle dir hier einen vollständigen Trainings- oder Ernährungsplan – oder verbinde dein Ritual mit den Schwester-Schulen.</p>
         </div>
+        <div id="ks-plan-live" class="ks-plan-live"></div>
+        <h2 style="margin:8px 0 14px;font-size:20px">Programme &amp; Schwester-Schulen</h2>
         <div class="ss-grid">
             ${KS_LINKS.map(l => { const d = KS_DISC_MAP[l.disc]; return `
             <a class="ss-sense-card ks-link-card" href="${l.href}" style="--accent:${d.accent};--accent-soft:${d.soft};--accent-glow:${d.glow}">
@@ -578,7 +580,67 @@ class KoerperSchule {
             </a>`; }).join('')}
         </div>`;
     }
-    _afterPlan() { /* Links sind native Anker */ }
+    async _afterPlan() {
+        const wrap = document.getElementById('ks-plan-live');
+        if (!wrap) return;
+        if (!this._isLoggedIn()) {
+            wrap.innerHTML = `<div class="ss-panel ks-plan-hint"><i class="fas fa-cloud"></i> Melde dich auf der Website an, damit deine erstellten Trainings- und Ernährungspläne hier geräteübergreifend erscheinen.</div>`;
+            return;
+        }
+        wrap.innerHTML = `<div class="ss-panel ks-plan-hint"><i class="fas fa-circle-notch fa-spin"></i> Lade deine aktiven Pläne …</div>`;
+        const panels = [];
+        try {
+            if (window.awsTrainingAPI) {
+                const plan = await window.awsTrainingAPI.getCurrentPlan().catch(() => null);
+                if (plan) panels.push(this._trainingPlanPanel(plan));
+            }
+        } catch (e) { /* ignore */ }
+        try {
+            if (window.awsNutritionAPI) {
+                const nplan = await window.awsNutritionAPI.getCurrentPlan().catch(() => null);
+                let summary = null;
+                try { summary = await window.awsNutritionAPI.getTodaysSummary(); } catch (e) { /* ignore */ }
+                if (nplan || summary) panels.push(this._nutritionPlanPanel(nplan, summary));
+            }
+        } catch (e) { /* ignore */ }
+        wrap.innerHTML = panels.length
+            ? panels.join('')
+            : `<div class="ss-panel ks-plan-hint"><i class="fas fa-seedling"></i> Noch kein aktiver Plan. Erstelle unten deinen ersten Trainings- oder Ernährungsplan – er erscheint dann automatisch hier.</div>`;
+    }
+    _trainingPlanPanel(plan) {
+        const d = KS_DISC_MAP.bewegung;
+        const goals = Array.isArray(plan.goals) ? plan.goals.slice(0, 3).join(', ') : '';
+        const weeks = Array.isArray(plan.weeks) ? plan.weeks.length : null;
+        return `
+        <div class="ss-panel ks-plan-card" style="--accent:${d.accent};--accent-soft:${d.soft}">
+            <div class="ks-plan-card-head"><span class="ic">🏋️</span><div><div class="t">${this._esc(plan.title || 'Dein Trainingsplan')}</div><div class="s">Aktiver Trainingsplan</div></div></div>
+            <div class="ks-plan-meta">
+                ${plan.level ? `<span><i class="fas fa-signal"></i> ${this._esc(plan.level)}</span>` : ''}
+                ${plan.frequency ? `<span><i class="fas fa-calendar-week"></i> ${this._esc(plan.frequency)}×/Woche</span>` : ''}
+                ${plan.timePerSession ? `<span><i class="fas fa-clock"></i> ${this._esc(plan.timePerSession)} Min</span>` : ''}
+                ${weeks ? `<span><i class="fas fa-layer-group"></i> ${weeks} Wochen</span>` : ''}
+            </div>
+            ${goals ? `<p class="sub" style="margin:10px 0 0"><i class="fas fa-bullseye"></i> ${this._esc(goals)}</p>` : ''}
+            <a class="ss-btn ss-btn-ghost" style="margin-top:14px" href="../../personal-training-dashboard.html">Trainingsplan öffnen</a>
+        </div>`;
+    }
+    _nutritionPlanPanel(plan, summary) {
+        const d = KS_DISC_MAP.ernaehrung;
+        const goal = (summary && summary.goal) || (plan && plan.dailyCalories) || null;
+        const today = summary ? summary.calories : null;
+        const meals = plan && plan.mealsPerDay;
+        const pct = (goal && today != null) ? Math.min(100, Math.round(today / goal * 100)) : null;
+        return `
+        <div class="ss-panel ks-plan-card" style="--accent:${d.accent};--accent-soft:${d.soft}">
+            <div class="ks-plan-card-head"><span class="ic">🥗</span><div><div class="t">Dein Ernährungsplan</div><div class="s">Aktiver Plan</div></div></div>
+            <div class="ks-plan-meta">
+                ${goal ? `<span><i class="fas fa-fire"></i> Ziel ${goal} kcal/Tag</span>` : ''}
+                ${meals ? `<span><i class="fas fa-utensils"></i> ${this._esc(meals)} Mahlzeiten/Tag</span>` : ''}
+            </div>
+            ${pct != null ? `<div class="ss-prog" style="margin-top:12px"><div class="ss-prog-bar"><div class="ss-prog-fill" style="width:${pct}%"></div></div></div><p class="sub" style="margin:6px 0 0">Heute: ${today} / ${goal} kcal</p>` : ''}
+            <a class="ss-btn ss-btn-ghost" style="margin-top:14px" href="../../ernaehrungsberatung.html">Ernährungsplan öffnen</a>
+        </div>`;
+    }
 
     /* ===================== JOURNAL ===================== */
     _renderJournal() {

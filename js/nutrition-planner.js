@@ -261,6 +261,7 @@ class NutritionPlanner {
             this.updatePlanSummary();
             this.updateWeekOverview();
             this.updateShoppingList();
+            this.saveMealPlanToCloud();
             
             // Move to next step
             setTimeout(() => {
@@ -276,11 +277,26 @@ class NutritionPlanner {
             this.mealPlan = this.createMealPlan();
             this.updatePlanSummary();
             this.updateWeekOverview();
+            this.saveMealPlanToCloud();
             
             setTimeout(() => {
                 this.currentStep = 5;
                 this.updateStepDisplay();
             }, 1000);
+        }
+    }
+
+    async saveMealPlanToCloud() {
+        try {
+            if (!this.mealPlan || !window.awsNutritionAPI) return;
+            if (window.realUserAuth && window.realUserAuth.isLoggedIn && !window.realUserAuth.isLoggedIn()) return;
+            const plan = Object.assign({ createdAt: new Date().toISOString() }, this.mealPlan);
+            await window.awsNutritionAPI.savePlan(plan);
+            const goal = this.mealPlan.dailyCalories || (this.userData && this.userData.dailyCalories);
+            if (goal) await window.awsNutritionAPI.updatePreferences({ dailyCalorieGoal: goal });
+            console.log('✅ Ernährungsplan in Cloud gespeichert');
+        } catch (e) {
+            console.warn('Cloud-Speicherung des Ernährungsplans fehlgeschlagen:', e);
         }
     }
 

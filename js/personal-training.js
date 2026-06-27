@@ -566,7 +566,21 @@ class PersonalTrainingPlanner {
         const savedPlans = JSON.parse(localStorage.getItem('trainingPlans') || '[]');
         savedPlans.push(plan);
         localStorage.setItem('trainingPlans', JSON.stringify(savedPlans));
+        localStorage.setItem('generatedTrainingPlan', JSON.stringify(plan));
         console.log('Training plan saved to localStorage');
+        // Best-effort: zusätzlich in die Cloud (geräteübergreifend, erscheint in der Schule des Körpers)
+        this.saveTrainingPlanToCloud(plan);
+    }
+
+    async saveTrainingPlanToCloud(plan) {
+        try {
+            if (!window.awsTrainingAPI) return;
+            if (window.realUserAuth && window.realUserAuth.isLoggedIn && !window.realUserAuth.isLoggedIn()) return;
+            await window.awsTrainingAPI.savePlan(plan);
+            console.log('✅ Trainingsplan in Cloud gespeichert');
+        } catch (e) {
+            console.warn('Cloud-Speicherung des Trainingsplans fehlgeschlagen:', e);
+        }
     }
 
     displayGeneratedPlan() {
