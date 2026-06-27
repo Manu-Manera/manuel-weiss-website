@@ -70,6 +70,15 @@
 }
 .ks-plan-meta span i { color: var(--accent, var(--ks-accent)); margin-right: 5px; }
 
+/* Disziplin-Tags (Chips) – sonst kleben die Tags auf den Karten zusammen */
+.gm-disc-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.gm-tag {
+    font-size: 11px; font-weight: 600; letter-spacing: .03em;
+    color: var(--accent, var(--ks-accent));
+    background: var(--accent-soft, rgba(52, 211, 153, .14));
+    border-radius: 999px; padding: 3px 9px;
+}
+
 /* ---------------- Veränderungs-Reise ---------------- */
 .ks-journey-tabs { margin-bottom: 18px; }
 
