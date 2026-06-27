@@ -3,403 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RAISEC - Berufsinteressen-Analyse | Manuel Weiss</title>
-    <link rel="stylesheet" href="css/raisec-smart-styles.css">
-    <link rel="stylesheet" href="css/raisec-hexagon-styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <!-- Progress Badge Styles -->
+    <title>RIASEC-Interessentest | Manuel Weiss</title>
+    <meta name="description" content="Der RIASEC-Test (Holland-Code) zeigt deine beruflichen Interessen über sechs Typen und gibt dir passende Tätigkeits- und Berufsrichtungen.">
+    <link rel="stylesheet" href="../_kit/method-light.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .user-progress-badge {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background: white;
-            border-radius: 8px;
-            padding: 12px 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            font-size: 14px;
-            min-width: 200px;
-        }
-        
-        .user-progress-badge .user-info,
-        .user-progress-badge .progress-sync {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #4a5568;
-        }
-        
-        .user-progress-badge i {
-            font-size: 16px;
-            color: #667eea;
-        }
-        
-        @media (max-width: 768px) {
-            .user-progress-badge {
-                top: auto;
-                bottom: 20px;
-                right: 10px;
-                left: 10px;
-                min-width: auto;
-            }
-        }
+        :root { --mk-accent: #6366f1; --mk-accent-2: #8b5cf6; --mk-accent-soft: rgba(99,102,241,.12); }
+        .ri-item { padding:12px 0; border-bottom:1px solid var(--mk-line); }
+        .ri-scale { display:flex; gap:6px; margin-top:8px; }
+        .ri-dot { flex:1; border:1.5px solid var(--mk-line); background:#fff; border-radius:10px; padding:7px 0; text-align:center; cursor:pointer; font-weight:700; color:var(--mk-muted); transition:all .12s; font-size:13px; }
+        .ri-dot:hover { border-color:var(--mk-accent); } .ri-dot.sel { background:var(--mk-accent); border-color:var(--mk-accent); color:#fff; }
+        .ri-bar { height:12px; border-radius:999px; background:var(--mk-line); overflow:hidden; }
+        .ri-bar > span { display:block; height:100%; background:linear-gradient(90deg,var(--mk-accent),var(--mk-accent-2)); }
     </style>
 </head>
-<body data-page-id="index-raisec">
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-compass-drafting"></i></span><span>RIASEC-Test</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
+    </header>
 
-    <!-- Progress Badge -->
-    <div class="user-progress-badge" style="display: none;">
-        <div class="user-info">
-            <i class="fas fa-user-circle"></i>
-            <span>Nicht angemeldet</span>
-        </div>
-        <div class="progress-sync">
-            <i class="fas fa-cloud-off-alt"></i>
-            <span>Fortschritt lokal</span>
-        </div>
-    </div>
-    <!-- Hero Section mit RAISEC-Diagramm -->
-    <section class="hero-section">
-        <div class="hero-background">
-            <div class="sparkling-stars"></div>
-        </div>
-        <div class="container">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h1 class="hero-title">
-                        <span class="title-icon">🎯</span>
-                        RAISEC Berufsinteressen-Analyse
-                    </h1>
-                    <p class="hero-subtitle">
-                        Entdecke deine beruflichen Interessen und finde den perfekten Karriereweg
-                    </p>
-                    <p class="hero-description">
-                        Die RAISEC-Methode hilft dir dabei, deine beruflichen Interessen zu identifizieren und den richtigen Karriereweg zu finden. 
-                        Basierend auf den Holland-Codes analysieren wir deine Persönlichkeit und zeigen dir passende Berufsfelder auf.
-                    </p>
-                    
-                    <!-- YouTube Video -->
-                    <div class="video-section">
-                        <h3>Mehr über RAISEC erfahren</h3>
-                        <div class="video-container">
-                            <iframe 
-                                src="https://www.youtube.com/embed/embed/VIDEO_ID" 
-                                title="RAISEC Berufsinteressen-Analyse"
-                                frameborder="0" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                allowfullscreen>
-                            </iframe>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- RAISEC Hexagon Diagramm -->
-                <div class="raisec-diagram-container">
-                    <div class="raisec-hexagon">
-                        <div class="hexagon-center">
-                            <span class="center-text">RAISEC</span>
-                            <span class="center-subtitle">Berufsinteressen</span>
-                        </div>
-                        
-                        <!-- Hexagon Sektoren -->
-                        <div class="hexagon-sector realistic" data-type="realistic">
-                            <div class="sector-content">
-                                <div class="sector-icon">🔧</div>
-                                <div class="sector-title">Realistisch</div>
-                                <div class="sector-subtitle">Praktisch-technisch</div>
-                            </div>
-                        </div>
-                        
-                        <div class="hexagon-sector investigative" data-type="investigative">
-                            <div class="sector-content">
-                                <div class="sector-icon">🔬</div>
-                                <div class="sector-title">Investigativ</div>
-                                <div class="sector-subtitle">Forschend-analytisch</div>
-                            </div>
-                        </div>
-                        
-                        <div class="hexagon-sector artistic" data-type="artistic">
-                            <div class="sector-content">
-                                <div class="sector-icon">🎨</div>
-                                <div class="sector-title">Künstlerisch</div>
-                                <div class="sector-subtitle">Kreativ-expressiv</div>
-                            </div>
-                        </div>
-                        
-                        <div class="hexagon-sector social" data-type="social">
-                            <div class="sector-content">
-                                <div class="sector-icon">👥</div>
-                                <div class="sector-title">Sozial</div>
-                                <div class="sector-subtitle">Menschen-orientiert</div>
-                            </div>
-                        </div>
-                        
-                        <div class="hexagon-sector enterprising" data-type="enterprising">
-                            <div class="sector-content">
-                                <div class="sector-icon">💼</div>
-                                <div class="sector-title">Unternehmerisch</div>
-                                <div class="sector-subtitle">Führungs-orientiert</div>
-                            </div>
-                        </div>
-                        
-                        <div class="hexagon-sector conventional" data-type="conventional">
-                            <div class="sector-content">
-                                <div class="sector-icon">📊</div>
-                                <div class="sector-title">Konventionell</div>
-                                <div class="sector-subtitle">Strukturiert-regelbasiert</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-compass-drafting"></i></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Berufsorientierung</div>
+            <h1>Was interessiert dich wirklich?</h1>
+            <p>Das RIASEC-Modell (Holland) beschreibt sechs Interessentypen. Dein „Holland-Code" aus den drei stärksten zeigt dir Tätigkeiten und Berufsfelder, in denen du aufblühst.</p>
+            <div class="mk-badges"><span class="mk-badge">6 Typen</span><span class="mk-badge">30 Aussagen</span><span class="mk-badge">Holland-Code</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Wie sehr spricht dich das an?</h2>
+                <p class="mk-sub">1 = gar nicht · 5 = sehr. Antworte aus dem Bauch.</p>
+                <div id="ri-items"></div>
+                <div class="mk-savebadge" style="margin-top:10px;"><span id="ri-prog">0</span> / 30 beantwortet</div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- RAISEC Typen Übersicht -->
-    <section class="raisec-types-section">
-        <div class="container">
-            <h2 class="section-title">Die 6 RAISEC-Typen</h2>
-            <p class="section-subtitle">Entdecke deine beruflichen Interessen</p>
-            
-            <div class="raisec-types-grid">
-                <!-- Realistisch -->
-                <div class="raisec-type-card realistic" data-type="realistic">
-                    <div class="card-header">
-                        <div class="card-icon">🔧</div>
-                        <h3>Realistisch (R)</h3>
-                    </div>
-                    <div class="card-content">
-                        <p class="card-description">
-                            Praktisch-technisch orientiert, handwerklich begabt, löst gerne konkrete Probleme
-                        </p>
-                        <ul class="card-features">
-                            <li>Technische Fähigkeiten</li>
-                            <li>Handwerkliche Begabung</li>
-                            <li>Praktische Problemlösung</li>
-                            <li>Konkrete Ergebnisse</li>
-                        </ul>
-                        <div class="card-actions">
-                            <a href="realistic-raisec.html" class="btn-primary">Workflow starten</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Investigativ -->
-                <div class="raisec-type-card investigative" data-type="investigative">
-                    <div class="card-header">
-                        <div class="card-icon">🔬</div>
-                        <h3>Investigativ (I)</h3>
-                    </div>
-                    <div class="card-content">
-                        <p class="card-description">
-                            Forschend-analytisch, wissenschaftlich interessiert, löst gerne komplexe Probleme
-                        </p>
-                        <ul class="card-features">
-                            <li>Analytisches Denken</li>
-                            <li>Forschung und Wissenschaft</li>
-                            <li>Komplexe Problemlösung</li>
-                            <li>Wissensdrang</li>
-                        </ul>
-                        <div class="card-actions">
-                            <a href="investigative-raisec.html" class="btn-primary">Workflow starten</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Künstlerisch -->
-                <div class="raisec-type-card artistic" data-type="artistic">
-                    <div class="card-header">
-                        <div class="card-icon">🎨</div>
-                        <h3>Künstlerisch (A)</h3>
-                    </div>
-                    <div class="card-content">
-                        <p class="card-description">
-                            Kreativ-künstlerisch, expressiv, arbeitet gerne mit Ideen und Emotionen
-                        </p>
-                        <ul class="card-features">
-                            <li>Kreativität und Innovation</li>
-                            <li>Künstlerische Ausdrucksfähigkeit</li>
-                            <li>Emotionale Intelligenz</li>
-                            <li>Originalität</li>
-                        </ul>
-                        <div class="card-actions">
-                            <a href="artistic-raisec.html" class="btn-primary">Workflow starten</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sozial -->
-                <div class="raisec-type-card social" data-type="social">
-                    <div class="card-header">
-                        <div class="card-icon">👥</div>
-                        <h3>Sozial (S)</h3>
-                    </div>
-                    <div class="card-content">
-                        <p class="card-description">
-                            Menschen-orientiert, helfend, arbeitet gerne mit anderen zusammen
-                        </p>
-                        <ul class="card-features">
-                            <li>Empathie und Mitgefühl</li>
-                            <li>Kommunikationsfähigkeit</li>
-                            <li>Teamarbeit</li>
-                            <li>Hilfsbereitschaft</li>
-                        </ul>
-                        <div class="card-actions">
-                            <a href="social-raisec.html" class="btn-primary">Workflow starten</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Unternehmerisch -->
-                <div class="raisec-type-card enterprising" data-type="enterprising">
-                    <div class="card-header">
-                        <div class="card-icon">💼</div>
-                        <h3>Unternehmerisch (E)</h3>
-                    </div>
-                    <div class="card-content">
-                        <p class="card-description">
-                            Führungs-orientiert, überzeugend, arbeitet gerne mit Menschen und Ideen
-                        </p>
-                        <ul class="card-features">
-                            <li>Führungsqualitäten</li>
-                            <li>Überzeugungskraft</li>
-                            <li>Unternehmerisches Denken</li>
-                            <li>Initiative</li>
-                        </ul>
-                        <div class="card-actions">
-                            <a href="enterprising-raisec.html" class="btn-primary">Workflow starten</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Konventionell -->
-                <div class="raisec-type-card conventional" data-type="conventional">
-                    <div class="card-header">
-                        <div class="card-icon">📊</div>
-                        <h3>Konventionell (C)</h3>
-                    </div>
-                    <div class="card-content">
-                        <p class="card-description">
-                            Strukturiert, regelbasiert, arbeitet gerne mit Daten und Systemen
-                        </p>
-                        <ul class="card-features">
-                            <li>Organisatorische Fähigkeiten</li>
-                            <li>Genauigkeit und Präzision</li>
-                            <li>Systematisches Arbeiten</li>
-                            <li>Zuverlässigkeit</li>
-                        </ul>
-                        <div class="card-actions">
-                            <a href="conventional-raisec.html" class="btn-primary">Workflow starten</a>
-                        </div>
-                    </div>
-                </div>
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>Dein Interessenprofil</h2>
+                <div id="ri-result"></div>
+                <button class="mk-btn mk-btn-primary" id="ri-export" style="margin-top:14px;"><i class="fas fa-download"></i> Profil herunterladen</button>
             </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
+            <span class="info" id="mk-step-info">Schritt 1 von 2</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
-    </section>
+    </main>
 
-    <!-- Features Section -->
-    <section class="features-section">
-        <div class="container">
-            <h2 class="section-title">Warum RAISEC?</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🎯</div>
-                    <h3>Präzise Analyse</h3>
-                    <p>Identifiziere deine beruflichen Interessen mit wissenschaftlich fundierten Methoden</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">💼</div>
-                    <h3>Karriere-Empfehlungen</h3>
-                    <p>Erhalte konkrete Berufsfelder und Karrierewege, die zu dir passen</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📈</div>
-                    <h3>Entwicklungsplan</h3>
-                    <p>Erstelle einen individuellen Plan für deine berufliche Entwicklung</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔗</div>
-                    <h3>Vernetzung</h3>
-                    <p>Verbinde dich mit anderen Methoden für eine ganzheitliche Persönlichkeitsentwicklung</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    <div class="mk-toast" id="mk-toast"></div>
 
-    <!-- CTA Section -->
-    <section class="cta-section">
-        <div class="container">
-            <div class="cta-content">
-                <h2>Bereit für deine RAISEC-Analyse?</h2>
-                <p>Entdecke deine beruflichen Interessen und finde den perfekten Karriereweg</p>
-                <div class="cta-buttons">
-                    <a href="realistic-raisec.html" class="btn-primary">Jetzt starten</a>
-                    <a href="#features" class="btn-secondary">Mehr erfahren</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>RAISEC</h3>
-                    <p>Berufsinteressen-Analyse basierend auf den Holland-Codes</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Verwandte Methoden</h3>
-                    <ul>
-                        <li><a href="../ikigai/index-ikigai.html">Ikigai</a></li>
-                        <li><a href="../swot/index-swot.html">SWOT</a></li>
-                        <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Kontakt</h3>
-                    <p>Manuel Weiss<br>Persönlichkeitsentwicklung</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Manuel Weiss. Alle Rechte vorbehalten.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script src="js/raisec-workflow.js"></script>
-
-    <!-- AWS Configuration -->
     <script>
-        window.AWS_CONFIG = {
-            region: 'eu-central-1',
-            userPoolId: 'eu-central-1_8gP4gLK9r',
-            clientId: '7kc5tt6a23fgh53d60vkefm812',
-            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-            dynamoDB: {
-                tableName: 'mawps-user-profiles',
-                region: 'eu-central-1'
-            },
-            s3: {
-                bucket: 'mawps-user-files-1760106396',
-                region: 'eu-central-1'
-            }
-        };
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
     </script>
-    
-    <!-- AWS SDK -->
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
-    
-    <!-- Auth & Progress Tracking -->
-    <script src="/js/aws-profile-api.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
-    <script src="/js/user-progress-tracker.js"></script>
-    <script src="/js/personality-auth-integration.js"></script>
+    <script src="../_kit/method-kit.js"></script>
+    <script>
+        const TYPES = {
+            R:{label:'Realistisch',ic:'🔧',desc:'praktisch, technisch, handfest',jobs:'Ingenieurwesen, Handwerk, Technik, IT-Infrastruktur, Naturberufe'},
+            I:{label:'Investigativ',ic:'🔬',desc:'forschend, analytisch, neugierig',jobs:'Wissenschaft, Medizin, Datenanalyse, Forschung & Entwicklung'},
+            A:{label:'Künstlerisch',ic:'🎨',desc:'kreativ, ausdrucksstark, frei',jobs:'Design, Medien, Musik, Schreiben, Architektur'},
+            S:{label:'Sozial',ic:'🤝',desc:'helfend, lehrend, beratend',jobs:'Bildung, Gesundheit, Beratung, Soziales, HR'},
+            E:{label:'Unternehmerisch',ic:'📈',desc:'führend, überzeugend, treibend',jobs:'Management, Vertrieb, Gründung, Marketing, Recht'},
+            C:{label:'Konventionell',ic:'🗂️',desc:'ordnend, sorgfältig, strukturiert',jobs:'Verwaltung, Finanzen, Controlling, Qualität, Organisation'}
+        };
+        const BANK = {
+            R:['Mit Werkzeugen oder Maschinen arbeiten','Etwas reparieren oder bauen','Draußen in der Natur arbeiten','Handwerklich mit den Händen tätig sein','Technische Geräte bedienen'],
+            I:['Ein kniffliges Problem lösen','Daten und Zusammenhänge analysieren','Experimente durchführen','Komplexe Themen ergründen','Recherchieren und forschen'],
+            A:['Etwas Kreatives gestalten','Musik machen, schreiben oder malen','Eigene Ideen künstlerisch ausdrücken','Originelle, ungewöhnliche Lösungen finden','In einem freien, kreativen Umfeld arbeiten'],
+            S:['Anderen Menschen helfen','Etwas erklären oder unterrichten','Eng mit Menschen im Team arbeiten','Auf die Sorgen anderer eingehen','Menschen beraten oder begleiten'],
+            E:['Eine Gruppe anführen','Andere überzeugen und begeistern','Etwas verkaufen oder verhandeln','Projekte initiieren und vorantreiben','Verantwortung und Entscheidungen übernehmen'],
+            C:['Mit Zahlen sorgfältig arbeiten','Abläufe strukturieren und organisieren','Nach klaren Regeln vorgehen','Dokumente genau verwalten','Aufgaben gewissenhaft erledigen']
+        };
+        const ITEMS=[]; for(let i=0;i<5;i++){ ['R','I','A','S','E','C'].forEach(ty=>ITEMS.push({type:ty,t:BANK[ty][i]})); }
+
+        (async function () {
+            await MethodKit.init({
+                method: 'raisec',
+                accent: '#6366f1', accent2: '#8b5cf6',
+                steps: [{icon:'📝',label:'Test'},{icon:'🧭',label:'Profil'}],
+                defaultState: { answers:{} }
+            });
+            const S = MethodKit.state;
+            const host=document.getElementById('ri-items');
+            function render(){
+                host.innerHTML=ITEMS.map((it,i)=>`<div class="ri-item"><div>${i+1}. ${it.t}</div><div class="ri-scale">${[1,2,3,4,5].map(v=>`<div class="ri-dot ${S.answers[i]===v?'sel':''}" data-i="${i}" data-v="${v}">${v}</div>`).join('')}</div></div>`).join('');
+                host.querySelectorAll('[data-v]').forEach(el=>el.addEventListener('click',()=>{ S.answers[el.dataset.i]=parseInt(el.dataset.v,10); MethodKit.save(); render(); document.getElementById('ri-prog').textContent=Object.keys(S.answers).length; }));
+                document.getElementById('ri-prog').textContent=Object.keys(S.answers).length;
+            }
+            render();
+
+            function scores(){
+                const sum={R:0,I:0,A:0,S:0,E:0,C:0}, cnt={R:0,I:0,A:0,S:0,E:0,C:0};
+                ITEMS.forEach((it,i)=>{ if(S.answers[i]){ sum[it.type]+=S.answers[i]; cnt[it.type]++; } });
+                const pct={}; Object.keys(sum).forEach(k=>pct[k]= cnt[k]? Math.round(sum[k]/cnt[k]/5*100):0);
+                return pct;
+            }
+            MethodKit.onStep=function(n){ if(n===2){
+                const pct=scores();
+                const order=Object.keys(pct).sort((a,b)=>pct[b]-pct[a]);
+                const code=order.slice(0,3).join('');
+                document.getElementById('ri-result').innerHTML=
+                    `<div class="mk-result" style="margin-bottom:14px;"><h4>🧭 Dein Holland-Code</h4><strong style="font-size:26px;letter-spacing:.1em;">${code}</strong> <span style="color:var(--mk-muted)">— ${order.slice(0,3).map(k=>TYPES[k].label).join(', ')}</span></div>`+
+                    order.map(k=>`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;font-size:14px;"><span>${TYPES[k].ic} ${TYPES[k].label} <span style="color:var(--mk-faint)">· ${TYPES[k].desc}</span></span><strong>${pct[k]}%</strong></div><div class="ri-bar"><span style="width:${pct[k]}%"></span></div></div>`).join('')+
+                    `<h3 style="margin-top:16px;">Passende Felder</h3>`+order.slice(0,3).map(k=>`<div class="mk-row"><div class="grow"><strong>${TYPES[k].ic} ${TYPES[k].label}:</strong> ${TYPES[k].jobs}</div></div>`).join('');
+            }};
+            document.getElementById('ri-export').addEventListener('click',()=>{
+                const pct=scores(); const order=Object.keys(pct).sort((a,b)=>pct[b]-pct[a]);
+                let t=`RIASEC-PROFIL\n=============\n\nHolland-Code: ${order.slice(0,3).join('')}\n\n`;
+                order.forEach(k=>t+=`${TYPES[k].label}: ${pct[k]}%\n`);
+                t+=`\nPassende Felder: ${order.slice(0,3).map(k=>TYPES[k].jobs).join(' | ')}\n`;
+                MethodKit.exportText('mein-riasec-profil.txt', t);
+            });
+        })();
+    </script>
 </body>
 </html>

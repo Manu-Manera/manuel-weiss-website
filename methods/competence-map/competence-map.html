@@ -3,457 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Competence Map - Kompetenzlandkarte</title>
-    <link rel="stylesheet" href="../../css/ikigai-planner.css">
-    <link rel="stylesheet" href="competence-map.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/unified-auth-system.css">
-
-    <!-- Progress Badge Styles -->
+    <title>Kompetenz-Map | Manuel Weiss</title>
+    <meta name="description" content="Kartiere deine Kompetenzen in vier Feldern, vergleiche Ist und Soll und erkenne, wo deine Entwicklung den größten Hebel hat.">
+    <link rel="stylesheet" href="../_kit/method-light.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .user-progress-badge {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background: white;
-            border-radius: 8px;
-            padding: 12px 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            font-size: 14px;
-            min-width: 200px;
-        }
-        
-        .user-progress-badge .user-info,
-        .user-progress-badge .progress-sync {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #4a5568;
-        }
-        
-        .user-progress-badge i {
-            font-size: 16px;
-            color: #667eea;
-        }
-        
-        @media (max-width: 768px) {
-            .user-progress-badge {
-                top: auto;
-                bottom: 20px;
-                right: 10px;
-                left: 10px;
-                min-width: auto;
-            }
-        }
+        :root { --mk-accent: #0ea5e9; --mk-accent-2: #6366f1; --mk-accent-soft: rgba(14,165,233,.12); }
+        .cm-row { padding:12px 0; border-bottom:1px solid var(--mk-line); }
+        .cm-sliders { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px; }
+        @media (max-width:520px){ .cm-sliders{grid-template-columns:1fr;} }
+        .cm-mini label { font-size:12px; color:var(--mk-muted); }
     </style>
 </head>
-<body data-page-id="competence-map">
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-diagram-project"></i></span><span>Kompetenz-Map</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
+    </header>
 
-    <!-- Progress Badge -->
-    <div class="user-progress-badge" style="display: none;">
-        <div class="user-info">
-            <i class="fas fa-user-circle"></i>
-            <span>Nicht angemeldet</span>
-        </div>
-        <div class="progress-sync">
-            <i class="fas fa-cloud-off-alt"></i>
-            <span>Fortschritt lokal</span>
-        </div>
-    </div>
-    <div class="competence-method">
-        <div class="method-header">
-            <div class="method-icon">
-                <i class="fas fa-map"></i>
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-diagram-project"></i></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <h1>Wo stehst du, wo willst du hin?</h1>
+            <p>Kompetenzen verteilen sich auf vier Felder: Fach-, Methoden-, Sozial- und persönliche Kompetenz. Bewerte Ist und Soll – die größten Lücken zeigen dir, wo Lernen am meisten bringt.</p>
+            <div class="mk-badges"><span class="mk-badge">4 Kompetenzfelder</span><span class="mk-badge">Ist/Soll</span><span class="mk-badge">Lücken-Analyse</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Bewerte deine Kompetenzen</h2>
+                <p class="mk-sub">Ist = wo du heute stehst · Soll = wo du hin willst (1–5).</p>
+                <div id="cm-fields"></div>
             </div>
-            <div class="method-title">
-                <h1>Competence Map</h1>
-                <p>Erstelle deine persönliche Kompetenzlandkarte für gezielte Entwicklung</p>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>Deine größten Lücken</h2>
+                <p class="mk-sub">Sortiert nach Entwicklungs-Potenzial (Soll − Ist).</p>
+                <div id="cm-gaps"></div>
+                <div class="mk-field" style="margin-top:14px;"><label>🎯 Welche Kompetenz packst du zuerst an – und wie?</label><textarea class="mk-textarea" data-mk-field="plan"></textarea></div>
+                <button class="mk-btn mk-btn-primary" id="cm-export"><i class="fas fa-download"></i> Map herunterladen</button>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
+            <span class="info" id="mk-step-info">Schritt 1 von 2</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
+    </main>
 
-        <div class="workflow-header">
-            <button class="btn btn-secondary" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
-                <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
-            </button>
-        <div class="workflow-progress">
-            <div class="progress-step active" data-step="1">
-                <div class="step-number">1</div>
-                <div class="step-title">Kompetenzen identifizieren</div>
-            <div class="progress-step" data-step="2">
-                <div class="step-number">2</div>
-                <div class="step-title">Bewertung & Mapping</div>
-            <div class="progress-step" data-step="3">
-                <div class="step-number">3</div>
-                <div class="step-title">Lücken analysieren</div>
-            <div class="progress-step" data-step="4">
-                <div class="step-number">4</div>
-                <div class="step-title">Entwicklungsplan</div>
-            <div class="progress-step" data-step="5">
-                <div class="step-number">5</div>
-                <div class="step-title">Umsetzung & Tracking</div>
-        <div class="workflow-content">
-            <!-- Step 1: Kompetenzen identifizieren -->
-            <div class="workflow-step active" id="step-1">
-                <div class="step-header">
-                    <h2>Schritt 1: Kompetenzen identifizieren</h2>
-                    <p>Identifiziere alle deine relevanten Kompetenzen und Fähigkeiten</p>
-                </div>
-                <div class="competence-identification">
-                    <h3>🎯 Kompetenzkategorien</h3>
-                    <div class="competence-categories">
-                        <div class="category-item">
-                            <h4>Fachkompetenzen</h4>
-                            <p>Spezifisches Wissen und Fähigkeiten in deinem Bereich</p>
-                            <textarea id="technical-competences" placeholder="Liste deine Fachkompetenzen auf..."></textarea>
-                        </div>
-                            <h4>Methodenkompetenzen</h4>
-                            <p>Fähigkeiten zur Problemlösung und Arbeitsorganisation</p>
-                            <textarea id="method-competences" placeholder="Liste deine Methodenkompetenzen auf..."></textarea>
-                            <h4>Sozialkompetenzen</h4>
-                            <p>Fähigkeiten im Umgang mit anderen Menschen</p>
-                            <textarea id="social-competences" placeholder="Liste deine Sozialkompetenzen auf..."></textarea>
-                            <h4>Personale Kompetenzen</h4>
-                            <p>Persönliche Eigenschaften und Selbstmanagement</p>
-                            <textarea id="personal-competences" placeholder="Liste deine personalen Kompetenzen auf..."></textarea>
-                    </div>
-                <div class="competence-identification-practice">
-                    <h5>🎯 Übung: Kompetenzidentifikation</h5>
-                    <div class="practice-exercises">
-                        <div class="exercise-item">
-                            <label>Übung 1: Brainstorming</label>
-                            <textarea id="practice-brainstorming" placeholder="Brainstorme alle deine Kompetenzen..."></textarea>
-                            <label>Übung 2: Feedback sammeln</label>
-                            <textarea id="practice-feedback-collection" placeholder="Sammle Feedback von anderen über deine Kompetenzen..."></textarea>
-                            <label>Übung 3: Erfolge analysieren</label>
-                            <textarea id="practice-success-analysis" placeholder="Analysiere deine Erfolge und die dahinterliegenden Kompetenzen..."></textarea>
-                            <label>Übung 4: Herausforderungen meistern</label>
-                            <textarea id="practice-challenge-mastery" placeholder="Analysiere, welche Kompetenzen du bei Herausforderungen eingesetzt hast..."></textarea>
-                            <label>Übung 5: Versteckte Talente</label>
-                            <textarea id="practice-hidden-talents" placeholder="Identifiziere versteckte Talente und Kompetenzen..."></textarea>
-                            <label>Übung 6: Zukunftsrelevanz</label>
-                            <textarea id="practice-future-relevance" placeholder="Bewerte die Relevanz deiner Kompetenzen für die Zukunft..."></textarea>
-                <div class="competence-identification-tips">
-                    <h5>💡 Tipps für die Kompetenzidentifikation</h5>
-                    <div class="tips-list">
-                        <div class="tip-item">
-                            <div class="tip-icon">🔍</div>
-                            <div class="tip-content">
-                                <h6>Vollständig sein</h6>
-                                <p>Identifiziere alle relevanten Kompetenzen</p>
-                            </div>
-                            <div class="tip-icon">👥</div>
-                                <h6>Feedback einholen</h6>
-                                <p>Hole Feedback von verschiedenen Personen</p>
-                            <div class="tip-icon">📝</div>
-                                <h6>Dokumentieren</h6>
-                                <p>Dokumentiere alle identifizierten Kompetenzen</p>
-                            <div class="tip-icon">🎯</div>
-                                <h6>Kategorisieren</h6>
-                                <p>Kategorisiere Kompetenzen nach Bereichen</p>
-                            <div class="tip-icon">🔮</div>
-                                <h6>Zukunftsorientiert</h6>
-                                <p>Denke zukunftsorientiert bei der Bewertung</p>
-                            <div class="tip-icon">💡</div>
-                                <h6>Kreativ sein</h6>
-                                <p>Sei kreativ bei der Identifikation</p>
-                <div class="competence-identification-scenarios">
-                    <h5>🎭 Kompetenzidentifikation-Szenarien</h5>
-                    <div class="scenarios-list">
-                        <div class="scenario-item">
-                            <h6>Beruf: Karrierewechsel</h6>
-                            <p><strong>Situation:</strong> Du möchtest einen Karrierewechsel vollziehen.</p>
-                            <textarea id="scenario-career-change" placeholder="Welche Kompetenzen sind für den neuen Beruf relevant?"></textarea>
-                            <h6>Persönlich: Weiterentwicklung</h6>
-                            <p><strong>Situation:</strong> Du möchtest dich persönlich weiterentwickeln.</p>
-                            <textarea id="scenario-personal-development" placeholder="Welche Kompetenzen möchtest du entwickeln?"></textarea>
-                            <h6>Führung: Führungskompetenzen</h6>
-                            <p><strong>Situation:</strong> Du möchtest Führungskompetenzen entwickeln.</p>
-                            <textarea id="scenario-leadership-competences" placeholder="Welche Führungskompetenzen sind wichtig?"></textarea>
-            <!-- Step 2: Bewertung & Mapping -->
-            <div class="workflow-step" id="step-2">
-                    <h2>Schritt 2: Bewertung & Mapping</h2>
-                    <p>Bewerte deine Kompetenzen und erstelle eine visuelle Landkarte</p>
-                <div class="competence-evaluation">
-                    <h3>📊 Kompetenzbewertung</h3>
-                    <div class="evaluation-criteria">
-                        <div class="criteria-item">
-                            <h4>Aktuelles Niveau</h4>
-                            <p>Wie gut beherrscht du die Kompetenz aktuell?</p>
-                            <textarea id="current-level" placeholder="Bewerte dein aktuelles Niveau..."></textarea>
-                            <h4>Zielniveau</h4>
-                            <p>Wie gut möchtest du die Kompetenz beherrschen?</p>
-                            <textarea id="target-level" placeholder="Definiere dein Zielniveau..."></textarea>
-                            <h4>Relevanz</h4>
-                            <p>Wie relevant ist die Kompetenz für deine Ziele?</p>
-                            <textarea id="relevance" placeholder="Bewerte die Relevanz..."></textarea>
-                            <h4>Entwicklungsaufwand</h4>
-                            <p>Wie viel Aufwand ist für die Entwicklung nötig?</p>
-                            <textarea id="development-effort" placeholder="Schätze den Entwicklungsaufwand..."></textarea>
-                <div class="competence-evaluation-practice">
-                    <h5>🎯 Übung: Kompetenzbewertung</h5>
-                            <label>Übung 1: Selbsteinschätzung</label>
-                            <textarea id="practice-self-assessment" placeholder="Führe eine ehrliche Selbsteinschätzung durch..."></textarea>
-                            <label>Übung 2: Fremdeinschätzung</label>
-                            <textarea id="practice-external-assessment" placeholder="Hole Fremdeinschätzungen ein..."></textarea>
-                            <label>Übung 3: Zielsetzung</label>
-                            <textarea id="practice-goal-setting" placeholder="Setze realistische Ziele für jede Kompetenz..."></textarea>
-                            <label>Übung 4: Relevanzbewertung</label>
-                            <textarea id="practice-relevance-assessment" placeholder="Bewerte die Relevanz jeder Kompetenz..."></textarea>
-                            <label>Übung 5: Aufwandschätzung</label>
-                            <textarea id="practice-effort-estimation" placeholder="Schätze den Entwicklungsaufwand..."></textarea>
-                            <label>Übung 6: Priorisierung</label>
-                            <textarea id="practice-prioritization" placeholder="Priorisiere Kompetenzen nach Wichtigkeit..."></textarea>
-                <div class="competence-evaluation-tips">
-                    <h5>💡 Tipps für die Kompetenzbewertung</h5>
-                            <div class="tip-icon">📊</div>
-                                <h6>Ehrlich sein</h6>
-                                <p>Sei ehrlich bei der Selbsteinschätzung</p>
-                                <h6>Feedback nutzen</h6>
-                                <p>Nutze Feedback für objektive Einschätzung</p>
-                                <h6>Ziele setzen</h6>
-                                <p>Setze realistische und messbare Ziele</p>
-                            <div class="tip-icon">⚖️</div>
-                                <h6>Relevanz bewerten</h6>
-                                <p>Bewerte die Relevanz für deine Ziele</p>
-                            <div class="tip-icon">⏰</div>
-                                <h6>Aufwand schätzen</h6>
-                                <p>Schätze den Aufwand realistisch ein</p>
-                            <div class="tip-icon">📈</div>
-                                <h6>Priorisieren</h6>
-                                <p>Priorisiere nach Wichtigkeit und Dringlichkeit</p>
-                <div class="competence-evaluation-scenarios">
-                    <h5>🎭 Kompetenzbewertung-Szenarien</h5>
-                            <h6>Beruf: Beförderung</h6>
-                            <p><strong>Situation:</strong> Du möchtest eine Beförderung erreichen.</p>
-                            <textarea id="scenario-promotion" placeholder="Welche Kompetenzen sind für die Beförderung wichtig?"></textarea>
-                            <h6>Persönlich: Hobby entwickeln</h6>
-                            <p><strong>Situation:</strong> Du möchtest ein neues Hobby entwickeln.</p>
-                            <textarea id="scenario-hobby-development" placeholder="Welche Kompetenzen brauchst du für das Hobby?"></textarea>
-                            <h6>Führung: Team leiten</h6>
-                            <p><strong>Situation:</strong> Du möchtest ein Team leiten.</p>
-                            <textarea id="scenario-team-leadership" placeholder="Welche Führungskompetenzen sind wichtig?"></textarea>
-            <!-- Step 3: Lücken analysieren -->
-            <div class="workflow-step" id="step-3">
-                    <h2>Schritt 3: Lücken analysieren</h2>
-                    <p>Analysiere die Lücken zwischen aktuellem und gewünschtem Niveau</p>
-                <div class="gap-analysis">
-                    <h3>🔍 Lückenanalyse</h3>
-                    <div class="gap-elements">
-                        <div class="element-item">
-                            <h4>Kompetenzlücken</h4>
-                            <p>Identifiziere fehlende Kompetenzen</p>
-                            <textarea id="competence-gaps" placeholder="Identifiziere deine Kompetenzlücken..."></textarea>
-                            <h4>Entwicklungsbedarf</h4>
-                            <p>Analysiere den Entwicklungsbedarf</p>
-                            <textarea id="development-needs" placeholder="Analysiere deinen Entwicklungsbedarf..."></textarea>
-                            <h4>Ressourcenbedarf</h4>
-                            <p>Identifiziere benötigte Ressourcen</p>
-                            <textarea id="resource-needs" placeholder="Identifiziere deine Ressourcenbedürfnisse..."></textarea>
-                            <h4>Zeitrahmen</h4>
-                            <p>Schätze den benötigten Zeitrahmen</p>
-                            <textarea id="timeframe" placeholder="Schätze den Zeitrahmen für die Entwicklung..."></textarea>
-                <div class="gap-analysis-practice">
-                    <h5>🎯 Übung: Lückenanalyse</h5>
-                            <label>Übung 1: Lücken identifizieren</label>
-                            <textarea id="practice-gap-identification" placeholder="Identifiziere alle Kompetenzlücken..."></textarea>
-                            <label>Übung 2: Entwicklungsbedarf analysieren</label>
-                            <textarea id="practice-development-need-analysis" placeholder="Analysiere deinen Entwicklungsbedarf..."></textarea>
-                            <label>Übung 3: Ressourcen planen</label>
-                            <textarea id="practice-resource-planning" placeholder="Plane die benötigten Ressourcen..."></textarea>
-                            <label>Übung 4: Zeitplan erstellen</label>
-                            <textarea id="practice-timeline-creation" placeholder="Erstelle einen realistischen Zeitplan..."></textarea>
-                            <label>Übung 5: Prioritäten setzen</label>
-                            <textarea id="practice-priority-setting" placeholder="Setze Prioritäten für die Entwicklung..."></textarea>
-                            <label>Übung 6: Risiken bewerten</label>
-                            <textarea id="practice-risk-assessment" placeholder="Bewerte Risiken bei der Kompetenzentwicklung..."></textarea>
-                <div class="gap-analysis-tips">
-                    <h5>💡 Tipps für die Lückenanalyse</h5>
-                                <h6>Systematisch vorgehen</h6>
-                                <p>Gehe systematisch bei der Lückenanalyse vor</p>
-                                <h6>Daten nutzen</h6>
-                                <p>Nutze Daten für objektive Analyse</p>
-                                <h6>Fokus halten</h6>
-                                <p>Halte den Fokus auf wichtige Lücken</p>
-                                <h6>Realistisch sein</h6>
-                                <p>Sei realistisch bei der Einschätzung</p>
-                            <div class="tip-icon">🔄</div>
-                                <h6>Regelmäßig überprüfen</h6>
-                                <p>Überprüfe regelmäßig deine Lücken</p>
-                                <p>Sei kreativ bei der Lösungsfindung</p>
-                <div class="gap-analysis-scenarios">
-                    <h5>🎭 Lückenanalyse-Szenarien</h5>
-                            <h6>Beruf: Neue Rolle</h6>
-                            <p><strong>Situation:</strong> Du übernimmst eine neue Rolle im Unternehmen.</p>
-                            <textarea id="scenario-new-role" placeholder="Welche Kompetenzlücken musst du schließen?"></textarea>
-                            <h6>Persönlich: Neues Projekt</h6>
-                            <p><strong>Situation:</strong> Du startest ein neues persönliches Projekt.</p>
-                            <textarea id="scenario-new-project" placeholder="Welche Kompetenzen brauchst du für das Projekt?"></textarea>
-                            <h6>Führung: Größeres Team</h6>
-                            <p><strong>Situation:</strong> Du leitest jetzt ein größeres Team.</p>
-                            <textarea id="scenario-larger-team" placeholder="Welche Führungskompetenzen musst du entwickeln?"></textarea>
-            <!-- Step 4: Entwicklungsplan -->
-            <div class="workflow-step" id="step-4">
-                    <h2>Schritt 4: Entwicklungsplan</h2>
-                    <p>Erstelle einen strukturierten Plan für deine Kompetenzentwicklung</p>
-                <div class="development-planning">
-                    <h3>📋 Entwicklungsplanung</h3>
-                    <div class="planning-elements">
-                            <h4>Lernziele</h4>
-                            <p>Definiere konkrete Lernziele</p>
-                            <textarea id="learning-goals" placeholder="Definiere deine Lernziele..."></textarea>
-                            <h4>Lernmethoden</h4>
-                            <p>Wähle passende Lernmethoden</p>
-                            <textarea id="learning-methods" placeholder="Wähle passende Lernmethoden..."></textarea>
-                            <h4>Ressourcen</h4>
-                            <textarea id="resources" placeholder="Identifiziere benötigte Ressourcen..."></textarea>
-                            <h4>Zeitplan</h4>
-                            <p>Erstelle einen realistischen Zeitplan</p>
-                            <textarea id="timeline" placeholder="Erstelle einen Zeitplan..."></textarea>
-                <div class="development-planning-practice">
-                    <h5>🎯 Übung: Entwicklungsplanung</h5>
-                            <label>Übung 1: SMART-Ziele</label>
-                            <textarea id="practice-smart-goals" placeholder="Formuliere SMART-Ziele für deine Kompetenzentwicklung..."></textarea>
-                            <label>Übung 2: Lernmethoden wählen</label>
-                            <textarea id="practice-learning-method-selection" placeholder="Wähle passende Lernmethoden..."></textarea>
-                            <label>Übung 5: Meilensteine definieren</label>
-                            <textarea id="practice-milestone-definition" placeholder="Definiere Meilensteine für deine Entwicklung..."></textarea>
-                            <label>Übung 6: Erfolgsmessung</label>
-                            <textarea id="practice-success-measurement" placeholder="Definiere Kriterien für den Erfolg..."></textarea>
-                <div class="development-planning-tips">
-                    <h5>💡 Tipps für die Entwicklungsplanung</h5>
-                                <h6>SMART-Ziele</h6>
-                                <p>Formuliere spezifische, messbare, erreichbare Ziele</p>
-                            <div class="tip-icon">📚</div>
-                                <h6>Vielfältige Methoden</h6>
-                                <p>Nutze verschiedene Lernmethoden</p>
-                                <h6>Realistisch planen</h6>
-                                <p>Plane realistisch und flexibel</p>
-                                <p>Überprüfe regelmäßig deinen Fortschritt</p>
-                                <h6>Meilensteine setzen</h6>
-                                <p>Setze Meilensteine für Motivation</p>
-                            <div class="tip-icon">🎉</div>
-                                <h6>Erfolge feiern</h6>
-                                <p>Feiere deine Erfolge</p>
-                <div class="development-planning-scenarios">
-                    <h5>🎭 Entwicklungsplanung-Szenarien</h5>
-                            <h6>Beruf: Spezialisierung</h6>
-                            <p><strong>Situation:</strong> Du möchtest dich in einem Bereich spezialisieren.</p>
-                            <textarea id="scenario-specialization" placeholder="Wie würdest du deine Spezialisierung planen?"></textarea>
-                            <h6>Persönlich: Neue Fähigkeit</h6>
-                            <p><strong>Situation:</strong> Du möchtest eine neue Fähigkeit erlernen.</p>
-                            <textarea id="scenario-new-skill" placeholder="Wie würdest du das Lernen einer neuen Fähigkeit planen?"></textarea>
-                            <textarea id="scenario-leadership-development" placeholder="Wie würdest du deine Führungskompetenzen entwickeln?"></textarea>
-            <!-- Step 5: Umsetzung & Tracking -->
-            <div class="workflow-step" id="step-5">
-                    <h2>Schritt 5: Umsetzung & Tracking</h2>
-                    <p>Setze deinen Entwicklungsplan um und verfolge deinen Fortschritt</p>
-                <div class="implementation-tracking">
-                    <h3>🚀 Umsetzung & Tracking</h3>
-                    <div class="tracking-elements">
-                            <h4>Fortschrittsmessung</h4>
-                            <p>Messe regelmäßig deinen Fortschritt</p>
-                            <textarea id="progress-measurement" placeholder="Wie misst du deinen Fortschritt?"></textarea>
-                            <h4>Anpassungen</h4>
-                            <p>Passe deinen Plan bei Bedarf an</p>
-                            <textarea id="adjustments" placeholder="Wie passt du deinen Plan an?"></textarea>
-                            <h4>Reflexion</h4>
-                            <p>Reflektiere regelmäßig über deine Entwicklung</p>
-                            <textarea id="reflection" placeholder="Wie reflektierst du über deine Entwicklung?"></textarea>
-                            <h4>Kontinuierliche Verbesserung</h4>
-                            <p>Verbessere kontinuierlich deinen Ansatz</p>
-                            <textarea id="continuous-improvement" placeholder="Wie verbesserst du kontinuierlich?"></textarea>
-                <div class="implementation-tracking-practice">
-                    <h5>🎯 Übung: Umsetzung & Tracking</h5>
-                            <label>Übung 1: Fortschritt dokumentieren</label>
-                            <textarea id="practice-progress-documentation" placeholder="Dokumentiere regelmäßig deinen Fortschritt..."></textarea>
-                            <label>Übung 2: Anpassungen vornehmen</label>
-                            <textarea id="practice-adjustments" placeholder="Nimm Anpassungen an deinem Plan vor..."></textarea>
-                            <label>Übung 3: Reflexion üben</label>
-                            <textarea id="practice-reflection" placeholder="Übe regelmäßige Reflexion..."></textarea>
-                            <label>Übung 4: Feedback einholen</label>
-                            <textarea id="practice-feedback-collection" placeholder="Hole regelmäßig Feedback ein..."></textarea>
-                            <label>Übung 5: Erfolge feiern</label>
-                            <textarea id="practice-celebrating-success" placeholder="Feiere deine Erfolge..."></textarea>
-                            <label>Übung 6: Nächste Schritte planen</label>
-                            <textarea id="practice-next-steps-planning" placeholder="Plane deine nächsten Schritte..."></textarea>
-                <div class="implementation-tracking-tips">
-                    <h5>💡 Tipps für Umsetzung & Tracking</h5>
-                                <h6>Regelmäßig messen</h6>
-                                <p>Messe regelmäßig deinen Fortschritt</p>
-                                <h6>Flexibel sein</h6>
-                                <p>Sei flexibel bei Anpassungen</p>
-                            <div class="tip-icon">💭</div>
-                                <h6>Reflektieren</h6>
-                                <p>Reflektiere regelmäßig über deine Entwicklung</p>
-                                <p>Nutze Feedback für Verbesserungen</p>
-                                <p>Feiere auch kleine Erfolge</p>
-                                <h6>Kontinuierlich verbessern</h6>
-                                <p>Verbessere kontinuierlich deinen Ansatz</p>
-                <div class="implementation-tracking-scenarios">
-                    <h5>🎭 Umsetzung & Tracking-Szenarien</h5>
-                            <h6>Beruf: Kompetenzentwicklung</h6>
-                            <p><strong>Situation:</strong> Du entwickelst berufliche Kompetenzen.</p>
-                            <textarea id="scenario-professional-development" placeholder="Wie würdest du deine berufliche Entwicklung verfolgen?"></textarea>
-                            <p><strong>Situation:</strong> Du entwickelst ein neues Hobby.</p>
-                            <textarea id="scenario-hobby-development" placeholder="Wie würdest du deine Hobbyentwicklung verfolgen?"></textarea>
-                            <p><strong>Situation:</strong> Du entwickelst Führungskompetenzen.</p>
-                            <textarea id="scenario-leadership-tracking" placeholder="Wie würdest du deine Führungskompetenzen verfolgen?"></textarea>
-                <div class="competence-summary">
-                    <h5>🎉 Competence Map Zusammenfassung</h5>
-                    <div class="summary-form">
-                        <div class="summary-item">
-                            <label>Hauptkompetenzen:</label>
-                            <textarea id="main-competences" placeholder="Welche sind deine Hauptkompetenzen?"></textarea>
-                            <label>Entwicklungsbereiche:</label>
-                            <textarea id="development-areas" placeholder="Welche Bereiche möchtest du entwickeln?"></textarea>
-                            <label>Entwicklungsplan:</label>
-                            <textarea id="development-plan" placeholder="Wie sieht dein Entwicklungsplan aus?"></textarea>
-                            <label>Nächste Schritte:</label>
-                            <textarea id="next-steps" placeholder="Welche nächsten Schritte sind wichtig?"></textarea>
-                            <label>Lernpunkte:</label>
-                            <textarea id="learning-points" placeholder="Was hast du für die Zukunft gelernt?"></textarea>
-        <div class="workflow-navigation">
-            <button id="prev-step" class="nav-button prev-button" data-action="previous-step">
-                <i class="fas fa-arrow-left"></i> Zurück
-            <button id="next-step" class="nav-button next-button" data-action="next-step">
-                Weiter <i class="fas fa-arrow-right"></i>
-    </div>
-    <script src="competence-map.js"></script>
-    <!-- Global Auth System -->
-    <script src="../../js/aws-config.js"></script>
-    <script src="js/global-auth-system.js"></script>    <script src="../../js/unified-auth-manager.js"></script>
-    
-    <!-- Auth Modals Container -->
-    <div id="authModalsContainer"></div>
+    <div class="mk-toast" id="mk-toast"></div>
 
-    <!-- AWS Configuration -->
     <script>
-        window.AWS_CONFIG = {
-            region: 'eu-central-1',
-            userPoolId: 'eu-central-1_8gP4gLK9r',
-            clientId: '7kc5tt6a23fgh53d60vkefm812',
-            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-            dynamoDB: {
-                tableName: 'mawps-user-profiles',
-                region: 'eu-central-1'
-            },
-            s3: {
-                bucket: 'mawps-user-files-1760106396',
-                region: 'eu-central-1'
-            }
-        };
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
     </script>
-    
-    <!-- AWS SDK -->
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
-    
-    <!-- Auth & Progress Tracking -->
-    <script src="/js/aws-profile-api.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
-    <script src="/js/user-progress-tracker.js"></script>
-    <script src="/js/personality-auth-integration.js"></script>
+    <script src="../_kit/method-kit.js"></script>
+    <script>
+        const CATS = [
+            {c:'🎓 Fachkompetenz', items:['Fachwissen','Digitale Skills','Sprachen']},
+            {c:'🧩 Methodenkompetenz', items:['Problemlösen','Projektmanagement','Analytik']},
+            {c:'🤝 Sozialkompetenz', items:['Kommunikation','Teamarbeit','Konfliktfähigkeit']},
+            {c:'🌱 Persönliche Kompetenz', items:['Selbstorganisation','Resilienz','Lernbereitschaft']}
+        ];
+        (async function () {
+            await MethodKit.init({
+                method: 'competence-map',
+                accent: '#0ea5e9', accent2: '#6366f1',
+                steps: [{icon:'📊',label:'Bewerten'},{icon:'🎯',label:'Lücken'}],
+                defaultState: { ist:{}, soll:{}, plan:'' }
+            });
+            MethodKit.bindFields();
+            const S = MethodKit.state;
+
+            const host=document.getElementById('cm-fields');
+            function key(c,it){ return c+'|'+it; }
+            host.innerHTML=CATS.map(cat=>`<div style="margin-bottom:14px;"><div style="font-weight:700;margin-bottom:4px;">${cat.c}</div>${cat.items.map(it=>{ const k=key(cat.c,it); return `<div class="cm-row"><strong style="font-size:14px;">${it}</strong><div class="cm-sliders"><div class="cm-mini"><label>Ist: <span data-istv="${k}">${S.ist[k]||2}</span></label><input class="mk-range" type="range" min="1" max="5" data-ist="${k}" value="${S.ist[k]||2}"></div><div class="cm-mini"><label>Soll: <span data-sollv="${k}">${S.soll[k]||4}</span></label><input class="mk-range" type="range" min="1" max="5" data-soll="${k}" value="${S.soll[k]||4}"></div></div></div>`; }).join('')}</div>`).join('');
+            host.querySelectorAll('[data-ist]').forEach(el=>el.addEventListener('input',()=>{ S.ist[el.dataset.ist]=parseInt(el.value,10); host.querySelector(`[data-istv="${CSS.escape(el.dataset.ist)}"]`).textContent=el.value; MethodKit.save(); }));
+            host.querySelectorAll('[data-soll]').forEach(el=>el.addEventListener('input',()=>{ S.soll[el.dataset.soll]=parseInt(el.value,10); host.querySelector(`[data-sollv="${CSS.escape(el.dataset.soll)}"]`).textContent=el.value; MethodKit.save(); }));
+
+            MethodKit.onStep=function(n){ if(n===2){
+                const rows=[];
+                CATS.forEach(cat=>cat.items.forEach(it=>{ const k=key(cat.c,it); const ist=S.ist[k]||2, soll=S.soll[k]||4; rows.push({it,cat:cat.c,gap:soll-ist,ist,soll}); }));
+                rows.sort((a,b)=>b.gap-a.gap);
+                document.getElementById('cm-gaps').innerHTML=rows.map(r=>`<div class="mk-row"><div class="grow">${MethodKit.esc(r.it)} <span style="color:var(--mk-faint);font-size:12px;">${r.cat.replace(/^.. /,'')}</span></div><span class="mk-range-val" style="background:${r.gap>=2?'rgba(239,68,68,.15)':'var(--mk-accent-soft)'};color:${r.gap>=2?'#dc2626':'var(--mk-accent)'};">+${r.gap}</span></div>`).join('');
+            }};
+
+            document.getElementById('cm-export').addEventListener('click',()=>{
+                let t='KOMPETENZ-MAP\n=============\n\n';
+                CATS.forEach(cat=>{ t+=`${cat.c}\n`; cat.items.forEach(it=>{ const k=key(cat.c,it); t+=`  ${it}: Ist ${S.ist[k]||2} → Soll ${S.soll[k]||4}\n`; }); t+='\n'; });
+                t+=`Plan: ${S.plan||'–'}\n`;
+                MethodKit.exportText('meine-kompetenz-map.txt', t);
+            });
+        })();
+    </script>
 </body>
 </html>

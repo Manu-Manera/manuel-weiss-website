@@ -3,440 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wheel of Life | Manuel Weiss</title>
-    <link rel="stylesheet" href="css/wheel-of-life-smart-styles.css">
-    <link rel="stylesheet" href="css/wheel-of-life-diagram-styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <!-- Progress Badge Styles -->
-    <style>
-        .user-progress-badge {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background: white;
-            border-radius: 8px;
-            padding: 12px 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            font-size: 14px;
-            min-width: 200px;
-        }
-        
-        .user-progress-badge .user-info,
-        .user-progress-badge .progress-sync {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #4a5568;
-        }
-        
-        .user-progress-badge i {
-            font-size: 16px;
-            color: #667eea;
-        }
-        
-        @media (max-width: 768px) {
-            .user-progress-badge {
-                top: auto;
-                bottom: 20px;
-                right: 10px;
-                left: 10px;
-                min-width: auto;
-            }
-        }
-    </style>
+    <title>Lebensrad | Manuel Weiss</title>
+    <meta name="description" content="Das Lebensrad zeigt auf einen Blick, wie ausgewogen dein Leben ist. Bewerte acht Lebensbereiche und finde heraus, wo du ansetzen solltest.">
+    <link rel="stylesheet" href="../_kit/method-light.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>:root { --mk-accent: #0ea5e9; --mk-accent-2: #6366f1; --mk-accent-soft: rgba(14,165,233,.12); }</style>
 </head>
-<body data-page-id="index-wheel-of-life">
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-circle-notch"></i></span><span>Lebensrad</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
+    </header>
 
-    <!-- Progress Badge -->
-    <div class="user-progress-badge" style="display: none;">
-        <div class="user-info">
-            <i class="fas fa-user-circle"></i>
-            <span>Nicht angemeldet</span>
-        </div>
-        <div class="progress-sync">
-            <i class="fas fa-cloud-off-alt"></i>
-            <span>Fortschritt lokal</span>
-        </div>
-    </div>
-    <!-- Hero Section mit Wheel of Life Diagramm -->
-    <section class="hero-section">
-        <div class="hero-background">
-            <div class="sparkling-stars"></div>
-        </div>
-        <div class="container">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h1 class="hero-title">
-                        <span class="title-icon">🎯</span>
-                        Wheel of Life
-                    </h1>
-                    <p class="hero-subtitle">
-                        Bewerte deine Lebensbereiche und finde heraus, wo du deine Energie investieren solltest
-                    </p>
-                    <p class="hero-description">
-                        Das Wheel of Life hilft dir dabei, deine Lebensbalance zu analysieren und 
-                        Bereiche zu identifizieren, die deine Aufmerksamkeit benötigen. Bewerte 
-                        jeden Lebensbereich und entwickle einen Plan für mehr Zufriedenheit.
-                    </p>
-                    
-                    <!-- YouTube Video -->
-                    <div class="video-section">
-                        <h3>Mehr über Wheel of Life erfahren</h3>
-                        <div class="video-container">
-                            <iframe 
-                                src="https://www.youtube.com/embed/VIDEO_ID" 
-                                title="Wheel of Life"
-                                frameborder="0" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                allowfullscreen>
-                            </iframe>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Wheel of Life Diagramm -->
-                <div class="wheel-container">
-                    <div class="wheel-of-life" id="wheelOfLife">
-                        <div class="wheel-center">
-                            <div class="center-score" id="centerScore">0</div>
-                            <div class="center-label">Lebensbalance</div>
-                        </div>
-                        
-                        <!-- Lebensbereiche -->
-                        <div class="life-area" data-area="career" data-score="0">
-                            <div class="area-icon">💼</div>
-                            <div class="area-label">Karriere</div>
-                            <div class="area-score">0</div>
-                        </div>
-                        
-                        <div class="life-area" data-area="finances" data-score="0">
-                            <div class="area-icon">💰</div>
-                            <div class="area-label">Finanzen</div>
-                            <div class="area-score">0</div>
-                        </div>
-                        
-                        <div class="life-area" data-area="health" data-score="0">
-                            <div class="area-icon">🏥</div>
-                            <div class="area-label">Gesundheit</div>
-                            <div class="area-score">0</div>
-                        </div>
-                        
-                        <div class="life-area" data-area="family" data-score="0">
-                            <div class="area-icon">👨‍👩‍👧‍👦</div>
-                            <div class="area-label">Familie</div>
-                            <div class="area-score">0</div>
-                        </div>
-                        
-                        <div class="life-area" data-area="relationships" data-score="0">
-                            <div class="area-icon">👥</div>
-                            <div class="area-label">Beziehungen</div>
-                            <div class="area-score">0</div>
-                        </div>
-                        
-                        <div class="life-area" data-area="personal-development" data-score="0">
-                            <div class="area-icon">📚</div>
-                            <div class="area-label">Entwicklung</div>
-                            <div class="area-score">0</div>
-                        </div>
-                        
-                        <div class="life-area" data-area="leisure" data-score="0">
-                            <div class="area-icon">🎮</div>
-                            <div class="area-label">Freizeit</div>
-                            <div class="area-score">0</div>
-                        </div>
-                        
-                        <div class="life-area" data-area="spirituality" data-score="0">
-                            <div class="area-icon">🧘</div>
-                            <div class="area-label">Spiritualität</div>
-                            <div class="area-score">0</div>
-                        </div>
-                    </div>
-                </div>
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-circle-notch"></i></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <h1>Wie rund läuft dein Leben?</h1>
+            <p>Das Lebensrad macht in einem Bild sichtbar, wo dein Leben im Gleichgewicht ist – und wo es „eiert". Bewerte acht Bereiche und entscheide bewusst, wo du als Nächstes investierst.</p>
+            <div class="mk-badges"><span class="mk-badge">8 Lebensbereiche</span><span class="mk-badge">Visualisierung</span><span class="mk-badge">Fokus</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Bewerte deine Lebensbereiche</h2>
+                <p class="mk-sub">Wie zufrieden bist du aktuell? 1 = gar nicht, 10 = rundum zufrieden.</p>
+                <div id="wl-rate"></div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Lebensbereiche Übersicht -->
-    <section class="life-areas-section">
-        <div class="container">
-            <h2 class="section-title">Die 8 Lebensbereiche</h2>
-            <p class="section-subtitle">Bewerte jeden Bereich von 1-10 und entwickle deine Lebensbalance</p>
-            
-            <div class="life-areas-grid">
-                <!-- Karriere -->
-                <div class="life-area-card career" data-area="career">
-                    <div class="card-header">
-                        <div class="card-icon">💼</div>
-                        <h3>Karriere</h3>
-                    </div>
-                    <div class="card-content">
-                        <p class="card-description">
-                            Deine berufliche Entwicklung, Zufriedenheit und Wachstum
-                        </p>
-                        <div class="score-input">
-                            <label>Bewertung (1-10):</label>
-                            <input type="range" min="1" max="10" value="5" class="score-slider" data-area="career">
-                            <span class="score-display">5</span>
-                        </div>
-                        <div class="card-actions">
-                            <a href="career-wheel.html" class="btn-primary">Detaillierte Analyse</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Finanzen -->
-                <div class="life-area-card finances" data-area="finances">
-                    <div class="card-header">
-                        <div class="card-icon">💰</div>
-                        <h3>Finanzen</h3>
-                    </div>
-                    <div class="card-content">
-                        <p class="card-description">
-                            Finanzielle Sicherheit, Wohlstand und Geldmanagement
-                        </p>
-                        <div class="score-input">
-                            <label>Bewertung (1-10):</label>
-                            <input type="range" min="1" max="10" value="5" class="score-slider" data-area="finances">
-                            <span class="score-display">5</span>
-                        </div>
-                        <div class="card-actions">
-                            <a href="finances-wheel.html" class="btn-primary">Detaillierte Analyse</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Gesundheit -->
-                <div class="life-area-card health" data-area="health">
-                    <div class="card-header">
-                        <div class="card-icon">🏥</div>
-                        <h3>Gesundheit</h3>
-                    </div>
-                    <div class="card-content">
-                        <p class="card-description">
-                            Körperliche und mentale Gesundheit, Fitness und Wohlbefinden
-                        </p>
-                        <div class="score-input">
-                            <label>Bewertung (1-10):</label>
-                            <input type="range" min="1" max="10" value="5" class="score-slider" data-area="health">
-                            <span class="score-display">5</span>
-                        </div>
-                        <div class="card-actions">
-                            <a href="health-wheel.html" class="btn-primary">Detaillierte Analyse</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Familie -->
-                <div class="life-area-card family" data-area="family">
-                    <div class="card-header">
-                        <div class="card-icon">👨‍👩‍👧‍👦</div>
-                        <h3>Familie</h3>
-                    </div>
-                    <div class="card-content">
-                        <p class="card-description">
-                            Familienbeziehungen, Zeit mit Angehörigen und Familienharmonie
-                        </p>
-                        <div class="score-input">
-                            <label>Bewertung (1-10):</label>
-                            <input type="range" min="1" max="10" value="5" class="score-slider" data-area="family">
-                            <span class="score-display">5</span>
-                        </div>
-                        <div class="card-actions">
-                            <a href="family-wheel.html" class="btn-primary">Detaillierte Analyse</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Beziehungen -->
-                <div class="life-area-card relationships" data-area="relationships">
-                    <div class="card-header">
-                        <div class="card-icon">👥</div>
-                        <h3>Beziehungen</h3>
-                    </div>
-                    <div class="card-content">
-                        <p class="card-description">
-                            Soziale Kontakte, Freundschaften und zwischenmenschliche Beziehungen
-                        </p>
-                        <div class="score-input">
-                            <label>Bewertung (1-10):</label>
-                            <input type="range" min="1" max="10" value="5" class="score-slider" data-area="relationships">
-                            <span class="score-display">5</span>
-                        </div>
-                        <div class="card-actions">
-                            <a href="relationships-wheel.html" class="btn-primary">Detaillierte Analyse</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Persönliche Entwicklung -->
-                <div class="life-area-card personal-development" data-area="personal-development">
-                    <div class="card-header">
-                        <div class="card-icon">📚</div>
-                        <h3>Entwicklung</h3>
-                    </div>
-                    <div class="card-content">
-                        <p class="card-description">
-                            Lernen, Wachstum und persönliche Weiterentwicklung
-                        </p>
-                        <div class="score-input">
-                            <label>Bewertung (1-10):</label>
-                            <input type="range" min="1" max="10" value="5" class="score-slider" data-area="personal-development">
-                            <span class="score-display">5</span>
-                        </div>
-                        <div class="card-actions">
-                            <a href="personal-development-wheel.html" class="btn-primary">Detaillierte Analyse</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Freizeit -->
-                <div class="life-area-card leisure" data-area="leisure">
-                    <div class="card-header">
-                        <div class="card-icon">🎮</div>
-                        <h3>Freizeit</h3>
-                    </div>
-                    <div class="card-content">
-                        <p class="card-description">
-                            Hobbys, Erholung und Aktivitäten für Entspannung
-                        </p>
-                        <div class="score-input">
-                            <label>Bewertung (1-10):</label>
-                            <input type="range" min="1" max="10" value="5" class="score-slider" data-area="leisure">
-                            <span class="score-display">5</span>
-                        </div>
-                        <div class="card-actions">
-                            <a href="leisure-wheel.html" class="btn-primary">Detaillierte Analyse</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Spiritualität -->
-                <div class="life-area-card spirituality" data-area="spirituality">
-                    <div class="card-header">
-                        <div class="card-icon">🧘</div>
-                        <h3>Spiritualität</h3>
-                    </div>
-                    <div class="card-content">
-                        <p class="card-description">
-                            Sinn, Werte, Glaube und spirituelle Entwicklung
-                        </p>
-                        <div class="score-input">
-                            <label>Bewertung (1-10):</label>
-                            <input type="range" min="1" max="10" value="5" class="score-slider" data-area="spirituality">
-                            <span class="score-display">5</span>
-                        </div>
-                        <div class="card-actions">
-                            <a href="spirituality-wheel.html" class="btn-primary">Detaillierte Analyse</a>
-                        </div>
-                    </div>
-                </div>
+        <section class="mk-step" data-step="2">
+            <div class="mk-card" style="text-align:center;">
+                <h2>Dein Lebensrad</h2>
+                <p class="mk-sub">Je runder, desto ausgewogener.</p>
+                <div id="wl-chart"></div>
+                <div id="wl-legend" style="text-align:left; margin-top:14px;"></div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Features Section -->
-    <section class="features-section">
-        <div class="container">
-            <h2 class="section-title">Warum Wheel of Life?</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">⚖️</div>
-                    <h3>Lebensbalance</h3>
-                    <p>Erkenne Ungleichgewichte in deinen Lebensbereichen und finde Wege zur Balance</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🎯</div>
-                    <h3>Priorisierung</h3>
-                    <p>Identifiziere Bereiche, die deine Aufmerksamkeit und Energie benötigen</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📈</div>
-                    <h3>Entwicklung</h3>
-                    <p>Entwickle konkrete Pläne für die Verbesserung deiner Lebensbereiche</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔍</div>
-                    <h3>Selbsterkenntnis</h3>
-                    <p>Gewinne Klarheit über deine aktuelle Lebenssituation und Zufriedenheit</p>
-                </div>
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>Wo setzt du an?</h2>
+                <p class="mk-sub">Oft lohnt der größte Hebel beim niedrigsten Bereich – aber du entscheidest.</p>
+                <div class="mk-chips" id="wl-focus" style="margin-bottom:14px;"></div>
+                <div class="mk-field"><label>Eine konkrete Sache, die diesen Bereich um 1 Punkt hebt</label><input class="mk-input" data-mk-field="action" placeholder="z. B. „Jeden Sonntag mit einem Freund telefonieren""></div>
+                <button class="mk-btn mk-btn-primary" id="wl-export"><i class="fas fa-download"></i> Lebensrad herunterladen</button>
             </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
+            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
-    </section>
+    </main>
 
-    <!-- CTA Section -->
-    <section class="cta-section">
-        <div class="container">
-            <div class="cta-content">
-                <h2>Bereit für deine Lebensbalance-Analyse?</h2>
-                <p>Bewerte deine Lebensbereiche und entwickle einen Plan für mehr Zufriedenheit</p>
-                <div class="cta-buttons">
-                    <a href="step1-wheel.html" class="btn-primary">Jetzt starten</a>
-                    <button class="btn-secondary" onclick="generateReport()">Bericht generieren</button>
-                </div>
-            </div>
-        </div>
-    </section>
+    <div class="mk-toast" id="mk-toast"></div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Wheel of Life</h3>
-                    <p>Lebensbalance-Analyse für mehr Zufriedenheit</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Verwandte Methoden</h3>
-                    <ul>
-                        <li><a href="../ikigai/index-ikigai.html">Ikigai</a></li>
-                        <li><a href="../swot/index-swot.html">SWOT-Analyse</a></li>
-                        <li><a href="../raisec/index-raisec.html">RAISEC</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Kontakt</h3>
-                    <p>Manuel Weiss<br>Lebensbalance-Coaching</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Manuel Weiss. Alle Rechte vorbehalten.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script src="js/wheel-of-life-workflow.js"></script>
-
-    <!-- AWS Configuration -->
     <script>
-        window.AWS_CONFIG = {
-            region: 'eu-central-1',
-            userPoolId: 'eu-central-1_8gP4gLK9r',
-            clientId: '7kc5tt6a23fgh53d60vkefm812',
-            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-            dynamoDB: {
-                tableName: 'mawps-user-profiles',
-                region: 'eu-central-1'
-            },
-            s3: {
-                bucket: 'mawps-user-files-1760106396',
-                region: 'eu-central-1'
-            }
-        };
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
     </script>
-    
-    <!-- AWS SDK -->
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
-    
-    <!-- Auth & Progress Tracking -->
-    <script src="/js/aws-profile-api.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
-    <script src="/js/user-progress-tracker.js"></script>
-    <script src="/js/personality-auth-integration.js"></script>
+    <script src="../_kit/method-kit.js"></script>
+    <script>
+        const AREAS = [
+            {id:'health',ic:'💪',label:'Gesundheit'},{id:'career',ic:'💼',label:'Karriere'},
+            {id:'money',ic:'💰',label:'Finanzen'},{id:'love',ic:'❤️',label:'Partnerschaft'},
+            {id:'family',ic:'👪',label:'Familie & Freunde'},{id:'growth',ic:'📈',label:'Entwicklung'},
+            {id:'fun',ic:'🎉',label:'Freizeit & Spaß'},{id:'meaning',ic:'🧭',label:'Sinn & Spiritualität'}
+        ];
+        (async function () {
+            await MethodKit.init({
+                method: 'wheel-of-life',
+                accent: '#0ea5e9', accent2: '#6366f1',
+                steps: [{icon:'📊',label:'Bewerten'},{icon:'🎡',label:'Rad'},{icon:'🎯',label:'Fokus'}],
+                defaultState: { ratings:{}, focus:'', action:'' }
+            });
+            MethodKit.bindFields();
+            const S = MethodKit.state;
+
+            const rate=document.getElementById('wl-rate');
+            rate.innerHTML=AREAS.map(a=>`<div class="mk-field"><label>${a.ic} ${a.label}</label><div class="mk-range-wrap"><input class="mk-range" type="range" min="1" max="10" data-r="${a.id}" value="${S.ratings[a.id]||5}"><span class="mk-range-val" data-rv="${a.id}">${S.ratings[a.id]||5}</span></div></div>`).join('');
+            rate.querySelectorAll('[data-r]').forEach(el=>el.addEventListener('input',()=>{ S.ratings[el.dataset.r]=parseInt(el.value,10); rate.querySelector(`[data-rv="${el.dataset.r}"]`).textContent=el.value; MethodKit.save(); }));
+
+            function drawWheel(){
+                const N=AREAS.length, cx=150, cy=150, R=110;
+                const pt=(i,r)=>{ const ang=-Math.PI/2 + i*2*Math.PI/N; return [cx+r*Math.cos(ang), cy+r*Math.sin(ang)]; };
+                let grid='';
+                [2,4,6,8,10].forEach(g=>{ let pts=AREAS.map((_,i)=>pt(i,g/10*R).join(',')).join(' '); grid+=`<polygon points="${pts}" fill="none" stroke="#e2e8f0" stroke-width="1"/>`; });
+                let axes='', labels='';
+                AREAS.forEach((a,i)=>{ const [x,y]=pt(i,R); axes+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#e2e8f0" stroke-width="1"/>`;
+                    const [lx,ly]=pt(i,R+22); labels+=`<text x="${lx}" y="${ly}" font-size="13" text-anchor="middle" dominant-baseline="middle" fill="#475569">${a.ic}</text>`; });
+                const dataPts=AREAS.map((a,i)=>pt(i,(S.ratings[a.id]||5)/10*R).join(',')).join(' ');
+                const dots=AREAS.map((a,i)=>{ const [x,y]=pt(i,(S.ratings[a.id]||5)/10*R); return `<circle cx="${x}" cy="${y}" r="3.5" fill="#0ea5e9"/>`; }).join('');
+                document.getElementById('wl-chart').innerHTML=`<svg viewBox="0 0 300 300" style="max-width:340px;width:100%;">${grid}${axes}<polygon points="${dataPts}" fill="rgba(14,165,233,.25)" stroke="#0ea5e9" stroke-width="2"/>${dots}${labels}</svg>`;
+                document.getElementById('wl-legend').innerHTML=AREAS.map(a=>`<span class="mk-badge" style="margin:0 6px 6px 0;">${a.ic} ${a.label}: ${S.ratings[a.id]||5}</span>`).join('');
+            }
+
+            function renderFocus(){
+                const fh=document.getElementById('wl-focus');
+                let weak=AREAS[0].id, min=11; AREAS.forEach(a=>{ const v=S.ratings[a.id]||5; if(v<min){min=v;weak=a.id;} });
+                if(!S.focus) S.focus=weak;
+                fh.innerHTML=AREAS.map(a=>`<button class="mk-chip ${S.focus===a.id?'selected':''}" data-f="${a.id}">${a.ic} ${a.label} (${S.ratings[a.id]||5})</button>`).join('');
+                fh.querySelectorAll('[data-f]').forEach(el=>el.addEventListener('click',()=>{ S.focus=el.dataset.f; MethodKit.save(); renderFocus(); }));
+            }
+            MethodKit.onStep=function(n){ if(n===2) drawWheel(); if(n===3) renderFocus(); };
+
+            document.getElementById('wl-export').addEventListener('click',()=>{
+                const f=AREAS.find(a=>a.id===S.focus)||{label:'–'};
+                let t='MEIN LEBENSRAD\n==============\n\n';
+                AREAS.forEach(a=>t+=`${a.label}: ${S.ratings[a.id]||5}/10\n`);
+                t+=`\nFokus: ${f.label}\nMaßnahme: ${S.action}\n`;
+                MethodKit.exportText('mein-lebensrad.txt', t);
+            });
+        })();
+    </script>
 </body>
 </html>
