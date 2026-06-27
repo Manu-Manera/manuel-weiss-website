@@ -1,355 +1,119 @@
-<div class="workflow-container">
-    <div class="workflow-header">
-        <button class="btn btn-secondary" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
-            <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
-        </button>
-    </div>
-    <div class="workflow-intro">
-        <h3>Stress-Management: Gelassenheit in jeder Situation</h3>
-        <p>Lerne, Stress zu erkennen, zu verstehen und effektiv zu bewältigen. Entwickle Strategien für ein ausgeglichenes und entspanntes Leben.</p>
-        <div class="workflow-features">
-            <span class="feature-badge">Stress-Analyse</span>
-            <span class="feature-badge">Bewältigungsstrategien</span>
-            <span class="feature-badge">Entspannungstechniken</span>
-            <span class="feature-badge">Prävention</span>
-        </div>
-    
-    <div class="workflow-progress">
-        <div class="progress-step active" data-step="1">
-            <div class="step-number">1</div>
-            <div class="step-title">Stress-Analyse</div>
-        <div class="progress-step" data-step="2">
-            <div class="step-number">2</div>
-            <div class="step-title">Bewältigungsstrategien</div>
-        <div class="progress-step" data-step="3">
-            <div class="step-number">3</div>
-            <div class="step-title">Entspannungstechniken</div>
-        <div class="progress-step" data-step="4">
-            <div class="step-number">4</div>
-            <div class="step-title">Prävention</div>
-    <!-- Step 1: Stress-Analyse -->
-    <div class="workflow-step active" data-step="1">
-        <div class="step-header">
-            <h3>Schritt 1: Stress-Analyse</h3>
-            <p>Erkenne deine persönlichen Stressquellen und verstehe, wie Stress auf dich wirkt.</p>
-        
-        <div class="stress-analysis">
-            <div class="analysis-intro">
-                <h4>🔍 Stress-Analyse</h4>
-                <p>Der erste Schritt zur Stressbewältigung ist das Verstehen deiner persönlichen Stressmuster.</p>
-            </div>
-            
-            <div class="stress-sources">
-                <h4>📊 Stressquellen identifizieren</h4>
-                <div class="sources-grid">
-                    <div class="source-category">
-                        <h5>💼 Beruf & Arbeit</h5>
-                        <div class="stress-list">
-                            <div class="stress-item">
-                                <input type="text" placeholder="z.B. Überstunden, Deadlines, Konflikte mit Kollegen">
-                                <div class="stress-intensity">
-                                    <label>Intensität:</label>
-                                    <input type="range" min="1" max="10" value="5" class="stress-slider">
-                                    <span class="stress-value">5</span>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="btn btn-outline btn-sm" data-action="add-stress-source" data-param="work">+ Weitere hinzufügen</button>
-                    </div>
-                    
-                        <h5>👥 Beziehungen</h5>
-                                <input type="text" placeholder="z.B. Familienkonflikte, Partnerschaftsprobleme">
-                        <button class="btn btn-outline btn-sm" data-action="add-stress-source" data-param="relationships">+ Weitere hinzufügen</button>
-                        <h5>💰 Finanzen</h5>
-                                <input type="text" placeholder="z.B. Schulden, unerwartete Ausgaben">
-                        <button class="btn btn-outline btn-sm" data-action="add-stress-source" data-param="finances">+ Weitere hinzufügen</button>
-                        <h5>🏠 Alltag & Organisation</h5>
-                                <input type="text" placeholder="z.B. Zeitmangel, Termindruck, Haushalt">
-                        <button class="btn btn-outline btn-sm" data-action="add-stress-source" data-param="daily">+ Weitere hinzufügen</button>
-                </div>
-            <div class="stress-symptoms">
-                <h4>🚨 Stress-Symptome</h4>
-                <p>Welche körperlichen und emotionalen Symptome bemerkst du bei Stress?</p>
-                <div class="symptoms-grid">
-                    <div class="symptom-category">
-                        <h5>💭 Emotionale Symptome</h5>
-                        <div class="symptom-list">
-                            <div class="symptom-item">
-                                <input type="checkbox" id="anxiety">
-                                <label for="anxiety">Angst & Sorgen</label>
-                                <input type="checkbox" id="irritability">
-                                <label for="irritability">Reizbarkeit</label>
-                                <input type="checkbox" id="mood-swings">
-                                <label for="mood-swings">Stimmungsschwankungen</label>
-                                <input type="checkbox" id="overwhelm">
-                                <label for="overwhelm">Überforderung</label>
-                                <input type="checkbox" id="depression">
-                                <label for="depression">Niedergeschlagenheit</label>
-                        <h5>🏃‍♂️ Körperliche Symptome</h5>
-                                <input type="checkbox" id="headaches">
-                                <label for="headaches">Kopfschmerzen</label>
-                                <input type="checkbox" id="muscle-tension">
-                                <label for="muscle-tension">Muskelverspannungen</label>
-                                <input type="checkbox" id="sleep-problems">
-                                <label for="sleep-problems">Schlafprobleme</label>
-                                <input type="checkbox" id="digestive-issues">
-                                <label for="digestive-issues">Verdauungsprobleme</label>
-                                <input type="checkbox" id="fatigue">
-                                <label for="fatigue">Erschöpfung</label>
-                        <h5>🧠 Kognitive Symptome</h5>
-                                <input type="checkbox" id="concentration">
-                                <label for="concentration">Konzentrationsschwierigkeiten</label>
-                                <input type="checkbox" id="memory">
-                                <label for="memory">Gedächtnisprobleme</label>
-                                <input type="checkbox" id="decision-making">
-                                <label for="decision-making">Entscheidungsschwierigkeiten</label>
-                                <input type="checkbox" id="racing-thoughts">
-                                <label for="racing-thoughts">Rasende Gedanken</label>
-                                <input type="checkbox" id="negative-thinking">
-                                <label for="negative-thinking">Negative Gedanken</label>
-            <div class="stress-assessment">
-                <h4>📈 Stress-Level Assessment</h4>
-                <div class="assessment-questions">
-                    <div class="question-item">
-                        <label>Wie oft fühlst du dich gestresst?</label>
-                        <div class="rating-scale">
-                            <span>Nie</span>
-                            <input type="range" min="1" max="5" value="3" class="assessment-slider">
-                            <span>Immer</span>
-                        <label>Wie gut schläfst du nachts?</label>
-                            <span>Sehr schlecht</span>
-                            <span>Sehr gut</span>
-                        <label>Wie zufrieden bist du mit deinem Leben?</label>
-                            <span>Sehr unzufrieden</span>
-                            <span>Sehr zufrieden</span>
-                
-                <div class="assessment-result">
-                    <h5>Dein aktueller Stress-Level:</h5>
-                    <div class="stress-level-display">
-                        <div class="level-bar">
-                            <div class="level-fill" id="stress-level-fill"></div>
-                        <span class="level-text" id="stress-level-text">Mittel</span>
-    <!-- Step 2: Bewältigungsstrategien -->
-    <div class="workflow-step" data-step="2">
-            <h3>Schritt 2: Bewältigungsstrategien</h3>
-            <p>Entwickle individuelle Strategien zur Stressbewältigung, die zu dir und deiner Situation passen.</p>
-        <div class="coping-strategies">
-            <div class="strategies-intro">
-                <h4>🛠️ Bewältigungsstrategien</h4>
-                <p>Es gibt verschiedene Wege, mit Stress umzugehen. Finde die Strategien, die für dich am besten funktionieren.</p>
-            <div class="strategy-categories">
-                <div class="strategy-category">
-                    <h5>💭 Kognitive Strategien</h5>
-                    <div class="strategy-list">
-                        <div class="strategy-item">
-                            <h6>Gedankenstopp</h6>
-                            <p>Stoppe negative Gedankenspiralen durch bewusste Unterbrechung.</p>
-                            <button class="btn btn-outline btn-sm" data-action="show-strategy-guide" data-param="thought-stopping">Anleitung</button>
-                            <h6>Realitätscheck</h6>
-                            <p>Überprüfe deine Gedanken auf Realitätsgehalt und Übertreibungen.</p>
-                            <button class="btn btn-outline btn-sm" data-action="show-strategy-guide" data-param="reality-check">Anleitung</button>
-                            <h6>Positive Umformulierung</h6>
-                            <p>Formuliere schwierige Situationen positiv um.</p>
-                            <button class="btn btn-outline btn-sm" data-action="show-strategy-guide" data-param="reframing">Anleitung</button>
-                    <h5>🎯 Problemlösungsstrategien</h5>
-                            <h6>Problem-Analyse</h6>
-                            <p>Analysiere das Problem systematisch und finde Lösungsansätze.</p>
-                            <button class="btn btn-outline btn-sm" data-action="show-strategy-guide" data-param="problem-analysis">Anleitung</button>
-                            <h6>Prioritäten setzen</h6>
-                            <p>Setze klare Prioritäten und konzentriere dich auf das Wichtigste.</p>
-                            <button class="btn btn-outline btn-sm" data-action="show-strategy-guide" data-param="priorities">Anleitung</button>
-                            <h6>Zeitmanagement</h6>
-                            <p>Organisiere deine Zeit effektiv und vermeide Zeitdruck.</p>
-                            <button class="btn btn-outline btn-sm" data-action="show-strategy-guide" data-param="time-management">Anleitung</button>
-                    <h5>🤝 Soziale Strategien</h5>
-                            <h6>Soziale Unterstützung</h6>
-                            <p>Suche Unterstützung bei Familie, Freunden oder Kollegen.</p>
-                            <button class="btn btn-outline btn-sm" data-action="show-strategy-guide" data-param="social-support">Anleitung</button>
-                            <h6>Kommunikation</h6>
-                            <p>Kommuniziere deine Bedürfnisse und Grenzen klar.</p>
-                            <button class="btn btn-outline btn-sm" data-action="show-strategy-guide" data-param="communication">Anleitung</button>
-                            <h6>Professionelle Hilfe</h6>
-                            <p>Suche bei Bedarf professionelle Unterstützung.</p>
-                            <button class="btn btn-outline btn-sm" data-action="show-strategy-guide" data-param="professional-help">Anleitung</button>
-            <div class="personal-strategies">
-                <h4>🎯 Deine persönlichen Strategien</h4>
-                <div class="strategy-builder">
-                    <div class="strategy-input">
-                        <input type="text" id="strategy-input" placeholder="Neue Bewältigungsstrategie hinzufügen...">
-                        <button class="btn btn-primary" data-action="add-personal-strategy">Hinzufügen</button>
-                    <div class="strategies-list" id="personal-strategies-list">
-                        <p>Füge deine eigenen Bewältigungsstrategien hinzu.</p>
-    <!-- Step 3: Entspannungstechniken -->
-    <div class="workflow-step" data-step="3">
-            <h3>Schritt 3: Entspannungstechniken</h3>
-            <p>Lerne verschiedene Entspannungstechniken kennen und finde die, die dir am besten hilft.</p>
-        <div class="relaxation-techniques">
-            <div class="techniques-intro">
-                <h4>🧘‍♀️ Entspannungstechniken</h4>
-                <p>Regelmäßige Entspannung hilft dir, Stress abzubauen und dein Wohlbefinden zu verbessern.</p>
-            <div class="techniques-grid">
-                <div class="technique-card">
-                    <h5>🫁 Atemtechniken</h5>
-                    <p>Einfache Atemübungen für sofortige Entspannung</p>
-                    <ul>
-                        <li>4-7-8 Atmung</li>
-                        <li>Bauchatmung</li>
-                        <li>Box-Atmung</li>
-                    </ul>
-                    <button class="btn btn-primary" data-action="start-breathing-exercise">Übung starten</button>
-                    <h5>🧘‍♀️ Meditation</h5>
-                    <p>Meditation für tiefe Entspannung und Achtsamkeit</p>
-                        <li>Achtsamkeitsmeditation</li>
-                        <li>Body-Scan</li>
-                        <li>Geführte Meditation</li>
-                    <button class="btn btn-primary" data-action="start-meditation">Meditation starten</button>
-                    <h5>💪 Progressive Muskelentspannung</h5>
-                    <p>Systematische Entspannung aller Muskelgruppen</p>
-                        <li>Anspannung und Entspannung</li>
-                        <li>Körperwahrnehmung</li>
-                        <li>Tiefenentspannung</li>
-                    <button class="btn btn-primary" data-action="start-muscle-relaxation">Übung starten</button>
-                    <h5>🌿 Visualisierung</h5>
-                    <p>Entspannung durch positive Bilder und Vorstellungen</p>
-                        <li>Ruheort visualisieren</li>
-                        <li>Erfolg visualisieren</li>
-                        <li>Natur-Szenen</li>
-                    <button class="btn btn-primary" data-action="start-visualization">Visualisierung starten</button>
-                    <h5>🎵 Musik & Klänge</h5>
-                    <p>Entspannung durch beruhigende Klänge</p>
-                        <li>Entspannungsmusik</li>
-                        <li>Naturgeräusche</li>
-                        <li>Binaurale Beats</li>
-                    <button class="btn btn-primary" data-action="start-music-relaxation">Musik starten</button>
-                    <h5>🏃‍♂️ Bewegung & Sport</h5>
-                    <p>Aktive Entspannung durch körperliche Betätigung</p>
-                        <li>Yoga</li>
-                        <li>Spaziergänge</li>
-                        <li>Leichter Sport</li>
-                    <button class="btn btn-primary" data-action="start-movement-relaxation">Bewegung starten</button>
-            <div class="relaxation-schedule">
-                <h4>📅 Entspannungsplan</h4>
-                <div class="schedule-builder">
-                    <div class="schedule-item">
-                        <label>Wann möchtest du entspannen?</label>
-                        <select id="relaxation-time">
-                            <option value="morning">Morgens</option>
-                            <option value="lunch">Mittags</option>
-                            <option value="evening">Abends</option>
-                            <option value="flexible">Flexibel</option>
-                        </select>
-                        <label>Wie lange möchtest du entspannen?</label>
-                        <select id="relaxation-duration">
-                            <option value="5">5 Minuten</option>
-                            <option value="10">10 Minuten</option>
-                            <option value="15">15 Minuten</option>
-                            <option value="30">30 Minuten</option>
-                        <label>Welche Technik bevorzugst du?</label>
-                        <select id="preferred-technique">
-                            <option value="breathing">Atemtechniken</option>
-                            <option value="meditation">Meditation</option>
-                            <option value="muscle">Muskelentspannung</option>
-                            <option value="visualization">Visualisierung</option>
-                    <button class="btn btn-primary" data-action="create-relaxation-plan">Plan erstellen</button>
-    <!-- Step 4: Prävention -->
-    <div class="workflow-step" data-step="4">
-            <h3>Schritt 4: Stress-Prävention</h3>
-            <p>Entwickle langfristige Strategien zur Stressprävention und einem ausgeglichenen Lebensstil.</p>
-        <div class="stress-prevention">
-            <div class="prevention-intro">
-                <h4>🛡️ Stress-Prävention</h4>
-                <p>Vorbeugen ist besser als heilen. Entwickle einen Lebensstil, der Stress von vornherein reduziert.</p>
-            <div class="prevention-areas">
-                <div class="prevention-area">
-                    <h5>🏃‍♂️ Körperliche Gesundheit</h5>
-                    <div class="prevention-tips">
-                        <div class="tip-item">
-                            <input type="checkbox" id="regular-exercise">
-                            <label for="regular-exercise">Regelmäßige Bewegung</label>
-                            <input type="checkbox" id="healthy-diet">
-                            <label for="healthy-diet">Gesunde Ernährung</label>
-                            <input type="checkbox" id="sufficient-sleep">
-                            <label for="sufficient-sleep">Ausreichend Schlaf</label>
-                            <input type="checkbox" id="limit-caffeine">
-                            <label for="limit-caffeine">Koffein reduzieren</label>
-                    <h5>🧠 Mentale Gesundheit</h5>
-                            <input type="checkbox" id="mindfulness-practice">
-                            <label for="mindfulness-practice">Achtsamkeitspraxis</label>
-                            <input type="checkbox" id="positive-thinking">
-                            <label for="positive-thinking">Positives Denken</label>
-                            <input type="checkbox" id="realistic-expectations">
-                            <label for="realistic-expectations">Realistische Erwartungen</label>
-                            <input type="checkbox" id="self-care">
-                            <label for="self-care">Selbstfürsorge</label>
-                    <h5>👥 Soziale Beziehungen</h5>
-                            <input type="checkbox" id="social-connections">
-                            <label for="social-connections">Soziale Kontakte pflegen</label>
-                            <input type="checkbox" id="boundaries">
-                            <label for="boundaries">Grenzen setzen</label>
-                            <input type="checkbox" id="conflict-resolution">
-                            <label for="conflict-resolution">Konflikte lösen</label>
-                            <input type="checkbox" id="support-network">
-                            <label for="support-network">Unterstützungsnetzwerk</label>
-                    <h5>⏰ Zeitmanagement</h5>
-                            <input type="checkbox" id="prioritization">
-                            <label for="prioritization">Prioritäten setzen</label>
-                            <input type="checkbox" id="time-blocking">
-                            <label for="time-blocking">Zeitblöcke planen</label>
-                            <input type="checkbox" id="delegation">
-                            <label for="delegation">Aufgaben delegieren</label>
-                            <input type="checkbox" id="buffer-time">
-                            <label for="buffer-time">Pufferzeiten einplanen</label>
-            <div class="prevention-plan">
-                <h4>📋 Dein Präventionsplan</h4>
-                <div class="plan-builder">
-                    <div class="plan-input">
-                        <input type="text" id="prevention-input" placeholder="Neue Präventionsmaßnahme hinzufügen...">
-                        <button class="btn btn-primary" data-action="add-prevention-measure">Hinzufügen</button>
-                    <div class="prevention-list" id="prevention-measures-list">
-                        <p>Füge deine eigenen Präventionsmaßnahmen hinzu.</p>
-            <div class="stress-monitoring">
-                <h4>📊 Stress-Monitoring</h4>
-                <div class="monitoring-tools">
-                    <div class="monitoring-item">
-                        <h5>📅 Tägliches Stress-Tracking</h5>
-                        <p>Verfolge dein tägliches Stresslevel und identifiziere Muster.</p>
-                        <button class="btn btn-outline" data-action="open-stress-tracker">Tracker öffnen</button>
-                        <h5>📈 Wöchentliche Bewertung</h5>
-                        <p>Bewerte deine Stressbewältigung wöchentlich.</p>
-                        <button class="btn btn-outline" data-action="open-weekly-review">Bewertung starten</button>
-                        <h5>🎯 Zielsetzung</h5>
-                        <p>Setze dir konkrete Ziele für dein Stressmanagement.</p>
-                        <button class="btn btn-outline" data-action="set-stress-goals">Ziele setzen</button>
-    <!-- Navigation -->
-    <div class="workflow-navigation">
-        <div class="nav-buttons">
-            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
-                <i class="fas fa-arrow-left"></i> Zurück
-            </button>
-            <div class="progress-info">
-                <span id="current-step">Schritt 1</span> von <span id="total-steps">4</span>
-            <button class="btn btn-primary" id="next-btn" data-action="next-step">
-                Weiter <i class="fas fa-arrow-right"></i>
-</div>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stressmanagement | Manuel Weiss</title>
+    <meta name="description" content="Erkenne deine Stressoren und Frühwarnsignale, unterscheide Beeinflussbares von Nicht-Beeinflussbarem und baue einen persönlichen Anti-Stress-Plan.">
+    <link rel="stylesheet" href="../_kit/method-light.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --mk-accent: #14b8a6; --mk-accent-2: #0ea5e9; --mk-accent-soft: rgba(20,184,166,.12); }
+        .br-circle{width:180px;height:180px;border-radius:50%;margin:14px auto;display:flex;align-items:center;justify-content:center;background:var(--mk-accent-soft);border:2px solid var(--mk-accent);transition:transform 4s ease-in-out;font-weight:700;color:var(--mk-accent);font-size:18px;text-align:center}
+    </style>
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-spa"></i></span><span>Stressmanagement</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
+    </header>
 
-<!-- Global Auth System -->
-<script src="../../js/aws-config.js"></script>
-    <script src="js/global-auth-system.js"></script><script src="../../js/unified-auth-manager.js"></script>
-    
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-spa"></i></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Wohlbefinden</div>
+            <h1>Stress verstehen und steuern</h1>
+            <p>Stress entsteht nicht durch Ereignisse allein, sondern durch ihre Bewertung. Erkenne deine Auslöser und Frühwarnsignale, trenne Beeinflussbares von Nicht-Beeinflussbarem – und finde sofort Ruhe mit einer Atemübung.</p>
+            <div class="mk-badges"><span class="mk-badge">Stressoren</span><span class="mk-badge">Signale</span><span class="mk-badge">Atemübung</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Deine Stressoren</h2>
+                <div class="mk-field"><label>Was stresst dich aktuell am meisten?</label><textarea class="mk-textarea" data-mk-field="stressors"></textarea></div>
+                <div class="mk-field"><label>Woran merkst du Stress? (körperlich, mental, im Verhalten)</label><textarea class="mk-textarea" data-mk-field="signals" placeholder="z. B. flacher Atem, Gereiztheit, schlechter Schlaf"></textarea></div>
+                <div class="mk-field"><label>Dein aktuelles Stresslevel</label><div class="mk-range-wrap"><input class="mk-range" type="range" min="0" max="10" data-mk-field="level" value="5"><span class="mk-range-val" data-mk-rangeval="level">5</span></div></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>Beeinflussbar oder nicht?</h2>
+                <p class="mk-sub">Klarheit reduziert Stress. Was kannst du verändern – und was musst du akzeptieren?</p>
+                <div class="mk-field"><label>✅ Das kann ich beeinflussen (und tun)</label><textarea class="mk-textarea" data-mk-field="control"></textarea></div>
+                <div class="mk-field"><label>🕊️ Das kann ich nicht beeinflussen (und loslassen)</label><textarea class="mk-textarea" data-mk-field="accept"></textarea></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>Sofort-Ruhe: 4-7-8-Atmung</h2>
+                <p class="mk-sub">4 Sek. einatmen, 7 Sek. halten, 8 Sek. ausatmen. Folge dem Kreis.</p>
+                <div class="br-circle" id="sm-circle">Bereit?</div>
+                <div style="text-align:center"><button class="mk-btn mk-btn-primary" id="sm-breath"><i class="fas fa-play"></i> Atemzyklus starten</button></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>Dein Anti-Stress-Plan</h2>
+                <div class="mk-field"><label>Welche 1–2 Dinge tust du ab jetzt regelmäßig für dich?</label><textarea class="mk-textarea" data-mk-field="plan"></textarea></div>
+                <div class="mk-field"><label>Was hilft dir akut, wenn der Stress hochkocht?</label><textarea class="mk-textarea" data-mk-field="acute"></textarea></div>
+                <button class="mk-btn mk-btn-primary" id="sm-export"><i class="fas fa-download"></i> Plan herunterladen</button>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
+            <span class="info" id="mk-step-info">Schritt 1 von 4</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
     <script>
-        // Load auth modals
-        async function loadAuthModals() {
-            try {
-                const response = await fetch('components/unified-auth-modals.html');
-                const html = await response.text();
-                document.getElementById('authModalsContainer').innerHTML = html;
-            } catch (error) {
-                console.error('Error loading auth modals:', error);
-            }
-        }
-        
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAuthModals();
-        });
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
     </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js"></script>
+    <script>
+        (async function () {
+            await MethodKit.init({
+                method: 'stress-management',
+                accent: '#14b8a6', accent2: '#0ea5e9',
+                steps: [{icon:'⚡',label:'Stressoren'},{icon:'⚖️',label:'Einfluss'},{icon:'🫁',label:'Atmen'},{icon:'🛡️',label:'Plan'}],
+                defaultState: { stressors:'',signals:'',level:5,control:'',accept:'',plan:'',acute:'' }
+            });
+            MethodKit.bindFields();
+            const S = MethodKit.state;
+
+            let breathing=false;
+            const circle=document.getElementById('sm-circle');
+            document.getElementById('sm-breath').addEventListener('click',function(){
+                if(breathing)return; breathing=true; this.disabled=true;
+                const phases=[['Einatmen…',4000,1.25],['Halten…',7000,1.25],['Ausatmen…',8000,0.8]];
+                let i=0;
+                function run(){
+                    if(i>=phases.length){ circle.textContent='Geschafft 🌿'; circle.style.transform='scale(1)'; breathing=false; document.getElementById('sm-breath').disabled=false; return; }
+                    const [t,d,sc]=phases[i]; circle.textContent=t; circle.style.transition='transform '+(d/1000)+'s ease-in-out'; circle.style.transform='scale('+sc+')';
+                    i++; setTimeout(run,d);
+                }
+                run();
+            });
+
+            document.getElementById('sm-export').addEventListener('click',()=>{
+                MethodKit.exportText('anti-stress-plan.txt', `STRESSMANAGEMENT\n================\n\nStressoren: ${S.stressors}\nSignale: ${S.signals}\nStresslevel: ${S.level}/10\n\nBeeinflussbar: ${S.control}\nLoslassen: ${S.accept}\n\nMein Plan: ${S.plan}\nAkut-Hilfe: ${S.acute}\n`);
+            });
+        })();
+    </script>
+</body>
+</html>

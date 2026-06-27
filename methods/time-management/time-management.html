@@ -1,235 +1,111 @@
-<div class="workflow-container">
-    <div class="workflow-header">
-        <button class="btn btn-secondary" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
-            <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
-        </button>
-    </div>
-    <div class="workflow-intro">
-        <h3>Zeitmanagement: Meistere deine Zeit</h3>
-        <p>Lerne effektive Zeitmanagement-Techniken und optimiere deine Produktivität. Von der Zeit-Analyse über Priorisierung bis hin zu Zeitblocking - entwickle ein System, das zu dir passt.</p>
-        <div class="workflow-features">
-            <span class="feature-badge">Zeit-Analyse</span>
-            <span class="feature-badge">Priorisierung</span>
-            <span class="feature-badge">Zeitblocking</span>
-            <span class="feature-badge">Produktivitäts-Tools</span>
-        </div>
-    
-    <div class="workflow-progress">
-        <div class="progress-step active" data-step="1">
-            <div class="step-number">1</div>
-            <div class="step-title">Zeit-Analyse</div>
-        <div class="progress-step" data-step="2">
-            <div class="step-number">2</div>
-            <div class="step-title">Priorisierung</div>
-        <div class="progress-step" data-step="3">
-            <div class="step-number">3</div>
-            <div class="step-title">Zeitblocking</div>
-        <div class="progress-step" data-step="4">
-            <div class="step-number">4</div>
-            <div class="step-title">Produktivitäts-Tools</div>
-        <div class="progress-step" data-step="5">
-            <div class="step-number">5</div>
-            <div class="step-title">Zeit-Optimierung</div>
-    <!-- Step 1: Zeit-Analyse -->
-    <div class="workflow-step active" data-step="1">
-        <div class="step-header">
-            <h3>Schritt 1: Zeit-Analyse</h3>
-            <p>Analysiere, wie du deine Zeit aktuell verbringst und identifiziere Zeitfresser und Optimierungspotentiale.</p>
-        
-        <div class="time-analysis">
-            <div class="analysis-intro">
-                <h4>⏰ Deine Zeit unter der Lupe</h4>
-                <p>Bevor du dein Zeitmanagement optimieren kannst, musst du verstehen, wofür du deine Zeit verwendest.</p>
-            </div>
-            
-            <div class="time-categories">
-                <h4>📊 Zeit-Kategorien</h4>
-                <div class="categories-grid">
-                    <div class="time-category">
-                        <label>Arbeit/Beruf</label>
-                        <input type="number" class="time-input" placeholder="Stunden" min="0" max="24">
-                        <span>Stunden pro Tag</span>
-                    </div>
-                        <label>Schlaf</label>
-                        <label>Familie/Beziehung</label>
-                        <label>Hobbys/Freizeit</label>
-                        <label>Lernen/Entwicklung</label>
-                        <label>Haushalt/Alltag</label>
-                </div>
-            <div class="time-summary">
-                <h4>📈 Zeit-Zusammenfassung</h4>
-                <div class="summary-stats">
-                    <div class="time-total">
-                        <span>Gesamtzeit:</span>
-                        <span id="total-time">0</span>
-                        <span>Stunden</span>
-                    <div class="time-balance" id="time-balance">
-                        <p>Fülle die Zeit-Kategorien aus, um deine Zeit-Balance zu sehen.</p>
-            <div class="time-wasters">
-                <h4>⏱️ Zeitfresser identifizieren</h4>
-                <p>Welche Aktivitäten verschwenden deine Zeit?</p>
-                <div class="waster-list">
-                    <div class="waster-item">
-                        <input type="text" class="waster-input" placeholder="z.B. 'Zu viel Zeit auf Social Media'">
-                        <input type="number" class="waster-hours" placeholder="h" min="0" max="24">
-                <button class="btn btn-secondary" data-action="add-time-waster">+ Zeitfresser hinzufügen</button>
-    <!-- Step 2: Priorisierung -->
-    <div class="workflow-step" data-step="2">
-            <h3>Schritt 2: Priorisierung</h3>
-            <p>Lerne verschiedene Priorisierungsmethoden kennen und wende sie auf deine Aufgaben an.</p>
-        <div class="prioritization">
-            <div class="prioritization-intro">
-                <h4>🎯 Priorisierung meistern</h4>
-                <p>Nicht alle Aufgaben sind gleich wichtig. Lerne, deine Prioritäten richtig zu setzen.</p>
-            <div class="prioritization-methods">
-                <h4>📋 Priorisierungs-Methoden</h4>
-                <div class="methods-grid">
-                    <div class="method-card">
-                        <h5>Eisenhower-Matrix</h5>
-                        <p>Teile Aufgaben nach Wichtigkeit und Dringlichkeit ein.</p>
-                        <button class="btn btn-outline" data-action="show-eisenhower-matrix">Anwenden</button>
-                        <h5>ABC-Analyse</h5>
-                        <p>Kategorisiere Aufgaben nach ihrer Bedeutung.</p>
-                        <button class="btn btn-outline" data-action="show-a-b-c-analysis">Anwenden</button>
-                        <h5>MoSCoW-Methode</h5>
-                        <p>Must have, Should have, Could have, Won't have.</p>
-                        <button class="btn btn-outline" data-action="show-mo-s-co-w">Anwenden</button>
-            <div class="task-prioritization">
-                <h4>✅ Aufgaben priorisieren</h4>
-                <div class="task-input">
-                    <input type="text" id="new-task" placeholder="Neue Aufgabe hinzufügen...">
-                    <button class="btn btn-primary" data-action="add-task">Hinzufügen</button>
-                <div class="tasks-list" id="tasks-list">
-                    <p>Füge Aufgaben hinzu, um sie zu priorisieren.</p>
-    <!-- Step 3: Zeitblocking -->
-    <div class="workflow-step" data-step="3">
-            <h3>Schritt 3: Zeitblocking</h3>
-            <p>Plane deine Zeit in Blöcken und erstelle einen strukturierten Tagesablauf.</p>
-        <div class="time-blocking">
-            <div class="blocking-intro">
-                <h4>📅 Zeitblocking</h4>
-                <p>Teile deinen Tag in Zeitblöcke ein und weise jeder Aktivität einen festen Zeitraum zu.</p>
-            <div class="daily-schedule">
-                <h4>🗓️ Tagesplan erstellen</h4>
-                <div class="schedule-builder">
-                    <div class="time-blocks" id="time-blocks">
-                        <div class="time-block">
-                            <input type="time" class="start-time" value="06:00">
-                            <input type="time" class="end-time" value="07:00">
-                            <input type="text" class="activity" placeholder="Aktivität">
-                            <button class="btn btn-sm btn-danger" data-action="remove-time-block">×</button>
-                        </div>
-                    <button class="btn btn-secondary" data-action="add-time-block">+ Zeitblock hinzufügen</button>
-            <div class="blocking-tips">
-                <h4>💡 Zeitblocking-Tipps</h4>
-                <div class="tips-list">
-                    <div class="tip-item">
-                        <h6>🎯 Realistische Zeiten</h6>
-                        <p>Plane mehr Zeit ein als du denkst, dass du brauchst.</p>
-                        <h6>⏰ Pufferzeiten</h6>
-                        <p>Lasse zwischen den Blöcken Pufferzeiten für Unvorhergesehenes.</p>
-                        <h6>🔄 Flexibilität</h6>
-                        <p>Behalte die Möglichkeit, Blöcke zu verschieben.</p>
-                        <h6>📱 Ablenkungen vermeiden</h6>
-                        <p>Schalte Benachrichtigungen während wichtiger Blöcke aus.</p>
-    <!-- Step 4: Produktivitäts-Tools -->
-    <div class="workflow-step" data-step="4">
-            <h3>Schritt 4: Produktivitäts-Tools</h3>
-            <p>Entdecke bewährte Techniken und Tools, um deine Produktivität zu steigern.</p>
-        <div class="productivity-tools">
-            <div class="tools-intro">
-                <h4>🛠️ Produktivitäts-Tools</h4>
-                <p>Nutze bewährte Techniken, um deine Effizienz zu maximieren.</p>
-            <div class="productivity-techniques">
-                <h4>⚡ Produktivitäts-Techniken</h4>
-                <div class="techniques-grid">
-                    <div class="technique-card">
-                        <h5>Pomodoro-Technik</h5>
-                        <p>25 Minuten fokussiert arbeiten, 5 Minuten Pause.</p>
-                        <button class="btn btn-outline" data-action="start-pomodoro">Starten</button>
-                        <h5>2-Minuten-Regel</h5>
-                        <p>Wenn etwas weniger als 2 Minuten dauert, mache es sofort.</p>
-                        <button class="btn btn-outline" data-action="show-two-minute-rule">Anwenden</button>
-                        <h5>Eat the Frog</h5>
-                        <p>Beginne mit der schwierigsten Aufgabe des Tages.</p>
-                        <button class="btn btn-outline" data-action="show-eat-the-frog">Anwenden</button>
-                        <h5>Time Boxing</h5>
-                        <p>Setze feste Zeitlimits für Aufgaben.</p>
-                        <button class="btn btn-outline" data-action="show-time-boxing">Anwenden</button>
-            <div class="productivity-timer">
-                <h4>⏱️ Produktivitäts-Timer</h4>
-                <div class="timer-container">
-                    <div class="timer-display">
-                        <div class="timer-circle">
-                            <div class="timer-time" id="timer-time">25:00</div>
-                    <div class="timer-controls">
-                        <button class="btn btn-primary" id="timer-start" data-action="start-timer">Start</button>
-                        <button class="btn btn-secondary" id="timer-pause" data-action="pause-timer" disabled>Pause</button>
-                        <button class="btn btn-outline" id="timer-reset" data-action="reset-timer">Reset</button>
-                    <div class="timer-settings">
-                        <label>Arbeitszeit (Minuten):</label>
-                        <input type="number" id="work-time" value="25" min="1" max="60">
-                        <label>Pausenzeit (Minuten):</label>
-                        <input type="number" id="break-time" value="5" min="1" max="30">
-    <!-- Step 5: Zeit-Optimierung -->
-    <div class="workflow-step" data-step="5">
-            <h3>Schritt 5: Zeit-Optimierung</h3>
-            <p>Optimiere dein Zeitmanagement basierend auf deinen Erkenntnissen und entwickle nachhaltige Gewohnheiten.</p>
-        <div class="time-optimization">
-            <div class="optimization-intro">
-                <h4>🚀 Zeit-Optimierung</h4>
-                <p>Basierend auf deiner Analyse kannst du dein Zeitmanagement weiter optimieren.</p>
-            <div class="optimization-areas">
-                <div class="area-card">
-                    <h5>📊 Zeit-Analyse Review</h5>
-                    <p>Überprüfe deine Zeitverteilung und identifiziere Verbesserungen.</p>
-                    <div class="analysis-review" id="analysis-review">
-                        <p>Führe zuerst die Zeit-Analyse durch, um Erkenntnisse zu erhalten.</p>
-                
-                    <h5>🎯 Prioritäten optimieren</h5>
-                    <p>Verfeinere deine Priorisierung basierend auf deinen Zielen.</p>
-                    <div class="priorities-optimization" id="priorities-optimization">
-                        <p>Setze Prioritäten, um Optimierungsvorschläge zu erhalten.</p>
-                    <h5>⚡ Produktivität steigern</h5>
-                    <p>Entwickle Strategien für mehr Effizienz.</p>
-                    <div class="productivity-optimization" id="productivity-optimization">
-                        <p>Nutze die Produktivitäts-Tools für Verbesserungsvorschläge.</p>
-            <div class="optimization-plan">
-                <h4>📋 Optimierungs-Plan</h4>
-                <div class="plan-builder">
-                    <div class="plan-items" id="optimization-plan-items">
-                        <p>Erstelle einen Plan basierend auf deinen Optimierungen.</p>
-                    <button class="btn btn-primary" data-action="generate-optimization-plan">Plan generieren</button>
-    <!-- Navigation -->
-    <div class="workflow-navigation">
-        <div class="nav-buttons">
-            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
-                <i class="fas fa-arrow-left"></i> Zurück
-            </button>
-            <div class="progress-info">
-                <span id="current-step">Schritt 1</span> von <span id="total-steps">5</span>
-            <button class="btn btn-primary" id="next-btn" data-action="next-step">
-                Weiter <i class="fas fa-arrow-right"></i>
-</div>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeitmanagement · Eisenhower | Manuel Weiss</title>
+    <meta name="description" content="Bring Ordnung in deine Aufgaben mit der Eisenhower-Matrix: wichtig vs. dringend – und entscheide bewusst, was du tust, planst, delegierst oder streichst.">
+    <link rel="stylesheet" href="../_kit/method-light.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --mk-accent: #0ea5e9; --mk-accent-2: #6366f1; --mk-accent-soft: rgba(14,165,233,.12); }
+        .ei-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+        .ei-quad{border:1px solid var(--mk-line);border-radius:var(--mk-radius-sm);padding:14px;background:var(--mk-surface)}
+        .ei-quad h3{margin:0 0 4px;font-size:15px}
+        .ei-quad .ei-act{font-size:12px;font-weight:600;color:var(--mk-accent);margin-bottom:10px}
+        .ei-q1{border-top:3px solid #ef4444}.ei-q2{border-top:3px solid #22c55e}.ei-q3{border-top:3px solid #f59e0b}.ei-q4{border-top:3px solid #94a3b8}
+        .ei-task{display:flex;align-items:center;gap:8px;font-size:13px;padding:6px 8px;background:var(--mk-surface-2);border-radius:8px;margin-bottom:6px}
+        .ei-task .grow{flex:1}
+        @media(max-width:640px){.ei-grid{grid-template-columns:1fr}}
+    </style>
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-table-cells-large"></i></span><span>Eisenhower-Matrix</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
+    </header>
 
-<!-- Global Auth System -->
-<script src="../../js/aws-config.js"></script>
-    <script src="js/global-auth-system.js"></script><script src="../../js/unified-auth-manager.js"></script>
-    
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-table-cells-large"></i></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Eisenhower</div>
+            <h1>Wichtig zuerst, nicht nur dringend</h1>
+            <p>Die meisten reagieren auf Dringendes und vernachlässigen das Wichtige. Sortiere deine Aufgaben nach Wichtigkeit und Dringlichkeit – und entscheide bewusst, was du wirklich tust.</p>
+            <div class="mk-badges"><span class="mk-badge">Tun</span><span class="mk-badge">Planen</span><span class="mk-badge">Delegieren</span><span class="mk-badge">Streichen</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Aufgaben sammeln & einordnen</h2>
+                <p class="mk-sub">Trag eine Aufgabe ein und wähle, wie wichtig und wie dringend sie ist.</p>
+                <div class="mk-field"><label>Aufgabe</label><input class="mk-input" id="ei-name"></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label>Wichtig?</label><select class="mk-select" id="ei-imp"><option value="1">Ja, wichtig</option><option value="0">Nein</option></select></div>
+                    <div class="mk-field"><label>Dringend?</label><select class="mk-select" id="ei-urg"><option value="1">Ja, dringend</option><option value="0">Nein</option></select></div>
+                </div>
+                <button class="mk-btn mk-btn-primary" id="ei-add"><i class="fas fa-plus"></i> Hinzufügen</button>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>Deine Matrix</h2>
+                <div class="ei-grid">
+                    <div class="ei-quad ei-q1"><h3>Wichtig & dringend</h3><div class="ei-act">→ Sofort selbst tun</div><div id="ei-c1"></div></div>
+                    <div class="ei-quad ei-q2"><h3>Wichtig, nicht dringend</h3><div class="ei-act">→ Fest einplanen</div><div id="ei-c2"></div></div>
+                    <div class="ei-quad ei-q3"><h3>Dringend, nicht wichtig</h3><div class="ei-act">→ Delegieren</div><div id="ei-c3"></div></div>
+                    <div class="ei-quad ei-q4"><h3>Weder noch</h3><div class="ei-act">→ Streichen</div><div id="ei-c4"></div></div>
+                </div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
+            <span class="info" id="mk-step-info">Schritt 1 von 2</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
     <script>
-        // Load auth modals
-        async function loadAuthModals() {
-            try {
-                const response = await fetch('components/unified-auth-modals.html');
-                const html = await response.text();
-                document.getElementById('authModalsContainer').innerHTML = html;
-            } catch (error) {
-                console.error('Error loading auth modals:', error);
-            }
-        }
-        
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAuthModals();
-        });
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
     </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js"></script>
+    <script>
+        (async function () {
+            await MethodKit.init({
+                method: 'time-management',
+                accent: '#0ea5e9', accent2: '#6366f1',
+                steps: [{icon:'📝',label:'Sammeln'},{icon:'🗂️',label:'Matrix'}],
+                defaultState: { tasks:[] }
+            });
+            const S = MethodKit.state;
+            function quad(t){ return t.imp&&t.urg?1:t.imp&&!t.urg?2:!t.imp&&t.urg?3:4; }
+            function render(){
+                [1,2,3,4].forEach(q=>{
+                    const host=document.getElementById('ei-c'+q);
+                    const list=S.tasks.filter(t=>quad(t)===q);
+                    host.innerHTML=list.length?list.map(t=>`<div class="ei-task"><span class="grow">${MethodKit.esc(t.name)}</span><button class="mk-iconbtn" data-d="${t.id}"><i class="fas fa-trash"></i></button></div>`).join(''):'<div style="font-size:12px;color:var(--mk-faint)">–</div>';
+                });
+                document.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',()=>{ S.tasks=S.tasks.filter(t=>t.id!==b.dataset.d); MethodKit.save(); render(); }));
+            }
+            document.getElementById('ei-add').addEventListener('click',()=>{
+                const name=document.getElementById('ei-name').value.trim(); if(!name){ MethodKit.toast('Bitte Aufgabe eingeben','warn'); return; }
+                S.tasks.push({ id:MethodKit.uid(), name, imp:+document.getElementById('ei-imp').value, urg:+document.getElementById('ei-urg').value });
+                MethodKit.save(); document.getElementById('ei-name').value=''; render(); MethodKit.toast('Eingeordnet');
+            });
+            render();
+        })();
+    </script>
+</body>
+</html>

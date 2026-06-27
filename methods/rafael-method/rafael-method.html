@@ -1,125 +1,105 @@
-<div class="workflow-container">
-    <div class="workflow-header">
-        <button class="btn btn-secondary" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
-            <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
-        </button>
-    </div>
-    <div class="workflow-intro">
-        <h3>Rafael-Methode: Systematische Problemlösung</h3>
-        <p>Nutze die bewährte Rafael-Methode für strukturierte Problemlösung und Entscheidungsfindung in komplexen Situationen.</p>
-        <div class="workflow-features">
-            <span class="feature-badge">Systematisch</span>
-            <span class="feature-badge">Strukturiert</span>
-            <span class="feature-badge">Logisch</span>
-            <span class="feature-badge">Effektiv</span>
-        </div>
-    
-    <div class="workflow-progress">
-        <div class="progress-step active" data-step="1">
-            <div class="step-number">1</div>
-            <div class="step-title">Problem</div>
-        <div class="progress-step" data-step="2">
-            <div class="step-number">2</div>
-            <div class="step-title">Analyse</div>
-        <div class="progress-step" data-step="3">
-            <div class="step-number">3</div>
-            <div class="step-title">Lösung</div>
-        <div class="progress-step" data-step="4">
-            <div class="step-number">4</div>
-            <div class="step-title">Umsetzung</div>
-    <!-- Step 1: Problem -->
-    <div class="workflow-step active" data-step="1">
-        <div class="step-header">
-            <h3>Schritt 1: Problem definieren</h3>
-            <p>Definiere das Problem klar und präzise, um eine solide Grundlage für die Lösung zu schaffen.</p>
-        
-        <div class="problem-definition">
-            <div class="problem-form">
-                <div class="problem-item">
-                    <label>Was ist das Problem? (Kurze Beschreibung)</label>
-                    <textarea id="problem-description" placeholder="Beschreibe das Problem in 1-2 Sätzen..."></textarea>
-                </div>
-                
-                    <label>Wann tritt das Problem auf?</label>
-                    <textarea id="problem-timing" placeholder="Wann tritt das Problem auf?"></textarea>
-                    <label>Wer ist betroffen?</label>
-                    <textarea id="problem-affected" placeholder="Wer ist von dem Problem betroffen?"></textarea>
-                    <label>Welche Auswirkungen hat das Problem?</label>
-                    <textarea id="problem-impact" placeholder="Welche negativen Auswirkungen hat das Problem?"></textarea>
-            </div>
-    <!-- Step 2: Analyse -->
-    <div class="workflow-step" data-step="2">
-            <h3>Schritt 2: Problem analysieren</h3>
-            <p>Analysiere das Problem systematisch, um die Ursachen und Zusammenhänge zu verstehen.</p>
-        <div class="problem-analysis">
-            <div class="analysis-form">
-                <div class="analysis-item">
-                    <label>Was sind die möglichen Ursachen?</label>
-                    <textarea id="analysis-causes" placeholder="Liste alle möglichen Ursachen auf..."></textarea>
-                    <label>Welche Faktoren beeinflussen das Problem?</label>
-                    <textarea id="analysis-factors" placeholder="Welche internen und externen Faktoren spielen eine Rolle?"></textarea>
-                    <label>Gibt es ähnliche Probleme in der Vergangenheit?</label>
-                    <textarea id="analysis-history" placeholder="Wie wurde das Problem früher gelöst?"></textarea>
-    <!-- Step 3: Lösung -->
-    <div class="workflow-step" data-step="3">
-            <h3>Schritt 3: Lösungen entwickeln</h3>
-            <p>Entwickle verschiedene Lösungsansätze und wähle die beste aus.</p>
-        <div class="solution-development">
-            <div class="solution-form">
-                <div class="solution-item">
-                    <label>Lösungsansatz 1</label>
-                    <textarea id="solution-1" placeholder="Beschreibe den ersten Lösungsansatz..."></textarea>
-                    <label>Lösungsansatz 2</label>
-                    <textarea id="solution-2" placeholder="Beschreibe den zweiten Lösungsansatz..."></textarea>
-                    <label>Lösungsansatz 3</label>
-                    <textarea id="solution-3" placeholder="Beschreibe den dritten Lösungsansatz..."></textarea>
-                    <label>Welche Lösung ist am besten?</label>
-                    <textarea id="solution-choice" placeholder="Begründe deine Wahl..."></textarea>
-    <!-- Step 4: Umsetzung -->
-    <div class="workflow-step" data-step="4">
-            <h3>Schritt 4: Lösung umsetzen</h3>
-            <p>Setze die gewählte Lösung in konkrete Schritte um und plane die Umsetzung.</p>
-        <div class="solution-implementation">
-            <div class="implementation-form">
-                <div class="implementation-item">
-                    <label>Was ist der erste Schritt?</label>
-                    <textarea id="implementation-step1" placeholder="Beschreibe den ersten Umsetzungsschritt..."></textarea>
-                    <label>Was sind die weiteren Schritte?</label>
-                    <textarea id="implementation-steps" placeholder="Liste alle weiteren Schritte auf..."></textarea>
-                    <label>Wer ist verantwortlich?</label>
-                    <textarea id="implementation-responsible" placeholder="Wer ist für die Umsetzung verantwortlich?"></textarea>
-                    <label>Bis wann soll es umgesetzt sein?</label>
-                    <textarea id="implementation-deadline" placeholder="Wann soll die Lösung umgesetzt sein?"></textarea>
-    <!-- Navigation -->
-    <div class="workflow-navigation">
-        <div class="nav-buttons">
-            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
-                <i class="fas fa-arrow-left"></i> Zurück
-            </button>
-            <div class="progress-info">
-                <span id="current-step">Schritt 1</span> von <span id="total-steps">4</span>
-            <button class="btn btn-primary" id="next-btn" data-action="next-step">
-                Weiter <i class="fas fa-arrow-right"></i>
-</div>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAFAEL-Methode | Manuel Weiss</title>
+    <meta name="description" content="Strukturierte Problemlösung in vier Schritten: Problem klar definieren, Ursachen analysieren, Lösungen entwickeln und die Umsetzung planen.">
+    <link rel="stylesheet" href="../_kit/method-light.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>:root { --mk-accent: #3b82f6; --mk-accent-2: #6366f1; --mk-accent-soft: rgba(59,130,246,.12); }</style>
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-puzzle-piece"></i></span><span>RAFAEL-Methode</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
+    </header>
 
-<!-- Global Auth System -->
-<script src="../../js/aws-config.js"></script>
-    <script src="js/global-auth-system.js"></script><script src="../../js/unified-auth-manager.js"></script>
-    
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-puzzle-piece"></i></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <h1>Probleme systematisch lösen</h1>
+            <p>Komplexe Probleme wirken überwältigend – bis man sie strukturiert angeht. In vier klaren Schritten kommst du vom diffusen Problem zur umsetzbaren Lösung.</p>
+            <div class="mk-badges"><span class="mk-badge">Definieren</span><span class="mk-badge">Analysieren</span><span class="mk-badge">Lösen</span><span class="mk-badge">Umsetzen</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>1 · Problem definieren</h2>
+                <div class="mk-field"><label>Was ist das Problem? (1–2 Sätze)</label><textarea class="mk-textarea" data-mk-field="problem"></textarea></div>
+                <div class="mk-field"><label>Wann tritt es auf?</label><input class="mk-input" data-mk-field="when"></div>
+                <div class="mk-field"><label>Wer ist betroffen?</label><input class="mk-input" data-mk-field="who"></div>
+                <div class="mk-field"><label>Welche Auswirkungen hat es?</label><textarea class="mk-textarea" data-mk-field="impact"></textarea></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>2 · Analysieren</h2>
+                <div class="mk-field"><label>Mögliche Ursachen</label><textarea class="mk-textarea" data-mk-field="causes" placeholder="Frage 5× „Warum?", um zur Wurzel zu kommen."></textarea></div>
+                <div class="mk-field"><label>Einflussfaktoren (intern/extern)</label><textarea class="mk-textarea" data-mk-field="factors"></textarea></div>
+                <div class="mk-field"><label>Wie wurde Ähnliches früher gelöst?</label><textarea class="mk-textarea" data-mk-field="history"></textarea></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>3 · Lösungen entwickeln</h2>
+                <div class="mk-field"><label>Lösungsansatz 1</label><textarea class="mk-textarea" data-mk-field="sol1"></textarea></div>
+                <div class="mk-field"><label>Lösungsansatz 2</label><textarea class="mk-textarea" data-mk-field="sol2"></textarea></div>
+                <div class="mk-field"><label>Lösungsansatz 3</label><textarea class="mk-textarea" data-mk-field="sol3"></textarea></div>
+                <div class="mk-field"><label>Welche Lösung wählst du – und warum?</label><textarea class="mk-textarea" data-mk-field="choice"></textarea></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Umsetzung planen</h2>
+                <div class="mk-field"><label>Erster Schritt</label><input class="mk-input" data-mk-field="step1"></div>
+                <div class="mk-field"><label>Weitere Schritte</label><textarea class="mk-textarea" data-mk-field="steps"></textarea></div>
+                <div class="mk-field"><label>Wer ist verantwortlich?</label><input class="mk-input" data-mk-field="responsible"></div>
+                <div class="mk-field"><label>Bis wann?</label><input class="mk-input" type="date" data-mk-field="deadline"></div>
+                <button class="mk-btn mk-btn-primary" id="rf-export"><i class="fas fa-download"></i> Lösungsplan herunterladen</button>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
+            <span class="info" id="mk-step-info">Schritt 1 von 4</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
     <script>
-        // Load auth modals
-        async function loadAuthModals() {
-            try {
-                const response = await fetch('components/unified-auth-modals.html');
-                const html = await response.text();
-                document.getElementById('authModalsContainer').innerHTML = html;
-            } catch (error) {
-                console.error('Error loading auth modals:', error);
-            }
-        }
-        
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAuthModals();
-        });
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
     </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js"></script>
+    <script>
+        (async function () {
+            await MethodKit.init({
+                method: 'rafael-method',
+                accent: '#3b82f6', accent2: '#6366f1',
+                steps: [{icon:'❓',label:'Problem'},{icon:'🔬',label:'Analyse'},{icon:'💡',label:'Lösung'},{icon:'🚀',label:'Umsetzung'}],
+                defaultState: { problem:'',when:'',who:'',impact:'',causes:'',factors:'',history:'',sol1:'',sol2:'',sol3:'',choice:'',step1:'',steps:'',responsible:'',deadline:'' }
+            });
+            MethodKit.bindFields();
+            const S = MethodKit.state;
+            document.getElementById('rf-export').addEventListener('click',()=>{
+                MethodKit.exportText('mein-loesungsplan.txt', `RAFAEL-METHODE\n==============\n\n1. PROBLEM\n${S.problem}\nWann: ${S.when}\nWer: ${S.who}\nAuswirkungen: ${S.impact}\n\n2. ANALYSE\nUrsachen: ${S.causes}\nFaktoren: ${S.factors}\nFrüher: ${S.history}\n\n3. LÖSUNGEN\n1) ${S.sol1}\n2) ${S.sol2}\n3) ${S.sol3}\nGewählt: ${S.choice}\n\n4. UMSETZUNG\nErster Schritt: ${S.step1}\nWeitere: ${S.steps}\nVerantwortlich: ${S.responsible}\nDeadline: ${S.deadline}\n`);
+            });
+        })();
+    </script>
+</body>
+</html>
