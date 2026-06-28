@@ -721,9 +721,10 @@ async function fetchImages(title){
     (j.items||[]).forEach(it=>{
       if(it.type!=='image'||it.showInGallery===false) return;
       if(JUNK.test(it.title||'')) return;
-      const ss=it.srcset&&it.srcset[0]&&it.srcset[0].src;
+      const arr=it.srcset||[];
+      const ss=(arr[arr.length-1]||arr[0]||{}).src;
       if(!ss) return;
-      out.push(('https:'+ss).replace('https:https:','https:').replace(/\/\d+px-/,'/800px-'));
+      out.push(ss.indexOf('//')===0?'https:'+ss:ss);
     });
     return out;
   }catch(e){ return []; }
