@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Camper-Rundreise 2026/27 · Pfäffikon ZH → Nordkap-Region → Mittelmeer → zurück</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root{
+    --sommer:#2e9e6b; --herbst:#e8853a; --winter:#d24d6a; --fruehling:#7e5bd6;
+    --ink:#1d2330; --muted:#65708a; --bg:#f5f7fb; --card:#fff;
+    --line:#e6eaf2; --shadow:0 10px 30px rgba(20,30,60,.08);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55}
+  a{color:inherit}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 18px}
+
+  /* HERO */
+  .hero{position:relative;color:#fff;text-align:center;padding:70px 18px 84px;
+    background:linear-gradient(135deg,#1b5e8c 0%,#2e9e6b 45%,#e8853a 78%,#d24d6a 100%);overflow:hidden}
+  .hero h1{font-size:clamp(28px,5vw,46px);margin:0 0 12px;letter-spacing:-.5px}
+  .hero p{font-size:clamp(15px,2.2vw,19px);max-width:720px;margin:0 auto;opacity:.95}
+  .hero .meta{margin-top:22px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .pill{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);
+    padding:7px 14px;border-radius:999px;font-size:13px;backdrop-filter:blur(4px)}
+
+  /* LEGEND */
+  .legend{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin:-44px auto 0;
+    position:relative;z-index:5;background:var(--card);box-shadow:var(--shadow);
+    border-radius:16px;padding:16px 22px;max-width:840px}
+  .legend .grp{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+  .dot{width:13px;height:13px;border-radius:50%}
+  .dot.s{background:var(--sommer)} .dot.h{background:var(--herbst)} .dot.w{background:var(--winter)} .dot.f{background:var(--fruehling)}
+
+  /* MAP */
+  #map{height:560px;border-radius:18px;margin:26px 0 8px;box-shadow:var(--shadow);z-index:1}
+  .maphint{text-align:center;color:var(--muted);font-size:13px;margin-bottom:34px}
+
+  /* SECTIONS */
+  .phase-head{display:flex;align-items:center;gap:14px;margin:46px 0 6px}
+  .phase-head .bar{width:6px;height:34px;border-radius:6px}
+  .phase-head h2{margin:0;font-size:clamp(20px,3vw,28px)}
+  .phase-head .sub{color:var(--muted);font-size:14px}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    box-shadow:var(--shadow);overflow:hidden;margin:18px 0}
+  .card .top{padding:20px 22px 6px}
+  .card .num{display:inline-flex;align-items:center;justify-content:center;
+    width:30px;height:30px;border-radius:50%;color:#fff;font-weight:700;font-size:14px;margin-right:10px}
+  .card h3{display:inline;font-size:20px;margin:0;vertical-align:middle}
+  .card .where{color:var(--muted);font-size:13px;margin:6px 0 0 40px}
+  .card .lead{margin:12px 22px 4px;color:#39435a}
+
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin:12px 22px}
+  .badge{font-size:12.5px;padding:5px 11px;border-radius:999px;background:#eef2f9;border:1px solid var(--line)}
+  .badge.spa{background:#e8f6f0;border-color:#bfe7d6}
+  .badge.forro{background:#fbe9ef;border-color:#f2c6d4}
+  .badge.volley{background:#fff1e3;border-color:#f6d4b0}
+  .badge.fit{background:#eaeefb;border-color:#c8d3f3}
+  .badge.dating{background:#fdeaf0;border-color:#f5c4d5}
+
+  .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:8px 12px 4px}
+  .gallery img{width:100%;height:150px;object-fit:cover;border-radius:10px;display:block;background:#e9edf5}
+  .gallery .gal-msg{grid-column:1/-1;height:120px;display:flex;align-items:center;justify-content:center;
+    background:#eef2f9;border-radius:10px;font-size:13px;color:#9aa6bf}
+
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:14px 22px 22px}
+  @media(max-width:720px){.cols{grid-template-columns:1fr}.gallery{grid-template-columns:repeat(2,1fr)}}
+  .cols h4{margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  .cols ul{margin:0;padding-left:18px}
+  .cols li{margin:5px 0}
+  .alt{background:#fafbfe;border-radius:12px;padding:12px 14px;border:1px dashed var(--line)}
+
+  .sights{padding:6px 22px 4px}
+  .sights h4{margin:8px 0;font-size:14px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  .sight-chips{display:flex;flex-wrap:wrap;gap:8px}
+  .sight-chip{font-size:12.5px;padding:6px 11px;border-radius:10px;background:#f3f6fc;border:1px solid var(--line);color:#39435a}
+
+  .forme{margin:6px 22px 22px;padding:14px 16px;border-radius:14px;
+    background:linear-gradient(135deg,#fef4f8,#f3effc);border:1px solid #efd9ea}
+  .forme h4{margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:.04em;color:#9b3d7a}
+  .forme ul{margin:0;padding-left:18px}
+  .forme li{margin:6px 0;color:#4a3b52}
+
+  /* BUDGET */
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--line);font-size:14px}
+  th{background:#f0f3fa;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  tr:last-child td{border-bottom:none;font-weight:600}
+
+  .tips{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:22px;margin:18px 0}
+  .tips h3{margin:0 0 10px}
+  .tips ul{margin:0;padding-left:20px}
+  .tips li{margin:6px 0}
+
+  /* STRATEGY */
+  .strategy-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:720px){.strategy-grid{grid-template-columns:1fr}}
+  .strat{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:18px 20px}
+  .strat.wide{grid-column:1 / -1}
+  .strat h3{margin:0 0 10px;font-size:17px}
+  .strat ul{margin:0;padding-left:18px}
+  .strat li{margin:6px 0;font-size:14px;color:#39435a}
+  .strat .tag{display:inline-block;font-size:11px;font-weight:700;color:#fff;
+    background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:3px 10px;border-radius:999px;margin-bottom:10px;letter-spacing:.03em}
+  .strat table{box-shadow:none;border:1px solid var(--line)}
+  .strat .hook{background:#f6f4ff;border-left:3px solid #8b5cf6;border-radius:8px;padding:8px 12px;margin:6px 0;font-size:13.5px}
+
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:40px 18px 60px}
+
+  .leaflet-popup-content{margin:0;width:260px!important}
+  .pop img{width:100%;height:130px;object-fit:cover;border-radius:10px 10px 0 0;display:block}
+  .pop .pc{padding:10px 12px 12px}
+  .pop h4{margin:0 0 4px;font-size:15px}
+  .pop .pd{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .pop .pb{font-size:12.5px}
+  .marker-num{display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;
+    border-radius:50%;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>🚐 Camper-Rundreise 2026/27 — Pfäffikon ZH → Nordkap-Region → Mittelmeer</h1>
+  <p>Sparsame Schleife ab/zurück <strong>Pilatusstrasse 40, Pfäffikon ZH</strong>: im Sommer hoch nach <strong>Norwegen &amp; Finnland</strong> (Fjorde, Mitternachtssonne, Sauna), <strong>spät</strong> Richtung Süden, Winter in Portugal — und im <strong>Frühjahr über die Mittelmeerküste</strong> (Spanien · Côte d'Azur · Italienische Riviera) zurück über die Alpen.</p>
+  <div class="meta">
+    <span class="pill">🧖 Spa &amp; Wellness</span>
+    <span class="pill">💃 Forró</span>
+    <span class="pill">🏐 Beachvolleyball</span>
+    <span class="pill">🏋️ Fitness</span>
+    <span class="pill">❤️ Leute kennenlernen</span>
+    <span class="pill">🌌 Polarlichter</span>
+    <span class="pill">💶 ~10.000–13.000 € gesamt</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="legend">
+    <div class="grp"><span class="dot s"></span> Aug–Sept · Norden (Fjorde, Sauna, Polarlichter)</div>
+    <div class="grp"><span class="dot h"></span> Okt–Nov · Abstieg (Forró &amp; Surf)</div>
+    <div class="grp"><span class="dot w"></span> Dez–Feb · Portugal (Tanzen &amp; Strand)</div>
+    <div class="grp"><span class="dot f"></span> Mär–Apr · Mittelmeer-Rückreise</div>
+  </div>
+
+  <div id="map"></div>
+  <div class="maphint">Tipp: Auf die nummerierten Stationen klicken für Bild, Empfehlung &amp; Alternative. Linie = Reiseroute.</div>
+
+  <div id="sections"></div>
+
+  <!-- BUDGET -->
+  <div class="phase-head">
+    <div class="bar" style="background:linear-gradient(var(--sommer),var(--herbst),var(--winter),var(--fruehling))"></div>
+    <div><h2>💶 Budget — sparsame Variante</h2><div class="sub">Richtwerte für 1 Person im eigenen Camper, ohne grössere Reparaturen.</div></div>
+  </div>
+  <table>
+    <thead><tr><th>Phase</th><th>Zeitraum</th><th>Schwerpunkt</th><th>~ pro Monat</th></tr></thead>
+    <tbody>
+      <tr><td>Norden (NO bis Nordkapp/FIN/SE)</td><td>Aug–Sept</td><td>Lange Strecken &amp; Fähren, gratis freistehen, aber Sprit/Essen teuer</td><td>1.400–1.900 €</td></tr>
+      <tr><td>Abstieg DE→FR→ES</td><td>Okt–Nov</td><td>Günstige Aires, Forró, Surf</td><td>900–1.100 €</td></tr>
+      <tr><td>Portugal-Winter</td><td>Dez–Feb</td><td>Monats-Stellplatz mit Strom/WLAN</td><td>800–1.000 €</td></tr>
+      <tr><td>Mittelmeer-Rückreise</td><td>Mär–Apr</td><td>Costa-Küsten, Côte d'Azur &amp; Riviera (teurer)</td><td>1.000–1.300 €</td></tr>
+      <tr><td>Gesamt (~9 Monate)</td><td>Aug–Apr</td><td>Unteres Ende, wenn im Süden lange gestanden wird</td><td>~10.000–13.000 €</td></tr>
+    </tbody>
+  </table>
+
+  <!-- TIPS -->
+  <div class="phase-head">
+    <div class="bar" style="background:var(--sommer)"></div>
+    <div><h2>💡 Sparsam-Hebel &amp; Komfort</h2><div class="sub">Damit es günstig bleibt — und trotzdem angenehm.</div></div>
+  </div>
+  <div class="tips">
+    <ul>
+      <li><strong>Skandinavien gratis stehen:</strong> Allemansrätten in Schweden/Norwegen/Finnland nutzen, Apps <em>park4night</em> &amp; <em>Campercontact</em>. Lebensmittel in DE/DK vorbocken (Norden teuer).</li>
+      <li><strong>Norwegen-Kosten im Griff:</strong> Maut läuft automatisch über <em>AutoPASS</em> (vorher registrieren), Fähren teils teuer — Routen mit wenig Fjordquerungen wählen. Diesel/Essen in Schweden günstiger einkaufen.</li>
+      <li><strong>Polarlichter (Bonus):</strong> ab Mitte/Ende September stehen die Chancen in Lofoten &amp; Lappland gut — App <em>My Aurora</em> / KP-Index checken.</li>
+      <li><strong>Sprit clever:</strong> ruhig fahren, Etappen bündeln; Süden ist deutlich billiger als der Norden.</li>
+      <li><strong>Winter-Monatspreis:</strong> in Portugal Stellplatz monatlich verhandeln (oft ~150–300 €/Monat mit Strom) statt pro Nacht.</li>
+      <li><strong>Fitness &amp; Tanzen:</strong> Monats-Gym (~25–40 €) + Forró-Kursreihe statt Einzeltickets.</li>
+      <li><strong>Autark-Setup:</strong> 200–400 W Solar + LiFePO4-Akku, Diesel-Standheizung (günstiger als Gas), Mobilrouter mit 2 SIMs (DE + EU/PT) fürs Arbeiten.</li>
+      <li><strong>Leute kennenlernen:</strong> in den Städten/Winterspots <em>lange bleiben</em> — Stammtische, Forró-Kurse, Beachvolleyball-Gruppen &amp; Nomaden-Meetups (Couchsurfing-Events, Meetup, Bumble BFF/Dating).</li>
+      <li><strong>Mittelmeer-Rückreise (Frühjahr):</strong> Côte d'Azur &amp; italienische Riviera sind teurer und im Sommer überlaufen — im März/April aber mild, leer und günstiger. Stellplätze vorab prüfen (in IT/FR-Städten oft begrenzt).</li>
+      <li><strong>Schweiz-Bezug:</strong> Start/Ziel Pfäffikon ZH — Vignette nicht nötig fürs Wohnmobil &gt; 3,5 t (dort schwere Verkehrsabgabe/LSVA beachten); für PKW-Camper bis 3,5 t Vignette für CH/AT bereithalten.</li>
+    </ul>
+  </div>
+
+  <!-- FOLLOWER-STRATEGIE -->
+  <div class="phase-head">
+    <div class="bar" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)"></div>
+    <div><h2>📈 Follower-Skript — Community aufbauen mit der Reise</h2><div class="sub">Ein konkreter Plan, um aus dem Vanlife-Vorhaben so viele Follower wie möglich zu machen.</div></div>
+  </div>
+
+  <div class="strategy-grid">
+
+    <div class="strat">
+      <span class="tag">1 · POSITIONIERUNG</span>
+      <h3>Deine Nische & dein Hook</h3>
+      <ul>
+        <li><strong>Die Story:</strong> „Ich vermiete meine 2 Wohnungen (München & Zürich) und lebe 9 Monate im Camper" — sofort ungewöhnlich &amp; greifbar.</li>
+        <li><strong>Einzigartiger Mix:</strong> Vanlife + <em>Forró-Tanzen</em> + Sauna/Wellness + Beachvolleyball + „solo &amp; offen, Leute treffen". Diese Kombi hat fast niemand → einprägsam.</li>
+        <li><strong>Konsistenter Handle</strong> auf allen Plattformen (z. B. <em>@manu.unterwegs</em> / <em>@forro.vanlife</em>) + 1-Satz-Bio: Hook + Route + Ziel (Nordkapp → Portugal).</li>
+      </ul>
+    </div>
+
+    <div class="strat">
+      <span class="tag">2 · PLATTFORMEN</span>
+      <h3>Wo du postest</h3>
+      <ul>
+        <li><strong>TikTok + Instagram Reels</strong> = Reichweiten-Motor (kurze, gehookte Clips). Hauptfokus.</li>
+        <li><strong>YouTube</strong> = längere Etappen-Vlogs, beste Langlebigkeit + Monetarisierung.</li>
+        <li><strong>Instagram Stories</strong> = Nähe, Behind-the-Scenes, Q&amp;A, Dating-/Alltagsmomente.</li>
+        <li><strong>Newsletter/Blog</strong> = E-Mail-Liste, die dir gehört (algorithmus-unabhängig).</li>
+        <li><strong>Regel:</strong> 1× drehen → 4× verwerten (Reel, TikTok, YT-Short, Story).</li>
+      </ul>
+    </div>
+
+    <div class="strat">
+      <span class="tag">3 · CONTENT-SÄULEN</span>
+      <h3>5 wiederkehrende Themen</h3>
+      <ul>
+        <li>🏔️ <strong>Orte &amp; Abenteuer</strong> (Fjorde, Nordkapp, Polarlicht) → Reichweite</li>
+        <li>💃 <strong>Forró &amp; Tanz</strong> (Szene, Lernen, Auftritte) → treue Nischen-Fans</li>
+        <li>🧖 <strong>Sauna/Wellness/Fitness</strong> (Cold Plunge, Routinen) → Trend + Mehrwert</li>
+        <li>🚐 <strong>Vanlife-Praxis</strong> (Setup, Kosten, Stellplätze, autark arbeiten) → Save/Share</li>
+        <li>❤️ <strong>Persönlich &amp; sozial</strong> (Leute treffen, Mut zur Solo-Reise) → Bindung</li>
+      </ul>
+    </div>
+
+    <div class="strat">
+      <span class="tag">4 · RHYTHMUS</span>
+      <h3>Frequenz & Batching</h3>
+      <ul>
+        <li><strong>Ziel:</strong> 1 Reel/Tag (min. 4–5/Woche) + 1 YouTube-Vlog/Woche.</li>
+        <li><strong>Batchen:</strong> an WLAN-/Stadttagen 5–10 Clips schneiden &amp; vorplanen, unterwegs nur drehen.</li>
+        <li><strong>Tools:</strong> CapCut (Schnitt), Metricool/Later (Planung), Notion/Trello (Ideen-Backlog).</li>
+        <li><strong>Erste Stunde nach Post:</strong> aktiv auf Kommentare antworten (pusht Reichweite).</li>
+      </ul>
+    </div>
+
+    <div class="strat wide">
+      <span class="tag">5 · HOOKS</span>
+      <h3>Die ersten 1–2 Sekunden entscheiden</h3>
+      <div class="hook">„Ich habe meine 2 Wohnungen vermietet, um <strong>das</strong> zu tun…"</div>
+      <div class="hook">„So viel kostet mich <strong>1 Monat Vanlife in Norwegen</strong>."</div>
+      <div class="hook">„Nördlichster Punkt Europas — und ich bin <strong>ganz allein</strong> hier."</div>
+      <div class="hook">„Ich tanze <strong>Forró in jedem Land Europas</strong> — Tag 27."</div>
+      <div class="hook">„Sauna bei -2 °C, dann direkt ins <strong>Eismeer</strong>."</div>
+      <p style="margin:8px 0 0;color:var(--muted);font-size:13px">Muster: Widerspruch / Neugier / Zahl / Versprechen <em>plus</em> ein visueller Wow-Shot in Sekunde 1.</p>
+    </div>
+
+    <div class="strat">
+      <span class="tag">6 · SERIEN</span>
+      <h3>Wiederkehr = Abos</h3>
+      <ul>
+        <li><strong>„Forró in 33 Städten"</strong> — jede Station ein Tanzclip.</li>
+        <li><strong>„Sauna-Weltreise"</strong> — jede Sauna kurz bewerten.</li>
+        <li><strong>„Was kostet Vanlife?"</strong> — monatliche Transparenz.</li>
+        <li><strong>„Nordkapp-Countdown"</strong> — Spannungsbogen zum Highlight.</li>
+        <li><strong>„Beachvolleyball mit Fremden"</strong> — sozial &amp; Challenge.</li>
+      </ul>
+    </div>
+
+    <div class="strat">
+      <span class="tag">7 · TECHNIK</span>
+      <h3>Setup fürs Filmen unterwegs</h3>
+      <ul>
+        <li>Handy + Gimbal, <strong>Drohne</strong> (Fjorde/Strände = Viral-Shots), Action-Cam, Ansteck-Mikro.</li>
+        <li>Strom: Solar + Powerbank; Internet: 2 SIMs (+ ggf. Starlink fürs Hochladen).</li>
+        <li><strong>Material sichern:</strong> Festplatte + Cloud-Backup (nichts verlieren!).</li>
+      </ul>
+    </div>
+
+    <div class="strat">
+      <span class="tag">8 · WACHSTUM</span>
+      <h3>Taktiken für Reichweite</h3>
+      <ul>
+        <li>Trends/Sounds früh nutzen — aber on-brand.</li>
+        <li>Geotags + lokale &amp; Nischen-Hashtags (#lofoten #forró #vanlife).</li>
+        <li><strong>Kollabs:</strong> lokale Creator, Forró-Schulen, Camper-/Wellness-Marken, andere Vanlifer.</li>
+        <li>Community einbinden: „Wo soll ich als Nächstes tanzen/parken?" (Engagement).</li>
+      </ul>
+    </div>
+
+    <div class="strat">
+      <span class="tag">9 · GELD</span>
+      <h3>Monetarisierung (ab ~5–10k)</h3>
+      <ul>
+        <li><strong>Affiliate:</strong> Camper-Ausrüstung, Solar, Apps, Versicherungen.</li>
+        <li><strong>Marken-Deals:</strong> Outdoor, Wohnmobil, Wellness.</li>
+        <li><strong>Eigenprodukt:</strong> digitaler Reise-/Stellplatz-Guide (passt zu dieser Karte!).</li>
+        <li><strong>YouTube-Werbung</strong> + Patreon/Memberships.</li>
+      </ul>
+    </div>
+
+    <div class="strat wide">
+      <span class="tag">10 · FAHRPLAN</span>
+      <h3>Meilensteine über die 9 Monate</h3>
+      <table>
+        <thead><tr><th>Phase</th><th>Fokus</th><th>Ziel</th></tr></thead>
+        <tbody>
+          <tr><td>Woche 1–4 (Aug)</td><td>Kanäle aufsetzen, Stil finden, 20+ Clips</td><td>Erste 500 Follower</td></tr>
+          <tr><td>Monat 2–3 (Sept–Okt)</td><td>Norden/Nordkapp-Highlights, Serien starten</td><td>1 viraler Clip (&gt;50k), 1–3k</td></tr>
+          <tr><td>Monat 4–6 (Nov–Jan)</td><td>Portugal: Forró- &amp; Community-Content, Kollabs</td><td>~10k, erste Affiliate-Links</td></tr>
+          <tr><td>Monat 7–9 (Feb–Apr)</td><td>Mittelmeer + Recap, Produkt/Newsletter</td><td>Recap-Viral, erste Einnahmen</td></tr>
+        </tbody>
+      </table>
+      <p style="margin:8px 0 0;color:var(--muted);font-size:13px">Wöchentlich Zahlen tracken — achte auf <strong>Saves &amp; Shares &amp; Watch-Time</strong> mehr als auf Likes.</p>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  Persönlicher Reiseplan · sparsame Vanlife-Rundreise 2026/27 ab/zurück Pfäffikon ZH.<br>
+  Bilder sind thematische Platzhalter (LoremFlickr / Creative Commons). Karte: © OpenStreetMap-Mitwirkende.
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const PHASE = {
+  sommer:{color:'#2e9e6b', label:'Aug–Sept'},
+  herbst:{color:'#e8853a', label:'Okt–Nov'},
+  winter:{color:'#d24d6a', label:'Dez–Feb'},
+  fruehling:{color:'#7e5bd6', label:'Mär–Apr'}
+};
+
+const stops = [
+  { n:1, name:'Pfäffikon ZH — Start', phase:'sommer', coords:[47.203,8.778], dates:'Start: ~1. August',
+    lead:'Losfahrt an der Pilatusstrasse 40. Camper gepackt, Wohnungen untervermietet — über Deutschland zügig Richtung Norden.',
+    interests:['fit'],
+    recos:['Letzter Grosseinkauf zu CH-/DE-Preisen','Camper-Check: Reifen, Öl, Diesel, Wasser, Solar','AutoPASS (Norwegen-Maut) vorab registrieren'],
+    alts:['Route via Stuttgart/Frankfurt oder via München je nach Lust'],
+    sights:['Zürichsee-Ufer','Altstadt Rapperswil (Rosenstadt)','Seedamm Pfäffikon'],
+    content:['Auftakt-Hook-Reel: „Ich vermiete meine 2 Wohnungen & lebe 9 Monate im Camper"','Camper-Setup-Tour (Solar, Bett, Küche) als erstes „Lern mich kennen"-Video','Karte mit 33 Stationen zeigen + Community nach Tipps fragen (Engagement-Boost)'],
+    imgs:['zurich,lake','camper,van','roadtrip','rapperswil'] },
+
+  { n:2, name:'Hamburg — Forró-Warmup', phase:'sommer', coords:[53.55,9.99], dates:'~3.–5. August',
+    lead:'Erster Tanz-Stopp auf dem Weg hoch: Hamburg hat eine lebendige Forró-Szene — nochmal unter Leute vor dem Norden.',
+    interests:['forro','dating','fit'],
+    recos:['Forró-Baile / offene Kurse (FB: "Forró Hamburg")','Abend an der Elbe / Stadtpark-See'],
+    alts:['Kopenhagen als Zwischenstopp, wenn du über DK fährst'],
+    sights:['Elbphilharmonie','Speicherstadt','Reeperbahn / St. Pauli','Planten un Blomen'],
+    content:['Ersten Forró-Tanzabend filmen: „Vanlife trifft Forró" (Serie starten)','Hafen-Sonnenuntergang-Timelapse für den Feed','Street-Food-Story Schanzenviertel'],
+    imgs:['hamburg,harbor','elbphilharmonie','speicherstadt','forro,dance'] },
+
+  { n:3, name:'Göteborg & Bohuslän', phase:'sommer', coords:[57.70,11.97], dates:'~6.–9. August',
+    lead:'Eintritt Skandinavien an der schwedischen Westküste: Schärenbuchten, gratis Naturstellplätze, Baden und Beachvolleyball.',
+    interests:['volley','spa','fit'],
+    recos:['Freistehen in Bohuslän (Allemansrätten)','Saltholmen-Strände: Volleyball & Baden','Kallbadhus / Saunafloß'],
+    alts:['Malmö/Öresund als schneller Einstieg hinter der Brücke'],
+    sights:['Schäreninseln (Saltholmen)','Haga-Viertel','Feskekôrka (Fischmarkt)','Liseberg'],
+    content:['Beachvolleyball-Challenge am Schärenstrand','Kallbad + Sauna „Cold-Plunge"-Trend-Reel','„So übernachte ich gratis" – Allemansrätten erklärt (Save-Content)'],
+    imgs:['sweden,coast','gothenburg','beach,volleyball','sauna'] },
+
+  { n:4, name:'Oslo', phase:'sommer', coords:[59.913,10.752], dates:'~10.–12. August',
+    lead:'Tor zu Norwegen: entspannte Hauptstadt am Fjord, Fjordbad, Saunaflöße am Hafen und junge, sportliche Szene.',
+    interests:['spa','dating','fit'],
+    recos:['Sauna + Fjordsprung (SALT/Oslo Badstuforening)','Vigeland-Park & Hafenpromenade','Günstig stehen am Stadtrand, Zentrum per ÖV'],
+    alts:['Direkt zur Westküste, wenn du Stadt überspringen willst'],
+    sights:['Opernhaus (begehbares Dach)','Vigeland-Skulpturenpark','Holmenkollen','Aker Brygge'],
+    content:['Saunaflöße am Fjord + Sprung ins Wasser (starkes Reel)','Outdoor-Workout am Hafen für die Fitness-Nische','„Oslo für Vanlifer ohne Budget" Spar-Guide'],
+    imgs:['oslo,norway','oslo opera','vigeland','sauna,fjord'] },
+
+  { n:5, name:'Fjordnorwegen — Bergen & Geiranger', phase:'sommer', coords:[61.50,7.00], dates:'~13.–14. August',
+    lead:'Das landschaftliche Highlight: Geirangerfjord, Trollstigen, Wasserfälle. Teuer (Fähren/Maut), aber unvergesslich.',
+    interests:['spa','fit'],
+    recos:['Geirangerfjord & Trollstigen-Panoramastrasse','Wandern an den Fjorden','Bergen-Altstadt Bryggen + Fischmarkt'],
+    alts:['Weniger Fjordquerungen wählen, um Fährkosten zu sparen'],
+    sights:['Geirangerfjord','Trollstigen','Bryggen Bergen','Sieben-Schwestern-Wasserfall'],
+    content:['Drohnen-Shot Geirangerfjord (hohes Viral-Potenzial)','Trollstigen-Serpentinen als POV-Drive','„Was Norwegen wirklich kostet" Transparenz-Reel'],
+    imgs:['geiranger,fjord','trollstigen','bergen,norway','norway,waterfall'] },
+
+  { n:6, name:'Ålesund — Jugendstil am Fjord', phase:'sommer', coords:[62.472,6.155], dates:'~15. August',
+    lead:'Bunte Jugendstil-Stadt auf Inseln, umringt von Fjorden und Bergen. Perfekter erster Etappenstopp Richtung Norden.',
+    interests:['spa','fit'],
+    recos:['Aksla-Treppe (418 Stufen) für das Panorama','Jugendstil-Altstadt bummeln','Fjordbad / Sauna am Wasser'],
+    alts:['Bootstour in den Geirangerfjord von hier aus'],
+    sights:['Aksla-Aussicht (Fjellstua)','Jugendstil-Zentrum','Atlantikpark Aquarium','Godøy-Leuchtturm'],
+    content:['418-Stufen-Sunrise-Hike als POV-Reel','Jugendstil-Architektur-Walk (Aesthetic-Feed)','Fischer-Frühstück am Hafen'],
+    imgs:['alesund,norway','norway,fjord','art nouveau','lighthouse,norway'] },
+
+  { n:7, name:'Atlantikstraße & Kristiansund', phase:'sommer', coords:[63.018,7.310], dates:'~16. August',
+    lead:'Die spektakuläre Atlanterhavsveien schlängelt sich über Brücken und Schären direkt am offenen Meer entlang.',
+    interests:['fit','spa'],
+    recos:['Storseisundet-Brücke & Aussichtspunkte','Angeln/Spaziergang an den Schären','Sturmwellen beobachten (windige Tage)'],
+    alts:['Panoramaberg Varden in Molde'],
+    sights:['Storseisundet-Brücke','Aussichtspunkt Eldhusøya','Kvernes-Stabkirche','Angelplätze am Meer'],
+    content:['„Schönste Straße der Welt?" Drive-Reel (starker Hook)','Sturmwellen-Slow-Mo bei Wind','Frisch geangelten Fisch im Camper kochen (Food-Content)'],
+    imgs:['atlantic road norway','norway,coast','bridge,sea','fishing'] },
+
+  { n:8, name:'Trondheim', phase:'sommer', coords:[63.430,10.395], dates:'~17.–18. August',
+    lead:'Charmante Studentenstadt am Fjord: Holzhäuser, Cafés und der mächtige Nidarosdom — gute Stadt zum Auftanken.',
+    interests:['spa','dating','fit'],
+    recos:['Nidarosdom & Altstadt Bakklandet','Fjordbad / Hafensauna','Cafés und Studentenleben'],
+    alts:['Zügig weiter, wenn der Norden ruft'],
+    sights:['Nidarosdom','Bakklandet (bunte Häuser)','Gamle Bybro (alte Brücke)','Bryggen am Fluss'],
+    content:['Café-Hopping in Bakklandet (Aesthetic-Feed)','Studenten-Nightlife: „Leute treffen"-Vlog','Dom-Architektur-Reel'],
+    imgs:['trondheim,norway','nidaros cathedral','bakklandet','norway,city'] },
+
+  { n:9, name:'Polarkreis — Saltfjellet', phase:'sommer', coords:[66.600,15.400], dates:'~19. August',
+    lead:'Überquerung des Polarkreises: karge Hochebene, Rentiere und das Gefühl, endgültig im hohen Norden zu sein.',
+    interests:['fit','spa'],
+    recos:['Foto am Polarkreis-Monument (66°33′)','Saltfjellet-Hochebene','Abstecher zum Svartisen-Gletscher'],
+    alts:['Mo i Rana als Versorgungsstopp'],
+    sights:['Polarkreis-Monument (66°33′)','Saltfjellet-Hochebene','Svartisen-Gletscher','Mo i Rana'],
+    content:['„Ich überquere den Polarkreis" Meilenstein-Reel','Gletscher-Wanderung Svartisen','Rentier-Sichtungen festhalten'],
+    imgs:['arctic circle norway','glacier,norway','svartisen','reindeer'] },
+
+  { n:10, name:'Bodø — Tor zu den Lofoten', phase:'sommer', coords:[67.280,14.405], dates:'~20.–21. August',
+    lead:'Lebendige Küstenstadt und Sprungbrett zu den Lofoten. Hier den stärksten Gezeitenstrom der Welt erleben.',
+    interests:['fit','spa','dating'],
+    recos:['Saltstraumen-Mahlstrom (Gezeitenstrom)','Autofähre zu den Lofoten organisieren','Stadtsauna / Kaffeerösterei'],
+    alts:['Schnellboot statt Autofähre als Alternative'],
+    sights:['Saltstraumen (Mahlstrom)','Kjerringøy (alter Handelsplatz)','Keiservarden-Aussicht'],
+    content:['Saltstraumen-Strömung als Drohnen-Reel','Sauna + Eismeer-Dip','„Tor zu den Lofoten" Teaser für Spannung'],
+    imgs:['bodo,norway','saltstraumen','norway,sea','lofoten'] },
+
+  { n:11, name:'Lofoten', phase:'sommer', coords:[68.15,13.61], dates:'~22.–26. August',
+    lead:'Dramatische Gipfel direkt am Meer, weiße Strände, Fischerdörfer. Ende August: erste Polarlicht-Chancen am Nachthimmel.',
+    interests:['spa','fit'],
+    recos:['Strände Haukland & Kvalvika','Reine & Hamnøy fotografieren','Polarlichter ab später Nacht (KP-Index checken)'],
+    alts:['In rorbu-Hütten-Dörfern stehen bleiben'],
+    sights:['Reine & Hamnøy','Strände Haukland/Uttakleiv','Henningsvær (Fußballplatz am Meer)','Kvalvika Beach'],
+    content:['Henningsvær-Fußballplatz Drohnen-Shot (ikonisch, viral)','Sunrise-Hike Reinebringen','Polarlicht-Timelapse (Serien-Content)','Strand-Workout / Beachvolleyball am weißen Sand'],
+    imgs:['lofoten,norway','reine norway','henningsvaer','northern lights'] },
+
+  { n:12, name:'Senja', phase:'sommer', coords:[69.300,17.800], dates:'~27.–28. August',
+    lead:'Norwegens „Insel im Kleinen": wildere, ruhigere Schwester der Lofoten mit spektakulären Stränden und Felsnadeln.',
+    interests:['spa','fit'],
+    recos:['Tungeneset & Segla-Wanderung','Traumstrand Ersfjord','Polarlichter über dem Meer'],
+    alts:['Direkt weiter nach Tromsø, wenn die Zeit drängt'],
+    sights:['Segla-Berg','Tungeneset','Ersfjord-Strand','Bergsbotn-Plattform'],
+    content:['Segla-Wanderung als POV-Reel','Ersfjord-Polarlicht-Reel','„Geheime Lofoten-Alternative" Hook'],
+    imgs:['senja,norway','segla norway','norway,beach','northern lights'] },
+
+  { n:13, name:'Tromsø — Tor zur Arktis', phase:'sommer', coords:[69.649,18.956], dates:'~29.–31. August',
+    lead:'Quirlige Arktis-Metropole: Studenten, Bars, Seilbahn-Panorama und Hafensaunen mit Eisbaden — sehr sozial.',
+    interests:['spa','dating','fit'],
+    recos:['Eismeerkathedrale & Fjellheisen-Seilbahn','Hafensauna + Eisbaden','Lebendige Bar-/Studentenszene'],
+    alts:['Walbeobachtungstour (je nach Saison)'],
+    sights:['Eismeerkathedrale','Fjellheisen-Seilbahn','Polaria','Hafenpromenade'],
+    content:['Hafensauna + Eisbaden-Reel (Trend)','Seilbahn-Panorama bei Dämmerung','Bar-Hopping „Leute treffen in der Arktis"','Walbeobachtung (je nach Saison)'],
+    imgs:['tromso,norway','arctic cathedral','aurora','norway,city'] },
+
+  { n:14, name:'Nordkapp', phase:'sommer', coords:[71.170,25.784], dates:'~1.–2. September',
+    lead:'Der mythische nördlichste Punkt Europas: schroffe Klippe über dem Eismeer, Rentiere und endloser Horizont.',
+    interests:['fit','spa'],
+    recos:['Nordkap-Plateau & Globus-Monument','Mitternachtssonne / Polarlicht je nach Datum','Rentiere entlang der Straße'],
+    alts:['Knivskjellodden-Wanderung zum echten Nordpunkt'],
+    sights:['Nordkap-Plateau & Globus','Knivskjellodden-Wanderung','Kirkeporten-Felsbogen'],
+    content:['„Nördlichster Punkt Europas erreicht" – großer Meilenstein-Reel (Story-Highlight)','Mitternachtssonne/Polarlicht-Timelapse','Rentiere am Nordkap'],
+    imgs:['nordkapp,norway','north cape','arctic,cliff','reindeer'] },
+
+  { n:15, name:'Inari & Saariselkä — Nord-Lappland', phase:'sommer', coords:[68.906,27.029], dates:'~3.–4. September',
+    lead:'Eintritt nach Finnland durch das Land der Samen: weite Wildnis, der heilige Inarisee und sehr gute Polarlicht-Chancen.',
+    interests:['spa','fit'],
+    recos:['Siida-Museum (Sami-Kultur) in Inari','Wandern & Sauna in Saariselkä','Polarlichter über dem Inarisee'],
+    alts:['Urho-Kekkonen-Nationalpark für mehrtägige Touren'],
+    sights:['Inarisee (Boots-/Inseltour)','Siida-Museum (Sami-Kultur)','Urho-Kekkonen-NP','Saariselkä Fells'],
+    content:['Sami-Kultur respektvoll vorstellen (Bildung = teilbar)','Polarlicht über dem Inarisee','Wildnis-Wandern-Reel'],
+    imgs:['inari,finland','lapland,finland','aurora,finland','reindeer'] },
+
+  { n:16, name:'Rovaniemi — Polarkreis', phase:'sommer', coords:[66.50,25.73], dates:'~5.–7. September',
+    lead:'Hauptstadt Lapplands am Polarkreis: echte finnische Saunakultur, endlose Wälder & Seen und gute Polarlicht-Nächte.',
+    interests:['spa','fit'],
+    recos:['Rauch-/Seesauna mit Eintauchen','Polarkreis & Polarlicht-Nächte','Pilze/Beeren am Wegrand (Jedermannsrecht)'],
+    alts:['Ranua-Wildpark als Tagesausflug'],
+    sights:['Polarkreis & Santa Claus Village','Arktikum-Museum','Jätkänkynttilä-Brücke','Ranua-Wildpark'],
+    content:['Rauchsauna + Eintauchen: finnische Saunakultur erklärt','„Santa Village im Sommer" kuriose Story','Polarkreis-Foto-Reel'],
+    imgs:['rovaniemi,finland','finnish,sauna','santa claus village','aurora,finland'] },
+
+  { n:17, name:'Oulu — Bottnischer Meerbusen', phase:'sommer', coords:[65.012,25.471], dates:'~8. September',
+    lead:'Entspannte Küstenstadt und Europas Fahrrad-Hauptstadt: flach, grün, viele Strandwege und eine lockere Szene.',
+    interests:['fit','dating','spa'],
+    recos:['Strand- und Radwege erkunden','Markthalle am Hafen','Sauna am Meer'],
+    alts:['Kalajoki-Dünen weiter südlich an der Küste'],
+    sights:['Marktplatz & Markthalle','Nallikari-Strand','Toripolliisi-Statue','Fahrrad-Highways'],
+    content:['„Europas Fahrradstadt" Bike-Reel','Beachvolleyball am Nallikari-Strand','Markthallen-Food-Story'],
+    imgs:['oulu,finland','finland,coast','market','beach'] },
+
+  { n:18, name:'Finnische Seenplatte — Kuopio', phase:'sommer', coords:[62.892,27.677], dates:'~9.–10. September',
+    lead:'Herz der finnischen Seenlandschaft: Wasser, Wald und Saunakultur pur — ideal zum Durchatmen vor der Hauptstadt.',
+    interests:['spa','fit'],
+    recos:['Riesen-Rauchsauna Jätkänkämppä','Aussichtsturm Puijo','SUP/Kanu auf den Seen'],
+    alts:['Savonlinna mit Opernburg als Abstecher'],
+    sights:['Puijo-Aussichtsturm','Riesen-Rauchsauna Jätkänkämppä','Kallavesi-See','Marktplatz (Kalakukko)'],
+    content:['Welt­größte Rauchsauna-Reel (WOW-Hook)','SUP/Kanu bei Sonnenaufgang','Aussichtsturm-Panorama'],
+    imgs:['kuopio,finland','finland,lake','smoke sauna','sup'] },
+
+  { n:19, name:'Tampere — Sauna-Welthauptstadt', phase:'sommer', coords:[61.498,23.760], dates:'~11.–12. September',
+    lead:'Coole Industrie-Stadt zwischen zwei Seen mit den meisten öffentlichen Saunen der Welt und junger, lockerer Szene.',
+    interests:['spa','dating','fit'],
+    recos:['Öffentliche Saunen (Rajaportti, Kuuma)','See-Schwimmen mitten in der Stadt','Cafés & Ausgehviertel'],
+    alts:['Naturwege & Seen rund um die Stadt'],
+    sights:['Rajaportti (älteste öffentl. Sauna)','Näsinneula-Turm','Pyynikki-Aussicht','Moomin-Museum'],
+    content:['Sauna-Hopping „Sauna-Welthauptstadt"-Serie','See-Schwimmen mitten in der Stadt','Lokale Szene / Dating-Vlog'],
+    imgs:['tampere,finland','sauna,finland','finland,city','lake'] },
+
+  { n:20, name:'Helsinki', phase:'sommer', coords:[60.17,24.94], dates:'~13.–16. September',
+    lead:'Finnlands Hauptstadt: Sauna-Mekka am Meer, lockere Leute, Inseln und Cafés — gute Stadt fürs Kennenlernen.',
+    interests:['spa','dating','fit'],
+    recos:['Löyly & Allas Sea Pool (Sauna + Meerbad)','Insel Suomenlinna per Fähre','Stadtstrände & Outdoor-Sport'],
+    alts:['Tallinn (Estland) per Tagesfähre als günstiger Abstecher'],
+    sights:['Löyly-Sauna','Suomenlinna (UNESCO)','Dom & Senatsplatz','Allas Sea Pool'],
+    content:['Löyly Sauna + Meerbad-Reel','Suomenlinna-Insel-Vlog','„Finnische Sauna-Etikette" Guide (sehr teilbar)','Café / Dating in Helsinki'],
+    imgs:['helsinki,finland','loyly sauna','suomenlinna','sauna,sea'] },
+
+  { n:21, name:'Stockholm & Schären', phase:'sommer', coords:[59.33,18.06], dates:'~18.–23. September',
+    lead:'Per Nachtfähre Helsinki→Stockholm zurück nach Schweden: schöne Stadt, Bäder/Saunen, letzte Nordlandtage vor dem Abstieg.',
+    interests:['dating','spa','volley','fit'],
+    recos:['Hellasgården: Sauna + See vor der Stadt','Schären-Inseln per Tagesfähre','Gamla Stan & Hafenleben'],
+    alts:['Seenland Mälaren ringsum gratis stehen'],
+    sights:['Gamla Stan','Vasa-Museum','Skansen','Schärengarten'],
+    content:['Hellasgården Sauna + See','Schären-Inselhopping-Reel','Beachvolleyball / Outdoor-Gym','Altstadt-Aesthetic-Reel'],
+    imgs:['stockholm','gamla stan','sweden,archipelago','sauna,lake'] },
+
+  { n:22, name:'Berlin — Forró-Hauptstadt DE', phase:'herbst', coords:[52.52,13.405], dates:'~1.–7. Oktober',
+    lead:'Zurück auf dem Kontinent: Berlin hat die grösste Forró-Szene Deutschlands — fast täglich Bailes & Kurse, viel Sozialleben.',
+    interests:['forro','dating','fit'],
+    recos:['Forró-Baile fast jeden Abend (FB: "Forró Berlin")','Stadtrand-Stellplätze günstig','Outdoor-Sport am Tempelhofer Feld'],
+    alts:['Hamburg erneut, falls die Route es hergibt'],
+    sights:['Brandenburger Tor','East Side Gallery','Tempelhofer Feld','Museumsinsel'],
+    content:['Forró-Baile Berlin (größte Szene DE) – Tanz-Reel','Tempelhof Skating / Volleyball','„Zurück in der Großstadt nach der Arktis" Kontrast-Reel'],
+    imgs:['berlin','brandenburg gate','forro,dance','tempelhof'] },
+
+  { n:23, name:'Bordeaux / Arcachon', phase:'herbst', coords:[44.66,-1.17], dates:'~12.–18. Oktober',
+    lead:'Frankreichs Atlantikküste: mildes Herbstwetter, Dune du Pilat, günstige bis gratis "Aires", Strandfeeling.',
+    interests:['volley','fit','spa'],
+    recos:['Aires de camping-car (oft gratis/günstig)','Dune du Pilat & Strände','Austern & Wein in Arcachon'],
+    alts:['La Rochelle / Île de Ré als nördlichere Alternative'],
+    sights:['Dune du Pilat','Place de la Bourse (Miroir d’eau)','Cap Ferret','Weinregion Médoc'],
+    content:['Dune du Pilat Sunset-Reel','Austern & Wein Tasting (Food-Content)','Beachvolleyball / Surf am Atlantik'],
+    imgs:['arcachon,dune','bordeaux','dune du pilat','france,beach'] },
+
+  { n:24, name:'Biarritz / San Sebastián', phase:'herbst', coords:[43.40,-1.78], dates:'~19.–26. Oktober',
+    lead:'Surf-Grenzregion FR/ES: Beachvolleyball, Surfen, Pintxos und ein junger, aktiver Vibe — leicht Anschluss zu finden.',
+    interests:['volley','dating','fit','spa'],
+    recos:['Surf & Beachvolleyball an den Stränden','Thalasso/Spa in Biarritz','Pintxos-Tour in San Sebastián (sozial!)'],
+    alts:['Hossegor/Capbreton ruhiger & günstiger'],
+    sights:['La Concha (San Sebastián)','Biarritz Grande Plage','Monte Igueldo','Altstadt-Pintxos'],
+    content:['Surf + Beachvolleyball-Reel','Pintxos-Tour (Food + Leute kennenlernen)','Thalasso / Spa-Day','Monte Igueldo Sonnenuntergang'],
+    imgs:['biarritz,surf','san sebastian,beach','la concha','pintxos'] },
+
+  { n:25, name:'Porto', phase:'herbst', coords:[41.15,-8.61], dates:'~28. Okt–6. November',
+    lead:'Portugal-Einstieg: günstiger als Lissabon, eigene Forró-Szene, Surfstrände, mildes Wetter zum Eingewöhnen.',
+    interests:['forro','dating','fit','spa'],
+    recos:['Forró-Abende in Porto (FB-Gruppen checken)','Surf & Strand in Matosinhos','Port-Wein-Keller, Ribeira-Viertel'],
+    alts:['Costa Verde nördlich (Viana do Castelo) ruhiger & billiger'],
+    sights:['Ribeira & Ponte Dom Luís I','Livraria Lello','Port-Weinkeller (Gaia)','Strand Matosinhos'],
+    content:['Forró-Abend in Porto','Port-Wein-Tasting-Reel','Surf in Matosinhos','Azulejo-Aesthetic-Reel'],
+    imgs:['porto,portugal','porto bridge','douro river','surf,portugal'] },
+
+  { n:26, name:'Lissabon / Costa da Caparica', phase:'winter', coords:[38.65,-9.23], dates:'November–Dezember (Basis)',
+    lead:'Dein Winter-Cluster: Lissabon ist Europas Forró-Hotspot im Winter, riesige Single-/Nomaden-Community, günstige Gyms — Volleyball am Caparica-Strand.',
+    interests:['forro','dating','fit','volley','spa'],
+    recos:['Monats-Stellplatz an der Costa da Caparica','Forró-Kursreihe + wöchentliche Bailes','Beachvolleyball Caparica · Nomaden-Meetups'],
+    alts:['Setúbal/Sesimbra ruhiger & günstiger, Lissabon per Zug'],
+    sights:['Belém-Turm & Pastéis','Alfama & Tram 28','Costa da Caparica','Sintra (Tagestrip)'],
+    content:['Forró-Hotspot Lissabon – wöchentliche Tanz-Serie (Kern-Content)','Beachvolleyball Caparica','Nomaden-/Single-Community-Vlog (Dating)','Sintra-Märchenschlösser-Reel'],
+    imgs:['lisbon,portugal','tram 28 lisbon','forro,dance','sintra'] },
+
+  { n:27, name:'Algarve — Lagos & Sagres', phase:'winter', coords:[37.10,-8.67], dates:'Januar–Februar',
+    lead:'Der wärmste Fleck Europas im Winter (16–20 °C): Surf- und Volleyball-Community, Yoga/Wellness-Retreats, viele Reisende — ideal zum Bleiben.',
+    interests:['volley','spa','fit','dating'],
+    recos:['Monatsplatz in Lagos/Sagres mit Strom & WLAN','Surf + Beachvolleyball-Gruppen','Yoga/Wellness-Retreats, Steilküsten-Wandern'],
+    alts:['Alentejo-Küste (Zambujeira do Mar) ursprünglicher & leerer'],
+    sights:['Benagil-Höhle','Ponta da Piedade (Lagos)','Cabo de São Vicente (Sagres)','Praia da Marinha'],
+    content:['Benagil-Höhle Kajak-Reel (ikonisch)','Sunset am Cabo de São Vicente','Surf + Beachvolleyball-Community','Yoga/Wellness-Retreat-Vlog'],
+    imgs:['benagil cave','lagos,portugal','algarve,beach','surf'] },
+
+  { n:28, name:'Andalusien — Málaga & Costa del Sol', phase:'fruehling', coords:[36.72,-4.42], dates:'~Ende Feb–Anfang März',
+    lead:'Start der Mittelmeer-Rückreise: mildes Andalusien, Strandpromenaden, Tapas-Kultur und Wärme zum Auftanken.',
+    interests:['spa','dating','fit','volley'],
+    recos:['Strandpromenade Málaga + Beachvolleyball','Hammam Al Ándalus (Wellness)','Tapas-/Ausgehszene, Granada-Abstecher'],
+    alts:['Cádiz/Tarifa (Atlantik) als surf-/kitelastige Variante'],
+    sights:['Alhambra (Granada-Tagestrip)','Caminito del Rey','Alcazaba Málaga','Playa de la Malagueta'],
+    content:['Caminito del Rey Klippenpfad-Reel','Hammam Al Ándalus (Wellness)','Beachvolleyball in Málaga','Tapas + Flamenco-Vibe'],
+    imgs:['malaga,spain','alhambra','caminito del rey','andalusia,beach'] },
+
+  { n:29, name:'Valencia', phase:'fruehling', coords:[39.47,-0.38], dates:'~März',
+    lead:'Mittelmeer-Metropole mit riesigem Stadtstrand: Beachvolleyball, Radwege, Paella und entspanntes Frühlingsklima.',
+    interests:['volley','fit','dating','spa'],
+    recos:['Beachvolleyball an der Malvarrosa','Turia-Park für Laufen/Rad','Mercado Central & Ausgehviertel Ruzafa'],
+    alts:['Alicante/Costa Blanca als wärmere, ruhigere Option'],
+    sights:['Ciudad de las Artes','Kathedrale & Altstadt','Malvarrosa-Strand','Turia-Park','Mercado Central'],
+    content:['Beachvolleyball an der Malvarrosa','Turia-Park Bike/Run-Reel','Paella-Origin Food-Story','Futuristische Architektur-Reel'],
+    imgs:['valencia,spain','city of arts valencia','beach,volleyball','paella'] },
+
+  { n:30, name:'Barcelona & Costa Brava', phase:'fruehling', coords:[41.39,2.17], dates:'~März',
+    lead:'Stadt + Küste: lebendige Szene, Strand-Volleyball an der Barceloneta, Tanzabende und schöne Buchten der Costa Brava.',
+    interests:['dating','volley','fit','forro'],
+    recos:['Beachvolleyball Barceloneta','Tanz-/Salsa-/Forró-Abende suchen','Costa-Brava-Buchten (Calella, Cadaqués)'],
+    alts:['Sitges südlich als ruhigerer Badeort'],
+    sights:['Sagrada Família','Park Güell','Gothic Quarter','Barceloneta','Costa-Brava-Buchten'],
+    content:['Barceloneta Beachvolleyball + Skyline','Gaudí-Architektur-Reel','Salsa/Forró-Abend','Costa-Brava-Buchten Drohnen-Reel'],
+    imgs:['barcelona,beach','sagrada familia','park guell','costa brava'] },
+
+  { n:31, name:'Côte d\'Azur — Nizza', phase:'fruehling', coords:[43.70,7.27], dates:'~Ende März',
+    lead:'Französische Riviera im Frühling: mild, glamourös, weniger überlaufen als im Sommer. Promenade, Altstadt, Bergpanorama.',
+    interests:['spa','dating','fit'],
+    recos:['Promenade des Anglais (Laufen/Rad)','Altstadt Nizza & Märkte','Èze / Monaco als Tagesausflug'],
+    alts:['Antibes/Cannes mit einfacheren Stellplätzen'],
+    sights:['Promenade des Anglais','Vieux Nice','Colline du Château','Èze & Monaco'],
+    content:['Promenade Sunrise-Run','Èze-Dorf + Monaco-Day-Trip','Riviera-Aesthetic-Reel','Märkte im Vieux Nice'],
+    imgs:['nice,france','french riviera','vieux nice','monaco'] },
+
+  { n:32, name:'Italienische Riviera — Cinque Terre', phase:'fruehling', coords:[44.13,9.71], dates:'~April',
+    lead:'Ligurische Küste: bunte Dörfer am Meer, Wanderwege zwischen den Cinque Terre, Pesto & Focaccia — letzter Küstengenuss.',
+    interests:['spa','fit','dating'],
+    recos:['Wanderweg zwischen den fünf Dörfern','Portofino/Santa Margherita','Stellplätze ausserhalb (Levanto/La Spezia)'],
+    alts:['Gardasee als Zwischenstopp Richtung Alpen'],
+    sights:['Manarola','Vernazza','Riomaggiore','Sentiero Azzurro','Portofino'],
+    content:['Manarola Sunset-Reel (ikonisch)','Sentiero-Azzurro-Wanderung POV','Pesto/Focaccia Food-Story','Portofino-Yacht-Vibe'],
+    imgs:['cinque terre','manarola','vernazza','liguria,italy'] },
+
+  { n:33, name:'Pfäffikon ZH — Rückkehr', phase:'fruehling', coords:[47.218,8.792], dates:'~April (Ankunft)',
+    lead:'Über die Alpen (Gotthard/San Bernardino) zurück an die Pilatusstrasse 40. Rundreise komplett — Camper entladen, ankommen.',
+    interests:['fit'],
+    recos:['Alpenpass je nach Schnee/Wetter wählen','Camper reinigen & Service nach langer Tour','Fotos/Erinnerungen sortieren'],
+    alts:['Tessin (Lugano/Locarno) als letzter Sonnen-Stopp vor Zürich'],
+    sights:['Gotthard-Pass','Tessin (Lugano/Locarno)','Zürichsee'],
+    content:['Abschluss-Best-of: „9 Monate · 33 Stationen · X km" Recap-Reel (Viral-Potenzial)','„Was die Reise gekostet hat" Transparenz-Video','Q&A & Dankes-Post mit der Community','Vorher/Nachher: Mensch + Camper'],
+    imgs:['gotthard,alps','lugano','zurich,lake','switzerland'] }
+];
+
+const interestMeta = {
+  spa:{c:'spa',t:'🧖 Spa & Wellness'},
+  forro:{c:'forro',t:'💃 Forró'},
+  volley:{c:'volley',t:'🏐 Beachvolleyball'},
+  fit:{c:'fit',t:'🏋️ Fitness'},
+  dating:{c:'dating',t:'❤️ Leute kennenlernen'}
+};
+
+function img(kw,lock){return `https://loremflickr.com/600/400/${encodeURIComponent(kw)}?lock=${lock}`;}
+
+/* ---------- MAP ---------- */
+const map = L.map('map',{scrollWheelZoom:false}).setView([54.0,8.0],3.6);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  maxZoom:18, attribution:'© OpenStreetMap'
+}).addTo(map);
+
+function popHtml(s,imgUrl){
+  return `<div class="pop">${imgUrl?`<img src="${imgUrl}" alt="">`:''}<div class="pc"><h4>${s.n}. ${s.name}</h4><div class="pd">${s.dates}</div><div class="pb">${s.lead}</div></div></div>`;
+}
+const latlngs=[];
+const markerByN={};
+stops.forEach(s=>{
+  latlngs.push(s.coords);
+  const col=PHASE[s.phase].color;
+  const icon=L.divIcon({className:'',html:`<div class="marker-num" style="width:30px;height:30px;background:${col}">${s.n}</div>`,iconSize:[30,30],iconAnchor:[15,15]});
+  markerByN[s.n]=L.marker(s.coords,{icon}).addTo(map).bindPopup(popHtml(s,''));
+});
+
+/* Route line, coloured by leg of the later phase */
+for(let i=0;i<latlngs.length-1;i++){
+  const col=PHASE[stops[i+1].phase].color;
+  L.polyline([latlngs[i],latlngs[i+1]],{color:col,weight:3.5,opacity:.7,dashArray:'1,6',lineCap:'round'}).addTo(map);
+}
+map.fitBounds(L.latLngBounds(latlngs).pad(0.12));
+
+/* ---------- SECTION CARDS ---------- */
+const phaseOrder=['sommer','herbst','winter','fruehling'];
+const phaseTitles={
+  sommer:{h:'☀️ August–September · Norden',s:'Fjorde, Mitternachtssonne, Sauna & erste Polarlichter — viel gratis freistehen.'},
+  herbst:{h:'🍂 Oktober–November · Abstieg',s:'Forró-Szene, Surf & milde Atlantikküste Richtung Portugal.'},
+  winter:{h:'🌊 Dezember–Februar · Portugal',s:'Tanzen, Fitness, Strand & wärmstes Winterklima Europas.'},
+  fruehling:{h:'🌅 März–April · Mittelmeer-Rückreise',s:'Über Spanien-Mittelmeer, Côte d\'Azur & italienische Riviera zurück über die Alpen.'}
+};
+const cssVar={sommer:'var(--sommer)',herbst:'var(--herbst)',winter:'var(--winter)',fruehling:'var(--fruehling)'};
+
+const cont=document.getElementById('sections');
+phaseOrder.forEach(ph=>{
+  const head=document.createElement('div');
+  head.className='phase-head';
+  head.innerHTML=`<div class="bar" style="background:${cssVar[ph]}"></div><div><h2>${phaseTitles[ph].h}</h2><div class="sub">${phaseTitles[ph].s}</div></div>`;
+  cont.appendChild(head);
+
+  stops.filter(s=>s.phase===ph).forEach(s=>{
+    const col=PHASE[s.phase].color;
+    const badges=s.interests.map(k=>`<span class="badge ${interestMeta[k].c}">${interestMeta[k].t}</span>`).join('');
+    const recos=s.recos.map(r=>`<li>${r}</li>`).join('');
+    const alts=s.alts.map(a=>`<li>${a}</li>`).join('');
+    const sights=(s.sights||[]).map(x=>`<span class="sight-chip">📍 ${x}</span>`).join('');
+    const content=(s.content||[]).map(c=>`<li>${c}</li>`).join('');
+    const card=document.createElement('div');
+    card.className='card';
+    card.innerHTML=`
+      <div class="top"><span class="num" style="background:${col}">${s.n}</span><h3>${s.name}</h3>
+        <div class="where">📅 ${s.dates}</div></div>
+      <p class="lead">${s.lead}</p>
+      <div class="badges">${badges}</div>
+      <div class="gallery" id="gal-${s.n}"><div class="gal-msg">Bilder werden geladen …</div></div>
+      ${sights?`<div class="sights"><h4>📍 Sehenswürdigkeiten &amp; Highlights</h4><div class="sight-chips">${sights}</div></div>`:''}
+      <div class="cols">
+        <div><h4>✅ Empfehlungen</h4><ul>${recos}</ul></div>
+        <div class="alt"><h4>🔁 Alternativen</h4><ul>${alts}</ul></div>
+      </div>
+      ${content?`<div class="forme"><h4>📸 Für dich — Content, Hobbys &amp; Follower</h4><ul>${content}</ul></div>`:''}`;
+    cont.appendChild(card);
+  });
+});
+
+/* ---------- ECHTE BILDER VON WIKIPEDIA/WIKIMEDIA ---------- */
+const wikiTitle={
+  1:'Lake Zurich',2:'Hamburg',3:'Gothenburg',4:'Oslo',5:'Geirangerfjord',
+  6:'Ålesund',7:'Atlantic Ocean Road',8:'Trondheim',9:'Svartisen',10:'Bodø',
+  11:'Lofoten',12:'Senja',13:'Tromsø',14:'North Cape, Norway',15:'Lake Inari',
+  16:'Rovaniemi',17:'Oulu',18:'Kuopio',19:'Tampere',20:'Helsinki',
+  21:'Stockholm',22:'Berlin',23:'Dune of Pilat',24:'Biarritz',25:'Porto',
+  26:'Lisbon',27:'Algarve',28:'Málaga',29:'Valencia',30:'Barcelona',
+  31:'Nice',32:'Cinque Terre',33:'Gotthard Pass'
+};
+const JUNK=/(\.svg|\.ogg|flag|locator|_map|map_|logo|icon|coat|wappen|seal|signature|blason|karte|orthographic|location)/i;
+
+async function fetchImages(title){
+  try{
+    const r=await fetch('https://en.wikipedia.org/api/rest_v1/page/media-list/'+encodeURIComponent(title));
+    if(!r.ok) return [];
+    const j=await r.json();
+    const out=[];
+    (j.items||[]).forEach(it=>{
+      if(it.type!=='image'||it.showInGallery===false) return;
+      if(JUNK.test(it.title||'')) return;
+      const ss=it.srcset&&it.srcset[0]&&it.srcset[0].src;
+      if(!ss) return;
+      out.push(('https:'+ss).replace('https:https:','https:').replace(/\/\d+px-/,'/800px-'));
+    });
+    return out;
+  }catch(e){ return []; }
+}
+
+async function loadGallery(s){
+  const el=document.getElementById('gal-'+s.n);
+  if(!el) return;
+  let urls=await fetchImages(wikiTitle[s.n]||s.name);
+  urls=urls.slice(0,6);
+  if(!urls.length){ el.innerHTML='<div class="gal-msg">Keine Bilder gefunden</div>'; return; }
+  el.innerHTML=urls.map(u=>`<img loading="lazy" src="${u}" alt="${s.name}" onerror="this.remove()">`).join('');
+  const m=markerByN[s.n];
+  if(m) m.setPopupContent(popHtml(s,urls[0]));
+}
+stops.forEach(loadGallery);
+</script>
+</body>
+</html>
