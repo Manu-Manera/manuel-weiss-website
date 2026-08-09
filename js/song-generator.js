@@ -223,9 +223,22 @@
       }
       if (res.ok) {
         const data = await res.json().catch(() => null);
-        const text = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+        const choice = data && data.choices && data.choices[0];
+        const text = choice && choice.message && choice.message.content;
         const parsed = safeJsonParse(text);
         if (parsed) return parsed;
+        const truncated = choice && choice.finish_reason === 'length';
+        if (truncated && !opts._tokenRetried) {
+          // Antwort wurde vom max_tokens-Limit abgeschnitten → mit mehr Budget wiederholen
+          const curTokens = typeof opts.maxTokens === 'number' ? opts.maxTokens : 4000;
+          const moreTokens = Math.min(16000, Math.round(curTokens * 1.8));
+          errors.push({ model, msg: 'Antwort abgeschnitten (max_tokens) – Retry mit ' + moreTokens + ' Tokens' });
+          return callOpenAIDirect(Object.assign({}, opts, {
+            _tokenRetried: true,
+            maxTokens: moreTokens,
+            user: (opts.user || '') + '\n\nWICHTIG: Antworte ausschließlich mit kompaktem gültigem JSON nach dem Schema. Kein Markdown, keine überflüssigen Felder.'
+          }));
+        }
         if (!opts._jsonRetried) {
           errors.push({ model, msg: 'KI-Antwort war kein gültiges JSON – Retry' });
           return callOpenAIDirect(Object.assign({}, opts, {
@@ -234,7 +247,7 @@
             user: (opts.user || '') + '\n\nWICHTIG: Antworte ausschließlich mit kompaktem gültigem JSON nach dem Schema. Kein Markdown.'
           }));
         }
-        errors.push({ model, msg: 'KI-Antwort war kein gültiges JSON' });
+        errors.push({ model, msg: 'KI-Antwort war kein gültiges JSON' + (truncated ? ' (abgeschnitten)' : '') });
         continue;
       }
       let errText = '';
@@ -362,8 +375,8 @@
     if (action === 'synthesize') {
       const { test_results, facets, external_signals, astrology, salient_answers, test_depth, imported_narrative, user_meta } = payload || {};
       // Mehr Antworten → mehr nuance_fragments → mehr Output-Tokens nötig
-      const synthTokens = (salient_answers && salient_answers.length > 45) ? 5000
-        : (salient_answers && salient_answers.length > 25) ? 4200 : 3500;
+      const synthTokens = (salient_answers && salient_answers.length > 45) ? 6500
+        : (salient_answers && salient_answers.length > 25) ? 5000 : 4000;
       return callOpenAIDirect({ apiKey, system: P.SYSTEM_CORE, user: P.buildPersonaSynthesisUserPrompt({ test_results, facets, external_signals, astrology, salient_answers, test_depth, imported_narrative, user_meta }), temperature: 0.4, top_p: 0.9, maxTokens: synthTokens });
     }
     if (action === 'compose') {
@@ -372,7 +385,7 @@
       const temp = typeof creativity === 'number'
         ? Math.max(0.6, Math.min(1.1, 0.5 + creativity * 0.5))
         : 0.85;
-      const composeTokens = (persona && Array.isArray(persona.nuance_fragments) && persona.nuance_fragments.length > 12) ? 7500 : 6000;
+      const composeTokens = (persona && Array.isArray(persona.nuance_fragments) && persona.nuance_fragments.length > 12) ? 12000 : 9000;
       return callOpenAIDirect({
         apiKey, system: P.SYSTEM_CORE,
         user: P.buildSongComposerUserPrompt({ persona, mode: 'full', edit_targets: [], previous_song: null, creativity, source_material, song_directives, variation_seed, avoid_lines }),
@@ -391,7 +404,7 @@
         user: userPrompt,
         temperature: rerollMode === 'rewrite_section' ? 0.82 : 0.78,
         top_p: 0.92,
-        maxTokens: 1400,
+        maxTokens: rerollMode === 'rewrite_section' ? 2500 : 1400,
         model: 'gpt-4.1'
       });
     }
