@@ -3012,7 +3012,43 @@
       exportBtn.onclick = () => this.exportJson();
       actions.append(exportBtn);
       wrap.append(actions);
+
+      // Großer Produktions-Button ganz unten – löst die komplette Suno-Produktion aus
+      wrap.append(this._renderProduceCta());
       return wrap;
+    }
+
+    _renderProduceCta() {
+      const phase = (this.state.audioState && this.state.audioState.phase) || 'idle';
+      const busy = phase === 'submitting' || phase === 'polling' || phase === 'queue_running';
+      const cta = el('div', 'sg-produce-cta-wrap');
+      const btn = el('button', 'sg-produce-cta',
+        busy ? '⏳ Produktion läuft …' : '🚀 Jetzt produzieren');
+      btn.type = 'button';
+      btn.disabled = busy;
+      btn.onclick = () => {
+        try {
+          const o = this._buildProductionOpts({
+            model: (this.state.audioState && this.state.audioState.model) || 'V5_5',
+            vocalGender: this._getVocalSelectValue()
+          });
+          this.runProduction(o);
+          // Zum Produktions-Panel scrollen, damit der Fortschritt sichtbar ist
+          setTimeout(() => {
+            const box = this.root.querySelector('.sg-prod-box');
+            if (box) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 150);
+        } catch (err) {
+          console.error('[SongGenerator] Produzieren-CTA:', err);
+          alert('Produktion konnte nicht starten: ' + (err.message || String(err)));
+        }
+      };
+      cta.append(btn);
+      cta.append(el('p', 'sg-hint sg-produce-cta-hint',
+        busy
+          ? 'Dein Song wird gerade produziert – Fortschritt oben im Bereich „KI-Audio-Produktion".'
+          : 'Startet die komplette Suno-Produktion mit deinem Songtext, allen Song-Studio-Reglern, Stimme und Modell von oben (~30–90 s, 2 Varianten).'));
+      return cta;
     }
 
     renderSongSection(section) {

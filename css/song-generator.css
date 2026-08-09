@@ -153,6 +153,41 @@
   border: 1px solid var(--sg-border);
 }
 .sg-btn-ghost:hover { background: #fff; border-color: var(--sg-accent); color: var(--sg-accent); }
+
+/* ─── Großer Produzieren-CTA (Editor, ganz unten) ───────────── */
+.sg-produce-cta-wrap {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--sg-border);
+  text-align: center;
+}
+.sg-produce-cta {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  padding: 1.25rem 2rem;
+  border-radius: 16px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: 0.01em;
+  color: #fff;
+  background: linear-gradient(135deg, var(--sg-accent), var(--sg-accent-2));
+  box-shadow: 0 12px 32px rgba(79, 70, 229, 0.45);
+  transition: all 0.18s ease;
+}
+.sg-produce-cta:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(79, 70, 229, 0.55);
+}
+.sg-produce-cta:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.sg-produce-cta-hint { margin-top: 0.6rem; }
 .sg-btn-icon {
   width: 28px;
   height: 28px;
