@@ -195,7 +195,7 @@ OUTPUT (JSON, PERSONA_SIGNAL_SCHEMA):
 // ────────────────────────────────────────────────────────────
 // 3) PERSONA SYNTHESIS
 // ────────────────────────────────────────────────────────────
-function buildPersonaSynthesisUserPrompt({ test_results, facets, external_signals, astrology, salient_answers, imported_narrative, user_meta }) {
+function buildPersonaSynthesisUserPrompt({ test_results, facets, external_signals, astrology, salient_answers, test_depth, imported_narrative, user_meta }) {
   return `AUFTRAG: Fusioniere folgende Quellen zu EINEM kohärenten Persona-Profil.
 
 INPUT:
@@ -205,6 +205,7 @@ ${JSON.stringify({
     external_signals: external_signals || [],
     astrology: astrology || null,
     salient_answers: salient_answers || [],
+    test_depth: test_depth || null,
     imported_narrative: imported_narrative || null,
     user_meta: user_meta || {}
   }, null, 2)}
@@ -213,9 +214,13 @@ PRIMÄRQUELLEN (wissenschaftlich):
  - test_results: Big-Five-Domänen + HEXACO-H + Schwartz + Bindung + VIA. 0..100.
  - facets: 30 NEO-PI-R-Facetten (O1..O6 … N1..N6), wenn vorhanden – höchste
    diagnostische Auflösung. Nutze zur Schärfung der Narrative und Motive.
- - salient_answers: markante EINZELANTWORTEN aus dem Persönlichkeitstest
-   (Frage-Kurzform, Ausprägung, Skala/Facette). Jede Antwort ist eine
-   individuelle Nuance – nutze sie für nuance_fragments (siehe unten).
+ - salient_answers: ALLE Einzelantworten aus dem Persönlichkeitstest
+   (Frage-Kurzform, Ausprägung, Skala/Facette), nach Extremität sortiert.
+   Jede Antwort ist eine individuelle Nuance – nutze sie für
+   nuance_fragments (siehe unten). Auch mittlere Ausprägungen sind
+   wertvolle Zwischentöne (Ambivalenz, Sowohl-als-auch).
+ - test_depth: Testtiefe (kompakt/hoch/maximal). Je tiefer, desto feiner
+   und zahlreicher müssen Narrative, Motive und nuance_fragments werden.
  - external_signals: optionale Zusatzhinweise (Tests, Tagebücher, Freitexte).
    Enthalten sie key_quotes / imagery_bank / core_messages, sind das O-Ton-
    Fragmente des Nutzers – übernimm die stärksten in motifs und
@@ -237,12 +242,22 @@ FUSIONS-REGELN:
 5. Erzeuge 5 motifs (semantische Bilder) für den Songtext.
 6. Erzeuge eine music_dna als kompakten Steuervektor.
 7. Setze harte Locks (tonality_lock, tempo_lock).
-8. Erzeuge nuance_fragments: Für JEDE markante Einzelantwort in
+8. Erzeuge nuance_fragments: Für markante Einzelantworten in
    salient_answers (und für die stärksten key_quotes/core_messages aus
-   external_signals) genau EIN konkretes, songtaugliches Bild oder Fragment
+   external_signals) je EIN konkretes, songtaugliches Bild oder Fragment
    (max. 12 Wörter). Kein Fragment doppelt, keine Allerweltsbilder
    (verboten: Anker, Funke, Echo, Sterne, Wege als Füller). Diese Fragmente
    sind später Pflicht-Material für den Songtext.
+   ANZAHL SKALIERT MIT test_depth:
+   - kompakt (Kurztest): 8–12 Fragmente aus den markantesten Antworten.
+   - hoch (mittlere Variante): 12–18 Fragmente, auch Facetten-Feinheiten.
+   - maximal (Langtest, 60+ Antworten): 20–30 Fragmente. Verdichte dabei
+     thematisch verwandte Antworten zu EINEM präzisen Bild, statt sie zu
+     wiederholen. Nutze zusätzlich mittlere Ausprägungen als Ambivalenz-
+     Fragmente („sowohl X als auch Y") und Facetten-Kontraste (z. B. hohe
+     Phantasie + niedrige Ordnungsliebe) als Spannungs-Bilder. Bei
+     maximal darf core_narrative 4–5 Sätze haben und motifs auf 7 wachsen –
+     jedes Motiv aus einer echten Antwort oder einem echten Zitat gespeist.
 
 OUTPUT (JSON, PERSONA_PROFILE):
 {
@@ -383,6 +398,16 @@ LYRIK-REGELN:
 - NUANCEN-PFLICHT: Enthält persona.nuance_fragments Einträge, verteile sie
   über den ganzen Song – jedes Fragment inspiriert mindestens eine Zeile.
   Trage die zugehörige ref als nuance_ref an der Zeile ein.
+- TIEFEN-SKALIERUNG (persona.test_depth): Bei depth=maximal (Langtest) gilt
+  der höchste Anspruch: KEINE austauschbare Zeile – jede Zeile muss
+  erkennbar aus einer Antwort, einer Facette oder dem O-Ton gespeist sein.
+  Sind mehr als 12 nuance_fragments vorhanden und song_length ist nicht
+  explizit gesetzt, wähle die LANGE Struktur (2 Verses, PreChorus, Bridge,
+  Doppel-Chorus, Outro), damit alle Nuancen Platz finden; nutze zusätzlich
+  alt_versions, um weitere Nuancen anzubieten. Verwandte Fragmente dürfen
+  zu einer dichten Zeile verschmelzen (nuance_ref = beide refs, komma-
+  getrennt). Spannungs-Fragmente („sowohl X als auch Y") gehören bevorzugt
+  in die Bridge.
 - must_include_keywords MÜSSEN vorkommen; must_avoid_keywords nicht.
 - Reim: nicht erzwungen; Halbreime/Assonanzen/innere Reime bevorzugt (Direktive rhyme_scheme hat Vorrang).
 - Refrain ist semantische Verdichtung der core_narrative (bzw. der Direktive theme/hook_line).

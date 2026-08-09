@@ -209,15 +209,18 @@ async function handleInterpretInput({ apiKey, payload, model }) {
 }
 
 async function handleSynthesize({ apiKey, payload, model }) {
-  const { test_results, facets, external_signals, astrology, salient_answers, imported_narrative, user_meta } = payload || {};
+  const { test_results, facets, external_signals, astrology, salient_answers, test_depth, imported_narrative, user_meta } = payload || {};
+  // Mehr Antworten → mehr nuance_fragments → mehr Output-Tokens nötig
+  const answerCount = Array.isArray(salient_answers) ? salient_answers.length : 0;
+  const maxTokens = answerCount > 45 ? 5000 : answerCount > 25 ? 4200 : 3500;
   const result = await callOpenAI({
     apiKey,
     system: SYSTEM_CORE,
-    user: buildPersonaSynthesisUserPrompt({ test_results, facets, external_signals, astrology, salient_answers, imported_narrative, user_meta }),
+    user: buildPersonaSynthesisUserPrompt({ test_results, facets, external_signals, astrology, salient_answers, test_depth, imported_narrative, user_meta }),
     temperature: 0.4,
     top_p: 0.9,
     model,
-    maxTokens: 3500
+    maxTokens
   });
   return ok('synthesize', result.json, { model: result.model });
 }
@@ -245,7 +248,7 @@ async function handleCompose({ apiKey, payload, model }) {
     temperature: temp,
     top_p: 0.95,
     model,
-    maxTokens: 6000,
+    maxTokens: (persona && Array.isArray(persona.nuance_fragments) && persona.nuance_fragments.length > 12) ? 7500 : 6000,
     presencePenalty: 0.15,
     frequencyPenalty: 0.1
   });

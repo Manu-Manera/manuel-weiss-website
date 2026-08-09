@@ -360,8 +360,11 @@
       return callOpenAIDirect({ apiKey, system: P.SYSTEM_CORE, user: P.buildInputInterpreterUserPrompt({ source_type, raw, lang }), temperature: 0.3, top_p: 0.9, maxTokens: 3000 });
     }
     if (action === 'synthesize') {
-      const { test_results, facets, external_signals, astrology, salient_answers, imported_narrative, user_meta } = payload || {};
-      return callOpenAIDirect({ apiKey, system: P.SYSTEM_CORE, user: P.buildPersonaSynthesisUserPrompt({ test_results, facets, external_signals, astrology, salient_answers, imported_narrative, user_meta }), temperature: 0.4, top_p: 0.9, maxTokens: 3500 });
+      const { test_results, facets, external_signals, astrology, salient_answers, test_depth, imported_narrative, user_meta } = payload || {};
+      // Mehr Antworten → mehr nuance_fragments → mehr Output-Tokens nötig
+      const synthTokens = (salient_answers && salient_answers.length > 45) ? 5000
+        : (salient_answers && salient_answers.length > 25) ? 4200 : 3500;
+      return callOpenAIDirect({ apiKey, system: P.SYSTEM_CORE, user: P.buildPersonaSynthesisUserPrompt({ test_results, facets, external_signals, astrology, salient_answers, test_depth, imported_narrative, user_meta }), temperature: 0.4, top_p: 0.9, maxTokens: synthTokens });
     }
     if (action === 'compose') {
       const { persona, creativity, source_material, song_directives, variation_seed, avoid_lines } = payload || {};
@@ -369,10 +372,11 @@
       const temp = typeof creativity === 'number'
         ? Math.max(0.6, Math.min(1.1, 0.5 + creativity * 0.5))
         : 0.85;
+      const composeTokens = (persona && Array.isArray(persona.nuance_fragments) && persona.nuance_fragments.length > 12) ? 7500 : 6000;
       return callOpenAIDirect({
         apiKey, system: P.SYSTEM_CORE,
         user: P.buildSongComposerUserPrompt({ persona, mode: 'full', edit_targets: [], previous_song: null, creativity, source_material, song_directives, variation_seed, avoid_lines }),
-        temperature: temp, top_p: 0.95, maxTokens: 6000
+        temperature: temp, top_p: 0.95, maxTokens: composeTokens
       });
     }
     if (action === 'reroll') {
@@ -1831,9 +1835,12 @@
     }
 
     /**
-     * Markante Einzelantworten aus dem Test extrahieren – jede Antwort wird
-     * so zur eigenen Nuance im Song. Sortiert nach Extremität (Abstand von
-     * der Mitte), damit die aussagekräftigsten Antworten vorne stehen.
+     * ALLE beantworteten Test-Items extrahieren – jede Antwort wird zur
+     * eigenen Nuance im Song. Sortiert nach Extremität (Abstand von der
+     * Mitte), damit die aussagekräftigsten Antworten vorne stehen; auch
+     * mittlere Ausprägungen bleiben als feine Zwischentöne enthalten.
+     * Gerade bei der langen Testvariante (74 Items) entsteht so ein
+     * maximal individuelles Bild.
      */
     _collectSalientAnswers(maxCount) {
       const q = this.state.questions;
@@ -1867,7 +1874,8 @@
         });
       });
       out.sort((a, b) => b._salience - a._salience);
-      return out.slice(0, maxCount || 30).map(e => {
+      const limit = maxCount || out.length;
+      return out.slice(0, limit).map(e => {
         const copy = Object.assign({}, e);
         delete copy._salience;
         return copy;
@@ -1904,8 +1912,15 @@
 
       const externalSignals = this._collectExternalSignals();
       const importedCount = Array.isArray(this.state.importedMethods) ? this.state.importedMethods.length : 0;
-      const salientAnswers = this._collectSalientAnswers(30);
+      // ALLE Antworten einbeziehen – bei der langen Variante (74 Items)
+      // entsteht die feinste Nuancierung im Song.
+      const salientAnswers = this._collectSalientAnswers();
       const sourceMaterial = this._collectSourceMaterial();
+      const testDepth = {
+        variant: variant,
+        answers_count: salientAnswers.length,
+        depth: variant === 'long' ? 'maximal' : variant === 'medium' ? 'hoch' : 'kompakt'
+      };
 
       // Direct-Persona als Fallback
       const directPersona = {
@@ -1918,6 +1933,7 @@
         music_dna: this._fuseMusicDNA(baseDNA, astroChart),
         astrology: astroChart || null,
         test_variant: variant,
+        test_depth: testDepth,
         salient_answers: salientAnswers,
         source_material: sourceMaterial,
         imported_narrative: this.state.importedNarrative || null,
@@ -1945,6 +1961,7 @@
           astrology: astroChart ? this._compactAstro(astroChart) : null,
           external_signals: externalSignals,
           salient_answers: salientAnswers,
+          test_depth: testDepth,
           user_meta: this.state.userMeta,
           base_dna: baseDNA,
           base_archetype: baseArchetype,
@@ -1954,6 +1971,7 @@
         persona.astrology = astroChart || null;
         persona.facets_final = persona.facets_final || facets;
         persona.test_variant = variant;
+        persona.test_depth = testDepth;
         persona.salient_answers = salientAnswers;
         persona.source_material = sourceMaterial;
         persona.nuance_fragments = Array.isArray(persona.nuance_fragments) ? persona.nuance_fragments : [];
