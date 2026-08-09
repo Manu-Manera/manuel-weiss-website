@@ -203,26 +203,27 @@
   // ────────────────────────────────────────────────────────────
 
   // Element-Modifier für die astrologische Schicht
+  // (bewusst weiche Formulierungen – aggressive Tags erzeugten wilde Intros/Hintergründe)
   const ELEMENT_MODIFIERS = {
-    fire:  { tags: ['driving', 'bright highs', 'punchy attack'],      moodWord: 'glowing' },
+    fire:  { tags: ['warm forward momentum', 'bright highs', 'confident groove'], moodWord: 'glowing' },
     earth: { tags: ['grounded', 'acoustic warmth', 'steady tempo'],   moodWord: 'rooted' },
     air:   { tags: ['airy texture', 'spacious mix', 'crystalline'],   moodWord: 'luminous' },
-    water: { tags: ['lush reverb', 'dynamic releases', 'cinematic'],  moodWord: 'flowing' }
+    water: { tags: ['lush reverb', 'smooth dynamic swells', 'cinematic'], moodWord: 'flowing' }
   };
 
-  // Aszendenten-Vibe für die ersten Takte
+  // Aszendenten-Vibe für die ersten Takte (sanfte Eröffnungen, kein abruptes Intro)
   const ASC_VIBES = {
-    'Widder':      'bold opening, immediate forward motion',
+    'Widder':      'confident but smooth opening',
     'Stier':       'patient intro, sensual textures',
     'Zwillinge':   'playful conversation between instruments',
     'Krebs':       'tender, water-soft entrance',
-    'Löwe':        'cinematic entrance, generous warmth',
+    'Löwe':        'warm, generous opening',
     'Jungfrau':    'precise, finely arranged opening',
     'Waage':       'balanced, lyrical intro',
     'Skorpion':    'low, mysterious low end',
     'Schütze':     'expansive horizon, lifted opening',
     'Steinbock':   'measured, structural intro',
-    'Wassermann':  'unusual harmonic opening, modern textures',
+    'Wassermann':  'modern, tasteful harmonic opening',
     'Fische':      'dream-like, washed-out intro'
   };
 
@@ -338,7 +339,7 @@
       if (N >= 60) persParts.push('emotionally vulnerable');
       else if (N <= 40) persParts.push('grounded');
     }
-    if (O >= 70) persParts.push('with unusual harmonic colors');
+    if (O >= 70) persParts.push('subtle rich harmonic colors');
 
     // Music-DNA Hard-Locks (Direktiven > Intent > Profil)
     const tempoBpm = dirStyle.tempoBpm || (intentMods && intentMods.tempo) || dna.tempo_bpm || 90;
@@ -367,14 +368,14 @@
       if (dnaPhase && dnaPhase.label) {
         persParts.push('development phase ' + dnaPhase.id.replace(/_/g, ' '));
       }
-      if (ident.evolutionScore >= 5) persParts.push('growth arc in dynamics');
-      if (ident.depthLevel >= 6) persParts.push('textural evolution');
+      if (ident.evolutionScore >= 5) persParts.push('gentle dynamic growth');
+      if (ident.depthLevel >= 6) persParts.push('subtle textural evolution');
     }
     if (persona && persona.music_dna && persona.music_dna.production_evolution_tags) {
       persParts.push(persona.music_dna.production_evolution_tags.slice(0, 2).join(', '));
     }
     if (persona && persona.music_dna && persona.music_dna.tension_curve) {
-      persParts.push(persona.music_dna.tension_curve.replace(/_/g, ' '));
+      persParts.push('smooth ' + persona.music_dna.tension_curve.replace(/_/g, ' '));
     }
     if (analysisKeywords.length) {
       persParts.push('emotional palette: ' + analysisKeywords.slice(0, 3).join(', '));
@@ -481,15 +482,21 @@
     const parts = [personalityText];
     if (astroText) parts.push(astroText);
     if (methodsText) parts.push(methodsText);
+    // Glättungs-Schicht: verhindert chaotische Intros, wilde Hintergrund-Artefakte
+    // und abrupte Wechsel zwischen den Sektionen
+    parts.push('smooth polished production, clean warm mix, gentle intro build, seamless transitions between sections');
     if (trackSpec && trackSpec.label) {
       parts.unshift('context: ' + trackSpec.label + ' playlist intent');
     }
     let style = parts.join(' | ').replace(/\s+/g, ' ').trim();
     if (style.length > 950) style = style.slice(0, 947) + '...';
 
-    // Negative tags: was wir nie wollen
+    // Negative tags: was wir nie wollen – Anti-Chaos zuerst
     const avoid = (dna.instrumentation && dna.instrumentation.avoid) || [];
-    var negativeParts = avoid.map(humanizeInstrument).slice(0, 5);
+    var negativeParts = [
+      'harsh noise', 'glitch effects', 'chaotic intro', 'abrupt cuts',
+      'dissonant screeching', 'distorted background artifacts'
+    ].concat(avoid.map(humanizeInstrument).slice(0, 5));
     if (accentLocked && normPrefs && normPrefs.genreAccent === 'jazz') {
       negativeParts = negativeParts.concat(['generic EDM', 'techno', 'dubstep', 'trance', 'synthwave']);
     } else if (accentLocked && normPrefs && normPrefs.genreAccent === 'funk') {
@@ -547,7 +554,7 @@
     'ruhig':     'calm low-key energy',
     'mittel':    'moderate steady energy',
     'treibend':  'driving propulsive energy',
-    'explosiv':  'explosive high energy'
+    'explosiv':  'explosive high energy, tight controlled production'
   };
   const DIRECTIVE_LANGUAGE_TAGS = {
     'de':  'German lyrics',
@@ -638,12 +645,14 @@
   }
 
   /**
-   * Kreativitäts-Regler (0–100) → weirdnessConstraint (0.15–0.70, 2 Dezimalstellen).
+   * Kreativitäts-Regler (0–100) → weirdnessConstraint (0.08–0.43, 2 Dezimalstellen).
+   * Bewusst niedrig gehalten: Kreativität soll v. a. den Text mutiger machen –
+   * hohe Weirdness-Werte erzeugten wilde/chaotische Klänge in Intro und Hintergrund.
    */
   function weirdnessFromCreativity(directives) {
     const c = directives ? directives.creativity : null;
     if (typeof c !== 'number' || !(c >= 0 && c <= 100)) return null;
-    return Math.round(15 + c * 0.55) / 100;
+    return Math.round(8 + c * 0.35) / 100;
   }
 
   /**
@@ -684,9 +693,10 @@
       }
     }
     if (styleStr.length > 1000) styleStr = styleStr.slice(0, 997) + '...';
-    if (negativeTags.length > 100) {
-      const cut = negativeTags.slice(0, 100);
-      negativeTags = cut.slice(0, cut.lastIndexOf(',') > 0 ? cut.lastIndexOf(',') : 100);
+    // Negativ-Tags moderat begrenzen (das 100-Zeichen-Limit der API gilt nur für den Titel)
+    if (negativeTags.length > 300) {
+      const cut = negativeTags.slice(0, 300);
+      negativeTags = cut.slice(0, cut.lastIndexOf(',') > 0 ? cut.lastIndexOf(',') : 300);
     }
 
     const directives = opts.songDirectives || null;
@@ -704,7 +714,7 @@
       negativeTags: negativeTags || undefined,
       styleWeight: opts.styleWeight != null ? opts.styleWeight : (style._accentLocked ? 0.88 : 0.72),
       weirdnessConstraint: opts.weirdnessConstraint != null ? opts.weirdnessConstraint
-                            : (dirWeirdness != null ? dirWeirdness : 0.42),
+                            : (dirWeirdness != null ? dirWeirdness : 0.28),
       audioWeight: typeof opts.audioWeight === 'number' ? opts.audioWeight : undefined,
       duration: duration,
       _weights: style.weights,
