@@ -918,6 +918,8 @@
 
     async _applyVoiceRegistration(result) {
       if (!result || !result.voiceId) return;
+      this._voiceSampleRecorder = null;
+      this._voiceVerifyRecorder = null;
       this.state.voiceProfile = result;
       this.state.useCustomVoice = true;
       this.state.voiceWizard = { phase: 'idle' };
@@ -932,6 +934,7 @@
 
     async _applyVoiceVerificationPending(result) {
       if (!result || result.phase !== 'need_verification') return;
+      this._voiceSampleRecorder = null; // Stimmprobe abgeschlossen – Recorder für Validierung ist separat
       this.state.voiceWizard = Object.assign({}, result, {
         phase: 'need_verification',
         updatedAt: new Date().toISOString()
@@ -3424,7 +3427,10 @@
         const recWrap = el('div', 'sg-voice-rec-block');
         box.append(el('p', 'sg-hint', 'Validierung aufnehmen (empfohlen) oder Datei hochladen (MP3/WAV):'));
         box.append(recWrap);
-        if (window.SongVoiceEngine && window.SongVoiceEngine.mountVoiceRecorder) {
+        if (self._voiceVerifyRecorder && self._voiceVerifyRecorder.reattach) {
+          // Bestehende Aufnahme über Re-Renders hinweg erhalten
+          self._voiceVerifyRecorder.reattach(recWrap);
+        } else if (window.SongVoiceEngine && window.SongVoiceEngine.mountVoiceRecorder) {
           self._voiceVerifyRecorder = window.SongVoiceEngine.mountVoiceRecorder(recWrap, {
             label: 'Validierung',
             maxSeconds: 25,
@@ -3442,8 +3448,16 @@
         const btn = el('button', 'sg-btn sg-btn-primary', 'Verifikation senden & Stimme erstellen');
         btn.type = 'button';
         btn.onclick = async function () {
-          var verifyFile = (vFile.files && vFile.files[0]) ||
-            (self._voiceVerifyRecorder && self._voiceVerifyRecorder.getFile('validierung.webm'));
+          var verifyFile = (vFile.files && vFile.files[0]) || null;
+          if (!verifyFile && self._voiceVerifyRecorder) {
+            // Läuft die Aufnahme noch, wird sie automatisch gestoppt und abgewartet
+            verifyFile = await self._voiceVerifyRecorder.stopAndGetFile('validierung.webm');
+            var vDur = self._voiceVerifyRecorder.getDuration ? self._voiceVerifyRecorder.getDuration() : null;
+            if (verifyFile && vDur != null && vDur < 3) {
+              alert('Die Validierungs-Aufnahme ist zu kurz (' + vDur.toFixed(1) + ' s). Bitte den ganzen Satz singen.');
+              return;
+            }
+          }
           if (!verifyFile) {
             alert('Bitte Validierung aufnehmen oder Audiodatei wählen.');
             return;
@@ -3509,11 +3523,19 @@
 
       const sampleRecWrap = el('div', 'sg-voice-rec-block');
       form.append(sampleRecWrap);
-      if (window.SongVoiceEngine && window.SongVoiceEngine.mountVoiceRecorder) {
+      if (self._voiceSampleRecorder && self._voiceSampleRecorder.reattach) {
+        // Bestehende Aufnahme über Re-Renders hinweg erhalten
+        self._voiceSampleRecorder.reattach(sampleRecWrap);
+      } else if (window.SongVoiceEngine && window.SongVoiceEngine.mountVoiceRecorder) {
         self._voiceSampleRecorder = window.SongVoiceEngine.mountVoiceRecorder(sampleRecWrap, {
           label: 'Stimmprobe',
           maxSeconds: 30,
-          onRecorded: function () {}
+          onRecorded: function (_file, durS) {
+            // Segment-Ende automatisch auf die Aufnahmedauer setzen
+            if (self._voiceEndInput && durS) {
+              self._voiceEndInput.value = String(Math.max(5, Math.min(30, Math.floor(durS))));
+            }
+          }
         });
       }
 
@@ -3533,8 +3555,11 @@
       const endIn = el('input');
       endIn.type = 'number';
       endIn.min = '1';
-      endIn.value = '10';
+      const knownDur = self._voiceSampleRecorder && self._voiceSampleRecorder.getDuration
+        ? self._voiceSampleRecorder.getDuration() : null;
+      endIn.value = knownDur ? String(Math.max(5, Math.min(30, Math.floor(knownDur)))) : '10';
       endIn.className = 'sg-voice-seg-input';
+      self._voiceEndInput = endIn;
       segRow.append(el('label', null, 'Segment Start (s)'));
       segRow.append(startIn);
       segRow.append(el('label', null, 'Ende (s)'));
@@ -3544,22 +3569,38 @@
       const startBtn = el('button', 'sg-btn sg-btn-secondary', 'Stimme registrieren starten');
       startBtn.type = 'button';
       startBtn.onclick = async function () {
-        var file = (fileIn.files && fileIn.files[0]) ||
-          (self._voiceSampleRecorder && self._voiceSampleRecorder.getFile('stimmprobe.webm'));
+        var file = (fileIn.files && fileIn.files[0]) || null;
+        var recDur = null;
+        if (!file && self._voiceSampleRecorder) {
+          // Läuft die Aufnahme noch, wird sie automatisch gestoppt und abgewartet
+          file = await self._voiceSampleRecorder.stopAndGetFile('stimmprobe.webm');
+          recDur = self._voiceSampleRecorder.getDuration ? self._voiceSampleRecorder.getDuration() : null;
+        }
         if (!file) {
           alert('Bitte Stimmprobe aufnehmen oder Audiodatei wählen.');
           return;
+        }
+        if (recDur != null && recDur < 5) {
+          alert('Die Aufnahme ist zu kurz (' + recDur.toFixed(1) + ' s). Bitte mindestens 5–10 Sekunden singen.');
+          return;
+        }
+        var segStart = parseInt(startIn.value, 10) || 0;
+        var segEnd = parseInt(endIn.value, 10) || 10;
+        if (recDur != null) {
+          // Segment nie über die tatsächliche Aufnahmedauer hinaus
+          var durFloor = Math.max(1, Math.floor(recDur));
+          if (segEnd > durFloor) segEnd = durFloor;
+          if (segStart >= segEnd) { segStart = 0; segEnd = durFloor; }
         }
         startBtn.disabled = true;
         self.state.voiceWizard = { phase: 'upload', label: 'Stimmprobe wird hochgeladen' };
         self.render();
         try {
-          let duration = parseInt(endIn.value, 10) || 10;
           const result = await window.SongVoiceEngine.registerVoice({
             file: file,
-            vocalStartS: parseInt(startIn.value, 10) || 0,
-            vocalEndS: parseInt(endIn.value, 10) || 10,
-            duration: duration,
+            vocalStartS: segStart,
+            vocalEndS: segEnd,
+            duration: recDur || segEnd,
             meta: { voiceName: 'Meine Stimme' },
             onPhase: function (p) {
               var labels = {

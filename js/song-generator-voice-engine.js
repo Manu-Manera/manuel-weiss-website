@@ -281,6 +281,11 @@
       var startS = opts.vocalStartS != null ? opts.vocalStartS : 0;
       var endS = opts.vocalEndS != null ? opts.vocalEndS : Math.min(12, opts.duration || 12);
       if (endS <= startS) endS = startS + 8;
+      // Segment darf nie länger als die tatsächliche Aufnahme sein
+      if (opts.duration && endS > Math.floor(opts.duration)) {
+        endS = Math.max(startS + 1, Math.floor(opts.duration));
+        if (startS >= endS) startS = 0;
+      }
 
       if (opts.onPhase) opts.onPhase({ phase: 'validate_start' });
       var val = await startValidation(voiceUrl, startS, endS, apiKey, opts.language || 'de');
@@ -370,6 +375,10 @@
     var recorder = null;
     var chunks = [];
     var timer = null;
+    var tick = null;
+    var recStartedAt = 0;
+    var durationS = null;
+    var stopWaiters = [];
 
     function cleanupStream() {
       if (stream) {
@@ -384,9 +393,17 @@
         return;
       }
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Für Gesangs-Cloning möglichst unverfälschtes Signal (kein Echo-/Rausch-Processing)
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+          });
+        } catch (_eRaw) {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        }
         chunks = [];
         blob = null;
+        durationS = null;
         preview.style.display = 'none';
         preview.removeAttribute('src');
         var mime = null;
@@ -408,24 +425,39 @@
         };
         recorder.onstop = function () {
           cleanupStream();
+          if (tick) { clearInterval(tick); tick = null; }
+          durationS = Math.max(0.1, (Date.now() - recStartedAt) / 1000);
           blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
           preview.src = URL.createObjectURL(blob);
           preview.style.display = 'block';
-          status.textContent = 'Aufnahme fertig (' + Math.round(blob.size / 1024) + ' KB) – wird als WAV hochgeladen';
+          status.textContent = '✓ Aufnahme fertig: ' + durationS.toFixed(1) + ' s (' +
+            Math.round(blob.size / 1024) + ' KB) – zum Prüfen abspielen';
           startBtn.disabled = false;
+          startBtn.textContent = '🎙 ' + label + ' neu aufnehmen';
           stopBtn.disabled = true;
-          if (opts.onRecorded) opts.onRecorded(getFile());
+          var waiters = stopWaiters.slice();
+          stopWaiters = [];
+          waiters.forEach(function (fn) { try { fn(); } catch (_e) {} });
+          if (opts.onRecorded) opts.onRecorded(getFile(), durationS);
         };
-        recorder.start();
+        // Timeslice: Chunks laufend sichern, damit auch bei abruptem Stopp nichts fehlt
+        recorder.start(250);
+        recStartedAt = Date.now();
         startBtn.disabled = true;
         stopBtn.disabled = false;
-        status.textContent = 'Aufnahme läuft … (max. ' + maxSec + ' s)';
+        status.textContent = '● Aufnahme läuft: 0 s / max. ' + maxSec + ' s';
+        if (tick) clearInterval(tick);
+        tick = setInterval(function () {
+          var s = Math.round((Date.now() - recStartedAt) / 1000);
+          status.textContent = '● Aufnahme läuft: ' + s + ' s / max. ' + maxSec + ' s';
+        }, 500);
         if (timer) clearTimeout(timer);
         timer = setTimeout(function () {
           if (recorder && recorder.state === 'recording') stopBtn.click();
         }, maxSec * 1000);
       } catch (err) {
         cleanupStream();
+        if (tick) { clearInterval(tick); tick = null; }
         alert('Mikrofon-Zugriff fehlgeschlagen: ' + (err.message || 'Bitte Berechtigung erlauben.'));
       }
     };
@@ -445,17 +477,39 @@
       return new File([blob], filename || ('voice-' + Date.now() + ext), { type: blob.type || 'audio/webm' });
     }
 
+    // Läuft die Aufnahme noch, wird sie gestoppt und auf die fertige Datei gewartet.
+    function stopAndGetFile(filename) {
+      return new Promise(function (resolve) {
+        if (recorder && recorder.state === 'recording') {
+          stopWaiters.push(function () { resolve(getFile(filename)); });
+          if (timer) clearTimeout(timer);
+          recorder.stop();
+        } else {
+          resolve(getFile(filename));
+        }
+      });
+    }
+
     return {
       element: wrap,
       getFile: getFile,
+      stopAndGetFile: stopAndGetFile,
+      getDuration: function () { return durationS; },
+      isRecording: function () { return !!(recorder && recorder.state === 'recording'); },
       hasRecording: function () { return !!blob; },
+      reattach: function (newContainer) {
+        if (newContainer && wrap.parentNode !== newContainer) newContainer.appendChild(wrap);
+      },
       reset: function () {
         blob = null;
         chunks = [];
+        durationS = null;
         cleanupStream();
+        if (tick) { clearInterval(tick); tick = null; }
         preview.style.display = 'none';
         preview.removeAttribute('src');
         status.textContent = 'Bereit';
+        startBtn.textContent = '🎙 ' + label + ' starten';
         startBtn.disabled = false;
         stopBtn.disabled = true;
       }
