@@ -27,7 +27,39 @@
     voiceProfile: 'sg_voice_profile_v1',
     voiceWizard: 'sg_voice_wizard_v1',
     useCustomVoice: 'sg_use_custom_voice_v1',
-    audioStylePrefs: 'sg_audio_style_prefs_v1'
+    audioStylePrefs: 'sg_audio_style_prefs_v1',
+    songDirectives: 'sg_song_directives_v1'
+  };
+
+  // ────────────────────────────────────────────────────────────
+  // Song-Studio: Direktiven-Defaults ('auto' = KI entscheidet,
+  // nur explizit gesetzte Werte gehen in den Prompt)
+  // ────────────────────────────────────────────────────────────
+  const SONG_DIRECTIVE_DEFAULTS = {
+    genre: '',
+    style_reference: '',
+    mood: 'auto',
+    energy: 'auto',
+    tempo_bpm: null,
+    key_mode: 'auto',
+    structure: [],
+    song_length: 'auto',
+    language: 'auto',
+    perspective: 'auto',
+    explicitness: 'auto',
+    humor: null,
+    pathos: null,
+    rhyme_scheme: 'auto',
+    line_length: 'auto',
+    vocal_style: 'auto',
+    theme: '',
+    hook_line: '',
+    title: '',
+    must_include: '',
+    must_avoid: '',
+    quote_fidelity: 70,
+    source_weights: { test: 50, freitext: 70, methoden: 50, astro: 30 },
+    creativity: 78
   };
 
   const API_BASE = 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
@@ -328,21 +360,28 @@
       return callOpenAIDirect({ apiKey, system: P.SYSTEM_CORE, user: P.buildInputInterpreterUserPrompt({ source_type, raw, lang }), temperature: 0.3, top_p: 0.9, maxTokens: 3000 });
     }
     if (action === 'synthesize') {
-      const { test_results, external_signals, user_meta } = payload || {};
-      return callOpenAIDirect({ apiKey, system: P.SYSTEM_CORE, user: P.buildPersonaSynthesisUserPrompt({ test_results, external_signals, user_meta }), temperature: 0.4, top_p: 0.9, maxTokens: 3000 });
+      const { test_results, facets, external_signals, astrology, salient_answers, imported_narrative, user_meta } = payload || {};
+      return callOpenAIDirect({ apiKey, system: P.SYSTEM_CORE, user: P.buildPersonaSynthesisUserPrompt({ test_results, facets, external_signals, astrology, salient_answers, imported_narrative, user_meta }), temperature: 0.4, top_p: 0.9, maxTokens: 3500 });
     }
     if (action === 'compose') {
-      const { persona, creativity } = payload || {};
+      const { persona, creativity, source_material, song_directives, variation_seed, avoid_lines } = payload || {};
       if (!persona) throw new Error('persona fehlt');
-      return callOpenAIDirect({ apiKey, system: P.SYSTEM_CORE, user: P.buildSongComposerUserPrompt({ persona, mode: 'full', edit_targets: [], previous_song: null, creativity }), temperature: 0.85, top_p: 0.95, maxTokens: 4500 });
+      const temp = typeof creativity === 'number'
+        ? Math.max(0.6, Math.min(1.1, 0.5 + creativity * 0.5))
+        : 0.85;
+      return callOpenAIDirect({
+        apiKey, system: P.SYSTEM_CORE,
+        user: P.buildSongComposerUserPrompt({ persona, mode: 'full', edit_targets: [], previous_song: null, creativity, source_material, song_directives, variation_seed, avoid_lines }),
+        temperature: temp, top_p: 0.95, maxTokens: 6000
+      });
     }
     if (action === 'reroll') {
-      const { persona, previous_song, edit_targets, mode, creativity } = payload || {};
+      const { persona, previous_song, edit_targets, mode, creativity, song_directives } = payload || {};
       if (!persona || !previous_song || !Array.isArray(edit_targets) || !edit_targets.length) throw new Error('persona + previous_song + edit_targets nötig');
       const rerollMode = mode || 'regenerate_lines';
       const userPrompt = P.buildSongRerollUserPrompt
-        ? P.buildSongRerollUserPrompt({ persona, previous_song, edit_targets, mode: rerollMode, creativity })
-        : P.buildSongComposerUserPrompt({ persona, mode: rerollMode, edit_targets, previous_song, creativity: typeof creativity === 'number' ? creativity : 0.95 });
+        ? P.buildSongRerollUserPrompt({ persona, previous_song, edit_targets, mode: rerollMode, creativity, song_directives })
+        : P.buildSongComposerUserPrompt({ persona, mode: rerollMode, edit_targets, previous_song, creativity: typeof creativity === 'number' ? creativity : 0.95, song_directives });
       return callOpenAIDirect({
         apiKey, system: P.SYSTEM_CORE,
         user: userPrompt,
@@ -491,7 +530,13 @@
           must_include_keywords: [],
           must_avoid_keywords: [],
           explicit: false
-        }
+        },
+        songDirectives: Object.assign(
+          {},
+          SONG_DIRECTIVE_DEFAULTS,
+          loadState(STORAGE_KEYS.songDirectives, {}) || {}
+        ),
+        songStudioOpen: false
       };
       const savedTest = loadState(STORAGE_KEYS.test);
       if (savedTest) {
@@ -1694,6 +1739,9 @@
             raw: ta.value,
             lang: 'de'
           });
+          // Rohtext-Essenz behalten: Original-Formulierungen sind später
+          // das wichtigste Material für den Songtext (SOURCE_MATERIAL).
+          sig.raw_essence = ta.value.trim().slice(0, 10000);
           this.state.externalInputs.push(sig);
           saveState(STORAGE_KEYS.externalInputs, this.state.externalInputs);
           ta.value = '';
@@ -1750,6 +1798,82 @@
       return sigs;
     }
 
+    /**
+     * Bündelt O-Ton-Material aus allen externen Inputs (Zitate, Sprachbilder,
+     * Kernbotschaften, Rohtext-Auszüge) + Methoden-Narrative. Wird bei Compose
+     * als SOURCE_MATERIAL an die KI gegeben, damit der Songtext die
+     * Original-Formulierungen des Nutzers aufgreift statt generischer Bilder.
+     */
+    _collectSourceMaterial() {
+      const quotes = [], words = [], imagery = [], messages = [], rawExcerpts = [];
+      (this.state.externalInputs || []).forEach(sig => {
+        (sig.key_quotes || []).forEach(q => { if (q && quotes.indexOf(q) === -1) quotes.push(q); });
+        (sig.signature_words || []).forEach(w => { if (w && words.indexOf(w) === -1) words.push(w); });
+        (sig.imagery_bank || []).forEach(i => { if (i && imagery.indexOf(i) === -1) imagery.push(i); });
+        (sig.core_messages || []).forEach(m => { if (m && messages.indexOf(m) === -1) messages.push(m); });
+        if (sig.raw_essence) {
+          rawExcerpts.push({ source_type: sig.source_type, text: sig.raw_essence.slice(0, 4000) });
+        } else if (sig.scrubbed_excerpt) {
+          rawExcerpts.push({ source_type: sig.source_type, text: sig.scrubbed_excerpt });
+        }
+      });
+      const hasAny = quotes.length || words.length || imagery.length || messages.length ||
+        rawExcerpts.length || this.state.importedNarrative;
+      if (!hasAny) return null;
+      return {
+        key_quotes: quotes.slice(0, 30),
+        signature_words: words.slice(0, 20),
+        imagery_bank: imagery.slice(0, 16),
+        core_messages: messages.slice(0, 12),
+        raw_excerpts: rawExcerpts.slice(0, 4),
+        methods_narrative: this.state.importedNarrative ? this.state.importedNarrative.slice(0, 2500) : null
+      };
+    }
+
+    /**
+     * Markante Einzelantworten aus dem Test extrahieren – jede Antwort wird
+     * so zur eigenen Nuance im Song. Sortiert nach Extremität (Abstand von
+     * der Mitte), damit die aussagekräftigsten Antworten vorne stehen.
+     */
+    _collectSalientAnswers(maxCount) {
+      const q = this.state.questions;
+      const answers = this.state.answers || {};
+      if (!q || !Array.isArray(q.phases)) return [];
+      const T = window.SongTestData;
+      const scaleLabels = (T && T.SCALE_LABELS) || {};
+      const facetLabels = (T && T.FACET_LABELS) || {};
+      const out = [];
+      q.phases.forEach(ph => {
+        (ph.items || []).forEach(it => {
+          const a = answers[it.id];
+          if (typeof a !== 'number') return;
+          let v01 = a / 6;
+          if (it.reverse) v01 = 1 - v01;
+          const salience = Math.abs(v01 - 0.5);
+          const auspraegung = v01 >= 0.78 ? 'stark ausgeprägt'
+            : v01 >= 0.6 ? 'ausgeprägt'
+            : v01 <= 0.22 ? 'kaum ausgeprägt'
+            : v01 <= 0.4 ? 'wenig ausgeprägt'
+            : 'mittel';
+          out.push({
+            item_id: it.id,
+            frage: it.stem,
+            skala: scaleLabels[it.construct] || it.construct,
+            facette: it.facet ? (facetLabels[it.facet] || it.facet) : null,
+            auspraegung: auspraegung,
+            wert: Math.round(v01 * 100),
+            _salience: salience
+          });
+        });
+      });
+      out.sort((a, b) => b._salience - a._salience);
+      return out.slice(0, maxCount || 30).map(e => {
+        const copy = Object.assign({}, e);
+        delete copy._salience;
+        return copy;
+      });
+    }
+
     async runSynthesis() {
       this.setStep(4);
 
@@ -1780,6 +1904,8 @@
 
       const externalSignals = this._collectExternalSignals();
       const importedCount = Array.isArray(this.state.importedMethods) ? this.state.importedMethods.length : 0;
+      const salientAnswers = this._collectSalientAnswers(30);
+      const sourceMaterial = this._collectSourceMaterial();
 
       // Direct-Persona als Fallback
       const directPersona = {
@@ -1792,6 +1918,8 @@
         music_dna: this._fuseMusicDNA(baseDNA, astroChart),
         astrology: astroChart || null,
         test_variant: variant,
+        salient_answers: salientAnswers,
+        source_material: sourceMaterial,
         imported_narrative: this.state.importedNarrative || null,
         imported_methods: this.state.importedMethods || [],
         imported_methods_count: importedCount,
@@ -1816,6 +1944,7 @@
           facets: facets,
           astrology: astroChart ? this._compactAstro(astroChart) : null,
           external_signals: externalSignals,
+          salient_answers: salientAnswers,
           user_meta: this.state.userMeta,
           base_dna: baseDNA,
           base_archetype: baseArchetype,
@@ -1825,6 +1954,9 @@
         persona.astrology = astroChart || null;
         persona.facets_final = persona.facets_final || facets;
         persona.test_variant = variant;
+        persona.salient_answers = salientAnswers;
+        persona.source_material = sourceMaterial;
+        persona.nuance_fragments = Array.isArray(persona.nuance_fragments) ? persona.nuance_fragments : [];
         persona.imported_methods = this.state.importedMethods || [];
         persona.imported_methods_count = importedCount;
         persona.music_dna = this._fuseMusicDNA(baseDNA, astroChart, this.state.audioIdentity, persona.tensions);
@@ -1887,29 +2019,62 @@
       return candidates.slice(0, 3).map(c => c.name);
     }
 
-    // Kurze Persona-Erzählung (3 Sätze, deterministisch aus Top-Skalen)
+    // Zufallsauswahl aus einem Pool (Fisher-Yates-Teilmischung) – sorgt dafür,
+    // dass Fallback-Narrative/-Motive nicht bei jedem Lauf identisch sind.
+    _pickRandom(pool, n) {
+      const arr = pool.slice();
+      for (let i = arr.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+      }
+      return arr.slice(0, n);
+    }
+
+    // Kurze Persona-Erzählung (3 Sätze, aus Top-Skalen mit Varianten-Pools)
     _buildNarrative(archetype, s) {
       const E = s.BIG5_E, O = s.BIG5_O, A = s.BIG5_A, C = s.BIG5_C, N = s.BIG5_N, H = s.HEX_H;
-      const energy = E >= 65 ? 'Du gibst Räumen Energie' : E <= 35 ? 'Deine Stärke liegt im Stillen' : 'Du bewegst dich zwischen Bühne und Rückzug';
-      const tiefe = O >= 65 ? 'liebst Bilder und Bedeutungen' : O <= 35 ? 'magst Klarheit und das Greifbare' : 'verbindest Konkretes mit Bedeutung';
-      const halt = N >= 65 ? 'auch wenn manches in dir wogt' : N <= 35 ? 'mit ruhigem inneren Boden' : 'manchmal ruhig, manchmal aufgewühlt';
-      const wert = H >= 60 ? 'Aufrichtigkeit ist dein Kompass' : A >= 65 ? 'andere Menschen sind dein Maßstab' : C >= 65 ? 'Disziplin trägt deine Vision' : 'du gehst eigene Wege';
+      const pick = pool => this._pickRandom(pool, 1)[0];
+      const energy = E >= 65
+        ? pick(['Du gibst Räumen Energie', 'Wo du auftauchst, wird es lauter und lebendiger', 'Du lädst Situationen auf wie eine Bühne'])
+        : E <= 35
+          ? pick(['Deine Stärke liegt im Stillen', 'Du beobachtest, bevor du sprichst – und triffst dann', 'Deine Kraft arbeitet unter der Oberfläche'])
+          : pick(['Du bewegst dich zwischen Bühne und Rückzug', 'Du kannst beides: Rampenlicht und Rückzugsort']);
+      const tiefe = O >= 65
+        ? pick(['liebst Bilder und Bedeutungen', 'denkst in Bildern, wo andere in Listen denken', 'suchst hinter allem die zweite Ebene'])
+        : O <= 35
+          ? pick(['magst Klarheit und das Greifbare', 'baust lieber, statt zu träumen'])
+          : pick(['verbindest Konkretes mit Bedeutung', 'holst Ideen auf den Boden']);
+      const halt = N >= 65
+        ? pick(['auch wenn manches in dir wogt', 'auch wenn es innen öfter stürmt als man sieht'])
+        : N <= 35
+          ? pick(['mit ruhigem inneren Boden', 'mit einer Ruhe, die man dir anmerkt'])
+          : pick(['manchmal ruhig, manchmal aufgewühlt', 'zwischen Sturm und Stille zuhause']);
+      const wert = H >= 60
+        ? pick(['Aufrichtigkeit ist dein Kompass', 'du bleibst echt, auch wenn es unbequem wird'])
+        : A >= 65
+          ? pick(['andere Menschen sind dein Maßstab', 'Verbundenheit ist dein Treibstoff'])
+          : C >= 65
+            ? pick(['Disziplin trägt deine Vision', 'du baust hartnäckig, Stein für Stein'])
+            : pick(['du gehst eigene Wege', 'Regeln sind für dich Vorschläge']);
       return `Du bist ein ${archetype}: ${energy} und ${tiefe}. ${wert.charAt(0).toUpperCase() + wert.slice(1)} – ${halt}.`;
     }
 
-    // Bilder/Motive für den Songtext (deterministisch, mit optionaler Astro-Schicht)
+    // Bilder/Motive für den Songtext (aus Skalen-Pools, zufällig gemischt,
+    // mit optionaler Astro-Schicht) – nur Fallback ohne KI-Synthese.
     _buildMotifs(s, astro) {
       const pool = [];
-      if (s.BIG5_O >= 60) pool.push('Sterne', 'Karten', 'Brücken');
-      if (s.BIG5_O < 50) pool.push('Heimweg', 'Küche', 'Werkbank');
-      if (s.BIG5_E >= 60) pool.push('Stimmen', 'Tanzfläche');
-      if (s.BIG5_E < 50) pool.push('Stille', 'Fenster');
-      if (s.BIG5_A >= 60) pool.push('Hände', 'Wärme');
-      if (s.BIG5_N >= 60) pool.push('Wasser', 'Schatten');
-      if (s.BIG5_N < 50) pool.push('Licht', 'Atem');
-      if (s.HEX_H >= 60) pool.push('Wurzeln');
-      if (s.ATT_SEC >= 60) pool.push('Hafen');
-      if (s.ATT_SEC < 50) pool.push('Weite');
+      if (s.BIG5_O >= 60) pool.push('Landkarten', 'Brücken', 'offene Fenster', 'unbeschriebene Seiten', 'fremde Städte');
+      if (s.BIG5_O < 50) pool.push('Heimweg', 'Küche', 'Werkbank', 'warmer Kaffee', 'vertraute Straßen');
+      if (s.BIG5_E >= 60) pool.push('Stimmen', 'Tanzfläche', 'Neonlicht', 'volle Küchenpartys');
+      if (s.BIG5_E < 50) pool.push('Stille', 'Fensterbank', 'leere Straßen bei Nacht', 'Kopfhörer');
+      if (s.BIG5_A >= 60) pool.push('Hände', 'Wärme', 'gedeckter Tisch', 'offene Türen');
+      if (s.BIG5_N >= 60) pool.push('Wasser', 'Gezeiten', 'Gewitterluft', 'Flut und Ebbe');
+      if (s.BIG5_N < 50) pool.push('Morgenlicht', 'Atem', 'fester Boden', 'klare Sicht');
+      if (s.HEX_H >= 60) pool.push('Wurzeln', 'Handschlag', 'ungeschminkte Worte');
+      if (s.ATT_SEC >= 60) pool.push('Hafen', 'Zuhause-Gefühl');
+      if (s.ATT_SEC < 50) pool.push('Weite', 'offene Landstraße', 'Rucksack');
+      if (s.BIG5_C >= 60) pool.push('Baugerüst', 'Werkzeugkasten', 'Skizzenbuch');
+      if (s.VAL_SD >= 60) pool.push('eigener Kompass', 'selbstgebaute Wege');
 
       // Astro-Motive (symbolisch, bewusst als Bild markiert)
       if (astro && Array.isArray(astro.motifs)) {
@@ -1917,8 +2082,317 @@
       }
 
       const unique = Array.from(new Set(pool));
-      while (unique.length < 5) unique.push(['Anker', 'Spur', 'Funken', 'Wege', 'Echo'][unique.length % 5]);
-      return unique.slice(0, 6);
+      const reserve = ['Kompassnadel', 'Handwerk', 'Reisetasche', 'Skizze', 'Aufbruch', 'Werkstattlicht'];
+      let ri = 0;
+      while (unique.length < 5 && ri < reserve.length) {
+        if (unique.indexOf(reserve[ri]) === -1) unique.push(reserve[ri]);
+        ri += 1;
+      }
+      return this._pickRandom(unique, Math.min(6, unique.length));
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // SONG-STUDIO: Volle Kontrolle über Text und Machart des Songs
+    // ════════════════════════════════════════════════════════════
+    renderSongStudio() {
+      const self = this;
+      const d = this.state.songDirectives;
+
+      const set = (key, value) => {
+        this.state.songDirectives[key] = value;
+        this._saveDirectives();
+      };
+
+      // Anzahl aktiver (nicht-Auto-)Einstellungen für das Badge
+      const countActive = () => {
+        let n = 0;
+        Object.keys(SONG_DIRECTIVE_DEFAULTS).forEach(k => {
+          if (k === 'creativity' || k === 'quote_fidelity' || k === 'source_weights') return;
+          const v = this.state.songDirectives[k];
+          const def = SONG_DIRECTIVE_DEFAULTS[k];
+          if (Array.isArray(v)) { if (v.length) n += 1; return; }
+          if (v !== def && v !== '' && v !== 'auto' && v !== null && v !== undefined) n += 1;
+        });
+        return n;
+      };
+
+      const panel = el('details', 'sg-song-studio');
+      panel.open = !!this.state.songStudioOpen;
+      panel.addEventListener('toggle', () => { this.state.songStudioOpen = panel.open; });
+
+      const sum = el('summary', 'sg-studio-summary');
+      sum.append(el('span', 'sg-studio-title', '🎛️ Song-Studio'));
+      const badge = el('span', 'sg-studio-badge');
+      const refreshBadge = () => {
+        const n = countActive();
+        badge.textContent = n > 0 ? (n + ' Einstellung' + (n === 1 ? '' : 'en') + ' aktiv') : 'alles auf Auto';
+        badge.classList.toggle('active', n > 0);
+      };
+      refreshBadge();
+      sum.append(badge);
+      panel.append(sum);
+
+      const body = el('div', 'sg-studio-body');
+      body.append(el('p', 'sg-hint',
+        'Alles hier ist optional. „Auto" bedeutet: Die KI entscheidet anhand deines Profils. ' +
+        'Jede Einstellung, die du änderst, ist für die Komposition verbindlich.'));
+
+      // ── Feld-Helfer ────────────────────────────────────────────
+      const selectField = (label, key, options) => {
+        const sel = el('select', 'sg-input');
+        options.forEach(([v, l]) => {
+          const o = el('option', null, l);
+          o.value = v;
+          if (String(d[key]) === String(v)) o.selected = true;
+          sel.append(o);
+        });
+        sel.onchange = () => { set(key, sel.value); refreshBadge(); };
+        return this.labeled(label, sel);
+      };
+      const textField = (label, key, placeholder, textarea) => {
+        const inp = textarea ? el('textarea', 'sg-textarea') : el('input', 'sg-input');
+        if (textarea) inp.rows = 2; else inp.type = 'text';
+        inp.placeholder = placeholder || '';
+        inp.value = d[key] || '';
+        inp.oninput = () => { set(key, inp.value); refreshBadge(); };
+        return this.labeled(label, inp);
+      };
+      const rangeField = (label, key, opts) => {
+        opts = opts || {};
+        const row = el('div', 'sg-studio-range');
+        const inp = el('input');
+        inp.type = 'range';
+        inp.min = String(opts.min != null ? opts.min : 0);
+        inp.max = String(opts.max != null ? opts.max : 100);
+        const cur = d[key];
+        const isAuto = cur === null || cur === undefined;
+        inp.value = String(isAuto ? (opts.def != null ? opts.def : 50) : cur);
+        const valSpan = el('span', 'sg-studio-range-val');
+        const fmt = opts.format || (v => v);
+        const refreshVal = () => {
+          const v = this.state.songDirectives[key];
+          valSpan.textContent = (v === null || v === undefined) ? 'Auto' : String(fmt(v));
+        };
+        refreshVal();
+        inp.oninput = () => { set(key, parseInt(inp.value, 10)); refreshVal(); refreshBadge(); };
+        row.append(inp, valSpan);
+        if (opts.allowAuto !== false) {
+          const autoBtn = el('button', 'sg-btn-tiny', 'Auto');
+          autoBtn.type = 'button';
+          autoBtn.title = 'Zurück auf Auto (KI entscheidet)';
+          autoBtn.onclick = () => { set(key, null); refreshVal(); refreshBadge(); };
+          row.append(autoBtn);
+        }
+        return this.labeled(label, row);
+      };
+      const group = (title, hint) => {
+        const g = el('div', 'sg-studio-group');
+        const h = el('h4', null, title);
+        g.append(h);
+        if (hint) g.append(el('p', 'sg-hint', hint));
+        return g;
+      };
+      const grid = (...fields) => {
+        const gr = el('div', 'sg-studio-grid');
+        fields.forEach(f => gr.append(f));
+        return gr;
+      };
+
+      // ── 1. Text & Botschaft ───────────────────────────────────
+      const gText = group('Text & Botschaft',
+        'Was der Song sagen soll – deine Worte haben Vorrang vor allem, was die KI erfindet.');
+      gText.append(textField('Kernbotschaft / Thema', 'theme',
+        'z. B. „Ich hab keine Zeit für ein mittelmäßiges Leben"', true));
+      gText.append(grid(
+        textField('Hook-Zeile (kommt garantiert im Refrain)', 'hook_line', 'z. B. „Scheiß auf alles – ich will leben"'),
+        textField('Songtitel (fest vorgeben)', 'title', 'leer = KI wählt')
+      ));
+      gText.append(grid(
+        textField('Muss-Wörter (Komma-getrennt)', 'must_include', 'z. B. Jakobs Krönung, Größenwahn'),
+        textField('Tabu-Wörter (Komma-getrennt)', 'must_avoid', 'z. B. Anker, Sterne, Phönix')
+      ));
+      gText.append(rangeField('Zitat-Treue (wie wörtlich dein O-Ton übernommen wird)', 'quote_fidelity',
+        { min: 0, max: 100, def: 70, allowAuto: false, format: v => v + '% – ' + (v >= 75 ? 'nah am Original' : v >= 40 ? 'frei angelehnt' : 'nur Inspiration') }));
+
+      // Quellen-Gewichtung
+      const gw = el('div', 'sg-studio-weights');
+      gw.append(el('label', null, 'Quellen-Gewichtung (woraus sich der Text speist)'));
+      [['test', 'Persönlichkeitstest'], ['freitext', 'Freitext / Messenger'], ['methoden', 'Methoden (Ikigai & Co.)'], ['astro', 'Astrologie']].forEach(([k, l]) => {
+        const row = el('div', 'sg-studio-weight-row');
+        row.append(el('span', 'sg-studio-weight-label', l));
+        const r = el('input');
+        r.type = 'range'; r.min = '0'; r.max = '100';
+        const weights = d.source_weights || SONG_DIRECTIVE_DEFAULTS.source_weights;
+        r.value = String(typeof weights[k] === 'number' ? weights[k] : 50);
+        const v = el('span', 'sg-studio-range-val', r.value);
+        r.oninput = () => {
+          const w = Object.assign({}, this.state.songDirectives.source_weights || SONG_DIRECTIVE_DEFAULTS.source_weights);
+          w[k] = parseInt(r.value, 10);
+          set('source_weights', w);
+          v.textContent = r.value;
+        };
+        row.append(r, v);
+        gw.append(row);
+      });
+      gText.append(gw);
+      body.append(gText);
+
+      // ── 2. Machart & Musik ────────────────────────────────────
+      const gMusic = group('Machart & Musik',
+        'Genre und Musikvorgaben überschreiben die automatisch berechnete Klang-DNA.');
+      const genreInp = el('input', 'sg-input');
+      genreInp.type = 'text';
+      genreInp.placeholder = 'frei eintippen oder Vorschlag wählen …';
+      genreInp.value = d.genre || '';
+      genreInp.setAttribute('list', 'sgGenrePresets');
+      const dataList = el('datalist');
+      dataList.id = 'sgGenrePresets';
+      ['Deutschrap', 'Indie-Folk', 'Singer-Songwriter', 'Pop-Ballade', 'Rock-Hymne', 'Punkrock',
+       'Synthwave', 'Hyperpop', 'R&B / Soul', 'Neo-Klassik', 'Chanson', 'Country', 'Reggae',
+       'Techno mit Vocals', 'Schlager-ironisch', 'Musical-Nummer'].forEach(gname => {
+        const o = el('option'); o.value = gname; dataList.append(o);
+      });
+      genreInp.oninput = () => { set('genre', genreInp.value); refreshBadge(); };
+      const genreField = this.labeled('Genre', genreInp);
+      genreField.append(dataList);
+      gMusic.append(grid(
+        genreField,
+        textField('Stil-Referenz („klingt wie …")', 'style_reference', 'z. B. „wie frühe Casper-Alben" oder „wie Johnny Cash"')
+      ));
+      gMusic.append(grid(
+        selectField('Stimmung', 'mood', [
+          ['auto', 'Auto (aus Profil)'], ['euphorisch', 'Euphorisch / feiernd'], ['kämpferisch', 'Kämpferisch / trotzig'],
+          ['melancholisch', 'Melancholisch'], ['hoffnungsvoll', 'Hoffnungsvoll'], ['wütend', 'Wütend / roh'],
+          ['verspielt', 'Verspielt / ironisch'], ['episch', 'Episch / groß'], ['intim', 'Intim / leise'], ['düster', 'Düster']
+        ]),
+        selectField('Energie', 'energy', [
+          ['auto', 'Auto'], ['ruhig', 'Ruhig'], ['mittel', 'Mittel'], ['treibend', 'Treibend'], ['explosiv', 'Explosiv']
+        ])
+      ));
+      const bpmInp = el('input', 'sg-input');
+      bpmInp.type = 'number'; bpmInp.min = '40'; bpmInp.max = '220';
+      bpmInp.placeholder = 'Auto';
+      bpmInp.value = d.tempo_bpm != null ? String(d.tempo_bpm) : '';
+      bpmInp.oninput = () => {
+        const n = parseInt(bpmInp.value, 10);
+        set('tempo_bpm', Number.isFinite(n) ? n : null);
+        refreshBadge();
+      };
+      gMusic.append(grid(
+        this.labeled('Tempo (BPM, leer = Auto)', bpmInp),
+        selectField('Tongeschlecht', 'key_mode', [
+          ['auto', 'Auto'], ['dur', 'Dur (hell)'], ['moll', 'Moll (dunkel)']
+        ]),
+        selectField('Songlänge', 'song_length', [
+          ['auto', 'Auto'], ['kurz', 'Kurz & kompakt'], ['mittel', 'Mittel (Standard)'], ['lang', 'Lang (2 Verses + Bridge + Doppel-Chorus)']
+        ])
+      ));
+
+      // Struktur-Builder
+      const structWrap = el('div', 'sg-studio-structure');
+      structWrap.append(el('label', null, 'Songstruktur (leer = Auto)'));
+      const seqRow = el('div', 'sg-studio-structure-seq');
+      const blockRow = el('div', 'sg-studio-structure-blocks');
+      const BLOCKS = [
+        ['intro', 'Intro'], ['verse', 'Verse'], ['prechorus', 'PreChorus'], ['chorus', 'Chorus'],
+        ['rap', 'Rap-Part'], ['bridge', 'Bridge'], ['drop', 'Drop'], ['outro', 'Outro']
+      ];
+      const renderSeq = () => {
+        seqRow.innerHTML = '';
+        const seq = this.state.songDirectives.structure || [];
+        if (!seq.length) {
+          seqRow.append(el('span', 'sg-hint', 'Auto – KI wählt die Struktur. Unten Bausteine antippen, um sie festzulegen.'));
+          return;
+        }
+        seq.forEach((blk, idx) => {
+          const chip = el('button', 'sg-studio-chip', (BLOCKS.find(b => b[0] === blk) || [blk, blk])[1] + ' ✕');
+          chip.type = 'button';
+          chip.title = 'Entfernen';
+          chip.onclick = () => {
+            const s = (this.state.songDirectives.structure || []).slice();
+            s.splice(idx, 1);
+            set('structure', s);
+            renderSeq(); refreshBadge();
+          };
+          seqRow.append(chip);
+        });
+      };
+      BLOCKS.forEach(([v, l]) => {
+        const b = el('button', 'sg-studio-chip sg-studio-chip-add', '+ ' + l);
+        b.type = 'button';
+        b.onclick = () => {
+          const s = (this.state.songDirectives.structure || []).slice();
+          s.push(v);
+          set('structure', s);
+          renderSeq(); refreshBadge();
+        };
+        blockRow.append(b);
+      });
+      renderSeq();
+      structWrap.append(seqRow, blockRow);
+      gMusic.append(structWrap);
+      body.append(gMusic);
+
+      // ── 3. Sprache & Ton ──────────────────────────────────────
+      const gTone = group('Sprache & Ton',
+        'Wie roh, witzig oder pathetisch der Text sein darf – und in welcher Sprache.');
+      gTone.append(grid(
+        selectField('Sprache', 'language', [
+          ['auto', 'Auto (Deutsch)'], ['de', 'Deutsch'], ['en', 'Englisch'],
+          ['ch', 'Schweizerdeutsch'], ['mix', 'Sprachmix (DE/EN)']
+        ]),
+        selectField('Perspektive', 'perspective', [
+          ['auto', 'Auto'], ['ich', 'Ich-Form'], ['du', 'Du-Form'], ['wir', 'Wir-Form']
+        ]),
+        selectField('Explizitheit', 'explicitness', [
+          ['auto', 'Auto (gemäßigt)'], ['clean', 'Clean (jugendfrei)'],
+          ['roh', 'Roh & direkt („scheiß drauf" erlaubt)'], ['derb', 'Derb & ungefiltert']
+        ])
+      ));
+      gTone.append(grid(
+        rangeField('Humor / Ironie', 'humor', { min: 0, max: 100, def: 50 }),
+        rangeField('Pathos / große Gefühle', 'pathos', { min: 0, max: 100, def: 50 })
+      ));
+      gTone.append(grid(
+        selectField('Reimschema', 'rhyme_scheme', [
+          ['auto', 'Auto (Halbreime/Assonanzen)'], ['frei', 'Frei (kein Reimzwang)'],
+          ['paarreim', 'Paarreim (AABB)'], ['kreuzreim', 'Kreuzreim (ABAB)'],
+          ['assonanz', 'Assonanzen / innere Reime'], ['rap_multis', 'Rap-Multis (mehrsilbig)']
+        ]),
+        selectField('Zeilenlänge', 'line_length', [
+          ['auto', 'Auto'], ['kurz', 'Kurz (max. ~8 Silben)'], ['mittel', 'Mittel'], ['lang', 'Lang (bis ~16 Silben)']
+        ])
+      ));
+      body.append(gTone);
+
+      // ── 4. Performance & Kreativität ──────────────────────────
+      const gPerf = group('Performance & Kreativität');
+      gPerf.append(grid(
+        selectField('Vocal-Stil', 'vocal_style', [
+          ['auto', 'Auto'], ['gesungen', 'Gesungen'], ['rap', 'Rap'],
+          ['gesprochen', 'Gesprochen (Spoken Word)'], ['mix', 'Mix (Rap + Gesang)']
+        ]),
+        rangeField('Kreativität (wie mutig die KI textet)', 'creativity',
+          { min: 30, max: 100, def: 78, allowAuto: false, format: v => v + '%' })
+      ));
+      body.append(gPerf);
+
+      // Reset
+      const resetRow = el('div', 'sg-actions');
+      const resetBtn = el('button', 'sg-btn sg-btn-ghost', 'Alles auf Auto zurücksetzen');
+      resetBtn.type = 'button';
+      resetBtn.onclick = () => {
+        this.state.songDirectives = Object.assign({}, SONG_DIRECTIVE_DEFAULTS,
+          { source_weights: Object.assign({}, SONG_DIRECTIVE_DEFAULTS.source_weights) });
+        this._saveDirectives();
+        this.state.songStudioOpen = true;
+        this.render();
+      };
+      resetRow.append(resetBtn);
+      body.append(resetRow);
+
+      panel.append(body);
+      return panel;
     }
 
     renderProfileMap() {
@@ -2114,6 +2588,9 @@
       wrap.append(sources);
 
       wrap.append(this.renderPersonalityAnalysisPanel(p));
+
+      // Song-Studio: volle Kontrolle über Text und Machart vor der Komposition
+      wrap.append(this.renderSongStudio());
 
       const actions = el('div', 'sg-actions');
       const back = el('button', 'sg-btn sg-btn-ghost', '← Zurück');
@@ -2346,6 +2823,27 @@
       }
     }
 
+    /**
+     * Song-Studio-Einstellungen → Prompt-Payload. Kommagetrennte Textfelder
+     * werden zu Arrays; 'auto'/leere Werte filtert der Prompt-Builder selbst.
+     */
+    _composeDirectivesPayload() {
+      const d = Object.assign({}, SONG_DIRECTIVE_DEFAULTS, this.state.songDirectives || {});
+      const parseList = s => String(s || '').split(/[,;\n]/).map(x => x.trim()).filter(Boolean);
+      const payload = Object.assign({}, d);
+      payload.must_include = parseList(d.must_include);
+      payload.must_avoid = parseList(d.must_avoid);
+      if (payload.tempo_bpm != null) {
+        const bpm = parseInt(payload.tempo_bpm, 10);
+        payload.tempo_bpm = (bpm >= 40 && bpm <= 220) ? bpm : null;
+      }
+      return payload;
+    }
+
+    _saveDirectives() {
+      saveState(STORAGE_KEYS.songDirectives, this.state.songDirectives);
+    }
+
     // ── Step 5: Compose ─────────────────────────────────────────
     async runCompose() {
       this.setStep(5);
@@ -2374,9 +2872,33 @@
         if (personaForCompose.astrology) {
           personaForCompose.astrology = this._compactAstro(personaForCompose.astrology);
         }
+
+        // SOURCE_MATERIAL separat übergeben (nicht doppelt im persona-JSON)
+        const sourceMaterial = personaForCompose.source_material || this._collectSourceMaterial();
+        delete personaForCompose.source_material;
+
+        // Zeilen früherer Versionen vermeiden → jede Neukomposition wird anders
+        const avoidLines = [];
+        const prev = this.state.song;
+        if (prev) {
+          if (prev.title) avoidLines.push(prev.title);
+          (prev.sections || []).forEach(sec => {
+            (sec.lines || []).forEach(l => { if (l.text) avoidLines.push(l.text); });
+          });
+        }
+
+        const directives = this._composeDirectivesPayload();
+        const creativity = Math.max(0, Math.min(1,
+          (typeof directives.creativity === 'number' ? directives.creativity : 78) / 100));
+        delete directives.creativity;
+
         const song = await callApi('compose', {
           persona: personaForCompose,
-          creativity: 0.78
+          creativity: creativity,
+          source_material: sourceMaterial,
+          song_directives: directives,
+          variation_seed: Math.random().toString(36).slice(2, 10) + '-' + Date.now().toString(36),
+          avoid_lines: avoidLines
         });
         this.state.song = song;
         saveState(STORAGE_KEYS.song, song);
@@ -2510,6 +3032,11 @@
       if (typeof line.syllables === 'number') meta.append(el('span', null, line.syllables + ' Silben'));
       if (typeof line.singability === 'number') meta.append(el('span', null, 'Singbarkeit ' + Math.round(line.singability * 100) + '%'));
       if (Array.isArray(line.imagery_tags)) line.imagery_tags.forEach(t => meta.append(el('span', 'sg-tag', t)));
+      if (line.nuance_ref) {
+        const nu = el('span', 'sg-tag sg-tag-nuance', '◆ ' + line.nuance_ref);
+        nu.title = 'Diese Zeile speist sich aus deiner Antwort/deinem Text: ' + line.nuance_ref;
+        meta.append(nu);
+      }
       w.append(meta);
 
       // Alt versions
@@ -2547,7 +3074,8 @@
           persona: this.getEnrichedPersona() || this.state.persona,
           previous_song: this.state.song,
           edit_targets: [{ section_id: section.id, line_ids: [line.id], instruction: '' }],
-          mode: 'regenerate_lines'
+          mode: 'regenerate_lines',
+          song_directives: this._composeDirectivesPayload()
         });
         this.state.song = mergeRerollIntoSong(this.state.song, data);
         saveState(STORAGE_KEYS.song, this.state.song);
@@ -2567,7 +3095,8 @@
           persona: this.getEnrichedPersona() || this.state.persona,
           previous_song: this.state.song,
           edit_targets: [{ section_id: section.id, line_ids: [line.id], instruction: instr }],
-          mode: 'regenerate_lines'
+          mode: 'regenerate_lines',
+          song_directives: this._composeDirectivesPayload()
         });
         this.state.song = mergeRerollIntoSong(this.state.song, data);
         saveState(STORAGE_KEYS.song, this.state.song);
@@ -2585,7 +3114,8 @@
           persona: this.getEnrichedPersona() || this.state.persona,
           previous_song: this.state.song,
           edit_targets: [{ section_id: section.id, line_ids: (section.lines || []).map(l => l.id), instruction: instr }],
-          mode: 'rewrite_section'
+          mode: 'rewrite_section',
+          song_directives: this._composeDirectivesPayload()
         });
         this.state.song = mergeRerollIntoSong(this.state.song, data);
         saveState(STORAGE_KEYS.song, this.state.song);

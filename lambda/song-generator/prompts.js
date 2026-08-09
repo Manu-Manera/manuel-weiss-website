@@ -156,6 +156,11 @@ SCHRITTE:
 3. Mapping auf das einheitliche PERSONA_SIGNAL_SCHEMA.
 4. Konfidenzbewertung pro Skala (0–1) + kurze Belegnotiz.
 5. Wenn Eingabe unzureichend (<200 Zeichen substantiell): confidence_overall < 0.3.
+6. O-TON-EXTRAKTION (kritisch für den Songtext!): Sammle die stärksten
+   WÖRTLICHEN Zitate, Mantras, Sprachbilder und Kernbotschaften aus dem
+   RAW-Text. Bewahre den Originalton – kraftvolle, umgangssprachliche oder
+   derbe Formulierungen NICHT glätten, nur PII entfernen. Diese Fragmente
+   sind später das Rohmaterial für die Lyrics.
 
 OUTPUT (JSON, PERSONA_SIGNAL_SCHEMA):
 {
@@ -172,6 +177,10 @@ OUTPUT (JSON, PERSONA_SIGNAL_SCHEMA):
                 "confidence": 0..1, "evidence": "..." }
   },
   "themes": ["<thema1>", ...],
+  "key_quotes": ["<bis zu 20 wörtliche, prägnante Zitate/Phrasen aus dem Text – O-Ton, nur PII-bereinigt>"],
+  "signature_words": ["<bis zu 15 typische Wörter/Wendungen der Person>"],
+  "imagery_bank": ["<bis zu 12 konkrete Bilder/Metaphern aus dem Text>"],
+  "core_messages": ["<bis zu 8 Kernbotschaften/Mantras, je 1 Satz, nah am Original>"],
   "tonality": { "warmth": 0..1, "grit": 0..1, "melancholy": 0..1, "playfulness": 0..1 },
   "music_hints": {
     "preferred_genres": [], "avoid_genres": [],
@@ -186,24 +195,54 @@ OUTPUT (JSON, PERSONA_SIGNAL_SCHEMA):
 // ────────────────────────────────────────────────────────────
 // 3) PERSONA SYNTHESIS
 // ────────────────────────────────────────────────────────────
-function buildPersonaSynthesisUserPrompt({ test_results, external_signals, user_meta }) {
+function buildPersonaSynthesisUserPrompt({ test_results, facets, external_signals, astrology, salient_answers, imported_narrative, user_meta }) {
   return `AUFTRAG: Fusioniere folgende Quellen zu EINEM kohärenten Persona-Profil.
 
 INPUT:
-${JSON.stringify({ test_results: test_results || {}, external_signals: external_signals || [], user_meta: user_meta || {} }, null, 2)}
+${JSON.stringify({
+    test_results: test_results || {},
+    facets: facets || {},
+    external_signals: external_signals || [],
+    astrology: astrology || null,
+    salient_answers: salient_answers || [],
+    imported_narrative: imported_narrative || null,
+    user_meta: user_meta || {}
+  }, null, 2)}
+
+PRIMÄRQUELLEN (wissenschaftlich):
+ - test_results: Big-Five-Domänen + HEXACO-H + Schwartz + Bindung + VIA. 0..100.
+ - facets: 30 NEO-PI-R-Facetten (O1..O6 … N1..N6), wenn vorhanden – höchste
+   diagnostische Auflösung. Nutze zur Schärfung der Narrative und Motive.
+ - salient_answers: markante EINZELANTWORTEN aus dem Persönlichkeitstest
+   (Frage-Kurzform, Ausprägung, Skala/Facette). Jede Antwort ist eine
+   individuelle Nuance – nutze sie für nuance_fragments (siehe unten).
+ - external_signals: optionale Zusatzhinweise (Tests, Tagebücher, Freitexte).
+   Enthalten sie key_quotes / imagery_bank / core_messages, sind das O-Ton-
+   Fragmente des Nutzers – übernimm die stärksten in motifs und
+   nuance_fragments, ohne sie zu glätten.
+
+SEKUNDÄRQUELLE (symbolisch, OPTIONAL):
+ - astrology: nur als BILDERSPRACHE und MOTIV-RESERVOIR nutzen, nie als
+   Persönlichkeitsaussage („du bist…").
 
 FUSIONS-REGELN:
-1. Pro Skala: gewichteter Mittelwert über alle Quellen, Gewicht = confidence².
-   Test-Quelle bekommt zusätzlich Faktor 1.5.
+1. Pro Skala: gewichteter Mittelwert über alle wissenschaftlichen Quellen,
+   Gewicht = confidence². Test-Quelle bekommt zusätzlich Faktor 1.5.
 2. Bei Widersprüchen >25 Punkte: notiere in tensions[], wähle Wert mit höherer
    aggregierter Konfidenz, dokumentiere in rationale.
 3. Leite Archetyp ab (NICHT MBTI-Buchstaben verwenden) – wähle 1 aus 12:
    ["Pilger","Kartograph","Funke","Hüter","Alchemist","Wanderer","Architekt",
     "Echo","Leuchtturm","Sturmreiter","Gärtner","Nordstern"]
-4. Erzeuge core_narrative (3 Sätze, Du-Form, poetisch-präzise).
+4. Erzeuge core_narrative (3–4 Sätze, Du-Form, poetisch-präzise).
 5. Erzeuge 5 motifs (semantische Bilder) für den Songtext.
 6. Erzeuge eine music_dna als kompakten Steuervektor.
 7. Setze harte Locks (tonality_lock, tempo_lock).
+8. Erzeuge nuance_fragments: Für JEDE markante Einzelantwort in
+   salient_answers (und für die stärksten key_quotes/core_messages aus
+   external_signals) genau EIN konkretes, songtaugliches Bild oder Fragment
+   (max. 12 Wörter). Kein Fragment doppelt, keine Allerweltsbilder
+   (verboten: Anker, Funke, Echo, Sterne, Wege als Füller). Diese Fragmente
+   sind später Pflicht-Material für den Songtext.
 
 OUTPUT (JSON, PERSONA_PROFILE):
 {
@@ -212,6 +251,10 @@ OUTPUT (JSON, PERSONA_PROFILE):
   "tensions": [{ "scale": "...", "delta": 12, "note": "..." }],
   "core_narrative": "<3 Sätze>",
   "motifs": ["<bild1>", "...", "<bild5>"],
+  "nuance_fragments": [
+    { "ref": "<item_id | quote | methode>", "source": "test|freitext|methode|astro",
+      "fragment": "<konkretes Bild, max. 12 Wörter>" }
+  ],
   "music_dna": {
     "key": "<C|C#|D|...>",
     "mode": "ionian|dorian|phrygian|lydian|mixolydian|aeolian|harmonic_minor",
@@ -241,19 +284,92 @@ OUTPUT (JSON, PERSONA_PROFILE):
 // ────────────────────────────────────────────────────────────
 // 4) SONG COMPOSER (full / regenerate / rewrite)
 // ────────────────────────────────────────────────────────────
-function buildSongComposerUserPrompt({ persona, mode, edit_targets, previous_song, creativity }) {
+function buildSongComposerUserPrompt({ persona, mode, edit_targets, previous_song, creativity, source_material, song_directives, variation_seed, avoid_lines }) {
+  persona = persona || {};
+  const material = source_material || persona.source_material || null;
+  const avoid = Array.isArray(avoid_lines) ? avoid_lines : [];
+
+  // Direktiven: nur gesetzte (nicht-"auto") Werte in den Prompt
+  const activeDirectives = {};
+  if (song_directives) {
+    Object.keys(song_directives).forEach((k) => {
+      const v = song_directives[k];
+      if (v === null || v === undefined || v === '' || v === 'auto') return;
+      if (Array.isArray(v) && !v.length) return;
+      activeDirectives[k] = v;
+    });
+  }
+  const hasDirectives = Object.keys(activeDirectives).length > 0;
+
+  const materialBlock = material
+    ? `SOURCE_MATERIAL (O-Ton des Nutzers – WICHTIGSTE TEXTQUELLE):
+${JSON.stringify(material, null, 2)}
+
+SOURCE-MATERIAL-REGELN (verbindlich):
+- Die key_quotes / core_messages sind der O-Ton des Nutzers. Baue die
+  stärksten davon erkennbar in den Song ein – als Hook, Refrainzeile
+  oder Punchline. Wörtlich oder minimal angepasst (Silben/Rhythmus).
+- Nutze signature_words und imagery_bank als primäres Vokabular.
+- Jede Sektion enthält mindestens 1 konkretes Bild oder Zitat aus dem Material.
+- Glätte den Ton NICHT: wenn der Nutzer roh/derb formuliert und die
+  Direktiven es nicht verbieten, bleibt der Song genauso roh.
+- Generische Füllbilder (Anker, Funke, Echo, Sterne, Wege, Spur) sind
+  VERBOTEN, solange Material aus SOURCE_MATERIAL verfügbar ist.
+
+`
+    : '';
+
+  const directivesBlock = hasDirectives
+    ? `SONG-DIREKTIVEN (vom Nutzer eingestellt – VERBINDLICH, überschreiben
+music_dna und Standard-Regeln, wo sie kollidieren):
+${JSON.stringify(activeDirectives, null, 2)}
+
+DIREKTIVEN-LEGENDE:
+- genre / style_reference: Ziel-Genre bzw. stilistische Referenz. Passe
+  Akkorde, Rhythmik, Zeilenbau, Vokabular und engine-prompts daran an.
+- mood, energy: emotionale Grundfarbe und Intensität.
+- tempo_bpm, key_mode: feste musikalische Vorgaben (ersetzen die Locks).
+- structure: exakte Sektionsfolge – übernimm sie 1:1 in structure_order.
+- song_length: kurz≈8-12 Zeilen gesamt kompakt, mittel≈Standard, lang≈2 Verses+Bridge+Doppel-Chorus.
+- language: de=Deutsch, en=Englisch, ch=Schweizerdeutsch (Mundart), mix=Sprachmix.
+- perspective: ich/du/wir – konsequent im ganzen Song.
+- explicitness: clean=jugendfrei, roh=direkt+umgangssprachlich inkl. „scheiß"/„verdammt", derb=ungefiltert explizit erlaubt.
+- humor / pathos: 0-100. Hoch = ironisch-überdreht bzw. groß-emotional.
+- rhyme_scheme: frei/paarreim/kreuzreim/assonanz/rap_multis.
+- line_length: kurz≈max 8 Silben, mittel≈Standard, lang≈bis 16 Silben.
+- vocal_style: gesungen/rap/gesprochen/mix – bestimmt Zeilenrhythmik und delivery.
+- theme: Kernbotschaft des Songs – der Refrain verdichtet SIE (statt der core_narrative).
+- hook_line: MUSS als zentrale Refrain-/Hookzeile vorkommen (wörtlich oder metrisch minimal angepasst).
+- title: als Songtitel übernehmen.
+- must_include: Wörter/Phrasen, die vorkommen MÜSSEN. must_avoid: verboten.
+- quote_fidelity: 0-100. Hoch = Zitate möglichst wörtlich; niedrig = frei paraphrasieren.
+- source_weights: relative Gewichtung der Quellen (test/freitext/methoden/astro)
+  für die inhaltliche Mischung des Songtexts.
+
+`
+    : '';
+
+  const avoidBlock = avoid.length
+    ? `BEREITS VERWENDETE ZEILEN (aus früheren Versionen – NICHT wiederholen,
+auch nicht leicht umformuliert; finde NEUE Bilder und Formulierungen):
+${JSON.stringify(avoid.slice(0, 60), null, 1)}
+
+`
+    : '';
+
   return `AUFTRAG: Erzeuge einen tief persönlichen Song basierend auf PERSONA_PROFILE.
 
 INPUT:
 ${JSON.stringify({
-  persona: persona || {},
+  persona,
   mode: mode || 'full',
   edit_targets: edit_targets || [],
   previous_song: previous_song || null,
-  creativity: typeof creativity === 'number' ? creativity : 0.7
+  creativity: typeof creativity === 'number' ? creativity : 0.7,
+  variation_seed: variation_seed || null
 }, null, 2)}
 
-MUSIK-LOCK-MATRIX (nicht verhandelbar):
+${materialBlock}${directivesBlock}${avoidBlock}MUSIK-LOCK-MATRIX (gilt, sofern SONG-DIREKTIVEN nichts anderes vorgeben):
 - Tonart bleibt innerhalb music_dna.key ± relative Moll/Dur-Variante.
 - Akkorde nur aus tonality_lock-Familien (Standard: I, ii, IV, V, vi, iiø, VImaj7).
 - Tempo bleibt im tempo_lock-Fenster.
@@ -261,29 +377,41 @@ MUSIK-LOCK-MATRIX (nicht verhandelbar):
 - Bei jeder Re-Roll-Variation: Locks bleiben identisch.
 
 LYRIK-REGELN:
-- Du-Form ODER Ich-Form, konsistent über den ganzen Song.
+- Du-Form ODER Ich-Form, konsistent über den ganzen Song (Direktive perspective hat Vorrang).
 - Bilder vor Abstrakta (zeige, behaupte nicht).
 - Mindestens 3 von 5 motifs werden konkret aufgegriffen.
+- NUANCEN-PFLICHT: Enthält persona.nuance_fragments Einträge, verteile sie
+  über den ganzen Song – jedes Fragment inspiriert mindestens eine Zeile.
+  Trage die zugehörige ref als nuance_ref an der Zeile ein.
 - must_include_keywords MÜSSEN vorkommen; must_avoid_keywords nicht.
-- Reim: nicht erzwungen; Halbreime/Assonanzen/innere Reime bevorzugt.
-- Refrain ist semantische Verdichtung der core_narrative.
-- Eine Zeile = ein Atemzug. Max. 12 Silben pro Zeile (Strophe), 9 (Refrain).
+- Reim: nicht erzwungen; Halbreime/Assonanzen/innere Reime bevorzugt (Direktive rhyme_scheme hat Vorrang).
+- Refrain ist semantische Verdichtung der core_narrative (bzw. der Direktive theme/hook_line).
+- Eine Zeile = ein Atemzug. Max. 12 Silben pro Zeile (Strophe), 9 (Refrain) – Direktive line_length hat Vorrang.
 - Jede Zeile trägt eine singability-Note (0..1).
+
+ANTI-REPETITION (verbindlich):
+- Keine Phrase wiederholt sich im Song, außer als bewusster Refrain/Hook.
+- Kein Wort außer Funktionswörtern kommt öfter als 4x vor (Refrain-Hook ausgenommen).
+- Verbrauchte Song-Klischees vermeiden: „Anker", „Funke", „Echo", „Sterne",
+  „Flügel", „Phönix", „brenn(t/en)", „Herz aus Gold" – außer sie stammen
+  nachweislich aus SOURCE_MATERIAL oder must_include.
+- variation_seed ist ein Zufallsanker: nutze ihn, um bewusst andere Bilder,
+  Reime und Perspektiven zu wählen als bei einem früheren Durchlauf.
 
 OUTPUT (JSON, SONG_OBJECT):
 {
   "title": "<≤6 Wörter>",
   "subtitle": "<optional, ≤10 Wörter>",
-  "lang": "de",
+  "lang": "<gemäß Direktive language, sonst de>",
   "key": "<C-Dur | A-Moll | ...>",
   "tempo_bpm": 92,
   "time_signature": "4/4",
-  "structure_order": ["intro","verse1","prechorus","chorus","verse2","chorus","bridge","chorus","outro"],
+  "structure_order": ["<Sektionsfolge gemäß Direktive structure, sonst music_dna.structure>"],
   "sections": [
     {
       "id": "verse1",
       "label": "Verse 1",
-      "chords": ["Am","F","C","G"],
+      "chords": ["<Akkord1>","<Akkord2>","<Akkord3>","<Akkord4>"],
       "performance_note": "...",
       "lines": [
         {
@@ -291,7 +419,8 @@ OUTPUT (JSON, SONG_OBJECT):
           "text": "<Zeilentext>",
           "syllables": 9,
           "singability": 0.86,
-          "imagery_tags": ["wasser","stille"],
+          "imagery_tags": ["<tag1>","<tag2>"],
+          "nuance_ref": "<optional: ref aus nuance_fragments oder quote>",
           "alt_versions": [
             { "text": "<alt 1>", "delta_note": "ruhiger" },
             { "text": "<alt 2>", "delta_note": "kantiger" }
@@ -333,10 +462,99 @@ RE-WRITE-LOGIK (mode=rewrite_section):
 - instruction aus edit_targets ist verbindlich.`;
 }
 
+// ────────────────────────────────────────────────────────────
+// 5) SONG REROLL (kompakt – nur betroffene Zeilen/Sektion)
+// ────────────────────────────────────────────────────────────
+function buildSongRerollUserPrompt({ persona, previous_song, edit_targets, mode, song_directives }) {
+  persona = persona || {};
+  previous_song = previous_song || {};
+  edit_targets = edit_targets || [];
+  mode = mode || 'regenerate_lines';
+
+  const styleBrief = {};
+  if (song_directives) {
+    ['language', 'perspective', 'explicitness', 'rhyme_scheme', 'humor', 'pathos', 'vocal_style', 'genre', 'style_reference'].forEach((k) => {
+      const v = song_directives[k];
+      if (v !== null && v !== undefined && v !== '' && v !== 'auto') styleBrief[k] = v;
+    });
+  }
+
+  const targets = edit_targets.map((et) => {
+    const sec = (previous_song.sections || []).find((s) => s.id === et.section_id);
+    const lineIds = et.line_ids || [];
+    const lines = ((sec && sec.lines) || []).filter((l) => lineIds.length === 0 || lineIds.indexOf(l.id) !== -1);
+    return {
+      section_id: et.section_id,
+      section_label: sec && sec.label,
+      chords: sec && sec.chords,
+      performance_note: sec && sec.performance_note,
+      instruction: et.instruction || '',
+      lines: lines.map((l) => ({
+        id: l.id, text: l.text, syllables: l.syllables,
+        singability: l.singability, imagery_tags: l.imagery_tags
+      }))
+    };
+  });
+
+  const personaBrief = {
+    archetype: persona.archetype,
+    motifs: persona.motifs,
+    core_narrative: persona.core_narrative,
+    key_quotes: (persona.source_material && Array.isArray(persona.source_material.key_quotes))
+      ? persona.source_material.key_quotes.slice(0, 8)
+      : undefined,
+    music_dna: persona.music_dna
+      ? { key: persona.music_dna.key, mode: persona.music_dna.mode, tempo_bpm: persona.music_dna.tempo_bpm }
+      : null
+  };
+
+  return `AUFTRAG: Songzeilen neu formulieren (mode=${mode}).
+
+PERSONA (Kurz):
+${JSON.stringify(personaBrief, null, 2)}
+
+${Object.keys(styleBrief).length ? 'STIL-DIREKTIVEN (verbindlich):\n' + JSON.stringify(styleBrief, null, 2) + '\n\n' : ''}ZIELE (nur diese Zeilen/Sektionen ändern):
+${JSON.stringify(targets, null, 2)}
+
+REGELN:
+- Nur die genannten line_ids ändern${mode === 'rewrite_section' ? ' (ganze Sektion)' : ''}.
+- Silbenzahl pro Zeile ±1 beibehalten.
+- imagery_tags-Familie beibehalten.
+- Neue Zeile darf KEINE Formulierung aus dem restlichen Song wiederholen.
+- Bei regenerate_lines: pro Zeile neuer text + genau 3 alt_versions (delta_note: zarter, direkter, bildhafter).
+- instruction aus edit_targets ist verbindlich.
+- Sprache und Perspektive wie im Original bzw. gemäß Stil-Direktiven.
+
+OUTPUT: NUR gültiges JSON, kein Markdown, keine Codefences.
+Schema:
+{
+  "sections": [
+    {
+      "id": "<section_id>",
+      "lines": [
+        {
+          "id": "<line_id>",
+          "text": "<neuer Text>",
+          "syllables": 9,
+          "singability": 0.86,
+          "imagery_tags": ["tag1","tag2"],
+          "alt_versions": [
+            { "text": "...", "delta_note": "zarter" },
+            { "text": "...", "delta_note": "direkter" },
+            { "text": "...", "delta_note": "bildhafter" }
+          ]
+        }
+      ]
+    }
+  ]
+}`;
+}
+
 module.exports = {
   SYSTEM_CORE,
   PROMPT_TEST_QUESTIONS,
   buildInputInterpreterUserPrompt,
   buildPersonaSynthesisUserPrompt,
-  buildSongComposerUserPrompt
+  buildSongComposerUserPrompt,
+  buildSongRerollUserPrompt
 };

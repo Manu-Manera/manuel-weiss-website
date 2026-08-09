@@ -23,7 +23,8 @@ const {
   PROMPT_TEST_QUESTIONS,
   buildInputInterpreterUserPrompt,
   buildPersonaSynthesisUserPrompt,
-  buildSongComposerUserPrompt
+  buildSongComposerUserPrompt,
+  buildSongRerollUserPrompt
 } = require('./prompts');
 
 const CORS_HEADERS = {
@@ -106,7 +107,7 @@ function safeJsonParse(text) {
  * Ruft OpenAI Chat Completions mit Model-Fallback und sinnvollem Retry.
  * Ergebnis ist immer geparstes JSON oder wirft.
  */
-async function callOpenAI({ apiKey, system, user, temperature, top_p, model, maxTokens }) {
+async function callOpenAI({ apiKey, system, user, temperature, top_p, model, maxTokens, presencePenalty, frequencyPenalty }) {
   const errors = [];
   const candidates = [];
 
@@ -127,6 +128,9 @@ async function callOpenAI({ apiKey, system, user, temperature, top_p, model, max
       max_tokens: typeof maxTokens === 'number' ? maxTokens : 4000,
       response_format: { type: 'json_object' }
     };
+    // Moderate Penalties gegen Wiederholungen (klein halten – JSON-Output!)
+    if (typeof presencePenalty === 'number') body.presence_penalty = presencePenalty;
+    if (typeof frequencyPenalty === 'number') body.frequency_penalty = frequencyPenalty;
 
     let res;
     try {
@@ -205,22 +209,25 @@ async function handleInterpretInput({ apiKey, payload, model }) {
 }
 
 async function handleSynthesize({ apiKey, payload, model }) {
-  const { test_results, external_signals, user_meta } = payload || {};
+  const { test_results, facets, external_signals, astrology, salient_answers, imported_narrative, user_meta } = payload || {};
   const result = await callOpenAI({
     apiKey,
     system: SYSTEM_CORE,
-    user: buildPersonaSynthesisUserPrompt({ test_results, external_signals, user_meta }),
+    user: buildPersonaSynthesisUserPrompt({ test_results, facets, external_signals, astrology, salient_answers, imported_narrative, user_meta }),
     temperature: 0.4,
     top_p: 0.9,
     model,
-    maxTokens: 3000
+    maxTokens: 3500
   });
   return ok('synthesize', result.json, { model: result.model });
 }
 
 async function handleCompose({ apiKey, payload, model }) {
-  const { persona, creativity } = payload || {};
+  const { persona, creativity, source_material, song_directives, variation_seed, avoid_lines } = payload || {};
   if (!persona) return fail(400, 'payload.persona ist erforderlich');
+  const temp = typeof creativity === 'number'
+    ? Math.max(0.6, Math.min(1.1, 0.5 + creativity * 0.5))
+    : 0.85;
   const result = await callOpenAI({
     apiKey,
     system: SYSTEM_CORE,
@@ -229,37 +236,45 @@ async function handleCompose({ apiKey, payload, model }) {
       mode: 'full',
       edit_targets: [],
       previous_song: null,
-      creativity
+      creativity,
+      source_material,
+      song_directives,
+      variation_seed,
+      avoid_lines
     }),
-    temperature: 0.85,
+    temperature: temp,
     top_p: 0.95,
     model,
-    maxTokens: 4500
+    maxTokens: 6000,
+    presencePenalty: 0.15,
+    frequencyPenalty: 0.1
   });
   return ok('compose', result.json, { model: result.model });
 }
 
 async function handleReroll({ apiKey, payload, model }) {
-  const { persona, previous_song, edit_targets, mode, creativity } = payload || {};
+  const { persona, previous_song, edit_targets, mode, creativity, song_directives } = payload || {};
   if (!persona) return fail(400, 'payload.persona ist erforderlich');
   if (!previous_song) return fail(400, 'payload.previous_song ist erforderlich');
   if (!Array.isArray(edit_targets) || edit_targets.length === 0) {
     return fail(400, 'payload.edit_targets[] ist erforderlich');
   }
+  const rerollMode = mode || 'regenerate_lines';
   const result = await callOpenAI({
     apiKey,
     system: SYSTEM_CORE,
-    user: buildSongComposerUserPrompt({
+    user: buildSongRerollUserPrompt({
       persona,
-      mode: mode || 'regenerate_lines',
-      edit_targets,
       previous_song,
-      creativity: typeof creativity === 'number' ? creativity : 0.95
+      edit_targets,
+      mode: rerollMode,
+      song_directives
     }),
     temperature: 0.95,
     top_p: 0.98,
     model: model || 'gpt-4o-mini',
-    maxTokens: 2500
+    maxTokens: 2500,
+    presencePenalty: 0.2
   });
   return ok('reroll', result.json, { model: result.model });
 }

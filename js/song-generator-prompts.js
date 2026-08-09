@@ -143,7 +143,12 @@ Falls nein: korrigiere INTERN und gib erst dann das finale JSON aus.`;
       '2. Quellen-spezifische Extraktion (Tests: Skalen/Typcodes; Chats: Themen,\n   Selbstbeschreibungen, Konflikte, Ambitionen; Social: Tonalität;\n   Music: Genre/Energy/Valence/Tempo).\n' +
       '3. Mapping auf das einheitliche PERSONA_SIGNAL_SCHEMA.\n' +
       '4. Konfidenzbewertung pro Skala (0–1) + kurze Belegnotiz.\n' +
-      '5. Wenn Eingabe unzureichend (<200 Zeichen substantiell): confidence_overall < 0.3.\n\n' +
+      '5. Wenn Eingabe unzureichend (<200 Zeichen substantiell): confidence_overall < 0.3.\n' +
+      '6. O-TON-EXTRAKTION (kritisch für den Songtext!): Sammle die stärksten\n' +
+      '   WÖRTLICHEN Zitate, Mantras, Sprachbilder und Kernbotschaften aus dem\n' +
+      '   RAW-Text. Bewahre den Originalton – kraftvolle, umgangssprachliche oder\n' +
+      '   derbe Formulierungen NICHT glätten, nur PII entfernen. Diese Fragmente\n' +
+      '   sind später das Rohmaterial für die Lyrics.\n\n' +
       'OUTPUT (JSON, PERSONA_SIGNAL_SCHEMA):\n' +
       '{\n  "source_type": "...",\n  "lang": "de",\n  "scrubbed_excerpt": "<≤500 Zeichen anonymisierter Auszug>",\n' +
       '  "signals": {\n    "BIG5_O": { "value": 0..100, "confidence": 0..1, "evidence": "<≤120 Z.>" },\n' +
@@ -151,6 +156,10 @@ Falls nein: korrigiere INTERN und gib erst dann das finale JSON aus.`;
       '    "HEX_H":  {...},\n    "VAL_SD": {...}, "VAL_BE": {...},\n    "ATT_SEC":{...},\n' +
       '    "VIA_TOP":{ "value": ["<Stärke1>","<Stärke2>","<Stärke3>"],\n                "confidence": 0..1, "evidence": "..." }\n  },\n' +
       '  "themes": ["<thema1>", ...],\n' +
+      '  "key_quotes": ["<bis zu 20 wörtliche, prägnante Zitate/Phrasen aus dem Text – O-Ton, nur PII-bereinigt>"],\n' +
+      '  "signature_words": ["<bis zu 15 typische Wörter/Wendungen der Person>"],\n' +
+      '  "imagery_bank": ["<bis zu 12 konkrete Bilder/Metaphern aus dem Text>"],\n' +
+      '  "core_messages": ["<bis zu 8 Kernbotschaften/Mantras, je 1 Satz, nah am Original>"],\n' +
       '  "tonality": { "warmth": 0..1, "grit": 0..1, "melancholy": 0..1, "playfulness": 0..1 },\n' +
       '  "music_hints": {\n    "preferred_genres": [], "avoid_genres": [],\n    "tempo_pref": [bpm_min, bpm_max], "energy_pref": 0..1\n  },\n' +
       '  "confidence_overall": 0..1,\n  "safety_flag": false,\n  "notes": "<≤200 Zeichen>"\n}';
@@ -163,6 +172,8 @@ Falls nein: korrigiere INTERN und gib erst dann das finale JSON aus.`;
         facets: args.facets || {},
         external_signals: args.external_signals || [],
         astrology: args.astrology || null,
+        salient_answers: args.salient_answers || [],
+        imported_narrative: args.imported_narrative || null,
         user_meta: args.user_meta || {}
       }, null, 2) + '\n\n' +
       'PRIMÄRQUELLEN (wissenschaftlich):\n' +
@@ -171,7 +182,13 @@ Falls nein: korrigiere INTERN und gib erst dann das finale JSON aus.`;
       ' - facets: 30 NEO-PI-R-Facetten (O1..O6, C1..C6, E1..E6, A1..A6, N1..N6),\n' +
       '   wenn vorhanden – höchste diagnostische Auflösung. Nutze zur Schärfung\n' +
       '   der Narrative und Motive.\n' +
-      ' - external_signals: optionale Zusatzhinweise (Tests, Tagebücher etc.).\n\n' +
+      ' - salient_answers: markante EINZELANTWORTEN aus dem Persönlichkeitstest\n' +
+      '   (Frage-Kurzform, Ausprägung, Skala/Facette). Jede Antwort ist eine\n' +
+      '   individuelle Nuance – nutze sie für nuance_fragments (siehe unten).\n' +
+      ' - external_signals: optionale Zusatzhinweise (Tests, Tagebücher, Freitexte).\n' +
+      '   Enthalten sie key_quotes / imagery_bank / core_messages, sind das O-Ton-\n' +
+      '   Fragmente des Nutzers – übernimm die stärksten in motifs und\n' +
+      '   nuance_fragments, ohne sie zu glätten.\n\n' +
       'SEKUNDÄRQUELLE (symbolisch, OPTIONAL):\n' +
       ' - astrology: enthält Aszendent, MC, Planetenstände mit Zeichen und\n' +
       '   Whole-Sign-Häusern sowie auffällige Aspekte. Wenn vorhanden, nutze sie\n' +
@@ -186,11 +203,18 @@ Falls nein: korrigiere INTERN und gib erst dann das finale JSON aus.`;
       '4. Erzeuge core_narrative (3–4 Sätze, Du-Form, poetisch-präzise).\n' +
       '5. Erzeuge 5 motifs (semantische Bilder) für den Songtext. Wenn astrology\n   vorhanden, dürfen 1–2 Motive astrologische Bildersprache aufnehmen (z. B.\n   „Aszendent: erste Hülle, mit der du den Raum betrittst").\n' +
       '6. Erzeuge eine music_dna als kompakten Steuervektor.\n' +
-      '7. Setze harte Locks (tonality_lock, tempo_lock).\n\n' +
+      '7. Setze harte Locks (tonality_lock, tempo_lock).\n' +
+      '8. Erzeuge nuance_fragments: Für JEDE markante Einzelantwort in\n' +
+      '   salient_answers (und für die stärksten key_quotes/core_messages aus\n' +
+      '   external_signals) genau EIN konkretes, songtaugliches Bild oder Fragment\n' +
+      '   (max. 12 Wörter). Kein Fragment doppelt, keine Allerweltsbilder\n' +
+      '   (verboten: Anker, Funke, Echo, Sterne, Wege als Füller). Diese Fragmente\n' +
+      '   sind später Pflicht-Material für den Songtext.\n\n' +
       'OUTPUT (JSON, PERSONA_PROFILE):\n' +
       '{\n  "archetype": "<einer der 12>",\n  "scales_final": { "BIG5_O": 0..100, ..., "VIA_TOP": ["...","...","..."] },\n' +
       '  "tensions": [{ "scale": "...", "delta": 12, "note": "..." }],\n' +
       '  "core_narrative": "<3 Sätze>",\n  "motifs": ["<bild1>", "...", "<bild5>"],\n' +
+      '  "nuance_fragments": [\n    { "ref": "<item_id | quote | methode>", "source": "test|freitext|methode|astro",\n      "fragment": "<konkretes Bild, max. 12 Wörter>" }\n  ],\n' +
       '  "music_dna": {\n    "key": "<C|C#|D|...>",\n    "mode": "ionian|dorian|phrygian|lydian|mixolydian|aeolian|harmonic_minor",\n' +
       '    "tempo_bpm": 60..160,\n    "tempo_lock": [bpm_min, bpm_max],\n    "tonality_lock": ["allowed_chord_family_1","..."],\n' +
       '    "time_signature": "4/4|3/4|6/8|5/4",\n    "energy": 0..1, "brightness": 0..1, "density": 0..1,\n    "warmth": 0..1, "grit": 0..1,\n' +
@@ -205,8 +229,70 @@ Falls nein: korrigiere INTERN und gib erst dann das finale JSON aus.`;
     const edit_targets = args.edit_targets || [];
     const previous_song = args.previous_song || null;
     const creativity = typeof args.creativity === 'number' ? args.creativity : 0.7;
+    const source_material = args.source_material || persona.source_material || null;
+    const directives = args.song_directives || null;
+    const variation_seed = args.variation_seed || null;
+    const avoid_lines = Array.isArray(args.avoid_lines) ? args.avoid_lines : [];
+
+    // Direktiven: nur gesetzte (nicht-"auto") Werte in den Prompt
+    const activeDirectives = {};
+    if (directives) {
+      Object.keys(directives).forEach(function (k) {
+        const v = directives[k];
+        if (v === null || v === undefined || v === '' || v === 'auto') return;
+        if (Array.isArray(v) && !v.length) return;
+        activeDirectives[k] = v;
+      });
+    }
+    const hasDirectives = Object.keys(activeDirectives).length > 0;
+
     return 'AUFTRAG: Erzeuge einen tief persönlichen Song basierend auf PERSONA_PROFILE.\n\n' +
-      'INPUT:\n' + JSON.stringify({ persona, mode, edit_targets, previous_song, creativity }, null, 2) + '\n\n' +
+      'INPUT:\n' + JSON.stringify({ persona, mode, edit_targets, previous_song, creativity, variation_seed }, null, 2) + '\n\n' +
+      (source_material
+        ? 'SOURCE_MATERIAL (O-Ton des Nutzers – WICHTIGSTE TEXTQUELLE):\n' +
+          JSON.stringify(source_material, null, 2) + '\n\n' +
+          'SOURCE-MATERIAL-REGELN (verbindlich):\n' +
+          '- Die key_quotes / core_messages sind der O-Ton des Nutzers. Baue die\n' +
+          '  stärksten davon erkennbar in den Song ein – als Hook, Refrainzeile\n' +
+          '  oder Punchline. Wörtlich oder minimal angepasst (Silben/Rhythmus).\n' +
+          '- Nutze signature_words und imagery_bank als primäres Vokabular.\n' +
+          '- Jede Sektion enthält mindestens 1 konkretes Bild oder Zitat aus dem Material.\n' +
+          '- Glätte den Ton NICHT: wenn der Nutzer roh/derb formuliert und die\n' +
+          '  Direktiven es nicht verbieten, bleibt der Song genauso roh.\n' +
+          '- Generische Füllbilder (Anker, Funke, Echo, Sterne, Wege, Spur) sind\n' +
+          '  VERBOTEN, solange Material aus SOURCE_MATERIAL verfügbar ist.\n\n'
+        : '') +
+      (hasDirectives
+        ? 'SONG-DIREKTIVEN (vom Nutzer eingestellt – VERBINDLICH, überschreiben\n' +
+          'music_dna und Standard-Regeln, wo sie kollidieren):\n' +
+          JSON.stringify(activeDirectives, null, 2) + '\n\n' +
+          'DIREKTIVEN-LEGENDE:\n' +
+          '- genre / style_reference: Ziel-Genre bzw. stilistische Referenz. Passe\n' +
+          '  Akkorde, Rhythmik, Zeilenbau, Vokabular und engine-prompts daran an.\n' +
+          '- mood, energy: emotionale Grundfarbe und Intensität.\n' +
+          '- tempo_bpm, key_mode: feste musikalische Vorgaben (ersetzen die Locks).\n' +
+          '- structure: exakte Sektionsfolge – übernimm sie 1:1 in structure_order.\n' +
+          '- song_length: kurz≈8-12 Zeilen gesamt kompakt, mittel≈Standard, lang≈2 Verses+Bridge+Doppel-Chorus.\n' +
+          '- language: de=Deutsch, en=Englisch, ch=Schweizerdeutsch (Mundart), mix=Sprachmix.\n' +
+          '- perspective: ich/du/wir – konsequent im ganzen Song.\n' +
+          '- explicitness: clean=jugendfrei, roh=direkt+umgangssprachlich inkl. „scheiß"/„verdammt", derb=ungefiltert explizit erlaubt.\n' +
+          '- humor / pathos: 0-100. Hoch = ironisch-überdreht bzw. groß-emotional.\n' +
+          '- rhyme_scheme: frei/paarreim/kreuzreim/assonanz/rap_multis.\n' +
+          '- line_length: kurz≈max 8 Silben, mittel≈Standard, lang≈bis 16 Silben.\n' +
+          '- vocal_style: gesungen/rap/gesprochen/mix – bestimmt Zeilenrhythmik und delivery.\n' +
+          '- theme: Kernbotschaft des Songs – der Refrain verdichtet SIE (statt der core_narrative).\n' +
+          '- hook_line: MUSS als zentrale Refrain-/Hookzeile vorkommen (wörtlich oder metrisch minimal angepasst).\n' +
+          '- title: als Songtitel übernehmen.\n' +
+          '- must_include: Wörter/Phrasen, die vorkommen MÜSSEN. must_avoid: verboten.\n' +
+          '- quote_fidelity: 0-100. Hoch = Zitate möglichst wörtlich; niedrig = frei paraphrasieren.\n' +
+          '- source_weights: relative Gewichtung der Quellen (test/freitext/methoden/astro)\n' +
+          '  für die inhaltliche Mischung des Songtexts.\n\n'
+        : '') +
+      (avoid_lines.length
+        ? 'BEREITS VERWENDETE ZEILEN (aus früheren Versionen – NICHT wiederholen,\n' +
+          'auch nicht leicht umformuliert; finde NEUE Bilder und Formulierungen):\n' +
+          JSON.stringify(avoid_lines.slice(0, 60), null, 1) + '\n\n'
+        : '') +
       (persona.audio_identity
         ? 'AUDIO-IDENTITÄT (Entwicklungsphase, verbindlich für Arrangement):\n' +
           persona.audio_identity.composeHints + '\n' +
@@ -225,28 +311,40 @@ Falls nein: korrigiere INTERN und gib erst dann das finale JSON aus.`;
       'Songtext. Schreibe NIE Aussagen wie „du bist Skorpion" oder „weil dein\n' +
       'Aszendent…". Astrologie ist symbolisches Material, keine Diagnose.\n' +
       'Wenn nicht vorhanden, ignoriere die Schicht vollständig.\n\n' +
-      'MUSIK-LOCK-MATRIX (nicht verhandelbar):\n' +
+      'MUSIK-LOCK-MATRIX (gilt, sofern SONG-DIREKTIVEN nichts anderes vorgeben):\n' +
       '- Tonart bleibt innerhalb music_dna.key ± relative Moll/Dur-Variante.\n' +
       '- Akkorde nur aus tonality_lock-Familien (Standard: I, ii, IV, V, vi, iiø, VImaj7).\n' +
       '- Tempo bleibt im tempo_lock-Fenster.\n' +
       '- Instrumente nur aus core ∪ color ∪ rhythm; nie aus avoid.\n' +
       '- Bei jeder Re-Roll-Variation: Locks bleiben identisch.\n\n' +
       'LYRIK-REGELN:\n' +
-      '- Du-Form ODER Ich-Form, konsistent über den ganzen Song.\n' +
+      '- Du-Form ODER Ich-Form, konsistent über den ganzen Song (Direktive perspective hat Vorrang).\n' +
       '- Bilder vor Abstrakta (zeige, behaupte nicht).\n' +
       '- Mindestens 3 von 5 motifs werden konkret aufgegriffen.\n' +
+      '- NUANCEN-PFLICHT: Enthält persona.nuance_fragments Einträge, verteile sie\n' +
+      '  über den ganzen Song – jedes Fragment inspiriert mindestens eine Zeile.\n' +
+      '  Trage die zugehörige ref als nuance_ref an der Zeile ein.\n' +
       '- must_include_keywords MÜSSEN vorkommen; must_avoid_keywords nicht.\n' +
-      '- Reim: nicht erzwungen; Halbreime/Assonanzen/innere Reime bevorzugt.\n' +
-      '- Refrain ist semantische Verdichtung der core_narrative.\n' +
-      '- Eine Zeile = ein Atemzug. Max. 12 Silben pro Zeile (Strophe), 9 (Refrain).\n' +
+      '- Reim: nicht erzwungen; Halbreime/Assonanzen/innere Reime bevorzugt (Direktive rhyme_scheme hat Vorrang).\n' +
+      '- Refrain ist semantische Verdichtung der core_narrative (bzw. der Direktive theme/hook_line).\n' +
+      '- Eine Zeile = ein Atemzug. Max. 12 Silben pro Zeile (Strophe), 9 (Refrain) – Direktive line_length hat Vorrang.\n' +
       '- Jede Zeile trägt eine singability-Note (0..1).\n\n' +
+      'ANTI-REPETITION (verbindlich):\n' +
+      '- Keine Phrase wiederholt sich im Song, außer als bewusster Refrain/Hook.\n' +
+      '- Kein Wort außer Funktionswörtern kommt öfter als 4x vor (Refrain-Hook ausgenommen).\n' +
+      '- Verbrauchte Song-Klischees vermeiden: „Anker", „Funke", „Echo", „Sterne",\n' +
+      '  „Flügel", „Phönix", „brenn(t/en)", „Herz aus Gold" – außer sie stammen\n' +
+      '  nachweislich aus SOURCE_MATERIAL oder must_include.\n' +
+      '- variation_seed ist ein Zufallsanker: nutze ihn, um bewusst andere Bilder,\n' +
+      '  Reime und Perspektiven zu wählen als bei einem früheren Durchlauf.\n\n' +
       'OUTPUT (JSON, SONG_OBJECT):\n' +
-      '{\n  "title": "<≤6 Wörter>",\n  "subtitle": "<optional, ≤10 Wörter>",\n  "lang": "de",\n' +
+      '{\n  "title": "<≤6 Wörter>",\n  "subtitle": "<optional, ≤10 Wörter>",\n  "lang": "<gemäß Direktive language, sonst de>",\n' +
       '  "key": "<C-Dur | A-Moll | ...>",\n  "tempo_bpm": 92,\n  "time_signature": "4/4",\n' +
-      '  "structure_order": ["intro","verse1","prechorus","chorus","verse2","chorus","bridge","chorus","outro"],\n' +
-      '  "sections": [\n    {\n      "id": "verse1",\n      "label": "Verse 1",\n      "chords": ["Am","F","C","G"],\n      "performance_note": "...",\n' +
+      '  "structure_order": ["<Sektionsfolge gemäß Direktive structure, sonst music_dna.structure>"],\n' +
+      '  "sections": [\n    {\n      "id": "verse1",\n      "label": "Verse 1",\n      "chords": ["<Akkord1>","<Akkord2>","<Akkord3>","<Akkord4>"],\n      "performance_note": "...",\n' +
       '      "lines": [\n        {\n          "id": "v1l1",\n          "text": "<Zeilentext>",\n          "syllables": 9,\n          "singability": 0.86,\n' +
-      '          "imagery_tags": ["wasser","stille"],\n' +
+      '          "imagery_tags": ["<tag1>","<tag2>"],\n' +
+      '          "nuance_ref": "<optional: ref aus nuance_fragments oder quote>",\n' +
       '          "alt_versions": [\n            { "text": "<alt 1>", "delta_note": "ruhiger" },\n            { "text": "<alt 2>", "delta_note": "kantiger" }\n          ]\n        }\n      ]\n    }\n  ],\n' +
       '  "production_spec": {\n    "arrangement": [{ "bar": "1-4", "elements": ["upright_bass","felt_piano"] }],\n' +
       '    "mix_targets": {\n      "lufs_integrated": -10, "true_peak_db": -1, "stereo_width": 0.7,\n      "low_end_focus_hz": 80, "air_band_db": "+1.5 dB @ 12 kHz"\n    },\n' +
@@ -273,6 +371,14 @@ Falls nein: korrigiere INTERN und gib erst dann das finale JSON aus.`;
     const previous_song = args.previous_song || {};
     const edit_targets = args.edit_targets || [];
     const mode = args.mode || 'regenerate_lines';
+    const d = args.song_directives || null;
+    const styleBrief = {};
+    if (d) {
+      ['language', 'perspective', 'explicitness', 'rhyme_scheme', 'humor', 'pathos', 'vocal_style', 'genre', 'style_reference'].forEach(function (k) {
+        const v = d[k];
+        if (v !== null && v !== undefined && v !== '' && v !== 'auto') styleBrief[k] = v;
+      });
+    }
 
     const targets = edit_targets.map(function (et) {
       const sec = (previous_song.sections || []).find(function (s) { return s.id === et.section_id; });
@@ -302,6 +408,9 @@ Falls nein: korrigiere INTERN und gib erst dann das finale JSON aus.`;
       archetype: persona.archetype,
       motifs: persona.motifs,
       core_narrative: persona.core_narrative,
+      key_quotes: (persona.source_material && Array.isArray(persona.source_material.key_quotes))
+        ? persona.source_material.key_quotes.slice(0, 8)
+        : undefined,
       music_dna: persona.music_dna
         ? { key: persona.music_dna.key, mode: persona.music_dna.mode, tempo_bpm: persona.music_dna.tempo_bpm }
         : null
@@ -309,14 +418,18 @@ Falls nein: korrigiere INTERN und gib erst dann das finale JSON aus.`;
 
     return 'AUFTRAG: Songzeilen neu formulieren (mode=' + mode + ').\n\n' +
       'PERSONA (Kurz):\n' + JSON.stringify(personaBrief, null, 2) + '\n\n' +
+      (Object.keys(styleBrief).length
+        ? 'STIL-DIREKTIVEN (verbindlich):\n' + JSON.stringify(styleBrief, null, 2) + '\n\n'
+        : '') +
       'ZIELE (nur diese Zeilen/Sektionen ändern):\n' + JSON.stringify(targets, null, 2) + '\n\n' +
       'REGELN:\n' +
       '- Nur die genannten line_ids ändern' + (mode === 'rewrite_section' ? ' (ganze Sektion)' : '') + '.\n' +
       '- Silbenzahl pro Zeile ±1 beibehalten.\n' +
       '- imagery_tags-Familie beibehalten.\n' +
+      '- Neue Zeile darf KEINE Formulierung aus dem restlichen Song wiederholen.\n' +
       '- Bei regenerate_lines: pro Zeile neuer text + genau 3 alt_versions (delta_note: zarter, direkter, bildhafter).\n' +
       '- instruction aus edit_targets ist verbindlich.\n' +
-      '- Sprache: Deutsch, gleiche Perspektive (Du/Ich) wie im Original.\n\n' +
+      '- Sprache und Perspektive wie im Original bzw. gemäß Stil-Direktiven.\n\n' +
       'OUTPUT: NUR gültiges JSON, kein Markdown, keine Codefences.\n' +
       'Schema:\n' +
       '{\n  "sections": [\n    {\n      "id": "<section_id>",\n      "lines": [\n        {\n          "id": "<line_id>",\n          "text": "<neuer Text>",\n          "syllables": 9,\n          "singability": 0.86,\n          "imagery_tags": ["tag1","tag2"],\n          "alt_versions": [\n            { "text": "...", "delta_note": "zarter" },\n            { "text": "...", "delta_note": "direkter" },\n            { "text": "...", "delta_note": "bildhafter" }\n          ]\n        }\n      ]\n    }\n  ]\n}';
