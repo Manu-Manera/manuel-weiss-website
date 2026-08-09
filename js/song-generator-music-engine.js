@@ -670,6 +670,25 @@
       styleStr = 'custom voice persona clone, ' + styleStr;
     }
 
+    // Explizite Stimm-Wahl (m/f) hart durchsetzen: Suno gewichtet den Style-Text
+    // stärker als den vocalGender-Parameter, daher zusätzlich Tags + Negativ-Tags.
+    var negativeTags = style.negativeTags || '';
+    const explicitGender = opts.vocalGender === 'm' || opts.vocalGender === 'f';
+    if (explicitGender && !useInstrumental) {
+      if (opts.vocalGender === 'm') {
+        styleStr = 'male vocals, masculine voice, ' + styleStr;
+        negativeTags = 'female vocals, female voice' + (negativeTags ? ', ' + negativeTags : '');
+      } else {
+        styleStr = 'female vocals, feminine voice, ' + styleStr;
+        negativeTags = 'male vocals, male voice' + (negativeTags ? ', ' + negativeTags : '');
+      }
+    }
+    if (styleStr.length > 1000) styleStr = styleStr.slice(0, 997) + '...';
+    if (negativeTags.length > 100) {
+      const cut = negativeTags.slice(0, 100);
+      negativeTags = cut.slice(0, cut.lastIndexOf(',') > 0 ? cut.lastIndexOf(',') : 100);
+    }
+
     const directives = opts.songDirectives || null;
     const duration = opts.duration != null ? opts.duration : durationFromDirectives(directives, model);
     const dirWeirdness = weirdnessFromCreativity(directives);
@@ -682,7 +701,7 @@
       customMode: true,
       instrumental: useInstrumental || !hasLyrics,
       vocalGender: useInstrumental ? undefined : vocalGender,
-      negativeTags: style.negativeTags || undefined,
+      negativeTags: negativeTags || undefined,
       styleWeight: opts.styleWeight != null ? opts.styleWeight : (style._accentLocked ? 0.88 : 0.72),
       weirdnessConstraint: opts.weirdnessConstraint != null ? opts.weirdnessConstraint
                             : (dirWeirdness != null ? dirWeirdness : 0.42),
@@ -816,6 +835,9 @@
     const payload = buildEngineRequest(persona, song, opts);
     onUpdate({ phase: 'submitting', payload });
 
+    const isCancelled = typeof opts.isCancelled === 'function' ? opts.isCancelled : function () { return false; };
+    if (isCancelled()) { onUpdate({ phase: 'cancelled' }); return null; }
+
     const { taskId } = await provider.createTask(apiKey, payload);
     onUpdate({ phase: 'polling', taskId, weights: payload._weights, payload });
 
@@ -826,6 +848,7 @@
 
     while (Date.now() - start < maxWaitMs) {
       await new Promise(r => setTimeout(r, pollIntervalMs));
+      if (isCancelled()) { onUpdate({ phase: 'cancelled', taskId }); return null; }
       let st;
       try { st = await provider.pollTask(apiKey, taskId); }
       catch (err) {

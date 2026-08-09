@@ -3185,7 +3185,11 @@
         ? window.SongPlaylistEngine.resolveInstrumental(intentMods, prefs, intentId)
         : intentMods.instrumental;
       opts._persona = persona;
-      const wantsCustomVoice = (base.vocalGender === 'custom' || this.state.useCustomVoice) &&
+      // Explizite Wahl von Männlich/Weiblich gewinnt immer – Custom Voice nur,
+      // wenn sie ausdrücklich gewählt ist oder gar keine Stimme gewählt wurde.
+      const explicitGender = base.vocalGender === 'm' || base.vocalGender === 'f';
+      const wantsCustomVoice = !explicitGender &&
+        (base.vocalGender === 'custom' || this.state.useCustomVoice) &&
         this.state.voiceProfile && this.state.voiceProfile.voiceId;
       const canUseCustomVoice = window.SongPlaylistEngine.allowsCustomVoice
         ? window.SongPlaylistEngine.allowsCustomVoice(intentId, prefs, opts.instrumental)
@@ -3904,7 +3908,19 @@
         if (friendly) stateBox.append(el('p', 'sg-prod-status', friendly));
         const cancel = el('button', 'sg-btn sg-btn-ghost', 'Abbrechen');
         cancel.onclick = () => {
+          // Laufende Produktion wirklich stoppen (Run-Token invalidieren)
+          this._prodRunId = (this._prodRunId || 0) + 1;
           this.state.audioState = { phase: 'idle' };
+          // Platzhalter-Tracks ohne Audio-URL entfernen, fertige Teilergebnisse behalten
+          if (this.state.audio && this.state.audio.partial) {
+            const usable = (this.state.audio.tracks || []).filter(t => this._trackUrl(t));
+            if (usable.length) {
+              this.state.audio.tracks = usable;
+            } else {
+              this.state.audio = null;
+              clearState(STORAGE_KEYS.audio);
+            }
+          }
           this.render();
         };
         stateBox.append(cancel);
@@ -4656,6 +4672,8 @@
         this.render();
 
         const opts = this._buildProductionOpts(Object.assign({}, baseOpts, { intentId: intentId }));
+        // „Queue abbrechen" stoppt auch das Polling des laufenden Tracks
+        opts.isCancelled = function () { return !!self.state.audioState.cancelQueue; };
 
         try {
           const result = await window.SongMusicEngine.generateAudio(
@@ -4673,6 +4691,10 @@
               }
             }
           );
+          if (!result) { // abgebrochen
+            playlistTracks[i].status = 'skipped';
+            break;
+          }
           const raw = (result.tracks && result.tracks[0]) || null;
           if (raw && self._applyRawToPlaylistTrack(playlistTracks[i], raw, intent)) {
             queueDone.push({ label: intent.label, status: 'ok' });
@@ -4738,6 +4760,11 @@
       }
       const self = this;
       const intentId = opts.intentId || this.state.audioIntent;
+      // Run-Token: „Abbrechen" erhöht den Zähler, dann werden alle Events
+      // dieses Laufs ignoriert und das Polling in der Engine gestoppt.
+      this._prodRunId = (this._prodRunId || 0) + 1;
+      const runId = this._prodRunId;
+      opts.isCancelled = function () { return self._prodRunId !== runId; };
       this.state.audioState = { phase: 'submitting', model: opts.model, vocalGender: opts.vocalGender };
       this.state.audio = {
         tracks: [
@@ -4755,6 +4782,7 @@
           this.state.song,
           opts,
           function (evt) {
+            if (self._prodRunId !== runId) return; // Lauf wurde abgebrochen
             if (evt.phase === 'submitting') {
               self.state.audioState = Object.assign({}, self.state.audioState, { phase: 'submitting' });
             } else if (evt.phase === 'polling' || evt.phase === 'first_ready') {
@@ -4781,6 +4809,7 @@
             self._schedulePollRender();
           }
         );
+        if (!result || this._prodRunId !== runId) return; // abgebrochen
         this.state.audio = {
           tracks: result.tracks || [],
           taskId: result.taskId,
@@ -4805,6 +4834,7 @@
         this.state.audioState = { phase: 'success' };
         this.render();
       } catch (err) {
+        if (this._prodRunId !== runId) return; // abgebrochen – Fehler ignorieren
         console.error('[SongGenerator] Audio-Produktion fehlgeschlagen:', err);
         this.state.audioState = { phase: 'error', error: err.message || String(err) };
         this.render();
