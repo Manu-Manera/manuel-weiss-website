@@ -290,6 +290,7 @@
     const trackSpec = opts.trackSpec || null;
     const stylePrefs = opts.stylePrefs || null;
     const analysisKeywords = opts.analysisKeywords || (intentMods && intentMods.analysisKeywords) || [];
+    const dirStyle = directivesToStyle(opts.songDirectives || null);
 
     // ── PERSÖNLICHKEIT (50%) ─────────────────────────────────
     const O = sf.BIG5_O || 50, E = sf.BIG5_E || 50, A = sf.BIG5_A || 50,
@@ -308,9 +309,13 @@
     }
 
     // Genre-Grundlinie aus Profil – bei manuellem Genre-Akzent nicht mit Electro/EDM überdecken
+    // Song-Studio-Direktiven haben höchste Priorität (explizite User-Wahl)
     const akustisch = (dna.instrumentation && dna.instrumentation.core || []).includes('felt_piano');
     const elektro = (dna.instrumentation && dna.instrumentation.core || []).includes('analog_keys');
-    if (accentLocked && accentDef && accentDef.tags.length) {
+    if (dirStyle.lockTags.length) {
+      accentLocked = true;
+      persParts.push('PRIMARY GENRE LOCK: ' + dirStyle.lockTags.join(', '));
+    } else if (accentLocked && accentDef && accentDef.tags.length) {
       persParts.push('PRIMARY GENRE LOCK: ' + accentDef.tags.join(', '));
     } else if (akustisch) {
       persParts.push('intimate acoustic singer-songwriter');
@@ -320,17 +325,31 @@
       persParts.push('hybrid acoustic-electronic');
     }
 
-    // Mood-Hauptachsen
-    if (E >= 65) persParts.push('uplifting');
-    else if (E <= 35) persParts.push('contemplative');
-    if (N >= 60) persParts.push('emotionally vulnerable');
-    else if (N <= 40) persParts.push('grounded');
+    // Song-Studio-Direktiven: Stimmung, Energie, Sprache, Vocal-Stil, Ton
+    if (dirStyle.moodTags.length) {
+      persParts.push(dirStyle.moodTags.join(', '));
+    }
+
+    // Mood-Hauptachsen (nur wenn keine explizite Stimmungs-Direktive gesetzt ist)
+    const hasMoodDirective = !!directiveValue(opts.songDirectives, 'mood');
+    if (!hasMoodDirective) {
+      if (E >= 65) persParts.push('uplifting');
+      else if (E <= 35) persParts.push('contemplative');
+      if (N >= 60) persParts.push('emotionally vulnerable');
+      else if (N <= 40) persParts.push('grounded');
+    }
     if (O >= 70) persParts.push('with unusual harmonic colors');
 
-    // Music-DNA Hard-Locks (Intent kann Tempo/Energy überschreiben)
-    const tempoBpm = (intentMods && intentMods.tempo) || dna.tempo_bpm || 90;
+    // Music-DNA Hard-Locks (Direktiven > Intent > Profil)
+    const tempoBpm = dirStyle.tempoBpm || (intentMods && intentMods.tempo) || dna.tempo_bpm || 90;
     persParts.push(tempoBpm + ' BPM');
-    persParts.push((dna.key || 'C') + ' ' + (dna.mode || 'ionian'));
+    if (dirStyle.keyMode === 'dur') {
+      persParts.push((dna.key || 'C') + ' major');
+    } else if (dirStyle.keyMode === 'moll') {
+      persParts.push((dna.key || 'A') + ' minor');
+    } else {
+      persParts.push((dna.key || 'C') + ' ' + (dna.mode || 'ionian'));
+    }
     if (dna.time_signature && dna.time_signature !== '4/4') persParts.push(dna.time_signature + ' time signature');
 
     if (intentMods && intentMods.genreHints && intentMods.genreHints.length) {
@@ -484,7 +503,8 @@
       astrology:   astro ? 0.50 : 0.00,
       methods:     bonus,
       methodsCount: methods,
-      intent:      trackSpec ? (trackSpec.weights && trackSpec.weights.intent) || 0.35 : 0
+      intent:      trackSpec ? (trackSpec.weights && trackSpec.weights.intent) || 0.35 : 0,
+      directives:  (dirStyle.lockTags.length || dirStyle.moodTags.length) ? 1.0 : 0
     };
     // Wenn keine Astrologie: Persönlichkeit nimmt deren 50% mit (transparent)
     if (!astro) weights.personality = 1.0 - weights.methods;
@@ -492,6 +512,7 @@
     return {
       style, negativeTags, weights,
       _accentLocked: accentLocked,
+      directives_text: dirStyle.lockTags.concat(dirStyle.moodTags).join(', '),
       personality_text: personalityText,
       astrology_text:   astroText,
       methods_text:     methodsText,
@@ -508,9 +529,85 @@
     return String(slug).replace(/_/g, ' ');
   }
 
+  // ────────────────────────────────────────────────────────────
+  // Song-Studio-Direktiven → englische Suno-Style-Tags
+  // ────────────────────────────────────────────────────────────
+  const DIRECTIVE_MOOD_TAGS = {
+    'euphorisch':    'euphoric celebratory mood',
+    'kämpferisch':   'defiant anthemic fighting spirit',
+    'melancholisch': 'melancholic wistful mood',
+    'hoffnungsvoll': 'hopeful uplifting mood',
+    'wütend':        'raw angry intensity',
+    'verspielt':     'playful ironic wink',
+    'episch':        'epic cinematic scale',
+    'intim':         'intimate hushed closeness',
+    'düster':        'dark brooding atmosphere'
+  };
+  const DIRECTIVE_ENERGY_TAGS = {
+    'ruhig':     'calm low-key energy',
+    'mittel':    'moderate steady energy',
+    'treibend':  'driving propulsive energy',
+    'explosiv':  'explosive high energy'
+  };
+  const DIRECTIVE_LANGUAGE_TAGS = {
+    'de':  'German lyrics',
+    'en':  'English lyrics',
+    'ch':  'Swiss German dialect vocals (Mundart)',
+    'mix': 'bilingual German-English lyrics'
+  };
+  const DIRECTIVE_VOCAL_TAGS = {
+    'rap':        'rap vocals, rhythmic flow, tight pocket',
+    'gesprochen': 'spoken word delivery',
+    'gesungen':   'melodic sung vocals',
+    'mix':        'rap verses with melodic sung chorus'
+  };
+
+  function directiveValue(directives, key) {
+    if (!directives) return null;
+    const v = directives[key];
+    if (v === null || v === undefined || v === '' || v === 'auto') return null;
+    if (Array.isArray(v) && !v.length) return null;
+    return v;
+  }
+
+  /**
+   * Wandelt die Song-Studio-Direktiven in Suno-Style-Fragmente um.
+   * Rückgabe: { lockTags: [...], moodTags: [...], tempoBpm, keyMode }
+   */
+  function directivesToStyle(directives) {
+    const out = { lockTags: [], moodTags: [], tempoBpm: null, keyMode: null };
+    if (!directives) return out;
+
+    const genre = directiveValue(directives, 'genre');
+    const ref = directiveValue(directives, 'style_reference');
+    if (genre) out.lockTags.push(genre);
+    if (ref) out.lockTags.push('in the style of ' + ref);
+
+    const mood = directiveValue(directives, 'mood');
+    if (mood && DIRECTIVE_MOOD_TAGS[mood]) out.moodTags.push(DIRECTIVE_MOOD_TAGS[mood]);
+    const energy = directiveValue(directives, 'energy');
+    if (energy && DIRECTIVE_ENERGY_TAGS[energy]) out.moodTags.push(DIRECTIVE_ENERGY_TAGS[energy]);
+    const lang = directiveValue(directives, 'language');
+    if (lang && DIRECTIVE_LANGUAGE_TAGS[lang]) out.moodTags.push(DIRECTIVE_LANGUAGE_TAGS[lang]);
+    const vocal = directiveValue(directives, 'vocal_style');
+    if (vocal && DIRECTIVE_VOCAL_TAGS[vocal]) out.moodTags.push(DIRECTIVE_VOCAL_TAGS[vocal]);
+
+    const expl = directiveValue(directives, 'explicitness');
+    if (expl === 'roh' || expl === 'derb') out.moodTags.push('raw unpolished vocal delivery');
+    const humor = directiveValue(directives, 'humor');
+    if (typeof humor === 'number' && humor >= 70) out.moodTags.push('tongue-in-cheek ironic delivery');
+    const pathos = directiveValue(directives, 'pathos');
+    if (typeof pathos === 'number' && pathos >= 70) out.moodTags.push('grand emotional build, big dynamics');
+
+    const bpm = directiveValue(directives, 'tempo_bpm');
+    if (typeof bpm === 'number' && bpm >= 40 && bpm <= 220) out.tempoBpm = bpm;
+    out.keyMode = directiveValue(directives, 'key_mode'); // 'dur' | 'moll' | null
+    return out;
+  }
+
   /**
    * Lyrics in Suno-Form bringen: Section-Marker [Verse 1] [Chorus] usw.
-   * + reine Textzeilen. Max 4500 Zeichen für V5_5.
+   * + reine Textzeilen. V5/V5.5 erlauben 5000 Zeichen – wir nutzen 4900.
    */
   function buildLyricsFromSong(song) {
     if (!song || !Array.isArray(song.sections)) return '';
@@ -524,8 +621,29 @@
       out.push(''); // Leerzeile zwischen Sektionen
     });
     let txt = out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
-    if (txt.length > 4500) txt = txt.slice(0, 4497) + '...';
+    if (txt.length > 4900) txt = txt.slice(0, 4897) + '...';
     return txt;
+  }
+
+  /**
+   * Songlänge-Direktive → Suno-duration (Sekunden, nur V5_5 + customMode).
+   */
+  function durationFromDirectives(directives, model) {
+    if (model !== 'V5_5') return undefined;
+    const pref = directiveValue(directives, 'song_length');
+    if (pref === 'kurz') return 150;
+    if (pref === 'mittel') return 210;
+    if (pref === 'lang') return 320;
+    return undefined;
+  }
+
+  /**
+   * Kreativitäts-Regler (0–100) → weirdnessConstraint (0.15–0.70, 2 Dezimalstellen).
+   */
+  function weirdnessFromCreativity(directives) {
+    const c = directives ? directives.creativity : null;
+    if (typeof c !== 'number' || !(c >= 0 && c <= 100)) return null;
+    return Math.round(15 + c * 0.55) / 100;
   }
 
   /**
@@ -552,6 +670,10 @@
       styleStr = 'custom voice persona clone, ' + styleStr;
     }
 
+    const directives = opts.songDirectives || null;
+    const duration = opts.duration != null ? opts.duration : durationFromDirectives(directives, model);
+    const dirWeirdness = weirdnessFromCreativity(directives);
+
     return {
       model,
       title: opts.titleOverride || title,
@@ -562,8 +684,12 @@
       vocalGender: useInstrumental ? undefined : vocalGender,
       negativeTags: style.negativeTags || undefined,
       styleWeight: opts.styleWeight != null ? opts.styleWeight : (style._accentLocked ? 0.88 : 0.72),
-      weirdnessConstraint: opts.weirdnessConstraint != null ? opts.weirdnessConstraint : 0.42,
+      weirdnessConstraint: opts.weirdnessConstraint != null ? opts.weirdnessConstraint
+                            : (dirWeirdness != null ? dirWeirdness : 0.42),
+      audioWeight: typeof opts.audioWeight === 'number' ? opts.audioWeight : undefined,
+      duration: duration,
       _weights: style.weights,
+      _directives_text: style.directives_text,
       _personality_text: style.personality_text,
       _astrology_text:   style.astrology_text,
       _methods_text:     style.methods_text,
@@ -629,6 +755,11 @@
         if (payload.negativeTags) body.negativeTags = payload.negativeTags;
         if (typeof payload.styleWeight === 'number') body.styleWeight = payload.styleWeight;
         if (typeof payload.weirdnessConstraint === 'number') body.weirdnessConstraint = payload.weirdnessConstraint;
+        if (typeof payload.audioWeight === 'number') body.audioWeight = payload.audioWeight;
+        // duration: nur V5_5 + customMode, 10–360 s (Ganzzahl)
+        if (typeof payload.duration === 'number' && payload.model === 'V5_5') {
+          body.duration = Math.max(10, Math.min(360, Math.round(payload.duration)));
+        }
         const res = await fetch(this.base + '/generate', {
           method: 'POST',
           headers: {

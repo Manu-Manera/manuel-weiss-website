@@ -3152,6 +3152,9 @@
       const intentId = base.intentId || this.state.audioIntent || 'personality';
       const ui = this.state.analysisUi || { mode: 'integrated', length: 'medium' };
       const opts = Object.assign({ intentId: intentId }, base);
+      // Song-Studio-Direktiven auch in die Suno-Produktion durchreichen
+      // (Genre, Stimmung, Tempo, Sprache, Vocal-Stil, Songlänge, Kreativität)
+      opts.songDirectives = this._composeDirectivesPayload();
       if (!window.SongPlaylistEngine || !this.state.persona) return opts;
       const persona = this.getEnrichedPersona() || this.state.persona;
 
@@ -4279,7 +4282,12 @@
     _renderMixMatrix(preview) {
       const box = el('div', 'sg-mix-matrix');
       box.append(el('div', 'sg-mix-title', 'So wird dein Sound gemischt'));
-      const rows = [
+      const rows = [];
+      if (preview.directives_text) {
+        rows.push({ key: 'directives', label: 'Song-Studio (deine Regler)', color: '#ec4899',
+          text: preview.directives_text + ' – überschreibt Profil-Vorgaben' });
+      }
+      rows.push(
         { key: 'personality', label: 'Persönlichkeit', color: '#6366f1',
           text: preview.personality_text },
         { key: 'astrology', label: 'Astrologie', color: '#a78bfa',
@@ -4288,7 +4296,7 @@
           text: preview.methods_text || '—' },
         { key: 'intent', label: 'Playlist-Kontext', color: '#f59e0b',
           text: preview.intent_text || 'Kompositions-Song (Standard)' }
-      ];
+      );
       rows.forEach(r => {
         const w = preview.weights[r.key] || 0;
         const row = el('div', 'sg-mix-row');
