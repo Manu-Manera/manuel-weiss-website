@@ -211,21 +211,50 @@
     water: { tags: ['lush reverb', 'smooth dynamic swells', 'cinematic'], moodWord: 'flowing' }
   };
 
-  // Aszendenten-Vibe für die ersten Takte (sanfte Eröffnungen, kein abruptes Intro)
+  // Aszendenten-Vibe für die ersten Takte (charaktervoll, aber musikalisch sauber)
   const ASC_VIBES = {
-    'Widder':      'confident but smooth opening',
+    'Widder':      'bold energetic opening',
     'Stier':       'patient intro, sensual textures',
     'Zwillinge':   'playful conversation between instruments',
     'Krebs':       'tender, water-soft entrance',
-    'Löwe':        'warm, generous opening',
+    'Löwe':        'cinematic warm entrance',
     'Jungfrau':    'precise, finely arranged opening',
     'Waage':       'balanced, lyrical intro',
     'Skorpion':    'low, mysterious low end',
     'Schütze':     'expansive horizon, lifted opening',
     'Steinbock':   'measured, structural intro',
-    'Wassermann':  'modern, tasteful harmonic opening',
+    'Wassermann':  'fresh modern harmonic opening',
     'Fische':      'dream-like, washed-out intro'
   };
+
+  // Intro-Stile: sorgt für abwechslungsreiche, packende Song-Einstiege
+  // (pro Produktion wird zufällig einer passend zum Energie-Level gewählt)
+  const INTRO_STYLES = {
+    energetic: [
+      'starts immediately with the vocal hook',
+      'kicks off with a catchy instrumental riff',
+      'drum pickup straight into the first verse',
+      'full band entrance from bar one',
+      'opens with a shouted gang-vocal hook'
+    ],
+    moderate: [
+      'short two-bar instrumental intro, then vocals',
+      'opens with a memorable melodic motif',
+      'groove-first intro with early vocal entry',
+      'starts with a rhythmic guitar or keys figure'
+    ],
+    calm: [
+      'intimate vocal-first opening',
+      'soft atmospheric intro that blooms within seconds',
+      'gentle instrumental figure with early vocal entry',
+      'close-mic vocal over sparse backing to start'
+    ]
+  };
+
+  function pickIntroStyle(energyLevel) {
+    const pool = INTRO_STYLES[energyLevel] || INTRO_STYLES.moderate;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
 
   function topFacetTags(facets) {
     if (!facets) return [];
@@ -340,6 +369,17 @@
       else if (N <= 40) persParts.push('grounded');
     }
     if (O >= 70) persParts.push('subtle rich harmonic colors');
+
+    // Packender, abwechslungsreicher Song-Einstieg passend zum Energie-Level
+    const energyDirective = directiveValue(opts.songDirectives, 'energy');
+    let energyLevel;
+    if (energyDirective === 'treibend' || energyDirective === 'explosiv') energyLevel = 'energetic';
+    else if (energyDirective === 'ruhig') energyLevel = 'calm';
+    else if (energyDirective === 'mittel') energyLevel = 'moderate';
+    else if (E >= 65 || (dna.tempo_bpm || 90) >= 110) energyLevel = 'energetic';
+    else if (E <= 35 || (dna.tempo_bpm || 90) <= 72) energyLevel = 'calm';
+    else energyLevel = 'moderate';
+    persParts.push(pickIntroStyle(energyLevel));
 
     // Music-DNA Hard-Locks (Direktiven > Intent > Profil)
     const tempoBpm = dirStyle.tempoBpm || (intentMods && intentMods.tempo) || dna.tempo_bpm || 90;
@@ -482,9 +522,9 @@
     const parts = [personalityText];
     if (astroText) parts.push(astroText);
     if (methodsText) parts.push(methodsText);
-    // Glättungs-Schicht: verhindert chaotische Intros, wilde Hintergrund-Artefakte
-    // und abrupte Wechsel zwischen den Sektionen
-    parts.push('smooth polished production, clean warm mix, gentle intro build, seamless transitions between sections');
+    // Glättungs-Schicht: saubere Produktion und weiche Übergänge –
+    // aber bewusst OHNE Intro-Bremse (der Einstieg kommt vom Intro-Stil oben)
+    parts.push('polished clean production, seamless transitions between sections');
     if (trackSpec && trackSpec.label) {
       parts.unshift('context: ' + trackSpec.label + ' playlist intent');
     }
