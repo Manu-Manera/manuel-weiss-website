@@ -460,6 +460,7 @@
     const forceInstr = opts.instrumental === true ||
       (stylePrefs && window.SongPlaylistEngine &&
         window.SongPlaylistEngine.resolveInstrumental(intentMods || {}, stylePrefs, opts.intentId));
+    const harshGenre = isHarshGenre(opts.songDirectives, accentDef, intentMods);
     if (forceInstr) {
       persParts.push('instrumental no vocals');
     } else {
@@ -468,8 +469,13 @@
         const deli = (intentMods && intentMods.vocalDelivery) || dna.vocal.delivery || 'sung';
         persParts.push(reg + ' register ' + deli + ' vocals');
       }
-      // Schöner, melodischer Gesang – Suno neigt sonst bei intensiven Moods zum Schreien
-      persParts.push('beautiful melodic singing, controlled in-tune vocal performance');
+      if (harshGenre) {
+        // Metal/Hardcore & Co.: Screams sind stilprägend und ausdrücklich erlaubt
+        persParts.push('powerful aggressive vocal performance, harsh screams and shouts where the genre demands it');
+      } else {
+        // Schöner, melodischer Gesang – Suno neigt sonst bei intensiven Moods zum Schreien
+        persParts.push('beautiful melodic singing, controlled in-tune vocal performance');
+      }
     }
 
     // Top-Facetten als Microexpression
@@ -542,8 +548,8 @@
       'harsh noise', 'glitch effects', 'chaotic intro', 'abrupt cuts',
       'dissonant screeching', 'distorted background artifacts'
     ];
-    if (!forceInstr) {
-      // Anti-Schrei: Stimmen sollen singen, nicht brüllen
+    if (!forceInstr && !harshGenre) {
+      // Anti-Schrei: Stimmen sollen singen, nicht brüllen (außer in harten Genres)
       negativeParts = negativeParts.concat(['screaming', 'shouting vocals', 'screamo', 'yelling', 'strained harsh vocals']);
     }
     negativeParts = negativeParts.concat(avoid.map(humanizeInstrument).slice(0, 5));
@@ -627,6 +633,21 @@
     return v;
   }
 
+  // Harte Genres, in denen Screams/Shouts stilprägend und erwünscht sind
+  const HARSH_GENRE_RE = /metal|hardcore|screamo|punk|deathcore|metalcore|grindcore|djent|thrash|crossover|nu[- ]?metal|industrial|rage/i;
+
+  function isHarshGenre(directives, accentDef, intentMods) {
+    const parts = [
+      directiveValue(directives, 'genre'),
+      directiveValue(directives, 'style_reference')
+    ]
+      .concat((accentDef && accentDef.tags) || [])
+      .concat((intentMods && intentMods.genreHints) || [])
+      .filter(Boolean)
+      .join(' ');
+    return HARSH_GENRE_RE.test(parts);
+  }
+
   /**
    * Wandelt die Song-Studio-Direktiven in Suno-Style-Fragmente um.
    * Rückgabe: { lockTags: [...], moodTags: [...], tempoBpm, keyMode }
@@ -641,7 +662,12 @@
     if (ref) out.lockTags.push('in the style of ' + ref);
 
     const mood = directiveValue(directives, 'mood');
-    if (mood && DIRECTIVE_MOOD_TAGS[mood]) out.moodTags.push(DIRECTIVE_MOOD_TAGS[mood]);
+    if (mood === 'wütend' && isHarshGenre(directives, null, null)) {
+      // In harten Genres darf Wut auch roh gebrüllt werden
+      out.moodTags.push('raw furious vocal intensity');
+    } else if (mood && DIRECTIVE_MOOD_TAGS[mood]) {
+      out.moodTags.push(DIRECTIVE_MOOD_TAGS[mood]);
+    }
     const energy = directiveValue(directives, 'energy');
     if (energy && DIRECTIVE_ENERGY_TAGS[energy]) out.moodTags.push(DIRECTIVE_ENERGY_TAGS[energy]);
     const lang = directiveValue(directives, 'language');
