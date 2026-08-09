@@ -235,7 +235,7 @@
       'kicks off with a catchy instrumental riff',
       'drum pickup straight into the first verse',
       'full band entrance from bar one',
-      'opens with a shouted gang-vocal hook'
+      'opens with a big catchy sung chorus hook'
     ],
     moderate: [
       'short two-bar instrumental intro, then vocals',
@@ -457,14 +457,19 @@
     }
 
     // Vocal
-    const forceInstr = stylePrefs && window.SongPlaylistEngine &&
-      window.SongPlaylistEngine.resolveInstrumental(intentMods || {}, stylePrefs, opts.intentId);
+    const forceInstr = opts.instrumental === true ||
+      (stylePrefs && window.SongPlaylistEngine &&
+        window.SongPlaylistEngine.resolveInstrumental(intentMods || {}, stylePrefs, opts.intentId));
     if (forceInstr) {
       persParts.push('instrumental no vocals');
-    } else if (dna.vocal) {
-      const reg = dna.vocal.register || 'mid';
-      const deli = (intentMods && intentMods.vocalDelivery) || dna.vocal.delivery || 'sung';
-      persParts.push(reg + ' register ' + deli + ' vocals');
+    } else {
+      if (dna.vocal) {
+        const reg = dna.vocal.register || 'mid';
+        const deli = (intentMods && intentMods.vocalDelivery) || dna.vocal.delivery || 'sung';
+        persParts.push(reg + ' register ' + deli + ' vocals');
+      }
+      // Schöner, melodischer Gesang – Suno neigt sonst bei intensiven Moods zum Schreien
+      persParts.push('beautiful melodic singing, controlled in-tune vocal performance');
     }
 
     // Top-Facetten als Microexpression
@@ -536,7 +541,12 @@
     var negativeParts = [
       'harsh noise', 'glitch effects', 'chaotic intro', 'abrupt cuts',
       'dissonant screeching', 'distorted background artifacts'
-    ].concat(avoid.map(humanizeInstrument).slice(0, 5));
+    ];
+    if (!forceInstr) {
+      // Anti-Schrei: Stimmen sollen singen, nicht brüllen
+      negativeParts = negativeParts.concat(['screaming', 'shouting vocals', 'screamo', 'yelling', 'strained harsh vocals']);
+    }
+    negativeParts = negativeParts.concat(avoid.map(humanizeInstrument).slice(0, 5));
     if (accentLocked && normPrefs && normPrefs.genreAccent === 'jazz') {
       negativeParts = negativeParts.concat(['generic EDM', 'techno', 'dubstep', 'trance', 'synthwave']);
     } else if (accentLocked && normPrefs && normPrefs.genreAccent === 'funk') {
@@ -584,7 +594,7 @@
     'kämpferisch':   'defiant anthemic fighting spirit',
     'melancholisch': 'melancholic wistful mood',
     'hoffnungsvoll': 'hopeful uplifting mood',
-    'wütend':        'raw angry intensity',
+    'wütend':        'intense angry emotion, sung with control (not shouted)',
     'verspielt':     'playful ironic wink',
     'episch':        'epic cinematic scale',
     'intim':         'intimate hushed closeness',
@@ -639,8 +649,8 @@
     const vocal = directiveValue(directives, 'vocal_style');
     if (vocal && DIRECTIVE_VOCAL_TAGS[vocal]) out.moodTags.push(DIRECTIVE_VOCAL_TAGS[vocal]);
 
-    const expl = directiveValue(directives, 'explicitness');
-    if (expl === 'roh' || expl === 'derb') out.moodTags.push('raw unpolished vocal delivery');
+    // Explizitheit betrifft nur den TEXT (Compose-Prompt), nicht den Gesangsstil –
+    // das frühere Mapping auf 'raw unpolished vocal delivery' machte die Stimme kratzig/schreiend.
     const humor = directiveValue(directives, 'humor');
     if (typeof humor === 'number' && humor >= 70) out.moodTags.push('tongue-in-cheek ironic delivery');
     const pathos = directiveValue(directives, 'pathos');
