@@ -323,6 +323,19 @@
     return sunoFetch(apiKey, 'GET', '/voice/record-info?taskId=' + encodeURIComponent(taskId), null);
   }
 
+  /**
+   * Fordert einen neuen Validierungssatz an, wenn der alte Task verbraucht ist
+   * (Fehler „Validate record is not in valid status“).
+   * Hinweis: Die API erwartet hier tatsächlich das Feld `calBackUrl` (sic).
+   */
+  async function regenerateValidation(taskId, apiKey) {
+    var data = await sunoFetch(apiKey, 'POST', '/voice/regenerate', {
+      taskId: taskId,
+      calBackUrl: NOOP_CB
+    });
+    return (data && data.taskId) || taskId;
+  }
+
   /** Prüft, ob die erstellte Custom Voice (noch) nutzbar ist. */
   async function checkVoice(taskId, apiKey) {
     if (!apiKey && window.SongMusicEngine && window.SongMusicEngine.getSunoApiKey) {
@@ -616,6 +629,8 @@
     pollValidatePhrase: pollValidatePhrase,
     generateCustomVoice: generateCustomVoice,
     pollVoiceId: pollVoiceId,
+    getVoiceRecord: getVoiceRecord,
+    regenerateValidation: regenerateValidation,
     checkVoice: checkVoice,
     registerVoice: registerVoice
   };

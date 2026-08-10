@@ -427,7 +427,10 @@
       const res = await fetch(apiUrl(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, payload, apiKey, model: opts && opts.model })
+        body: JSON.stringify({ action, payload, apiKey, model: opts && opts.model }),
+        // Hängende Requests nicht ewig laufen lassen – nach Timeout Direct-Mode
+        signal: (typeof AbortSignal !== 'undefined' && AbortSignal.timeout)
+          ? AbortSignal.timeout(120000) : undefined
       });
       let json;
       try { json = await res.json(); } catch (_e) { json = null; }
@@ -442,9 +445,10 @@
       throw e;
     } catch (err) {
       if (err.code === 'no_api_key') throw err;
-      // TypeError = Netzwerkfehler / CORS / Lambda fehlt komplett
-      if (err instanceof TypeError) {
-        console.warn('[SongGenerator] Netzwerkfehler bei Lambda → Direct-Mode:', err.message);
+      // TypeError = Netzwerkfehler / CORS / Lambda fehlt komplett;
+      // Timeout/Abort = Lambda hängt → ebenfalls Direct-Mode versuchen
+      if (err instanceof TypeError || err.name === 'TimeoutError' || err.name === 'AbortError') {
+        console.warn('[SongGenerator] Lambda nicht nutzbar (' + (err.name || 'Netzwerk') + ') → Direct-Mode:', err.message);
         return await dispatchDirect(action, payload, apiKey);
       }
       throw err;
@@ -958,6 +962,76 @@
       } catch (err) {
         console.warn('[SongGenerator] Stimmen-Wizard-Cloud:', err && err.message);
       }
+    }
+
+    /**
+     * Erholung, wenn der Validierungs-Task verbraucht/abgelaufen ist
+     * („Validate record is not in valid status“): Erst prüfen, ob die Stimme
+     * bereits erstellt wurde – sonst neuen Validierungssatz anfordern.
+     */
+    _regenerateVoicePhrase(wiz) {
+      const self = this;
+      const flowToken = this._voiceFlowToken = (this._voiceFlowToken || 0) + 1;
+      this._voiceFlowActive = true;
+      this.state.voiceWizard = Object.assign({}, wiz, {
+        phase: 'validate_poll',
+        label: 'Neuer Validierungssatz wird erzeugt',
+        lastError: null,
+        updatedAt: new Date().toISOString()
+      });
+      this._persistVoiceLocal();
+      this.render();
+      (async function () {
+        try {
+          const apiKey = await window.SongMusicEngine.getSunoApiKey();
+          // 1) Wurde die Stimme durch den früheren Versuch schon erstellt?
+          if (wiz.taskId) {
+            try {
+              const rec = await window.SongVoiceEngine.getVoiceRecord(wiz.taskId, apiKey);
+              if (rec && rec.status === 'success' && rec.voiceId) {
+                if (flowToken !== self._voiceFlowToken) return;
+                await self._applyVoiceRegistration({
+                  phase: 'ready',
+                  status: 'ready',
+                  voiceId: rec.voiceId,
+                  validateTaskId: wiz.validateTaskId || null,
+                  voiceName: 'Meine Stimme',
+                  createdAt: new Date().toISOString(),
+                  voiceUrl: wiz.voiceUrl || null,
+                  personaId: rec.voiceId,
+                  personaModel: 'voice_persona'
+                });
+                self.render();
+                return;
+              }
+            } catch (_e) { /* weiter mit Regenerate */ }
+          }
+          // 2) Neuen Validierungssatz anfordern und Phrase abholen
+          const newTaskId = await window.SongVoiceEngine.regenerateValidation(wiz.validateTaskId, apiKey);
+          const info = await window.SongVoiceEngine.pollValidatePhrase(newTaskId, apiKey);
+          if (flowToken !== self._voiceFlowToken) return;
+          self._voiceVerifyRecorder = null; // alter Satz gilt nicht mehr – neue Aufnahme nötig
+          await self._applyVoiceVerificationPending({
+            phase: 'need_verification',
+            validateTaskId: newTaskId,
+            validateInfo: info.validateInfo,
+            voiceUrl: wiz.voiceUrl || null,
+            vocalStartS: wiz.vocalStartS,
+            vocalEndS: wiz.vocalEndS
+          });
+          self.render();
+        } catch (err) {
+          if (flowToken !== self._voiceFlowToken) return;
+          self.state.voiceWizard = Object.assign({}, wiz, {
+            phase: 'need_verification',
+            lastError: 'Neuer Validierungssatz fehlgeschlagen: ' + (err.message || String(err))
+          });
+          self._persistVoiceLocal();
+          self.render();
+        } finally {
+          self._voiceFlowActive = false;
+        }
+      })();
     }
 
     _voicePhaseLabel(phase) {
@@ -2977,6 +3051,16 @@
 
     // ── Step 5: Compose ─────────────────────────────────────────
     async runCompose() {
+      if (this._composeActive) return;
+      this._composeActive = true;
+      try {
+        await this._runComposeInner();
+      } finally {
+        this._composeActive = false;
+      }
+    }
+
+    async _runComposeInner() {
       this.setStep(5);
       const wrap = this.root.querySelector('.sg-card') || this.root;
 
@@ -3034,8 +3118,11 @@
         this.state.song = song;
         saveState(STORAGE_KEYS.song, song);
         this._cloudSave('song', { forceNewVersion: true });
-        this.setStep(6);
+        // Nur weiterspringen, wenn der Nutzer nicht zwischenzeitlich
+        // abgebrochen/zurücknavigiert hat
+        if (this.state.step === 5) this.setStep(6);
       } catch (err) {
+        if (this.state.step !== 5) return;
         const s = wrap.querySelector('.sg-status') || this.showStatus('', wrap);
         s.textContent = '⚠️ ' + err.message;
         s.classList.add('sg-status-error');
@@ -3050,10 +3137,24 @@
     }
 
     renderCompose() {
+      const self = this;
       const wrap = el('div', 'sg-card sg-compose');
       wrap.append(el('h2', null, 'Song wird komponiert …'));
       wrap.append(this.showSpinner());
       wrap.append(el('p', 'sg-lead', 'Songtext, Akkorde und Produktions-Spezifikation werden geschrieben. Das dauert ungefähr 15–25 Sekunden.'));
+
+      // Nach einem Seiten-Reload hängt der Schritt sonst ohne laufenden
+      // Prozess fest – Komposition automatisch (wieder) starten.
+      if (!this._composeActive) {
+        setTimeout(function () {
+          if (!self._composeActive && self.state.step === 5) self.runCompose();
+        }, 0);
+      }
+
+      const back = el('button', 'sg-btn sg-btn-ghost sg-compose-back', '← Abbrechen & zurück');
+      back.type = 'button';
+      back.onclick = function () { self.setStep(4); };
+      wrap.append(back);
       return wrap;
     }
 
@@ -3676,6 +3777,12 @@
           } catch (err) {
             if (flowToken !== self._voiceFlowToken) return;
             const msg = err.message || String(err);
+            self._voiceFlowActive = false;
+            if (/not in valid status/i.test(msg)) {
+              // Validierungs-Task verbraucht → automatisch neuen Satz anfordern
+              self._regenerateVoicePhrase(wiz);
+              return;
+            }
             self.state.voiceWizard = Object.assign({}, wiz, {
               phase: 'need_verification',
               lastError: msg,
@@ -3689,6 +3796,14 @@
           }
         };
         box.append(btn);
+
+        const regenBtn = el('button', 'sg-btn sg-btn-ghost sg-voice-regen',
+          '🔄 Neuen Validierungssatz anfordern');
+        regenBtn.type = 'button';
+        regenBtn.title = 'Wenn das Senden mit „Validate record is not in valid status“ fehlschlägt, hier einen frischen Satz holen.';
+        regenBtn.onclick = function () { self._regenerateVoicePhrase(wiz); };
+        box.append(regenBtn);
+
         panel.append(box);
         return panel;
       }
