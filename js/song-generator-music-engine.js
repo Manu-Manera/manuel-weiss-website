@@ -321,6 +321,11 @@
     const stylePrefs = opts.stylePrefs || null;
     const analysisKeywords = opts.analysisKeywords || (intentMods && intentMods.analysisKeywords) || [];
     const dirStyle = directivesToStyle(opts.songDirectives || null);
+    // Explizite Stil-Vorgabe (Genre/Stil-Referenz/Blaupause): Der Prompt wird
+    // radikal fokussiert – Profil-Klangfarben (DNA-Instrumente, Identity-
+    // Production-Tags, Astro-Layer …) würden das gewünschte Genre sonst
+    // überstimmen (z. B. Elektro-Tags gegen Handpan-Meditation).
+    const userLock = dirStyle.lockTags.length > 0;
 
     // ── PERSÖNLICHKEIT (50%) ─────────────────────────────────
     const O = sf.BIG5_O || 50, E = sf.BIG5_E || 50, A = sf.BIG5_A || 50,
@@ -360,15 +365,15 @@
       persParts.push(dirStyle.moodTags.join(', '));
     }
 
-    // Mood-Hauptachsen (nur wenn keine explizite Stimmungs-Direktive gesetzt ist)
+    // Mood-Hauptachsen (nur ohne explizite Stimmungs-Direktive/Stil-Lock)
     const hasMoodDirective = !!directiveValue(opts.songDirectives, 'mood');
-    if (!hasMoodDirective) {
+    if (!hasMoodDirective && !userLock) {
       if (E >= 65) persParts.push('uplifting');
       else if (E <= 35) persParts.push('contemplative');
       if (N >= 60) persParts.push('emotionally vulnerable');
       else if (N <= 40) persParts.push('grounded');
     }
-    if (O >= 70) persParts.push('subtle rich harmonic colors');
+    if (O >= 70 && !userLock) persParts.push('subtle rich harmonic colors');
 
     // Packender, abwechslungsreicher Song-Einstieg passend zum Energie-Level
     const energyDirective = directiveValue(opts.songDirectives, 'energy');
@@ -399,12 +404,12 @@
     if (intentMods && intentMods.genreHints && intentMods.genreHints.length && !dirStyle.lockTags.length) {
       persParts.unshift(intentMods.genreHints[0]);
     }
-    if (intentMods && intentMods.moodWords && intentMods.moodWords.length) {
+    if (intentMods && intentMods.moodWords && intentMods.moodWords.length && !userLock) {
       persParts.push(intentMods.moodWords.slice(0, 3).join(' '));
     }
     const ident = persona && persona.audio_identity;
     const dnaPhase = persona && persona.music_dna && persona.music_dna.evolution_phase;
-    if (ident) {
+    if (ident && !userLock) {
       if (ident.productionTags && ident.productionTags.length) {
         persParts.push(ident.productionTags.slice(0, 4).join(', '));
       }
@@ -414,16 +419,16 @@
       if (ident.evolutionScore >= 5) persParts.push('gentle dynamic growth');
       if (ident.depthLevel >= 6) persParts.push('subtle textural evolution');
     }
-    if (persona && persona.music_dna && persona.music_dna.production_evolution_tags) {
+    if (persona && persona.music_dna && persona.music_dna.production_evolution_tags && !userLock) {
       persParts.push(persona.music_dna.production_evolution_tags.slice(0, 2).join(', '));
     }
-    if (persona && persona.music_dna && persona.music_dna.tension_curve) {
+    if (persona && persona.music_dna && persona.music_dna.tension_curve && !userLock) {
       persParts.push('smooth ' + persona.music_dna.tension_curve.replace(/_/g, ' '));
     }
-    if (analysisKeywords.length) {
+    if (analysisKeywords.length && !userLock) {
       persParts.push('emotional palette: ' + analysisKeywords.slice(0, 3).join(', '));
     }
-    if (intentMods && intentMods.contextDNA) {
+    if (intentMods && intentMods.contextDNA && !userLock) {
       const cd = intentMods.contextDNA;
       if (cd.reverb_space >= 0.75) persParts.push('long reverb wash');
       else if (cd.reverb_space >= 0.55) persParts.push('spacious mix');
@@ -437,15 +442,18 @@
       else if (cd.circadian_band === 'rest') persParts.push('restorative calm');
     }
 
-    // Instrumente (Whitelist)
-    const allInstr = []
-      .concat((dna.instrumentation && dna.instrumentation.core) || [])
-      .concat((dna.instrumentation && dna.instrumentation.color) || [])
-      .slice(0, 5)
-      .map(humanizeInstrument);
-    if (allInstr.length) persParts.push(allInstr.join(', '));
+    // Instrumente aus der Profil-DNA – NICHT bei explizitem Stil-Lock
+    // (die Instrumente kommen dann aus der User-Vorgabe selbst)
+    if (!userLock) {
+      const allInstr = []
+        .concat((dna.instrumentation && dna.instrumentation.core) || [])
+        .concat((dna.instrumentation && dna.instrumentation.color) || [])
+        .slice(0, 5)
+        .map(humanizeInstrument);
+      if (allInstr.length) persParts.push(allInstr.join(', '));
+    }
 
-    if (intentMods && intentMods.personalGenreNote) {
+    if (intentMods && intentMods.personalGenreNote && !userLock) {
       persParts.push(intentMods.personalGenreNote);
     }
     if (stylePrefs && window.SongPlaylistEngine) {
@@ -464,10 +472,11 @@
       (stylePrefs && window.SongPlaylistEngine &&
         window.SongPlaylistEngine.resolveInstrumental(intentMods || {}, stylePrefs, opts.intentId));
     const harshGenre = isHarshGenre(opts.songDirectives, accentDef, intentMods);
+    const vocalDirective = directiveValue(opts.songDirectives, 'vocal_style');
     if (forceInstr) {
       persParts.push('instrumental no vocals');
     } else {
-      if (dna.vocal) {
+      if (dna.vocal && !userLock) {
         const reg = dna.vocal.register || 'mid';
         const deli = (intentMods && intentMods.vocalDelivery) || dna.vocal.delivery || 'sung';
         persParts.push(reg + ' register ' + deli + ' vocals');
@@ -475,14 +484,17 @@
       if (harshGenre) {
         // Metal/Hardcore & Co.: Screams sind stilprägend und ausdrücklich erlaubt
         persParts.push('powerful aggressive vocal performance, harsh screams and shouts where the genre demands it');
+      } else if (vocalDirective === 'gesprochen') {
+        // Gesprochene/geflüsterte Vocals nicht mit Melodie-Gesang übersteuern
+        persParts.push('soft controlled natural vocal delivery');
       } else {
         // Schöner, melodischer Gesang – Suno neigt sonst bei intensiven Moods zum Schreien
         persParts.push('beautiful melodic singing, controlled in-tune vocal performance');
       }
     }
 
-    // Top-Facetten als Microexpression
-    const facetTags = topFacetTags(facets);
+    // Top-Facetten als Microexpression (nicht bei explizitem Stil-Lock)
+    const facetTags = userLock ? [] : topFacetTags(facets);
     if (facetTags.length) persParts.push(facetTags.slice(0, 2).join(' ').toLowerCase());
 
     const personalityText = persParts.join(', ');
@@ -534,12 +546,14 @@
 
     // ── FINAL ZUSAMMENSETZEN ─────────────────────────────────
     const parts = [personalityText];
-    if (astroText) parts.push(astroText);
-    if (methodsText) parts.push(methodsText);
+    if (astroText && !userLock) parts.push(astroText);
+    if (methodsText && !userLock) parts.push(methodsText);
     // Glättungs-Schicht: saubere Produktion und weiche Übergänge –
     // aber bewusst OHNE Intro-Bremse (der Einstieg kommt vom Intro-Stil oben)
     parts.push('polished clean production, seamless transitions between sections');
-    if (trackSpec && trackSpec.label) {
+    // Kontext-Label NIE vor den User-Stil-Lock stellen – Suno gewichtet die
+    // vordersten Tags am stärksten
+    if (trackSpec && trackSpec.label && !userLock) {
       parts.unshift('context: ' + trackSpec.label + ' playlist intent');
     }
     let style = parts.join(' | ').replace(/\s+/g, ' ').trim();
@@ -746,11 +760,15 @@
     const style = buildStylePrompt(persona, opts);
     const lyrics = buildLyricsFromSong(song);
     const useVoicePersona = !!(opts.personaId && opts.personaModel === 'voice_persona');
+    // Bei explizitem Stil-Lock (Genre/Referenz/Blaupause) beschreibt der User
+    // die Stimmen selbst – kein Geschlecht aus dem Profil erzwingen
+    const dirLock = !!(opts.songDirectives &&
+      (directiveValue(opts.songDirectives, 'genre') || directiveValue(opts.songDirectives, 'style_reference')));
     let vocalGender;
     if (useVoicePersona || opts.vocalGender === 'custom') {
       vocalGender = undefined;
     } else {
-      vocalGender = opts.vocalGender || vocalGenderFromPersona(persona);
+      vocalGender = opts.vocalGender || (dirLock ? undefined : vocalGenderFromPersona(persona));
       if (vocalGender !== 'm' && vocalGender !== 'f') vocalGender = undefined;
     }
     const useInstrumental = opts.instrumental != null ? opts.instrumental : style.instrumental;
