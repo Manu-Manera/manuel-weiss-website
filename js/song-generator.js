@@ -48,6 +48,7 @@
     style_reference: '',
     mood: 'auto',
     energy: 'auto',
+    style_weight: null,
     tempo_bpm: null,
     key_mode: 'auto',
     structure: [],
@@ -2478,6 +2479,12 @@
         genreField,
         textField('Stil-Referenz („klingt wie …")', 'style_reference', 'z. B. „wie frühe Casper-Alben" oder „wie Johnny Cash"')
       ));
+      gMusic.append(rangeField('Stil-Treue (wie strikt Suno deinen Stil-Vorgaben folgt)', 'style_weight', {
+        min: 0, max: 100, def: 80,
+        format: v => v + '% – ' + (v >= 85 ? 'sehr strikt nach Vorgabe' : v >= 60 ? 'strikt' : v >= 40 ? 'ausgewogen' : 'freie Interpretation')
+      }));
+      gMusic.append(el('p', 'sg-hint',
+        'Auto = 88 % bei eigenem Genre/Stil, sonst 72 %. Hoch stellen, wenn Suno zu frei interpretiert (z. B. falsches Genre trotz Vorgabe).'));
       gMusic.append(grid(
         selectField('Stimmung', 'mood', [
           ['auto', 'Auto (aus Profil)'], ['euphorisch', 'Euphorisch / feiernd'], ['kämpferisch', 'Kämpferisch / trotzig'],

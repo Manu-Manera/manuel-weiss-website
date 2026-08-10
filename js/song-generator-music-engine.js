@@ -806,6 +806,12 @@
     const directives = opts.songDirectives || null;
     const duration = opts.duration != null ? opts.duration : durationFromDirectives(directives, model);
     const dirWeirdness = weirdnessFromCreativity(directives);
+    // Stil-Treue-Regler (0–100) → Suno styleWeight (0.30–1.00).
+    // 0.30 als Untergrenze: darunter würde der Style-Prompt praktisch ignoriert.
+    const dirStyleWeight = (directives && typeof directives.style_weight === 'number' &&
+      directives.style_weight >= 0 && directives.style_weight <= 100)
+      ? Math.round((30 + directives.style_weight * 0.70) ) / 100
+      : null;
 
     return {
       model,
@@ -816,7 +822,9 @@
       instrumental: useInstrumental || !hasLyrics,
       vocalGender: useInstrumental ? undefined : vocalGender,
       negativeTags: negativeTags || undefined,
-      styleWeight: opts.styleWeight != null ? opts.styleWeight : (style._accentLocked ? 0.88 : 0.72),
+      styleWeight: opts.styleWeight != null ? opts.styleWeight
+                    : (dirStyleWeight != null ? dirStyleWeight
+                    : (style._accentLocked ? 0.88 : 0.72)),
       weirdnessConstraint: opts.weirdnessConstraint != null ? opts.weirdnessConstraint
                             : (dirWeirdness != null ? dirWeirdness : 0.28),
       audioWeight: typeof opts.audioWeight === 'number' ? opts.audioWeight : undefined,
