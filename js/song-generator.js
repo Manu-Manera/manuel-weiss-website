@@ -960,6 +960,103 @@
       }
     }
 
+    _voicePhaseLabel(phase) {
+      return {
+        upload: 'Stimmprobe wird hochgeladen',
+        verify_upload: 'Verifikations-Aufnahme wird hochgeladen',
+        validate_start: 'Analyse gestartet',
+        validate_poll: 'Validierungssatz wird erzeugt',
+        voice_generate: 'Stimme wird erstellt',
+        voice_poll: 'Stimme wird fertiggestellt (kann 1–5 Min dauern)'
+      }[phase] || phase;
+    }
+
+    _cancelVoiceWizard() {
+      // Token invalidiert laufende onPhase-/Fehler-Updates alter Flows
+      this._voiceFlowToken = (this._voiceFlowToken || 0) + 1;
+      this._voiceResumeActive = false;
+      this.state.voiceWizard = { phase: 'idle' };
+      this._persistVoiceLocal();
+      this._persistVoiceCloud({ clearWizard: true }).catch(function () {});
+      this.render();
+    }
+
+    /**
+     * Nach Seiten-Reload hängt der Wizard sonst in einer Zwischenphase fest,
+     * obwohl kein Poll mehr läuft – hier wird das Polling wieder aufgenommen
+     * bzw. ein nicht fortsetzbarer Zustand sauber beendet.
+     */
+    _resumeVoiceWizard(wiz) {
+      const self = this;
+      if (this._voiceFlowActive || this._voiceResumeActive) return;
+      const phase = wiz.phase;
+      const isVoicePhase = phase === 'voice_generate' || phase === 'voice_poll';
+      const isValidatePhase = phase === 'validate_start' || phase === 'validate_poll';
+      const taskId = wiz.taskId || wiz.validateTaskId;
+
+      if (!taskId || (!isVoicePhase && !isValidatePhase)) {
+        // Upload-Phasen sind nach Reload nicht fortsetzbar (Datei weg)
+        this.state.voiceWizard = {
+          phase: 'idle',
+          lastError: 'Der Vorgang wurde unterbrochen (z. B. Seite neu geladen) – bitte erneut starten.'
+        };
+        this._persistVoiceLocal();
+        setTimeout(function () { self.render(); }, 0);
+        return;
+      }
+
+      this._voiceResumeActive = true;
+      const flowToken = this._voiceFlowToken = (this._voiceFlowToken || 0) + 1;
+      (async function () {
+        try {
+          const apiKey = await window.SongMusicEngine.getSunoApiKey();
+          if (isVoicePhase) {
+            const rec = await window.SongVoiceEngine.pollVoiceId(taskId, apiKey);
+            if (flowToken !== self._voiceFlowToken) return;
+            await self._applyVoiceRegistration({
+              phase: 'ready',
+              status: 'ready',
+              voiceId: rec.voiceId,
+              validateTaskId: wiz.validateTaskId || null,
+              voiceName: 'Meine Stimme',
+              createdAt: new Date().toISOString(),
+              voiceUrl: wiz.voiceUrl || null,
+              personaId: rec.voiceId,
+              personaModel: 'voice_persona'
+            });
+          } else {
+            const info = await window.SongVoiceEngine.pollValidatePhrase(taskId, apiKey);
+            if (flowToken !== self._voiceFlowToken) return;
+            await self._applyVoiceVerificationPending({
+              phase: 'need_verification',
+              validateTaskId: taskId,
+              validateInfo: info.validateInfo,
+              voiceUrl: wiz.voiceUrl || null,
+              vocalStartS: wiz.vocalStartS,
+              vocalEndS: wiz.vocalEndS
+            });
+          }
+          self.render();
+        } catch (err) {
+          if (flowToken !== self._voiceFlowToken) return;
+          const msg = err.message || String(err);
+          // Wenn schon ein Validierungssatz existiert, dorthin zurück – sonst von vorn
+          if (wiz.validateTaskId && wiz.validateInfo) {
+            self.state.voiceWizard = Object.assign({}, wiz, {
+              phase: 'need_verification',
+              lastError: msg
+            });
+          } else {
+            self.state.voiceWizard = { phase: 'idle', lastError: msg };
+          }
+          self._persistVoiceLocal();
+          self.render();
+        } finally {
+          self._voiceResumeActive = false;
+        }
+      })();
+    }
+
     _getDisplayName(item) {
       return window.SongFavorites && window.SongFavorites.getDisplayName
         ? window.SongFavorites.getDisplayName(item)
@@ -3554,21 +3651,30 @@
           }
           btn.disabled = true;
           btn.textContent = 'Stimme wird erstellt …';
+          self._voiceFlowActive = true;
+          const flowToken = self._voiceFlowToken = (self._voiceFlowToken || 0) + 1;
           try {
             const result = await window.SongVoiceEngine.registerVoice({
               validateTaskId: wiz.validateTaskId,
               verifyFile: verifyFile,
               meta: { voiceName: 'Meine Stimme' },
               onPhase: function (p) {
-                self.state.voiceWizard = Object.assign({}, wiz, p, { updatedAt: new Date().toISOString() });
+                if (flowToken !== self._voiceFlowToken) return;
+                self.state.voiceWizard = Object.assign({}, wiz, p, {
+                  label: self._voicePhaseLabel(p.phase),
+                  lastError: null,
+                  updatedAt: new Date().toISOString()
+                });
                 self._persistVoiceLocal();
               }
             });
+            if (flowToken !== self._voiceFlowToken) return;
             if (result.voiceId) {
               await self._applyVoiceRegistration(result);
             }
             self.render();
           } catch (err) {
+            if (flowToken !== self._voiceFlowToken) return;
             const msg = err.message || String(err);
             self.state.voiceWizard = Object.assign({}, wiz, {
               phase: 'need_verification',
@@ -3578,6 +3684,8 @@
             self._persistVoiceLocal();
             alert('Stimm-Erstellung fehlgeschlagen: ' + msg);
             self.render();
+          } finally {
+            self._voiceFlowActive = false;
           }
         };
         box.append(btn);
@@ -3586,8 +3694,14 @@
       }
 
       if (wiz.phase && wiz.phase !== 'idle') {
-        panel.append(el('p', 'sg-voice-status', '⏳ ' + (wiz.label || wiz.phase) + ' …'));
+        this._resumeVoiceWizard(wiz);
+        panel.append(el('p', 'sg-voice-status',
+          '⏳ ' + (wiz.label || this._voicePhaseLabel(wiz.phase)) + ' …'));
         panel.append(this.showSpinner());
+        const cancelBtn = el('button', 'sg-btn sg-btn-ghost sg-voice-cancel', 'Abbrechen & neu starten');
+        cancelBtn.type = 'button';
+        cancelBtn.onclick = function () { self._cancelVoiceWizard(); };
+        panel.append(cancelBtn);
         return panel;
       }
 
@@ -3695,6 +3809,8 @@
         }
         startBtn.disabled = true;
         self.state.voiceWizard = { phase: 'upload', label: 'Stimmprobe wird hochgeladen' };
+        self._voiceFlowActive = true;
+        const flowToken = self._voiceFlowToken = (self._voiceFlowToken || 0) + 1;
         self.render();
         try {
           const result = await window.SongVoiceEngine.registerVoice({
@@ -3704,22 +3820,16 @@
             duration: recDur || segEnd,
             meta: { voiceName: 'Meine Stimme' },
             onPhase: function (p) {
-              var labels = {
-                upload: 'Stimmprobe wird hochgeladen',
-                verify_upload: 'Verifikations-Aufnahme wird hochgeladen',
-                validate_start: 'Analyse gestartet',
-                validate_poll: 'Validierungssatz wird erzeugt',
-                voice_generate: 'Stimme wird erstellt',
-                voice_poll: 'Stimme wird fertiggestellt'
-              };
+              if (flowToken !== self._voiceFlowToken) return;
               self.state.voiceWizard = Object.assign({}, p, {
-                label: labels[p.phase] || p.phase,
+                label: self._voicePhaseLabel(p.phase),
                 updatedAt: new Date().toISOString()
               });
               self._persistVoiceLocal();
               self.render();
             }
           });
+          if (flowToken !== self._voiceFlowToken) return;
           if (result.phase === 'need_verification') {
             await self._applyVoiceVerificationPending(result);
           } else if (result.voiceId) {
@@ -3727,11 +3837,14 @@
           }
           self.render();
         } catch (err) {
+          if (flowToken !== self._voiceFlowToken) return;
           const msg = err.message || String(err);
           self.state.voiceWizard = { phase: 'idle', lastError: msg };
           self._persistVoiceLocal();
           alert('Stimm-Registrierung fehlgeschlagen: ' + msg);
           self.render();
+        } finally {
+          self._voiceFlowActive = false;
         }
       };
       form.append(startBtn);
