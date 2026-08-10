@@ -3072,6 +3072,14 @@
 
       // Produktions-Blaupause im Themen-Feld: extrahierte Parameter anwenden.
       // Die Blaupause gewinnt bei 'auto'/leeren Werten; explizite User-Wahl bleibt.
+      // Nach einem Reload aus dem localStorage-Cache rekonstruieren, damit auch
+      // synchrone Pfade (Reroll, Vorschau) sie sofort sehen.
+      if (!this._blueprintOverlay) {
+        const storedBp = loadState(STYLE_BLUEPRINT_KEY, null);
+        if (storedBp && storedBp.v === STYLE_BLUEPRINT_VERSION) {
+          this._blueprintOverlay = storedBp;
+        }
+      }
       const bp = this._blueprintOverlay;
       if (bp && bp.source === String(d.theme || '').trim()) {
         if (bp.core_message) payload.theme = bp.core_message;
