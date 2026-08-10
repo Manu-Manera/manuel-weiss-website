@@ -141,6 +141,49 @@
     return 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/profile-image/upload-url';
   }
 
+  // ────────────────────────────────────────────────────────────
+  // Primärer Upload: Sunos eigene File-Upload-API.
+  // Grund: Die eigenen Presign-Endpunkte vergeben teils falsche
+  // Datei-Endungen (.jpg für Audio) – Suno lehnt solche URLs für
+  // die Stimm-Validierung ab. Sunos Storage garantiert korrekte
+  // Endung + Erreichbarkeit (Dateien bleiben 3 Tage, reicht für
+  // den Validierungs-Workflow). CORS ist offen, gleicher API-Key.
+  // ────────────────────────────────────────────────────────────
+  var SUNO_UPLOAD_BASE = 'https://sunoapiorg.redpandaai.co/api';
+
+  function fileExtension(file) {
+    var t = normalizeContentType(file.type);
+    if (/wav/.test(t)) return '.wav';
+    if (/mpeg|mp3/.test(t)) return '.mp3';
+    if (/mp4|m4a/.test(t)) return '.m4a';
+    if (/webm/.test(t)) return '.webm';
+    if (/ogg/.test(t)) return '.ogg';
+    var m = /\.([a-z0-9]{2,4})$/i.exec(file.name || '');
+    return m ? '.' + m[1].toLowerCase() : '.wav';
+  }
+
+  async function uploadToSunoStorage(file, apiKey) {
+    if (!apiKey) throw new Error('Kein Suno-API-Key für Upload');
+    var fd = new FormData();
+    var name = 'voice-' + Date.now() + fileExtension(file);
+    fd.append('file', file, name);
+    fd.append('uploadPath', 'user-voice');
+    fd.append('fileName', name);
+    var res = await fetch(SUNO_UPLOAD_BASE + '/file-stream-upload', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + apiKey },
+      body: fd
+    });
+    var data = await res.json().catch(function () { return null; });
+    if (!res.ok || !data || data.success === false) {
+      throw new Error('Suno-Upload fehlgeschlagen: HTTP ' + res.status +
+        (data && data.msg ? ' – ' + data.msg : ''));
+    }
+    var url = data.data && (data.data.downloadUrl || data.data.download_url);
+    if (!url) throw new Error('Suno-Upload: keine Download-URL erhalten');
+    return url;
+  }
+
   async function requestUploadUrl(endpoint, file, contentType, fileType) {
     var presignRes = await fetch(endpoint, {
       method: 'POST',
@@ -164,16 +207,30 @@
     return { uploadUrl: uploadUrl, publicUrl: presign.publicUrl };
   }
 
-  async function uploadAudioFile(file) {
+  async function uploadAudioFile(file, apiKey) {
     if (!file) throw new Error('Keine Datei gewählt');
     file = await convertToWavFile(file);
     var ct = normalizeContentType(file.type || 'audio/wav');
+    var errors = [];
 
+    // 1) Suno-eigener Storage (korrekte Endung, garantiert kompatibel)
+    if (!apiKey && window.SongMusicEngine && window.SongMusicEngine.getSunoApiKey) {
+      try { apiKey = await window.SongMusicEngine.getSunoApiKey(); } catch (_e) {}
+    }
+    if (apiKey) {
+      try {
+        return await uploadToSunoStorage(file, apiKey);
+      } catch (err) {
+        errors.push('Suno-Storage: ' + err.message);
+      }
+    }
+
+    // 2) Fallback: eigene Presign-Endpunkte (S3)
     var attempts = [
       { endpoint: getLegacyMediaUploadEndpoint(), fileType: 'voice' },
       { endpoint: getApiBase() + '/profile-image/upload-url', fileType: 'voice' }
     ];
-    var lastErr = null;
+    var s3Url = null;
     for (var i = 0; i < attempts.length; i++) {
       try {
         var attempt = attempts[i];
@@ -186,13 +243,36 @@
         if (!putRes.ok) {
           throw new Error('Audio-Upload fehlgeschlagen (HTTP ' + putRes.status + ')');
         }
-        var publicUrl = presign.publicUrl.split('?')[0];
-        return publicUrl;
+        s3Url = presign.publicUrl.split('?')[0];
+        break;
       } catch (err) {
-        lastErr = err;
+        errors.push(err.message);
       }
     }
-    throw lastErr || new Error('Audio-Upload fehlgeschlagen');
+    if (!s3Url) {
+      throw new Error('Audio-Upload fehlgeschlagen: ' + errors.join(' | '));
+    }
+
+    // 3) Falls die S3-URL eine falsche Endung hat (Alt-Lambda vergibt .jpg),
+    //    über Sunos URL-Upload mit korrektem Dateinamen re-hosten.
+    var wrongExt = !/\.(wav|mp3|m4a|webm|ogg|aac)(\?|$)/i.test(s3Url);
+    if (wrongExt && apiKey) {
+      try {
+        var name = 'voice-' + Date.now() + fileExtension(file);
+        var res = await fetch(SUNO_UPLOAD_BASE + '/file-url-upload', {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + apiKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ fileUrl: s3Url, uploadPath: 'user-voice', fileName: name })
+        });
+        var data = await res.json().catch(function () { return null; });
+        var url = data && data.data && (data.data.downloadUrl || data.data.download_url);
+        if (res.ok && data && data.success !== false && url) return url;
+      } catch (_e) { /* S3-URL als letzte Option verwenden */ }
+    }
+    return s3Url;
   }
 
   async function startValidation(voiceUrl, vocalStartS, vocalEndS, apiKey, language) {
@@ -210,7 +290,7 @@
   }
 
   async function pollValidatePhrase(taskId, apiKey, onUpdate, maxWaitMs) {
-    maxWaitMs = maxWaitMs || 120000;
+    maxWaitMs = maxWaitMs || 180000;
     var start = Date.now();
     while (Date.now() - start < maxWaitMs) {
       var info = await getValidateInfo(taskId, apiKey);
@@ -243,8 +323,18 @@
     return sunoFetch(apiKey, 'GET', '/voice/record-info?taskId=' + encodeURIComponent(taskId), null);
   }
 
+  /** Prüft, ob die erstellte Custom Voice (noch) nutzbar ist. */
+  async function checkVoice(taskId, apiKey) {
+    if (!apiKey && window.SongMusicEngine && window.SongMusicEngine.getSunoApiKey) {
+      apiKey = await window.SongMusicEngine.getSunoApiKey();
+    }
+    if (!apiKey) throw new Error('Kein Suno-API-Key');
+    var data = await sunoFetch(apiKey, 'POST', '/voice/check-voice', { task_id: taskId });
+    return !!(data && data.isAvailable);
+  }
+
   async function pollVoiceId(taskId, apiKey, onUpdate, maxWaitMs) {
-    maxWaitMs = maxWaitMs || 180000;
+    maxWaitMs = maxWaitMs || 300000;
     var start = Date.now();
     while (Date.now() - start < maxWaitMs) {
       var rec = await getVoiceRecord(taskId, apiKey);
@@ -274,7 +364,8 @@
 
     if (!validateTaskId) {
       if (opts.file && !voiceUrl) {
-        voiceUrl = await uploadAudioFile(opts.file);
+        if (opts.onPhase) opts.onPhase({ phase: 'upload' });
+        voiceUrl = await uploadAudioFile(opts.file, apiKey);
       }
       if (!voiceUrl) throw new Error('Keine Stimmprobe');
 
@@ -310,7 +401,8 @@
 
     var verifyUrl = opts.verifyUrl;
     if (opts.verifyFile && !verifyUrl) {
-      verifyUrl = await uploadAudioFile(opts.verifyFile);
+      if (opts.onPhase) opts.onPhase({ phase: 'verify_upload' });
+      verifyUrl = await uploadAudioFile(opts.verifyFile, apiKey);
     }
     if (!verifyUrl) throw new Error('Keine Verifikations-Aufnahme');
     if (!validateTaskId) throw new Error('Kein Validierungs-Task');
@@ -518,11 +610,13 @@
 
   window.SongVoiceEngine = {
     uploadAudioFile: uploadAudioFile,
+    uploadToSunoStorage: uploadToSunoStorage,
     mountVoiceRecorder: mountVoiceRecorder,
     startValidation: startValidation,
     pollValidatePhrase: pollValidatePhrase,
     generateCustomVoice: generateCustomVoice,
     pollVoiceId: pollVoiceId,
+    checkVoice: checkVoice,
     registerVoice: registerVoice
   };
 })();

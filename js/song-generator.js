@@ -3444,12 +3444,49 @@
         if (window.SongGeneratorCloud && window.SongGeneratorCloud.isLoggedIn()) {
           ready.append(el('p', 'sg-hint', '☁️ Stimme und Proben in deinem AWS-Profil gespeichert – für Suno-Produktion bereit.'));
         }
+
+        const isActive = this.state.useCustomVoice;
+        ready.append(el('p', 'sg-voice-active-state',
+          isActive
+            ? '🎙 Aktiv: Deine Songs werden mit deiner Stimme produziert.'
+            : '⚠️ Nicht aktiv: Aktuell wird eine Standard-Stimme verwendet.'));
+
+        const btnRow = el('div', 'sg-voice-ready-actions');
+        if (!isActive) {
+          const activateBtn = el('button', 'sg-btn sg-btn-primary', '🎙 Meine Stimme für Songs aktivieren');
+          activateBtn.type = 'button';
+          activateBtn.onclick = function () {
+            self.state.useCustomVoice = true;
+            self.state.audioState = Object.assign({}, self.state.audioState || {}, { vocalGender: 'custom' });
+            saveState(STORAGE_KEYS.useCustomVoice, true);
+            self.render();
+          };
+          btnRow.append(activateBtn);
+        }
+        const resetBtn = el('button', 'sg-btn sg-btn-ghost', 'Stimme entfernen & neu registrieren');
+        resetBtn.type = 'button';
+        resetBtn.onclick = function () {
+          if (!confirm('Registrierte Stimme wirklich entfernen? Danach kannst du eine neue Stimmprobe aufnehmen.')) return;
+          self.state.voiceProfile = null;
+          self.state.useCustomVoice = false;
+          self.state.voiceWizard = { phase: 'idle' };
+          self._voiceSampleRecorder = null;
+          self._voiceVerifyRecorder = null;
+          saveState(STORAGE_KEYS.voiceProfile, null);
+          saveState(STORAGE_KEYS.useCustomVoice, false);
+          saveState(STORAGE_KEYS.voiceWizard, { phase: 'idle' });
+          self._persistVoiceCloud({ profile: null, wizard: { phase: 'idle' } }).catch(function () {});
+          self.render();
+        };
+        btnRow.append(resetBtn);
+        ready.append(btnRow);
+
         const steps = el('div', 'sg-voice-next-steps');
         steps.append(el('p', 'sg-voice-next-title', 'So geht es weiter:'));
         const ol = document.createElement('ol');
         ol.className = 'sg-voice-next-list';
         [
-          'Scrolle zu „Audio produzieren“ und wähle beim Feld Stimme → „Meine Stimme (registriert)“.',
+          'Scrolle zu „Audio produzieren“ – beim Feld Stimme ist „Meine Stimme (registriert)“ gewählt, wenn sie aktiv ist.',
           'Produziere einen Einzel-Song oder eine Playlist – Suno nutzt dann deine Voice-Persona.',
           'Instrumental- oder Fokus-Modi (z. B. Workout, Schlaf) verwenden keine Gesangsstimme.'
         ].forEach(function (txt) {
@@ -3467,6 +3504,10 @@
         const box = el('div', 'sg-voice-verify-box');
         if (wiz.voiceUrl) {
           box.append(el('p', 'sg-hint', '☁️ Stimmprobe gespeichert – du kannst die Seite neu laden und die Validierung fortsetzen.'));
+        }
+        if (wiz.lastError) {
+          box.append(el('p', 'sg-voice-status sg-voice-error',
+            '✗ Letzter Versuch fehlgeschlagen: ' + wiz.lastError + ' – bitte erneut aufnehmen und senden.'));
         }
         box.append(el('p', 'sg-voice-phrase-label', 'Sing jetzt genau diesen Satz (singend, in deiner normalen Tonhöhe):'));
         box.append(el('blockquote', 'sg-voice-phrase', wiz.validateInfo));
@@ -3528,9 +3569,15 @@
             }
             self.render();
           } catch (err) {
-            alert(err.message || String(err));
-            btn.disabled = false;
-            btn.textContent = 'Verifikation senden & Stimme erstellen';
+            const msg = err.message || String(err);
+            self.state.voiceWizard = Object.assign({}, wiz, {
+              phase: 'need_verification',
+              lastError: msg,
+              updatedAt: new Date().toISOString()
+            });
+            self._persistVoiceLocal();
+            alert('Stimm-Erstellung fehlgeschlagen: ' + msg);
+            self.render();
           }
         };
         box.append(btn);
@@ -3545,6 +3592,11 @@
       }
 
       const form = el('div', 'sg-voice-form');
+
+      if (wiz.lastError) {
+        form.append(el('p', 'sg-voice-status sg-voice-error',
+          '✗ Letzter Versuch fehlgeschlagen: ' + wiz.lastError));
+      }
 
       const guide = el('div', 'sg-voice-guide');
       guide.append(el('p', 'sg-voice-guide-title', 'Was soll ich aufnehmen?'));
@@ -3653,6 +3705,8 @@
             meta: { voiceName: 'Meine Stimme' },
             onPhase: function (p) {
               var labels = {
+                upload: 'Stimmprobe wird hochgeladen',
+                verify_upload: 'Verifikations-Aufnahme wird hochgeladen',
                 validate_start: 'Analyse gestartet',
                 validate_poll: 'Validierungssatz wird erzeugt',
                 voice_generate: 'Stimme wird erstellt',
@@ -3673,8 +3727,10 @@
           }
           self.render();
         } catch (err) {
-          self.state.voiceWizard = { phase: 'idle' };
-          alert(err.message || String(err));
+          const msg = err.message || String(err);
+          self.state.voiceWizard = { phase: 'idle', lastError: msg };
+          self._persistVoiceLocal();
+          alert('Stimm-Registrierung fehlgeschlagen: ' + msg);
           self.render();
         }
       };
@@ -3924,6 +3980,18 @@
       if (this._hasRegisteredVoice()) {
         vgWrap.append(el('p', 'sg-hint sg-voice-prod-hint',
           '„Meine Stimme“ nutzt deine Suno Voice-Persona (personaId) – nicht bei Instrumental/Fokus-Modi.'));
+        if (this._getVocalSelectValue() === 'custom') {
+          try {
+            const check = this._buildProductionOpts({ vocalGender: 'custom' });
+            if (!check.useCustomVoice) {
+              vgWrap.append(el('p', 'sg-hint sg-voice-prod-warn',
+                '⚠️ Der gewählte Sound-Kontext ist instrumental bzw. ohne Gesang – deine Stimme kommt hier nicht zum Einsatz. Wähle z. B. „Kompositions-Song“ oder einen anderen Gesangs-Kontext.'));
+            } else {
+              vgWrap.append(el('p', 'sg-hint sg-voice-prod-ok',
+                '✓ Deine registrierte Stimme wird für diese Produktion verwendet.'));
+            }
+          } catch (_e) {}
+        }
       }
       opts.append(vgWrap);
 
