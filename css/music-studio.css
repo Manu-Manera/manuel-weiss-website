@@ -9,10 +9,13 @@
   color: #e5e7f0;
 }
 
+/* Die fixe Navbar (top 24px + 55px hoch) darf das Studio nicht überdecken */
+.ms-page main { padding-top: 92px; }
+
 .ms-app {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 64px);
+  height: calc(100vh - 92px);
   min-height: 560px;
   background: #0b0e1a;
   color: #e5e7f0;
