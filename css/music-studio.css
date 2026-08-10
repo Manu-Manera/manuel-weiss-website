@@ -1,0 +1,631 @@
+/* ══════════════════════════════════════════════════════════════
+   Musik-Studio – dunkles DAW-Layout
+   links Bibliothek · Mitte Waveform + Tabs · rechts KI · unten Transport
+   ══════════════════════════════════════════════════════════════ */
+
+.ms-page {
+  background: #0b0e1a;
+  min-height: 100vh;
+  color: #e5e7f0;
+}
+
+.ms-app {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 64px);
+  min-height: 560px;
+  background: #0b0e1a;
+  color: #e5e7f0;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Topbar ── */
+.ms-topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 18px;
+  background: #121629;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+}
+
+.ms-topbar-title {
+  font-weight: 800;
+  font-size: 1.05rem;
+  background: linear-gradient(90deg, #8b5cf6, #ec4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+}
+
+.ms-topbar-song {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #9aa3c0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ms-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ms-credits {
+  font-size: 0.85rem;
+  color: #fbbf24;
+  white-space: nowrap;
+}
+
+/* ── Body: 3 Spalten ── */
+.ms-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.ms-library {
+  width: 260px;
+  flex-shrink: 0;
+  background: #10142455;
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ms-center {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 14px 16px;
+  gap: 12px;
+}
+
+.ms-ai {
+  width: 320px;
+  flex-shrink: 0;
+  background: #10142455;
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ms-panel-head {
+  padding: 12px 14px 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9aa3c0;
+}
+
+/* ── Bibliothek ── */
+.ms-lib-search {
+  margin: 0 12px 8px;
+  padding: 8px 10px;
+  background: #0b0e1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #e5e7f0;
+  font-size: 0.85rem;
+}
+
+.ms-lib-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 8px 12px;
+}
+
+.ms-lib-group {
+  padding: 10px 6px 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7394;
+}
+
+.ms-lib-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ms-lib-item:hover { background: rgba(139, 92, 246, 0.12); }
+.ms-lib-item.active { background: rgba(139, 92, 246, 0.25); }
+
+.ms-lib-cover {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.ms-lib-cover-ph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1c2138;
+  color: #6b7394;
+}
+
+.ms-lib-meta { min-width: 0; display: flex; flex-direction: column; }
+
+.ms-lib-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ms-lib-sub { font-size: 0.72rem; color: #6b7394; }
+.ms-lib-sub .fa-bolt { color: #fbbf24; }
+
+/* ── Versionen ── */
+.ms-versions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ms-versions-label { font-size: 0.78rem; color: #9aa3c0; }
+
+.ms-version {
+  padding: 5px 12px;
+  background: #1c2138;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  color: #c7cce4;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.ms-version:hover { border-color: #8b5cf6; }
+
+.ms-version.active {
+  background: linear-gradient(90deg, #8b5cf6, #ec4899);
+  color: #fff;
+  border-color: transparent;
+  font-weight: 600;
+}
+
+/* ── Waveform ── */
+.ms-waveform { flex-shrink: 0; }
+
+.stw-wrap {
+  background: #101322;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.stw-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.stw-btn {
+  background: #1c2138;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #c7cce4;
+  border-radius: 6px;
+  width: 28px;
+  height: 26px;
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.stw-btn:hover { border-color: #8b5cf6; }
+
+.stw-hint { font-size: 0.72rem; color: #6b7394; margin-left: 8px; }
+
+.stw-region-label {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: #f9a8d4;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.stw-canvas-wrap { height: 130px; position: relative; }
+.stw-canvas { display: block; cursor: crosshair; }
+
+.stw-lyrics-track {
+  position: relative;
+  height: 26px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.stw-word {
+  position: absolute;
+  top: 4px;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.stw-word.active { color: #f9a8d4; font-weight: 700; }
+
+/* ── Tabs ── */
+.ms-tabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0;
+  flex-shrink: 0;
+}
+
+.ms-tab {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #9aa3c0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ms-tab:hover { color: #e5e7f0; }
+.ms-tab.active { color: #fff; border-bottom-color: #ec4899; }
+
+.ms-tab-ai-mobile { display: none; }
+
+/* ── Formulare / Aktionen ── */
+.ms-action {
+  background: #12162955;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  margin-bottom: 4px;
+}
+
+.ms-action summary {
+  padding: 12px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.92rem;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ms-action summary::-webkit-details-marker { display: none; }
+
+.ms-cost {
+  margin-left: auto;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #fbbf24;
+}
+
+.ms-form { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+
+.ms-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: #9aa3c0;
+}
+
+.ms-form input[type="text"],
+.ms-form input[type="number"],
+.ms-form input[type="search"],
+.ms-form select,
+.ms-form textarea {
+  padding: 8px 10px;
+  background: #0b0e1a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #e5e7f0;
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+
+.ms-form textarea { resize: vertical; }
+
+.ms-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.ms-form-grid-3 { grid-template-columns: 2fr 1.5fr auto; align-items: end; }
+
+.ms-check {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 8px !important;
+  margin-top: auto;
+}
+
+.ms-hint { font-size: 0.75rem; color: #6b7394; margin: 0; }
+
+.ms-action-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ── Buttons ── */
+.ms-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #1c2138;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #e5e7f0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.ms-btn:hover:not(:disabled) { border-color: #8b5cf6; }
+.ms-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.ms-btn-primary {
+  background: linear-gradient(90deg, #8b5cf6, #ec4899);
+  border-color: transparent;
+}
+
+.ms-btn-primary:hover:not(:disabled) {
+  filter: brightness(1.1);
+  border-color: transparent;
+}
+
+.ms-btn-ghost { background: transparent; }
+
+/* ── Tasks ── */
+.ms-tasks { margin-top: 4px; }
+
+.ms-task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: #12162955;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 0.82rem;
+}
+
+.ms-task-label { font-weight: 600; }
+.ms-task-info { color: #6b7394; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ms-task-cancel { padding: 4px 10px; font-size: 0.75rem; }
+
+/* ── Mixer ── */
+.ms-mixer {
+  background: #12162955;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding-bottom: 12px;
+}
+
+.ms-mixer-hint { padding: 0 14px 8px; font-size: 0.75rem; color: #6b7394; }
+
+.ms-mixer-tracks { padding: 0 14px; display: flex; flex-direction: column; gap: 6px; }
+
+.ms-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: #0b0e1a;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+}
+
+.ms-strip-name {
+  width: 110px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ms-strip-btn {
+  width: 26px;
+  height: 24px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #1c2138;
+  color: #9aa3c0;
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ms-mute.on { background: #ef4444; color: #fff; border-color: transparent; }
+.ms-solo.on { background: #fbbf24; color: #111; border-color: transparent; }
+
+.ms-strip-fader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  color: #6b7394;
+  flex: 1;
+}
+
+.ms-strip-fader input[type="range"] { flex: 1; accent-color: #8b5cf6; min-width: 50px; }
+
+.ms-strip-dl { color: #6b7394; font-size: 0.8rem; }
+.ms-strip-dl:hover { color: #ec4899; }
+
+/* ── KI-Panel ── */
+.ms-ai-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 12px 12px;
+  overflow: hidden;
+  gap: 10px;
+}
+
+.ms-ai-suggest { width: 100%; justify-content: center; flex-shrink: 0; }
+
+.ms-ai-log {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ms-ai-msg {
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.ms-ai-msg.user {
+  background: rgba(139, 92, 246, 0.2);
+  align-self: flex-end;
+  max-width: 90%;
+}
+
+.ms-ai-msg.ai { background: #1c2138; align-self: flex-start; max-width: 95%; }
+
+.ms-ai-sugg {
+  background: #141830;
+  border: 1px solid rgba(236, 72, 153, 0.35);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-left: 8px;
+}
+
+.ms-ai-sugg-title { font-size: 0.82rem; font-weight: 700; color: #f9a8d4; }
+.ms-ai-sugg-desc { font-size: 0.76rem; color: #9aa3c0; margin: 4px 0 8px; }
+.ms-ai-apply { padding: 5px 12px; font-size: 0.75rem; }
+
+.ms-ai-input { display: flex; gap: 6px; flex-shrink: 0; }
+
+.ms-ai-input .ms-ai-text {
+  flex: 1;
+  padding: 8px 10px;
+  background: #0b0e1a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #e5e7f0;
+  font-size: 0.85rem;
+}
+
+/* ── Transport ── */
+.ms-transport {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 18px;
+  background: #121629;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+}
+
+.ms-play {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  justify-content: center;
+  padding: 0;
+  font-size: 1rem;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  border: none;
+}
+
+.ms-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: #9aa3c0;
+  white-space: nowrap;
+}
+
+.ms-seek { flex: 1; accent-color: #ec4899; }
+.ms-vol { width: 90px; accent-color: #8b5cf6; }
+
+/* ── Leerzustände / Toast ── */
+.ms-empty {
+  padding: 16px;
+  font-size: 0.85rem;
+  color: #6b7394;
+  line-height: 1.5;
+}
+
+.ms-empty a { color: #a78bfa; }
+
+.ms-empty-center { text-align: center; padding: 40px 16px; }
+
+.ms-toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #1c2138;
+  border: 1px solid #8b5cf6;
+  color: #e5e7f0;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.25s;
+  max-width: min(560px, 90vw);
+}
+
+.ms-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.ms-toast.error { border-color: #ef4444; }
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .ms-ai { display: none; }
+  .ms-tab-ai-mobile { display: inline-flex; }
+  .ms-tab-ai-mobile-content {
+    display: flex;
+    flex-direction: column;
+    min-height: 340px;
+  }
+}
+
+@media (max-width: 800px) {
+  .ms-app { height: auto; min-height: 100vh; }
+  .ms-body { flex-direction: column; }
+  .ms-library {
+    width: 100%;
+    max-height: 260px;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+  .ms-form-grid, .ms-form-grid-3 { grid-template-columns: 1fr; }
+  .ms-strip { flex-wrap: wrap; }
+  .ms-transport { position: sticky; bottom: 0; }
+}

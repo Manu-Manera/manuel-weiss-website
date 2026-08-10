@@ -4624,6 +4624,14 @@
           };
           actions.append(dl);
 
+          const studioBtn = el('button', 'sg-btn sg-btn-ghost', '🎛 Im Studio bearbeiten');
+          studioBtn.type = 'button';
+          studioBtn.title = 'Musik-Studio: Abschnitte ersetzen, verlängern, covern, Stems mischen – mit KI-Assistent';
+          studioBtn.onclick = function () {
+            window.location.href = 'musik-studio.html?open=' + encodeURIComponent(url);
+          };
+          actions.append(studioBtn);
+
           if (navigator.share) {
             const shareBtn = el('button', 'sg-btn sg-btn-ghost', 'Teilen');
             shareBtn.type = 'button';

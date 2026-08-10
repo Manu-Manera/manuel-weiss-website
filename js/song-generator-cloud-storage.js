@@ -419,6 +419,25 @@
     if (!res.ok) throw new Error('HTTP ' + res.status);
   }
 
+  // Generische Step-Zugriffe (z. B. Musik-Studio: 'studioProjects')
+  async function readStep(stepName) {
+    if (!isLoggedIn()) return null;
+    try {
+      const token = await getAuthToken();
+      return await fetchWorkflowStep(stepName, token);
+    } catch (err) {
+      console.warn('[SongGeneratorCloud] readStep(' + stepName + '):', err.message);
+      return null;
+    }
+  }
+
+  async function writeStep(stepName, body) {
+    if (!isLoggedIn()) return null;
+    const token = await getAuthToken();
+    await writeWorkflowStep(stepName, body, token);
+    return body;
+  }
+
   async function loadAudioLibrary() {
     if (!isLoggedIn()) return { entries: [], identity: null, favorites: [], updatedAt: null };
     try {
@@ -819,6 +838,8 @@
     },
 
     applySnapshotToState: applySnapshotToState,
+    readStep: readStep,
+    writeStep: writeStep,
     loadAudioLibrary: loadAudioLibrary,
     saveAudioToLibrary: saveAudioToLibrary,
     syncAudioIdentity: syncAudioIdentity,
