@@ -773,6 +773,11 @@
         negativeTags = 'male vocals, male voice' + (negativeTags ? ', ' + negativeTags : '');
       }
     }
+    // Verbots-Tags aus einer Produktions-Blaupause (AVOID-Liste) ergänzen
+    if (Array.isArray(opts.extraNegativeTags) && opts.extraNegativeTags.length) {
+      const extra = opts.extraNegativeTags.join(', ');
+      negativeTags = negativeTags ? negativeTags + ', ' + extra : extra;
+    }
     if (styleStr.length > 1000) styleStr = styleStr.slice(0, 997) + '...';
     // Negativ-Tags moderat begrenzen (das 100-Zeichen-Limit der API gilt nur für den Titel)
     if (negativeTags.length > 300) {

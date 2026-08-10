@@ -35,6 +35,10 @@
   // Bei Prompt-Änderungen erhöhen → alte Übersetzungen werden neu erzeugt
   const STYLE_REF_RESOLVER_VERSION = 2;
 
+  // Version der Blaupausen-Analyse (Produktions-Beschreibung im Themen-Feld)
+  const STYLE_BLUEPRINT_VERSION = 1;
+  const STYLE_BLUEPRINT_KEY = 'sg_style_blueprint_v1';
+
   // ────────────────────────────────────────────────────────────
   // Song-Studio: Direktiven-Defaults ('auto' = KI entscheidet,
   // nur explizit gesetzte Werte gehen in den Prompt)
@@ -2412,6 +2416,12 @@
         'Was der Song sagen soll – deine Worte haben Vorrang vor allem, was die KI erfindet.');
       gText.append(textField('Kernbotschaft / Thema', 'theme',
         'z. B. „Ich hab keine Zeit für ein mittelmäßiges Leben"', true));
+      if (this._isBlueprintText((d.theme || ''))) {
+        gText.append(el('p', 'sg-hint sg-blueprint-hint',
+          '📋 Produktions-Blaupause erkannt: Stil, Instrumente, Tempo, Stimmung und Verbote werden ' +
+          'bei der Produktion automatisch extrahiert und in den Sound-Prompt übernommen – ' +
+          'Mantras/Hooks fliessen in den Text.'));
+      }
       gText.append(grid(
         textField('Hook-Zeile (kommt garantiert im Refrain)', 'hook_line', 'z. B. „Scheiß auf alles – ich will leben"'),
         textField('Songtitel (fest vorgeben)', 'title', 'leer = KI wählt')
@@ -3059,6 +3069,28 @@
           ? cached.resolved
           : null;
       }
+
+      // Produktions-Blaupause im Themen-Feld: extrahierte Parameter anwenden.
+      // Die Blaupause gewinnt bei 'auto'/leeren Werten; explizite User-Wahl bleibt.
+      const bp = this._blueprintOverlay;
+      if (bp && bp.source === String(d.theme || '').trim()) {
+        if (bp.core_message) payload.theme = bp.core_message;
+        if (bp.style_description) {
+          payload.style_reference = payload.style_reference
+            ? payload.style_reference + ', ' + bp.style_description
+            : bp.style_description;
+        }
+        if (payload.tempo_bpm == null && bp.tempo_bpm) payload.tempo_bpm = bp.tempo_bpm;
+        if ((d.key_mode === 'auto' || !d.key_mode) && bp.key_mode) payload.key_mode = bp.key_mode;
+        if ((d.mood === 'auto' || !d.mood) && bp.mood) payload.mood = bp.mood;
+        if ((d.energy === 'auto' || !d.energy) && bp.energy) payload.energy = bp.energy;
+        if ((d.song_length === 'auto' || !d.song_length) && bp.song_length) payload.song_length = bp.song_length;
+        if ((d.vocal_style === 'auto' || !d.vocal_style) && bp.vocal_style) payload.vocal_style = bp.vocal_style;
+        if (bp.must_include.length) {
+          payload.must_include = payload.must_include.concat(bp.must_include).slice(0, 14);
+        }
+        payload._blueprint_negative_tags = bp.negative_tags;
+      }
       return payload;
     }
 
@@ -3114,6 +3146,92 @@
       saveState(STORAGE_KEYS.songDirectives, this.state.songDirectives);
     }
 
+    /**
+     * Erkennt, ob im Themen-Feld statt einer kurzen Botschaft eine komplette
+     * Produktions-Blaupause steht (Stil-Prompt mit Instrumenten, BPM, Verboten…).
+     */
+    _isBlueprintText(text) {
+      const t = String(text || '');
+      if (t.length < 400) return false;
+      const markers = /BPM|instrumentation|production|style prompt|tempo:|mood:|avoid|no edm|outro|intro|vocal direction|instrumente|verbote|struktur/i;
+      return markers.test(t) || t.length > 1200;
+    }
+
+    /**
+     * Zerlegt eine eingefügte Produktions-Blaupause per KI in strukturierte
+     * Direktiven: Stilbeschreibung (→ Suno-Style), Tempo/Tonart/Stimmung/
+     * Energie/Länge, Negativ-Tags (AVOID-Liste), Kernbotschaft und Mantras.
+     * Ergebnis wird pro Text gecacht und als Overlay auf die Direktiven gelegt.
+     */
+    async _applyStyleBlueprint() {
+      const d = this.state.songDirectives || {};
+      const raw = String(d.theme || '').trim();
+      if (!raw || !this._isBlueprintText(raw)) {
+        this._blueprintOverlay = null;
+        return null;
+      }
+      const cached = loadState(STYLE_BLUEPRINT_KEY, null);
+      if (cached && cached.source === raw && cached.v === STYLE_BLUEPRINT_VERSION) {
+        this._blueprintOverlay = cached;
+        return cached;
+      }
+      try {
+        const apiKey = await getApiKey();
+        if (!apiKey) return null;
+        let out = await callOpenAIDirect({
+          apiKey: apiKey,
+          system: 'Du bist ein Musikproduktions-Analyst. Du extrahierst aus einer Produktions-Beschreibung strukturierte Parameter für einen Musik-Generator. Antworte AUSSCHLIESSLICH mit gültigem JSON, ohne Markdown-Zaun.',
+          user: 'Analysiere diese Produktions-Beschreibung und extrahiere die Parameter als JSON:\n\n---\n' +
+            raw.slice(0, 9000) + '\n---\n\n' +
+            'JSON-Schema (alle Felder ausfüllen, unbekannt = null):\n' +
+            '{\n' +
+            '  "style_description": "ENGLISCHE Klangbeschreibung für den Musik-Stil, max. 300 Zeichen: Hauptinstrument(e) ZUERST, dann Genre, Klangästhetik, Vocal-Charakter, Atmosphäre. KEINE Künstlernamen.",\n' +
+            '  "negative_tags": ["ENGLISCHE Tags aus der AVOID-/Verbots-Liste, max. 12, je 1-4 Wörter"],\n' +
+            '  "tempo_bpm": 68,\n' +
+            '  "key_mode": "dur" | "moll" | null,\n' +
+            '  "mood": "kämpferisch"|"melancholisch"|"hoffnungsvoll"|"wütend"|"verspielt"|"episch"|"intim"|"düster"|null,\n' +
+            '  "energy": "ruhig"|"mittel"|"treibend"|"explosiv"|null,\n' +
+            '  "song_length": "kurz"|"mittel"|"lang"|null,\n' +
+            '  "vocal_style": "rap"|"gesprochen"|"gesungen"|"mix"|null,\n' +
+            '  "core_message": "Die emotionale Kernbotschaft in der Sprache der Beschreibung, max. 250 Zeichen",\n' +
+            '  "must_include": ["wörtliche Mantras/Hook-Zeilen aus der Beschreibung, max. 8 kurze Zeilen"]\n' +
+            '}\n\n' +
+            'Regeln: tempo_bpm = Mittelwert bei Bereichen (z. B. 64-72 → 68). ' +
+            'style_description muss das gewünschte Hauptinstrument prominent an erster Stelle nennen. ' +
+            'negative_tags nur echte Verbote (z. B. "EDM", "reggae groove", "pop chorus").',
+          temperature: 0.2,
+          top_p: 0.9,
+          maxTokens: 900
+        });
+        out = String(out || '').trim()
+          .replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+        const parsed = JSON.parse(out);
+        const bp = {
+          v: STYLE_BLUEPRINT_VERSION,
+          source: raw,
+          style_description: String(parsed.style_description || '').slice(0, 320) || null,
+          negative_tags: Array.isArray(parsed.negative_tags)
+            ? parsed.negative_tags.map(String).filter(Boolean).slice(0, 12) : [],
+          tempo_bpm: (typeof parsed.tempo_bpm === 'number' && parsed.tempo_bpm >= 40 && parsed.tempo_bpm <= 220)
+            ? Math.round(parsed.tempo_bpm) : null,
+          key_mode: (parsed.key_mode === 'dur' || parsed.key_mode === 'moll') ? parsed.key_mode : null,
+          mood: parsed.mood || null,
+          energy: parsed.energy || null,
+          song_length: parsed.song_length || null,
+          vocal_style: parsed.vocal_style || null,
+          core_message: String(parsed.core_message || '').slice(0, 300) || null,
+          must_include: Array.isArray(parsed.must_include)
+            ? parsed.must_include.map(String).filter(Boolean).slice(0, 8) : []
+        };
+        saveState(STYLE_BLUEPRINT_KEY, bp);
+        this._blueprintOverlay = bp;
+        return bp;
+      } catch (err) {
+        console.warn('[SongGenerator] Blaupausen-Analyse fehlgeschlagen:', err && err.message);
+        return null;
+      }
+    }
+
     // ── Step 5: Compose ─────────────────────────────────────────
     async runCompose() {
       if (this._composeActive) return;
@@ -3167,7 +3285,8 @@
           });
         }
 
-        // Stil-Referenz vorab in künstlerfreie Beschreibung übersetzen (gecacht)
+        // Blaupause + Stil-Referenz vorab per KI auflösen (gecacht)
+        await this._applyStyleBlueprint();
         await this._resolveStyleReference();
         const directives = this._composeDirectivesPayload();
         const creativity = Math.max(0, Math.min(1,
@@ -3472,6 +3591,11 @@
       // Song-Studio-Direktiven auch in die Suno-Produktion durchreichen
       // (Genre, Stimmung, Tempo, Sprache, Vocal-Stil, Songlänge, Kreativität)
       opts.songDirectives = this._composeDirectivesPayload();
+      // Verbots-Liste aus einer erkannten Produktions-Blaupause → Suno negativeTags
+      if (opts.songDirectives._blueprint_negative_tags &&
+          opts.songDirectives._blueprint_negative_tags.length) {
+        opts.extraNegativeTags = opts.songDirectives._blueprint_negative_tags;
+      }
       if (!window.SongPlaylistEngine || !this.state.persona) return opts;
       const persona = this.getEnrichedPersona() || this.state.persona;
 
@@ -5085,8 +5209,9 @@
       }
       baseOpts = baseOpts || {};
       const self = this;
-      // Stil-Referenz einmal vorab auflösen – die per-Track-Opts im Loop
-      // übernehmen die künstlerfreie Beschreibung dann aus dem Cache
+      // Blaupause + Stil-Referenz einmal vorab auflösen – die per-Track-Opts
+      // im Loop übernehmen die Ergebnisse dann aus dem Cache/Overlay
+      await this._applyStyleBlueprint();
       if (this.state.songDirectives && String(this.state.songDirectives.style_reference || '').trim()) {
         await this._resolveStyleReference();
       }
@@ -5226,13 +5351,17 @@
       }
       const self = this;
       const intentId = opts.intentId || this.state.audioIntent;
-      // Stil-Referenz mit Künstlernamen darf nie roh zu Suno – vorab in
-      // eine künstlerfreie Klangbeschreibung übersetzen (gecacht)
+      // Produktions-Blaupause (falls im Themen-Feld) und Stil-Referenz mit
+      // Künstlernamen vorab per KI auflösen (beides gecacht), dann die
+      // Direktiven neu bauen, damit alle Ableitungen im Prompt landen
+      await this._applyStyleBlueprint();
       if (this.state.songDirectives && String(this.state.songDirectives.style_reference || '').trim()) {
-        const resolvedRef = await this._resolveStyleReference();
-        if (opts.songDirectives) {
-          opts.songDirectives = Object.assign({}, opts.songDirectives, { style_reference: resolvedRef });
-        }
+        await this._resolveStyleReference();
+      }
+      opts.songDirectives = this._composeDirectivesPayload();
+      if (opts.songDirectives._blueprint_negative_tags &&
+          opts.songDirectives._blueprint_negative_tags.length) {
+        opts.extraNegativeTags = opts.songDirectives._blueprint_negative_tags;
       }
       // Run-Token: „Abbrechen" erhöht den Zähler, dann werden alle Events
       // dieses Laufs ignoriert und das Polling in der Engine gestoppt.
