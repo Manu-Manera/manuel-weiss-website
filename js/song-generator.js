@@ -28,7 +28,8 @@
     voiceWizard: 'sg_voice_wizard_v1',
     useCustomVoice: 'sg_use_custom_voice_v1',
     audioStylePrefs: 'sg_audio_style_prefs_v1',
-    songDirectives: 'sg_song_directives_v1'
+    songDirectives: 'sg_song_directives_v1',
+    styleRefResolved: 'sg_style_ref_resolved_v1'
   };
 
   // ────────────────────────────────────────────────────────────
@@ -3042,7 +3043,65 @@
         const bpm = parseInt(payload.tempo_bpm, 10);
         payload.tempo_bpm = (bpm >= 40 && bpm <= 220) ? bpm : null;
       }
+      // Stil-Referenz nie roh weitergeben: Suno lehnt Künstlernamen ab.
+      // Liegt eine KI-Übersetzung (künstlerfreie Klangbeschreibung) vor,
+      // wird sie eingesetzt – sonst bleibt die Referenz draussen und wird
+      // in runProduction/runPlaylistQueue vorab aufgelöst.
+      const rawRef = String(d.style_reference || '').trim();
+      if (rawRef) {
+        const cached = this.state.styleRefResolved
+          || loadState(STORAGE_KEYS.styleRefResolved, null);
+        payload.style_reference = (cached && cached.source === rawRef && cached.resolved)
+          ? cached.resolved
+          : null;
+      }
       return payload;
+    }
+
+    /**
+     * Übersetzt die Stil-Referenz („klingt wie Xavier Rudd, Michael Franti …“)
+     * in eine präzise, künstlerfreie englische Klangbeschreibung – Suno
+     * verweigert Tags mit Künstlernamen. Ergebnis wird pro Rohtext gecacht.
+     */
+    async _resolveStyleReference() {
+      const d = this.state.songDirectives || {};
+      const raw = String(d.style_reference || '').trim();
+      if (!raw) return null;
+      const cached = this.state.styleRefResolved
+        || loadState(STORAGE_KEYS.styleRefResolved, null);
+      if (cached && cached.source === raw && cached.resolved) {
+        this.state.styleRefResolved = cached;
+        return cached.resolved;
+      }
+      try {
+        const apiKey = await getApiKey();
+        if (!apiKey) return null;
+        let text = await callOpenAIDirect({
+          apiKey: apiKey,
+          system: 'Du bist ein Musikproduktions-Experte. Du übersetzt Künstler-Referenzen in präzise Klangbeschreibungen für KI-Musikgenerierung.',
+          user: 'Übersetze diese Stil-Referenz in eine präzise ENGLISCHE Klangbeschreibung für einen Musik-Generierungs-Prompt:\n\n"' + raw + '"\n\n' +
+            'Regeln:\n' +
+            '- ABSOLUT KEINE Künstlernamen, Bandnamen, Songtitel oder Albumnamen – sie sind verboten.\n' +
+            '- Beschreibe stattdessen sehr genau, was den Sound der genannten Künstler ausmacht: Genre-Fusion, Instrumentierung (konkrete Instrumente), Vocal-Stil und -Charakter, Produktionsästhetik, Rhythmik/Groove, Stimmung.\n' +
+            '- Werden mehrere Künstler genannt, kombiniere ihre prägenden Merkmale zu EINER stimmigen Beschreibung.\n' +
+            '- Maximal 280 Zeichen, kommagetrennte Deskriptoren, keine Sätze nötig.\n' +
+            '- Antworte NUR mit der Beschreibung, ohne Anführungszeichen und ohne Erklärung.',
+          temperature: 0.4,
+          top_p: 0.9,
+          maxTokens: 220
+        });
+        text = String(text || '').trim()
+          .replace(/^["'„“]+|["'„“]+$/g, '')
+          .replace(/\s+/g, ' ');
+        if (text.length > 320) text = text.slice(0, 317) + '...';
+        if (!text) return null;
+        this.state.styleRefResolved = { source: raw, resolved: text };
+        saveState(STORAGE_KEYS.styleRefResolved, this.state.styleRefResolved);
+        return text;
+      } catch (err) {
+        console.warn('[SongGenerator] Stil-Referenz-Übersetzung fehlgeschlagen:', err && err.message);
+        return null; // Referenz lieber weglassen als Künstlernamen zu Suno schicken
+      }
     }
 
     _saveDirectives() {
@@ -3102,6 +3161,8 @@
           });
         }
 
+        // Stil-Referenz vorab in künstlerfreie Beschreibung übersetzen (gecacht)
+        await this._resolveStyleReference();
         const directives = this._composeDirectivesPayload();
         const creativity = Math.max(0, Math.min(1,
           (typeof directives.creativity === 'number' ? directives.creativity : 78) / 100));
@@ -5018,6 +5079,11 @@
       }
       baseOpts = baseOpts || {};
       const self = this;
+      // Stil-Referenz einmal vorab auflösen – die per-Track-Opts im Loop
+      // übernehmen die künstlerfreie Beschreibung dann aus dem Cache
+      if (this.state.songDirectives && String(this.state.songDirectives.style_reference || '').trim()) {
+        await this._resolveStyleReference();
+      }
       try {
       const packId = baseOpts.pack || this.state.playlistPack || 'core';
       const pack = window.SongPlaylistEngine.getPlaylistPack(packId);
@@ -5154,6 +5220,14 @@
       }
       const self = this;
       const intentId = opts.intentId || this.state.audioIntent;
+      // Stil-Referenz mit Künstlernamen darf nie roh zu Suno – vorab in
+      // eine künstlerfreie Klangbeschreibung übersetzen (gecacht)
+      if (this.state.songDirectives && String(this.state.songDirectives.style_reference || '').trim()) {
+        const resolvedRef = await this._resolveStyleReference();
+        if (opts.songDirectives) {
+          opts.songDirectives = Object.assign({}, opts.songDirectives, { style_reference: resolvedRef });
+        }
+      }
       // Run-Token: „Abbrechen" erhöht den Zähler, dann werden alle Events
       // dieses Laufs ignoriert und das Polling in der Engine gestoppt.
       this._prodRunId = (this._prodRunId || 0) + 1;
@@ -5229,9 +5303,56 @@
         this.render();
       } catch (err) {
         if (this._prodRunId !== runId) return; // abgebrochen – Fehler ignorieren
+        const msg = err.message || String(err);
+        // Sicherheitsnetz: Meldet Suno einen konkreten Künstlernamen in den
+        // Tags, wird er überall entfernt und einmal automatisch neu gestartet.
+        const artistMatch = /contains? artist name\s+(.{2,60}?)\s*(?:[-–—]|,|\.|$)/i.exec(msg);
+        if (artistMatch && (opts._artistRetries || 0) < 2) {
+          const name = artistMatch[1].trim();
+          console.warn('[SongGenerator] Suno meldet Künstlernamen "' + name + '" – wird entfernt, Neustart.');
+          opts._artistRetries = (opts._artistRetries || 0) + 1;
+          this._stripArtistName(name, opts);
+          this.runProduction(opts);
+          return;
+        }
         console.error('[SongGenerator] Audio-Produktion fehlgeschlagen:', err);
-        this.state.audioState = { phase: 'error', error: err.message || String(err) };
+        this.state.audioState = { phase: 'error', error: msg };
         this.render();
+      }
+    }
+
+    /** Entfernt einen von Suno beanstandeten Künstlernamen aus allen Stil-Quellen. */
+    _stripArtistName(name, opts) {
+      const esc = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const re = new RegExp('\\s*(?:wie|like|à la|a la|feat\\.?|x)?\\s*' + esc + '\\s*[,/&+-]?', 'gi');
+      const clean = function (s) {
+        return String(s || '').replace(re, ' ').replace(/\s{2,}/g, ' ')
+          .replace(/^[\s,/&+-]+|[\s,/&+-]+$/g, '').trim();
+      };
+      // Direktiven im State bereinigen (Quelle für alle künftigen Läufe)
+      if (this.state.songDirectives) {
+        ['style_reference', 'genre', 'theme', 'must_include'].forEach((k) => {
+          if (this.state.songDirectives[k]) {
+            this.state.songDirectives[k] = clean(this.state.songDirectives[k]);
+          }
+        });
+        this._saveDirectives();
+      }
+      // Cache der übersetzten Referenz ebenfalls bereinigen
+      if (this.state.styleRefResolved && this.state.styleRefResolved.resolved) {
+        this.state.styleRefResolved.resolved = clean(this.state.styleRefResolved.resolved) || null;
+        saveState(STORAGE_KEYS.styleRefResolved, this.state.styleRefResolved);
+      }
+      // Aktuelle Lauf-Optionen bereinigen
+      if (opts && opts.songDirectives) {
+        const d2 = Object.assign({}, opts.songDirectives);
+        ['style_reference', 'genre', 'theme'].forEach(function (k) {
+          if (d2[k]) d2[k] = clean(d2[k]) || null;
+        });
+        if (Array.isArray(d2.must_include)) {
+          d2.must_include = d2.must_include.map(clean).filter(Boolean);
+        }
+        opts.songDirectives = d2;
       }
     }
 

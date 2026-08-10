@@ -659,7 +659,9 @@
     const genre = directiveValue(directives, 'genre');
     const ref = directiveValue(directives, 'style_reference');
     if (genre) out.lockTags.push(genre);
-    if (ref) out.lockTags.push('in the style of ' + ref);
+    // style_reference ist an dieser Stelle bereits eine künstlerfreie
+    // Klangbeschreibung (vom Generator übersetzt) – Suno lehnt Künstlernamen ab.
+    if (ref) out.lockTags.push(ref);
 
     const mood = directiveValue(directives, 'mood');
     if (mood === 'wütend' && isHarshGenre(directives, null, null)) {
