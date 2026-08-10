@@ -32,6 +32,9 @@
     styleRefResolved: 'sg_style_ref_resolved_v1'
   };
 
+  // Bei Prompt-Änderungen erhöhen → alte Übersetzungen werden neu erzeugt
+  const STYLE_REF_RESOLVER_VERSION = 2;
+
   // ────────────────────────────────────────────────────────────
   // Song-Studio: Direktiven-Defaults ('auto' = KI entscheidet,
   // nur explizit gesetzte Werte gehen in den Prompt)
@@ -3051,7 +3054,8 @@
       if (rawRef) {
         const cached = this.state.styleRefResolved
           || loadState(STORAGE_KEYS.styleRefResolved, null);
-        payload.style_reference = (cached && cached.source === rawRef && cached.resolved)
+        payload.style_reference = (cached && cached.source === rawRef &&
+          cached.resolved && cached.v === STYLE_REF_RESOLVER_VERSION)
           ? cached.resolved
           : null;
       }
@@ -3069,7 +3073,8 @@
       if (!raw) return null;
       const cached = this.state.styleRefResolved
         || loadState(STORAGE_KEYS.styleRefResolved, null);
-      if (cached && cached.source === raw && cached.resolved) {
+      if (cached && cached.source === raw && cached.resolved &&
+          cached.v === STYLE_REF_RESOLVER_VERSION) {
         this.state.styleRefResolved = cached;
         return cached.resolved;
       }
@@ -3082,8 +3087,9 @@
           user: 'Übersetze diese Stil-Referenz in eine präzise ENGLISCHE Klangbeschreibung für einen Musik-Generierungs-Prompt:\n\n"' + raw + '"\n\n' +
             'Regeln:\n' +
             '- ABSOLUT KEINE Künstlernamen, Bandnamen, Songtitel oder Albumnamen – sie sind verboten.\n' +
-            '- Beschreibe stattdessen sehr genau, was den Sound der genannten Künstler ausmacht: Genre-Fusion, Instrumentierung (konkrete Instrumente), Vocal-Stil und -Charakter, Produktionsästhetik, Rhythmik/Groove, Stimmung.\n' +
-            '- Werden mehrere Künstler genannt, kombiniere ihre prägenden Merkmale zu EINER stimmigen Beschreibung.\n' +
+            '- WICHTIG: Alle Nicht-Künstler-Angaben in der Referenz (Instrumente wie Handpan, Genres, Stimmungen, Sprachen) MÜSSEN wörtlich erhalten bleiben – prominent AM ANFANG der Beschreibung.\n' +
+            '- Beschreibe dann sehr genau, was den Sound der genannten Künstler ausmacht: Genre-Fusion, Instrumentierung (konkrete Instrumente), Vocal-Stil und -Charakter, Produktionsästhetik, Rhythmik/Groove, Stimmung.\n' +
+            '- Werden mehrere Künstler genannt, kombiniere ihre prägenden Merkmale zu EINER stimmigen Beschreibung. Kein Merkmal eines einzelnen Künstlers (z. B. Reggae) darf die explizit genannten Instrumente/Genres verdrängen.\n' +
             '- Maximal 280 Zeichen, kommagetrennte Deskriptoren, keine Sätze nötig.\n' +
             '- Antworte NUR mit der Beschreibung, ohne Anführungszeichen und ohne Erklärung.',
           temperature: 0.4,
@@ -3095,7 +3101,7 @@
           .replace(/\s+/g, ' ');
         if (text.length > 320) text = text.slice(0, 317) + '...';
         if (!text) return null;
-        this.state.styleRefResolved = { source: raw, resolved: text };
+        this.state.styleRefResolved = { source: raw, resolved: text, v: STYLE_REF_RESOLVER_VERSION };
         saveState(STORAGE_KEYS.styleRefResolved, this.state.styleRefResolved);
         return text;
       } catch (err) {

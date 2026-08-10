@@ -393,7 +393,10 @@
     }
     if (dna.time_signature && dna.time_signature !== '4/4') persParts.push(dna.time_signature + ' time signature');
 
-    if (intentMods && intentMods.genreHints && intentMods.genreHints.length) {
+    // Intent-Genre nur voranstellen, wenn der User KEIN eigenes Genre/Stil-
+    // Referenz gesetzt hat – sonst würde es den PRIMARY GENRE LOCK dominieren
+    // (z. B. Reggae-Kontext überdeckt explizit gewünschte Handpan-Musik).
+    if (intentMods && intentMods.genreHints && intentMods.genreHints.length && !dirStyle.lockTags.length) {
       persParts.unshift(intentMods.genreHints[0]);
     }
     if (intentMods && intentMods.moodWords && intentMods.moodWords.length) {
