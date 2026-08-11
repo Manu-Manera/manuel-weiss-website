@@ -1,0 +1,520 @@
+From d8cf2c2db2719ac260d0e1c780a1e4f9ef5e96f6 Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Sun, 2 Aug 2026 21:46:08 +0000
+Subject: [PATCH] Fix: Gustav Garten-WhatsApp trotz Meta #131047 (24h-Fenster)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Die Bewässerung lief weiter, Zustellung scheiterte mit Re-engagement
+#131047 nachdem niemand Gustav geschrieben hat. Proaktive Nachrichten
+werden jetzt getrackt, bei Status-Fail gequeued und beim nächsten
+Inbound nachgeliefert; Catch-up zeigt den Garten-Überblick. Zusätzlich
+ReferenceError (mins/zoneName) im Sequenz-Abschluss behoben.
+---
+ WHATSAPP_SETUP.md      |   3 +
+ functions/.env.example |   6 +
+ functions/index.js     | 396 ++++++++++++++++++++++++++++++++++++++++-
+ 3 files changed, 396 insertions(+), 9 deletions(-)
+
+diff --git a/WHATSAPP_SETUP.md b/WHATSAPP_SETUP.md
+index e24d8b5..74cc9e2 100644
+--- a/WHATSAPP_SETUP.md
++++ b/WHATSAPP_SETUP.md
+@@ -133,3 +133,6 @@ Im `functions/index.js` kannst du die NLP-Erkennung erweitern, z. B. `Putzplan-U
+ - **WhatsApp send failed 131030 / #133010** → Zwei häufige Ursachen:
+   1. **Empfänger** nicht in der Meta-Sandbox unter **API Setup → To** (SMS bestätigen).
+   2. **Absender:** In `.env` steht eine **eigene Nummer** (Schritt 2), Status **PENDING** – Chat-Antworten gehen trotzdem (Webhook-ID), **Erinnerungen um 8:00** nicht. Lösung: **Meta-Testnummer** (`+1 555 …`) in API Setup als Phone number ID eintragen **oder** einmal Gustav «Hilfe» schreiben (speichert die funktionierende ID in Firestore `config/whatsappMeta`). Nicht die unvollständige DE-Nummer «Gustav Gans» als `WHATSAPP_PHONE_ID` verwenden.
++- **Garten-Alerts kommen nicht an, Bewässerung läuft aber (#131047)** → Meta erlaubt Freitext an dich nur innerhalb von **24 Stunden nach deiner letzten Nachricht an Gustav**. Graph API sagt oft trotzdem `send_ok`, die Zustellung scheitert danach. Ab dem Fix:
++  1. Schreib Gustav kurz `hi` oder `garten status` → Fenster öffnet sich, ausstehende Meldungen + Catch-up kommen nach.
++  2. Optional dauerhaft: in Meta ein **Utility-Template** `garten_bewaesserung` mit drei Variablen anlegen und `WHATSAPP_TEMPLATE_GARTEN=garten_bewaesserung` in `functions/.env` setzen, dann `firebase deploy --only functions`.
+diff --git a/functions/.env.example b/functions/.env.example
+index 0031697..7dbe3f0 100644
+--- a/functions/.env.example
++++ b/functions/.env.example
+@@ -8,6 +8,12 @@ WHATSAPP_VERIFY_TOKEN=einGeheimerStringDenIchSelbstWaehle
+ # WG-Erwachsene (+ ggf. weitere) – gleiche Nummern auch in Meta Sandbox unter «To» verifizieren
+ WHATSAPP_GROUP_RECIPIENTS=41798385590,41795553906,41762988934,41765740020,41798489999,41795911251,41789561100,41784082785
+ 
++# Optional: Meta Message-Template für Garten-Alerts ausserhalb des 24h-Fensters (#131047).
++# Template in Meta anlegen (Utility), z.B. Body:
++#   Automatische Garten-Bewässerung: {{1}}, Dauer {{2}} Min, Zeitplan {{3}}
++# WHATSAPP_TEMPLATE_GARTEN=garten_bewaesserung
++# WHATSAPP_TEMPLATE_LANG=de
++
+ # WhatsApp bei neuer Sauna-Buchung (Website + Gustav), komma-separiert ohne +
+ SAUNA_BOOKING_NOTIFY=41798385590
+ 
+diff --git a/functions/index.js b/functions/index.js
+index e3906cf..b09d66b 100644
+--- a/functions/index.js
++++ b/functions/index.js
+@@ -323,8 +323,12 @@ async function sendWhatsAppDetailed(to, text, phoneIdOpt) {
+     await debugLog("send_failed", { to, status: res.status, response: bodyText.slice(0, 2000), metaCode });
+     return { ok: false, status: res.status, metaCode, metaMessage, error: bodyText };
+   }
+-  await debugLog("send_ok", { to, status: res.status, phoneId });
+-  return { ok: true };
++  let messageId = null;
++  try {
++    messageId = JSON.parse(bodyText)?.messages?.[0]?.id || null;
++  } catch (_) { /* */ }
++  await debugLog("send_ok", { to, status: res.status, phoneId, messageId });
++  return { ok: true, messageId };
+ }
+ 
+ async function sendWhatsApp(to, text, phoneIdOpt) {
+@@ -487,13 +491,292 @@ function whatsAppProactiveErrorHint(sendResult) {
+       "Schreib Gustav zuerst eine Nachricht im Chat, dann z.B. *testmsg gartentodo*."
+     );
+   }
++  if (sendResult?.metaCode === 131047 || sendResult?.reason === "outside_24h_window") {
++    return (
++      "Meta blockiert proaktive Nachrichten (#131047 – mehr als 24h seit deiner letzten Antwort an Gustav). " +
++      "Schreib Gustav kurz etwas (z.B. *hi* oder *garten status*) – ausstehende Meldungen kommen dann nach."
++    );
++  }
++  if (sendResult?.metaCode === 131030) {
++    return (
++      "Meta blockiert den Empfänger (#131030 – Nummer nicht auf der Sandbox-Positivliste). " +
++      "In Meta Developer Console → WhatsApp → API Setup → Empfänger hinzufügen und per SMS bestätigen."
++    );
++  }
+   return sendResult?.metaMessage || sendResult?.reason || "WhatsApp-Versand fehlgeschlagen";
+ }
+ 
+-async function broadcast(text) {
++/* ==========================================================================
++   WhatsApp 24h-Fenster: Sessions, Pending-Queue, Delivery-Status
++   Meta liefert bei Textnachrichten oft HTTP 200, scheitert danach mit #131047
++   wenn der Empfänger Gustav >24h nicht geschrieben hat.
++   ========================================================================== */
++
++const WA_SESSION_COLLECTION = "whatsapp_sessions";
++const WA_PENDING_COLLECTION = "whatsapp_pending";
++const WA_OUTBOUND_COLLECTION = "whatsapp_outbound";
++/** Sicherheitsmarge unter 24h, damit Randfälle nicht knappen. */
++const WA_WINDOW_MS = 23 * 60 * 60 * 1000;
++const WA_PENDING_MAX_FLUSH = 15;
++const WA_OUTBOUND_TTL_MS = 48 * 60 * 60 * 1000;
++
++function normWaPhone(s) {
++  return String(s || "").replace(/\D/g, "");
++}
++
++async function touchWhatsAppSession(phone) {
++  const id = normWaPhone(phone);
++  if (!id) return;
++  try {
++    await db.collection(WA_SESSION_COLLECTION).doc(id).set(
++      {
++        lastInboundAt: FieldValue.serverTimestamp(),
++        updatedAt: FieldValue.serverTimestamp(),
++      },
++      { merge: true }
++    );
++  } catch (e) {
++    logger.warn("touchWhatsAppSession", e?.message || e);
++  }
++}
++
++async function getWhatsAppLastInboundMs(phone) {
++  const id = normWaPhone(phone);
++  if (!id) return 0;
++  try {
++    const snap = await db.collection(WA_SESSION_COLLECTION).doc(id).get();
++    const t = snap.data()?.lastInboundAt;
++    return t?.toMillis?.() || 0;
++  } catch (e) {
++    logger.warn("getWhatsAppLastInboundMs", e?.message || e);
++    return 0;
++  }
++}
++
++async function isWithinWhatsAppWindow(phone) {
++  const last = await getWhatsAppLastInboundMs(phone);
++  return !!last && Date.now() - last < WA_WINDOW_MS;
++}
++
++async function enqueuePendingWhatsApp(to, text, meta = {}) {
++  const phone = normWaPhone(to);
++  if (!phone || !text) return;
++  try {
++    await db.collection(WA_PENDING_COLLECTION).add({
++      to: phone,
++      text: String(text).slice(0, 4000),
++      meta: meta || {},
++      delivered: false,
++      createdAt: FieldValue.serverTimestamp(),
++    });
++    await debugLog("wa_pending_enqueue", {
++      to: phone,
++      reason: meta?.reason || null,
++      preview: String(text).slice(0, 100),
++    });
++  } catch (e) {
++    logger.warn("enqueuePendingWhatsApp", e?.message || e);
++  }
++}
++
++async function rememberWhatsAppOutbound(messageId, to, text) {
++  const id = String(messageId || "").trim();
++  const phone = normWaPhone(to);
++  if (!id || !phone || !text) return;
++  try {
++    await db.collection(WA_OUTBOUND_COLLECTION).doc(id).set({
++      to: phone,
++      text: String(text).slice(0, 4000),
++      createdAt: FieldValue.serverTimestamp(),
++      expiresAtMs: Date.now() + WA_OUTBOUND_TTL_MS,
++    });
++  } catch (e) {
++    logger.warn("rememberWhatsAppOutbound", e?.message || e);
++  }
++}
++
++async function handleWhatsAppStatusFailure(status) {
++  const code = status?.errors?.[0]?.code ?? null;
++  if (code !== 131047 && code !== 131026) return;
++  const wamid = String(status?.id || "").trim();
++  const to = normWaPhone(status?.recipient_id);
++  if (!wamid || !to) return;
++  try {
++    const ref = db.collection(WA_OUTBOUND_COLLECTION).doc(wamid);
++    const snap = await ref.get();
++    if (!snap.exists) {
++      await debugLog("wa_status_failed_no_outbound", { to, wamid, metaCode: code });
++      return;
++    }
++    const text = snap.data()?.text;
++    await enqueuePendingWhatsApp(to, text, { reason: `status_${code}`, wamid });
++    await ref.delete().catch(() => {});
++    await debugLog("wa_status_requeued", { to, wamid, metaCode: code });
++  } catch (e) {
++    logger.warn("handleWhatsAppStatusFailure", e?.message || e);
++  }
++}
++
++async function flushPendingWhatsApp(to, phoneIdOpt) {
++  const phone = normWaPhone(to);
++  if (!phone) return { flushed: 0 };
++  let snap;
++  try {
++    snap = await db
++      .collection(WA_PENDING_COLLECTION)
++      .where("to", "==", phone)
++      .where("delivered", "==", false)
++      .limit(40)
++      .get();
++  } catch (e) {
++    logger.warn("flushPendingWhatsApp query", e?.message || e);
++    return { flushed: 0 };
++  }
++  if (snap.empty) return { flushed: 0 };
++
++  const docs = snap.docs
++    .slice()
++    .sort((a, b) => (a.data().createdAt?.toMillis?.() || 0) - (b.data().createdAt?.toMillis?.() || 0))
++    .slice(0, WA_PENDING_MAX_FLUSH);
++
++  let flushed = 0;
++  for (const doc of docs) {
++    const text = doc.data()?.text;
++    if (!text) {
++      await doc.ref.update({ delivered: true, droppedAt: FieldValue.serverTimestamp() }).catch(() => {});
++      continue;
++    }
++    const sent = await sendWhatsAppDetailed(phone, text, phoneIdOpt);
++    if (!sent.ok) {
++      await debugLog("wa_pending_flush_failed", { to: phone, metaCode: sent.metaCode, reason: sent.reason });
++      break;
++    }
++    if (sent.messageId) await rememberWhatsAppOutbound(sent.messageId, phone, text);
++    await doc.ref.update({
++      delivered: true,
++      deliveredAt: FieldValue.serverTimestamp(),
++      messageId: sent.messageId || null,
++    }).catch(() => {});
++    flushed += 1;
++  }
++  if (flushed) {
++    logger.info(`WhatsApp-Pending nachgeliefert: ${flushed} an ${phone}`);
++    await debugLog("wa_pending_flushed", { to: phone, flushed });
++  }
++  return { flushed };
++}
++
++/**
++ * Proaktive Nachricht (Garten-Plan, Regen-Skip, Reminder, …).
++ * Bekannt ausserhalb 24h-Fenster → Queue (oder optionales Template).
++ * Unbekanntes/offenes Fenster → senden; #131047 kommt per Status-Webhook in die Queue.
++ */
++async function sendWhatsAppProactive(to, text, phoneIdOpt, meta = {}) {
++  const phone = normWaPhone(to);
++  if (!phone || !text) return { ok: false, reason: "missing_to_or_text" };
++
++  const lastInboundMs = await getWhatsAppLastInboundMs(phone);
++  const sessionKnown = lastInboundMs > 0;
++  const inWindow = sessionKnown && Date.now() - lastInboundMs < WA_WINDOW_MS;
++
++  if (sessionKnown && !inWindow) {
++    const templateName = (process.env.WHATSAPP_TEMPLATE_GARTEN || "").trim();
++    if (templateName && meta?.templateParams) {
++      const tr = await sendWhatsAppTemplate(phone, templateName, meta.templateParams, phoneIdOpt);
++      if (tr.ok) return tr;
++    }
++    await enqueuePendingWhatsApp(phone, text, {
++      ...meta,
++      reason: meta?.reason || "outside_24h_window",
++    });
++    return { ok: false, queued: true, reason: "outside_24h_window", metaCode: 131047 };
++  }
++
++  const sent = await sendWhatsAppDetailed(phone, text, phoneIdOpt);
++  if (sent.ok && sent.messageId) {
++    await rememberWhatsAppOutbound(sent.messageId, phone, text);
++  }
++  // Graph API kann 200 liefern, Zustellung scheitert später mit #131047 → Status-Webhook queued.
++  return sent;
++}
++
++async function sendWhatsAppTemplate(to, templateName, bodyParams = [], phoneIdOpt, langCode = "de") {
++  const { token } = cfg();
++  const phoneId = await resolveWhatsAppPhoneId(phoneIdOpt);
++  const phone = normWaPhone(to);
++  if (!token || !phoneId || !phone || !templateName) {
++    return { ok: false, reason: "template_not_configured" };
++  }
++  const language = process.env.WHATSAPP_TEMPLATE_LANG || langCode;
++  const components = [];
++  if (bodyParams.length) {
++    components.push({
++      type: "body",
++      parameters: bodyParams.map((p) => ({ type: "text", text: String(p).slice(0, 1024) })),
++    });
++  }
++  try {
++    const res = await fetch(`https://graph.facebook.com/v20.0/${phoneId}/messages`, {
++      method: "POST",
++      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
++      body: JSON.stringify({
++        messaging_product: "whatsapp",
++        to: phone,
++        type: "template",
++        template: {
++          name: templateName,
++          language: { code: language },
++          ...(components.length ? { components } : {}),
++        },
++      }),
++    });
++    const bodyText = await res.text().catch(() => "");
++    if (!res.ok) {
++      let metaCode = null;
++      let metaMessage = null;
++      try {
++        const j = JSON.parse(bodyText);
++        metaCode = j?.error?.code ?? null;
++        metaMessage = j?.error?.message ?? null;
++      } catch (_) { /* */ }
++      await debugLog("template_send_failed", {
++        to: phone,
++        templateName,
++        status: res.status,
++        metaCode,
++        response: bodyText.slice(0, 1000),
++      });
++      return { ok: false, status: res.status, metaCode, metaMessage, error: bodyText };
++    }
++    let messageId = null;
++    try {
++      messageId = JSON.parse(bodyText)?.messages?.[0]?.id || null;
++    } catch (_) { /* */ }
++    await debugLog("template_send_ok", { to: phone, templateName, messageId });
++    return { ok: true, messageId };
++  } catch (e) {
++    logger.error("sendWhatsAppTemplate", e);
++    return { ok: false, reason: "fetch_failed", error: String(e) };
++  }
++}
++
++async function broadcast(text, meta = {}) {
+   const { recipients } = cfg();
+-  if (!recipients.length) return;
+-  await Promise.all(recipients.map((r) => sendWhatsApp(r, text)));
++  if (!recipients.length) return { sent: 0, queued: 0, failed: 0 };
++  const results = await Promise.all(recipients.map((r) => sendWhatsAppProactive(r, text, undefined, meta)));
++  const sent = results.filter((r) => r?.ok).length;
++  const queued = results.filter((r) => r?.queued).length;
++  const failed = results.length - sent - queued;
++  if (queued || failed) {
++    await debugLog("broadcast_summary", {
++      sent,
++      queued,
++      failed,
++      preview: String(text).slice(0, 80),
++      kind: meta?.kind || null,
++    });
++  }
++  return { sent, queued, failed };
+ }
+ 
+ /** WG-WhatsApp (Alias für broadcast). */
+@@ -506,7 +789,11 @@ async function notifyGartenPlanStarted(zoneLabel, minutes, onT, offT, opts = {})
+     `📍 ${zoneLabel}\n` +
+     `⏱️ Dauer: ${minutes} Min\n` +
+     `📅 Zeitplan: ${onT} – ${offT}${queuedNote}\n\n` +
+-    `Zum Stoppen: «Garten aus»`
++    `Zum Stoppen: «Garten aus»`,
++    {
++      kind: "garten_plan_started",
++      templateParams: [String(zoneLabel), String(minutes), `${onT} – ${offT}`],
++    }
+   );
+ }
+ 
+@@ -517,10 +804,47 @@ async function notifyGartenRainSkippedZones(zoneLabels) {
+   await broadcastToWG(
+     `🌧️ *Garten-Zeitplan übersprungen*\n\n` +
+     `${list}\n\n` +
+-    `Regen im ±6h-Fenster um die geplante Zeit – heute nicht gegossen.`
++    `Regen im ±6h-Fenster um die geplante Zeit – heute nicht gegossen.`,
++    { kind: "garten_rain_skip" }
+   );
+ }
+ 
++/** Kurzüberblick der letzten Garten-Läufe (für Catch-up nach 24h-Block). */
++async function buildGartenCatchupWhatsApp() {
++  try {
++    const snap = await db.doc("config/gartenPlan").get();
++    if (!snap.exists) return "";
++    const data = snap.data() || {};
++    const ymd = gartenYmdZurichNow();
++    const ymdPrev = gartenYmdDaysAgo(ymd, 1);
++    const lines = [];
++    for (const day of [ymd, ymdPrev]) {
++      const dayLog = normalizeGartenWaterLogDay(data.waterLog?.[day]);
++      const entries = Object.values(dayLog || {}).filter(
++        (e) => e && (e.status === "started" || e.status === "done" || e.status === "skipped_rain")
++      );
++      if (!entries.length) continue;
++      const label = day === ymd ? "Heute" : "Gestern";
++      lines.push(`*${label} (${day}):*`);
++      for (const e of entries) {
++        const zone = e.zoneLabel || e.zoneId || "Zone";
++        if (e.status === "skipped_rain") {
++          lines.push(`• ${zone}: übersprungen (Regen)`);
++        } else {
++          const slot = e.slotOn && e.slotOff ? ` ${e.slotOn}–${e.slotOff}` : "";
++          const mins = e.minutes != null ? ` · ${e.minutes} Min` : "";
++          lines.push(`• ${zone}:${slot}${mins} · ${e.status}`);
++        }
++      }
++    }
++    if (!lines.length) return "";
++    return `🌿 *Garten-Überblick*\n\n${lines.join("\n")}`;
++  } catch (e) {
++    logger.warn("buildGartenCatchupWhatsApp", e?.message || e);
++    return "";
++  }
++}
++
+ /** Max. eine WhatsApp pro Kalendertag (Wetter gilt für alle Zonen gemeinsam). */
+ async function notifyGartenRainSkipOncePerDay(ymd, zoneLabels) {
+   const unique = [...new Set((zoneLabels || []).map((l) => String(l || "").trim()).filter(Boolean))];
+@@ -5102,6 +5426,14 @@ exports.whatsappWebhook = onRequest(
+         /** Muss fürs Senden passen, sonst antwortet die API mit einer anderen Nummer / still. */
+         const replyPhoneId = value.metadata?.phone_number_id;
+         if (replyPhoneId) rememberWhatsAppPhoneId(replyPhoneId).catch(() => {});
++
++        // Delivery-Status: #131047 kommt oft NACH send_ok → ausstehende Texte nachliefern
++        for (const st of value.statuses || []) {
++          if (st?.status === "failed") {
++            await handleWhatsAppStatusFailure(st);
++          }
++        }
++
+         const messages = value.messages || [];
+         const contacts = value.contacts || [];
+         // Echte Gruppen: Meta liefert `group_id` am Message-Objekt (s. Groups Messaging
+@@ -5116,6 +5448,38 @@ exports.whatsappWebhook = onRequest(
+           const contact = contacts.find((c) => c.wa_id === from);
+           const senderName = contact?.profile?.name || "";
+           const type = msg.type;
++          const isPrivate = !isGroup;
++
++          // Session früh aktualisieren (auch bei Button-Replies / continue-Pfaden)
++          let hadWindow = true;
++          if (from) {
++            hadWindow = await isWithinWhatsAppWindow(from);
++            await touchWhatsAppSession(from);
++            if (isPrivate) {
++              try {
++                const flushed = await flushPendingWhatsApp(from, replyPhoneId);
++                if (flushed?.flushed > 0) {
++                  await answer(
++                    `📬 *${flushed.flushed}* zwischengespeicherte Gustav-Nachricht` +
++                    `${flushed.flushed === 1 ? "" : "en"} nachgeliefert ` +
++                    `(WhatsApp erlaubt proaktive Meldungen nur 24h nach deiner letzten Antwort).\n` +
++                    `Tipp: Schreib Gustav ab und zu kurz *hi* – dann kommen Garten-Alerts live.`
++                  );
++                } else if (!hadWindow) {
++                  const catchup = await buildGartenCatchupWhatsApp();
++                  if (catchup) {
++                    await answer(
++                      `👋 Willkommen zurück! WhatsApp hatte proaktive Gustav-Nachrichten blockiert (#131047, 24h-Fenster).\n\n` +
++                      `${catchup}\n\n` +
++                      `Solange du Gustav ab und zu schreibst, kommen die Alerts wieder live.`
++                    );
++                  }
++                }
++              } catch (e) {
++                logger.warn("flushPendingWhatsApp on inbound", e?.message || e);
++              }
++            }
++          }
+ 
+           let text = "";
+           let caption = "";
+@@ -5151,7 +5515,6 @@ exports.whatsappWebhook = onRequest(
+           // Gruppen-Filter: Nur reagieren, wenn direkt angesprochen. In Privatchats immer.
+           const combined = text || caption;
+           const mention = stripBotMention(combined);
+-          const isPrivate = !isGroup;
+           await debugLog("message", {
+             from,
+             senderName,
+@@ -6835,7 +7198,11 @@ exports.checkBewaesserung = onSchedule(
+           logger.info(`Sequenz ${d.sequenzId} Step ${d.step}: ${d.device} ${d.action}`);
+           
+           if (d.sendSuccessMessage && d.requestedBy) {
+-            await sendWhatsApp(d.requestedBy, formatGartenCompletionWhatsApp(d));
++            const mins = d.bewässerungsMinuten || "?";
++            const zoneName = d.zoneLabel || d.device || "Ventil";
++            await sendWhatsAppProactive(d.requestedBy, formatGartenCompletionWhatsApp(d), undefined, {
++              kind: "garten_seq_done",
++            });
+             await debugLog("garten_seq_success_msg", { sequenzId: d.sequenzId, minutes: mins });
+             await setGartenWaterLog(gartenYmdZurichNow(), d.zoneId || "wh2-wintergarten", {
+               status: "done",
+@@ -6844,6 +7211,17 @@ exports.checkBewaesserung = onSchedule(
+               sequenzId: d.sequenzId,
+               zoneLabel: zoneName,
+             });
++          } else if (d.sendSuccessMessage && !d.requestedBy) {
++            // Plan-Sequenz: Abschluss auch ohne requestedBy im Water-Log markieren
++            const mins = d.bewässerungsMinuten || null;
++            const zoneName = d.zoneLabel || d.device || "Ventil";
++            await setGartenWaterLog(gartenYmdZurichNow(), d.zoneId || "wh2-wintergarten", {
++              status: "done",
++              source: d.waterLogSource || "plan",
++              minutes: mins,
++              sequenzId: d.sequenzId,
++              zoneLabel: zoneName,
++            });
+           }
+ 
+           if (d.step === 4) {
+-- 
+2.43.0
+
