@@ -21,15 +21,16 @@ REGION = "eu-central-1"
 
 
 def main() -> int:
-    today = date.today()
+    today = date.today().isoformat()
     try:
-        events = zeit_vorschlaege.get_calendar_events(today)
+        events = zeit_vorschlaege.get_calendar_events(date.fromisoformat(today))
     except Exception as exc:
         print(f"Kalender lesen fehlgeschlagen: {exc}", file=sys.stderr)
         return 1
 
     payload = [
         {
+            "date": today,
             "title": ev["title"],
             "start": ev["start"],
             "end": ev["end"],
@@ -38,18 +39,20 @@ def main() -> int:
         for ev in events
     ]
 
-    boto3.client("dynamodb", region_name=REGION).put_item(
+    client = boto3.client("dynamodb", region_name=REGION)
+    client.put_item(
         TableName=TABLE,
         Item={
             "pk": {"S": "CALENDAR"},
-            "sk": {"S": today.isoformat()},
+            "sk": {"S": today},
+            "day": {"S": today},
             "updatedAt": {"S": datetime.now(timezone.utc).isoformat()},
             "source": {"S": "apple-calendar"},
             "count": {"N": str(len(payload))},
             "events": {"S": json.dumps(payload, ensure_ascii=False)},
         },
     )
-    print(f"Kalender → AWS: {len(payload)} Termin(e) für {today.isoformat()}")
+    print(f"Kalender → AWS: {len(payload)} Termin(e) für {today}")
     return 0
 
 

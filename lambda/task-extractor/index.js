@@ -771,11 +771,23 @@ async function loadTodaysCalendarEvents() {
   }));
   if (!result.Item) return [];
   const item = unmarshall(result.Item);
+  if (item.day && item.day !== day) return [];
+  let events;
   try {
-    return typeof item.events === 'string' ? JSON.parse(item.events) : (item.events || []);
+    events = typeof item.events === 'string' ? JSON.parse(item.events) : (item.events || []);
   } catch {
     return [];
   }
+  return events.filter((ev) => !ev.date || ev.date === day);
+}
+
+function formatCalendarDayLabel() {
+  return new Date().toLocaleDateString('de-CH', {
+    timeZone: 'Europe/Zurich',
+    weekday: 'short',
+    day: '2-digit',
+    month: '2-digit'
+  });
 }
 
 function formatCalendarSuggestions(events, artifacts) {
@@ -784,14 +796,15 @@ function formatCalendarSuggestions(events, artifacts) {
     .filter((ev) => formatDurationLabel(ev.hours))
     .filter((ev) => !eventAlreadyLogged(ev, artifacts));
 
+  const dayLabel = formatCalendarDayLabel();
   if (!open.length) {
     if (events?.length) {
-      return '📅 <b>Kalender</b>\nAlle heutigen Termine sind erfasst.';
+      return `📅 <b>Kalender ${escapeHtml(dayLabel)}</b>\nAlle heutigen Termine sind erfasst.`;
     }
     return '';
   }
 
-  const lines = ['📅 <b>Vorschläge aus dem Kalender</b>\nSchreib den Text zum Übernehmen:'];
+  const lines = [`📅 <b>Vorschläge für ${escapeHtml(dayLabel)}</b>\nSchreib den Text zum Übernehmen:`];
   for (const ev of open.slice(0, 8)) {
     const dur = formatDurationLabel(ev.hours);
     const title = ev.title.replace(/\s+/g, ' ').trim();
@@ -816,7 +829,7 @@ async function loadTodaysTimeEntries() {
         try {
           const progress = JSON.parse(data).progress || {};
           const artifacts = progress.productivityTracker?.artifacts || [];
-          const today = new Date().toISOString().split('T')[0];
+          const today = zurichDate();
           resolve(artifacts.filter(a => a.date === today));
         } catch (e) {
           resolve([]);

@@ -14,7 +14,7 @@
     <key>RunAtLoad</key>
     <true/>
     <key>StartInterval</key>
-    <integer>900</integer>
+    <integer>300</integer>
     <key>StandardOutPath</key>
     <string>/Users/manumanera/Library/Logs/calendar-sync.log</string>
     <key>StandardErrorPath</key>
