@@ -309,7 +309,28 @@ aws events put-targets \
     --targets "Id"="1","Arn"="arn:aws:lambda:${REGION}:${ACCOUNT_ID}:function:${SUMMARY_LAMBDA_NAME}" \
     --region $REGION > /dev/null
 
-echo "✅ Scheduler: Feierabend-Check 17:00 CET"
+FOLLOWUP_RULE_NAME="calendar-followup"
+aws events put-rule \
+    --name $FOLLOWUP_RULE_NAME \
+    --schedule-expression "rate(5 minutes)" \
+    --state ENABLED \
+    --description "5-10 Min nach Kalendertermin: Telegram-Frage zum Zeiteintrag" \
+    --region $REGION > /dev/null
+
+aws lambda add-permission \
+    --function-name $SUMMARY_LAMBDA_NAME \
+    --statement-id "eventbridge-calendar-followup" \
+    --action "lambda:InvokeFunction" \
+    --principal events.amazonaws.com \
+    --source-arn "arn:aws:events:${REGION}:${ACCOUNT_ID}:rule/${FOLLOWUP_RULE_NAME}" \
+    --region $REGION 2>/dev/null || true
+
+aws events put-targets \
+    --rule $FOLLOWUP_RULE_NAME \
+    --targets "Id"="1","Arn"="arn:aws:lambda:${REGION}:${ACCOUNT_ID}:function:${SUMMARY_LAMBDA_NAME}","Input"="{\"source\":\"calendar-followup\"}" \
+    --region $REGION > /dev/null
+
+echo "✅ Scheduler: Feierabend-Check 17:00 CET + Kalender-Nachfrage alle 5 Min"
 
 # Aufräumen
 rm -f task-extractor.zip

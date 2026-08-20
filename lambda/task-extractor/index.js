@@ -592,7 +592,11 @@ async function processScheduledCheck() {
 }
 
 async function handleCallbackQuery(query) {
-  const [action, taskId] = query.data.split(':');
+  const data = String(query?.data || '');
+  if (data.startsWith('calok:') || data.startsWith('calno:')) {
+    return await handleCalendarCallback(query);
+  }
+  const [action, taskId] = data.split(':');
   
   try {
     if (action === 'task_accept') {
@@ -875,6 +879,224 @@ function formatUnansweredSection(unanswered, limit = 8) {
   return lines.join('\n');
 }
 
+function promptIdFor(day, start, title) {
+  const raw = `${day}|${start}|${title}`;
+  let hash = 0;
+  for (let i = 0; i < raw.length; i++) {
+    hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+    hash |= 0;
+  }
+  return `c${(hash >>> 0).toString(16).slice(0, 7)}`;
+}
+
+function zurichMinutesNow() {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Europe/Zurich',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).formatToParts(new Date()).map((p) => [p.type, p.value])
+  );
+  return Number(parts.hour) * 60 + Number(parts.minute);
+}
+
+function parseHm(hhmm) {
+  const match = String(hhmm || '').match(/^(\d{1,2}):(\d{2})/);
+  if (!match) return null;
+  return Number(match[1]) * 60 + Number(match[2]);
+}
+
+function guessCustomer(title) {
+  const known = ['Horizon', 'SHS', 'Cistec', 'Knauf', 'HR Campus', 'Akyurek', 'Lonza', 'Bayer', 'UKG', 'Stardust', 'Roche', 'Novartis', 'Valkeen'];
+  return known.find((c) => title.toLowerCase().includes(c.toLowerCase())) || '';
+}
+
+async function telegramCall(method, payload) {
+  return new Promise((resolve, reject) => {
+    const data = JSON.stringify(payload);
+    const req = https.request({
+      hostname: 'api.telegram.org',
+      path: `/bot${TELEGRAM_BOT_TOKEN}/${method}`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(data) }
+    }, (res) => {
+      let body = '';
+      res.on('data', (chunk) => body += chunk);
+      res.on('end', () => {
+        try { resolve(JSON.parse(body)); } catch { resolve({}); }
+      });
+    });
+    req.on('error', reject);
+    req.write(data);
+    req.end();
+  });
+}
+
+async function loadPrompt(id) {
+  const result = await dynamoClient.send(new GetItemCommand({
+    TableName: DYNAMODB_TABLE,
+    Key: { pk: { S: 'CALPROMPT' }, sk: { S: id } }
+  }));
+  return result.Item ? unmarshall(result.Item) : null;
+}
+
+async function savePrompt(prompt) {
+  await dynamoClient.send(new PutItemCommand({
+    TableName: DYNAMODB_TABLE,
+    Item: marshall(prompt, { removeUndefinedValues: true })
+  }));
+}
+
+async function saveCalendarTimeEntry(prompt) {
+  const progress = await new Promise((resolve) => {
+    const req = https.request({
+      hostname: '6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com',
+      path: '/v1/onboarding-progress?userId=default-user',
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    }, (res) => {
+      let data = '';
+      res.on('data', (chunk) => data += chunk);
+      res.on('end', () => {
+        try { resolve(JSON.parse(data).progress || {}); } catch { resolve({}); }
+      });
+    });
+    req.on('error', () => resolve({}));
+    req.end();
+  });
+
+  if (!progress.productivityTracker) {
+    progress.productivityTracker = { artifacts: [], customers: [], projects: [], taskTypes: [] };
+  }
+  const hours = Number(prompt.hours) || 0;
+  const artifact = {
+    id: `cal-${Date.now()}`,
+    type: /meeting|call|workshop|1to1|1:1|blocker|upgrade|sync/i.test(prompt.title) ? 'meeting' : 'other',
+    title: prompt.title,
+    description: `Kalender ${prompt.start}–${prompt.end}`,
+    customer: guessCustomer(prompt.title),
+    project: '',
+    impact: 3,
+    durationHours: hours,
+    date: prompt.day || zurichDate(),
+    createdAt: new Date().toISOString(),
+    source: 'calendar-followup'
+  };
+  progress.productivityTracker.artifacts.push(artifact);
+
+  await new Promise((resolve) => {
+    const payload = JSON.stringify({ userId: 'default-user', progress });
+    const req = https.request({
+      hostname: '6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com',
+      path: '/v1/onboarding-progress',
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) }
+    }, (res) => {
+      res.on('data', () => {});
+      res.on('end', () => resolve());
+    });
+    req.on('error', () => resolve());
+    req.write(payload);
+    req.end();
+  });
+  return artifact;
+}
+
+async function runCalendarFollowup() {
+  const day = zurichDate();
+  const nowMin = zurichMinutesNow();
+  const [events, artifacts] = await Promise.all([
+    loadTodaysCalendarEvents(),
+    loadTodaysTimeEntries()
+  ]);
+
+  let sent = 0;
+  for (const ev of events) {
+    if (!ev?.title || SKIP_CALENDAR_TITLE.test(ev.title.trim())) continue;
+    const dur = formatDurationLabel(ev.hours);
+    if (!dur) continue;
+    const endMin = parseHm(ev.end);
+    if (endMin == null) continue;
+    const elapsed = nowMin - endMin;
+    if (elapsed < 5 || elapsed > 12) continue;
+    if (eventAlreadyLogged(ev, artifacts)) continue;
+
+    const id = promptIdFor(day, ev.start, ev.title);
+    const existing = await loadPrompt(id);
+    if (existing) continue;
+
+    const prompt = {
+      pk: 'CALPROMPT',
+      sk: id,
+      id,
+      day,
+      title: ev.title.replace(/\s+/g, ' ').trim(),
+      start: ev.start,
+      end: ev.end,
+      hours: ev.hours,
+      status: 'pending',
+      askedAt: new Date().toISOString()
+    };
+    await savePrompt(prompt);
+
+    const cmd = `${dur} ${prompt.title}`;
+    await sendTelegramMessage(
+      `📅 <b>Termin vorbei</b>\n${escapeHtml(prompt.title)}\n${escapeHtml(prompt.start)}–${escapeHtml(prompt.end)} · ${escapeHtml(dur)}\n\nAls Zeiteintrag speichern?`,
+      {
+        inline_keyboard: [[
+          { text: `Ja, ${dur}`, callback_data: `calok:${id}` },
+          { text: 'Nein', callback_data: `calno:${id}` }
+        ]]
+      }
+    );
+    sent += 1;
+  }
+
+  return { statusCode: 200, body: `Calendar follow-up sent ${sent}` };
+}
+
+async function handleCalendarCallback(query) {
+  const data = String(query?.data || '');
+  const [action, id] = data.split(':');
+  const prompt = id ? await loadPrompt(id) : null;
+
+  if (!prompt) {
+    if (query?.id) await telegramCall('answerCallbackQuery', { callback_query_id: query.id, text: 'Vorschlag nicht mehr gültig' });
+    return { statusCode: 200, body: 'unknown prompt' };
+  }
+
+  let text;
+  if (action === 'calok' && prompt.status !== 'saved') {
+    await saveCalendarTimeEntry(prompt);
+    prompt.status = 'saved';
+    await savePrompt(prompt);
+    const dur = formatDurationLabel(prompt.hours);
+    text = `✅ Gespeichert: ${dur} ${prompt.title}`;
+  } else if (action === 'calno') {
+    prompt.status = 'declined';
+    await savePrompt(prompt);
+    text = `👌 ${prompt.title} nicht erfasst.`;
+  } else {
+    text = 'Schon erledigt.';
+  }
+
+  if (query?.id) await telegramCall('answerCallbackQuery', { callback_query_id: query.id, text });
+  const chatId = query?.message?.chat?.id;
+  const messageId = query?.message?.message_id;
+  if (chatId && messageId) {
+    await telegramCall('editMessageText', {
+      chat_id: chatId,
+      message_id: messageId,
+      text,
+      parse_mode: 'HTML'
+    });
+  } else {
+    await sendTelegramMessage(text);
+  }
+  return { statusCode: 200, body: 'callback handled' };
+}
+
 async function sendUnansweredMailMessage() {
   try {
     const unanswered = await graphClient.getUnansweredEmails();
@@ -887,6 +1109,13 @@ async function sendUnansweredMailMessage() {
 
 exports.feierabendCheck = async (event) => {
   console.log('Feierabend-Check', event?.source || 'schedule');
+
+  if (event?.source === 'calendar-followup') {
+    return await runCalendarFollowup();
+  }
+  if (event?.source === 'cal-callback') {
+    return await handleCalendarCallback(event.callback);
+  }
 
   if (event?.source === 'offen') {
     await sendUnansweredMailMessage();

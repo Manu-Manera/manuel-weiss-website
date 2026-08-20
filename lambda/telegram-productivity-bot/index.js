@@ -301,6 +301,22 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: 'Invalid JSON' };
   }
   
+  if (body?.callback_query) {
+    const data = String(body.callback_query.data || '');
+    if (data.startsWith('calok:') || data.startsWith('calno:')) {
+      try {
+        await lambdaClient.send(new InvokeCommand({
+          FunctionName: 'task-extractor-summary',
+          InvocationType: 'RequestResponse',
+          Payload: JSON.stringify({ source: 'cal-callback', callback: body.callback_query })
+        }));
+      } catch (err) {
+        console.error('Calendar callback failed:', err);
+      }
+    }
+    return { statusCode: 200, body: 'OK' };
+  }
+
   if (!body?.message) {
     if (body?.edited_message) {
       return { statusCode: 200, body: 'OK - edited messages ignored' };
