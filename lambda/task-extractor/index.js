@@ -6,7 +6,7 @@
  */
 
 const https = require('https');
-const { DynamoDBClient, PutItemCommand, QueryCommand, UpdateItemCommand, ScanCommand } = require('@aws-sdk/client-dynamodb');
+const { DynamoDBClient, PutItemCommand, GetItemCommand, QueryCommand, UpdateItemCommand, ScanCommand } = require('@aws-sdk/client-dynamodb');
 const { unmarshall, marshall } = require('@aws-sdk/util-dynamodb');
 
 const graphClient = require('./graphClient');
@@ -729,6 +729,79 @@ function escapeHtml(text) {
     .replace(/>/g, '&gt;');
 }
 
+function zurichDate() {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Zurich' });
+}
+
+function formatDurationLabel(hours) {
+  const q = Math.round(Number(hours) * 4) / 4;
+  if (!q || q < 0.25) return null;
+  if (q === 0.25) return '15min';
+  if (q === 0.5) return '30min';
+  if (q === 0.75) return '45min';
+  return Number.isInteger(q) ? `${q}h` : `${q}h`;
+}
+
+const SKIP_CALENDAR_TITLE = /^(lunch|mittag(essen)?|focus time|fokuszeit|ooo|abwesend|urlaub|vacation|private)$/i;
+
+function normalizeTitle(text) {
+  return String(text || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9äöüàéè]+/gi, ' ')
+    .trim();
+}
+
+function eventAlreadyLogged(event, artifacts) {
+  const evWords = normalizeTitle(event.title).split(' ').filter((w) => w.length > 3);
+  if (!evWords.length) {
+    return artifacts.some((a) => normalizeTitle(a.title) === normalizeTitle(event.title));
+  }
+  return artifacts.some((a) => {
+    const logged = normalizeTitle(`${a.title} ${a.customer || ''}`);
+    const hits = evWords.filter((w) => logged.includes(w)).length;
+    return hits >= Math.min(2, evWords.length);
+  });
+}
+
+async function loadTodaysCalendarEvents() {
+  const day = zurichDate();
+  const result = await dynamoClient.send(new GetItemCommand({
+    TableName: DYNAMODB_TABLE,
+    Key: { pk: { S: 'CALENDAR' }, sk: { S: day } }
+  }));
+  if (!result.Item) return [];
+  const item = unmarshall(result.Item);
+  try {
+    return typeof item.events === 'string' ? JSON.parse(item.events) : (item.events || []);
+  } catch {
+    return [];
+  }
+}
+
+function formatCalendarSuggestions(events, artifacts) {
+  const open = (events || [])
+    .filter((ev) => ev?.title && !SKIP_CALENDAR_TITLE.test(ev.title.trim()))
+    .filter((ev) => formatDurationLabel(ev.hours))
+    .filter((ev) => !eventAlreadyLogged(ev, artifacts));
+
+  if (!open.length) {
+    if (events?.length) {
+      return '📅 <b>Kalender</b>\nAlle heutigen Termine sind erfasst.';
+    }
+    return '';
+  }
+
+  const lines = ['📅 <b>Vorschläge aus dem Kalender</b>\nSchreib den Text zum Übernehmen:'];
+  for (const ev of open.slice(0, 8)) {
+    const dur = formatDurationLabel(ev.hours);
+    const title = ev.title.replace(/\s+/g, ' ').trim();
+    const cmd = `${dur} ${title}`;
+    const window = ev.start && ev.end ? ` (${ev.start}–${ev.end})` : '';
+    lines.push(`• <code>${escapeHtml(cmd)}</code>${escapeHtml(window)}`);
+  }
+  return lines.join('\n');
+}
+
 async function loadTodaysTimeEntries() {
   return new Promise((resolve) => {
     const req = https.request({
@@ -755,25 +828,22 @@ async function loadTodaysTimeEntries() {
   });
 }
 
-function formatGraphError(message) {
+function formatExchangeError(message) {
   const text = String(message || '');
-  if (text.includes('AADSTS65001') || text.includes('has not consented')) {
-    return 'Microsoft braucht einmal deine Zustimmung.\nBitte hier neu verbinden:\nhttps://manuel-weiss.ch/onboarding/task-extractor';
+  if (text.includes('AADSTS65001') || text.includes('has not consented') || text.includes('Kein Refresh Token')) {
+    return 'Exchange-Zugang einmal freigeben:\nhttps://manuel-weiss.ch/onboarding/task-extractor';
   }
-  if (text.includes('Kein Refresh Token') || text.includes('refresh_token')) {
-    return 'Outlook ist nicht verbunden.\nBitte hier anmelden:\nhttps://manuel-weiss.ch/onboarding/task-extractor';
-  }
-  return 'Check gerade nicht möglich. Bitte später nochmal /feierabend.';
+  return 'Exchange-Check gerade nicht möglich. Später /feierabend.';
 }
 
-function formatUnansweredSection(unanswered) {
+function formatUnansweredSection(unanswered, limit = 8) {
   if (!unanswered.length) {
     return '✉️ <b>Unbeantwortete Mails</b>\nKeine offenen Mails älter als 4 Stunden.';
   }
 
   const lines = [`✉️ <b>Unbeantwortete Mails (${unanswered.length})</b>`];
   let currentLabel = null;
-  for (const mail of unanswered.slice(0, 8)) {
+  for (const mail of unanswered.slice(0, limit)) {
     if (mail.label !== currentLabel) {
       currentLabel = mail.label;
       lines.push(`\n<b>${mail.label}</b>`);
@@ -786,8 +856,8 @@ function formatUnansweredSection(unanswered) {
       lines.push(`• ${subject} (${sender}) – vor ${mail.ageHuman}`);
     }
   }
-  if (unanswered.length > 8) {
-    lines.push(`\n<i>… und ${unanswered.length - 8} weitere. /offen für die volle Liste.</i>`);
+  if (unanswered.length > limit) {
+    lines.push(`\n<i>… und ${unanswered.length - limit} weitere. /offen für die volle Liste.</i>`);
   }
   return lines.join('\n');
 }
@@ -795,10 +865,10 @@ function formatUnansweredSection(unanswered) {
 async function sendUnansweredMailMessage() {
   try {
     const unanswered = await graphClient.getUnansweredEmails();
-    await sendTelegramMessage(formatUnansweredSection(unanswered));
+    await sendTelegramMessage(formatUnansweredSection(unanswered, 25));
   } catch (error) {
     console.error('Unanswered mail check failed:', error);
-    await sendTelegramMessage(`✉️ Mail-Check fehlgeschlagen.\n${formatGraphError(error.message)}`);
+    await sendTelegramMessage(`✉️ Mail-Check fehlgeschlagen.\n${formatExchangeError(error.message)}`);
   }
 }
 
@@ -810,13 +880,17 @@ exports.feierabendCheck = async (event) => {
     return { statusCode: 200, body: 'Unanswered mail check sent' };
   }
 
-  const [todayArtifacts, unanswered, todaysTasks] = await Promise.all([
+  const [todayArtifacts, unanswered, todaysTasks, calendarEvents] = await Promise.all([
     loadTodaysTimeEntries(),
     graphClient.getUnansweredEmails().catch((err) => {
-      console.error('Graph unanswered failed:', err);
+      console.error('Exchange unanswered failed:', err);
       return { error: err.message };
     }),
-    getTodaysTasks().catch(() => [])
+    getTodaysTasks().catch(() => []),
+    loadTodaysCalendarEvents().catch((err) => {
+      console.error('Calendar snapshot failed:', err);
+      return [];
+    })
   ]);
 
   const totalHours = todayArtifacts.reduce((sum, a) => sum + (a.durationHours || 0), 0);
@@ -829,7 +903,7 @@ exports.feierabendCheck = async (event) => {
 
   let mailBlock;
   if (unanswered?.error) {
-    mailBlock = `✉️ <b>Unbeantwortete Mails</b>\n${formatGraphError(unanswered.error)}`;
+    mailBlock = `✉️ <b>Unbeantwortete Mails</b>\n${formatExchangeError(unanswered.error)}`;
   } else {
     mailBlock = formatUnansweredSection(unanswered || []);
   }
@@ -842,7 +916,8 @@ exports.feierabendCheck = async (event) => {
     if (pending.length) taskBlock += `\n<i>/tasks für die offenen Vorschläge</i>`;
   }
 
-  const message = `🌅 <b>Feierabend-Check</b>\n\n${timeBlock}\n\n${mailBlock}${taskBlock}`;
+  const calendarBlock = formatCalendarSuggestions(calendarEvents, todayArtifacts);
+  const message = `🌅 <b>Feierabend-Check</b>\n\n${timeBlock}${calendarBlock ? `\n\n${calendarBlock}` : ''}\n\n${mailBlock}${taskBlock}`;
   await sendTelegramMessage(message);
 
   return { statusCode: 200, body: 'Feierabend-Check sent' };
