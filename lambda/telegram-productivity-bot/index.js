@@ -303,7 +303,7 @@ exports.handler = async (event) => {
   
   if (body?.callback_query) {
     const data = String(body.callback_query.data || '');
-    if (data.startsWith('calok:') || data.startsWith('calno:')) {
+    if (data.startsWith('cal')) {
       try {
         await lambdaClient.send(new InvokeCommand({
           FunctionName: 'task-extractor-summary',

@@ -593,7 +593,7 @@ async function processScheduledCheck() {
 
 async function handleCallbackQuery(query) {
   const data = String(query?.data || '');
-  if (data.startsWith('calok:') || data.startsWith('calno:')) {
+  if (data.startsWith('cal')) {
     return await handleCalendarCallback(query);
   }
   const [action, taskId] = data.split(':');
@@ -907,9 +907,54 @@ function parseHm(hhmm) {
   return Number(match[1]) * 60 + Number(match[2]);
 }
 
+const EXCEL_TARGETS = [
+  { customer: 'SHS', label: 'SHS / Siemens' },
+  { customer: 'Cistec', label: 'Cistec' },
+  { customer: 'Intern', label: 'Intern' }
+];
+
 function guessCustomer(title) {
   const known = ['Horizon', 'SHS', 'Cistec', 'Knauf', 'HR Campus', 'Akyurek', 'Lonza', 'Bayer', 'UKG', 'Stardust', 'Roche', 'Novartis', 'Valkeen'];
-  return known.find((c) => title.toLowerCase().includes(c.toLowerCase())) || '';
+  if (title.toLowerCase().includes('siemens')) return 'SHS';
+  return known.find((c) => title.toLowerCase().includes(c.toLowerCase())) || 'SHS';
+}
+
+function excelLabel(customer) {
+  return EXCEL_TARGETS.find((t) => t.customer === customer)?.label || customer || 'bitte wählen';
+}
+
+function nextExcelTarget(customer) {
+  const index = EXCEL_TARGETS.findIndex((t) => t.customer === customer);
+  return EXCEL_TARGETS[(index + 1 + EXCEL_TARGETS.length) % EXCEL_TARGETS.length].customer;
+}
+
+function roundQuarterHours(hours) {
+  return Math.max(0.25, Math.round(Number(hours) * 4) / 4);
+}
+
+function calendarPromptText(prompt) {
+  const dur = formatDurationLabel(prompt.hours);
+  return `📅 <b>Termin vorbei</b>\n${escapeHtml(prompt.title)}\n${escapeHtml(prompt.start)}–${escapeHtml(prompt.end)}\n\n⏱ Zeit: <b>${escapeHtml(dur)}</b>\n📄 Excel: <b>${escapeHtml(excelLabel(prompt.customer))}</b>\n\nZeit und Ziel anpassen, dann speichern.`;
+}
+
+function calendarPromptKeyboard(prompt) {
+  const id = prompt.id;
+  const dur = formatDurationLabel(prompt.hours);
+  return {
+    inline_keyboard: [
+      [
+        { text: `✅ ${dur} speichern`, callback_data: `calok:${id}` },
+        { text: '❌ Nein', callback_data: `calno:${id}` }
+      ],
+      [
+        { text: '−15 Min', callback_data: `calm:${id}` },
+        { text: '+15 Min', callback_data: `calp:${id}` }
+      ],
+      [
+        { text: `📄 ${excelLabel(prompt.customer)} ›`, callback_data: `calx:${id}` }
+      ]
+    ]
+  };
 }
 
 async function telegramCall(method, payload) {
@@ -975,7 +1020,7 @@ async function saveCalendarTimeEntry(prompt) {
     type: /meeting|call|workshop|1to1|1:1|blocker|upgrade|sync/i.test(prompt.title) ? 'meeting' : 'other',
     title: prompt.title,
     description: `Kalender ${prompt.start}–${prompt.end}`,
-    customer: guessCustomer(prompt.title),
+    customer: prompt.customer || guessCustomer(prompt.title),
     project: '',
     impact: 3,
     durationHours: hours,
@@ -1000,7 +1045,29 @@ async function saveCalendarTimeEntry(prompt) {
     req.write(payload);
     req.end();
   });
+  await queueExcelTimesheetEntry(prompt, artifact);
   return artifact;
+}
+
+async function queueExcelTimesheetEntry(prompt, artifact) {
+  const customer = prompt.customer || artifact.customer;
+  if (!customer) return;
+  const hours = roundQuarterHours(prompt.hours || artifact.durationHours);
+  await dynamoClient.send(new PutItemCommand({
+    TableName: 'zeit-eintraege',
+    Item: marshall({
+      pk: 'pending',
+      sk: artifact.id,
+      id: artifact.id,
+      date: prompt.day || zurichDate(),
+      hours,
+      customer,
+      description: prompt.title,
+      status: 'confirmed',
+      createdAt: new Date().toISOString(),
+      source: 'calendar-followup'
+    })
+  }));
 }
 
 async function runCalendarFollowup() {
@@ -1034,22 +1101,13 @@ async function runCalendarFollowup() {
       title: ev.title.replace(/\s+/g, ' ').trim(),
       start: ev.start,
       end: ev.end,
-      hours: ev.hours,
+      hours: roundQuarterHours(ev.hours),
+      customer: guessCustomer(ev.title),
       status: 'pending',
       askedAt: new Date().toISOString()
     };
     await savePrompt(prompt);
-
-    const cmd = `${dur} ${prompt.title}`;
-    await sendTelegramMessage(
-      `📅 <b>Termin vorbei</b>\n${escapeHtml(prompt.title)}\n${escapeHtml(prompt.start)}–${escapeHtml(prompt.end)} · ${escapeHtml(dur)}\n\nAls Zeiteintrag speichern?`,
-      {
-        inline_keyboard: [[
-          { text: `Ja, ${dur}`, callback_data: `calok:${id}` },
-          { text: 'Nein', callback_data: `calno:${id}` }
-        ]]
-      }
-    );
+    await sendTelegramMessage(calendarPromptText(prompt), calendarPromptKeyboard(prompt));
     sent += 1;
   }
 
@@ -1066,13 +1124,49 @@ async function handleCalendarCallback(query) {
     return { statusCode: 200, body: 'unknown prompt' };
   }
 
+  const chatId = query?.message?.chat?.id;
+  const messageId = query?.message?.message_id;
+
+  if (action === 'calm' || action === 'calp') {
+    const delta = action === 'calp' ? 0.25 : -0.25;
+    prompt.hours = roundQuarterHours((Number(prompt.hours) || 0.25) + delta);
+    await savePrompt(prompt);
+    if (query?.id) await telegramCall('answerCallbackQuery', { callback_query_id: query.id, text: formatDurationLabel(prompt.hours) });
+    if (chatId && messageId) {
+      await telegramCall('editMessageText', {
+        chat_id: chatId,
+        message_id: messageId,
+        text: calendarPromptText(prompt),
+        parse_mode: 'HTML',
+        reply_markup: calendarPromptKeyboard(prompt)
+      });
+    }
+    return { statusCode: 200, body: 'hours updated' };
+  }
+
+  if (action === 'calx') {
+    prompt.customer = nextExcelTarget(prompt.customer);
+    await savePrompt(prompt);
+    if (query?.id) await telegramCall('answerCallbackQuery', { callback_query_id: query.id, text: excelLabel(prompt.customer) });
+    if (chatId && messageId) {
+      await telegramCall('editMessageText', {
+        chat_id: chatId,
+        message_id: messageId,
+        text: calendarPromptText(prompt),
+        parse_mode: 'HTML',
+        reply_markup: calendarPromptKeyboard(prompt)
+      });
+    }
+    return { statusCode: 200, body: 'target updated' };
+  }
+
   let text;
   if (action === 'calok' && prompt.status !== 'saved') {
     await saveCalendarTimeEntry(prompt);
     prompt.status = 'saved';
     await savePrompt(prompt);
     const dur = formatDurationLabel(prompt.hours);
-    text = `✅ Gespeichert: ${dur} ${prompt.title}`;
+    text = `✅ Gespeichert: ${dur} ${prompt.title}\n📄 Excel: ${excelLabel(prompt.customer)}\n<i>Geht mit dem nächsten Mac-Sync ins TimeSheet.</i>`;
   } else if (action === 'calno') {
     prompt.status = 'declined';
     await savePrompt(prompt);
@@ -1081,9 +1175,7 @@ async function handleCalendarCallback(query) {
     text = 'Schon erledigt.';
   }
 
-  if (query?.id) await telegramCall('answerCallbackQuery', { callback_query_id: query.id, text });
-  const chatId = query?.message?.chat?.id;
-  const messageId = query?.message?.message_id;
+  if (query?.id) await telegramCall('answerCallbackQuery', { callback_query_id: query.id, text: text.replace(/<[^>]+>/g, '').slice(0, 180) });
   if (chatId && messageId) {
     await telegramCall('editMessageText', {
       chat_id: chatId,
