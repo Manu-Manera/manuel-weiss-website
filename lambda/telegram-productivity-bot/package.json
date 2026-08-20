@@ -1,11 +1,15 @@
 {
   "name": "telegram-productivity-bot",
-  "version": "1.0.0",
-  "description": "Telegram Bot für Produktivitäts-Erfassung (DSGVO/DSG-konform)",
+  "version": "2.0.0",
+  "description": "Telegram Bot für Produktivitäts-Erfassung - AWS Bedrock Claude (DSGVO-konform, Frankfurt)",
   "main": "index.js",
   "author": "Manuel Weiss",
   "license": "MIT",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.600.0",
+    "@aws-sdk/client-lambda": "^3.600.0"
   }
 }

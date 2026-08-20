@@ -1,0 +1,17 @@
+{
+  "name": "task-extractor",
+  "version": "1.0.0",
+  "description": "Task Extractor - Emails, Teams, Meetings analysieren und Tasks extrahieren",
+  "main": "index.js",
+  "author": "Manuel Weiss",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.600.0",
+    "@aws-sdk/client-dynamodb": "^3.600.0",
+    "@aws-sdk/client-secrets-manager": "^3.600.0",
+    "@aws-sdk/util-dynamodb": "^3.600.0"
+  }
+}

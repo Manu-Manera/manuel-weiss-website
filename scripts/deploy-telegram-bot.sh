@@ -14,6 +14,7 @@ set -e
 REGION="eu-central-1"
 LAMBDA_NAME="telegram-productivity-bot"
 REMINDER_LAMBDA_NAME="telegram-productivity-reminder"
+SIRI_LAMBDA_NAME="telegram-productivity-siri"
 ROLE_NAME="telegram-bot-lambda-role"
 API_NAME="telegram-productivity-api"
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
@@ -139,6 +140,32 @@ else
         --region $REGION > /dev/null
 fi
 
+# Siri Lambda erstellen
+echo "📱 Deploye Siri Lambda: $SIRI_LAMBDA_NAME..."
+if aws lambda get-function --function-name $SIRI_LAMBDA_NAME --region $REGION 2>/dev/null; then
+    aws lambda update-function-code \
+        --function-name $SIRI_LAMBDA_NAME \
+        --zip-file fileb://telegram-bot.zip \
+        --region $REGION > /dev/null
+    
+    aws lambda update-function-configuration \
+        --function-name $SIRI_LAMBDA_NAME \
+        --handler index.siriCapture \
+        --environment "Variables={OPENAI_API_KEY=${OPENAI_KEY}}" \
+        --region $REGION > /dev/null
+else
+    aws lambda create-function \
+        --function-name $SIRI_LAMBDA_NAME \
+        --runtime nodejs20.x \
+        --role $ROLE_ARN \
+        --handler index.siriCapture \
+        --zip-file fileb://telegram-bot.zip \
+        --timeout 30 \
+        --memory-size 256 \
+        --environment "Variables={OPENAI_API_KEY=${OPENAI_KEY}}" \
+        --region $REGION > /dev/null
+fi
+
 # API Gateway erstellen
 echo "🌐 Konfiguriere API Gateway..."
 API_ID=$(aws apigatewayv2 get-apis --region $REGION --query "Items[?Name=='$API_NAME'].ApiId" --output text)
@@ -184,7 +211,46 @@ if [ -z "$API_ID" ]; then
         --region $REGION 2>/dev/null || true
 fi
 
+# Siri Route hinzufügen
+echo "   Konfiguriere Siri Route..."
+SIRI_INTEGRATION_ID=$(aws apigatewayv2 get-integrations --api-id $API_ID --region $REGION \
+    --query "Items[?contains(IntegrationUri, '$SIRI_LAMBDA_NAME')].IntegrationId" --output text 2>/dev/null)
+
+if [ -z "$SIRI_INTEGRATION_ID" ]; then
+    SIRI_INTEGRATION_ID=$(aws apigatewayv2 create-integration \
+        --api-id $API_ID \
+        --integration-type AWS_PROXY \
+        --integration-uri "arn:aws:lambda:${REGION}:${ACCOUNT_ID}:function:${SIRI_LAMBDA_NAME}" \
+        --payload-format-version "2.0" \
+        --region $REGION \
+        --query 'IntegrationId' --output text)
+    
+    # GET Route für Siri
+    aws apigatewayv2 create-route \
+        --api-id $API_ID \
+        --route-key "GET /siri" \
+        --target "integrations/$SIRI_INTEGRATION_ID" \
+        --region $REGION > /dev/null 2>&1 || true
+    
+    # POST Route für Siri (falls benötigt)
+    aws apigatewayv2 create-route \
+        --api-id $API_ID \
+        --route-key "POST /siri" \
+        --target "integrations/$SIRI_INTEGRATION_ID" \
+        --region $REGION > /dev/null 2>&1 || true
+    
+    # Lambda Permission für Siri
+    aws lambda add-permission \
+        --function-name $SIRI_LAMBDA_NAME \
+        --statement-id "apigateway-invoke" \
+        --action "lambda:InvokeFunction" \
+        --principal apigateway.amazonaws.com \
+        --source-arn "arn:aws:execute-api:${REGION}:${ACCOUNT_ID}:${API_ID}/*/*" \
+        --region $REGION 2>/dev/null || true
+fi
+
 WEBHOOK_URL="https://${API_ID}.execute-api.${REGION}.amazonaws.com/prod/webhook"
+SIRI_URL="https://${API_ID}.execute-api.${REGION}.amazonaws.com/prod/siri"
 
 # CloudWatch Event für 17:00 Reminder (CET = 15:00 UTC im Sommer, 16:00 UTC im Winter)
 echo "📅 Konfiguriere Abend-Reminder (17:00 CET)..."
@@ -193,8 +259,8 @@ RULE_NAME="telegram-productivity-reminder-daily"
 aws events put-rule \
     --name $RULE_NAME \
     --schedule-expression "cron(0 15 ? * MON-FRI *)" \
-    --state ENABLED \
-    --description "Täglicher Productivity Reminder um 17:00 CET (Mo-Fr)" \
+    --state DISABLED \
+    --description "Legacy: durch task-extractor-summary (Feierabend-Check 17:00) ersetzt" \
     --region $REGION > /dev/null
 
 aws lambda add-permission \
@@ -222,6 +288,9 @@ echo "✅ Deployment erfolgreich!"
 echo ""
 echo "📱 Telegram Bot ist bereit!"
 echo "   Webhook: $WEBHOOK_URL"
+echo ""
+echo "📱 Siri Shortcut Endpoint:"
+echo "   $SIRI_URL?text=..."
 echo ""
 echo "🕐 Reminder: Täglich 17:00 CET (Mo-Fr)"
 echo ""

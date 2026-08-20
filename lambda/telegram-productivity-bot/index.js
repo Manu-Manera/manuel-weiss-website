@@ -2,20 +2,41 @@
  * Telegram Productivity Bot - Lambda Handler
  * 
  * Empfängt Nachrichten wie "2h Horizon Support" und speichert sie als Artefakte.
- * DSGVO/DSG-konform: Keine Chat-History, nur extrahierte Daten in eu-central-1.
+ * DSGVO/DSG-konform: AWS Bedrock Claude in Frankfurt (eu-central-1)
  */
 
 const https = require('https');
+const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime');
+const { LambdaClient, InvokeCommand } = require('@aws-sdk/client-lambda');
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const ALLOWED_CHAT_ID = process.env.ALLOWED_CHAT_ID;
+
+// AWS Bedrock Claude (EU Inference Profile - Frankfurt) - DSGVO-konform
+const BEDROCK_REGION = process.env.BEDROCK_REGION || 'eu-central-1';
+const BEDROCK_MODEL = process.env.BEDROCK_MODEL || 'eu.anthropic.claude-haiku-4-5-20251001-v1:0';
+
+const bedrockClient = new BedrockRuntimeClient({ region: BEDROCK_REGION });
+const lambdaClient = new LambdaClient({ region: BEDROCK_REGION });
+
+async function invokeFeierabendCheck(source) {
+  await lambdaClient.send(new InvokeCommand({
+    FunctionName: 'task-extractor-summary',
+    InvocationType: 'Event',
+    Payload: JSON.stringify({ source })
+  }));
+}
+
 const API_BASE = 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
 const USER_ID = 'default-user';
 
-const KNOWN_CUSTOMERS = [
-  'Horizon', 'Cistec', 'Knauf', 'HR Campus', 'Akyurek', 'Lonza', 'Bayer', 'Intern', 'Valkeen'
+const DEFAULT_CUSTOMERS = [
+  'Horizon', 'SHS', 'Cistec', 'Knauf', 'HR Campus', 'Akyurek', 'Lonza', 'Bayer', 
+  'UKG', 'Stardust', 'Roche', 'Novartis', 'Intern', 'Valkeen'
 ];
+
+// Wird dynamisch aus den gespeicherten Daten geladen
+let KNOWN_CUSTOMERS = [...DEFAULT_CUSTOMERS];
 
 const ARTIFACT_TYPES = {
   'support': ['support', 'case', 'ticket', 'hilfe', 'problem', 'troubleshoot'],
@@ -55,58 +76,73 @@ async function sendTelegramMessage(chatId, text, options = {}) {
   });
 }
 
-async function parseWithOpenAI(message) {
-  const systemPrompt = `Du bist ein Zeiterfassungs-Parser. Extrahiere aus der Nachricht:
-- duration_hours: Dauer in Stunden (z.B. "2h" = 2, "30min" = 0.5, "1.5h" = 1.5)
-- customer: Kunde aus dieser Liste: ${KNOWN_CUSTOMERS.join(', ')}
-- type: Einer von: document, code, presentation, support, demo, meeting, training, other
-- title: Kurze Beschreibung der Tätigkeit
-- impact: Geschätzter Impact 1-5 (1=Routine, 3=Normal, 5=Strategisch wichtig)
+async function parseWithBedrock(message, existingCustomers = []) {
+  const allCustomers = [...new Set([...KNOWN_CUSTOMERS, ...existingCustomers])];
+  
+  const systemPrompt = `Du bist ein Zeiterfassungs-Parser. Parse die Nachricht EXAKT.
 
-Antworte NUR mit validem JSON, keine Erklärung. Beispiel:
-{"duration_hours": 2, "customer": "Horizon", "type": "support", "title": "Support-Call Berechtigungen", "impact": 3}
+DURATION_HOURS - Erkenne ALLE Zeitformate:
+- "2 stunden", "2 Stunden", "zwei stunden" = 2
+- "2h", "2H" = 2  
+- "1.5h", "1,5h", "eineinhalb stunden" = 1.5
+- "30 min", "30min", "30 minuten" = 0.5
+- "45 min" = 0.75
 
-Falls du etwas nicht erkennen kannst, setze null.`;
+CUSTOMER - Der ERSTE genannte Kunde/Firma:
+- Bekannt: ${allCustomers.join(', ')}
+- "SHS, Horizon Projekt" → customer = "SHS" (der ERSTE!)
+- "Horizon Projekt" → customer = "Horizon"
+- Unbekannte Firmen: Nimm sie trotzdem! ("Acme Corp" → customer = "Acme Corp")
+- Typische Positionen: Am Anfang, nach Komma, vor "Projekt"
 
-  const payload = JSON.stringify({
-    model: 'gpt-4o-mini',
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: message }
-    ],
-    temperature: 0.1,
-    max_tokens: 200
-  });
+TYPE - Nach Tätigkeit:
+- document: Dokumentation, QRG, Guide, FAQ, Anleitung erstellen/schreiben
+- code: Script, API, Automation, Entwicklung, Lambda
+- meeting: Call, Meeting, Workshop, Termin, Sync
+- support: Support, Ticket, Troubleshooting
+- demo: Demo zeigen, Walkthrough
+- training: Schulung, Training
+- presentation: PowerPoint, Slides, Deck erstellen
+- other: Alles andere
 
-  return new Promise((resolve, reject) => {
-    const req = https.request({
-      hostname: 'api.openai.com',
-      path: '/v1/chat/completions',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-        'Content-Length': Buffer.byteLength(payload)
-      }
-    }, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        try {
-          const response = JSON.parse(data);
-          const content = response.choices?.[0]?.message?.content || '{}';
-          const parsed = JSON.parse(content.replace(/```json\n?|\n?```/g, ''));
-          resolve(parsed);
-        } catch (e) {
-          console.error('OpenAI parse error:', e, data);
-          resolve(null);
-        }
-      });
+TITLE - Kurze, saubere Beschreibung (ohne Dauer, ohne den ersten Kundennamen)
+
+BEISPIELE:
+Input: "SHS, Horizon Projekt 2 stunden dokumentation für zeiterfassung erstellen"
+Output: {"duration_hours":2,"customer":"SHS","type":"document","title":"Horizon Projekt - Dokumentation für Zeiterfassung erstellen","impact":3}
+
+Input: "45 min HR Campus support call"
+Output: {"duration_hours":0.75,"customer":"HR Campus","type":"meeting","title":"Support Call","impact":3}
+
+Input: "3h Neukunde ABC onboarding workshop"
+Output: {"duration_hours":3,"customer":"Neukunde ABC","type":"training","title":"Onboarding Workshop","impact":3}
+
+NUR JSON ausgeben, keine Erklärung!`;
+
+  try {
+    const command = new InvokeModelCommand({
+      modelId: BEDROCK_MODEL,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        anthropic_version: 'bedrock-2023-05-31',
+        max_tokens: 200,
+        temperature: 0.1,
+        system: systemPrompt,
+        messages: [
+          { role: 'user', content: message }
+        ]
+      })
     });
-    req.on('error', reject);
-    req.write(payload);
-    req.end();
-  });
+
+    const response = await bedrockClient.send(command);
+    const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+    const content = responseBody.content?.[0]?.text || '{}';
+    const parsed = JSON.parse(content.replace(/```json\n?|\n?```/g, ''));
+    return parsed;
+  } catch (error) {
+    console.error('Bedrock error:', error);
+    return null;
+  }
 }
 
 function parseSimple(message) {
@@ -194,9 +230,15 @@ async function addArtifact(parsed, originalMessage) {
   if (!progress.productivityTracker) {
     progress.productivityTracker = {
       artifacts: [],
-      customers: KNOWN_CUSTOMERS,
-      projects: []
+      customers: [...DEFAULT_CUSTOMERS],
+      projects: [],
+      taskTypes: [] // Für benutzerdefinierte Task-Typen
     };
+  }
+  
+  // Stelle sicher dass customers Array existiert
+  if (!progress.productivityTracker.customers) {
+    progress.productivityTracker.customers = [...DEFAULT_CUSTOMERS];
   }
   
   const artifact = {
@@ -205,7 +247,7 @@ async function addArtifact(parsed, originalMessage) {
     title: parsed.title || originalMessage,
     description: `Via Telegram: "${originalMessage}"`,
     customer: parsed.customer || '',
-    project: '',
+    project: parsed.project || '',
     impact: parsed.impact || 3,
     durationHours: parsed.duration_hours,
     date: new Date().toISOString().split('T')[0],
@@ -215,12 +257,23 @@ async function addArtifact(parsed, originalMessage) {
   
   progress.productivityTracker.artifacts.push(artifact);
   
+  // NEUEN Kunden automatisch speichern
   if (parsed.customer && !progress.productivityTracker.customers.includes(parsed.customer)) {
     progress.productivityTracker.customers.push(parsed.customer);
+    console.log('Neuer Kunde hinzugefügt:', parsed.customer);
+  }
+  
+  // NEUES Projekt speichern (falls vorhanden)
+  if (parsed.project && !progress.productivityTracker.projects?.includes(parsed.project)) {
+    if (!progress.productivityTracker.projects) {
+      progress.productivityTracker.projects = [];
+    }
+    progress.productivityTracker.projects.push(parsed.project);
+    console.log('Neues Projekt hinzugefügt:', parsed.project);
   }
   
   const saved = await saveProgress(progress);
-  return { artifact, saved };
+  return { artifact, saved, isNewCustomer: parsed.customer && !DEFAULT_CUSTOMERS.includes(parsed.customer) };
 }
 
 function formatArtifactConfirmation(artifact) {
@@ -279,6 +332,8 @@ Ich parse deine Nachricht und speichere sie im Tracker.
 
 <b>Befehle:</b>
 /heute - Was du heute erfasst hast
+/offen - Unbeantwortete Mails
+/feierabend - Feierabend-Check jetzt
 /help - Diese Hilfe`);
     return { statusCode: 200, body: 'OK' };
   }
@@ -302,21 +357,33 @@ Ich parse deine Nachricht und speichere sie im Tracker.
     return { statusCode: 200, body: 'OK' };
   }
   
+  if (text.startsWith('/offen') || text.startsWith('/feierabend')) {
+    await sendTelegramMessage(chatId, 'Prüfe Posteingang und Zeiterfassung…');
+    try {
+      await invokeFeierabendCheck(text.startsWith('/offen') ? 'offen' : 'command');
+    } catch (err) {
+      console.error('Feierabend invoke failed:', err);
+      await sendTelegramMessage(chatId, 'Check konnte nicht gestartet werden. Bitte später erneut versuchen.');
+    }
+    return { statusCode: 200, body: 'OK' };
+  }
+
   if (text.startsWith('/help')) {
     await sendTelegramMessage(chatId, `📖 <b>So funktioniert's:</b>
 
 Schreib mir einfach was du gemacht hast. Ich erkenne:
 
 <b>Zeit:</b> 2h, 30min, 1.5h
-<b>Kunden:</b> Horizon, Cistec, Knauf, HR Campus, etc.
-<b>Typen:</b> Meeting, Support, Doku, Code, Demo, Training
+<b>Kunden:</b> Beliebige Namen! Neue Kunden werden automatisch gespeichert.
+<b>Typen:</b> Meeting, Support, Doku, Code, Demo, Training, Präsentation
 
 <b>Beispiele:</b>
 <code>2h Horizon Support-Call</code>
 <code>45min Knauf QRG erstellt</code>
-<code>3h Cistec Workshop vorbereitet</code>
+<code>3h Neuer Kunde ABC Kickoff Meeting</code>
+<code>1.5h SHS Dokumentation schreiben</code>
 
-Alles wird automatisch im Tracker gespeichert! 🚀`);
+✨ Neue Kunden/Projekte werden automatisch gelernt! 🚀`);
     return { statusCode: 200, body: 'OK' };
   }
   
@@ -331,9 +398,13 @@ Alles wird automatisch im Tracker gespeichert! 🚀`);
   
   await sendTelegramMessage(chatId, '⏳ Verarbeite...');
   
+  // Lade existierende Kunden für besseres Parsing
+  const progress = await loadCurrentProgress();
+  const existingCustomers = progress.productivityTracker?.customers || [];
+  
   let parsed;
-  if (OPENAI_API_KEY) {
-    parsed = await parseWithOpenAI(text);
+  if (bedrockClient) {
+    parsed = await parseWithBedrock(text, existingCustomers);
   }
   if (!parsed || !parsed.title) {
     parsed = parseSimple(text);
@@ -341,10 +412,14 @@ Alles wird automatisch im Tracker gespeichert! 🚀`);
   
   console.log('Parsed:', parsed);
   
-  const { artifact, saved } = await addArtifact(parsed, text);
+  const { artifact, saved, isNewCustomer } = await addArtifact(parsed, text);
   
   if (saved) {
-    await sendTelegramMessage(chatId, formatArtifactConfirmation(artifact));
+    let confirmation = formatArtifactConfirmation(artifact);
+    if (isNewCustomer) {
+      confirmation += `\n\n🆕 <i>Neuer Kunde "${artifact.customer}" wurde gespeichert!</i>`;
+    }
+    await sendTelegramMessage(chatId, confirmation);
   } else {
     await sendTelegramMessage(chatId, '❌ Fehler beim Speichern. Bitte später erneut versuchen.');
   }
@@ -352,37 +427,71 @@ Alles wird automatisch im Tracker gespeichert! 🚀`);
   return { statusCode: 200, body: 'OK' };
 };
 
-exports.sendReminder = async (event) => {
-  if (!TELEGRAM_BOT_TOKEN || !ALLOWED_CHAT_ID) {
-    console.log('Missing config for reminder');
-    return { statusCode: 200, body: 'Missing config' };
+// Siri Shortcut Handler - einfacher GET-Request mit ?text=...
+exports.siriCapture = async (event) => {
+  console.log('Siri Event:', JSON.stringify(event));
+  
+  // Text aus Query-String oder Body
+  let text = event.queryStringParameters?.text || '';
+  if (!text && event.body) {
+    try {
+      const body = JSON.parse(event.body);
+      text = body.text || '';
+    } catch (e) {}
   }
   
+  text = decodeURIComponent(text).trim();
+  
+  if (!text || text.length < 3) {
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      body: 'Fehler: Kein Text angegeben'
+    };
+  }
+  
+  console.log('Siri text:', text);
+  
+  // Lade existierende Kunden für besseres Parsing
   const progress = await loadCurrentProgress();
-  const artifacts = progress.productivityTracker?.artifacts || [];
-  const today = new Date().toISOString().split('T')[0];
-  const todayArtifacts = artifacts.filter(a => a.date === today);
+  const existingCustomers = progress.productivityTracker?.customers || [];
   
-  let message;
-  if (todayArtifacts.length === 0) {
-    message = `🌅 <b>Feierabend-Check!</b>
-
-Was hast du heute geschafft? Schreib mir z.B.:
-
-<code>2h Horizon Support</code>
-<code>1h Cistec Meeting</code>
-
-Oder /heute um zu sehen was du schon erfasst hast.`;
-  } else {
-    const totalHours = todayArtifacts.reduce((sum, a) => sum + (a.durationHours || 0), 0);
-    message = `🌅 <b>Feierabend-Check!</b>
-
-Du hast heute schon <b>${todayArtifacts.length} Einträge</b> (${totalHours.toFixed(1)}h) erfasst.
-
-Noch was vergessen? Einfach schreiben!`;
+  let parsed;
+  if (bedrockClient) {
+    parsed = await parseWithBedrock(text, existingCustomers);
+  }
+  if (!parsed || !parsed.title) {
+    parsed = parseSimple(text);
   }
   
-  await sendTelegramMessage(ALLOWED_CHAT_ID, message);
+  console.log('Parsed:', parsed);
   
-  return { statusCode: 200, body: 'Reminder sent' };
+  const { artifact, saved, isNewCustomer } = await addArtifact(parsed, text);
+  
+  if (saved) {
+    const duration = artifact.durationHours ? `${artifact.durationHours} Stunden` : '';
+    const customer = artifact.customer || '';
+    const newCustomerNote = isNewCustomer ? ` (neuer Kunde)` : '';
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      body: `Erfasst: ${duration} ${customer}${newCustomerNote} - ${artifact.title}`.trim()
+    };
+  } else {
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      body: 'Fehler beim Speichern'
+    };
+  }
+};
+
+exports.sendReminder = async (event) => {
+  try {
+    await invokeFeierabendCheck('schedule');
+    return { statusCode: 200, body: 'Feierabend-Check triggered' };
+  } catch (err) {
+    console.error('Feierabend invoke failed:', err);
+    return { statusCode: 500, body: 'Invoke failed' };
+  }
 };
