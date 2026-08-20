@@ -39,7 +39,7 @@ async function refreshAccessToken() {
     client_secret: creds.clientSecret,
     refresh_token: creds.refreshToken,
     grant_type: 'refresh_token',
-    scope: 'offline_access Mail.Read Calendars.Read Tasks.ReadWrite User.Read ChannelMessage.Read.All'
+    scope: 'offline_access Mail.Read User.Read'
   });
 
   const tenantPath = creds.userTenantId || 'organizations';
@@ -397,7 +397,7 @@ async function exchangeCodeForTokens(code, redirectUri) {
     code,
     redirect_uri: redirectUri,
     grant_type: 'authorization_code',
-    scope: 'offline_access Mail.Read Calendars.Read Tasks.ReadWrite User.Read ChannelMessage.Read.All'
+    scope: 'offline_access Mail.Read User.Read'
   });
 
   return new Promise((resolve, reject) => {

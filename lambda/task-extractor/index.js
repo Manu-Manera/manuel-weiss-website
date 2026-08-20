@@ -755,6 +755,17 @@ async function loadTodaysTimeEntries() {
   });
 }
 
+function formatGraphError(message) {
+  const text = String(message || '');
+  if (text.includes('AADSTS65001') || text.includes('has not consented')) {
+    return 'Microsoft braucht einmal deine Zustimmung.\nBitte hier neu verbinden:\nhttps://manuel-weiss.ch/onboarding/task-extractor';
+  }
+  if (text.includes('Kein Refresh Token') || text.includes('refresh_token')) {
+    return 'Outlook ist nicht verbunden.\nBitte hier anmelden:\nhttps://manuel-weiss.ch/onboarding/task-extractor';
+  }
+  return 'Check gerade nicht möglich. Bitte später nochmal /feierabend.';
+}
+
 function formatUnansweredSection(unanswered) {
   if (!unanswered.length) {
     return '✉️ <b>Unbeantwortete Mails</b>\nKeine offenen Mails älter als 4 Stunden.';
@@ -787,7 +798,7 @@ async function sendUnansweredMailMessage() {
     await sendTelegramMessage(formatUnansweredSection(unanswered));
   } catch (error) {
     console.error('Unanswered mail check failed:', error);
-    await sendTelegramMessage(`✉️ Mail-Check fehlgeschlagen: ${escapeHtml(error.message)}`);
+    await sendTelegramMessage(`✉️ Mail-Check fehlgeschlagen.\n${formatGraphError(error.message)}`);
   }
 }
 
@@ -818,7 +829,7 @@ exports.feierabendCheck = async (event) => {
 
   let mailBlock;
   if (unanswered?.error) {
-    mailBlock = `✉️ <b>Unbeantwortete Mails</b>\nCheck nicht möglich: ${escapeHtml(unanswered.error)}`;
+    mailBlock = `✉️ <b>Unbeantwortete Mails</b>\n${formatGraphError(unanswered.error)}`;
   } else {
     mailBlock = formatUnansweredSection(unanswered || []);
   }
