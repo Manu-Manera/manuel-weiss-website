@@ -746,7 +746,7 @@ function formatDurationLabel(hours) {
   return Number.isInteger(q) ? `${q}h` : `${q}h`;
 }
 
-const SKIP_CALENDAR_TITLE = /^(lunch|mittag(essen)?|focus time|fokuszeit|ooo|abwesend|urlaub|vacation|private)$/i;
+const SKIP_CALENDAR_TITLE = /(^(lunch|mittag(essen)?|focus time|fokuszeit|ooo|abwesend|urlaub|vacation|private)$|abgas|womo|zahnarzt|privat)/i;
 
 function normalizeTitle(text) {
   return String(text || '')
@@ -908,9 +908,8 @@ function parseHm(hhmm) {
 }
 
 const EXCEL_TARGETS = [
-  { customer: 'SHS', label: 'SHS / Siemens' },
   { customer: 'Cistec', label: 'Cistec' },
-  { customer: 'Intern', label: 'Intern' }
+  { customer: 'SHS', label: 'SHS / Siemens' }
 ];
 
 function guessCustomer(title) {
@@ -934,7 +933,7 @@ function roundQuarterHours(hours) {
 
 function calendarPromptText(prompt) {
   const dur = formatDurationLabel(prompt.hours);
-  return `📅 <b>Termin vorbei</b>\n${escapeHtml(prompt.title)}\n${escapeHtml(prompt.start)}–${escapeHtml(prompt.end)}\n\n⏱ Zeit: <b>${escapeHtml(dur)}</b>\n📄 Excel: <b>${escapeHtml(excelLabel(prompt.customer))}</b>\n\nZeit und Ziel anpassen, dann speichern.`;
+  return `📅 <b>Termin vorbei</b>\n${escapeHtml(prompt.title)}\n${escapeHtml(prompt.start)}–${escapeHtml(prompt.end)}\n\n⏱ Zeit: <b>${escapeHtml(dur)}</b>\n📄 Excel: <b>${escapeHtml(excelLabel(prompt.customer))}</b>\n\nZeit mit ±15 Min ändern, Excel-Datei antippen, dann speichern.`;
 }
 
 function calendarPromptKeyboard(prompt) {
@@ -950,9 +949,10 @@ function calendarPromptKeyboard(prompt) {
         { text: '−15 Min', callback_data: `calm:${id}` },
         { text: '+15 Min', callback_data: `calp:${id}` }
       ],
-      [
-        { text: `📄 ${excelLabel(prompt.customer)} ›`, callback_data: `calx:${id}` }
-      ]
+      EXCEL_TARGETS.map((t) => ({
+        text: `${prompt.customer === t.customer ? '✅' : '📄'} ${t.label}`,
+        callback_data: `calx:${id}:${t.customer}`
+      }))
     ]
   };
 }
@@ -1145,7 +1145,12 @@ async function handleCalendarCallback(query) {
   }
 
   if (action === 'calx') {
-    prompt.customer = nextExcelTarget(prompt.customer);
+    const picked = String(query?.data || '').split(':')[2];
+    if (picked && EXCEL_TARGETS.some((t) => t.customer === picked)) {
+      prompt.customer = picked;
+    } else {
+      prompt.customer = nextExcelTarget(prompt.customer);
+    }
     await savePrompt(prompt);
     if (query?.id) await telegramCall('answerCallbackQuery', { callback_query_id: query.id, text: excelLabel(prompt.customer) });
     if (chatId && messageId) {
