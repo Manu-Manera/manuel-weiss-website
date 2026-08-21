@@ -909,8 +909,15 @@ function parseHm(hhmm) {
 
 const EXCEL_TARGETS = [
   { customer: 'Cistec', label: 'Cistec' },
-  { customer: 'SHS', label: 'SHS / Siemens' }
+  { customer: 'SHS', label: 'SHS / Siemens' },
+  { customer: 'Horizon', label: 'Horizon' },
+  { customer: 'Knauf', label: 'Knauf' },
+  { customer: 'HR Campus', label: 'HR Campus' },
+  { customer: 'Intern', label: 'Intern / Valkeen' }
 ];
+
+const EINTRAG_API = 'https://bs9hmd2jp8.execute-api.eu-central-1.amazonaws.com/prod/eintrag';
+const TEAMS_HEADER = 'https://manuel-weiss.ch/images/valkeen-card-header.png?v=20260821b';
 
 function guessCustomer(title) {
   const known = ['Horizon', 'SHS', 'Cistec', 'Knauf', 'HR Campus', 'Akyurek', 'Lonza', 'Bayer', 'UKG', 'Stardust', 'Roche', 'Novartis', 'Valkeen'];
@@ -929,6 +936,230 @@ function nextExcelTarget(customer) {
 
 function roundQuarterHours(hours) {
   return Math.max(0.25, Math.round(Number(hours) * 4) / 4);
+}
+
+function smartTimesheetTitle(title) {
+  const text = String(title || '').replace(/\s+/g, ' ').trim();
+  if (!text) return 'Meeting MW';
+  if (/\b(MW|MN|AS)(\+[A-Z]{2})?\b/.test(text)) return text;
+  return `${text} MW`;
+}
+
+function httpsJson(urlString, payload, method = 'POST') {
+  const url = new URL(urlString);
+  const data = payload == null ? '' : JSON.stringify(payload);
+  return new Promise((resolve, reject) => {
+    const req = https.request({
+      hostname: url.hostname,
+      path: url.pathname + url.search,
+      port: url.port || 443,
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(data ? { 'Content-Length': Buffer.byteLength(data) } : {})
+      }
+    }, (res) => {
+      let body = '';
+      res.on('data', (chunk) => { body += chunk; });
+      res.on('end', () => resolve({ status: res.statusCode, body }));
+    });
+    req.on('error', reject);
+    if (data) req.write(data);
+    req.end();
+  });
+}
+
+function buildTeamsCalendarCard(prompt) {
+  const title = smartTimesheetTitle(prompt.title);
+  const hours = roundQuarterHours(prompt.hours);
+  const customer = prompt.customer || 'SHS';
+  return {
+    type: 'AdaptiveCard',
+    $schema: 'http://adaptivecards.io/schemas/adaptive-card.json',
+    version: '1.4',
+    msteams: { width: 'Full' },
+    body: [
+      {
+        type: 'Container',
+        bleed: true,
+        backgroundImage: { url: TEAMS_HEADER, fillMode: 'Cover', verticalAlignment: 'Center' },
+        items: [{
+          type: 'ColumnSet',
+          columns: [
+            { type: 'Column', width: 'stretch', items: [{ type: 'TextBlock', text: ' ', spacing: 'None' }] },
+            {
+              type: 'Column',
+              width: 'auto',
+              verticalContentAlignment: 'Center',
+              items: [
+                { type: 'TextBlock', text: 'ZEITERFASSUNG', weight: 'Bolder', size: 'Small', color: 'Light', horizontalAlignment: 'Right', spacing: 'None' },
+                { type: 'TextBlock', text: 'Implementation · TimeSheet', size: 'Small', color: 'Light', isSubtle: true, horizontalAlignment: 'Right', spacing: 'None' }
+              ]
+            }
+          ]
+        }]
+      },
+      {
+        type: 'Container',
+        spacing: 'Medium',
+        items: [
+          { type: 'TextBlock', text: 'TERMIN VORBEI', size: 'Small', weight: 'Bolder', color: 'Accent', spacing: 'None' },
+          { type: 'TextBlock', text: title, weight: 'Bolder', size: 'Large', wrap: true, spacing: 'Small' },
+          {
+            type: 'ColumnSet',
+            spacing: 'Medium',
+            columns: [
+              {
+                type: 'Column',
+                width: 'stretch',
+                items: [
+                  { type: 'TextBlock', text: 'ZEITRAUM', size: 'Small', isSubtle: true, spacing: 'None' },
+                  { type: 'TextBlock', text: `${prompt.start || '–'} – ${prompt.end || '–'}`, weight: 'Bolder', spacing: 'None' }
+                ]
+              },
+              {
+                type: 'Column',
+                width: 'stretch',
+                items: [
+                  { type: 'TextBlock', text: 'DAUER', size: 'Small', isSubtle: true, spacing: 'None' },
+                  { type: 'TextBlock', text: `${hours} h`, weight: 'Bolder', color: 'Good', spacing: 'None' }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        type: 'Container',
+        spacing: 'Large',
+        separator: true,
+        items: [
+          { type: 'Input.Text', id: 'title', label: 'Text im TimeSheet', value: title, isMultiline: true, maxLength: 240 },
+          { type: 'Input.Number', id: 'hours', label: 'Stunden', value: hours, min: 0.25 },
+          {
+            type: 'Input.ChoiceSet',
+            id: 'customer',
+            label: 'Excel / Kunde',
+            style: 'compact',
+            value: customer,
+            choices: EXCEL_TARGETS.map((t) => ({ title: t.label, value: t.customer }))
+          }
+        ]
+      }
+    ],
+    actions: [
+      { type: 'Action.Submit', title: 'Speichern', style: 'positive', data: { action: 'save', id: prompt.id } },
+      { type: 'Action.Submit', title: 'Verwerfen', data: { action: 'discard', id: prompt.id } }
+    ]
+  };
+}
+
+async function loadTeamsWebhookUrl() {
+  if (process.env.TEAMS_CARD_WEBHOOK_URL) return process.env.TEAMS_CARD_WEBHOOK_URL;
+  const result = await dynamoClient.send(new GetItemCommand({
+    TableName: DYNAMODB_TABLE,
+    Key: { pk: { S: 'SETTINGS' }, sk: { S: 'TEAMS_WEBHOOK' } }
+  }));
+  return result.Item ? unmarshall(result.Item).url : null;
+}
+
+async function sendTeamsCalendarCard(prompt) {
+  const webhook = await loadTeamsWebhookUrl();
+  if (!webhook) return { sent: false, reason: 'no-webhook' };
+  const card = buildTeamsCalendarCard(prompt);
+  const res = await httpsJson(webhook, {
+    type: 'message',
+    attachments: [{
+      contentType: 'application/vnd.microsoft.card.adaptive',
+      contentUrl: null,
+      content: card
+    }]
+  });
+  if (res.status >= 200 && res.status < 300) return { sent: true };
+  console.error('Teams card failed', res.status, String(res.body || '').slice(0, 200));
+  return { sent: false, reason: `http-${res.status}` };
+}
+
+async function postZeitEintrag(payload) {
+  return httpsJson(EINTRAG_API, payload);
+}
+
+function parseZeitcardPayload(subject, preview, html) {
+  const raw = [subject, preview, String(html || '').replace(/<[^>]+>/g, '\n')].join('\n');
+  const jsonMatch = raw.match(/\{[\s\S]{5,800}\}/);
+  if (jsonMatch) {
+    try {
+      const parsed = JSON.parse(jsonMatch[0].replace(/&quot;/g, '"'));
+      if (parsed.id && parsed.action) return parsed;
+    } catch { /* fall through */ }
+  }
+  const pick = (key) => {
+    const match = raw.match(new RegExp(`${key}\\s*[:=]\\s*["']?([^\\n<"']+)`, 'i'));
+    return match ? match[1].trim() : '';
+  };
+  const id = pick('id');
+  const action = pick('action') || (/verwerfen|discard/i.test(raw) ? 'discard' : 'save');
+  if (!id) return null;
+  return {
+    id,
+    action,
+    title: pick('title') || pick('description'),
+    hours: pick('hours'),
+    customer: pick('customer')
+  };
+}
+
+async function zeitcardAlreadyHandled(messageId) {
+  const result = await dynamoClient.send(new GetItemCommand({
+    TableName: DYNAMODB_TABLE,
+    Key: { pk: { S: 'ZEITCARD' }, sk: { S: messageId } }
+  }));
+  return Boolean(result.Item);
+}
+
+async function markZeitcardHandled(messageId, id) {
+  await dynamoClient.send(new PutItemCommand({
+    TableName: DYNAMODB_TABLE,
+    Item: marshall({
+      pk: 'ZEITCARD',
+      sk: messageId,
+      id,
+      handledAt: new Date().toISOString()
+    })
+  }));
+}
+
+async function processZeitcardEmails() {
+  const since = new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString();
+  const messages = await graphClient.getNewEmails(since);
+  let handled = 0;
+  for (const msg of messages || []) {
+    if (!/\[ZEITCARD\]/i.test(msg.subject || '')) continue;
+    if (await zeitcardAlreadyHandled(msg.id)) continue;
+    let html = msg.bodyPreview || '';
+    try {
+      const full = await graphClient.getEmail(msg.id);
+      html = full?.body?.content || html;
+    } catch (err) {
+      console.error('Zeitcard mail load failed', err.message);
+    }
+    const parsed = parseZeitcardPayload(msg.subject, msg.bodyPreview, html);
+    if (!parsed?.id) continue;
+    const res = await postZeitEintrag({
+      id: parsed.id,
+      action: parsed.action === 'discard' ? 'discard' : 'save',
+      title: parsed.title,
+      hours: parsed.hours,
+      customer: parsed.customer
+    });
+    if (res.status >= 200 && res.status < 300) {
+      await markZeitcardHandled(msg.id, parsed.id);
+      handled += 1;
+    } else {
+      console.error('Zeitcard /eintrag failed', res.status, String(res.body || '').slice(0, 200));
+    }
+  }
+  return handled;
 }
 
 function calendarPromptText(prompt) {
@@ -1074,6 +1305,13 @@ async function queueExcelTimesheetEntry(prompt, artifact) {
 }
 
 async function runCalendarFollowup() {
+  let zeitcardHandled = 0;
+  try {
+    zeitcardHandled = await processZeitcardEmails();
+  } catch (err) {
+    console.error('Zeitcard poll failed', err.message);
+  }
+
   const day = zurichDate();
   const nowMin = zurichMinutesNow();
   const [events, artifacts] = await Promise.all([
@@ -1101,7 +1339,7 @@ async function runCalendarFollowup() {
       sk: id,
       id,
       day,
-      title: ev.title.replace(/\s+/g, ' ').trim(),
+      title: smartTimesheetTitle(ev.title.replace(/\s+/g, ' ').trim()),
       start: ev.start,
       end: ev.end,
       hours: roundQuarterHours(ev.hours),
@@ -1110,11 +1348,14 @@ async function runCalendarFollowup() {
       askedAt: new Date().toISOString()
     };
     await savePrompt(prompt);
-    await sendTelegramMessage(calendarPromptText(prompt), calendarPromptKeyboard(prompt));
+    const teams = await sendTeamsCalendarCard(prompt);
+    if (!teams.sent) {
+      await sendTelegramMessage(calendarPromptText(prompt), calendarPromptKeyboard(prompt));
+    }
     sent += 1;
   }
 
-  return { statusCode: 200, body: `Calendar follow-up sent ${sent}` };
+  return { statusCode: 200, body: `Calendar follow-up sent ${sent}, zeitcard ${zeitcardHandled}` };
 }
 
 async function handleCalendarCallback(query) {
@@ -1210,7 +1451,7 @@ async function sendUnansweredMailMessage() {
 exports.feierabendCheck = async (event) => {
   console.log('Feierabend-Check', event?.source || 'schedule');
 
-  if (event?.source === 'calendar-followup') {
+  if (event?.source === 'calendar-followup' || event?.source === 'zeitcard-poll') {
     return await runCalendarFollowup();
   }
   if (event?.source === 'cal-callback') {
