@@ -952,7 +952,10 @@ function calendarPromptKeyboard(prompt) {
       EXCEL_TARGETS.map((t) => ({
         text: `${prompt.customer === t.customer ? '✅' : '📄'} ${t.label}`,
         callback_data: `calx:${id}:${t.customer}`
-      }))
+      })),
+      [
+        { text: '✏️ Text & Excel anpassen', url: `https://manuel-weiss.ch/zeit-eintrag.html?id=${id}` }
+      ]
     ]
   };
 }
