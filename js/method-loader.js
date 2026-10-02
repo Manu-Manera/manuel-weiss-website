@@ -224,7 +224,7 @@ class MethodLoader {
             },
             'wheel-of-life': {
                 title: 'Wheel of Life Workflow',
-                htmlFile: 'methods/wheel-of-life/wheel-of-life.html',
+                htmlFile: 'methods/wheel-of-life/index-wheel-of-life.html',
                 cssFile: 'methods/wheel-of-life/wheel-of-life.css',
                 jsFile: 'methods/wheel-of-life/wheel-of-life.js',
                 initFunction: 'initWheelOfLife'

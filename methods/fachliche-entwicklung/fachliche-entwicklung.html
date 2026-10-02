@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fachliche Entwicklung | Manuel Weiss</title>
+    <meta name="description" content="Fachliche Entwicklung in sieben Schritten: Standort mit Skill-Radar, Skill-Gap-Analyse, Lernpfad mit Zeitplan, Zertifikate, Fortschritts-Check-ins, Roadmap und SMART-Aktionsplan.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="fachliche-entwicklung.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-rocket"></i></span><span>Fachliche Entwicklung</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-rocket"></i></div>
+            <div class="mk-kicker">Karriere · Kompetenzentwicklung</div>
+            <h1>Vom Ist zum Soll – mit Plan</h1>
+            <p>Wo stehst du fachlich, wo willst du hin, und was genau fehlt dazwischen? Dieser Workflow misst deine Skills, berechnet die Lücken, baut daraus einen Lernpfad mit realistischem Zeitplan und begleitet dich mit regelmässigen Check-ins bis zur Umsetzung.</p>
+            <div class="mk-badges"><span class="mk-badge">Skill-Radar Ist/Soll</span><span class="mk-badge">Gap-Ranking</span><span class="mk-badge">Lernpfad mit Zeitplan</span><span class="mk-badge">Check-ins & Roadmap</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <!-- 1 · Standort -->
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Standortbestimmung</h2>
+                <p class="mk-sub">Erst der Blick auf heute, dann auf morgen. Stichworte reichen – die Details kommen in den nächsten Schritten.</p>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="fe-role">Deine aktuelle Rolle</label><span class="hint">Position, Verantwortung, typische Aufgaben.</span><textarea class="mk-textarea" id="fe-role" data-mk-field="role" placeholder="z. B. Implementation Consultant HR-Software, verantwortlich für …"></textarea></div>
+                    <div class="mk-field"><label for="fe-vision">Wo willst du in 3–5 Jahren stehen?</label><span class="hint">Rolle, Branche, Verantwortungsumfang, Arbeitsweise.</span><textarea class="mk-textarea" id="fe-vision" data-mk-field="vision" placeholder="z. B. Solution Architect für HR-Tech, …"></textarea></div>
+                    <div class="mk-field"><label for="fe-experience">Berufserfahrung in Kürze</label><span class="hint">Jahre, Branchen, Stationen.</span><textarea class="mk-textarea" id="fe-experience" data-mk-field="experience" placeholder="…"></textarea></div>
+                    <div class="mk-field"><label for="fe-projects">Deine drei wichtigsten Erfolge</label><span class="hint">Konkrete Projekte mit Ergebnis – das ist dein Beweismaterial.</span><textarea class="mk-textarea" id="fe-projects" data-mk-field="projects" placeholder="…"></textarea></div>
+                </div>
+            </div>
+            <div class="mk-card">
+                <h2>Skill-Radar</h2>
+                <p class="mk-sub">Sechs Kompetenzfelder – benenne sie so, dass sie zu deinem Beruf passen, und bewerte <strong>Ist</strong> (heute) und <strong>Soll</strong> (für deine Vision) von 1 bis 10. Du kannst Felder ergänzen oder entfernen.</p>
+                <div class="fe-radar-wrap">
+                    <div id="fe-radar"></div>
+                    <div id="fe-skills"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2 · Skill-Gap -->
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>Skill-Gap-Analyse</h2>
+                <p class="mk-sub">Die Lücke ist Soll minus Ist. Gewichtet mit der Priorität ergibt sich deine Lern-Reihenfolge. Setze die Priorität nach dem, was deine Vision wirklich braucht – nicht nach dem, was am leichtesten ist.</p>
+                <div id="fe-gap"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Trends in deinem Berufsfeld</h3>
+                <p class="mk-sub">Welche Entwicklungen verändern, was in 3–5 Jahren gefragt ist? Wähle aus oder ergänze.</p>
+                <div class="mk-chips" id="fe-trend-chips"></div>
+                <div class="mk-field" style="margin-top:14px;"><label for="fe-trends">Was heisst das konkret für deine Skills?</label><textarea class="mk-textarea" id="fe-trends" data-mk-field="trends" placeholder="z. B. KI-gestützte Analysen werden Standard → Prompting & Datenkompetenz hochstufen"></textarea></div>
+            </div>
+        </section>
+
+        <!-- 3 · Lernpfad -->
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>Lernpfad</h2>
+                <p class="mk-sub">Für jede Lücke: Wie lernst du sie am besten? Als Faustregel rechnen wir <strong>12 Stunden fokussiertes Lernen pro Skill-Punkt</strong> – realistisch, nicht optimistisch. Dein Wochenbudget bestimmt den Zeitplan.</p>
+                <div class="fe-budget">
+                    <label for="fe-hours">Dein Lernbudget pro Woche</label>
+                    <div class="mk-range-wrap"><input type="range" class="mk-range" id="fe-hours" data-mk-field="hours" min="1" max="20" step="1"><span class="mk-range-val" data-mk-rangeval="hours">5</span><span class="mk-faint">Std.</span></div>
+                </div>
+                <div class="mk-section-label" style="margin-top:14px;">Deine bevorzugten Lernwege</div>
+                <div class="mk-chips" id="fe-methods"></div>
+            </div>
+            <div id="fe-path"></div>
+        </section>
+
+        <!-- 4 · Zertifikate -->
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>Zertifikate & Qualifikationen</h2>
+                <p class="mk-sub">Zertifikate sind Signale, keine Kompetenz. Plane nur die, die eine Lücke schliessen <em>und</em> vom Markt erkannt werden. Zieltermine landen automatisch in deiner Roadmap.</p>
+                <div id="fe-certs"></div>
+            </div>
+        </section>
+
+        <!-- 5 · Tracking -->
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>Fortschritt messen</h2>
+                <p class="mk-sub">Ein Check-in dauert zwei Minuten: Du bewertest deine Skills neu. Daraus entsteht dein Verlauf – und die Gap-Analyse aktualisiert sich automatisch.</p>
+                <div class="fe-rhythm">
+                    <label for="fe-rhythm">Check-in-Rhythmus</label>
+                    <select class="mk-select" id="fe-rhythm" data-mk-field="rhythm" style="max-width:260px;"><option value="weekly">Wöchentlich</option><option value="biweekly">Alle zwei Wochen</option><option value="monthly">Monatlich</option></select>
+                </div>
+                <div id="fe-checkin"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Verlauf</h3>
+                <div id="fe-chart"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Meilensteine</h3>
+                <p class="mk-sub">Sichtbare Zwischenziele – ein Kurs abgeschlossen, ein Projekt übernommen, ein Zertifikat bestanden.</p>
+                <div id="fe-milestones"></div>
+                <div class="mk-grid-2" style="margin-top:16px;">
+                    <div class="mk-field"><label for="fe-metrics">Woran erkennst du Fortschritt im Alltag?</label><textarea class="mk-textarea" id="fe-metrics" data-mk-field="metrics" placeholder="z. B. Ich werde für Thema X um Rat gefragt; ich brauche für Y halb so lange …"></textarea></div>
+                    <div class="mk-field"><label for="fe-rewards">Wie belohnst du dich?</label><textarea class="mk-textarea" id="fe-rewards" data-mk-field="rewards" placeholder="Pro Meilenstein …"></textarea></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6 · Roadmap -->
+        <section class="mk-step" data-step="6">
+            <div class="mk-card">
+                <h2>Deine Roadmap</h2>
+                <p class="mk-sub">Automatisch aus Lernpfad, Zertifikaten, Meilensteinen und Zielen zusammengesetzt – chronologisch nach Monat.</p>
+                <div id="fe-roadmap"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Abhängigkeiten & Risiken</h3>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="fe-deps">Was muss zuerst passieren, bevor anderes geht?</label><textarea class="mk-textarea" id="fe-deps" data-mk-field="deps" placeholder="z. B. Grundlagen X vor Zertifikat Y; Budgetfreigabe für Kurs Z"></textarea></div>
+                    <div class="mk-field"><label for="fe-risks">Was könnte den Plan kippen – und was tust du dann?</label><textarea class="mk-textarea" id="fe-risks" data-mk-field="risks" placeholder="Wenn … , dann …"></textarea></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7 · Aktionsplan -->
+        <section class="mk-step" data-step="7">
+            <div class="mk-card">
+                <h2>SMART-Ziele</h2>
+                <p class="mk-sub">Bis zu drei Ziele: spezifisch, messbar, erreichbar, relevant, terminiert. Das erste wird aus deiner grössten Lücke vorgeschlagen.</p>
+                <div id="fe-goals"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Die ersten drei Schritte</h3>
+                <p class="mk-sub">Was tust du in den nächsten sieben Tagen?</p>
+                <div id="fe-steps"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Rahmen</h3>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="fe-resources">Welche Ressourcen brauchst du?</label><textarea class="mk-textarea" id="fe-resources" data-mk-field="resources" placeholder="Zeit, Budget, Zugang, Tools …"></textarea></div>
+                    <div class="mk-field"><label for="fe-support">Wer unterstützt dich?</label><textarea class="mk-textarea" id="fe-support" data-mk-field="support" placeholder="Vorgesetzte, Mentor:in, Peers, Community …"></textarea></div>
+                    <div class="mk-field"><label for="fe-obstacles">Welche Hindernisse siehst du?</label><textarea class="mk-textarea" id="fe-obstacles" data-mk-field="obstacles" placeholder="…"></textarea></div>
+                    <div class="mk-field"><label for="fe-motivation">Was hält dich dran?</label><textarea class="mk-textarea" id="fe-motivation" data-mk-field="motivation" placeholder="Dein Warum, in einem Satz …"></textarea></div>
+                </div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="fe-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <p class="mk-sub">Standort, Skill-Gap, Lernpfad, Zertifikate, Check-ins, Roadmap und Aktionsplan als Textdatei.</p>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="fe-export"><i class="fas fa-download"></i> Entwicklungsplan exportieren</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset title="Alle Daten dieser Methode löschen"><i class="fas fa-trash"></i> Alles zurücksetzen</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
+            <span class="info" id="mk-step-info">Schritt 1 von 7</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003"></script>
+    <script src="fachliche-entwicklung.js?v=20261003"></script>
+</body>
+</html>

@@ -61,6 +61,54 @@ const methodWorkflowDefinitions = {
         features: ['Assessment', 'Timer', 'Geführte Übungen', 'Integration']
     },
     
+    'ikigai': {
+        title: 'Ikigai',
+        steps: 7,
+        stepTitles: [
+            'Standortbestimmung & Modell',
+            'Was du liebst',
+            'Worin du gut bist',
+            'Was die Welt braucht',
+            'Wofür du bezahlt werden kannst',
+            'Synthese: Venn-Diagramm & Ikigai-Satz',
+            'Aktionsplan in drei Horizonten'
+        ],
+        description: 'Die vier Kreise mit Stichworten füllen, in der Zuordnungs-Matrix sehen, wo sie zusammenlaufen, und daraus Ikigai-Satz und Aktionsplan ableiten.',
+        logic: 'intersection-based', // Stichworte → Schnittmengen → Satz → Plan
+        features: ['16 Leitfragen', 'Live-Venn-Diagramm', 'Ikigai-Satz-Builder', 'Export']
+    },
+
+    'fachliche-entwicklung': {
+        title: 'Fachliche Entwicklung',
+        steps: 7,
+        stepTitles: [
+            'Standort & Skill-Radar (Ist/Soll)',
+            'Skill-Gap-Analyse & Trends',
+            'Lernpfad mit Zeitplan',
+            'Zertifikate & Qualifikationen',
+            'Check-ins & Meilensteine',
+            'Roadmap',
+            'SMART-Ziele & erste Schritte'
+        ],
+        description: 'Skills messen, Lücken gewichten, daraus einen Lernpfad mit realistischem Zeitbudget bauen und den Fortschritt mit Check-ins verfolgen.',
+        logic: 'gap-based-planning', // Ist/Soll → Gap → Pfad → Tracking
+        features: ['Skill-Radar', 'Gap-Ranking', 'Lernpfad-Rechner', 'Verlaufs-Chart', 'Roadmap']
+    },
+
+    'therapy-form-finder': {
+        title: 'Therapieform-Finder',
+        steps: 4,
+        stepTitles: [
+            'Einstieg & Landkarte der Therapieformen',
+            'Fragebogen (17 Fragen)',
+            'Begründetes Ranking',
+            'Nächste Schritte & Erstgespräch'
+        ],
+        description: '17 Fragen zu Anliegen, Arbeitsstil und Präferenzen – mit begründetem Ranking von 20 Therapieformen und Checkliste für die Suche.',
+        logic: 'questionnaire-ranking', // Antworten → Score → Begründung
+        features: ['20 Therapieformen', 'Antwort-Begründung', 'Checkliste CH/DE', 'Fragen fürs Erstgespräch']
+    },
+
     'how-of-happiness': {
         title: 'The How of Happiness',
         steps: 6,

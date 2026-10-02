@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ikigai | Manuel Weiss</title>
+    <meta name="description" content="Finde dein Ikigai in sieben Schritten: Standortbestimmung, die vier Kreise (Lieben, Können, Welt, Bezahlung), Synthese mit Venn-Diagramm und Ikigai-Satz, Aktionsplan.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="ikigai.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-circle-notch"></i></span><span>Ikigai</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-circle-notch"></i></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Sinn & Richtung</div>
+            <h1>Wofür stehst du morgens auf?</h1>
+            <p>Ikigai (生き甲斐) ist das, was dein Leben lebenswert macht – dort, wo sich das, was du liebst, worin du gut bist, was die Welt braucht und wofür du bezahlt wirst, überschneiden. Du sammelst in jedem Kreis konkrete Stichworte, die Synthese zeigt dir, wo sie zusammenlaufen.</p>
+            <div class="mk-badges"><span class="mk-badge">4 Kreise · 16 Leitfragen</span><span class="mk-badge">Live-Venn-Diagramm</span><span class="mk-badge">Ikigai-Satz-Builder</span><span class="mk-badge">Aktionsplan</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <!-- 1 · Standort -->
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Das Modell</h2>
+                <p class="mk-sub">Vier Fragen, vier Kreise. Jede Zweier-Schnittmenge hat einen Namen – und zeigt, was fehlt, wenn du nur dort stehst.</p>
+                <div class="ikg-model" id="ikg-model"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Standortbestimmung</h2>
+                <p class="mk-sub">Bevor du in die Kreise gehst: ein ehrlicher Blick auf Werte, prägende Erfahrungen, Träume und Ängste. Es gibt keine falschen Antworten – Stichworte reichen.</p>
+                <div id="ikg-reflect"></div>
+            </div>
+        </section>
+
+        <!-- 2–5 · Kreise -->
+        <section class="mk-step" data-step="2"><div id="ikg-circle-love"></div></section>
+        <section class="mk-step" data-step="3"><div id="ikg-circle-good"></div></section>
+        <section class="mk-step" data-step="4"><div id="ikg-circle-world"></div></section>
+        <section class="mk-step" data-step="5"><div id="ikg-circle-paid"></div></section>
+
+        <!-- 6 · Synthese -->
+        <section class="mk-step" data-step="6">
+            <div class="mk-card">
+                <h2>Wo laufen deine Stichworte zusammen?</h2>
+                <p class="mk-sub">Jedes Stichwort, das du in einem Kreis eingetragen hast, taucht hier auf. Markiere, in welche <em>anderen</em> Kreise es auch gehört. Je mehr Kreise, desto näher am Ikigai.</p>
+                <div class="ikg-synth">
+                    <div class="ikg-venn-wrap"><div id="ikg-venn"></div></div>
+                    <div class="ikg-zones" id="ikg-zones"></div>
+                </div>
+            </div>
+            <div class="mk-card">
+                <h3>Zuordnungs-Matrix</h3>
+                <p class="mk-sub">Tippe auf die Kreise, um ein Stichwort zuzuordnen. Stichworte mit drei Kreisen sind „fast da" – die vierte Spalte zeigt dir die passende Frage.</p>
+                <div class="mk-chips" id="ikg-matrix-filter" style="margin-bottom:12px;"></div>
+                <div id="ikg-matrix"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Dein Ikigai in einem Satz</h2>
+                <p class="mk-sub">Baue aus deinen Stichworten einen ersten Satz – und formuliere ihn dann in deinen Worten um.</p>
+                <div id="ikg-builder"></div>
+                <div class="mk-field" style="margin-top:16px;">
+                    <label for="ikg-ikigai">Mein Ikigai</label>
+                    <textarea class="mk-textarea" id="ikg-ikigai" data-mk-field="ikigai" placeholder="Ich … , damit … , weil …"></textarea>
+                </div>
+                <div class="mk-field">
+                    <label for="ikg-vision">Wie sieht ein gewöhnlicher Dienstag aus, wenn du dein Ikigai lebst?</label>
+                    <span class="hint">Konkret: Wo wachst du auf, was tust du vormittags, mit wem sprichst du, womit endet der Tag?</span>
+                    <textarea class="mk-textarea" id="ikg-vision" data-mk-field="vision" placeholder="Morgens …"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7 · Aktionsplan -->
+        <section class="mk-step" data-step="7">
+            <div class="mk-card">
+                <h2>Vom Satz zur Handlung</h2>
+                <p class="mk-sub">Ikigai ist kein Ziel, sondern eine Richtung. Plane in drei Horizonten – und beginne mit einem Schritt, der diese Woche passt.</p>
+                <div id="ikg-first"></div>
+            </div>
+            <div id="ikg-horizons"></div>
+            <div class="mk-card">
+                <h3>Hindernisse & Unterstützung</h3>
+                <div class="mk-grid-2">
+                    <div class="mk-field">
+                        <label for="ikg-obstacles">Was könnte dich bremsen – und was tust du dann?</label>
+                        <textarea class="mk-textarea" id="ikg-obstacles" data-mk-field="obstacles" placeholder="Wenn … , dann …"></textarea>
+                    </div>
+                    <div class="mk-field">
+                        <label for="ikg-support">Wer oder was unterstützt dich?</label>
+                        <textarea class="mk-textarea" id="ikg-support" data-mk-field="support" placeholder="Menschen, Routinen, Ressourcen …"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <p class="mk-sub">Auf Basis deiner Kreise: Wo lohnt sich Vertiefung?</p>
+                <div id="ikg-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <p class="mk-sub">Standort, alle Kreise, Zuordnungen, Ikigai-Satz und Aktionsplan als Textdatei.</p>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="ikg-export"><i class="fas fa-download"></i> Ikigai exportieren</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset title="Alle Daten dieser Methode löschen"><i class="fas fa-trash"></i> Alles zurücksetzen</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
+            <span class="info" id="mk-step-info">Schritt 1 von 7</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003"></script>
+    <script src="ikigai-data.js?v=20261003"></script>
+    <script src="ikigai.js?v=20261003"></script>
+</body>
+</html>

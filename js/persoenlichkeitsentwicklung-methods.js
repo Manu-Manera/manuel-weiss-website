@@ -11,12 +11,12 @@ function startMethod(methodId) {
     
     // Direct navigation to specific workflow pages
     const methodUrls = {
-        'ikigai': 'persoenlichkeitsentwicklung.html',
+        'ikigai': 'methods/ikigai/ikigai.html',
         'gallup-strengths': 'methods/gallup-strengths/gallup-strengths.html',
         'via-strengths': 'methods/via-strengths/via-strengths.html',
         'self-assessment': 'methods/self-assessment/self-assessment.html',
         'values-clarification': 'methods/values-clarification/values-clarification.html',
-        'strengths-analysis': 'methods/strengths-analysis/strengths-analysis.html',
+        'strengths-analysis': 'methods/strengths-finder/strengths-finder.html',
         'goal-setting': 'methods/goal-setting/goal-setting.html',
         'mindfulness': 'methods/mindfulness/mindfulness.html',
         'how-of-happiness': 'methods/how-of-happiness/how-of-happiness.html',
@@ -42,8 +42,8 @@ function startMethod(methodId) {
         'solution-focused': 'methods/solution-focused/solution-focused.html',
         'systemic-coaching': 'methods/systemic-coaching/systemic-coaching.html',
         'target-coaching': 'methods/target-coaching/target-coaching.html',
-        'therapy-form-finder': 'methods/therapy-form-finder.html',
-        'therapy-form-finder-test': 'methods/therapy-form-finder.html',  // Fallback für Tests
+        'therapy-form-finder': 'methods/therapy-form-finder/therapy-form-finder.html',
+        'therapy-form-finder-test': 'methods/therapy-form-finder/therapy-form-finder.html',  // Fallback für Tests
         'raisec': 'raisec-persoenlichkeitsentwicklung.html',
         'personality-song': 'persoenlichkeits-song-generator.html'
     };

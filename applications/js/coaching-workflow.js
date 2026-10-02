@@ -55,10 +55,10 @@ class CoachingWorkflow {
                 { id: 'self-assessment', name: 'Selbsteinschätzung', desc: 'Erkenne dein volles Potenzial', icon: 'fa-user-check', path: '/methods/self-assessment/self-assessment.html', hasFullWorkflow: false }
             ],
             2: [
-                { id: 'ikigai', name: 'Ikigai', desc: 'Finde deinen Lebenszweck (7 Schritte)', icon: 'fa-compass', path: '/methods/ikigai/index-ikigai.html', hasFullWorkflow: true },
+                { id: 'ikigai', name: 'Ikigai', desc: 'Finde deinen Lebenszweck (7 Schritte)', icon: 'fa-compass', path: '/methods/ikigai/ikigai.html', hasFullWorkflow: true },
                 { id: 'via-strengths', name: 'VIA-Stärken', desc: 'Entdecke deine Charakterstärken', icon: 'fa-gem', path: '/methods/via-strengths/via-strengths.html', hasFullWorkflow: false },
-                { id: 'swot', name: 'SWOT-Analyse', desc: 'Stärken, Schwächen, Chancen, Risiken (2 Schritte)', icon: 'fa-th-large', path: '/methods/swot-analysis/step1-swot.html', hasFullWorkflow: true },
-                { id: 'values-clarification', name: 'Werteklärung', desc: 'Was ist dir wirklich wichtig?', icon: 'fa-heart', path: '/methods/values-clarification/values-clarification-modern.html', hasFullWorkflow: false }
+                { id: 'swot', name: 'SWOT-Analyse', desc: 'Stärken, Schwächen, Chancen, Risiken (2 Schritte)', icon: 'fa-th-large', path: '/methods/swot-analysis/swot-analysis.html', hasFullWorkflow: true },
+                { id: 'values-clarification', name: 'Werteklärung', desc: 'Was ist dir wirklich wichtig?', icon: 'fa-heart', path: '/methods/values-clarification/values-clarification.html', hasFullWorkflow: false }
             ],
             3: [
                 { id: 'goal-setting', name: 'SMART-Ziele', desc: 'Setze messbare Ziele', icon: 'fa-bullseye', path: '/methods/goal-setting/goal-setting.html', hasFullWorkflow: false },
