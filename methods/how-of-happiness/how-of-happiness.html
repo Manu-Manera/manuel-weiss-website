@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The How of Happiness | Manuel Weiss</title>
     <meta name="description" content="Die 12 Glücksaktivitäten nach Sonja Lyubomirsky als geführtes Programm: Glücks-Baseline messen, Person-Activity-Fit bestimmen, passende Übungen mit richtiger Dosierung trainieren und den Fortschritt messen.">
-    <link rel="stylesheet" href="../_kit/method-light.css">
-    <link rel="stylesheet" href="how-of-happiness.css">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="how-of-happiness.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -43,6 +43,7 @@
             <div class="mk-card">
                 <h2>Deine Glücks-Baseline</h2>
                 <p class="mk-sub">Die <em>Subjective Happiness Scale</em> (Lyubomirsky & Lepper, 1999) – vier Fragen, 1 bis 7. Du misst sie alle zwei Wochen erneut, um deinen Fortschritt zu sehen.</p>
+                <div id="hoh-shs-done" hidden></div>
                 <div id="hoh-shs"></div>
                 <div class="hoh-shs-result" id="hoh-shs-result"></div>
                 <button class="mk-btn mk-btn-primary" id="hoh-shs-save" style="margin-top:14px;"><i class="fas fa-check"></i> Baseline speichern</button>
@@ -55,6 +56,7 @@
                 <h2>Person-Activity-Fit</h2>
                 <p class="mk-sub">Die meisten Glücksratgeber scheitern, weil sie allen dasselbe empfehlen. Lyubomirskys zentrale Erkenntnis: Eine Aktivität wirkt nur, wenn sie zu deiner Persönlichkeit, deinen Werten und deinem Leben passt. Bewerte für jede der 12 Aktivitäten fünf Aussagen (1 = trifft gar nicht zu, 7 = trifft voll zu).</p>
                 <div class="hoh-fit-formula"><strong>Fit-Score</strong> = Natürlich + Freude + Wert − Schuld − Situation <span class="mk-faint">(Bereich −11 bis +19)</span></div>
+                <div class="hoh-fit-toolbar" id="hoh-fit-toolbar"></div>
                 <div id="hoh-fit-list"></div>
             </div>
             <div class="mk-card">
@@ -92,7 +94,13 @@
                 <p class="mk-sub">Jede abgeschlossene Übung landet hier. Die Streak zählt Tage mit mindestens einer Übung.</p>
                 <div class="hoh-stats" id="hoh-stats"></div>
                 <h3 style="margin-top:18px;">Letzte 12 Wochen</h3>
-                <div class="hoh-heat" id="hoh-heat"></div>
+                <div class="hoh-heat-wrap">
+                    <div class="hoh-heat-days"><span></span><span>Mo</span><span></span><span>Mi</span><span></span><span>Fr</span><span></span><span>So</span></div>
+                    <div>
+                        <div class="hoh-heat-months" id="hoh-heat-months"></div>
+                        <div class="hoh-heat" id="hoh-heat"></div>
+                    </div>
+                </div>
                 <div class="hoh-heat-legend"><span>weniger</span><i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><span>mehr</span></div>
             </div>
             <div class="mk-card">
@@ -118,7 +126,10 @@
             <div class="mk-card">
                 <h3>Mitnehmen</h3>
                 <p class="mk-sub">Dein Programm, deine Fit-Scores, deine Baseline-Verläufe und alle Einträge als Textdatei.</p>
-                <button class="mk-btn mk-btn-primary" id="hoh-export"><i class="fas fa-download"></i> Programm & Logbuch exportieren</button>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="hoh-export"><i class="fas fa-download"></i> Programm & Logbuch exportieren</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset title="Alle Daten dieser Methode löschen"><i class="fas fa-trash"></i> Alles zurücksetzen</button>
+                </div>
             </div>
         </section>
 
@@ -153,8 +164,8 @@
     <script src="/js/aws-app-config.js"></script>
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
-    <script src="../_kit/method-kit.js"></script>
-    <script src="happiness-data.js"></script>
-    <script src="how-of-happiness.js"></script>
+    <script src="../_kit/method-kit.js?v=20261003"></script>
+    <script src="happiness-data.js?v=20261003"></script>
+    <script src="how-of-happiness.js?v=20261003"></script>
 </body>
 </html>

@@ -30,7 +30,11 @@
             this._renderProgress();
             this._bindNav();
             this._bindBack();
+            this._bindKeyboard();
+            this._bindAutosize();
+            this._bindReset();
             this.goTo(this.state.__step || 1, true);
+            this._lastSynced = !!this._wasSynced;
             this._updateSyncBadge(this._wasSynced);
             return this;
         },
@@ -80,6 +84,7 @@
             opts = opts || {};
             try { localStorage.setItem(this._key(), JSON.stringify(this.state)); } catch (e) {}
             if (this._onChange) { try { this._onChange(this.state); } catch (e) {} }
+            this._flashSaved();
             clearTimeout(this._saveTimer);
             this._saveTimer = setTimeout(() => this._cloudSave(), opts.now ? 0 : 800);
         },
@@ -91,7 +96,23 @@
                     synced = this.isLoggedIn();
                 }
             } catch (e) { console.warn('[MethodKit] Cloud-Save fehlgeschlagen:', e); }
-            this._updateSyncBadge(synced);
+            this._lastSynced = synced;
+            if (!this._flashing) this._updateSyncBadge(synced);
+        },
+        _flashSaved() {
+            const b = document.getElementById('mk-sync');
+            if (!b) return;
+            const icon = b.querySelector('i'), txt = b.querySelector('span');
+            this._flashing = true;
+            b.classList.add('flash');
+            if (icon) icon.className = 'fas fa-circle-check';
+            if (txt) txt.textContent = 'Gespeichert';
+            clearTimeout(this._flashTimer);
+            this._flashTimer = setTimeout(() => {
+                this._flashing = false;
+                b.classList.remove('flash');
+                this._updateSyncBadge(this._lastSynced);
+            }, 1200);
         },
         _updateSyncBadge(synced) {
             const b = document.getElementById('mk-sync');
@@ -105,28 +126,76 @@
                 if (txt) txt.textContent = 'Lokal gespeichert';
             }
         },
+        /* Alles zurücksetzen (lokal + Cloud) – wird über [data-mk-reset] gebunden */
+        async reset(opts) {
+            opts = opts || {};
+            if (!opts.silent && !confirm('Wirklich alle Eingaben dieser Methode löschen? Das kann nicht rückgängig gemacht werden.')) return false;
+            this.state = JSON.parse(JSON.stringify(this._defaultState));
+            try { localStorage.removeItem(this._key()); } catch (e) {}
+            try {
+                if (global.workflowAPI && global.workflowAPI.saveWorkflowResults) {
+                    await global.workflowAPI.saveWorkflowResults(this.method, this.state);
+                }
+            } catch (e) {}
+            if (!opts.noReload) window.location.reload();
+            return true;
+        },
+        _bindReset() {
+            document.querySelectorAll('[data-mk-reset]').forEach(b => b.addEventListener('click', () => this.reset()));
+        },
 
         /* ---------- Steps ---------- */
         _stepEls() { return Array.from(document.querySelectorAll('.mk-step')); },
         _renderProgress() {
             const host = document.getElementById('mk-progress');
             if (!host || !this.steps.length) return;
+            host.setAttribute('role', 'tablist');
             host.innerHTML = this.steps.map((s, i) => `
-                <div class="mk-pstep" data-goto="${i + 1}">
-                    <div class="dot">${s.icon || (i + 1)}</div>
+                <button type="button" class="mk-pstep" data-goto="${i + 1}" role="tab" aria-label="Schritt ${i + 1}: ${this.esc(s.label)}">
+                    <div class="dot"><span class="ic">${s.icon || (i + 1)}</span><i class="fas fa-check chk" aria-hidden="true"></i></div>
                     <div class="lbl">${s.label}</div>
-                </div>`).join('');
+                </button>`).join('');
             host.querySelectorAll('[data-goto]').forEach(el => {
                 el.addEventListener('click', () => this.goTo(parseInt(el.dataset.goto, 10)));
             });
+            // Wrapper + Fortschrittsbalken
+            if (!host.parentElement.classList.contains('mk-progress-wrap')) {
+                const wrap = document.createElement('div');
+                wrap.className = 'mk-progress-wrap';
+                host.parentNode.insertBefore(wrap, host);
+                wrap.appendChild(host);
+                const bar = document.createElement('div');
+                bar.className = 'mk-progress-bar';
+                bar.innerHTML = '<span></span>';
+                wrap.appendChild(bar);
+            }
+            // Häkchen nur bei erledigten Schritten zeigen
+            if (!document.getElementById('mk-pstep-style')) {
+                const st = document.createElement('style');
+                st.id = 'mk-pstep-style';
+                st.textContent = '.mk-pstep .dot .chk{display:none}.mk-pstep.done .dot .chk{display:inline}.mk-pstep.done .dot .ic{display:none}';
+                document.head.appendChild(st);
+            }
         },
         _syncProgress() {
             const host = document.getElementById('mk-progress');
             if (!host) return;
+            let activeEl = null;
             host.querySelectorAll('.mk-pstep').forEach((el, i) => {
-                el.classList.toggle('active', i + 1 === this.step);
+                const active = i + 1 === this.step;
+                el.classList.toggle('active', active);
                 el.classList.toggle('done', i + 1 < this.step);
+                el.setAttribute('aria-selected', active ? 'true' : 'false');
+                if (active) activeEl = el;
             });
+            const total = this._stepEls().length || this.steps.length || 1;
+            const bar = host.parentElement && host.parentElement.querySelector('.mk-progress-bar > span');
+            if (bar) bar.style.width = Math.round((this.step / total) * 100) + '%';
+            // Aktiven Schritt horizontal in Sicht bringen (nur horizontal, kein Seiten-Scroll)
+            if (activeEl && host.scrollWidth > host.clientWidth) {
+                const target = activeEl.offsetLeft - (host.clientWidth - activeEl.offsetWidth) / 2;
+                host.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+            }
         },
         goTo(n, silent) {
             const els = this._stepEls();
@@ -140,7 +209,15 @@
             const prev = document.getElementById('mk-prev'), next = document.getElementById('mk-next');
             if (prev) prev.disabled = n === 1;
             if (next) {
-                next.style.visibility = n === total ? 'hidden' : 'visible';
+                if (!next.dataset.origHtml) next.dataset.origHtml = next.innerHTML;
+                if (n === total) {
+                    next.innerHTML = 'Fertig <i class="fas fa-check"></i>';
+                    next.classList.add('mk-btn-finish');
+                } else {
+                    next.innerHTML = next.dataset.origHtml;
+                    next.classList.remove('mk-btn-finish');
+                }
+                next.style.visibility = 'visible';
             }
             this.state.__step = n;
             if (!silent) {
@@ -148,15 +225,54 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
             if (typeof this.onStep === 'function') { try { this.onStep(n); } catch (e) {} }
+            this._autosizeAll();
         },
-        next() { this.goTo(this.step + 1); },
+        next() {
+            const total = this._stepEls().length || this.steps.length || 1;
+            if (this.step >= total) { this.finish(); return; }
+            this.goTo(this.step + 1);
+        },
         prev() { this.goTo(this.step - 1); },
+        /* Letzter Schritt → "Fertig": speichert sofort und geht zurück zur Übersicht */
+        finish() {
+            this.save({ now: true });
+            this.toast('Gespeichert – bis zum nächsten Mal!', 'success');
+            setTimeout(() => this.goBack(), 600);
+        },
         _bindNav() {
             const prev = document.getElementById('mk-prev'), next = document.getElementById('mk-next');
             if (prev) prev.addEventListener('click', () => this.prev());
             if (next) next.addEventListener('click', () => this.next());
             document.querySelectorAll('[data-mk-next]').forEach(b => b.addEventListener('click', () => this.next()));
             document.querySelectorAll('[data-mk-prev]').forEach(b => b.addEventListener('click', () => this.prev()));
+        },
+        _bindKeyboard() {
+            document.addEventListener('keydown', (ev) => {
+                if (ev.key !== 'ArrowLeft' && ev.key !== 'ArrowRight') return;
+                if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
+                const a = document.activeElement;
+                if (a && (a.matches('input, textarea, select, [contenteditable="true"]'))) return;
+                // Offenes Overlay/Dialog → nicht blättern
+                const dlg = Array.from(document.querySelectorAll('[aria-modal="true"]')).find(d => d.offsetParent !== null);
+                if (dlg) return;
+                if (ev.key === 'ArrowRight') { const total = this._stepEls().length || 1; if (this.step < total) this.next(); }
+                else this.prev();
+            });
+        },
+        /* Textareas wachsen mit dem Inhalt */
+        _bindAutosize() {
+            document.addEventListener('input', (ev) => {
+                if (ev.target && ev.target.matches && ev.target.matches('textarea.mk-textarea')) this._autosize(ev.target);
+            });
+            this._autosizeAll();
+        },
+        _autosize(t) {
+            if (!t || t.offsetParent === null) return;
+            t.style.height = 'auto';
+            t.style.height = Math.max(t.scrollHeight + 2, parseInt(getComputedStyle(t).minHeight, 10) || 0) + 'px';
+        },
+        _autosizeAll() {
+            document.querySelectorAll('textarea.mk-textarea').forEach(t => this._autosize(t));
         },
 
         /* ---------- Field binding ---------- */
@@ -204,17 +320,18 @@
         },
 
         /* ---------- Back (herkunftsbewusst) ---------- */
+        goBack() {
+            const r = document.referrer || '';
+            if (r.indexOf('aktivitaeten-uebersicht') > -1) {
+                window.location.href = '../../aktivitaeten-uebersicht.html';
+            } else {
+                window.location.href = '../../persoenlichkeitsentwicklung-uebersicht.html';
+            }
+        },
         _bindBack() {
             const b = document.getElementById('mk-back');
             if (!b) return;
-            b.addEventListener('click', () => {
-                const r = document.referrer || '';
-                if (r.indexOf('aktivitaeten-uebersicht') > -1) {
-                    window.location.href = '../../aktivitaeten-uebersicht.html';
-                } else {
-                    window.location.href = '../../persoenlichkeitsentwicklung-uebersicht.html';
-                }
-            });
+            b.addEventListener('click', () => this.goBack());
         },
 
         /* ---------- Helpers ---------- */

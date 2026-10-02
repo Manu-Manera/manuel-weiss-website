@@ -112,6 +112,7 @@
             MethodKit.save({ now: true });
             MethodKit.toast(`Baseline ${m.toFixed(2)} gespeichert`, 'success');
             renderBaselineBadge();
+            renderBaselineState(false);
         };
     }
     function renderBaselineBadge() {
@@ -120,19 +121,63 @@
         if (!l || !r) return;
         const n = S.shs.length;
         const old = $('hoh-baseline-badge'); if (old) old.remove();
-        r.insertAdjacentHTML('beforeend', `<div class="hoh-hint ok" id="hoh-baseline-badge" style="margin-top:10px;"><i class="fas fa-check-circle"></i><div>${n === 1 ? 'Baseline' : n + '. Messung'} vom ${fmtDate(l.date)}: <strong>${l.mean.toFixed(2)}</strong>. Nächste Messung in ${Math.max(0, REMEASURE_DAYS - daysSince(l.date))} Tagen im Review-Schritt.</div></div>`);
+        r.insertAdjacentHTML('beforeend', `<div class="mk-note ok" id="hoh-baseline-badge" style="margin-top:10px;"><i class="fas fa-check-circle"></i><div>${n === 1 ? 'Baseline' : n + '. Messung'} vom ${fmtDate(l.date)}: <strong>${l.mean.toFixed(2)}</strong>. Nächste Messung in ${Math.max(0, REMEASURE_DAYS - daysSince(l.date))} Tagen im Review-Schritt.</div></div>`);
+    }
+    /* Kompakter Zustand des Baseline-Blocks, wenn schon gemessen wurde */
+    function renderBaselineState(forceForm) {
+        const l = lastShs();
+        const form = $('hoh-shs'), res = $('hoh-shs-result'), btn = $('hoh-shs-save'), done = $('hoh-shs-done');
+        if (!done) return;
+        const showForm = forceForm || !l;
+        form.hidden = !showForm; res.hidden = !showForm; btn.hidden = !showForm;
+        done.hidden = showForm;
+        if (!showForm) {
+            const ds = daysSince(l.date);
+            const prev = S.shs.length > 1 ? S.shs[S.shs.length - 2] : null;
+            const diff = prev ? l.mean - prev.mean : null;
+            done.innerHTML = `<div class="hoh-baseline-done">
+                <div class="hoh-score"><div class="big">${l.mean.toFixed(2)}</div><div><strong>${S.shs.length === 1 ? 'Deine Baseline' : S.shs.length + '. Messung'} · ${fmtDate(l.date)}</strong><div class="d">${shsInterpret(l.mean)}</div>${diff != null ? `<div class="d" style="margin-top:4px;">Veränderung zur Vormessung: <strong style="color:${diff > 0 ? '#059669' : diff < 0 ? '#dc2626' : 'inherit'}">${diff > 0 ? '+' : ''}${diff.toFixed(2)}</strong></div>` : ''}</div></div>
+                <div class="hoh-baseline-actions">
+                    <span class="mk-faint" style="font-size:13px;"><i class="fas fa-calendar"></i> Nächste Messung ${ds >= REMEASURE_DAYS ? 'jetzt fällig' : 'in ' + (REMEASURE_DAYS - ds) + ' Tagen'}</span>
+                    <button class="mk-btn mk-btn-outline mk-btn-sm" id="hoh-shs-again"><i class="fas fa-rotate"></i> ${ds >= REMEASURE_DAYS ? 'Jetzt neu messen' : 'Trotzdem neu messen'}</button>
+                </div></div>`;
+            $('hoh-shs-again').onclick = () => { S.__shsDraft = [4, 4, 4, 4]; renderShs('hoh-shs', 'hoh-shs-result', 'hoh-shs-save', '__shsDraft'); renderBaselineState(true); form.scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+        }
     }
     function fmtDate(k) { const d = new Date(k); return d.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
 
     /* =====================================================================
        Schritt 2 · Fit-Diagnostik
        ===================================================================== */
+    function renderFitToolbar() {
+        const tb = $('hoh-fit-toolbar'); if (!tb) return;
+        const touched = D.ACTIVITIES.filter(a => fitTouched(a.id)).length;
+        tb.innerHTML = `
+            <div class="hoh-fit-progress"><span class="mk-badge">${touched}/12 bewertet</span><div class="hoh-fit-bar"><span style="width:${touched / 12 * 100}%"></span></div></div>
+            <div class="hoh-fit-tools">
+                ${touched < 12 ? `<button class="mk-btn mk-btn-ghost mk-btn-sm" id="hoh-fit-nextopen"><i class="fas fa-forward-step"></i> Nächste offene</button>` : `<span class="mk-note ok" style="margin:0;padding:6px 12px;font-size:13px;"><i class="fas fa-check"></i> Alle bewertet</span>`}
+                <button class="mk-btn mk-btn-outline mk-btn-sm" id="hoh-fit-toggleall"><i class="fas fa-angles-down"></i> Alle aufklappen</button>
+            </div>`;
+        const list = $('hoh-fit-list');
+        const nextBtn = $('hoh-fit-nextopen');
+        if (nextBtn) nextBtn.onclick = () => {
+            const open = D.ACTIVITIES.find(a => !fitTouched(a.id)); if (!open) return;
+            list.querySelectorAll('.hoh-fit-act').forEach(el => el.classList.toggle('open', el.dataset.act === open.id));
+            const el = list.querySelector(`.hoh-fit-act[data-act="${open.id}"]`);
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+        $('hoh-fit-toggleall').onclick = (ev) => {
+            const anyClosed = Array.from(list.querySelectorAll('.hoh-fit-act')).some(el => !el.classList.contains('open'));
+            list.querySelectorAll('.hoh-fit-act').forEach(el => el.classList.toggle('open', anyClosed));
+            ev.currentTarget.innerHTML = anyClosed ? '<i class="fas fa-angles-up"></i> Alle zuklappen' : '<i class="fas fa-angles-down"></i> Alle aufklappen';
+        };
+    }
     function renderFit() {
         const host = $('hoh-fit-list');
         host.innerHTML = D.ACTIVITIES.map(a => {
             const f = S.fit[a.id] || {};
             const sc = fitScore(a.id);
-            return `<div class="hoh-fit-act" data-act="${a.id}">
+            return `<div class="hoh-fit-act ${fitTouched(a.id) ? 'touched' : ''}" data-act="${a.id}" style="--act:${a.color}">
                 <div class="hoh-fit-head">
                     <span class="ic">${a.ic}</span>
                     <div class="t">${a.n}. ${a.title}<small>${a.short}</small></div>
@@ -154,12 +199,16 @@
         host.querySelectorAll('[data-fa]').forEach(el => el.addEventListener('input', () => {
             const a = el.dataset.fa, d = el.dataset.fd;
             S.fit[a] = S.fit[a] || {};
+            const wasTouched = !!S.fit[a].__t;
             S.fit[a][d] = +el.value; S.fit[a].__t = 1;
             host.querySelector(`[data-fv="${a}-${d}"]`).textContent = el.value;
             const sc = fitScore(a), b = host.querySelector(`[data-score="${a}"]`);
             b.textContent = (sc > 0 ? '+' : '') + sc; b.className = 'hoh-fit-score ' + scoreClass(a);
+            el.closest('.hoh-fit-act').classList.add('touched');
             MethodKit.save(); renderRanking();
+            if (!wasTouched) renderFitToolbar();
         }));
+        renderFitToolbar();
         renderRanking();
     }
     function scoreClass(aId) {
@@ -173,7 +222,7 @@
         const touched = r.filter(x => x.t).length;
         if (!touched) { host.innerHTML = '<div class="mk-empty">Bewerte oben mindestens eine Aktivität – das Ranking entsteht live.</div>'; return; }
         const max = 19, min = -11, span = max - min;
-        host.innerHTML = (touched < 12 ? `<div class="hoh-hint info"><i class="fas fa-info-circle"></i><div>${touched} von 12 bewertet. Für ein belastbares Ranking alle 12 durchgehen – es dauert etwa 10 Minuten.</div></div>` : '') +
+        host.innerHTML = (touched < 12 ? `<div class="mk-note info"><i class="fas fa-info-circle"></i><div>${touched} von 12 bewertet. Für ein belastbares Ranking alle 12 durchgehen – es dauert etwa 10 Minuten.</div></div>` : '') +
             r.map((x, i) => {
                 const s = x.s == null ? 0 : x.s;
                 const zero = ((0 - min) / span) * 100, pos = ((s - min) / span) * 100;
@@ -184,7 +233,7 @@
                     <span class="s">${x.t ? (s > 0 ? '+' : '') + s : '–'}</span>
                 </div>`;
             }).join('') +
-            `<div class="hoh-hint ok" style="margin-top:12px;"><i class="fas fa-lightbulb"></i><div>Deine Top 4: <strong>${r.filter(x => x.t).slice(0, 4).map(x => x.a.title).join(', ')}</strong>. Im nächsten Schritt kannst du sie übernehmen oder anpassen.</div></div>`;
+            `<div class="mk-note ok" style="margin-top:12px;"><i class="fas fa-lightbulb"></i><div>Deine Top 4: <strong>${r.filter(x => x.t).slice(0, 4).map(x => x.a.title).join(', ')}</strong>. Im nächsten Schritt kannst du sie übernehmen oder anpassen.</div></div>`;
     }
 
     /* =====================================================================
@@ -220,12 +269,21 @@
         const lowDiversity = S.selected.length >= 2 && S.selected.every(id => ['body', 'spirituality', 'savoring'].indexOf(id) > -1);
         if (lowDiversity) hints.push(['info', 'Alle gewählten Aktivitäten sind eher nach innen gerichtet. Eine soziale (Freundlichkeit, Beziehungen, Dankbarkeit) ergänzt gut.']);
         if (S.selected.length >= 1 && S.selected.length <= 4 && !hints.some(x => x[0] === 'warn')) hints.push(['ok', `${S.selected.length} ${S.selected.length === 1 ? 'Aktivität' : 'Aktivitäten'} – gute Grösse. Lege unten fest, wann du übst.`]);
-        h.innerHTML = hints.map(x => `<div class="hoh-hint ${x[0]}"><i class="fas fa-${x[0] === 'warn' ? 'triangle-exclamation' : x[0] === 'ok' ? 'check-circle' : 'info-circle'}"></i><div>${x[1]}</div></div>`).join('');
+        h.innerHTML = hints.map(x => `<div class="mk-note ${x[0]}"><i class="fas fa-${x[0] === 'warn' ? 'triangle-exclamation' : x[0] === 'ok' ? 'check-circle' : 'info-circle'}"></i><div>${x[1]}</div></div>`).join('');
+    }
+    function weeklyMinutes() {
+        return S.selected.reduce((sum, id) => {
+            const a = act(id), p = S.plan[id] || {}; const f = FREQS.find(x => x.id === p.freq) || FREQS[2];
+            const per = p.days && p.days.length ? p.days.length : Math.round(7 / f.days * 10) / 10;
+            const avg = a.exercises.reduce((s, e) => s + e.min, 0) / a.exercises.length;
+            return sum + per * Math.min(avg, 20);
+        }, 0);
     }
     function renderPlan() {
         const host = $('hoh-plan');
         if (!S.selected.length) { host.innerHTML = ''; return; }
-        host.innerHTML = S.selected.map(id => {
+        const mins = Math.round(weeklyMinutes());
+        host.innerHTML = `<div class="hoh-plan-summary"><div><strong>${S.selected.length} ${S.selected.length === 1 ? 'Aktivität' : 'Aktivitäten'}</strong> · ca. <strong>${mins} Min pro Woche</strong></div><div class="mk-faint" style="font-size:13px;">${mins > 150 ? 'Das ist ambitioniert – lieber kleiner anfangen und steigern.' : mins < 30 ? 'Sehr schlank. Gut zum Starten, später gern ausbauen.' : 'Realistischer Umfang – gut machbar neben dem Alltag.'}</div></div>` + S.selected.map(id => {
             const a = act(id); const p = S.plan[id] = S.plan[id] || { freq: defaultFreq(id), days: [] };
             return `<div class="mk-card hoh-planact" style="border-left-color:${a.color}">
                 <h3><span style="font-size:22px">${a.ic}</span> ${a.title}</h3>
@@ -243,11 +301,11 @@
                 <div class="hoh-dose"><i class="fas fa-flask"></i> <strong>Dosierung laut Forschung:</strong> ${a.dose}</div>
             </div>`;
         }).join('');
-        host.querySelectorAll('[data-freq]').forEach(el => el.addEventListener('change', () => { S.plan[el.dataset.freq].freq = el.value; MethodKit.save(); }));
+        host.querySelectorAll('[data-freq]').forEach(el => el.addEventListener('change', () => { S.plan[el.dataset.freq].freq = el.value; MethodKit.save(); renderPlan(); }));
         host.querySelectorAll('[data-day]').forEach(b => b.addEventListener('click', () => {
             const p = S.plan[b.dataset.dact], d = +b.dataset.day, i = p.days.indexOf(d);
             if (i > -1) p.days.splice(i, 1); else p.days.push(d);
-            b.classList.toggle('on'); MethodKit.save();
+            MethodKit.save(); renderPlan();
         }));
         host.querySelectorAll('[data-cue]').forEach(el => el.addEventListener('input', () => { S.plan[el.dataset.cue].cue = el.value; MethodKit.save(); }));
     }
@@ -262,18 +320,33 @@
         } else {
             const due = S.selected.filter(id => doneToday(id) || isDueToday(id));
             const v = varietyIndex(14);
+            const open = due.filter(id => !doneToday(id)).length;
+            $('hoh-today-sub').textContent = open ? `${open} ${open === 1 ? 'Aktivität steht' : 'Aktivitäten stehen'} heute an. Vorgeschlagen ist jeweils die Übung, die am längsten nicht dran war.` : 'Alles erledigt, was heute laut Plan anstand. Unten findest du alle Aktivitäten, falls du Lust auf mehr hast.';
             let html = due.length ? due.map(id => {
                 const a = act(id), p = S.plan[id] || {}, dn = doneToday(id);
-                return `<div class="hoh-today-item ${dn ? 'done' : ''}"><span class="ic">${a.ic}</span><div class="t">${a.title}<small>${p.cue ? esc(p.cue) : (FREQS.find(f => f.id === p.freq) || FREQS[2]).label}</small></div>${dn ? '<span style="color:#059669;font-weight:700;font-size:13px"><i class="fas fa-check"></i> erledigt</span>' : `<button class="mk-btn mk-btn-ghost mk-btn-sm" data-jump="${id}">Übung wählen</button>`}</div>`;
-            }).join('') : '<div class="hoh-hint ok"><i class="fas fa-mug-hot"></i><div>Heute steht laut Plan nichts an. Freier Tag – oder du nimmst dir unten spontan etwas.</div></div>';
-            if (v.total >= 5 && v.distinct <= 2) html += `<div class="hoh-hint warn" style="margin-top:10px;"><i class="fas fa-shuffle"></i><div><strong>Vielfalt-Warnung:</strong> In den letzten 14 Tagen hast du ${v.total} Übungen gemacht, aber nur ${v.distinct} verschiedene. Hedonische Adaptation droht – wechsle die Übung, den Ort oder die Form.</div></div>`;
+                const sug = suggestExercise(id);
+                return `<div class="hoh-today-item ${dn ? 'done' : ''}" style="--act:${a.color}"><span class="ic">${a.ic}</span><div class="t">${a.title}<small>${dn ? 'Heute erledigt' : `Vorschlag: <strong>${sug.title}</strong> · ${sug.min} Min`}${p.cue ? ` · ${esc(p.cue)}` : ''}</small></div>${dn ? '<span class="hoh-done-tag"><i class="fas fa-check"></i> erledigt</span>' : `<div class="hoh-today-actions"><button class="mk-btn mk-btn-primary mk-btn-sm" data-start="${id}:${sug.id}"><i class="fas fa-play"></i> Start</button><button class="mk-btn mk-btn-outline mk-btn-sm" data-jump="${id}" title="Andere Übung wählen"><i class="fas fa-list"></i></button></div>`}</div>`;
+            }).join('') : '<div class="mk-note ok"><i class="fas fa-mug-hot"></i><div>Heute steht laut Plan nichts an. Freier Tag – oder du nimmst dir unten spontan etwas.</div></div>';
+            if (v.total >= 5 && v.distinct <= 2) html += `<div class="mk-note warn" style="margin-top:10px;"><i class="fas fa-shuffle"></i><div><strong>Vielfalt-Warnung:</strong> In den letzten 14 Tagen hast du ${v.total} Übungen gemacht, aber nur ${v.distinct} verschiedene. Hedonische Adaptation droht – wechsle die Übung, den Ort oder die Form.</div></div>`;
             th.innerHTML = html;
             th.querySelectorAll('[data-jump]').forEach(b => b.addEventListener('click', () => {
                 const m = document.querySelector(`.hoh-module[data-mod="${b.dataset.jump}"]`);
                 if (m) { m.scrollIntoView({ behavior: 'smooth', block: 'start' }); m.querySelector('[data-tab="ex"]').click(); }
             }));
+            th.querySelectorAll('[data-start]').forEach(b => b.addEventListener('click', () => { const [a, e] = b.dataset.start.split(':'); openExercise(a, e); }));
         }
         renderModules();
+    }
+    /* Smarter Vorschlag: die Übung der Aktivität, die am längsten nicht gemacht wurde (nie gemachte zuerst, in Buch-Reihenfolge) */
+    function suggestExercise(aId) {
+        const a = act(aId);
+        let best = null, bestTs = Infinity;
+        a.exercises.forEach((e, i) => {
+            const l = entriesFor(aId, e.id).slice(-1)[0];
+            const ts = l ? (l.ts || new Date(l.date).getTime()) : -1e12 + i; // nie gemacht → ganz vorne, stabil sortiert
+            if (ts < bestTs) { bestTs = ts; best = e; }
+        });
+        return best || a.exercises[0];
     }
     function renderModules() {
         const host = $('hoh-modules');
@@ -377,11 +450,14 @@
         const dc = dayCounts(); const cells = []; const today = new Date(); const tk = todayKey();
         const end = new Date(today); const dowEnd = (end.getDay() + 6) % 7; end.setDate(end.getDate() + (6 - dowEnd));
         const start = new Date(end); start.setDate(start.getDate() - 7 * 12 + 1);
-        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        const months = []; let lastM = -1;
+        for (let d = new Date(start), i = 0; d <= end; d.setDate(d.getDate() + 1), i++) {
             const k = localKey(d); const c = dc[k] || 0; const future = d > today;
+            if (i % 7 === 0) { const mid = new Date(d); mid.setDate(mid.getDate() + 3); const m = mid.getMonth(); months.push(m !== lastM ? mid.toLocaleDateString('de-CH', { month: 'short' }) : ''); lastM = m; }
             cells.push(`<i class="${c >= 3 ? 'l3' : c === 2 ? 'l2' : c === 1 ? 'l1' : 'l0'} ${k === tk ? 'today' : ''}" style="${future ? 'opacity:.25' : ''}" title="${fmtDate(k)}: ${c} Übung${c === 1 ? '' : 'en'}"></i>`);
         }
         $('hoh-heat').innerHTML = cells.join('');
+        const ml = $('hoh-heat-months'); if (ml) ml.innerHTML = months.map(m => `<span>${m}</span>`).join('');
 
         // Filter
         const used = Array.from(new Set(S.entries.map(e => e.act)));
@@ -428,11 +504,11 @@
         const l = lastShs(); const rm = $('hoh-remeasure'); const ds = daysSince(l ? l.date : null);
         if (!l) rm.innerHTML = '';
         else if (ds >= REMEASURE_DAYS) {
-            rm.innerHTML = `<div class="hoh-hint info" style="margin-top:14px;"><i class="fas fa-ruler"></i><div><strong>Zeit für eine neue Messung</strong> – die letzte ist ${ds} Tage her.</div></div><div id="hoh-shs2"></div><div id="hoh-shs2-result"></div><button class="mk-btn mk-btn-primary" id="hoh-shs2-save" style="margin-top:12px;"><i class="fas fa-check"></i> Messung speichern</button>`;
+            rm.innerHTML = `<div class="mk-note info" style="margin-top:14px;"><i class="fas fa-ruler"></i><div><strong>Zeit für eine neue Messung</strong> – die letzte ist ${ds} Tage her.</div></div><div id="hoh-shs2"></div><div id="hoh-shs2-result"></div><button class="mk-btn mk-btn-primary" id="hoh-shs2-save" style="margin-top:12px;"><i class="fas fa-check"></i> Messung speichern</button>`;
             S.__shsDraft2 = [4, 4, 4, 4];
             renderShs('hoh-shs2', 'hoh-shs2-result', null, '__shsDraft2');
             $('hoh-shs2-save').onclick = () => { const m = shsMean(S.__shsDraft2); S.shs.push({ date: todayKey(), vals: S.__shsDraft2.slice(), mean: m }); MethodKit.save({ now: true }); MethodKit.toast(`Messung ${m.toFixed(2)} gespeichert`, 'success'); renderReview(); };
-        } else rm.innerHTML = `<div class="hoh-hint ok" style="margin-top:14px;"><i class="fas fa-calendar-check"></i><div>Letzte Messung vor ${ds} Tag${ds === 1 ? '' : 'en'}. Nächste Messung in ${REMEASURE_DAYS - ds} Tagen – zwischendurch zu messen bringt nichts, Glück schwankt tagesabhängig.</div></div>`;
+        } else rm.innerHTML = `<div class="mk-note ok" style="margin-top:14px;"><i class="fas fa-calendar-check"></i><div>Letzte Messung vor ${ds} Tag${ds === 1 ? '' : 'en'}. Nächste Messung in ${REMEASURE_DAYS - ds} Tagen – zwischendurch zu messen bringt nichts, Glück schwankt tagesabhängig.</div></div>`;
 
         // Five Hows mit automatischen Signalen aus den Daten
         const v = varietyIndex(14);
@@ -493,6 +569,7 @@
         renderPie();
         renderShs('hoh-shs', 'hoh-shs-result', 'hoh-shs-save', '__shsDraft');
         renderBaselineBadge();
+        renderBaselineState(false);
         renderFit();
 
         MethodKit.onStep = function (n) {

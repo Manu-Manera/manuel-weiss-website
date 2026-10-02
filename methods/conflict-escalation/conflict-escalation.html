@@ -3,485 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conflict Escalation - Konflikteskalationsmodell</title>
-    <link rel="stylesheet" href="../../css/ikigai-planner.css">
-    <link rel="stylesheet" href="conflict-escalation.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/unified-auth-system.css">
-
-    <!-- Progress Badge Styles -->
-    <style>
-        .user-progress-badge {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background: white;
-            border-radius: 8px;
-            padding: 12px 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            font-size: 14px;
-            min-width: 200px;
-        }
-        
-        .user-progress-badge .user-info,
-        .user-progress-badge .progress-sync {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #4a5568;
-        }
-        
-        .user-progress-badge i {
-            font-size: 16px;
-            color: #667eea;
-        }
-        
-        @media (max-width: 768px) {
-            .user-progress-badge {
-                top: auto;
-                bottom: 20px;
-                right: 10px;
-                left: 10px;
-                min-width: auto;
-            }
-        }
-    </style>
+    <title>Konflikt-Eskalation (Glasl) | Manuel Weiss</title>
+    <meta name="description" content="Erkenne mit dem 9-Stufen-Modell von Friedrich Glasl, wie weit ein Konflikt eskaliert ist – und welche De-Eskalation jetzt wirklich hilft.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>:root { --mk-accent: #f97316; --mk-accent-2: #ef4444; --mk-accent-soft: rgba(249,115,22,.12); }</style>
 </head>
-<body data-page-id="conflict-escalation">
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-fire"></i></span><span>Konflikt-Eskalation</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
+    </header>
 
-    <!-- Progress Badge -->
-    <div class="user-progress-badge" style="display: none;">
-        <div class="user-info">
-            <i class="fas fa-user-circle"></i>
-            <span>Nicht angemeldet</span>
-        </div>
-        <div class="progress-sync">
-            <i class="fas fa-cloud-off-alt"></i>
-            <span>Fortschritt lokal</span>
-        </div>
-    </div>
-    <div class="conflict-method">
-        <div class="method-header">
-            <div class="method-icon">
-                <i class="fas fa-exclamation-triangle"></i>
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-fire"></i></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Glasl</div>
+            <h1>Wie heiß ist der Konflikt?</h1>
+            <p>Friedrich Glasl beschreibt neun Eskalationsstufen in drei Phasen. Wer die Stufe kennt, wählt die passende De-Eskalation – und weiß, ab wann Hilfe von außen nötig wird.</p>
+            <div class="mk-badges"><span class="mk-badge">9 Stufen</span><span class="mk-badge">3 Phasen</span><span class="mk-badge">De-Eskalation</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Der Konflikt</h2>
+                <div class="mk-field"><label>Worum geht es, mit wem?</label><textarea class="mk-textarea" data-mk-field="conflict"></textarea></div>
             </div>
-            <div class="method-title">
-                <h1>Conflict Escalation</h1>
-                <p>Verstehe und verhindere Konflikteskalation nach dem Modell von Friedrich Glasl</p>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>Auf welcher Stufe steht ihr?</h2>
+                <p class="mk-sub">Wähle ehrlich die Stufe, die den aktuellen Umgang am besten beschreibt.</p>
+                <div id="ce-stages"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>Was jetzt hilft</h2>
+                <div id="ce-help"></div>
+                <div class="mk-field" style="margin-top:14px;"><label>Mein nächster Schritt zur De-Eskalation</label><textarea class="mk-textarea" data-mk-field="next"></textarea></div>
+                <button class="mk-btn mk-btn-primary" id="ce-export"><i class="fas fa-download"></i> Herunterladen</button>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
+            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
+    </main>
 
-        <div class="workflow-header">
-            <button class="btn btn-secondary" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
-                <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
-            </button>
-        <div class="workflow-progress">
-            <div class="progress-step active" data-step="1">
-                <div class="step-number">1</div>
-                <div class="step-title">Konfliktanalyse</div>
-            <div class="progress-step" data-step="2">
-                <div class="step-number">2</div>
-                <div class="step-title">Eskalationsstufen</div>
-            <div class="progress-step" data-step="3">
-                <div class="step-number">3</div>
-                <div class="step-title">Deeskalation</div>
-            <div class="progress-step" data-step="4">
-                <div class="step-number">4</div>
-                <div class="step-title">Prävention</div>
-            <div class="progress-step" data-step="5">
-                <div class="step-number">5</div>
-                <div class="step-title">Reflexion & Lernen</div>
-        <div class="workflow-content">
-            <!-- Step 1: Konfliktanalyse -->
-            <div class="workflow-step active" id="step-1">
-                <div class="step-header">
-                    <h2>Schritt 1: Konfliktanalyse</h2>
-                    <p>Analysiere den Konflikt systematisch und identifiziere die Ursachen</p>
-                </div>
-                <div class="conflict-analysis">
-                    <h3>🔍 Konfliktanalyse</h3>
-                    <div class="analysis-elements">
-                        <div class="element-item">
-                            <h4>Konfliktgegenstand</h4>
-                            <p>Worum geht es in dem Konflikt?</p>
-                            <textarea id="conflict-subject" placeholder="Beschreibe den Konfliktgegenstand..."></textarea>
-                        </div>
-                            <h4>Beteiligte Parteien</h4>
-                            <p>Wer ist an dem Konflikt beteiligt?</p>
-                            <textarea id="involved-parties" placeholder="Liste alle beteiligten Parteien auf..."></textarea>
-                            <h4>Konfliktursachen</h4>
-                            <p>Was sind die Ursachen des Konflikts?</p>
-                            <textarea id="conflict-causes" placeholder="Identifiziere die Konfliktursachen..."></textarea>
-                            <h4>Emotionale Aspekte</h4>
-                            <p>Welche Emotionen spielen eine Rolle?</p>
-                            <textarea id="emotional-aspects" placeholder="Analysiere die emotionalen Aspekte..."></textarea>
-                    </div>
-                <div class="conflict-analysis-practice">
-                    <h5>🎯 Übung: Konfliktanalyse</h5>
-                    <div class="practice-exercises">
-                        <div class="exercise-item">
-                            <label>Übung 1: Konfliktmapping</label>
-                            <textarea id="practice-conflict-mapping" placeholder="Erstelle eine Konfliktlandkarte..."></textarea>
-                            <label>Übung 2: Ursachenanalyse</label>
-                            <textarea id="practice-cause-analysis" placeholder="Analysiere die Konfliktursachen..."></textarea>
-                            <label>Übung 3: Interessenanalyse</label>
-                            <textarea id="practice-interest-analysis" placeholder="Analysiere die Interessen aller Parteien..."></textarea>
-                            <label>Übung 4: Emotionen identifizieren</label>
-                            <textarea id="practice-emotion-identification" placeholder="Identifiziere die beteiligten Emotionen..."></textarea>
-                            <label>Übung 5: Konflikttyp bestimmen</label>
-                            <textarea id="practice-conflict-type" placeholder="Bestimme den Typ des Konflikts..."></textarea>
-                            <label>Übung 6: Eskalationsgrad einschätzen</label>
-                            <textarea id="practice-escalation-level" placeholder="Schätze den aktuellen Eskalationsgrad ein..."></textarea>
-                <div class="conflict-analysis-tips">
-                    <h5>💡 Tipps für die Konfliktanalyse</h5>
-                    <div class="tips-list">
-                        <div class="tip-item">
-                            <div class="tip-icon">🔍</div>
-                            <div class="tip-content">
-                                <h6>Objektiv bleiben</h6>
-                                <p>Bleibe objektiv bei der Analyse</p>
-                            </div>
-                            <div class="tip-icon">👥</div>
-                                <h6>Alle Perspektiven</h6>
-                                <p>Berücksichtige alle Perspektiven</p>
-                            <div class="tip-icon">📝</div>
-                                <h6>Dokumentieren</h6>
-                                <p>Dokumentiere alle Erkenntnisse</p>
-                            <div class="tip-icon">🎯</div>
-                                <h6>Fokus auf Ursachen</h6>
-                                <p>Fokussiere auf die Ursachen, nicht auf Symptome</p>
-                            <div class="tip-icon">💭</div>
-                                <h6>Emotionen berücksichtigen</h6>
-                                <p>Berücksichtige emotionale Aspekte</p>
-                            <div class="tip-icon">⏰</div>
-                                <h6>Zeit nehmen</h6>
-                                <p>Nimm dir Zeit für eine gründliche Analyse</p>
-                <div class="conflict-analysis-scenarios">
-                    <h5>🎭 Konfliktanalyse-Szenarien</h5>
-                    <div class="scenarios-list">
-                        <div class="scenario-item">
-                            <h6>Arbeit: Teamkonflikt</h6>
-                            <p><strong>Situation:</strong> Du hast einen Konflikt in deinem Team.</p>
-                            <textarea id="scenario-team-conflict" placeholder="Wie würdest du den Teamkonflikt analysieren?"></textarea>
-                            <h6>Familie: Geschwisterkonflikt</h6>
-                            <p><strong>Situation:</strong> Du moderierst einen Konflikt zwischen Geschwistern.</p>
-                            <textarea id="scenario-sibling-conflict" placeholder="Welche Aspekte würdest du analysieren?"></textarea>
-                            <h6>Beziehung: Partnerschaftskonflikt</h6>
-                            <p><strong>Situation:</strong> Du hast einen Konflikt mit deinem Partner.</p>
-                            <textarea id="scenario-partner-conflict" placeholder="Wie würdest du den Partnerschaftskonflikt analysieren?"></textarea>
-            <!-- Step 2: Eskalationsstufen -->
-            <div class="workflow-step" id="step-2">
-                    <h2>Schritt 2: Eskalationsstufen</h2>
-                    <p>Verstehe die 9 Eskalationsstufen nach Friedrich Glasl</p>
-                <div class="escalation-stages">
-                    <h3>📈 Eskalationsstufen nach Glasl</h3>
-                    <div class="stages-grid">
-                        <div class="stage-item">
-                            <h4>Stufe 1: Verhärtung</h4>
-                            <p>Standpunkte verhärten sich, erste Spannungen</p>
-                            <textarea id="stage-1-hardening" placeholder="Beschreibe Stufe 1..."></textarea>
-                            <h4>Stufe 2: Debatte</h4>
-                            <p>Polarisierung, Schwarz-Weiß-Denken</p>
-                            <textarea id="stage-2-debate" placeholder="Beschreibe Stufe 2..."></textarea>
-                            <h4>Stufe 3: Taten</h4>
-                            <p>Konkrete Handlungen, Drohungen</p>
-                            <textarea id="stage-3-actions" placeholder="Beschreibe Stufe 3..."></textarea>
-                            <h4>Stufe 4: Koalitionen</h4>
-                            <p>Verbündete suchen, Lagerbildung</p>
-                            <textarea id="stage-4-coalitions" placeholder="Beschreibe Stufe 4..."></textarea>
-                            <h4>Stufe 5: Gesichtsverlust</h4>
-                            <p>Öffentliche Bloßstellung, Gesichtsverlust</p>
-                            <textarea id="stage-5-face-loss" placeholder="Beschreibe Stufe 5..."></textarea>
-                            <h4>Stufe 6: Drohstrategien</h4>
-                            <p>Ultimaten, Drohungen, Erpressung</p>
-                            <textarea id="stage-6-threats" placeholder="Beschreibe Stufe 6..."></textarea>
-                            <h4>Stufe 7: Begrenzte Vernichtung</h4>
-                            <p>Gezielte Schädigung des Gegners</p>
-                            <textarea id="stage-7-limited-destruction" placeholder="Beschreibe Stufe 7..."></textarea>
-                            <h4>Stufe 8: Zersplitterung</h4>
-                            <p>Vollständige Zerstörung des Gegners</p>
-                            <textarea id="stage-8-fragmentation" placeholder="Beschreibe Stufe 8..."></textarea>
-                            <h4>Stufe 9: Gemeinsam in den Abgrund</h4>
-                            <p>Vollständige Vernichtung beider Seiten</p>
-                            <textarea id="stage-9-together-abyss" placeholder="Beschreibe Stufe 9..."></textarea>
-                <div class="escalation-stages-practice">
-                    <h5>🎯 Übung: Eskalationsstufen</h5>
-                            <label>Übung 1: Stufen identifizieren</label>
-                            <textarea id="practice-stage-identification" placeholder="Identifiziere die aktuelle Eskalationsstufe..."></textarea>
-                            <label>Übung 2: Eskalationsmuster</label>
-                            <textarea id="practice-escalation-patterns" placeholder="Erkenne Eskalationsmuster..."></textarea>
-                            <label>Übung 3: Frühwarnsignale</label>
-                            <textarea id="practice-early-warning-signs" placeholder="Identifiziere Frühwarnsignale..."></textarea>
-                            <label>Übung 4: Eskalationsfaktoren</label>
-                            <textarea id="practice-escalation-factors" placeholder="Analysiere Eskalationsfaktoren..."></textarea>
-                            <label>Übung 5: Stufenverlauf</label>
-                            <textarea id="practice-stage-progression" placeholder="Analysiere den Stufenverlauf..."></textarea>
-                            <label>Übung 6: Wendepunkte</label>
-                            <textarea id="practice-turning-points" placeholder="Identifiziere Wendepunkte..."></textarea>
-                <div class="escalation-stages-tips">
-                    <h5>💡 Tipps für Eskalationsstufen</h5>
-                            <div class="tip-icon">📊</div>
-                                <h6>Stufen erkennen</h6>
-                                <p>Lerne die Eskalationsstufen zu erkennen</p>
-                            <div class="tip-icon">⚠️</div>
-                                <h6>Frühwarnsignale</h6>
-                                <p>Achte auf Frühwarnsignale</p>
-                            <div class="tip-icon">🔄</div>
-                                <h6>Muster verstehen</h6>
-                                <p>Verstehe Eskalationsmuster</p>
-                                <h6>Rechtzeitig handeln</h6>
-                                <p>Handele rechtzeitig bei Eskalation</p>
-                                <h6>Fokus auf Deeskalation</h6>
-                                <p>Fokussiere auf Deeskalation</p>
-                            <div class="tip-icon">💡</div>
-                                <h6>Prävention</h6>
-                                <p>Präventive Maßnahmen ergreifen</p>
-                <div class="escalation-stages-scenarios">
-                    <h5>🎭 Eskalationsstufen-Szenarien</h5>
-                            <h6>Arbeit: Projektkonflikt</h6>
-                            <p><strong>Situation:</strong> Ein Projektkonflikt eskaliert.</p>
-                            <textarea id="scenario-project-escalation" placeholder="Welche Eskalationsstufen erkennst du?"></textarea>
-                            <h6>Familie: Erbschaftskonflikt</h6>
-                            <p><strong>Situation:</strong> Ein Erbschaftskonflikt eskaliert.</p>
-                            <textarea id="scenario-inheritance-escalation" placeholder="Wie würdest du die Eskalation analysieren?"></textarea>
-                            <h6>Beziehung: Vertrauenskonflikt</h6>
-                            <p><strong>Situation:</strong> Ein Vertrauenskonflikt eskaliert.</p>
-                            <textarea id="scenario-trust-escalation" placeholder="Welche Eskalationsstufen sind erkennbar?"></textarea>
-            <!-- Step 3: Deeskalation -->
-            <div class="workflow-step" id="step-3">
-                    <h2>Schritt 3: Deeskalation</h2>
-                    <p>Lerne effektive Deeskalationstechniken für verschiedene Stufen</p>
-                <div class="deescalation-techniques">
-                    <h3>🔄 Deeskalationstechniken</h3>
-                    <div class="techniques-grid">
-                        <div class="technique-item">
-                            <h4>Frühe Stufen (1-3)</h4>
-                            <p>Kommunikation, Verständnis, Kompromisse</p>
-                            <textarea id="early-stages-deescalation" placeholder="Beschreibe Deeskalationstechniken für frühe Stufen..."></textarea>
-                            <h4>Mittlere Stufen (4-6)</h4>
-                            <p>Mediation, Verhandlungen, Gesichtswahrung</p>
-                            <textarea id="middle-stages-deescalation" placeholder="Beschreibe Deeskalationstechniken für mittlere Stufen..."></textarea>
-                            <h4>Späte Stufen (7-9)</h4>
-                            <p>Autoritäre Intervention, Trennung, Schutz</p>
-                            <textarea id="late-stages-deescalation" placeholder="Beschreibe Deeskalationstechniken für späte Stufen..."></textarea>
-                            <h4>Allgemeine Techniken</h4>
-                            <p>Aktives Zuhören, Empathie, Neutralität</p>
-                            <textarea id="general-deescalation" placeholder="Beschreibe allgemeine Deeskalationstechniken..."></textarea>
-                <div class="deescalation-techniques-practice">
-                    <h5>🎯 Übung: Deeskalationstechniken</h5>
-                            <label>Übung 1: Aktives Zuhören</label>
-                            <textarea id="practice-active-listening" placeholder="Übe aktives Zuhören in Konflikten..."></textarea>
-                            <label>Übung 2: Empathie zeigen</label>
-                            <textarea id="practice-empathy" placeholder="Übe Empathie in Konflikten..."></textarea>
-                            <label>Übung 3: Neutralität wahren</label>
-                            <textarea id="practice-neutrality" placeholder="Übe Neutralität in Konflikten..."></textarea>
-                            <label>Übung 4: Gesichtswahrung</label>
-                            <textarea id="practice-face-saving" placeholder="Übe Gesichtswahrung..."></textarea>
-                            <label>Übung 5: Kompromisse finden</label>
-                            <textarea id="practice-compromise-finding" placeholder="Übe das Finden von Kompromissen..."></textarea>
-                            <label>Übung 6: Mediation</label>
-                            <textarea id="practice-mediation" placeholder="Übe Mediationstechniken..."></textarea>
-                <div class="deescalation-techniques-tips">
-                    <h5>💡 Tipps für Deeskalation</h5>
-                            <div class="tip-icon">👂</div>
-                                <h6>Aktives Zuhören</h6>
-                                <p>Höre aktiv zu und zeige Verständnis</p>
-                                <h6>Empathie zeigen</h6>
-                                <p>Zeige Empathie für alle Parteien</p>
-                            <div class="tip-icon">⚖️</div>
-                                <h6>Neutralität wahren</h6>
-                                <p>Bleibe neutral und unparteiisch</p>
-                            <div class="tip-icon">🤝</div>
-                                <h6>Gesichtswahrung</h6>
-                                <p>Hilf allen Parteien, ihr Gesicht zu wahren</p>
-                                <h6>Kompromisse finden</h6>
-                                <p>Suche nach Kompromissen und Win-Win-Lösungen</p>
-                                <h6>Zeit geben</h6>
-                                <p>Gib den Parteien Zeit zum Nachdenken</p>
-                <div class="deescalation-techniques-scenarios">
-                    <h5>🎭 Deeskalation-Szenarien</h5>
-                            <h6>Arbeit: Teamkonflikt deeskalieren</h6>
-                            <p><strong>Situation:</strong> Du musst einen eskalierenden Teamkonflikt deeskalieren.</p>
-                            <textarea id="scenario-team-deescalation" placeholder="Wie würdest du den Konflikt deeskalieren?"></textarea>
-                            <h6>Familie: Familienkonflikt moderieren</h6>
-                            <p><strong>Situation:</strong> Du moderierst einen eskalierenden Familienkonflikt.</p>
-                            <textarea id="scenario-family-deescalation" placeholder="Welche Deeskalationstechniken würdest du anwenden?"></textarea>
-                            <h6>Beziehung: Partnerschaftskonflikt lösen</h6>
-                            <p><strong>Situation:</strong> Du möchtest einen eskalierenden Partnerschaftskonflikt lösen.</p>
-                            <textarea id="scenario-partner-deescalation" placeholder="Wie würdest du den Partnerschaftskonflikt deeskalieren?"></textarea>
-            <!-- Step 4: Prävention -->
-            <div class="workflow-step" id="step-4">
-                    <h2>Schritt 4: Prävention</h2>
-                    <p>Entwickle Strategien zur Konfliktprävention</p>
-                <div class="conflict-prevention">
-                    <h3>🛡️ Konfliktprävention</h3>
-                    <div class="prevention-strategies">
-                        <div class="strategy-item">
-                            <h4>Früherkennung</h4>
-                            <p>Erkenne Konflikte frühzeitig</p>
-                            <textarea id="early-detection" placeholder="Beschreibe Frühwarnsysteme..."></textarea>
-                            <h4>Kommunikation</h4>
-                            <p>Verbessere die Kommunikation</p>
-                            <textarea id="communication-improvement" placeholder="Beschreibe Kommunikationsverbesserungen..."></textarea>
-                            <h4>Strukturen</h4>
-                            <p>Schaffe klare Strukturen und Regeln</p>
-                            <textarea id="clear-structures" placeholder="Beschreibe klare Strukturen..."></textarea>
-                            <h4>Kultur</h4>
-                            <p>Entwickle eine konstruktive Konfliktkultur</p>
-                            <textarea id="conflict-culture" placeholder="Beschreibe eine konstruktive Konfliktkultur..."></textarea>
-                <div class="conflict-prevention-practice">
-                    <h5>🎯 Übung: Konfliktprävention</h5>
-                            <label>Übung 1: Frühwarnsysteme</label>
-                            <textarea id="practice-early-warning-systems" placeholder="Entwickle Frühwarnsysteme..."></textarea>
-                            <label>Übung 2: Kommunikationsregeln</label>
-                            <textarea id="practice-communication-rules" placeholder="Entwickle Kommunikationsregeln..."></textarea>
-                            <label>Übung 3: Konfliktlösungsprozesse</label>
-                            <textarea id="practice-conflict-resolution-processes" placeholder="Entwickle Konfliktlösungsprozesse..."></textarea>
-                            <label>Übung 4: Mediationsstrukturen</label>
-                            <textarea id="practice-mediation-structures" placeholder="Entwickle Mediationsstrukturen..."></textarea>
-                            <label>Übung 5: Schulungen</label>
-                            <textarea id="practice-trainings" placeholder="Plane Schulungen zur Konfliktlösung..."></textarea>
-                            <label>Übung 6: Kulturwandel</label>
-                            <textarea id="practice-culture-change" placeholder="Plane einen Kulturwandel..."></textarea>
-                <div class="conflict-prevention-tips">
-                    <h5>💡 Tipps für Konfliktprävention</h5>
-                            <div class="tip-icon">💬</div>
-                                <h6>Offene Kommunikation</h6>
-                                <p>Fördere offene Kommunikation</p>
-                            <div class="tip-icon">📋</div>
-                                <h6>Klare Regeln</h6>
-                                <p>Schaffe klare Regeln und Strukturen</p>
-                                <h6>Vertrauen aufbauen</h6>
-                                <p>Baue Vertrauen zwischen den Parteien auf</p>
-                                <h6>Gemeinsame Ziele</h6>
-                                <p>Definiere gemeinsame Ziele</p>
-                                <h6>Regelmäßige Reflexion</h6>
-                                <p>Reflektiere regelmäßig über Konflikte</p>
-                <div class="conflict-prevention-scenarios">
-                    <h5>🎭 Konfliktprävention-Szenarien</h5>
-                            <h6>Arbeit: Teamkonflikte verhindern</h6>
-                            <p><strong>Situation:</strong> Du möchtest Teamkonflikte in deinem Unternehmen verhindern.</p>
-                            <textarea id="scenario-team-conflict-prevention" placeholder="Wie würdest du Teamkonflikte verhindern?"></textarea>
-                            <h6>Familie: Familienkonflikte vermeiden</h6>
-                            <p><strong>Situation:</strong> Du möchtest Familienkonflikte vermeiden.</p>
-                            <textarea id="scenario-family-conflict-prevention" placeholder="Welche Präventionsmaßnahmen würdest du ergreifen?"></textarea>
-                            <h6>Beziehung: Partnerschaftskonflikte verhindern</h6>
-                            <p><strong>Situation:</strong> Du möchtest Partnerschaftskonflikte verhindern.</p>
-                            <textarea id="scenario-partner-conflict-prevention" placeholder="Wie würdest du Partnerschaftskonflikte verhindern?"></textarea>
-            <!-- Step 5: Reflexion & Lernen -->
-            <div class="workflow-step" id="step-5">
-                    <h2>Schritt 5: Reflexion & Lernen</h2>
-                    <p>Reflektiere über Konflikte und lerne für die Zukunft</p>
-                <div class="reflection-learning">
-                    <h3>💭 Reflexion & Lernen</h3>
-                    <div class="learning-elements">
-                            <h4>Konfliktreflexion</h4>
-                            <p>Reflektiere über vergangene Konflikte</p>
-                            <textarea id="conflict-reflection" placeholder="Reflektiere über vergangene Konflikte..."></textarea>
-                            <h4>Lernpunkte</h4>
-                            <p>Identifiziere wichtige Lernpunkte</p>
-                            <textarea id="learning-points" placeholder="Identifiziere wichtige Lernpunkte..."></textarea>
-                            <h4>Verbesserungen</h4>
-                            <p>Entwickle Verbesserungsvorschläge</p>
-                            <textarea id="improvements" placeholder="Entwickle Verbesserungsvorschläge..."></textarea>
-                            <h4>Zukünftige Strategien</h4>
-                            <p>Entwickle Strategien für die Zukunft</p>
-                            <textarea id="future-strategies" placeholder="Entwickle Strategien für die Zukunft..."></textarea>
-                <div class="reflection-learning-practice">
-                    <h5>🎯 Übung: Reflexion & Lernen</h5>
-                            <label>Übung 1: Konfliktanalyse</label>
-                            <textarea id="practice-conflict-analysis" placeholder="Analysiere vergangene Konflikte..."></textarea>
-                            <label>Übung 2: Lernpunkte identifizieren</label>
-                            <textarea id="practice-learning-point-identification" placeholder="Identifiziere wichtige Lernpunkte..."></textarea>
-                            <label>Übung 3: Verbesserungen planen</label>
-                            <textarea id="practice-improvement-planning" placeholder="Plane konkrete Verbesserungen..."></textarea>
-                            <label>Übung 4: Strategien entwickeln</label>
-                            <textarea id="practice-strategy-development" placeholder="Entwickle zukünftige Strategien..."></textarea>
-                            <label>Übung 5: Wissen dokumentieren</label>
-                            <textarea id="practice-knowledge-documentation" placeholder="Dokumentiere dein Wissen..."></textarea>
-                            <label>Übung 6: Transfer planen</label>
-                            <textarea id="practice-transfer-planning" placeholder="Plane den Transfer in andere Bereiche..."></textarea>
-                <div class="reflection-learning-tips">
-                    <h5>💡 Tipps für Reflexion & Lernen</h5>
-                                <h6>Regelmäßig reflektieren</h6>
-                                <p>Dokumentiere deine Erkenntnisse</p>
-                                <h6>Lernpunkte identifizieren</h6>
-                                <p>Identifiziere wichtige Lernpunkte</p>
-                                <h6>Verbesserungen umsetzen</h6>
-                                <p>Setze Verbesserungen konkret um</p>
-                            <div class="tip-icon">📚</div>
-                                <h6>Wissen teilen</h6>
-                                <p>Teile dein Wissen mit anderen</p>
-                            <div class="tip-icon">🚀</div>
-                                <h6>Kontinuierlich lernen</h6>
-                                <p>Lerne kontinuierlich aus Konflikten</p>
-                <div class="reflection-learning-scenarios">
-                    <h5>🎭 Reflexion & Lernen-Szenarien</h5>
-                            <h6>Arbeit: Teamkonflikt reflektieren</h6>
-                            <p><strong>Situation:</strong> Du reflektierst über einen gelösten Teamkonflikt.</p>
-                            <textarea id="scenario-team-reflection" placeholder="Wie würdest du den Teamkonflikt reflektieren?"></textarea>
-                            <h6>Familie: Familienkonflikt lernen</h6>
-                            <p><strong>Situation:</strong> Du lernst aus einem Familienkonflikt.</p>
-                            <textarea id="scenario-family-learning" placeholder="Welche Lernpunkte würdest du identifizieren?"></textarea>
-                            <h6>Beziehung: Partnerschaftskonflikt verbessern</h6>
-                            <p><strong>Situation:</strong> Du möchtest aus einem Partnerschaftskonflikt lernen.</p>
-                            <textarea id="scenario-partner-improvement" placeholder="Wie würdest du die Partnerschaft verbessern?"></textarea>
-                <div class="conflict-summary">
-                    <h5>🎉 Conflict Escalation Zusammenfassung</h5>
-                    <div class="summary-form">
-                        <div class="summary-item">
-                            <label>Hauptkonflikt:</label>
-                            <textarea id="main-conflict" placeholder="Beschreibe den Hauptkonflikt..."></textarea>
-                            <label>Eskalationsstufe:</label>
-                            <textarea id="escalation-stage" placeholder="Welche Eskalationsstufe war erreicht?"></textarea>
-                            <label>Deeskalationstechniken:</label>
-                            <textarea id="deescalation-techniques" placeholder="Welche Deeskalationstechniken wurden angewendet?"></textarea>
-                            <label>Präventionsmaßnahmen:</label>
-                            <textarea id="prevention-measures" placeholder="Welche Präventionsmaßnahmen sind sinnvoll?"></textarea>
-                            <label>Lernpunkte:</label>
-                            <textarea id="learning-points-summary" placeholder="Was hast du für die Zukunft gelernt?"></textarea>
-        <div class="workflow-navigation">
-            <button id="prev-step" class="nav-button prev-button" data-action="previous-step">
-                <i class="fas fa-arrow-left"></i> Zurück
-            <button id="next-step" class="nav-button next-button" data-action="next-step">
-                Weiter <i class="fas fa-arrow-right"></i>
-    </div>
-    <script src="conflict-escalation.js"></script>
-    <!-- Global Auth System -->
-    <script src="../../js/aws-config.js"></script>
-    <script src="js/global-auth-system.js"></script>    <script src="../../js/unified-auth-manager.js"></script>
-    
-    <!-- Auth Modals Container -->
-    <div id="authModalsContainer"></div>
+    <div class="mk-toast" id="mk-toast"></div>
 
-    <!-- AWS Configuration -->
     <script>
-        window.AWS_CONFIG = {
-            region: 'eu-central-1',
-            userPoolId: 'eu-central-1_8gP4gLK9r',
-            clientId: '7kc5tt6a23fgh53d60vkefm812',
-            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-            dynamoDB: {
-                tableName: 'mawps-user-profiles',
-                region: 'eu-central-1'
-            },
-            s3: {
-                bucket: 'mawps-user-files-1760106396',
-                region: 'eu-central-1'
-            }
-        };
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
     </script>
-    
-    <!-- AWS SDK -->
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
-    
-    <!-- Auth & Progress Tracking -->
-    <script src="/js/aws-profile-api.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
-    <script src="/js/user-progress-tracker.js"></script>
-    <script src="/js/personality-auth-integration.js"></script>
+    <script src="../_kit/method-kit.js?v=20261003"></script>
+    <script>
+        const STAGES=[
+            {n:1,t:'Verhärtung',p:0},{n:2,t:'Debatte & Polemik',p:0},{n:3,t:'Taten statt Worte',p:0},
+            {n:4,t:'Images & Koalitionen',p:1},{n:5,t:'Gesichtsverlust',p:1},{n:6,t:'Drohstrategien',p:1},
+            {n:7,t:'Begrenzte Vernichtung',p:2},{n:8,t:'Zersplitterung',p:2},{n:9,t:'Gemeinsam in den Abgrund',p:2}
+        ];
+        const PHASES=[
+            {label:'Phase 1 · win-win (1–3)',c:'#22c55e',help:'Noch gut selbst lösbar: Sucht das direkte Gespräch, hört aktiv zu, trennt Sache von Person und sucht gemeinsame Interessen. Eine moderierte Klärung genügt meist.'},
+            {label:'Phase 2 · win-lose (4–6)',c:'#f59e0b',help:'Aus eigener Kraft schwierig: Holt eine neutrale Moderation oder Mediation dazu. Sorgt für gesichtswahrende Lösungen und klare Spielregeln im Gespräch.'},
+            {label:'Phase 3 · lose-lose (7–9)',c:'#ef4444',help:'Selbsthilfe reicht nicht mehr: Es braucht entschiedene Intervention von außen (Mediation mit Machtbasis, Führungs- oder rechtliche Instanz). Schutz und Deeskalation haben Vorrang.'}
+        ];
+        (async function () {
+            await MethodKit.init({
+                method: 'conflict-escalation',
+                accent: '#f97316', accent2: '#ef4444',
+                steps: [{icon:'🎯',label:'Konflikt'},{icon:'🌡️',label:'Stufe'},{icon:'🧯',label:'De-Eskalation'}],
+                defaultState: { conflict:'', stage:0, next:'' }
+            });
+            MethodKit.bindFields();
+            const S = MethodKit.state;
+            const host=document.getElementById('ce-stages');
+            function render(){
+                host.innerHTML=STAGES.map(s=>`<button class="mk-option ${S.stage===s.n?'selected':''}" data-s="${s.n}" style="border-left:4px solid ${PHASES[s.p].c};"><span class="t">${s.n}. ${s.t}</span><span class="d">${PHASES[s.p].label.split('·')[1].trim()}</span></button>`).join('');
+                host.querySelectorAll('[data-s]').forEach(el=>el.addEventListener('click',()=>{ S.stage=parseInt(el.dataset.s,10); MethodKit.save(); render(); }));
+            }
+            render();
+            MethodKit.onStep=function(n){ if(n===3){
+                const st=STAGES.find(s=>s.n===S.stage);
+                document.getElementById('ce-help').innerHTML = st ? `<div class="mk-result"><h4>Stufe ${st.n}: ${st.t} — ${PHASES[st.p].label}</h4>${PHASES[st.p].help}</div>` : '<div class="mk-empty">Wähle zuerst die Stufe in Schritt 2.</div>';
+            }};
+            document.getElementById('ce-export').addEventListener('click',()=>{
+                const st=STAGES.find(s=>s.n===S.stage)||{t:'–',n:'–'};
+                MethodKit.exportText('mein-konflikt.txt', `KONFLIKT-ESKALATION (GLASL)\n===========================\n\nKonflikt: ${S.conflict}\nStufe: ${st.n} – ${st.t}\nNächster Schritt: ${S.next}\n`);
+            });
+        })();
+    </script>
 </body>
 </html>
