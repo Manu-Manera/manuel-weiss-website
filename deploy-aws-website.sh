@@ -223,13 +223,13 @@ if [ -n "$QUICK" ] && [ -z "$DRY_RUN" ]; then
   echo "$CHANGED" | xargs -I{} -P "$PARALLEL_UPLOADS" bash -c 'upload_one "$@"' _ {}
   echo "   ✓ Upload fertig ($(( $(date +%s) - UPLOAD_START ))s)"
 
-  # Cache invalidieren: HTML + Admin-Sections + JS/CSS
+  # Cache invalidieren: HTML + Admin-Sections + JS/CSS + Methoden-Assets
   if [ -n "$DID_BUILD" ]; then
     aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
-      --paths "/onboarding/*" "/*.html" "/admin/*" "/js/*" "/css/*" --region "${AWS_REGION}" >/dev/null 2>&1
+      --paths "/onboarding/*" "/*.html" "/admin/*" "/js/*" "/css/*" "/methods/*" --region "${AWS_REGION}" >/dev/null 2>&1
   else
     aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
-      --paths "/*.html" "/admin/*" "/js/*" "/css/*" "/sw.js" --region "${AWS_REGION}" >/dev/null 2>&1
+      --paths "/*.html" "/admin/*" "/js/*" "/css/*" "/methods/*" "/sw.js" --region "${AWS_REGION}" >/dev/null 2>&1
   fi
 
   # Deploy-Marker setzen (für „committed but not deployed“-Erkennung beim nächsten Lauf)

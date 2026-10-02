@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lösungsfokussiertes Coaching | Manuel Weiss</title>
-    <meta name="description" content="Statt im Problem zu graben, baust du an der Lösung: Wunderfrage, Skalierung, Ausnahmen und der nächste kleine Schritt (de Shazer).">
+    <meta name="description" content="Lösungsfokussiertes Selbstcoaching nach de Shazer & Berg: Anliegen in ein Ziel verwandeln, Wunderfrage aus vier Perspektiven, Skalierung mit Verlauf, Ausnahmen analysieren, nächster kleiner Schritt.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="solution-focused.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>:root { --mk-accent: #f59e0b; --mk-accent-2: #22c55e; --mk-accent-soft: rgba(245,158,11,.12); }</style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
@@ -21,58 +21,120 @@
     <main class="mk-shell">
         <section class="mk-hero">
             <div class="mk-hero-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
-            <div class="mk-kicker">Persönlichkeitsentwicklung · de Shazer</div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · de Shazer & Berg</div>
             <h1>Bau an der Lösung, nicht am Problem</h1>
-            <p>Lösungsfokussiertes Coaching dreht den Blick: weg vom Problem, hin zu dem, was funktioniert. Mit Wunderfrage, Skalierung und Ausnahmen findest du den nächsten machbaren Schritt.</p>
-            <div class="mk-badges"><span class="mk-badge">Wunderfrage</span><span class="mk-badge">Skalierung</span><span class="mk-badge">Ausnahmen</span></div>
+            <p>Lösungsfokussierte Kurzzeitberatung dreht den Blick: Statt zu ergründen, warum etwas nicht geht, suchst du, wann es schon einmal ging – und was du dazu beigetragen hast. Wunderfrage, Skalierung und Ausnahmen führen dich zum nächsten machbaren Schritt.</p>
+            <div class="mk-badges"><span class="mk-badge">Ziel statt Problem</span><span class="mk-badge">Wunderfrage · 4 Perspektiven</span><span class="mk-badge">Skala mit Verlauf</span><span class="mk-badge">Ausnahmen-Analyse</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
+        <!-- 1 · Anliegen -->
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
                 <h2>Dein Anliegen</h2>
-                <div class="mk-field"><label>Was möchtest du verändern?</label><textarea class="mk-textarea" data-mk-field="topic"></textarea></div>
+                <p class="mk-sub">Beschreibe zuerst frei, was dich beschäftigt. Danach drehen wir es um.</p>
+                <div class="mk-field"><label for="sf-topic">Was möchtest du verändern?</label><textarea class="mk-textarea" id="sf-topic" data-mk-field="topic" placeholder="z. B. Ich schiebe wichtige Aufgaben ständig auf und ärgere mich abends darüber."></textarea></div>
+            </div>
+            <div class="mk-card">
+                <h2>Vom Problem zum Ziel</h2>
+                <p class="mk-sub">Die wichtigste Frage der Methode: <strong>Was willst du stattdessen?</strong> Ein Ziel ist etwas, das du <em>tust</em> und das <em>anwesend</em> ist – nicht die Abwesenheit von etwas.</p>
+                <div class="mk-field"><label for="sf-goal">Was willst du stattdessen – positiv formuliert?</label><textarea class="mk-textarea" id="sf-goal" data-mk-field="goal" placeholder="z. B. Ich beginne wichtige Aufgaben morgens als Erstes und schliesse den Tag mit einem guten Gefühl ab."></textarea></div>
+                <div id="sf-goal-check"></div>
+                <div class="mk-section-label">Drei Prüffragen</div>
+                <div class="sf-checks" id="sf-goal-crit"></div>
             </div>
         </section>
 
+        <!-- 2 · Wunderfrage -->
         <section class="mk-step" data-step="2">
             <div class="mk-card">
                 <h2>Die Wunderfrage</h2>
-                <p class="mk-sub">Stell dir vor, über Nacht geschieht ein Wunder und dein Anliegen ist gelöst – du weißt es aber nicht. <strong>Woran würdest du morgens als Erstes merken, dass das Wunder geschehen ist?</strong></p>
-                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="miracle" style="min-height:140px;" placeholder="Was wäre konkret anders? Was tust du, was fühlst du, wie reagieren andere?"></textarea></div>
+                <p class="mk-sub">Stell dir vor: Heute Nacht, während du schläfst, geschieht ein Wunder – und dein Anliegen ist gelöst. Du weisst es aber nicht, weil du geschlafen hast. <strong>Woran merkst du morgen früh als Erstes, dass das Wunder geschehen ist?</strong></p>
+                <div class="mk-note info"><i class="fas fa-lightbulb"></i><span>Bleib konkret und beobachtbar: nicht „ich bin entspannter", sondern „ich trinke meinen Kaffee am Fenster, bevor ich das Handy anschaue".</span></div>
+                <div id="sf-miracle"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Deine Wunderzeichen</h2>
+                <p class="mk-sub">Verdichte die Beschreibung zu konkreten, beobachtbaren Zeichen. Sie werden später zu deinem Messinstrument.</p>
+                <div id="sf-signs"></div>
             </div>
         </section>
 
+        <!-- 3 · Skalierung -->
         <section class="mk-step" data-step="3">
             <div class="mk-card">
                 <h2>Skalierung</h2>
-                <p class="mk-sub">0 = weit weg von der Lösung, 10 = Wunder voll erreicht. Wo stehst du heute?</p>
-                <div class="mk-range-wrap"><input class="mk-range" type="range" min="0" max="10" data-mk-field="scale" value="3"><span class="mk-range-val" data-mk-rangeval="scale">3</span></div>
-                <div class="mk-field" style="margin-top:14px;"><label>Warum schon so „hoch" und nicht niedriger? Was funktioniert bereits?</label><textarea class="mk-textarea" data-mk-field="already"></textarea></div>
-                <div class="mk-field"><label>Woran würdest du merken, dass du einen Punkt weiter bist?</label><textarea class="mk-textarea" data-mk-field="onepoint"></textarea></div>
+                <p class="mk-sub">0 = der Tag, an dem du dich entschieden hast, etwas zu ändern. 10 = das Wunder ist vollständig eingetreten.</p>
+                <div id="sf-scale"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Die Fragen zur Skala</h3>
+                <div id="sf-scale-q"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Zuversicht & Wichtigkeit</h3>
+                <p class="mk-sub">Zwei Nebenskalen, die oft mehr verraten als die Hauptskala.</p>
+                <div id="sf-side"></div>
             </div>
         </section>
 
+        <!-- 4 · Ausnahmen -->
         <section class="mk-step" data-step="4">
             <div class="mk-card">
                 <h2>Ausnahmen</h2>
-                <p class="mk-sub">Wann war das Problem schon mal kleiner oder ganz weg? Was war da anders – und was hast DU dazu beigetragen?</p>
-                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="exceptions" style="min-height:120px;"></textarea></div>
+                <p class="mk-sub">Kein Problem ist immer gleich stark. Wann war es zuletzt kleiner, kürzer oder ganz weg – auch nur für eine Stunde? Jede Ausnahme ist ein Stück Lösung, das schon existiert.</p>
+                <div id="sf-exceptions"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Was du daraus lernst</h3>
+                <div id="sf-exc-insight"></div>
             </div>
         </section>
 
+        <!-- 5 · Ressourcen -->
         <section class="mk-step" data-step="5">
             <div class="mk-card">
+                <h2>Komplimente an dich selbst</h2>
+                <p class="mk-sub">In der lösungsfokussierten Arbeit gibt es nach jeder Sitzung Komplimente – ehrlich und konkret. Mach es für dich selbst: Was hast du bisher schon richtig gemacht, auch wenn das Problem noch da ist?</p>
+                <div id="sf-compliments"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Bewältigungsfragen</h2>
+                <p class="mk-sub">Für Phasen, in denen die Skala tief steht.</p>
+                <div class="mk-field"><label for="sf-coping">Wie hast du es bisher geschafft, dass es nicht noch schlimmer wurde?</label><textarea class="mk-textarea" id="sf-coping" data-mk-field="coping" placeholder="…"></textarea></div>
+                <div class="mk-field"><label for="sf-keep">Was in deinem Leben soll genau so bleiben, wie es ist?</label><span class="hint">Die klassische Beobachtungsaufgabe nach der ersten Sitzung – sie richtet die Aufmerksamkeit auf das, was funktioniert.</span><textarea class="mk-textarea" id="sf-keep" data-mk-field="keep" placeholder="…"></textarea></div>
+            </div>
+        </section>
+
+        <!-- 6 · Nächster Schritt -->
+        <section class="mk-step" data-step="6">
+            <div class="mk-card">
                 <h2>Dein nächster kleiner Schritt</h2>
-                <div class="mk-field"><label>Was tust du in den nächsten Tagen konkret – klein und machbar?</label><input class="mk-input" data-mk-field="step"></div>
-                <button class="mk-btn mk-btn-primary" id="sf-export"><i class="fas fa-download"></i> Herunterladen</button>
+                <p class="mk-sub">Nicht die Lösung – nur der nächste Punkt auf der Skala. Klein genug, dass du ihn sicher gehst.</p>
+                <div id="sf-step"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Skalen-Verlauf</h3>
+                <p class="mk-sub">Komm in ein paar Tagen zurück und setz die Skala neu. „Was ist besser geworden?" ist die Eröffnungsfrage jeder Folgesitzung.</p>
+                <div id="sf-log"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="sf-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="sf-export"><i class="fas fa-download"></i> Als Textdatei exportieren</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset title="Alle Daten dieser Methode löschen"><i class="fas fa-trash"></i> Alles zurücksetzen</button>
+                </div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 6</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -87,20 +149,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        (async function () {
-            await MethodKit.init({
-                method: 'solution-focused',
-                accent: '#f59e0b', accent2: '#22c55e',
-                steps: [{icon:'🎯',label:'Anliegen'},{icon:'✨',label:'Wunder'},{icon:'📏',label:'Skala'},{icon:'🔍',label:'Ausnahmen'},{icon:'👣',label:'Schritt'}],
-                defaultState: { topic:'',miracle:'',scale:3,already:'',onepoint:'',exceptions:'',step:'' }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-            document.getElementById('sf-export').addEventListener('click',()=>{
-                MethodKit.exportText('loesungsfokus.txt', `LÖSUNGSFOKUSSIERTES COACHING\n============================\n\nAnliegen: ${S.topic}\n\nWunderfrage: ${S.miracle}\n\nSkala heute: ${S.scale}/10\nWas schon funktioniert: ${S.already}\nEin Punkt weiter: ${S.onepoint}\n\nAusnahmen: ${S.exceptions}\n\nNächster Schritt: ${S.step}\n`);
-            });
-        })();
-    </script>
+    <script src="solution-focused.js?v=20261003"></script>
 </body>
 </html>

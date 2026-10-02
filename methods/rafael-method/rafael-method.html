@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RAFAEL-Methode | Manuel Weiss</title>
-    <meta name="description" content="Strukturierte Problemlösung in vier Schritten: Problem klar definieren, Ursachen analysieren, Lösungen entwickeln und die Umsetzung planen.">
+    <meta name="description" content="RAFAEL-Methode: Report, Alternativen, Feedback, Austausch, Erarbeitung, Lernschritte – strukturierte Reflexion nach einer konkreten Situation, mit Selbst-/Fremdbild-Abgleich und Lernplan.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="rafael-method.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>:root { --mk-accent: #3b82f6; --mk-accent-2: #6366f1; --mk-accent-soft: rgba(59,130,246,.12); }</style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
         <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
-        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-puzzle-piece"></i></span><span>RAFAEL-Methode</span></div>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-puzzle-piece"></i></span><span>RAFAEL</span></div>
         <span class="mk-topbar-spacer"></span>
         <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
     </header>
@@ -21,57 +21,133 @@
     <main class="mk-shell">
         <section class="mk-hero">
             <div class="mk-hero-icon"><i class="fas fa-puzzle-piece"></i></div>
-            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
-            <h1>Probleme systematisch lösen</h1>
-            <p>Komplexe Probleme wirken überwältigend – bis man sie strukturiert angeht. In vier klaren Schritten kommst du vom diffusen Problem zur umsetzbaren Lösung.</p>
-            <div class="mk-badges"><span class="mk-badge">Definieren</span><span class="mk-badge">Analysieren</span><span class="mk-badge">Lösen</span><span class="mk-badge">Umsetzen</span></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Strukturierte Reflexion</div>
+            <h1>Aus einer Situation lernen – systematisch</h1>
+            <p>RAFAEL ist eine Feedback- und Reflexionsmethode für konkrete Situationen: eine Präsentation, ein schwieriges Gespräch, ein Meeting, das du geleitet hast. Sechs Schritte führen vom nüchternen Bericht über Alternativen und Fremdfeedback bis zu ein bis drei Lernschritten, die du beim nächsten Mal ausprobierst.</p>
+            <div class="rf-acro">
+                <span><b>R</b>eport</span><span><b>A</b>lternativen</span><span><b>F</b>eedback</span><span><b>A</b>ustausch</span><span><b>E</b>rarbeitung</span><span><b>L</b>ernschritte</span>
+            </div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
+        <!-- 1 · Report -->
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>1 · Problem definieren</h2>
-                <div class="mk-field"><label>Was ist das Problem? (1–2 Sätze)</label><textarea class="mk-textarea" data-mk-field="problem"></textarea></div>
-                <div class="mk-field"><label>Wann tritt es auf?</label><input class="mk-input" data-mk-field="when"></div>
-                <div class="mk-field"><label>Wer ist betroffen?</label><input class="mk-input" data-mk-field="who"></div>
-                <div class="mk-field"><label>Welche Auswirkungen hat es?</label><textarea class="mk-textarea" data-mk-field="impact"></textarea></div>
+                <h2><span class="rf-letter">R</span> Report</h2>
+                <p class="mk-sub">Die Situation, die du reflektieren willst – und zuerst, was <strong>gut</strong> lief. Diese Reihenfolge ist Teil der Methode.</p>
+                <div class="mk-section-label">Um welche Art Situation geht es?</div>
+                <div class="mk-chips" id="rf-types"></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="rf-title">Kurztitel</label><input class="mk-input" id="rf-title" data-mk-field="title" placeholder="z. B. Quartalspräsentation vor dem Führungsteam"></div>
+                    <div class="mk-field"><label for="rf-date">Wann war das?</label><input class="mk-input" type="date" id="rf-date" data-mk-field="date"></div>
+                </div>
+                <div class="mk-field"><label for="rf-report">Was ist passiert? Beschreibend, nicht wertend</label><span class="hint">Wie eine Kamera: Wer war da, was wurde gesagt, was hast du getan, wie wurde reagiert.</span><textarea class="mk-textarea" id="rf-report" data-mk-field="report" placeholder="…"></textarea></div>
+                <div id="rf-report-check"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Was lief gut?</h3>
+                <p class="mk-sub">Mindestens drei Punkte, bevor es zu den Schwachstellen geht.</p>
+                <div id="rf-positives"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Was lief weniger gut?</h3>
+                <p class="mk-sub">Konkrete Momente – nicht „ich war nervös", sondern „bei Folie 4 habe ich den Faden verloren und zu schnell gesprochen".</p>
+                <div id="rf-weak"></div>
+                <div class="mk-field" style="margin-top:14px"><label>Deine Gesamtbewertung der Situation</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" id="rf-self" data-mk-field="selfRating" value="6"><span class="mk-range-val" data-mk-rangeval="selfRating">6</span></div></div>
             </div>
         </section>
 
+        <!-- 2 · Alternativen -->
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>2 · Analysieren</h2>
-                <div class="mk-field"><label>Mögliche Ursachen</label><textarea class="mk-textarea" data-mk-field="causes" placeholder="Frage 5× „Warum?", um zur Wurzel zu kommen."></textarea></div>
-                <div class="mk-field"><label>Einflussfaktoren (intern/extern)</label><textarea class="mk-textarea" data-mk-field="factors"></textarea></div>
-                <div class="mk-field"><label>Wie wurde Ähnliches früher gelöst?</label><textarea class="mk-textarea" data-mk-field="history"></textarea></div>
+                <h2><span class="rf-letter">A</span> Alternativen</h2>
+                <p class="mk-sub">Zu jeder Schwachstelle: Was hättest du stattdessen tun können? Mehrere Optionen – auch unrealistische. Die Auswahl kommt später.</p>
+                <div id="rf-alts"></div>
             </div>
         </section>
 
+        <!-- 3 · Feedback -->
         <section class="mk-step" data-step="3">
             <div class="mk-card">
-                <h2>3 · Lösungen entwickeln</h2>
-                <div class="mk-field"><label>Lösungsansatz 1</label><textarea class="mk-textarea" data-mk-field="sol1"></textarea></div>
-                <div class="mk-field"><label>Lösungsansatz 2</label><textarea class="mk-textarea" data-mk-field="sol2"></textarea></div>
-                <div class="mk-field"><label>Lösungsansatz 3</label><textarea class="mk-textarea" data-mk-field="sol3"></textarea></div>
-                <div class="mk-field"><label>Welche Lösung wählst du – und warum?</label><textarea class="mk-textarea" data-mk-field="choice"></textarea></div>
+                <h2><span class="rf-letter">F</span> Feedback</h2>
+                <p class="mk-sub">Jetzt kommen die anderen zu Wort. Hol dir Rückmeldung von Menschen, die dabei waren – oder trage ein, was du bereits gehört hast.</p>
+                <div id="rf-request"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Eingegangenes Feedback</h3>
+                <div id="rf-feedback"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Selbstbild vs. Fremdbild</h3>
+                <div id="rf-compare"></div>
             </div>
         </section>
 
+        <!-- 4 · Austausch -->
         <section class="mk-step" data-step="4">
             <div class="mk-card">
-                <h2>4 · Umsetzung planen</h2>
-                <div class="mk-field"><label>Erster Schritt</label><input class="mk-input" data-mk-field="step1"></div>
-                <div class="mk-field"><label>Weitere Schritte</label><textarea class="mk-textarea" data-mk-field="steps"></textarea></div>
-                <div class="mk-field"><label>Wer ist verantwortlich?</label><input class="mk-input" data-mk-field="responsible"></div>
-                <div class="mk-field"><label>Bis wann?</label><input class="mk-input" type="date" data-mk-field="deadline"></div>
-                <button class="mk-btn mk-btn-primary" id="rf-export"><i class="fas fa-download"></i> Lösungsplan herunterladen</button>
+                <h2><span class="rf-letter">A</span> Austausch</h2>
+                <p class="mk-sub">Ordne jede Rückmeldung ein. Nicht rechtfertigen – sortieren. Was deckt sich mit deinem Bild, was ist neu, wo siehst du es anders?</p>
+                <div id="rf-sort"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Nachfragen</h3>
+                <p class="mk-sub">Zu Punkten, die du anders siehst oder nicht verstehst: Was willst du den Feedbackgeber noch fragen?</p>
+                <div class="mk-field"><textarea class="mk-textarea" id="rf-questions" data-mk-field="questions" placeholder="z. B. Was genau meinst du mit „zu detailliert" – welche Stelle?"></textarea></div>
+            </div>
+        </section>
+
+        <!-- 5 · Erarbeitung -->
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2><span class="rf-letter">E</span> Erarbeitung</h2>
+                <p class="mk-sub">Jetzt wird verdichtet: Welche Themen tauchen bei dir <em>und</em> im Feedback auf? Was ist das eigentliche Muster dahinter?</p>
+                <div id="rf-themes"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Das Muster dahinter</h3>
+                <div class="mk-field"><label for="rf-pattern">Wenn du die Punkte zusammennimmst: Was ist das grössere Thema?</label><span class="hint">Oft nicht „Folie 4", sondern „Ich verliere unter Druck den Kontakt zum Publikum".</span><textarea class="mk-textarea" id="rf-pattern" data-mk-field="pattern" placeholder="…"></textarea></div>
+                <div class="mk-field"><label for="rf-strength">Und welche Stärke zeigt sich durchgehend – bei dir und im Feedback?</label><textarea class="mk-textarea" id="rf-strength" data-mk-field="strength" placeholder="…"></textarea></div>
+            </div>
+        </section>
+
+        <!-- 6 · Lernschritte -->
+        <section class="mk-step" data-step="6">
+            <div class="mk-card">
+                <h2><span class="rf-letter">L</span> Lernschritte</h2>
+                <p class="mk-sub">Ein bis drei konkrete Dinge, die du beim nächsten Mal anders machst. Weniger ist mehr – ein Schritt, den du wirklich gehst, schlägt fünf gute Vorsätze.</p>
+                <div id="rf-steps"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Nächste Gelegenheit</h3>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="rf-next">Wann ist die nächste ähnliche Situation?</label><input class="mk-input" id="rf-next" data-mk-field="nextOccasion" placeholder="z. B. Teammeeting am 14.10."></div>
+                    <div class="mk-field"><label for="rf-next-date">Datum</label><input class="mk-input" type="date" id="rf-next-date" data-mk-field="nextDate"></div>
+                </div>
+                <div class="mk-field"><label for="rf-review">Nach der nächsten Situation: Was hat sich verändert?</label><span class="hint">Komm hierher zurück. Oder starte einen neuen RAFAEL-Durchlauf.</span><textarea class="mk-textarea" id="rf-review" data-mk-field="review" placeholder="…"></textarea></div>
+            </div>
+            <div class="mk-card">
+                <h3>Frühere Durchläufe</h3>
+                <div id="rf-history"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="rf-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="rf-export"><i class="fas fa-download"></i> Als Textdatei exportieren</button>
+                    <button class="mk-btn mk-btn-outline" id="rf-archive"><i class="fas fa-box-archive"></i> Abschliessen & neue Situation</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset title="Alle Daten dieser Methode löschen"><i class="fas fa-trash"></i> Alles zurücksetzen</button>
+                </div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 4</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 6</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -86,20 +162,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        (async function () {
-            await MethodKit.init({
-                method: 'rafael-method',
-                accent: '#3b82f6', accent2: '#6366f1',
-                steps: [{icon:'❓',label:'Problem'},{icon:'🔬',label:'Analyse'},{icon:'💡',label:'Lösung'},{icon:'🚀',label:'Umsetzung'}],
-                defaultState: { problem:'',when:'',who:'',impact:'',causes:'',factors:'',history:'',sol1:'',sol2:'',sol3:'',choice:'',step1:'',steps:'',responsible:'',deadline:'' }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-            document.getElementById('rf-export').addEventListener('click',()=>{
-                MethodKit.exportText('mein-loesungsplan.txt', `RAFAEL-METHODE\n==============\n\n1. PROBLEM\n${S.problem}\nWann: ${S.when}\nWer: ${S.who}\nAuswirkungen: ${S.impact}\n\n2. ANALYSE\nUrsachen: ${S.causes}\nFaktoren: ${S.factors}\nFrüher: ${S.history}\n\n3. LÖSUNGEN\n1) ${S.sol1}\n2) ${S.sol2}\n3) ${S.sol3}\nGewählt: ${S.choice}\n\n4. UMSETZUNG\nErster Schritt: ${S.step1}\nWeitere: ${S.steps}\nVerantwortlich: ${S.responsible}\nDeadline: ${S.deadline}\n`);
-            });
-        })();
-    </script>
+    <script src="rafael-method.js?v=20261003"></script>
 </body>
 </html>

@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Systemisches Coaching | Manuel Weiss</title>
-    <meta name="description" content="Betrachte dein Anliegen als Teil eines Systems: Beteiligte, Wechselwirkungen, Ressourcen und Reframing – für überraschend neue Lösungen.">
+    <meta name="description" content="Systemisches Selbstcoaching: Systemlandkarte zeichnen, zirkuläre Fragen stellen, Musterschleifen erkennen, Hypothesen bilden und ein Experiment zur Musterunterbrechung planen.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="systemic-coaching.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>:root { --mk-accent: #06b6d4; --mk-accent-2: #8b5cf6; --mk-accent-soft: rgba(6,182,212,.12); }</style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
         <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
-        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-diagram-project"></i></span><span>Systemisches Coaching</span></div>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-diagram-project"></i></span><span>Systemisch</span></div>
         <span class="mk-topbar-spacer"></span>
         <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
     </header>
@@ -21,43 +21,101 @@
     <main class="mk-shell">
         <section class="mk-hero">
             <div class="mk-hero-icon"><i class="fas fa-diagram-project"></i></div>
-            <div class="mk-kicker">Persönlichkeitsentwicklung · Systemisch</div>
-            <h1>Du bist Teil eines Systems</h1>
-            <p>Probleme sind selten nur „in dir" – sie entstehen im Zusammenspiel. Systemisches Coaching weitet den Blick auf Beteiligte, Wechselwirkungen und versteckte Ressourcen und findet so neue Lösungen.</p>
-            <div class="mk-badges"><span class="mk-badge">Systemlandkarte</span><span class="mk-badge">Wechselwirkung</span><span class="mk-badge">Reframing</span></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Systemische Perspektive</div>
+            <h1>Das Problem hat ein System</h1>
+            <p>Systemisches Coaching schaut nicht auf dich allein, sondern auf das Geflecht aus Beziehungen, Erwartungen und Mustern, in dem ein Thema entsteht – und sich hält. Du zeichnest dein System, stellst zirkuläre Fragen, erkennst Schleifen und planst ein kleines Experiment, das das Muster unterbricht.</p>
+            <div class="mk-badges"><span class="mk-badge">Systemlandkarte</span><span class="mk-badge">Zirkuläre Fragen</span><span class="mk-badge">Musterschleife</span><span class="mk-badge">Hypothesen</span><span class="mk-badge">Experiment</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
+        <!-- 1 · Anliegen & System -->
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>Anliegen & System</h2>
-                <div class="mk-field"><label>Worum geht es?</label><textarea class="mk-textarea" data-mk-field="topic"></textarea></div>
-                <div class="mk-field"><label>Wer gehört zum System? (Personen, Gruppen, auch „abwesende")</label><textarea class="mk-textarea" data-mk-field="system" placeholder="z. B. ich, Team, Chef, Kunden, Familie"></textarea></div>
+                <h2>Dein Anliegen</h2>
+                <div class="mk-field"><label for="sc-topic">Worum geht es – und in welchem Kontext zeigt es sich?</label><textarea class="mk-textarea" id="sc-topic" data-mk-field="topic" placeholder="z. B. Im Team werde ich übergangen, obwohl ich fachlich am meisten beitrage. Zuhause höre ich, ich solle mich mehr durchsetzen."></textarea></div>
+                <div class="mk-section-label">Kontext</div>
+                <div class="mk-chips" id="sc-context"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Wer gehört zum System?</h2>
+                <p class="mk-sub">Alle, die mit dem Thema zu tun haben – auch Abwesende, deren Erwartungen mitspielen. Nähe = wie eng ihr verbunden seid, Qualität = wie die Beziehung sich gerade anfühlt.</p>
+                <div class="sc-map-wrap">
+                    <div class="sc-map" id="sc-map"></div>
+                    <div class="sc-members" id="sc-members"></div>
+                </div>
             </div>
         </section>
 
+        <!-- 2 · Wechselwirkungen -->
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>Wechselwirkungen</h2>
-                <div class="mk-field"><label>Wie beeinflussen sich die Beteiligten? Welches Muster wiederholt sich?</label><textarea class="mk-textarea" data-mk-field="patterns" style="min-height:120px;"></textarea></div>
-                <div class="mk-field"><label>Welchen (vielleicht verborgenen) Nutzen hat das Problem? Wofür ist es „gut"?</label><textarea class="mk-textarea" data-mk-field="function" placeholder="Reframing: Jedes Verhalten hatte mal einen Sinn."></textarea></div>
+                <h2>Zirkuläre Fragen</h2>
+                <p class="mk-sub">Das Herz der systemischen Arbeit: Du beantwortest Fragen <em>aus der Sicht anderer</em>. Das macht Unterschiede und Wechselwirkungen sichtbar, die aus deiner Position unsichtbar sind.</p>
+                <div id="sc-circular"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Die Musterschleife</h2>
+                <p class="mk-sub">Probleme in Systemen halten sich meist durch eine Schleife: Ich tue A → der andere tut B → ich tue noch mehr A … Baue deine Schleife nach.</p>
+                <div id="sc-loop"></div>
             </div>
         </section>
 
+        <!-- 3 · Funktion & Reframing -->
         <section class="mk-step" data-step="3">
             <div class="mk-card">
-                <h2>Ressourcen & Hypothese</h2>
-                <div class="mk-field"><label>Welche Ressourcen stecken im System? (Stärken, Verbündete, frühere Lösungen)</label><textarea class="mk-textarea" data-mk-field="resources"></textarea></div>
-                <div class="mk-field"><label>Deine Hypothese: Was hält das Problem aufrecht – und was könnte es lösen?</label><textarea class="mk-textarea" data-mk-field="hypothesis"></textarea></div>
-                <div class="mk-field"><label>👣 Welche kleine Veränderung probierst du, um das Muster zu stören?</label><input class="mk-input" data-mk-field="step"></div>
-                <button class="mk-btn mk-btn-primary" id="sc-export"><i class="fas fa-download"></i> Herunterladen</button>
+                <h2>Wozu ist das Problem gut?</h2>
+                <p class="mk-sub">Eine irritierende, aber zentrale Frage: Jedes stabile Muster hat im System eine Funktion. Es schützt, stabilisiert, verhindert oder ermöglicht etwas. Für wen – und was?</p>
+                <div id="sc-function"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Reframing</h2>
+                <p class="mk-sub">Gib dem Problemverhalten einen neuen Rahmen. Nicht schönreden – sondern die Fähigkeit oder Absicht dahinter benennen.</p>
+                <div id="sc-reframe"></div>
+            </div>
+        </section>
+
+        <!-- 4 · Ressourcen & Hypothesen -->
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>Ressourcen im System</h2>
+                <p class="mk-sub">Wer oder was im System ist eine Ressource – auch an unerwarteter Stelle?</p>
+                <div id="sc-resources"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Hypothesen</h2>
+                <p class="mk-sub">Systemische Hypothesen sind keine Wahrheiten, sondern nützliche Vermutungen. Gut ist, was neue Handlungsmöglichkeiten eröffnet. Formuliere mindestens zwei – je unterschiedlicher, desto besser.</p>
+                <div id="sc-hypotheses"></div>
+            </div>
+        </section>
+
+        <!-- 5 · Experiment -->
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>Musterunterbrechung</h2>
+                <p class="mk-sub">Du kannst andere nicht ändern – aber du kannst deinen Teil der Schleife ändern. Wähle, wo du ansetzt.</p>
+                <div id="sc-interrupt"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Dein Experiment</h2>
+                <div id="sc-experiment"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="sc-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="sc-export"><i class="fas fa-download"></i> Als Textdatei exportieren</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset title="Alle Daten dieser Methode löschen"><i class="fas fa-trash"></i> Alles zurücksetzen</button>
+                </div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -72,20 +130,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        (async function () {
-            await MethodKit.init({
-                method: 'systemic-coaching',
-                accent: '#06b6d4', accent2: '#8b5cf6',
-                steps: [{icon:'🗺️',label:'System'},{icon:'🔁',label:'Muster'},{icon:'💎',label:'Ressourcen'}],
-                defaultState: { topic:'',system:'',patterns:'',function:'',resources:'',hypothesis:'',step:'' }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-            document.getElementById('sc-export').addEventListener('click',()=>{
-                MethodKit.exportText('systemisches-coaching.txt', `SYSTEMISCHES COACHING\n=====================\n\nAnliegen: ${S.topic}\nSystem: ${S.system}\n\nMuster: ${S.patterns}\nNutzen des Problems: ${S.function}\n\nRessourcen: ${S.resources}\nHypothese: ${S.hypothesis}\nNächster Schritt: ${S.step}\n`);
-            });
-        })();
-    </script>
+    <script src="systemic-coaching.js?v=20261003"></script>
 </body>
 </html>

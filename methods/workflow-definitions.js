@@ -302,29 +302,31 @@ const methodWorkflowDefinitions = {
         title: 'Systemisches Coaching',
         steps: 5,
         stepTitles: [
-            'System analysieren',
-            'Beziehungen kartieren',
-            'Muster erkennen',
-            'Interventionen entwickeln',
-            'System verändern'
+            'Anliegen & Systemlandkarte',
+            'Zirkuläre Fragen & Musterschleife',
+            'Funktion & Reframing',
+            'Ressourcen & Hypothesen',
+            'Musterunterbrechung & Experiment'
         ],
-        description: 'Systemisches Coaching für ganzheitliche Entwicklung.',
+        description: 'Systemlandkarte zeichnen, zirkuläre Fragen stellen, Musterschleifen erkennen, Hypothesen bilden und ein Experiment zur Musterunterbrechung planen.',
         logic: 'systemic', // Systemisch
-        features: ['Systemanalyse', 'Beziehungen', 'Muster', 'Interventionen']
+        features: ['Systemlandkarte', 'Zirkuläre Fragen', 'Musterschleife', 'Hypothesen', 'Experiment']
     },
     
     'rafael-method': {
-        title: 'Rafael-Methode',
-        steps: 4,
+        title: 'RAFAEL-Methode',
+        steps: 6,
         stepTitles: [
-            'Spirituelle Verbindung',
-            'Energie-Arbeit',
-            'Heilung',
-            'Integration'
+            'Report',
+            'Alternativen',
+            'Feedback',
+            'Austausch',
+            'Erarbeitung',
+            'Lernschritte'
         ],
-        description: 'Die Rafael-Methode für spirituelle Entwicklung.',
-        logic: 'spiritual', // Spirituell
-        features: ['Spiritualität', 'Energie', 'Heilung', 'Integration']
+        description: 'Strukturierte Reflexion nach einer konkreten Situation: Bericht, Alternativen, Fremdfeedback, Selbst-/Fremdbild-Abgleich und ein bis drei Lernschritte.',
+        logic: 'reflection', // Reflexion & Feedback
+        features: ['Report', 'Alternativen', 'Fremdfeedback', 'Selbst- vs. Fremdbild', 'Lernschritte']
     },
     
     'conflict-escalation': {
@@ -391,16 +393,18 @@ const methodWorkflowDefinitions = {
     
     'solution-focused': {
         title: 'Lösungsfokussiertes Coaching',
-        steps: 4,
+        steps: 6,
         stepTitles: [
-            'Lösungsfokus etablieren',
-            'Ausnahmen finden',
-            'Ressourcen aktivieren',
-            'Lösungen verstärken'
+            'Anliegen → Ziel',
+            'Wunderfrage',
+            'Skalierung',
+            'Ausnahmen',
+            'Komplimente & Ressourcen',
+            'Nächster Schritt'
         ],
-        description: 'Lösungsorientierte Kurzzeitberatung für schnelle Ergebnisse.',
+        description: 'Lösungsfokussierte Kurzzeitberatung nach de Shazer & Berg: Ziel statt Problem, Wunderfrage aus vier Perspektiven, Skalierung mit Verlauf, Ausnahmen-Analyse, nächster kleiner Schritt.',
         logic: 'solution-focused', // Lösungsfokussiert
-        features: ['Lösungsfokus', 'Ausnahmen', 'Ressourcen', 'Verstärkung']
+        features: ['Wunderfrage', 'Skalierung', 'Ausnahmen', 'Komplimente', 'Skalen-Verlauf']
     },
     
     'change-stages': {
