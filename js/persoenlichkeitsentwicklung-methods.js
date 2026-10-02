@@ -19,6 +19,7 @@ function startMethod(methodId) {
         'strengths-analysis': 'methods/strengths-analysis/strengths-analysis.html',
         'goal-setting': 'methods/goal-setting/goal-setting.html',
         'mindfulness': 'methods/mindfulness/mindfulness.html',
+        'how-of-happiness': 'methods/how-of-happiness/how-of-happiness.html',
         'emotional-intelligence': 'methods/emotional-intelligence/emotional-intelligence.html',
         'habit-building': 'methods/habit-building/habit-building.html',
         'johari-window': 'methods/johari-window/johari-window.html',

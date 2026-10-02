@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The How of Happiness | Manuel Weiss</title>
+    <meta name="description" content="Die 12 Glücksaktivitäten nach Sonja Lyubomirsky als geführtes Programm: Glücks-Baseline messen, Person-Activity-Fit bestimmen, passende Übungen mit richtiger Dosierung trainieren und den Fortschritt messen.">
+    <link rel="stylesheet" href="../_kit/method-light.css">
+    <link rel="stylesheet" href="how-of-happiness.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-sun"></i></span><span>How of Happiness</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-sun"></i></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Sonja Lyubomirsky</div>
+            <h1>40 % deines Glücks liegen in deiner Hand</h1>
+            <p>Rund die Hälfte deines Glücksniveaus ist angeboren, nur 10 % hängen von den Umständen ab – aber 40 % entscheidest du durch das, was du täglich denkst und tust. Dieses Programm findet die Glücksaktivitäten, die <em>zu dir</em> passen, trainiert sie in der richtigen Dosis und misst, ob es wirkt.</p>
+            <div class="mk-badges"><span class="mk-badge">12 Aktivitäten · 61 Übungen</span><span class="mk-badge">Fit-Diagnostik</span><span class="mk-badge">Dosierung nach Studienlage</span><span class="mk-badge">Messbar</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <!-- 1 · Kompass -->
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Der Glückskuchen</h2>
+                <p class="mk-sub">Was bestimmt, wie glücklich ein Mensch dauerhaft ist? Die Forschung gibt eine überraschend klare Antwort.</p>
+                <div class="hoh-pie-wrap">
+                    <div class="hoh-pie" id="hoh-pie"></div>
+                    <div class="hoh-pie-legend" id="hoh-pie-legend"></div>
+                </div>
+                <div class="mk-result" style="margin-top:14px;"><h4>Die Konsequenz</h4>Nicht der neue Job, die Wohnung oder der Partner machen dauerhaft glücklicher – wir gewöhnen uns an fast alles. Nachhaltig wirkt nur, was wir <strong>regelmässig tun</strong>. Und das lässt sich trainieren.</div>
+            </div>
+            <div class="mk-card">
+                <h2>Deine Glücks-Baseline</h2>
+                <p class="mk-sub">Die <em>Subjective Happiness Scale</em> (Lyubomirsky & Lepper, 1999) – vier Fragen, 1 bis 7. Du misst sie alle zwei Wochen erneut, um deinen Fortschritt zu sehen.</p>
+                <div id="hoh-shs"></div>
+                <div class="hoh-shs-result" id="hoh-shs-result"></div>
+                <button class="mk-btn mk-btn-primary" id="hoh-shs-save" style="margin-top:14px;"><i class="fas fa-check"></i> Baseline speichern</button>
+            </div>
+        </section>
+
+        <!-- 2 · Fit-Diagnostik -->
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>Person-Activity-Fit</h2>
+                <p class="mk-sub">Die meisten Glücksratgeber scheitern, weil sie allen dasselbe empfehlen. Lyubomirskys zentrale Erkenntnis: Eine Aktivität wirkt nur, wenn sie zu deiner Persönlichkeit, deinen Werten und deinem Leben passt. Bewerte für jede der 12 Aktivitäten fünf Aussagen (1 = trifft gar nicht zu, 7 = trifft voll zu).</p>
+                <div class="hoh-fit-formula"><strong>Fit-Score</strong> = Natürlich + Freude + Wert − Schuld − Situation <span class="mk-faint">(Bereich −11 bis +19)</span></div>
+                <div id="hoh-fit-list"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Dein Fit-Ranking</h2>
+                <p class="mk-sub">Die vier Aktivitäten mit dem höchsten Score sind dein bester Startpunkt.</p>
+                <div id="hoh-fit-ranking"></div>
+            </div>
+        </section>
+
+        <!-- 3 · Programm -->
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>Dein Glücksprogramm</h2>
+                <p class="mk-sub">Wähle 1–4 Aktivitäten. Weniger ist mehr: Lieber zwei Aktivitäten konsequent als sechs halbherzig.</p>
+                <div class="mk-chips" id="hoh-select"></div>
+                <div id="hoh-select-hints" style="margin-top:12px;"></div>
+            </div>
+            <div id="hoh-plan"></div>
+        </section>
+
+        <!-- 4 · Praxis -->
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>Heute</h2>
+                <p class="mk-sub" id="hoh-today-sub">Was heute laut deinem Plan dran ist – und alles andere, falls du Lust hast.</p>
+                <div id="hoh-today"></div>
+            </div>
+            <div id="hoh-modules"></div>
+        </section>
+
+        <!-- 5 · Logbuch -->
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>Logbuch</h2>
+                <p class="mk-sub">Jede abgeschlossene Übung landet hier. Die Streak zählt Tage mit mindestens einer Übung.</p>
+                <div class="hoh-stats" id="hoh-stats"></div>
+                <h3 style="margin-top:18px;">Letzte 12 Wochen</h3>
+                <div class="hoh-heat" id="hoh-heat"></div>
+                <div class="hoh-heat-legend"><span>weniger</span><i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><span>mehr</span></div>
+            </div>
+            <div class="mk-card">
+                <h3>Einträge</h3>
+                <div class="mk-chips" id="hoh-log-filter" style="margin-bottom:12px;"></div>
+                <div id="hoh-log"></div>
+            </div>
+        </section>
+
+        <!-- 6 · Review -->
+        <section class="mk-step" data-step="6">
+            <div class="mk-card">
+                <h2>Wirkt es?</h2>
+                <p class="mk-sub">Miss deine Glücks-Baseline alle zwei Wochen erneut. Erwarte keine Sprünge – ein stabiler Trend über Monate ist das Ziel.</p>
+                <div id="hoh-shs-chart"></div>
+                <div id="hoh-remeasure"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Die fünf Hows</h2>
+                <p class="mk-sub">Warum manche dranbleiben und andere nicht: fünf Faktoren, die nachhaltiges Glück von kurzen Hochs unterscheiden. Prüfe dich ehrlich.</p>
+                <div id="hoh-hows"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <p class="mk-sub">Dein Programm, deine Fit-Scores, deine Baseline-Verläufe und alle Einträge als Textdatei.</p>
+                <button class="mk-btn mk-btn-primary" id="hoh-export"><i class="fas fa-download"></i> Programm & Logbuch exportieren</button>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
+            <span class="info" id="mk-step-info">Schritt 1 von 6</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <!-- Übungs-Overlay -->
+    <div class="hoh-overlay" id="hoh-overlay" hidden>
+        <div class="hoh-sheet" role="dialog" aria-modal="true">
+            <div class="hoh-sheet-head">
+                <div class="hoh-sheet-title" id="hoh-ex-title"></div>
+                <button class="mk-iconbtn" id="hoh-ex-close" aria-label="Schliessen"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="hoh-sheet-body" id="hoh-ex-body"></div>
+            <div class="hoh-sheet-foot">
+                <button class="mk-btn mk-btn-outline" id="hoh-ex-cancel">Abbrechen</button>
+                <button class="mk-btn mk-btn-primary" id="hoh-ex-done"><i class="fas fa-check"></i> Abschliessen</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js"></script>
+    <script src="happiness-data.js"></script>
+    <script src="how-of-happiness.js"></script>
+</body>
+</html>

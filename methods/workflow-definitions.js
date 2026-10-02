@@ -61,6 +61,22 @@ const methodWorkflowDefinitions = {
         features: ['Assessment', 'Timer', 'Geführte Übungen', 'Integration']
     },
     
+    'how-of-happiness': {
+        title: 'The How of Happiness',
+        steps: 6,
+        stepTitles: [
+            'Kompass & Glücks-Baseline',
+            'Person-Activity-Fit-Diagnostik',
+            'Programm & Dosierung',
+            'Geführte Praxis',
+            'Logbuch & Streak',
+            'Review & Five Hows'
+        ],
+        description: 'Die 12 Glücksaktivitäten nach Sonja Lyubomirsky als personalisiertes, messbares Trainingsprogramm – von der Fit-Diagnostik bis zur Verlaufsmessung.',
+        logic: 'fit-based-practice', // Passung → Praxis → Messung
+        features: ['Subjective Happiness Scale', 'Fit-Score', '61 Übungen', 'Heatmap & Trend']
+    },
+    
     'emotional-intelligence': {
         title: 'Emotionale Intelligenz',
         steps: 5,
