@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zirkuläres Fragen | Manuel Weiss</title>
-    <meta name="description" content="Gewinne neue Perspektiven auf eine festgefahrene Situation mit zirkulären Fragen aus der systemischen Beratung.">
+    <meta name="description" content="Zirkuläres Fragen: Beteiligte erfassen, Fragen aus sechs Fragetypen für konkrete Personen-Paare generieren, Perspektiven sammeln, Muster erkennen und zu einer neuen Erkenntnis kommen.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="circular-interview.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>:root { --mk-accent: #8b5cf6; --mk-accent-2: #06b6d4; --mk-accent-soft: rgba(139,92,246,.12); }</style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
@@ -23,40 +23,82 @@
             <div class="mk-hero-icon"><i class="fas fa-arrows-spin"></i></div>
             <div class="mk-kicker">Persönlichkeitsentwicklung · Systemisch</div>
             <h1>Die Situation mit anderen Augen sehen</h1>
-            <p>Zirkuläre Fragen lösen festgefahrenes Denken, indem du die Perspektive anderer einnimmst. Plötzlich entstehen neue Einsichten – und oft schon eine Lösung.</p>
-            <div class="mk-badges"><span class="mk-badge">Perspektivwechsel</span><span class="mk-badge">Beziehungen</span><span class="mk-badge">Neue Einsicht</span></div>
+            <p>Zirkuläre Fragen fragen nicht „Was denkst du?", sondern „Was glaubst du, denkt A über B?". Das löst festgefahrenes Denken, weil du das Beziehungsgeflecht von aussen betrachtest. Hier werden die Fragen für deine konkreten Beteiligten erzeugt – und die Antworten auf Muster untersucht.</p>
+            <div class="mk-badges"><span class="mk-badge">Perspektivwechsel</span><span class="mk-badge">6 Fragetypen</span><span class="mk-badge">Muster</span><span class="mk-badge">Systemisch</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>Situation & Beteiligte</h2>
-                <div class="mk-field"><label>Worum geht es?</label><textarea class="mk-textarea" data-mk-field="situation"></textarea></div>
-                <div class="mk-field"><label>Wer ist beteiligt? (Namen/Rollen)</label><input class="mk-input" data-mk-field="people" placeholder="z. B. ich, mein Partner, meine Mutter"></div>
+                <h2>1 · Die Situation</h2>
+                <div class="mk-field"><label for="ci-situation">Was ist los – in zwei, drei Sätzen?</label><textarea class="mk-textarea" id="ci-situation" data-mk-field="situation" placeholder="Beschreibe die Situation so, wie du sie gerade siehst."></textarea></div>
+                <div class="mk-field"><label for="ci-want">Was möchtest du besser verstehen?</label><input class="mk-input" id="ci-want" data-mk-field="want" placeholder="z. B. Warum reagiert mein Kollege so abweisend?"></div>
+                <div class="mk-field"><label>Wie festgefahren fühlt sich deine Sicht an?</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" data-mk-field="stuck" value="6"><span class="mk-range-val" data-mk-rangeval="stuck">6</span></div><span class="hint">1 = ich bin offen · 10 = ich weiss genau, wer schuld ist</span></div>
+            </div>
+            <div class="mk-card">
+                <h3>Wer ist beteiligt?</h3>
+                <p class="mk-sub">Alle, die im System eine Rolle spielen – auch Abwesende, die trotzdem mitwirken.</p>
+                <div id="ci-people"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>Zirkuläre Fragen</h2>
-                <p class="mk-sub">Beantworte sie aus der Perspektive der jeweils genannten Person – nicht aus deiner.</p>
-                <div id="ci-questions"></div>
+                <h2>2 · Zirkuläre Fragen</h2>
+                <p class="mk-sub">Wähle einen Fragetyp und die Personen. Die Frage wird für dich formuliert – antworte so, wie die Person vermutlich antworten würde, nicht wie du es siehst.</p>
+                <div id="ci-generator"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Deine Antworten</h3>
+                <div id="ci-answers"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
             <div class="mk-card">
-                <h2>Erkenntnis</h2>
-                <div class="mk-field"><label>💡 Was siehst du jetzt anders?</label><textarea class="mk-textarea" data-mk-field="insight"></textarea></div>
-                <div class="mk-field"><label>👣 Was probierst du als Nächstes?</label><textarea class="mk-textarea" data-mk-field="next"></textarea></div>
-                <button class="mk-btn mk-btn-primary" id="ci-export"><i class="fas fa-download"></i> Herunterladen</button>
+                <h2>3 · Perspektiven-Rad</h2>
+                <p class="mk-sub">Ein Satz pro Person: Wie würde sie die Situation in einem Satz beschreiben – und was wünscht sie sich?</p>
+                <div id="ci-wheel"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Muster erkennen</h2>
+                <p class="mk-sub">Systeme halten Probleme durch wiederkehrende Schleifen aufrecht. Markiere, welche Muster du in deinen Antworten wiederfindest.</p>
+                <div id="ci-patterns"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Die Problemschleife</h3>
+                <p class="mk-sub">Je mehr A …, desto mehr B … – und je mehr B …, desto mehr A. Wo ist der Kreis?</p>
+                <div id="ci-loop"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Erkenntnis</h2>
+                <div id="ci-shift"></div>
+                <div class="mk-field"><label for="ci-insight">Was siehst du jetzt, was du vorher nicht gesehen hast?</label><textarea class="mk-textarea" id="ci-insight" data-mk-field="insight" placeholder="…"></textarea></div>
+                <div class="mk-field"><label for="ci-surprise">Welche Antwort hat dich am meisten überrascht?</label><input class="mk-input" id="ci-surprise" data-mk-field="surprise" placeholder="…"></div>
+                <div class="mk-field"><label for="ci-next">Was tust du anders – als Erstes?</label><input class="mk-input" id="ci-next" data-mk-field="next" placeholder="Eine kleine Veränderung in deinem Verhalten verändert das ganze System."></div>
+                <div class="mk-field"><label>Wie festgefahren jetzt?</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" data-mk-field="stuckAfter" value="4"><span class="mk-range-val" data-mk-rangeval="stuckAfter">4</span></div></div>
+                <div id="ci-summary"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="ci-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="ci-export"><i class="fas fa-download"></i> Herunterladen</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button></div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -71,34 +113,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        const QUESTIONS=[
-            'Was glaubst du, wie die andere beteiligte Person die Situation beschreiben würde?',
-            'Was denkt diese Person wohl, was DU brauchst?',
-            'Wer leidet am meisten unter der Situation – und wer am wenigsten?',
-            'Wenn das Problem morgen verschwunden wäre: Wer würde es als Erstes merken, woran?',
-            'Was müsste passieren, damit sich das Problem verschlimmert? (Und was sagt das über die Lösung?)',
-            'Welchen Rat würde ein:e gemeinsame:r guter Freund:in euch geben?'
-        ];
-        (async function () {
-            await MethodKit.init({
-                method: 'circular-interview',
-                accent: '#8b5cf6', accent2: '#06b6d4',
-                steps: [{icon:'🎯',label:'Situation'},{icon:'🔄',label:'Fragen'},{icon:'💡',label:'Erkenntnis'}],
-                defaultState: { situation:'', people:'', answers:{}, insight:'', next:'' }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-            const host=document.getElementById('ci-questions');
-            host.innerHTML=QUESTIONS.map((q,i)=>`<div class="mk-field"><label>${i+1}. ${q}</label><textarea class="mk-textarea" data-q="${i}">${MethodKit.esc(S.answers[i]||'')}</textarea></div>`).join('');
-            host.querySelectorAll('[data-q]').forEach(el=>el.addEventListener('input',()=>{ S.answers[el.dataset.q]=el.value; MethodKit.save(); }));
-            document.getElementById('ci-export').addEventListener('click',()=>{
-                let t=`ZIRKULÄRES FRAGEN\n=================\n\nSituation: ${S.situation}\nBeteiligte: ${S.people}\n\n`;
-                QUESTIONS.forEach((q,i)=>t+=`${q}\n→ ${S.answers[i]||'–'}\n\n`);
-                t+=`Erkenntnis: ${S.insight}\nNächster Schritt: ${S.next}\n`;
-                MethodKit.exportText('zirkulaeres-fragen.txt', t);
-            });
-        })();
-    </script>
+    <script src="circular-interview.js?v=20261003"></script>
 </body>
 </html>

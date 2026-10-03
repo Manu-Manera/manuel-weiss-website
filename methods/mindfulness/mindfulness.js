@@ -1,732 +1,150 @@
-// Achtsamkeit & Meditation JavaScript Functions
+/* Achtsamkeit · Logik */
+(function () {
+    'use strict';
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => MethodKit.esc(s);
+    let S;
 
-let meditationTimer = null;
-let currentTime = 0;
-let totalTime = 0;
-let isRunning = false;
-let isPaused = false;
-let meditationSessions = [];
-let journalEntries = [];
-let mindfulnessScore = 0;
+    const MOODS = ['ruhig', 'müde', 'unruhig', 'gestresst', 'traurig', 'gereizt', 'neutral', 'froh', 'zerstreut', 'angespannt', 'dankbar', 'ängstlich'];
+    const PATTERNS = {
+        calm: { l: 'Beruhigend 4-7-8', d: '4 ein · 7 halten · 8 aus – für Anspannung und vor dem Schlafen', ph: [['Einatmen', 4], ['Halten', 7], ['Ausatmen', 8]] },
+        box: { l: 'Box 4-4-4-4', d: 'Gleichmässig – für Fokus und Klarheit', ph: [['Einatmen', 4], ['Halten', 4], ['Ausatmen', 4], ['Halten', 4]] },
+        simple: { l: 'Einfach 4-6', d: 'Längeres Ausatmen – der Klassiker für zwischendurch', ph: [['Einatmen', 4], ['Ausatmen', 6]] }
+    };
+    const SENSES = [{ k: 'see', ic: '👁️', l: 'Dinge, die du siehst', c: 5, h: 'Farben, Formen, Licht – auch Unscheinbares.' }, { k: 'feel', ic: '🖐️', l: 'Dinge, die du spürst', c: 4, h: 'Stuhl unter dir, Stoff auf der Haut, Temperatur.' }, { k: 'hear', ic: '👂', l: 'Geräusche, die du hörst', c: 3, h: 'Nahe und ferne. Auch das Rauschen dazwischen.' }, { k: 'smell', ic: '👃', l: 'Dinge, die du riechst', c: 2, h: 'Falls nichts: Wie riecht die Luft?' }, { k: 'taste', ic: '👅', l: 'Was du schmeckst', c: 1, h: 'Der Geschmack im Mund – jetzt.' }];
+    const BODY = ['Kopf & Gesicht', 'Kiefer', 'Nacken & Schultern', 'Brust', 'Bauch', 'Hände & Arme', 'Rücken', 'Beine', 'Füsse'];
+    const SENS = [{ k: 'tense', l: 'angespannt', c: '#ef4444' }, { k: 'heavy', l: 'schwer', c: '#f59e0b' }, { k: 'neutral', l: 'neutral', c: '#94a3b8' }, { k: 'warm', l: 'warm', c: '#f97316' }, { k: 'tingle', l: 'kribbelnd', c: '#8b5cf6' }, { k: 'light', l: 'leicht', c: '#10b981' }];
+    const LINKS = [
+        { m: 'Stressmanagement', l: '../stress-management/stress-management.html', why: 'Wenn die Anspannung ein Muster hat.' },
+        { m: 'Journaling', l: '../journaling/journaling.html', why: 'Die Reflexion täglich festhalten.' },
+        { m: 'Gewohnheiten aufbauen', l: '../habit-building/habit-building.html', why: 'Achtsamkeit als feste Routine verankern.' },
+        { m: 'Emotionale Intelligenz', l: '../emotional-intelligence/emotional-intelligence.html', why: 'Gefühle präziser wahrnehmen.' }
+    ];
+    const n = (v, d) => { const x = parseInt(v, 10); return isNaN(x) ? d : x; };
+    const todayKey = () => new Date().toISOString().slice(0, 10);
 
-function initMindfulness() {
-    console.log('Initializing Mindfulness & Meditation...');
-    
-    // Load saved data
-    loadSavedSessions();
-    loadSavedJournal();
-    
-    // Setup event listeners
-    setupMindfulnessEventListeners();
-    
-    // Initialize assessment
-    initializeAssessment();
-    
-    // Set today's date
-    document.getElementById('journal-date').value = new Date().toISOString().split('T')[0];
-    
-    // Update statistics
-    updateStatistics();
-}
+    /* ---------- 1 ---------- */
+    function renderMood() {
+        $('mf-mood').innerHTML = `<div class="mk-chips">${MOODS.map(m => `<button class="mk-chip ${S.mood.includes(m) ? 'selected' : ''}" data-m="${m}">${m}</button>`).join('')}</div>`;
+        $('mf-mood').querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => { const m = b.dataset.m; S.mood = S.mood.includes(m) ? S.mood.filter(x => x !== m) : [...S.mood, m].slice(-3); MethodKit.save(); renderMood(); }));
+    }
 
-function setupMindfulnessEventListeners() {
-    // Assessment sliders
-    document.querySelectorAll('.mindfulness-slider').forEach(slider => {
-        slider.addEventListener('input', updateMindfulnessScore);
-    });
-    
-    // Timer preset buttons
-    document.querySelectorAll('.preset-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => setPresetTime(parseInt(e.target.dataset.minutes)));
-    });
-    
-    // Custom time input
-    document.getElementById('custom-minutes').addEventListener('input', updateCustomTime);
-    
-    // Exercise category tabs
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => switchExerciseCategory(e.target.dataset.category));
-    });
-    
-    // Mood rating slider
-    const moodSlider = document.getElementById('mood-rating');
-    if (moodSlider) {
-        moodSlider.addEventListener('input', (e) => {
-            document.getElementById('mood-value').textContent = e.target.value;
+    /* ---------- 2 · Atem ---------- */
+    let timer = null, phaseT = null, startAt = 0, cycles = 0;
+    function renderPattern() {
+        $('mf-pattern').innerHTML = `<div class="mk-grid mf-pat">${Object.entries(PATTERNS).map(([k, p]) => `<button class="mk-option ${S.pattern === k ? 'selected' : ''}" data-pat="${k}"><span class="t">${p.l}</span><span class="d">${p.d}</span></button>`).join('')}</div>
+            <div class="mk-field" style="margin-top:10px"><label>Dauer</label><div class="mk-chips">${[1, 2, 3, 5, 10].map(m => `<button class="mk-chip ${n(S.minutes, 3) === m ? 'selected' : ''}" data-min="${m}">${m} min</button>`).join('')}</div></div>`;
+        $('mf-pattern').querySelectorAll('[data-pat]').forEach(b => b.addEventListener('click', () => { if (timer) return; S.pattern = b.dataset.pat; MethodKit.save(); renderPattern(); }));
+        $('mf-pattern').querySelectorAll('[data-min]').forEach(b => b.addEventListener('click', () => { if (timer) return; S.minutes = +b.dataset.min; MethodKit.save(); renderPattern(); }));
+        if (n(S.before, 5) >= 7 && S.pattern !== 'calm') $('mf-breath-note').innerHTML = '<div class="mk-note info"><i class="fas fa-info-circle"></i><span>Bei hoher Anspannung wirkt 4-7-8 am schnellsten – das lange Ausatmen aktiviert den Parasympathikus.</span></div>';
+        else $('mf-breath-note').innerHTML = '';
+    }
+    function startBreath() {
+        const P = PATTERNS[S.pattern] || PATTERNS.simple; const total = n(S.minutes, 3) * 60;
+        startAt = Date.now(); cycles = 0; $('mf-start').disabled = true; $('mf-stop').disabled = false; $('mf-circle').classList.add('on');
+        let pi = 0;
+        const phase = () => {
+            const [label, sec] = P.ph[pi]; const c = $('mf-circle');
+            $('mf-circle-t').textContent = label; $('mf-circle-c').textContent = sec + ' s';
+            c.style.transition = `transform ${sec}s ease-in-out`;
+            c.style.transform = label === 'Einatmen' ? 'scale(1.35)' : label === 'Ausatmen' ? 'scale(0.75)' : c.style.transform;
+            phaseT = setTimeout(() => { pi = (pi + 1) % P.ph.length; if (pi === 0) cycles++; phase(); }, sec * 1000);
+        };
+        phase();
+        timer = setInterval(() => { const el = Math.floor((Date.now() - startAt) / 1000); $('mf-timer').textContent = `${Math.floor(el / 60)}:${String(el % 60).padStart(2, '0')}`; if (el >= total) stopBreath(true); }, 500);
+    }
+    function stopBreath(done) {
+        clearInterval(timer); clearTimeout(phaseT); timer = null;
+        const el = Math.round((Date.now() - startAt) / 1000);
+        $('mf-start').disabled = false; $('mf-stop').disabled = true; const c = $('mf-circle'); c.classList.remove('on'); c.style.transition = 'transform 1.5s ease'; c.style.transform = 'scale(1)';
+        $('mf-circle-t').textContent = done ? 'Angekommen 🌿' : 'Pause'; $('mf-circle-c').textContent = `${cycles} Atemzyklen`;
+        S.breathSec = n(S.breathSec, 0) + el; S.breathCycles = n(S.breathCycles, 0) + cycles; MethodKit.save();
+        $('mf-breath-note').innerHTML = `<div class="mk-note ok"><i class="fas fa-check-circle"></i><span>${cycles} Zyklen in ${Math.floor(el / 60)}:${String(el % 60).padStart(2, '0')}. ${done ? 'Bleib noch einen Moment, bevor du weitergehst.' : 'Auch eine Minute zählt.'}</span></div>`;
+    }
+
+    /* ---------- 3 ---------- */
+    function renderSenses() {
+        const V = S.senses;
+        const total = SENSES.reduce((a, s) => a + s.c, 0), filled = SENSES.reduce((a, s) => a + (V[s.k] || []).filter(x => x.trim()).length, 0);
+        $('mf-senses').innerHTML = SENSES.map(s => { const arr = V[s.k] || []; const done = arr.filter(x => x.trim()).length; return `<div class="mf-sense ${done >= s.c ? 'done' : ''}"><div class="mf-sense-h"><span class="ic">${s.ic}</span><b>${s.c} ${s.l}</b><small>${done}/${s.c}</small></div><div class="hint">${s.h}</div><div class="mf-sense-in">${Array.from({ length: s.c }, (_, i) => `<input class="mk-input" data-sk="${s.k}" data-i="${i}" value="${esc(arr[i] || '')}" placeholder="${i + 1}.">`).join('')}</div></div>`; }).join('') +
+            `<div class="mf-prog"><i style="width:${filled / total * 100}%"></i></div>` + (filled === total ? '<div class="mk-note ok"><i class="fas fa-check-circle"></i><span>Alle 15 Wahrnehmungen. Merkst du, wie die Gedanken leiser geworden sind? Das ist der Effekt: Die Aufmerksamkeit kann nur an einem Ort sein.</span></div>' : filled >= 8 ? '<div class="mk-note info"><i class="fas fa-info-circle"></i><span>Über die Hälfte. Die kleinen Sinne (Riechen, Schmecken) sind die stärksten Anker, weil wir sie sonst nie beachten.</span></div>' : '');
+        $('mf-senses').querySelectorAll('[data-sk]').forEach(el => { el.addEventListener('input', () => { const arr = V[el.dataset.sk] || (V[el.dataset.sk] = []); arr[+el.dataset.i] = el.value; MethodKit.save(); }); el.addEventListener('change', renderSenses); });
+    }
+
+    /* ---------- 4 ---------- */
+    function renderBody() {
+        const B = S.body; const tense = BODY.filter(p => ['tense', 'heavy'].includes(B[p]));
+        $('mf-body').innerHTML = `<div class="mf-body">${BODY.map(p => `<div class="mf-part"><span class="mf-part-l">${p}</span><div class="mf-part-s">${SENS.map(s => `<button class="${B[p] === s.k ? 'on' : ''}" data-bp="${esc(p)}" data-s="${s.k}" style="--c:${s.c}">${s.l}</button>`).join('')}</div></div>`).join('')}</div>
+            ${Object.keys(B).length >= 5 ? `<div class="mf-map">${BODY.map(p => { const s = SENS.find(x => x.k === B[p]); return `<span style="background:${s ? s.c : 'var(--mk-line)'}" title="${p}: ${s ? s.l : '–'}"></span>`; }).join('')}</div>` : ''}
+            ${tense.length ? `<div class="mk-note info"><i class="fas fa-info-circle"></i><span>Spannung in <strong>${tense.join(', ')}</strong>. Atme beim nächsten Ausatmen bewusst dorthin – nicht um sie wegzumachen, sondern um ihr Raum zu geben. ${tense.includes('Kiefer') || tense.includes('Nacken & Schultern') ? 'Kiefer und Schultern sind die klassischen Stress-Speicher: Zunge vom Gaumen lösen, Schultern einmal hochziehen und fallen lassen.' : ''}</span></div>` : Object.keys(B).length >= 5 ? '<div class="mk-note ok"><i class="fas fa-check-circle"></i><span>Kaum Spannung – ein entspannter Körper. Nimm das bewusst wahr, damit du den Zustand wiedererkennst.</span></div>' : ''}`;
+        $('mf-body').querySelectorAll('[data-bp]').forEach(b => b.addEventListener('click', () => { const p = b.dataset.bp; B[p] = B[p] === b.dataset.s ? undefined : b.dataset.s; if (!B[p]) delete B[p]; MethodKit.save(); renderBody(); }));
+    }
+
+    /* ---------- 5 ---------- */
+    function renderDelta() {
+        const b = n(S.before, 5), a = n(S.after, 4), d = b - a;
+        $('mf-delta').innerHTML = `<div class="mf-delta"><div><b>${b}</b><span>vorher</span></div><div class="arr">${d > 0 ? '↘' : d < 0 ? '↗' : '→'}</div><div><b class="${d > 0 ? 'ok' : ''}">${a}</b><span>nachher</span></div></div>
+            <div class="mk-note ${d >= 2 ? 'ok' : d > 0 ? 'info' : 'info'}"><i class="fas fa-${d >= 2 ? 'check-circle' : 'info-circle'}"></i><span>${d >= 3 ? `Minus ${d} Punkte – das ist ein spürbarer Unterschied in wenigen Minuten.` : d > 0 ? `Minus ${d}. Kleine Schritte zählen – die Wirkung wächst mit der Regelmässigkeit.` : d === 0 ? 'Keine Veränderung – auch das ist eine ehrliche Beobachtung. Manchmal zeigt sich die Wirkung erst später am Tag.' : 'Mehr Anspannung als vorher? Das passiert, wenn man zum ersten Mal wirklich hinspürt. Es ist nicht mehr geworden – du nimmst es nur wahr.'}</span></div>`;
+    }
+    function renderGrat() {
+        $('mf-grat').innerHTML = `<div class="mf-grat">${[0, 1, 2].map(i => `<input class="mk-input" data-g="${i}" value="${esc(S.gratitude[i] || '')}" placeholder="${['Etwas Kleines von heute …', 'Jemand …', 'Etwas an dir selbst …'][i]}">`).join('')}</div>`;
+        $('mf-grat').querySelectorAll('[data-g]').forEach(el => el.addEventListener('input', () => { S.gratitude[+el.dataset.g] = el.value; MethodKit.save(); }));
+    }
+    function saveSession() {
+        const b = n(S.before, 5), a = n(S.after, 4);
+        S.log.push({ date: todayKey(), before: b, after: a, sec: n(S.breathSec, 0), pattern: S.pattern, mood: [...S.mood], intention: S.intention || '' });
+        S.breathSec = 0; S.breathCycles = 0; S.senses = {}; S.body = {}; S.mood = []; S.park = ''; S.reflect = ''; S.gratitude = []; S.intention = ''; S.before = a; S.after = Math.max(1, a - 1);
+        MethodKit.save({ now: true });
+        document.querySelectorAll('[data-mk-field]').forEach(el => { el.value = S[el.dataset.mkField] || ''; });
+        $('mf-before').value = S.before; $('mf-before-v').textContent = S.before; $('mf-after').value = S.after; $('mf-after-v').textContent = S.after;
+        MethodKit.toast('Übung gespeichert 🌿', 'success'); renderDelta(); renderGrat(); renderLog();
+    }
+    function renderLog() {
+        const L = S.log; if (!L.length) { $('mf-log').innerHTML = '<div class="mk-empty">Noch keine abgeschlossene Übung. Nach dem Abschliessen siehst du hier, wie sich Anspannung über die Zeit verändert.</div>'; return; }
+        const last = L.slice(-14); const W = 520, H = 150, P = 24; const x = i => P + i * ((W - 2 * P) / Math.max(1, last.length - 1)); const y = v => H - P - (v - 1) / 9 * (H - 2 * P);
+        const avgDrop = (L.reduce((a, e) => a + (e.before - e.after), 0) / L.length).toFixed(1);
+        const days = [...new Set(L.map(e => e.date))]; let streak = 0; const d = new Date(); for (; ;) { const k = d.toISOString().slice(0, 10); if (days.includes(k)) { streak++; d.setDate(d.getDate() - 1); } else break; }
+        const totalMin = Math.round(L.reduce((a, e) => a + (e.sec || 0), 0) / 60);
+        $('mf-log').innerHTML = `<div class="mf-stats"><div><b>${L.length}</b><span>Übungen</span></div><div><b>${streak}</b><span>Tage in Folge</span></div><div><b>−${avgDrop}</b><span>Ø Anspannung</span></div><div><b>${totalMin}</b><span>Min. geatmet</span></div></div>
+            <svg viewBox="0 0 ${W} ${H}" class="mf-chart" aria-label="Verlauf Anspannung">${last.length > 1 ? `<polyline points="${last.map((e, i) => x(i) + ',' + y(e.before)).join(' ')}" class="before"/><polyline points="${last.map((e, i) => x(i) + ',' + y(e.after)).join(' ')}" class="after"/>` : ''}${last.map((e, i) => `<line x1="${x(i)}" y1="${y(e.before)}" x2="${x(i)}" y2="${y(e.after)}" class="drop"/><circle cx="${x(i)}" cy="${y(e.before)}" r="4" class="before"/><circle cx="${x(i)}" cy="${y(e.after)}" r="4" class="after"/><text x="${x(i)}" y="${H - 6}">${e.date.slice(8, 10)}.${e.date.slice(5, 7)}</text>`).join('')}</svg>
+            <div class="mf-legend"><span><i class="before"></i> vorher</span><span><i class="after"></i> nachher</span></div>
+            ${L.length >= 3 ? `<div class="mk-note ${+avgDrop >= 2 ? 'ok' : 'info'}"><i class="fas fa-chart-line"></i><span>${+avgDrop >= 2 ? `Im Schnitt ${avgDrop} Punkte weniger Anspannung pro Übung – die Praxis wirkt zuverlässig.` : 'Die Wirkung pro Übung ist noch klein. Regelmässigkeit schlägt Dauer: lieber täglich drei Minuten als einmal pro Woche zwanzig.'}${streak >= 3 ? ` ${streak} Tage in Folge – das wird gerade zur Gewohnheit.` : ''}</span></div>` : ''}`;
+    }
+    function renderLinks() { $('mf-links').innerHTML = LINKS.map(x => `<a class="mk-option mf-link" href="${x.l}"><span class="t">${x.m}</span><span class="d">${x.why}</span></a>`).join(''); }
+    function exportAll() {
+        const L = ['ACHTSAMKEIT', '='.repeat(40), 'Exportiert: ' + new Date().toLocaleString('de-CH'), '', `Anspannung: ${n(S.before, 5)} → ${n(S.after, 4)}`, S.mood.length ? 'Stimmung: ' + S.mood.join(', ') : '', S.park ? 'Geparkt: ' + S.park : '', ''];
+        L.push('5-4-3-2-1'); SENSES.forEach(s => { const a = (S.senses[s.k] || []).filter(Boolean); if (a.length) L.push(`${s.ic} ${a.join(', ')}`); }); L.push('');
+        const B = Object.entries(S.body); if (B.length) { L.push('BODY-SCAN'); B.forEach(([p, s]) => L.push(`${p}: ${(SENS.find(x => x.k === s) || {}).l || s}`)); L.push(''); }
+        L.push('REFLEXION', S.reflect || '–', S.gratitude.filter(Boolean).length ? 'Dankbar: ' + S.gratitude.filter(Boolean).join(' · ') : '', S.intention ? 'Haltung: ' + S.intention : '', '');
+        if (S.log.length) { L.push('VERLAUF'); S.log.forEach(e => L.push(`${e.date}: ${e.before} → ${e.after}${e.sec ? ' · ' + Math.round(e.sec / 60) + ' min Atem' : ''}`)); }
+        MethodKit.exportText('achtsamkeit.txt', L.filter(x => x !== '').join('\n'));
+    }
+
+    (async function () {
+        await MethodKit.init({
+            method: 'mindfulness', accent: '#8b5cf6', accent2: '#06b6d4',
+            steps: [{ icon: '🌅', label: 'Ankommen' }, { icon: '🫁', label: 'Atem' }, { icon: '🖐️', label: 'Sinne' }, { icon: '🧘', label: 'Körper' }, { icon: '🌿', label: 'Reflexion' }],
+            defaultState: { before: 5, after: 4, mood: [], park: '', pattern: 'simple', minutes: 3, breathSec: 0, breathCycles: 0, senses: {}, body: {}, reflect: '', gratitude: [], intention: '', log: [] }
         });
-    }
-    
-    // Reminder settings
-    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-        checkbox.addEventListener('change', saveReminderSettings);
-    });
-    
-    document.querySelectorAll('select').forEach(select => {
-        select.addEventListener('change', saveReminderSettings);
-    });
-}
-
-function initializeAssessment() {
-    // Set initial score
-    updateMindfulnessScore();
-}
-
-function updateMindfulnessScore() {
-    const sliders = document.querySelectorAll('.mindfulness-slider');
-    let totalScore = 0;
-    
-    sliders.forEach(slider => {
-        totalScore += parseInt(slider.value);
-    });
-    
-    mindfulnessScore = Math.round((totalScore / sliders.length) * 10);
-    
-    document.getElementById('mindfulness-score').textContent = mindfulnessScore;
-    
-    // Update description based on score
-    const description = getScoreDescription(mindfulnessScore);
-    document.getElementById('score-description').textContent = description;
-    
-    // Save assessment
-    saveAssessment();
-}
-
-function getScoreDescription(score) {
-    if (score >= 80) {
-        return "Ausgezeichnet! Du praktizierst bereits sehr achtsam. Weiter so!";
-    } else if (score >= 60) {
-        return "Gut! Du bist auf dem richtigen Weg. Es gibt noch Raum für Verbesserungen.";
-    } else if (score >= 40) {
-        return "Durchschnittlich. Achtsamkeit kann dir helfen, dein Leben zu verbessern.";
-    } else {
-        return "Es gibt viel Potenzial! Beginne mit kleinen Schritten zur Achtsamkeit.";
-    }
-}
-
-function setPresetTime(minutes) {
-    // Remove active class from all buttons
-    document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
-    
-    // Add active class to clicked button
-    event.target.classList.add('active');
-    
-    // Set custom minutes input
-    document.getElementById('custom-minutes').value = minutes;
-    
-    // Update timer display
-    updateCustomTime();
-}
-
-function updateCustomTime() {
-    const minutes = parseInt(document.getElementById('custom-minutes').value) || 0;
-    totalTime = minutes * 60;
-    currentTime = totalTime;
-    updateTimerDisplay();
-}
-
-function startMeditation() {
-    if (totalTime === 0) {
-        showNotification('Bitte wähle eine Zeit aus!', 'warning');
-        return;
-    }
-    
-    isRunning = true;
-    isPaused = false;
-    
-    // Update button states
-    document.getElementById('start-timer').disabled = true;
-    document.getElementById('pause-timer').disabled = false;
-    document.getElementById('stop-timer').disabled = false;
-    
-    // Start timer
-    meditationTimer = setInterval(() => {
-        if (currentTime > 0) {
-            currentTime--;
-            updateTimerDisplay();
-            updateProgressRing();
-        } else {
-            completeMeditation();
-        }
-    }, 1000);
-    
-    showNotification('Meditation gestartet! 🧘', 'success');
-}
-
-function pauseMeditation() {
-    if (isPaused) {
-        // Resume
-        isPaused = false;
-        meditationTimer = setInterval(() => {
-            if (currentTime > 0) {
-                currentTime--;
-                updateTimerDisplay();
-                updateProgressRing();
-            } else {
-                completeMeditation();
-            }
-        }, 1000);
-        
-        document.getElementById('pause-timer').innerHTML = '<i class="fas fa-pause"></i> Pausieren';
-        showNotification('Meditation fortgesetzt', 'info');
-    } else {
-        // Pause
-        isPaused = true;
-        clearInterval(meditationTimer);
-        document.getElementById('pause-timer').innerHTML = '<i class="fas fa-play"></i> Fortsetzen';
-        showNotification('Meditation pausiert', 'info');
-    }
-}
-
-function stopMeditation() {
-    if (confirm('Möchtest du die Meditation wirklich beenden?')) {
-        clearInterval(meditationTimer);
-        resetTimer();
-        showNotification('Meditation beendet', 'warning');
-    }
-}
-
-function completeMeditation() {
-    clearInterval(meditationTimer);
-    
-    // Save session
-    const session = {
-        id: Date.now(),
-        duration: totalTime,
-        completed: true,
-        date: new Date().toISOString(),
-        type: 'meditation'
-    };
-    
-    meditationSessions.push(session);
-    saveSessions();
-    updateStatistics();
-    
-    // Show completion message
-    showNotification('Meditation abgeschlossen! 🎉', 'success');
-    
-    // Play completion sound if enabled
-    if (document.getElementById('sound-notifications').checked) {
-        playCompletionSound();
-    }
-    
-    // Reset timer
-    resetTimer();
-}
-
-function resetTimer() {
-    isRunning = false;
-    isPaused = false;
-    currentTime = totalTime;
-    
-    // Update button states
-    document.getElementById('start-timer').disabled = false;
-    document.getElementById('pause-timer').disabled = true;
-    document.getElementById('stop-timer').disabled = true;
-    document.getElementById('pause-timer').innerHTML = '<i class="fas fa-pause"></i> Pausieren';
-    
-    updateTimerDisplay();
-    updateProgressRing();
-}
-
-function updateTimerDisplay() {
-    const minutes = Math.floor(currentTime / 60);
-    const seconds = currentTime % 60;
-    const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    document.getElementById('timer-display').textContent = display;
-}
-
-function updateProgressRing() {
-    const progress = totalTime > 0 ? (totalTime - currentTime) / totalTime : 0;
-    const circumference = 2 * Math.PI * 90;
-    const offset = circumference - (progress * circumference);
-    
-    const progressRing = document.querySelector('.progress-ring-progress');
-    if (progressRing) {
-        progressRing.style.strokeDashoffset = offset;
-    }
-}
-
-function playCompletionSound() {
-    // Create a simple beep sound
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-    
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.5);
-}
-
-function switchExerciseCategory(category) {
-    // Remove active class from all tabs
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    
-    // Add active class to clicked tab
-    document.querySelector(`[data-category="${category}"]`).classList.add('active');
-    
-    // Hide all exercise categories
-    document.querySelectorAll('.exercise-category').forEach(cat => cat.classList.remove('active'));
-    
-    // Show selected category
-    document.getElementById(`${category}-exercises`).classList.add('active');
-}
-
-function startGuidedExercise(exerciseType) {
-    const exerciseData = getExerciseData(exerciseType);
-    
-    // Show exercise player
-    document.getElementById('exercise-player').style.display = 'block';
-    document.getElementById('current-exercise-title').textContent = exerciseData.title;
-    
-    // Load instructions
-    loadExerciseInstructions(exerciseData);
-    
-    // Start exercise timer
-    startExerciseTimer(exerciseData.duration);
-    
-    showNotification(`${exerciseData.title} gestartet!`, 'success');
-}
-
-function getExerciseData(exerciseType) {
-    const exercises = {
-        'breathing': {
-            title: 'Atem-Meditation',
-            duration: 300, // 5 minutes
-            instructions: [
-                'Setze dich bequem hin und schließe die Augen.',
-                'Richte deine Aufmerksamkeit auf deinen Atem.',
-                'Atme natürlich ein und aus.',
-                'Zähle beim Einatmen bis 4, halte den Atem für 4, atme für 4 aus.',
-                'Wiederhole diesen Zyklus.',
-                'Wenn deine Gedanken abschweifen, kehre sanft zum Atem zurück.',
-                'Genieße die Ruhe und Entspannung.'
-            ]
-        },
-        'body-scan': {
-            title: 'Body-Scan',
-            duration: 600, // 10 minutes
-            instructions: [
-                'Lege dich bequem hin und schließe die Augen.',
-                'Beginne mit deinen Zehen - spüre sie bewusst.',
-                'Wandere langsam durch deinen Körper.',
-                'Beachte Spannungen, aber bewerte sie nicht.',
-                'Atme in jeden Bereich hinein.',
-                'Lasse Spannungen mit dem Ausatmen los.',
-                'Beende mit einem tiefen, entspannenden Atemzug.'
-            ]
-        },
-        'mindful-walking': {
-            title: 'Achtsames Gehen',
-            duration: 300, // 5 minutes
-            instructions: [
-                'Gehe langsam und bewusst.',
-                'Spüre jeden Schritt - Heben, Schwingen, Aufsetzen.',
-                'Beobachte deine Umgebung ohne zu bewerten.',
-                'Achte auf Geräusche, Gerüche, Temperaturen.',
-                'Bleibe im gegenwärtigen Moment.',
-                'Wenn deine Gedanken abschweifen, kehre zum Gehen zurück.'
-            ]
-        },
-        'progressive-relaxation': {
-            title: 'Progressive Muskelentspannung',
-            duration: 900, // 15 minutes
-            instructions: [
-                'Lege dich bequem hin und schließe die Augen.',
-                'Beginne mit deinen Füßen - spanne die Muskeln an.',
-                'Halte die Spannung für 5 Sekunden.',
-                'Lasse los und spüre die Entspannung.',
-                'Wiederhole mit Waden, Oberschenkeln, Bauch.',
-                'Gehe durch alle Muskelgruppen.',
-                'Genieße die tiefe Entspannung.'
-            ]
-        },
-        'breathing-technique': {
-            title: '4-7-8 Atemtechnik',
-            duration: 300, // 5 minutes
-            instructions: [
-                'Setze dich aufrecht hin.',
-                'Atme durch die Nase ein und zähle bis 4.',
-                'Halte den Atem und zähle bis 7.',
-                'Atme durch den Mund aus und zähle bis 8.',
-                'Wiederhole diesen Zyklus 4-8 Mal.',
-                'Konzentriere dich nur auf das Zählen.',
-                'Spüre, wie dein Körper entspannt.'
-            ]
-        },
-        'sleep-meditation': {
-            title: 'Einschlaf-Meditation',
-            duration: 1200, // 20 minutes
-            instructions: [
-                'Lege dich in deine Schlafposition.',
-                'Schließe die Augen und entspanne dich.',
-                'Stelle dir einen ruhigen Ort vor.',
-                'Atme tief und langsam.',
-                'Lasse alle Gedanken los.',
-                'Spüre, wie dein Körper schwer wird.',
-                'Lasse dich in den Schlaf gleiten.'
-            ]
-        },
-        'concentration': {
-            title: 'Konzentrations-Meditation',
-            duration: 600, // 10 minutes
-            instructions: [
-                'Setze dich aufrecht hin.',
-                'Wähle einen Fokuspunkt (Atem, Kerze, etc.).',
-                'Richte deine gesamte Aufmerksamkeit darauf.',
-                'Wenn Gedanken kommen, lasse sie ziehen.',
-                'Kehre sanft zum Fokus zurück.',
-                'Trainiere deine Konzentration.',
-                'Spüre die Klarheit deines Geistes.'
-            ]
-        },
-        'loving-kindness': {
-            title: 'Loving-Kindness Meditation',
-            duration: 900, // 15 minutes
-            instructions: [
-                'Setze dich bequem hin und schließe die Augen.',
-                'Beginne mit dir selbst: "Möge ich glücklich sein."',
-                'Denke an eine geliebte Person.',
-                'Sende ihr liebevolle Gedanken.',
-                'Erweitere auf neutrale Personen.',
-                'Schließe schwierige Menschen ein.',
-                'Sende Liebe an alle Wesen.'
-            ]
-        }
-    };
-    
-    return exercises[exerciseType] || exercises['breathing'];
-}
-
-function loadExerciseInstructions(exerciseData) {
-    const instructionsContainer = document.getElementById('exercise-instructions');
-    instructionsContainer.innerHTML = exerciseData.instructions.map((instruction, index) => `
-        <div class="instruction-step ${index === 0 ? 'active' : ''}" data-step="${index}">
-            <div class="step-number">${index + 1}</div>
-            <div class="step-text">${instruction}</div>
-        </div>
-    `).join('');
-    
-    // Start instruction progression
-    startInstructionProgression(exerciseData.instructions.length);
-}
-
-function startInstructionProgression(totalSteps) {
-    let currentStep = 0;
-    const stepInterval = setInterval(() => {
-        // Remove active class from current step
-        document.querySelector(`.instruction-step[data-step="${currentStep}"]`)?.classList.remove('active');
-        
-        currentStep++;
-        
-        if (currentStep < totalSteps) {
-            // Add active class to next step
-            document.querySelector(`.instruction-step[data-step="${currentStep}"]`)?.classList.add('active');
-        } else {
-            clearInterval(stepInterval);
-        }
-    }, 30000); // 30 seconds per step
-}
-
-function startExerciseTimer(duration) {
-    let timeLeft = duration;
-    const timerDisplay = document.getElementById('exercise-timer');
-    
-    const timer = setInterval(() => {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        
-        timeLeft--;
-        
-        if (timeLeft < 0) {
-            clearInterval(timer);
-            completeGuidedExercise();
-        }
-    }, 1000);
-}
-
-function completeGuidedExercise() {
-    // Save exercise session
-    const session = {
-        id: Date.now(),
-        duration: 0, // Will be calculated
-        completed: true,
-        date: new Date().toISOString(),
-        type: 'guided-exercise'
-    };
-    
-    meditationSessions.push(session);
-    saveSessions();
-    updateStatistics();
-    
-    showNotification('Geführte Übung abgeschlossen! 🎉', 'success');
-    stopGuidedExercise();
-}
-
-function stopGuidedExercise() {
-    document.getElementById('exercise-player').style.display = 'none';
-}
-
-function showExerciseDetails(exerciseType) {
-    const exerciseData = getExerciseData(exerciseType);
-    
-    const details = `
-        <h4>${exerciseData.title}</h4>
-        <p><strong>Dauer:</strong> ${Math.floor(exerciseData.duration / 60)} Minuten</p>
-        <p><strong>Anleitung:</strong></p>
-        <ol>
-            ${exerciseData.instructions.map(instruction => `<li>${instruction}</li>`).join('')}
-        </ol>
-    `;
-    
-    showModal('Übungsdetails', details);
-}
-
-function saveJournalEntry() {
-    const date = document.getElementById('journal-date').value;
-    const mood = parseInt(document.getElementById('mood-rating').value);
-    const exercises = document.getElementById('exercises-done').value;
-    const insights = document.getElementById('insights').value;
-    const challenges = document.getElementById('challenges').value;
-    const gratitude = document.getElementById('gratitude').value;
-    
-    if (!date || !exercises.trim()) {
-        showNotification('Bitte fülle mindestens Datum und Übungen aus!', 'warning');
-        return;
-    }
-    
-    const entry = {
-        id: Date.now(),
-        date: date,
-        mood: mood,
-        exercises: exercises,
-        insights: insights,
-        challenges: challenges,
-        gratitude: gratitude,
-        createdAt: new Date().toISOString()
-    };
-    
-    journalEntries.push(entry);
-    saveJournal();
-    updateStatistics();
-    
-    // Clear form
-    document.getElementById('exercises-done').value = '';
-    document.getElementById('insights').value = '';
-    document.getElementById('challenges').value = '';
-    document.getElementById('gratitude').value = '';
-    document.getElementById('mood-rating').value = '5';
-    document.getElementById('mood-value').textContent = '5';
-    
-    showNotification('Tagebuch-Eintrag gespeichert!', 'success');
-}
-
-function viewJournalHistory() {
-    if (journalEntries.length === 0) {
-        showNotification('Noch keine Einträge vorhanden!', 'info');
-        return;
-    }
-    
-    // Sort by date (newest first)
-    const sortedEntries = journalEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
-    
-    const history = sortedEntries.map(entry => `
-        <div class="journal-entry-item">
-            <h5>📅 ${new Date(entry.date).toLocaleDateString()}</h5>
-            <div class="entry-mood">Stimmung: ${entry.mood}/10</div>
-            <div class="entry-content">
-                <p><strong>Übungen:</strong> ${entry.exercises}</p>
-                ${entry.insights ? `<p><strong>Erkenntnisse:</strong> ${entry.insights}</p>` : ''}
-                ${entry.challenges ? `<p><strong>Herausforderungen:</strong> ${entry.challenges}</p>` : ''}
-                ${entry.gratitude ? `<p><strong>Dankbarkeit:</strong> ${entry.gratitude}</p>` : ''}
-            </div>
-        </div>
-    `).join('');
-    
-    showModal('Achtsamkeits-Tagebuch', history);
-}
-
-function saveReminderSettings() {
-    const settings = {
-        morningReminder: document.getElementById('morning-reminder').checked,
-        morningTime: document.getElementById('morning-time').value,
-        eveningReminder: document.getElementById('evening-reminder').checked,
-        eveningTime: document.getElementById('evening-time').value,
-        stressReminder: document.getElementById('stress-reminder').checked
-    };
-    
-    localStorage.setItem('mindfulness-reminders', JSON.stringify(settings));
-    
-    // Setup notifications if supported
-    if ('Notification' in window) {
-        setupNotifications(settings);
-    }
-}
-
-function setupNotifications(settings) {
-    if (Notification.permission === 'granted') {
-        // Schedule notifications based on settings
-        if (settings.morningReminder) {
-            scheduleNotification(settings.morningTime, 'Morgendliche Achtsamkeitsübung', 'Zeit für deine tägliche Achtsamkeitspraxis! 🧘');
-        }
-        
-        if (settings.eveningReminder) {
-            scheduleNotification(settings.eveningTime, 'Abendliche Reflexion', 'Reflektiere über deinen Tag und praktiziere Dankbarkeit. 📝');
-        }
-    } else if (Notification.permission !== 'denied') {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                setupNotifications(settings);
-            }
-        });
-    }
-}
-
-function scheduleNotification(time, title, body) {
-    const [hours, minutes] = time.split(':').map(Number);
-    const now = new Date();
-    const scheduledTime = new Date();
-    scheduledTime.setHours(hours, minutes, 0, 0);
-    
-    // If time has passed today, schedule for tomorrow
-    if (scheduledTime <= now) {
-        scheduledTime.setDate(scheduledTime.getDate() + 1);
-    }
-    
-    const timeUntilNotification = scheduledTime.getTime() - now.getTime();
-    
-    setTimeout(() => {
-        new Notification(title, { body: body, icon: '/favicon.ico' });
-    }, timeUntilNotification);
-}
-
-function updateStatistics() {
-    // Calculate streak
-    const streak = calculateStreak();
-    document.getElementById('streak-days').textContent = streak;
-    
-    // Calculate total meditation time
-    const totalTime = meditationSessions.reduce((total, session) => total + session.duration, 0);
-    const hours = Math.floor(totalTime / 3600);
-    const minutes = Math.floor((totalTime % 3600) / 60);
-    document.getElementById('total-meditation-time').textContent = `${hours}h ${minutes}min`;
-    
-    // Calculate average mood
-    const avgMood = journalEntries.length > 0 
-        ? (journalEntries.reduce((sum, entry) => sum + entry.mood, 0) / journalEntries.length).toFixed(1)
-        : '0.0';
-    document.getElementById('avg-mood').textContent = avgMood;
-    
-    // Calculate sessions this week
-    const weekAgo = new Date();
-    weekAgo.setDate(weekAgo.getDate() - 7);
-    const thisWeekSessions = meditationSessions.filter(session => 
-        new Date(session.date) >= weekAgo
-    ).length;
-    document.getElementById('last-week-sessions').textContent = `${thisWeekSessions} Sessions`;
-    
-    // Update main statistics
-    document.getElementById('total-sessions').textContent = meditationSessions.length;
-    document.getElementById('current-streak').textContent = streak;
-    
-    const longestSession = meditationSessions.length > 0 
-        ? Math.max(...meditationSessions.map(s => s.duration))
-        : 0;
-    document.getElementById('longest-session').textContent = `${Math.floor(longestSession / 60)}min`;
-}
-
-function calculateStreak() {
-    if (meditationSessions.length === 0) return 0;
-    
-    // Sort sessions by date
-    const sortedSessions = meditationSessions.sort((a, b) => new Date(b.date) - new Date(a.date));
-    
-    let streak = 0;
-    let currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
-    
-    for (let i = 0; i < sortedSessions.length; i++) {
-        const sessionDate = new Date(sortedSessions[i].date);
-        sessionDate.setHours(0, 0, 0, 0);
-        
-        if (sessionDate.getTime() === currentDate.getTime()) {
-            streak++;
-            currentDate.setDate(currentDate.getDate() - 1);
-        } else if (sessionDate.getTime() < currentDate.getTime()) {
-            break;
-        }
-    }
-    
-    return streak;
-}
-
-function showModal(title, content) {
-    // Create modal if it doesn't exist
-    let modal = document.getElementById('mindfulness-modal');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'mindfulness-modal';
-        modal.className = 'modal';
-        modal.innerHTML = `
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 id="modal-title"></h3>
-                    <button class="modal-close" onclick="closeModal()">&times;</button>
-                </div>
-                <div class="modal-body" id="modal-body"></div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-    }
-    
-    document.getElementById('modal-title').textContent = title;
-    document.getElementById('modal-body').innerHTML = content;
-    modal.style.display = 'block';
-}
-
-function closeModal() {
-    document.getElementById('mindfulness-modal').style.display = 'none';
-}
-
-// Data persistence functions
-function saveSessions() {
-    localStorage.setItem('mindfulness-sessions', JSON.stringify(meditationSessions));
-}
-
-function loadSavedSessions() {
-    const saved = localStorage.getItem('mindfulness-sessions');
-    if (saved) {
-        meditationSessions = JSON.parse(saved);
-    }
-}
-
-function saveJournal() {
-    localStorage.setItem('mindfulness-journal', JSON.stringify(journalEntries));
-}
-
-function loadSavedJournal() {
-    const saved = localStorage.getItem('mindfulness-journal');
-    if (saved) {
-        journalEntries = JSON.parse(saved);
-    }
-}
-
-function saveAssessment() {
-    const assessment = {
-        score: mindfulnessScore,
-        date: new Date().toISOString(),
-        answers: {}
-    };
-    
-    document.querySelectorAll('.mindfulness-slider').forEach(slider => {
-        assessment.answers[slider.dataset.question] = slider.value;
-    });
-    
-    localStorage.setItem('mindfulness-assessment', JSON.stringify(assessment));
-}
+        S = MethodKit.state;
+        ['mood', 'gratitude', 'log'].forEach(k => { if (!Array.isArray(S[k])) S[k] = []; }); ['senses', 'body'].forEach(k => { if (!S[k] || typeof S[k] !== 'object') S[k] = {}; });
+        // Migration: alte Einzelfelder see/feel/hear/smell/taste (Strings) und gratitude als String
+        SENSES.forEach(s => { if (typeof S[s.k] === 'string') { if (S[s.k].trim() && !S.senses[s.k]) S.senses[s.k] = S[s.k].split(/[,;\n]/).map(x => x.trim()).filter(Boolean).slice(0, s.c); delete S[s.k]; } });
+        if (typeof S.gratitude === 'string') S.gratitude = S.gratitude.split(/[,;\n]/).map(x => x.trim()).filter(Boolean).slice(0, 3);
+        MethodKit.bindFields();
+        $('mf-before').value = n(S.before, 5); $('mf-before-v').textContent = n(S.before, 5); $('mf-after').value = n(S.after, 4); $('mf-after-v').textContent = n(S.after, 4);
+        $('mf-before').addEventListener('input', e => { S.before = n(e.target.value, 5); $('mf-before-v').textContent = S.before; MethodKit.save(); });
+        $('mf-after').addEventListener('input', e => { S.after = n(e.target.value, 4); $('mf-after-v').textContent = S.after; MethodKit.save(); renderDelta(); });
+        $('mf-start').addEventListener('click', startBreath); $('mf-stop').addEventListener('click', () => stopBreath(false));
+        $('mf-save').addEventListener('click', saveSession); $('mf-export').addEventListener('click', exportAll);
+        MethodKit.onStep = function (k) {
+            if (timer && k !== 2) stopBreath(false);
+            if (k === 1) renderMood();
+            if (k === 2) renderPattern();
+            if (k === 3) renderSenses();
+            if (k === 4) renderBody();
+            if (k === 5) { renderDelta(); renderGrat(); renderLog(); renderLinks(); }
+        };
+        MethodKit.onStep(MethodKit.step);
+    })();
+})();

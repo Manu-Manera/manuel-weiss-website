@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gewaltfreie Kommunikation | Manuel Weiss</title>
-    <meta name="description" content="Formuliere ein Anliegen nach der Gewaltfreien Kommunikation (Rosenberg): Beobachtung, Gefühl, Bedürfnis und Bitte – verbindend statt verletzend.">
+    <meta name="description" content="Gewaltfreie Kommunikation nach Rosenberg: Beobachtung ohne Bewertung, echte Gefühle statt Pseudo-Gefühle, Bedürfnisse erkennen, Bitte statt Forderung – mit automatischem Sprach-Check und Empathie-Wechsel.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="nonviolent-communication.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>:root { --mk-accent: #22c55e; --mk-accent-2: #14b8a6; --mk-accent-soft: rgba(34,197,94,.12); }</style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
         <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
-        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-dove"></i></span><span>Gewaltfreie Kommunikation</span></div>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-dove"></i></span><span>GFK</span></div>
         <span class="mk-topbar-spacer"></span>
         <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
     </header>
@@ -23,59 +23,101 @@
             <div class="mk-hero-icon"><i class="fas fa-dove"></i></div>
             <div class="mk-kicker">Persönlichkeitsentwicklung · Rosenberg</div>
             <h1>Ehrlich reden, ohne zu verletzen</h1>
-            <p>Die Gewaltfreie Kommunikation führt über vier Schritte vom Vorwurf zur Verbindung: Beobachtung, Gefühl, Bedürfnis und Bitte. So wirst du gehört – und hörst auch besser zu.</p>
-            <div class="mk-badges"><span class="mk-badge">Beobachtung</span><span class="mk-badge">Gefühl</span><span class="mk-badge">Bedürfnis</span><span class="mk-badge">Bitte</span></div>
+            <p>Die Gewaltfreie Kommunikation führt in vier Schritten vom Vorwurf zur Verbindung: Beobachtung, Gefühl, Bedürfnis, Bitte. Jeder Schritt hat typische Fallen – dieses Werkzeug erkennt sie in deinem Text, bevor dein Gegenüber es tut.</p>
+            <div class="mk-badges"><span class="mk-badge">Beobachtung</span><span class="mk-badge">Gefühl</span><span class="mk-badge">Bedürfnis</span><span class="mk-badge">Bitte</span><span class="mk-badge">Empathie</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>Worum geht es?</h2>
-                <p class="mk-sub">Die Situation, die dich beschäftigt.</p>
-                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="situation" placeholder="z. B. Konflikt mit Kollegin über Aufgabenverteilung."></textarea></div>
+                <h2>1 · Die Situation</h2>
+                <div class="mk-field"><label for="nvc-situation">Was ist passiert?</label><textarea class="mk-textarea" id="nvc-situation" data-mk-field="situation" placeholder="Schildere es erst einmal so, wie es dir jetzt durch den Kopf geht – auch mit Vorwurf. Den sortieren wir gleich."></textarea></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="nvc-who">Mit wem?</label><input class="mk-input" id="nvc-who" data-mk-field="who" placeholder="Name oder Rolle"></div>
+                    <div class="mk-field"><label for="nvc-goal">Was willst du mit dem Gespräch?</label><select class="mk-select" id="nvc-goal" data-mk-field="goal"><option value="">–</option><option value="heard">Gehört werden</option><option value="understand">Die andere Seite verstehen</option><option value="change">Etwas konkret verändern</option><option value="repair">Die Beziehung reparieren</option></select></div>
+                </div>
+                <div id="nvc-sitcheck"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>1 · Beobachtung</h2>
-                <p class="mk-sub">Was ist konkret passiert – wie eine Kamera, ohne Bewertung oder Verallgemeinerung („immer", „nie").</p>
-                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="observation" placeholder="„In den letzten zwei Meetings hast du meine Vorschläge nicht kommentiert.""></textarea></div>
+                <h2>👁️ Beobachtung</h2>
+                <p class="mk-sub">Was würde eine Kamera aufzeichnen? Keine Deutung, keine Verallgemeinerung – nur das, was gesehen oder gehört wurde.</p>
+                <div class="mk-field"><textarea class="mk-textarea" id="nvc-observation" data-mk-field="observation" placeholder="z. B. „Du hast gestern um 19 Uhr gesagt, dass du um 18 Uhr da bist.""></textarea></div>
+                <div id="nvc-obscheck"></div>
+                <div class="nvc-ex"><div class="nvc-ex-h">Bewertung → Beobachtung</div><div class="nvc-ex-row"><s>Du bist immer zu spät.</s><span>In dieser Woche bist du dreimal nach der vereinbarten Zeit gekommen.</span></div><div class="nvc-ex-row"><s>Du hörst mir nie zu.</s><span>Während ich erzählt habe, hast du auf dein Handy geschaut.</span></div><div class="nvc-ex-row"><s>Das war respektlos.</s><span>Du hast mich unterbrochen, bevor ich den Satz beendet hatte.</span></div></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
             <div class="mk-card">
-                <h2>2 · Gefühl</h2>
-                <p class="mk-sub">Was fühlst du wirklich? (echtes Gefühl, kein verkapptes Urteil wie „ich fühle mich übergangen")</p>
-                <div class="mk-chips" id="nvc-feelings" style="margin-bottom:12px;"></div>
-                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="feeling" placeholder="„Ich bin verunsichert und frustriert.""></textarea></div>
+                <h2>🫀 Gefühl</h2>
+                <p class="mk-sub">Was fühlst du – in deinem Körper, nicht in deinem Urteil? „Ich fühle mich ignoriert" ist kein Gefühl, sondern eine Interpretation dessen, was der andere tut.</p>
+                <div id="nvc-feelings"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="nvc-feeling">In eigenen Worten</label><input class="mk-input" id="nvc-feeling" data-mk-field="feeling" placeholder="„Ich bin … / Ich fühle mich …""></div>
+                <div id="nvc-feelcheck"></div>
+                <div class="mk-field"><label>Wie stark?</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" data-mk-field="intensity" value="6"><span class="mk-range-val" data-mk-rangeval="intensity">6</span></div></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="4">
             <div class="mk-card">
-                <h2>3 · Bedürfnis</h2>
-                <p class="mk-sub">Welches Bedürfnis steckt hinter dem Gefühl? Gefühle entstehen aus (un)erfüllten Bedürfnissen.</p>
-                <div class="mk-chips" id="nvc-needs" style="margin-bottom:12px;"></div>
-                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="need" placeholder="„Mir ist Wertschätzung und Mitgestaltung wichtig.""></textarea></div>
+                <h2>💎 Bedürfnis</h2>
+                <p class="mk-sub">Gefühle sind Boten: Angenehme zeigen erfüllte, unangenehme zeigen unerfüllte Bedürfnisse. Welches steckt hinter deinem Gefühl?</p>
+                <div id="nvc-needs"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="nvc-need">In eigenen Worten</label><input class="mk-input" id="nvc-need" data-mk-field="need" placeholder="„… weil mir … wichtig ist""></div>
+                <div id="nvc-needcheck"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Und die andere Seite?</h3>
+                <p class="mk-sub">Welches Bedürfnis hat dein Gegenüber vermutlich mit seinem Verhalten erfüllt? Das ist der Kern von Empathie – und entschärft fast jeden Konflikt.</p>
+                <div id="nvc-theirneeds"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="5">
             <div class="mk-card">
-                <h2>4 · Bitte</h2>
-                <p class="mk-sub">Eine konkrete, machbare, positiv formulierte Bitte – kein Befehl.</p>
-                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="request" placeholder="„Wärst du bereit, mir nach dem nächsten Meeting kurz Feedback zu geben?""></textarea></div>
-                <div class="mk-result"><h4>🕊️ Deine GFK-Botschaft</h4><div id="nvc-out">…</div></div>
-                <button class="mk-btn mk-btn-primary" id="nvc-export" style="margin-top:14px;"><i class="fas fa-download"></i> Herunterladen</button>
+                <h2>🙏 Bitte</h2>
+                <p class="mk-sub">Konkret, positiv, jetzt erfüllbar. Und: Eine Bitte, bei der ein Nein nicht okay ist, ist eine Forderung.</p>
+                <div class="mk-field"><textarea class="mk-textarea" id="nvc-request" data-mk-field="request" placeholder="„Wärst du bereit, mir kurz Bescheid zu geben, wenn es später wird?""></textarea></div>
+                <div id="nvc-reqcheck"></div>
+                <div class="mk-section-label">Der Forderungs-Test</div>
+                <p class="mk-sub">Was passiert in dir, wenn die Antwort „Nein" ist?</p>
+                <div id="nvc-notest"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="6">
+            <div class="mk-card">
+                <h2>✉️ Deine GFK-Botschaft</h2>
+                <div id="nvc-message"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="nvc-final">Feinschliff – so sagst du es wirklich</label><textarea class="mk-textarea" id="nvc-final" data-mk-field="final" placeholder="Der generierte Text ist ein Gerüst. Mach ihn zu deiner Sprache."></textarea></div>
+                <div style="margin-top:8px"><button class="mk-btn mk-btn-outline mk-btn-sm" id="nvc-copy"><i class="fas fa-copy"></i> Kopieren</button></div>
+            </div>
+            <div class="mk-card">
+                <h3>Empathie-Wechsel</h3>
+                <p class="mk-sub">Dieselben vier Schritte aus Sicht deines Gegenübers. Wenn du das formulieren kannst, bist du bereit für das Gespräch.</p>
+                <div id="nvc-flip"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Nach dem Gespräch</h3>
+                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="after" placeholder="Wie lief es? Was hat gewirkt, wo bist du in alte Muster gerutscht?"></textarea></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="nvc-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="nvc-export"><i class="fas fa-download"></i> Herunterladen</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button></div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 6</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -90,34 +132,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        const FEELINGS=['verunsichert','frustriert','traurig','wütend','enttäuscht','ängstlich','erschöpft','einsam','angespannt','hilflos'];
-        const NEEDS=['Wertschätzung','Verlässlichkeit','Respekt','Verbindung','Autonomie','Sicherheit','Klarheit','Mitgestaltung','Ruhe','Fairness'];
-        (async function () {
-            await MethodKit.init({
-                method: 'nonviolent-communication',
-                accent: '#22c55e', accent2: '#14b8a6',
-                steps: [{icon:'🎯',label:'Situation'},{icon:'👁️',label:'Beobachtung'},{icon:'🫀',label:'Gefühl'},{icon:'💎',label:'Bedürfnis'},{icon:'🙏',label:'Bitte'}],
-                defaultState: { situation:'',observation:'',feeling:'',need:'',request:'' }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-            function chipAppend(host, arr, field){
-                document.getElementById(host).innerHTML=arr.map(x=>`<button class="mk-chip" data-x="${x}">+ ${x}</button>`).join('');
-                document.getElementById(host).querySelectorAll('[data-x]').forEach(el=>el.addEventListener('click',()=>{ const ta=document.querySelector(`[data-mk-field="${field}"]`); ta.value=(ta.value?ta.value+', ':'')+el.dataset.x; S[field]=ta.value; MethodKit.save(); renderOut(); }));
-            }
-            chipAppend('nvc-feelings',FEELINGS,'feeling');
-            chipAppend('nvc-needs',NEEDS,'need');
-            function renderOut(){
-                document.getElementById('nvc-out').textContent=[S.observation,S.feeling,S.need,S.request].some(Boolean)?
-                    `${S.observation||'…'} — Ich fühle mich ${S.feeling||'…'}, weil mir ${S.need||'…'} wichtig ist. ${S.request||''}`:'…';
-            }
-            document.querySelectorAll('[data-mk-field]').forEach(el=>el.addEventListener('input',renderOut));
-            MethodKit.onStep=function(n){ if(n===5) renderOut(); };
-            document.getElementById('nvc-export').addEventListener('click',()=>{
-                MethodKit.exportText('meine-gfk-botschaft.txt', `GEWALTFREIE KOMMUNIKATION\n=========================\n\nSituation: ${S.situation}\n\n1. Beobachtung: ${S.observation}\n2. Gefühl: ${S.feeling}\n3. Bedürfnis: ${S.need}\n4. Bitte: ${S.request}\n`);
-            });
-        })();
-    </script>
+    <script src="nonviolent-communication.js?v=20261003"></script>
 </body>
 </html>

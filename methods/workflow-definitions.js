@@ -48,17 +48,18 @@ const methodWorkflowDefinitions = {
     },
     
     'mindfulness': {
-        title: 'Achtsamkeit & Meditation',
-        steps: 4,
+        title: "Achtsamkeit",
+        steps: 5,
         stepTitles: [
-            'Achtsamkeits-Assessment',
-            'Meditations-Timer',
-            'Geführte Übungen',
-            'Alltags-Integration'
+            "Ankommen & Check-in",
+            "Atem-Anker",
+            "5-4-3-2-1 Sinne",
+            "Body-Scan",
+            "Reflexion & Verlauf"
         ],
-        description: 'Entwickle Achtsamkeit und innere Ruhe durch geführte Meditationen und Achtsamkeitsübungen.',
+        description: "Geführte Achtsamkeitssequenz: Anspannungs-Check-in, animierter Atem-Anker mit drei Rhythmen und Timer, 5-4-3-2-1-Sinnesübung, Body-Scan mit Spannungskarte, Dankbarkeit, Haltung – und ein Verlauf mit Vorher/Nachher über alle Übungen.",
         logic: 'practice-based', // Praxis-basiert
-        features: ['Assessment', 'Timer', 'Geführte Übungen', 'Integration']
+        features: ["Atem-Animation", "3 Atemrhythmen", "5-4-3-2-1", "Body-Scan", "Vorher/Nachher-Verlauf"]
     },
     
     'ikigai': {
@@ -170,18 +171,18 @@ const methodWorkflowDefinitions = {
     },
     
     'time-management': {
-        title: 'Zeitmanagement',
+        title: "Zeitmanagement (Eisenhower)",
         steps: 5,
         stepTitles: [
-            'Zeit-Analyse',
-            'Priorisierung',
-            'Zeitblocking',
-            'Produktivitäts-Tools',
-            'Zeit-Optimierung'
+            "Aufgaben sammeln & bewerten",
+            "Eisenhower-Matrix",
+            "Zeitbudget & Big Rocks",
+            "Wochenplan",
+            "Wochen-Review"
         ],
-        description: 'Lerne effektive Zeitmanagement-Techniken und optimiere deine Produktivität.',
+        description: "Eisenhower-Matrix mit Zeitbudget: Aufgaben nach Wichtigkeit, Dringlichkeit und Dauer bewerten, Quadranten-Verteilung analysieren, Wochenfokus (Big Rocks) setzen, auf Tage verteilen, delegieren, streichen und wöchentlich auswerten.",
         logic: 'system-based', // System-basiert
-        features: ['Analyse', 'Priorisierung', 'Zeitblocking', 'Optimierung']
+        features: ["Matrix mit Zeitanteilen", "Zeitbudget-Check", "Big Rocks", "Wochenplan", "Review & Trend"]
     },
     
     'nlp-dilts': {
@@ -230,17 +231,19 @@ const methodWorkflowDefinitions = {
     },
     
     'nonviolent-communication': {
-        title: 'Gewaltfreie Kommunikation',
-        steps: 4,
+        title: "Gewaltfreie Kommunikation",
+        steps: 6,
         stepTitles: [
-            'Beobachtung',
-            'Gefühl',
-            'Bedürfnis',
-            'Bitte'
+            "Situation",
+            "Beobachtung",
+            "Gefühl",
+            "Bedürfnis",
+            "Bitte",
+            "Botschaft & Empathie-Wechsel"
         ],
-        description: 'Lerne gewaltfreie Kommunikation nach Marshall Rosenberg.',
+        description: "GFK nach Rosenberg mit Sprach-Check in jedem Schritt: Bewertungen in der Beobachtung, Pseudo-Gefühle, Strategien statt Bedürfnisse, Forderungen statt Bitten. Mit Gefühls- und Bedürfnis-Listen, Forderungs-Test, generierter Botschaft und Empathie-Wechsel.",
         logic: 'process-based', // Prozess-basiert
-        features: ['4 Schritte', 'Empathie', 'Konfliktlösung', 'Verständnis']
+        features: ["Bewertungs-Check", "Pseudo-Gefühl-Check", "Bedürfnis-Vorschläge", "Forderungs-Test", "Empathie-Wechsel"]
     },
     
     'five-pillars': {
@@ -372,17 +375,18 @@ const methodWorkflowDefinitions = {
     },
     
     'circular-interview': {
-        title: 'Zirkuläres Interview',
-        steps: 4,
+        title: "Zirkuläres Fragen",
+        steps: 5,
         stepTitles: [
-            'System definieren',
-            'Zirkuläre Fragen stellen',
-            'Muster erkennen',
-            'Lösungen entwickeln'
+            "Situation & Beteiligte",
+            "Zirkuläre Fragen generieren",
+            "Perspektiven-Rad",
+            "Muster & Problemschleife",
+            "Erkenntnis"
         ],
-        description: 'Zirkuläre Fragen für systemische Beratung.',
+        description: "Systemisches Fragen: Beteiligte erfassen, Fragen aus sechs Fragetypen für konkrete Personen-Paare generieren und aus deren Sicht beantworten, Perspektiven-Rad, Muster-Erkennung mit Problemschleife und Festgefahrenheits-Vergleich.",
         logic: 'circular', // Zirkulär
-        features: ['Zirkuläre Fragen', 'Systemisch', 'Muster', 'Lösungen']
+        features: ["6 Fragetypen", "Fragen-Generator", "Perspektiven-Rad", "Muster-Erkennung", "Problemschleife"]
     },
     
     'target-coaching': {

@@ -4,16 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Achtsamkeit | Manuel Weiss</title>
-    <meta name="description" content="Geführte Achtsamkeit: Atem-Anker, 5-4-3-2-1-Sinnesübung und Body-Scan – plus eine kurze Tagesreflexion für mehr Präsenz.">
+    <meta name="description" content="Geführte Achtsamkeitsübung: Check-in, Atem-Anker mit wählbarem Rhythmus und Timer, 5-4-3-2-1-Sinnesübung, Body-Scan mit Spannungskarte, Reflexion und Verlauf über die Zeit.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="mindfulness.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { --mk-accent: #8b5cf6; --mk-accent-2: #06b6d4; --mk-accent-soft: rgba(139,92,246,.12); }
-        .mf-circle{width:190px;height:190px;border-radius:50%;margin:16px auto;display:flex;align-items:center;justify-content:center;background:var(--mk-accent-soft);border:2px solid var(--mk-accent);transition:transform 4s ease-in-out;font-weight:700;color:var(--mk-accent);font-size:17px}
-        .mf-sense{border:1px solid var(--mk-line);border-radius:var(--mk-radius-sm);padding:12px 14px;margin-bottom:10px;background:var(--mk-surface)}
-        .mf-sense label{display:block;font-weight:600;margin-bottom:6px;font-size:14px}
-    </style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
@@ -28,46 +23,78 @@
             <div class="mk-hero-icon"><i class="fas fa-leaf"></i></div>
             <div class="mk-kicker">Persönlichkeitsentwicklung · Wohlbefinden</div>
             <h1>Ankommen im Jetzt</h1>
-            <p>Achtsamkeit ist die Kunst, präsent zu sein – ohne zu bewerten. Drei kurze geführte Übungen bringen dich zurück in den Moment: der Atem-Anker, die 5-4-3-2-1-Sinnesübung und eine kurze Reflexion.</p>
-            <div class="mk-badges"><span class="mk-badge">Atem-Anker</span><span class="mk-badge">5-4-3-2-1</span><span class="mk-badge">Reflexion</span></div>
+            <p>Achtsamkeit ist die Kunst, präsent zu sein – ohne zu bewerten. Diese geführte Sequenz dauert fünf bis zehn Minuten: ankommen, atmen, die Sinne öffnen, den Körper spüren, kurz reflektieren. Und sie merkt sich, was sich verändert hat.</p>
+            <div class="mk-badges"><span class="mk-badge">Atem-Anker</span><span class="mk-badge">5-4-3-2-1</span><span class="mk-badge">Body-Scan</span><span class="mk-badge">Verlauf</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>Atem-Anker</h2>
-                <p class="mk-sub">Eine Minute bewusst atmen. Lass den Atem fließen und folge dem Kreis – nichts tun, nur beobachten.</p>
-                <div class="mf-circle" id="mf-circle">Bereit?</div>
-                <div style="text-align:center"><button class="mk-btn mk-btn-primary" id="mf-breath"><i class="fas fa-play"></i> Atmen starten</button></div>
+                <h2>1 · Ankommen</h2>
+                <p class="mk-sub">Bevor du beginnst: Wie geht es dir gerade – ehrlich, ohne es ändern zu wollen?</p>
+                <div class="mk-field"><label>Wie angespannt bist du gerade?</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" id="mf-before"><span class="mk-range-val" id="mf-before-v">5</span></div><span class="hint">1 = tiefenentspannt · 10 = kurz vorm Platzen</span></div>
+                <div class="mk-section-label">Was ist gerade da?</div>
+                <div id="mf-mood"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="mf-park">Was beschäftigt dich? Park es hier – es wartet, bis du fertig bist.</label><textarea class="mk-textarea" id="mf-park" data-mk-field="park" placeholder="Gedanken, To-dos, Sorgen …"></textarea></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>5-4-3-2-1 · Sinne erden</h2>
-                <p class="mk-sub">Diese Übung holt dich aus dem Gedankenkarussell zurück in die Wahrnehmung.</p>
-                <div class="mf-sense"><label>👀 5 Dinge, die du SIEHST</label><input class="mk-input" data-mk-field="see"></div>
-                <div class="mf-sense"><label>✋ 4 Dinge, die du FÜHLST</label><input class="mk-input" data-mk-field="feel"></div>
-                <div class="mf-sense"><label>👂 3 Dinge, die du HÖRST</label><input class="mk-input" data-mk-field="hear"></div>
-                <div class="mf-sense"><label>👃 2 Dinge, die du RIECHST</label><input class="mk-input" data-mk-field="smell"></div>
-                <div class="mf-sense"><label>👅 1 Sache, die du SCHMECKST</label><input class="mk-input" data-mk-field="taste"></div>
+                <h2>🫁 Der Atem-Anker</h2>
+                <p class="mk-sub">Folge dem Kreis. Wenn Gedanken kommen, nimm sie wahr – und kehr zum Atem zurück. Jede Rückkehr ist die Übung, nicht die Störung.</p>
+                <div id="mf-pattern"></div>
+                <div class="mf-breath-wrap"><div class="mf-circle" id="mf-circle"><span id="mf-circle-t">Bereit</span><small id="mf-circle-c"></small></div></div>
+                <div class="mf-breath-ctl"><button class="mk-btn mk-btn-primary" id="mf-start"><i class="fas fa-play"></i> Starten</button><button class="mk-btn mk-btn-outline" id="mf-stop" disabled><i class="fas fa-stop"></i> Beenden</button><span class="mf-timer" id="mf-timer">0:00</span></div>
+                <div id="mf-breath-note"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
             <div class="mk-card">
-                <h2>Kurze Reflexion</h2>
-                <div class="mk-field"><label>Wie fühlst du dich jetzt – verglichen mit vorhin?</label><textarea class="mk-textarea" data-mk-field="reflect"></textarea></div>
-                <div class="mk-field"><label>Wofür bist du in diesem Moment dankbar?</label><textarea class="mk-textarea" data-mk-field="gratitude"></textarea></div>
-                <div class="mk-field"><label>Wann baust du heute noch einen achtsamen Moment ein?</label><input class="mk-input" data-mk-field="intention"></div>
-                <button class="mk-btn mk-btn-primary" id="mf-export"><i class="fas fa-download"></i> Reflexion sichern</button>
+                <h2>🖐️ 5-4-3-2-1 – die Sinne öffnen</h2>
+                <p class="mk-sub">Die schnellste Erdungsübung, die es gibt. Nenne, was du gerade wirklich wahrnimmst – nicht, was du weisst, sondern was du bemerkst.</p>
+                <div id="mf-senses"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>🧘 Body-Scan</h2>
+                <p class="mk-sub">Wandere mit der Aufmerksamkeit durch den Körper. Was spürst du wo? Keine Bewertung – nur Bemerken.</p>
+                <div id="mf-body"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>🌿 Reflexion</h2>
+                <div class="mk-field"><label>Wie angespannt bist du jetzt?</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" id="mf-after"><span class="mk-range-val" id="mf-after-v">4</span></div></div>
+                <div id="mf-delta"></div>
+                <div class="mk-field"><label for="mf-reflect">Was hast du bemerkt – im Körper, in den Gedanken?</label><textarea class="mk-textarea" id="mf-reflect" data-mk-field="reflect" placeholder="…"></textarea></div>
+                <div class="mk-section-label">Drei Dinge, für die du gerade dankbar bist</div>
+                <div id="mf-grat"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="mf-intention">Mit welcher Haltung gehst du in die nächste Stunde?</label><input class="mk-input" id="mf-intention" data-mk-field="intention" placeholder="z. B. Eines nach dem anderen · Erst atmen, dann antworten"></div>
+                <div style="margin-top:12px"><button class="mk-btn mk-btn-primary" id="mf-save"><i class="fas fa-check"></i> Übung abschliessen</button></div>
+            </div>
+            <div class="mk-card">
+                <h3>Dein Verlauf</h3>
+                <div id="mf-log"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="mf-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="mf-export"><i class="fas fa-download"></i> Herunterladen</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button></div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -82,34 +109,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        (async function () {
-            await MethodKit.init({
-                method: 'mindfulness',
-                accent: '#8b5cf6', accent2: '#06b6d4',
-                steps: [{icon:'🫁',label:'Atem'},{icon:'🖐️',label:'Sinne'},{icon:'🌿',label:'Reflexion'}],
-                defaultState: { see:'',feel:'',hear:'',smell:'',taste:'',reflect:'',gratitude:'',intention:'' }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-
-            let breathing=false;
-            const circle=document.getElementById('mf-circle');
-            document.getElementById('mf-breath').addEventListener('click',function(){
-                if(breathing)return; breathing=true; this.disabled=true;
-                let cycles=4;
-                function cycle(){
-                    if(cycles<=0){ circle.textContent='Angekommen 🌿'; circle.style.transform='scale(1)'; breathing=false; document.getElementById('mf-breath').disabled=false; return; }
-                    circle.textContent='Einatmen…'; circle.style.transition='transform 4s ease-in-out'; circle.style.transform='scale(1.3)';
-                    setTimeout(()=>{ circle.textContent='Ausatmen…'; circle.style.transform='scale(0.8)'; setTimeout(()=>{ cycles--; cycle(); },4000); },4000);
-                }
-                cycle();
-            });
-
-            document.getElementById('mf-export').addEventListener('click',()=>{
-                MethodKit.exportText('achtsamkeit.txt', `ACHTSAMKEIT\n===========\n\n5-4-3-2-1:\nSehen: ${S.see}\nFühlen: ${S.feel}\nHören: ${S.hear}\nRiechen: ${S.smell}\nSchmecken: ${S.taste}\n\nReflexion: ${S.reflect}\nDankbarkeit: ${S.gratitude}\nVorsatz: ${S.intention}\n`);
-            });
-        })();
-    </script>
+    <script src="mindfulness.js?v=20261003"></script>
 </body>
 </html>
