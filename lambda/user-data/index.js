@@ -753,108 +753,145 @@ async function handlePhotos(userId, method, event) {
     return { statusCode: 405, headers: CORS_HEADERS, body: JSON.stringify({ error: 'Method not allowed' }) };
 }
 
+// ============================================================================
+// WORKFLOWS – ein DynamoDB-Item pro Workflow (statt alles im Profil-Item)
+// Tabelle: mawps-user-data  pk = USER#<userId>  sk = WF#<workflowName>
+// Grund: Das Profil-Item lief gegen das 400-KB-Limit von DynamoDB, danach
+// schlugen ALLE Speichervorgänge der Methoden mit 500 fehl.
+// ============================================================================
+const WF_TABLE = process.env.WORKFLOW_TABLE || LEGACY_TABLE;
+const wfKey = (userId, name) => marshall({ pk: `USER#${userId}`, sk: `WF#${name}` });
+const emptyWorkflow = () => ({ steps: {}, results: null, progress: { currentStep: 0 } });
+
+async function loadWorkflowItem(userId, name) {
+    const r = await dynamoDB.send(new GetItemCommand({ TableName: WF_TABLE, Key: wfKey(userId, name) }));
+    if (!r.Item) return null;
+    const { pk, sk, ...wf } = unmarshall(r.Item);
+    return wf;
+}
+
+async function saveWorkflowItem(userId, name, wf) {
+    const item = { pk: `USER#${userId}`, sk: `WF#${name}`, userId, workflowName: name, ...wf, updatedAt: new Date().toISOString() };
+    await dynamoDB.send(new PutItemCommand({ TableName: WF_TABLE, Item: marshall(item, { removeUndefinedValues: true }) }));
+    return item;
+}
+
+async function listWorkflowItems(userId) {
+    const { QueryCommand } = require('@aws-sdk/client-dynamodb');
+    const out = {};
+    let ExclusiveStartKey;
+    do {
+        const r = await dynamoDB.send(new QueryCommand({
+            TableName: WF_TABLE,
+            KeyConditionExpression: 'pk = :pk AND begins_with(sk, :sk)',
+            ExpressionAttributeValues: marshall({ ':pk': `USER#${userId}`, ':sk': 'WF#' }),
+            ExclusiveStartKey
+        }));
+        (r.Items || []).forEach(i => { const { pk, sk, ...wf } = unmarshall(i); out[sk.slice(3)] = wf; });
+        ExclusiveStartKey = r.LastEvaluatedKey;
+    } while (ExclusiveStartKey);
+    return out;
+}
+
+/**
+ * Einmalige Migration: eingebettete `workflows` aus dem Profil-Item in
+ * eigene Items verschieben und das Profil-Item verschlanken.
+ * Läuft lazy beim ersten Workflow-Zugriff; Fehler sind nicht fatal.
+ */
+async function migrateEmbeddedWorkflows(userId) {
+    try {
+        const r = await dynamoDB.send(new GetItemCommand({ TableName: TABLE_NAME, Key: marshall({ userId }) }));
+        if (!r.Item) return {};
+        const data = unmarshall(r.Item);
+        const embedded = data.workflows;
+        if (!embedded || typeof embedded !== 'object' || !Object.keys(embedded).length) return {};
+        console.log('🔁 Migriere eingebettete Workflows:', Object.keys(embedded));
+        for (const [name, wf] of Object.entries(embedded)) {
+            const existing = await loadWorkflowItem(userId, name);
+            if (!existing) await saveWorkflowItem(userId, name, { ...emptyWorkflow(), ...wf });
+        }
+        const { workflows, ...slim } = data;
+        await dynamoDB.send(new PutItemCommand({ TableName: TABLE_NAME, Item: marshall({ ...slim, updatedAt: new Date().toISOString() }, { removeUndefinedValues: true }) }));
+        console.log('✅ Profil-Item verschlankt (workflows ausgelagert)');
+        return embedded;
+    } catch (err) {
+        console.warn('⚠️ Workflow-Migration fehlgeschlagen (nicht fatal):', err.message);
+        return {};
+    }
+}
+
 async function handleWorkflows(userId, method, event, path) {
-    const { data: existingData } = await loadUserDataWithFallback(userId);
-    const workflows = existingData.workflows || {};
-    
-    // Parse workflow path
-    const workflowsIndex = path.indexOf('/workflows/');
-    const workflowPath = workflowsIndex >= 0 ? path.substring(workflowsIndex + 11) : '';
+    const workflowsIndex = path.indexOf('/workflows');
+    const workflowPath = workflowsIndex >= 0 ? path.substring(workflowsIndex + 10) : '';
     const pathParts = workflowPath.split('/').filter(Boolean);
     const workflowName = pathParts[0];
     const action = pathParts[1];
     const stepName = pathParts[2];
-    
+    const now = new Date().toISOString();
+
+    // Legacy-Daten im Profil einmalig auslagern
+    const migrated = await migrateEmbeddedWorkflows(userId);
+
     if (!workflowName) {
         if (method === 'GET') {
-            return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify(workflows) };
+            const all = { ...migrated, ...(await listWorkflowItems(userId)) };
+            return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify(all) };
         }
+        return { statusCode: 405, headers: CORS_HEADERS, body: JSON.stringify({ error: 'Method not allowed' }) };
     }
-    
-    if (!workflows[workflowName]) {
-        workflows[workflowName] = { steps: {}, results: null, progress: { currentStep: 0 } };
-    }
-    
+
+    const wf = (await loadWorkflowItem(userId, workflowName)) || migrated[workflowName] || emptyWorkflow();
+    wf.steps = wf.steps || {};
+    wf.progress = wf.progress || { currentStep: 0 };
+
+    const persist = async (payload) => {
+        await saveWorkflowItem(userId, workflowName, wf);
+        return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify({ success: true, data: payload, updatedAt: now }) };
+    };
+
     if (action === 'steps') {
         if (method === 'GET') {
-            const stepData = stepName ? workflows[workflowName].steps?.[stepName] : workflows[workflowName].steps;
+            const stepData = stepName ? wf.steps[stepName] : wf.steps;
             return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify(stepData || {}) };
         }
-        
         if (method === 'POST' || method === 'PUT') {
             const body = JSON.parse(event.body || '{}');
-            const now = new Date().toISOString();
-            
-            if (stepName) {
-                workflows[workflowName].steps[stepName] = { ...body, updatedAt: now };
-            } else {
-                workflows[workflowName].steps = { ...workflows[workflowName].steps, ...body };
-            }
-            
-            const updatedData = { ...existingData, userId, workflows, updatedAt: now };
-            
-            await dynamoDB.send(new PutItemCommand({
-                TableName: TABLE_NAME,
-                Item: marshall(updatedData, { removeUndefinedValues: true })
-            }));
-            
-            return {
-                statusCode: 200,
-                headers: CORS_HEADERS,
-                body: JSON.stringify({ success: true, data: workflows[workflowName].steps[stepName] })
-            };
+            if (stepName) wf.steps[stepName] = { ...body, updatedAt: now };
+            else wf.steps = { ...wf.steps, ...body };
+            return persist(stepName ? wf.steps[stepName] : wf.steps);
         }
     }
-    
+
     if (action === 'results') {
         if (method === 'GET') {
-            return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify(workflows[workflowName].results || null) };
+            return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify(wf.results || null) };
         }
-        
         if (method === 'POST' || method === 'PUT') {
             const body = JSON.parse(event.body || '{}');
-            const now = new Date().toISOString();
-            
-            workflows[workflowName].results = { ...body, updatedAt: now };
-            const updatedData = { ...existingData, userId, workflows, updatedAt: now };
-            
-            await dynamoDB.send(new PutItemCommand({
-                TableName: TABLE_NAME,
-                Item: marshall(updatedData, { removeUndefinedValues: true })
-            }));
-            
-            return {
-                statusCode: 200,
-                headers: CORS_HEADERS,
-                body: JSON.stringify({ success: true, data: workflows[workflowName].results })
-            };
+            wf.results = { ...body, updatedAt: now };
+            return persist(wf.results);
+        }
+        if (method === 'DELETE') {
+            wf.results = null;
+            return persist(null);
         }
     }
-    
+
     if (action === 'progress') {
         if (method === 'GET') {
-            return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify(workflows[workflowName].progress || { currentStep: 0 }) };
+            return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify(wf.progress) };
         }
-        
         if (method === 'POST' || method === 'PUT') {
             const body = JSON.parse(event.body || '{}');
-            const now = new Date().toISOString();
-            
-            workflows[workflowName].progress = { ...workflows[workflowName].progress, ...body, updatedAt: now };
-            const updatedData = { ...existingData, userId, workflows, updatedAt: now };
-            
-            await dynamoDB.send(new PutItemCommand({
-                TableName: TABLE_NAME,
-                Item: marshall(updatedData, { removeUndefinedValues: true })
-            }));
-            
-            return {
-                statusCode: 200,
-                headers: CORS_HEADERS,
-                body: JSON.stringify({ success: true, data: workflows[workflowName].progress })
-            };
+            wf.progress = { ...wf.progress, ...body, updatedAt: now };
+            return persist(wf.progress);
         }
     }
-    
+
+    if (!action && method === 'GET') {
+        return { statusCode: 200, headers: CORS_HEADERS, body: JSON.stringify(wf) };
+    }
+
     return { statusCode: 404, headers: CORS_HEADERS, body: JSON.stringify({ error: 'Workflow action not found' }) };
 }
+

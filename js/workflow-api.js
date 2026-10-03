@@ -28,33 +28,39 @@ class WorkflowAPI {
      * Initialisierung - Warte auf Auth
      */
     async init() {
-        if (this.isInitialized) return;
-        
-        // Warte auf Auth-System
-        if (window.realUserAuth && window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn()) {
-            this.userId = window.realUserAuth.getCurrentUser()?.id;
-            this.isInitialized = true;
-            console.log('✅ Workflow API initialized for user:', this.userId);
-        } else {
-            // Retry nach kurzer Zeit
-            setTimeout(() => this.init(), 500);
-        }
+        // userId wird bei jedem Request frisch aus der Session gelesen – kein Polling nötig.
+        const u = this._currentUser();
+        if (u && u.id) { this.userId = u.id; this.isInitialized = true; }
+    }
+
+    _currentUser() {
+        try {
+            if (window.awsAuth && window.awsAuth.isLoggedIn && window.awsAuth.isLoggedIn()) return window.awsAuth.getCurrentUser();
+            if (window.realUserAuth && window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn()) return window.realUserAuth.getCurrentUser();
+        } catch (e) {}
+        return null;
     }
 
     /**
-     * Hole Auth-Token für API-Calls
+     * Hole Auth-Token für API-Calls.
+     * Akzeptiert sowohl eine aktive Auth-Instanz als auch eine gültige, noch nicht
+     * abgelaufene Session im localStorage (die Auth-Systeme initialisieren asynchron).
      */
     async getAuthToken() {
-        if (!window.realUserAuth || !window.realUserAuth.isLoggedIn || !window.realUserAuth.isLoggedIn()) {
-            throw new Error('User not authenticated');
-        }
-
         const sessionStr = localStorage.getItem('aws_auth_session');
-        if (!sessionStr) {
-            throw new Error('No valid session found');
-        }
+        if (!sessionStr) throw new Error('User not authenticated');
+        let session;
+        try { session = JSON.parse(sessionStr); } catch (e) { throw new Error('Invalid session'); }
+        if (!session.idToken) throw new Error('No valid session found');
 
-        const session = JSON.parse(sessionStr);
+        const authSaysYes = !!this._currentUser();
+        if (!authSaysYes) {
+            // Auth-System evtl. noch nicht fertig: Token selbst auf Ablauf prüfen
+            let exp = session.expiresAt ? new Date(session.expiresAt).getTime() : 0;
+            if (!exp) { try { exp = JSON.parse(atob(session.idToken.split('.')[1])).exp * 1000; } catch (e) {} }
+            if (!exp || exp <= Date.now() + 10000) throw new Error('Session expired');
+        }
+        if (session.id) this.userId = session.id;
         return session.idToken;
     }
 
@@ -80,7 +86,8 @@ class WorkflowAPI {
             headers['Authorization'] = `Bearer ${token}`;
         } catch (error) {
             // User nicht angemeldet - speichere lokal als Fallback
-            console.warn('⚠️ User not authenticated, using local storage fallback');
+            this.lastRequestSource = 'local';
+            this.lastError = null;
             return this.localStorageFallback(endpoint, method, body);
         }
 
@@ -97,16 +104,26 @@ class WorkflowAPI {
             const response = await fetch(url, options);
             
             if (!response.ok) {
-                throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                let detail = '';
+                try { detail = (await response.json()).message || ''; } catch (e) {}
+                throw new Error(`API Error: ${response.status}${detail ? ' – ' + detail : ''}`);
             }
 
+            this.lastRequestSource = 'api';
+            this.lastError = null;
             return await response.json();
         } catch (error) {
             console.error('❌ API Request failed:', error);
-            // Fallback zu localStorage
+            // Fallback zu localStorage – Aufrufer können über lastRequestSource/lastError erkennen,
+            // dass NICHT in der Cloud gespeichert wurde.
+            this.lastRequestSource = 'local';
+            this.lastError = error;
             return this.localStorageFallback(endpoint, method, body);
         }
     }
+
+    /** true, wenn der letzte Request wirklich die API erreicht hat */
+    lastWasCloud() { return this.lastRequestSource === 'api'; }
 
     /**
      * LocalStorage Fallback für nicht-angemeldete User

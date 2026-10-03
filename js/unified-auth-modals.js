@@ -451,7 +451,8 @@ class UnifiedAuthModals {
                 box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
             }
 
-            .form-group input:invalid {
+            /* Nur nach Nutzer-Interaktion rot markieren – nicht schon beim Öffnen */
+            .form-group input:user-invalid {
                 border-color: #ef4444;
             }
 

@@ -33,6 +33,7 @@
             this._bindKeyboard();
             this._bindAutosize();
             this._bindReset();
+            this._bindAuth();
             this.goTo(this.state.__step || 1, true);
             this._lastSynced = !!this._wasSynced;
             this._updateSyncBadge(this._wasSynced);
@@ -56,32 +57,87 @@
 
         /* ---------- Persistence ---------- */
         _key() { return 'mk_' + this.method; },
+        _session() {
+            try { const s = JSON.parse(localStorage.getItem('aws_auth_session')); return s && s.idToken ? s : null; } catch (e) { return null; }
+        },
+        _sessionValid() {
+            const s = this._session(); if (!s) return false;
+            let exp = s.expiresAt ? new Date(s.expiresAt).getTime() : 0;
+            if (!exp) { try { exp = JSON.parse(atob(s.idToken.split('.')[1])).exp * 1000; } catch (e) {} }
+            return !exp || exp > Date.now() || !!s.refreshToken; // abgelaufen + Refresh-Token → Auth-System refresht
+        },
         isLoggedIn() {
             try {
-                if (global.awsAuth && global.awsAuth.isLoggedIn) return !!global.awsAuth.isLoggedIn();
-                if (global.realUserAuth && global.realUserAuth.isLoggedIn) return !!global.realUserAuth.isLoggedIn();
+                if (global.awsAuth && global.awsAuth.isLoggedIn && global.awsAuth.isLoggedIn()) return true;
+                if (global.realUserAuth && global.realUserAuth.isLoggedIn && global.realUserAuth.isLoggedIn()) return true;
             } catch (e) {}
             return false;
+        },
+        currentUser() {
+            try {
+                if (global.realUserAuth && global.realUserAuth.isLoggedIn && global.realUserAuth.isLoggedIn()) return global.realUserAuth.getCurrentUser();
+                if (global.awsAuth && global.awsAuth.isLoggedIn && global.awsAuth.isLoggedIn()) return global.awsAuth.getCurrentUser();
+            } catch (e) {}
+            const s = this._session(); if (!s) return null;
+            try { const p = JSON.parse(atob(s.idToken.split('.')[1])); return { id: p.sub, email: p.email, firstName: p.given_name || '' }; } catch (e) { return null; }
+        },
+        _api() { return global.workflowAPI && global.workflowAPI.getWorkflowResults ? global.workflowAPI : null; },
+        _cloudOk() { const a = this._api(); return !!(a && (a.lastWasCloud ? a.lastWasCloud() : this.isLoggedIn())); },
+        /* State in-place ersetzen, damit Referenzen der Methoden (let S = MethodKit.state) gültig bleiben */
+        _replaceState(obj) {
+            Object.keys(this.state).forEach(k => { delete this.state[k]; });
+            Object.assign(this.state, obj);
+        },
+        _isDefault(st) {
+            const d = this._defaultState || {};
+            return Object.keys(st).every(k => k.startsWith('__') || JSON.stringify(st[k]) === JSON.stringify(d[k]));
+        },
+        /* Wartet kurz, bis das Auth-System eine vorhandene Session wiederhergestellt hat (max. ~2 s) */
+        async _waitForAuth(maxMs) {
+            if (!this._session()) return;
+            const t0 = Date.now();
+            while (Date.now() - t0 < (maxMs || 2000)) {
+                if (this.isLoggedIn()) return;
+                await new Promise(r => setTimeout(r, 80));
+            }
         },
         async _load() {
             try {
                 const local = JSON.parse(localStorage.getItem(this._key()));
-                if (local && typeof local === 'object') this.state = Object.assign({}, this.state, local);
+                if (local && typeof local === 'object') Object.assign(this.state, local);
             } catch (e) {}
+            if (!this._sessionValid()) return;            // nicht angemeldet → nur lokal
+            await this._waitForAuth(2000);
+            await this._pullCloud(true);
+        },
+        /* Cloud-Stand holen und mit lokalem Stand zusammenführen */
+        async _pullCloud(initial) {
+            const api = this._api(); if (!api) return false;
             try {
-                if (global.workflowAPI && global.workflowAPI.getWorkflowResults) {
-                    const res = await global.workflowAPI.getWorkflowResults(this.method);
-                    const remote = res && (res.results || res.state || res);
-                    if (remote && typeof remote === 'object' && Object.keys(remote).length) {
-                        this.state = Object.assign({}, this.state, remote);
-                        localStorage.setItem(this._key(), JSON.stringify(this.state));
-                        this._wasSynced = this.isLoggedIn();
+                const res = await api.getWorkflowResults(this.method);
+                if (!this._cloudOk()) { this._cloudError = api.lastError || null; return false; }
+                this._cloudError = null;
+                const remote = res && (res.results || res.state || null);
+                const remoteAt = remote && (remote.__updated || Date.parse(res.updatedAt || 0) || 0);
+                const localAt = this.state.__updated || 0;
+                if (remote && typeof remote === 'object' && Object.keys(remote).some(k => !k.startsWith('__'))) {
+                    const localEmpty = this._isDefault(this.state);
+                    if (localEmpty || remoteAt >= localAt) {
+                        this._replaceState(Object.assign({}, JSON.parse(JSON.stringify(this._defaultState)), remote));
+                        try { localStorage.setItem(this._key(), JSON.stringify(this.state)); } catch (e) {}
+                    } else if (!initial) {
+                        this._cloudSave(); // lokal ist neuer → hochladen
                     }
+                } else if (!this._isDefault(this.state)) {
+                    this._cloudSave(); // Cloud leer, lokal vorhanden → hochladen
                 }
-            } catch (e) { console.warn('[MethodKit] Cloud-Load fehlgeschlagen:', e); }
+                this._wasSynced = true;
+                return true;
+            } catch (e) { console.warn('[MethodKit] Cloud-Load fehlgeschlagen:', e); this._cloudError = e; return false; }
         },
         save(opts) {
             opts = opts || {};
+            this.state.__updated = Date.now();
             try { localStorage.setItem(this._key(), JSON.stringify(this.state)); } catch (e) {}
             if (this._onChange) { try { this._onChange(this.state); } catch (e) {} }
             this._flashSaved();
@@ -90,12 +146,14 @@
         },
         async _cloudSave() {
             let synced = false;
-            try {
-                if (global.workflowAPI && global.workflowAPI.saveWorkflowResults) {
-                    await global.workflowAPI.saveWorkflowResults(this.method, this.state);
-                    synced = this.isLoggedIn();
-                }
-            } catch (e) { console.warn('[MethodKit] Cloud-Save fehlgeschlagen:', e); }
+            const api = this._api();
+            if (api && this._sessionValid()) {
+                try {
+                    await api.saveWorkflowResults(this.method, this.state);
+                    synced = this._cloudOk();
+                    this._cloudError = synced ? null : (api.lastError || new Error('Cloud nicht erreichbar'));
+                } catch (e) { console.warn('[MethodKit] Cloud-Save fehlgeschlagen:', e); this._cloudError = e; }
+            }
             this._lastSynced = synced;
             if (!this._flashing) this._updateSyncBadge(synced);
         },
@@ -118,24 +176,99 @@
             const b = document.getElementById('mk-sync');
             if (!b) return;
             const icon = b.querySelector('i'), txt = b.querySelector('span');
+            const loggedIn = this.isLoggedIn() || this._sessionValid();
+            b.classList.remove('is-cloud', 'is-local', 'is-error', 'is-guest');
             if (synced) {
+                b.classList.add('is-cloud');
                 if (icon) icon.className = 'fas fa-cloud';
-                if (txt) txt.textContent = 'Geräteübergreifend gespeichert';
+                if (txt) txt.textContent = 'Synchronisiert';
+                const u = this.currentUser();
+                b.title = u && u.email ? `Angemeldet als ${u.email} – geräteübergreifend gespeichert` : 'Geräteübergreifend gespeichert';
+            } else if (loggedIn && this._cloudError) {
+                b.classList.add('is-error');
+                if (icon) icon.className = 'fas fa-cloud-arrow-up';
+                if (txt) txt.textContent = 'Lokal · Cloud-Fehler';
+                b.title = 'Speichern in der Cloud fehlgeschlagen – Daten sind lokal gesichert. ' + (this._cloudError.message || '');
+            } else if (loggedIn) {
+                b.classList.add('is-local');
+                if (icon) icon.className = 'fas fa-cloud';
+                if (txt) txt.textContent = 'Angemeldet';
+                b.title = 'Angemeldet – Änderungen werden geräteübergreifend gespeichert';
             } else {
-                if (icon) icon.className = 'fas fa-laptop';
-                if (txt) txt.textContent = 'Lokal gespeichert';
+                b.classList.add('is-guest');
+                if (icon) icon.className = 'fas fa-right-to-bracket';
+                if (txt) txt.textContent = 'Anmelden';
+                b.title = 'Nur lokal auf diesem Gerät gespeichert – anmelden, um geräteübergreifend zu speichern';
             }
         },
+
+        /* ---------- Login / Konto (Badge in der Topbar) ---------- */
+        _bindAuth() {
+            const b = document.getElementById('mk-sync');
+            if (b) {
+                b.setAttribute('role', 'button'); b.tabIndex = 0;
+                const act = (ev) => { ev.preventDefault(); if (this.isLoggedIn() || this._sessionValid()) this._toggleAccountMenu(); else this.openLogin(); };
+                b.addEventListener('click', act);
+                b.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') act(ev); });
+            }
+            const onLogin = () => { setTimeout(async () => { this._closeAccountMenu(); const ok = await this._pullCloud(false); if (!ok) await this._cloudSave(); this._lastSynced = this._cloudOk(); this._updateSyncBadge(this._lastSynced); if (typeof this.onStep === 'function') { try { this.onStep(this.step); } catch (e) {} } this.toast('Angemeldet – Fortschritt wird synchronisiert', 'success'); }, 350); };
+            const onLogout = () => { this._closeAccountMenu(); this._lastSynced = false; this._cloudError = null; this._updateSyncBadge(false); };
+            document.addEventListener('userLogin', onLogin);
+            window.addEventListener('userLoggedIn', onLogin);
+            document.addEventListener('userLogout', onLogout);
+            document.addEventListener('authStateChange', ev => { if (ev.detail && ev.detail.isAuthenticated === false) onLogout(); });
+            window.addEventListener('storage', ev => { if (ev.key === 'aws_auth_session') { if (ev.newValue) onLogin(); else onLogout(); } });
+            document.addEventListener('click', ev => { const m = document.getElementById('mk-account'); if (m && !m.contains(ev.target) && !(b && b.contains(ev.target))) this._closeAccountMenu(); });
+        },
+        openLogin() {
+            const a = global.realUserAuth;
+            if (a && typeof a.showAuthModal === 'function') {
+                if (!document.getElementById('realAuthModal') && typeof a.createAuthUI === 'function') a.createAuthUI();
+                a.showAuthModal();
+                setTimeout(() => { const e = document.getElementById('loginEmail'); if (e) e.focus(); }, 60);
+                return;
+            }
+            if (global.authModals && typeof global.authModals.showLogin === 'function') { global.authModals.showLogin(); return; }
+            window.location.href = '../../persoenlichkeitsentwicklung-uebersicht.html?login=1';
+        },
+        async logout() {
+            try {
+                if (global.realUserAuth && typeof global.realUserAuth.logout === 'function') await global.realUserAuth.logout();
+                else if (global.awsAuth && typeof global.awsAuth.logout === 'function') await global.awsAuth.logout();
+                else localStorage.removeItem('aws_auth_session');
+            } catch (e) { try { localStorage.removeItem('aws_auth_session'); } catch (x) {} }
+            this._closeAccountMenu(); this._lastSynced = false; this._cloudError = null; this._updateSyncBadge(false);
+            this.toast('Abgemeldet – Daten bleiben lokal erhalten', 'success');
+        },
+        _toggleAccountMenu() {
+            if (document.getElementById('mk-account')) { this._closeAccountMenu(); return; }
+            const u = this.currentUser() || {};
+            const name = [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email || 'Angemeldet';
+            const m = document.createElement('div');
+            m.id = 'mk-account'; m.className = 'mk-account'; m.setAttribute('role', 'menu');
+            m.innerHTML = `<div class="mk-account-h"><div class="mk-account-av">${this.esc((name || 'A').trim()[0].toUpperCase())}</div><div><b>${this.esc(name)}</b>${u.email && u.email !== name ? `<small>${this.esc(u.email)}</small>` : ''}</div></div>
+                <div class="mk-account-s">${this._lastSynced ? '<i class="fas fa-cloud"></i> Fortschritt wird geräteübergreifend gespeichert' : this._cloudError ? '<i class="fas fa-triangle-exclamation"></i> Cloud derzeit nicht erreichbar – lokal gesichert' : '<i class="fas fa-cloud"></i> Bereit für geräteübergreifendes Speichern'}</div>
+                <a class="mk-account-i" href="../../user-profile.html" role="menuitem"><i class="fas fa-user-circle"></i> Mein Profil</a>
+                <a class="mk-account-i" href="../../persoenlichkeitsentwicklung-uebersicht.html" role="menuitem"><i class="fas fa-th-large"></i> Alle Methoden</a>
+                <button class="mk-account-i" type="button" id="mk-account-sync" role="menuitem"><i class="fas fa-rotate"></i> Jetzt synchronisieren</button>
+                <button class="mk-account-i danger" type="button" id="mk-account-logout" role="menuitem"><i class="fas fa-sign-out-alt"></i> Abmelden</button>`;
+            document.body.appendChild(m);
+            m.querySelector('#mk-account-logout').addEventListener('click', () => this.logout());
+            m.querySelector('#mk-account-sync').addEventListener('click', async () => { this._closeAccountMenu(); await this._cloudSave(); this.toast(this._lastSynced ? 'Synchronisiert' : 'Cloud nicht erreichbar – lokal gesichert', this._lastSynced ? 'success' : 'warn'); });
+            requestAnimationFrame(() => m.classList.add('open'));
+        },
+        _closeAccountMenu() { const m = document.getElementById('mk-account'); if (m) m.remove(); },
+
         /* Alles zurücksetzen (lokal + Cloud) – wird über [data-mk-reset] gebunden */
         async reset(opts) {
             opts = opts || {};
             if (!opts.silent && !confirm('Wirklich alle Eingaben dieser Methode löschen? Das kann nicht rückgängig gemacht werden.')) return false;
             this.state = JSON.parse(JSON.stringify(this._defaultState));
+            this.state.__updated = Date.now();
             try { localStorage.removeItem(this._key()); } catch (e) {}
             try {
-                if (global.workflowAPI && global.workflowAPI.saveWorkflowResults) {
-                    await global.workflowAPI.saveWorkflowResults(this.method, this.state);
-                }
+                const api = this._api();
+                if (api && this._sessionValid()) await api.saveWorkflowResults(this.method, this.state);
             } catch (e) {}
             if (!opts.noReload) window.location.reload();
             return true;

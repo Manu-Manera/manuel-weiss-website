@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="css/ikigai-planner.css">
     <link rel="stylesheet" href="css/persoenlichkeitsentwicklung-uebersicht.css?v=20260111003200">
+    <link rel="stylesheet" href="css/pe-uebersicht-2026.css?v=20261003d">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">                                 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">                                                    
     
@@ -99,100 +100,50 @@
             <div class="particle particle-10"></div>
         </div>
         
-        <div class="hero-container">
-            <div class="hero-content">
-                <h1 class="hero-title">
-                    <span class="gradient-text">Entdecke dein Potenzial</span>
-                </h1>
-                <p class="hero-subtitle">
-                    Berufliche Karriere und persönliche Entwicklung – wähle deinen Bereich.
-                </p>
+        <div class="hero-container pe-hero-container">
+            <div class="hero-content pe-hero-content">
+                <div class="pe-kicker">Persönlichkeitsentwicklung</div>
+                <h1 class="hero-title"><span class="gradient-text">Entdecke dein Potenzial</span></h1>
+                <p class="hero-subtitle">Über 40 interaktive Methoden – von Werten und Zielen über Kommunikation bis Achtsamkeit. Jede mit echter Auswertung. Fortschritt bleibt auf diesem Gerät – und mit Konto auf allen.</p>
+                <div class="pe-hero-meta">
+                    <span><i class="fas fa-layer-group"></i> <b id="pe-count">45</b> Methoden</span>
+                    <span><i class="fas fa-laptop"></i> Kostenlos, ohne Konto</span>
+                    <button type="button" class="pe-hero-login" id="peHeroLogin"><i class="fas fa-cloud"></i> Anmelden für Sync</button>
+                </div>
+            </div>
+            <div class="pe-search" role="search">
+                <div class="pe-search-input">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                    <input type="text" id="methodSearch" class="search-input" placeholder="Methode, Thema oder Stichwort suchen …" autocomplete="off" aria-label="Methoden durchsuchen">
+                    <button class="search-clear" id="clearSearch" style="display: none;" aria-label="Suche löschen"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="filter-tags" role="tablist" aria-label="Kategorien">
+                    <span class="filter-tag active" data-category="all" role="tab">Alle</span>
+                    <span class="filter-tag" data-category="self-discovery" role="tab">Selbstfindung</span>
+                    <span class="filter-tag" data-category="goals" role="tab">Ziele &amp; Motivation</span>
+                    <span class="filter-tag" data-category="communication" role="tab">Kommunikation</span>
+                    <span class="filter-tag" data-category="mindfulness" role="tab">Achtsamkeit</span>
+                    <span class="filter-tag" data-category="coaching" role="tab">Coaching</span>
+                    <span class="filter-tag" data-category="nlp" role="tab">NLP</span>
+                    <span class="filter-tag" data-category="habits" role="tab">Gewohnheiten</span>
+                    <span class="filter-tag" data-category="analysis" role="tab">Analyse</span>
+                    <span class="filter-tag" data-category="conflict" role="tab">Konflikt</span>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Portal-Kacheln: Berufliches / Persönliches (höchste Ebene) -->
-    <section class="portal-tiles-section" id="portal-tiles">
-        <div class="container">
-            <div class="portal-tiles-grid">
-                <a href="#berufliches" class="portal-tile portal-tile-berufliches">
-                    <div class="portal-tile-icon"><i class="fas fa-briefcase"></i></div>
-                    <h2 class="portal-tile-title">Berufliches</h2>
-                    <p class="portal-tile-desc">Bewerbungsmanager, HR-Standortbestimmung, KI-Strategie</p>
-                    <span class="portal-tile-cta">Jetzt entdecken <i class="fas fa-arrow-right"></i></span>
-                </a>
-                <a href="#methods-overview" class="portal-tile portal-tile-persoenliches">
-                    <div class="portal-tile-icon"><i class="fas fa-heart"></i></div>
-                    <h2 class="portal-tile-title">Persönliches</h2>
-                    <p class="portal-tile-desc">Methoden wie Ikigai, RAISEC, Werte-Klärung und mehr</p>
-                    <span class="portal-tile-cta">Methoden entdecken <i class="fas fa-arrow-right"></i></span>
-                </a>
-            </div>
-        </div>
-    </section>
 
-    <!-- Berufliches Section: Bewerbungsmanager, HR, KI-Strategie -->
-    <section id="berufliches" class="berufliches-section">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Berufliche Tools</h2>
-                <p class="section-subtitle">Instrumente für deine Karriere und berufliche Weiterentwicklung</p>
-            </div>
-            <div class="berufliches-grid">
-                <a href="applications/index.html" class="berufliches-card">
-                    <div class="berufliches-card-icon"><i class="fas fa-file-alt"></i></div>
-                    <h3>Bewerbungsmanager</h3>
-                    <p>KI-gestützte Bewerbungen, Lebenslauf-Optimierung, Tracking und Interview-Vorbereitung.</p>
-                    <span class="berufliches-card-link">Zum Bewerbungsmanager <i class="fas fa-external-link-alt"></i></span>
-                </a>
-                <a href="hr-selbsttest.html" class="berufliches-card">
-                    <div class="berufliches-card-icon"><i class="fas fa-chart-line"></i></div>
-                    <h3>HR-Standortbestimmung</h3>
-                    <p>Finde heraus, wo dein Unternehmen in puncto HR und Digitalisierung steht.</p>
-                    <span class="berufliches-card-link">Zum HR-Selbsttest <i class="fas fa-external-link-alt"></i></span>
-                </a>
-                <a href="ki-strategieentwicklung.html" class="berufliches-card">
-                    <div class="berufliches-card-icon"><i class="fas fa-robot"></i></div>
-                    <h3>KI-Strategie</h3>
-                    <p>Entwickle eine fundierte KI-Strategie für dein Unternehmen.</p>
-                    <span class="berufliches-card-link">Zur KI-Strategie <i class="fas fa-external-link-alt"></i></span>
-                </a>
-            </div>
-        </div>
-    </section>
 
     <!-- Methods Overview Section -->
     <section id="methods-overview" class="personality-methods-overview">
         <div class="container">
-            <!-- Search and Filter Section -->
-            <div class="search-filter-section">
-                <div class="search-container">
-                    <div class="search-input-wrapper">
-                        <i class="fas fa-search search-icon"></i>
-                        <input type="text" id="methodSearch" class="search-input" placeholder="Suche nach Methoden, Kategorien oder Schlagwörtern..." onkeypress="handleSearchKeypress(event)">
-                        <button class="search-clear" id="clearSearch" style="display: none;">
-                            <i class="fas fa-times"></i>
-                        </button>
-                </div>
-                
-                <div class="filter-tags">
-                    <span class="filter-tag active" data-category="all">Alle</span>
-                    <span class="filter-tag" data-category="self-discovery">Selbstfindung</span>
-                    <span class="filter-tag" data-category="goals">Ziele & Motivation</span>
-                    <span class="filter-tag" data-category="communication">Kommunikation</span>
-                    <span class="filter-tag" data-category="mindfulness">Achtsamkeit</span>
-                    <span class="filter-tag" data-category="coaching">Coaching</span>
-                    <span class="filter-tag" data-category="nlp">NLP</span>
-                    <span class="filter-tag" data-category="habits">Gewohnheiten</span>
-                    <span class="filter-tag" data-category="analysis">Analyse</span>
-                    <span class="filter-tag" data-category="conflict">Konflikt</span>
-            </div>
-
             <div class="section-header">
-                <h2 class="section-title">Persönlichkeitsentwicklung Methoden</h2>
-                <p class="section-subtitle">
-                    Entdecke verschiedene bewährte Ansätze für deine persönliche Entwicklung und Selbstfindung
-                </p>
+                <div class="pe-section-text">
+                    <h2 class="section-title">Alle Methoden</h2>
+                    <p class="section-subtitle">Jede Methode führt dich Schritt für Schritt zu einem konkreten Ergebnis – Auswertung, Hinweis und etwas, das du mitnehmen kannst.</p>
+                </div>
+                <div id="pe-result-count" class="pe-result-count"></div>
             </div>
             
             <div class="methods-grid">
@@ -1049,13 +1000,12 @@
                     <div class="service-cta">
                         <span class="cta-text">Jetzt starten</span>
                         <i class="fas fa-arrow-right"></i>
-        </div>
-                    
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Contact Section -->
     <section id="contact" class="contact">
         <div class="container">
             <div class="section-header">
@@ -2170,8 +2120,9 @@
         const cards = document.querySelectorAll('.method-card');
         
         cards.forEach(card => {
+            if (card.hidden) return; // Auth-Gate (z. B. Song-Generator) nicht anfassen
             if (category === 'all' || card.dataset.category === category) {
-                card.style.display = 'block';
+                card.style.display = '';
             } else {
                 card.style.display = 'none';
             }
@@ -2197,7 +2148,7 @@
         if (searchTerm === '') {
             // Show all cards if search is empty
         cards.forEach(card => {
-                card.style.display = 'block';
+                card.style.display = '';
                 card.classList.remove('search-highlight');
             });
             return;
@@ -2235,7 +2186,7 @@
             const score = result.score;
             
             if (score > 0) {
-                card.style.display = 'block';
+                card.style.display = '';
                 card.classList.add('search-highlight');
                 
                 // Add similarity indicator
@@ -2400,7 +2351,102 @@
         document.getElementById('methodSearch').value = '';
         searchMethods();
         document.getElementById('clearSearch').style.display = 'none';
+        filterMethods('all');
     }
+
+    // ---- Redesign 2026: Fortschritts-Badges, Trefferzähler, Leerzustand ----
+    const PE_KEY_ALIAS = { 'strengths-analysis': 'strengths-finder' };
+    function peMethodKey(card) {
+        const m = (card.getAttribute('onclick') || '').match(/startMethod\('([^']+)'\)/);
+        if (!m) return null;
+        return PE_KEY_ALIAS[m[1]] || m[1];
+    }
+    function peProgressBadges() {
+        document.querySelectorAll('.method-card').forEach(card => {
+            const key = peMethodKey(card);
+            if (!key) return;
+            let st = null;
+            try { st = JSON.parse(localStorage.getItem('mk_' + key) || 'null'); } catch (e) { st = null; }
+            if (!st || typeof st !== 'object') return;
+            const step = Number(st.__step || 0);
+            const hasData = Object.keys(st).some(k => !k.startsWith('__'));
+            if (step <= 1 && !hasData) return;
+            const old = card.querySelector('.pe-progress'); if (old) old.remove();
+            const b = document.createElement('span');
+            b.className = 'pe-progress';
+            b.innerHTML = step > 1 ? '<i class="fas fa-play"></i> Begonnen · Schritt ' + step : '<i class="fas fa-pen"></i> Begonnen';
+            b.title = 'Dein Fortschritt ist gespeichert – weiter dort, wo du aufgehört hast';
+            card.appendChild(b);
+        });
+    }
+    function peUpdateCount() {
+        const grid = document.querySelector('.methods-grid');
+        if (!grid) return;
+        const cards = Array.from(grid.querySelectorAll('.method-card'));
+        const visible = cards.filter(c => c.style.display !== 'none' && !c.hidden).length;
+        let el = document.getElementById('pe-result-count');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'pe-result-count';
+            el.className = 'pe-result-count';
+            const header = document.querySelector('.personality-methods-overview .section-header');
+            if (header) header.appendChild(el);
+        }
+        el.innerHTML = '<b>' + visible + '</b> von ' + cards.filter(c => !c.hidden).length + ' Methoden';
+        let empty = document.getElementById('pe-empty');
+        if (visible === 0) {
+            if (!empty) {
+                empty = document.createElement('div');
+                empty.id = 'pe-empty';
+                empty.className = 'pe-empty';
+                empty.innerHTML = '<b>Keine Methode passt zu dieser Suche.</b>Probiere ein anderes Stichwort – oder blättere durch alle Methoden.<br><button type="button" onclick="clearSearch()"><i class="fas fa-undo"></i> Alle anzeigen</button>';
+                grid.appendChild(empty);
+            }
+            empty.style.display = '';
+        } else if (empty) {
+            empty.style.display = 'none';
+        }
+        const nr = document.getElementById('noResultsMessage');
+        if (nr) nr.style.display = 'none';
+    }
+    (function peWrap() {
+        const _f = window.filterMethods, _s = window.searchMethods;
+        if (typeof _f === 'function') window.filterMethods = function (c) { _f(c); peUpdateCount(); };
+        if (typeof _s === 'function') window.searchMethods = function () {
+            _s();
+            const inp = document.getElementById('methodSearch');
+            const clr = document.getElementById('clearSearch');
+            if (inp && clr) clr.style.display = inp.value.trim() ? '' : 'none';
+            peUpdateCount();
+        };
+        const clr = document.getElementById('clearSearch');
+        if (clr) clr.addEventListener('click', clearSearch);
+        peProgressBadges();
+        const pc = document.getElementById('pe-count');
+        if (pc) pc.textContent = String(document.querySelectorAll('.method-card:not([hidden])').length);
+        function peOpenLogin() {
+            if (window.authModals && typeof window.authModals.showLogin === 'function') window.authModals.showLogin();
+            else document.getElementById('authButton')?.click();
+        }
+        function peSyncLoginCta() {
+            const el = document.getElementById('peHeroLogin');
+            if (!el) return;
+            const label = (document.getElementById('authButtonText')?.textContent || '').trim();
+            const named = label && label !== 'Anmelden' && label !== 'Login';
+            el.hidden = named;
+        }
+        document.getElementById('peHeroLogin')?.addEventListener('click', peOpenLogin);
+        peSyncLoginCta();
+        setTimeout(peSyncLoginCta, 800);
+        setTimeout(peSyncLoginCta, 2000);
+        ['userLogin', 'userLoggedIn', 'userLogout', 'authStateChange'].forEach(ev => {
+            window.addEventListener(ev, () => setTimeout(() => { peUpdateCount(); peSyncLoginCta(); }, 50));
+            document.addEventListener(ev, () => setTimeout(() => { peUpdateCount(); peSyncLoginCta(); }, 50));
+        });
+        window.addEventListener('storage', e => { if (e.key && e.key.startsWith('mk_')) peProgressBadges(); });
+        window.addEventListener('pageshow', peProgressBadges);
+        peUpdateCount();
+    })();
     
     // Language Switcher Function
     function changeLanguage(langCode) {
@@ -2537,7 +2583,7 @@
     <!-- Unified Auth System -->
     <script src="js/user-dropdown-controller.js?v=20260527g"></script>
     <script src="js/unified-aws-auth.js?v=20260527g"></script>
-    <script src="js/unified-auth-modals.js?v=20260112"></script>
+    <script src="js/unified-auth-modals.js?v=20261003"></script>
     <script src="js/unified-profile-service.js?v=20260115"></script>
     <!-- Legacy Auth - Fallback -->
     <script src="js/real-user-auth-system.js?v=20260110" 
