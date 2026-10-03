@@ -215,16 +215,18 @@ const methodWorkflowDefinitions = {
     },
     
     'walt-disney': {
-        title: 'Walt-Disney-Strategie',
-        steps: 3,
+        title: 'Walt-Disney-Methode',
+        steps: 5,
         stepTitles: [
-            'Träumer-Phase',
-            'Realist-Phase',
-            'Kritiker-Phase'
+            'Idee',
+            'Träumer',
+            'Realist',
+            'Kritiker',
+            'Synthese – Runde 2'
         ],
-        description: 'Die Walt-Disney-Strategie für kreative Problemlösung und Visionen.',
+        description: 'Drei getrennte Denkräume: Träumer, Realist, Kritiker – mit Rollen-Check, Plan pro Traum-Element, bewerteter Kritik und zweiter Runde zur Synthese.',
         logic: 'creative-process', // Kreativer Prozess
-        features: ['Kreativität', 'Problemlösung', 'Visionen', 'Iteration']
+        features: ['Rollen-Check', 'Traum-Elemente', 'Plan pro Idee', 'Risiko-Bewertung', 'Runde 2']
     },
     
     'nonviolent-communication': {
@@ -257,45 +259,50 @@ const methodWorkflowDefinitions = {
     },
     
     'nlp-meta-goal': {
-        title: 'NLP Meta-Goal',
-        steps: 4,
+        title: 'Wohlgeformtes Ziel (NLP)',
+        steps: 6,
         stepTitles: [
-            'Meta-Ziel identifizieren',
-            'Ziel-Hierarchie erstellen',
-            'Ressourcen aktivieren',
-            'Meta-Ziel erreichen'
+            'Positiv formuliert',
+            'Eigeninitiative & Kontext',
+            'Sinnesspezifische Evidenz',
+            'Meta-Ziel',
+            'Ressourcen & Ökologie',
+            'Ziel & erster Schritt'
         ],
-        description: 'NLP Meta-Ziel-Techniken für tiefere Zielerreichung.',
+        description: 'Ein Ziel nach den NLP-Wohlgeformtheitskriterien formulieren – mit automatischem Check (Verneinung, Vagheit, Fremdbezug), Meta-Ziel-Kette und Ökologie-Prüfung.',
         logic: 'meta-level', // Meta-Ebene
-        features: ['Meta-Ziele', 'Hierarchie', 'Ressourcen', 'Erreichung']
+        features: ['Wohlgeformtheits-Check', 'VAKOG-Evidenz', 'Meta-Ziel', 'Sekundärgewinn', 'Ökologie']
     },
     
     'aek-communication': {
-        title: 'AEK - Aspektbezogene Kommunikation',
-        steps: 4,
+        title: 'AEK-Kommunikation',
+        steps: 6,
         stepTitles: [
-            'Aspekte identifizieren',
-            'Kommunikationsstil analysieren',
-            'Anpassung üben',
-            'Integration in Alltag'
+            'Anliegen & Muster',
+            'Assertive – Ich-Botschaft',
+            'Empathetic – Perspektivwechsel',
+            'Kind – Wertschätzung',
+            'Botschaft & Balance',
+            'Vorbereitung'
         ],
-        description: 'Aspektbezogene Kommunikation für besseres Verständnis.',
-        logic: 'aspect-based', // Aspekt-basiert
-        features: ['Aspekte', 'Kommunikation', 'Anpassung', 'Integration']
+        description: 'Schwierige Botschaften assertiv, empathisch und wertschätzend formulieren – mit Ich-Botschaft-Builder, Ton-Check (Weichmacher, Vorwürfe), Balance-Meter und Einwand-Vorbereitung.',
+        logic: 'aspect-based', // AEK
+        features: ['Ich-Botschaft', 'Perspektivwechsel', 'Ton-Check', 'Balance-Meter', 'Einwände']
     },
     
     'rubikon-model': {
         title: 'Rubikon-Modell',
-        steps: 4,
+        steps: 5,
         stepTitles: [
             'Abwägen',
+            'Entscheiden',
             'Planen',
             'Handeln',
             'Bewerten'
         ],
-        description: 'Das Rubikon-Modell der Handlungsphasen.',
+        description: 'Vom Wunsch zur Tat: gewichtete Pro/Contra-Waage, Motivations-Score (Erwartung × Wert), verbindliche Entscheidung, Wenn-Dann-Pläne und Aktions-Log.',
         logic: 'action-phases', // Handlungsphasen
-        features: ['4 Phasen', 'Handlung', 'Motivation', 'Umsetzung']
+        features: ['Gewichtete Waage', 'Motivations-Score', 'Rubikon-Commit', 'Wenn-Dann-Pläne', 'Aktions-Log']
     },
     
     'systemic-coaching': {
@@ -350,16 +357,18 @@ const methodWorkflowDefinitions = {
     
     'harvard-method': {
         title: 'Harvard-Methode',
-        steps: 4,
+        steps: 6,
         stepTitles: [
-            'Menschen trennen',
-            'Interessen fokussieren',
-            'Optionen entwickeln',
-            'Objektive Kriterien'
+            'Situation',
+            'Mensch und Problem trennen',
+            'Interessen statt Positionen',
+            'Optionen zum beiderseitigen Vorteil',
+            'Kriterien & BATNA',
+            'Verhandlungsplan'
         ],
-        description: 'Das Harvard-Konzept für erfolgreiche Verhandlungen.',
+        description: 'Verhandeln nach Fisher & Ury: Interessen-Abgleich beider Seiten, Optionen-Matrix (Win-Win), objektive Kriterien, BATNA-Vergleich und generierter Einstiegssatz.',
         logic: 'negotiation-based', // Verhandlungs-basiert
-        features: ['Verhandlungen', 'Interessen', 'Optionen', 'Kriterien']
+        features: ['Interessen-Abgleich', 'Optionen-Matrix', 'Kriterien', 'BATNA-Vergleich', 'Gesprächsplan']
     },
     
     'circular-interview': {
@@ -377,18 +386,18 @@ const methodWorkflowDefinitions = {
     },
     
     'target-coaching': {
-        title: 'Ziel-Coaching',
+        title: 'Ziel-Coaching (GROW)',
         steps: 5,
         stepTitles: [
-            'Ziel definieren',
-            'Ressourcen identifizieren',
-            'Strategie entwickeln',
-            'Umsetzung planen',
-            'Erfolg messen'
+            'Goal – Ziel & Zielskala',
+            'Reality – Ist-Zustand & Hindernisse',
+            'Options – Wirkung × Aufwand',
+            'Will – Entscheidung & Verbindlichkeit',
+            'Check-in'
         ],
-        description: 'Zielorientiertes Coaching für nachhaltige Ergebnisse.',
+        description: 'Selbstcoaching mit GROW (Whitmore): Zielskala, Hindernis-Klassifikation, Optionen-Matrix Wirkung × Aufwand, Verbindlichkeits-Check mit Wenn-Dann-Plänen und Fortschritts-Check-ins.',
         logic: 'target-oriented', // Ziel-orientiert
-        features: ['Zieldefinition', 'Ressourcen', 'Strategie', 'Umsetzung']
+        features: ['Zielskala', 'Hindernis-Analyse', 'Optionen-Matrix', 'Verbindlichkeit', 'Check-ins']
     },
     
     'solution-focused': {

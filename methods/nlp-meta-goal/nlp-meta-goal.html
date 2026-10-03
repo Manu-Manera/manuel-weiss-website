@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wohlgeformtes Ziel (NLP) | Manuel Weiss</title>
-    <meta name="description" content="Formuliere ein Ziel nach den NLP-Wohlgeformtheitskriterien: positiv, im eigenen Einfluss, sinnesspezifisch, kontextbezogen und ökologisch stimmig.">
+    <meta name="description" content="Formuliere ein Ziel nach den NLP-Wohlgeformtheitskriterien: positiv, im eigenen Einfluss, sinnesspezifisch, kontextbezogen, mit Meta-Ziel und ökologisch stimmig – mit automatischem Check.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="nlp-meta-goal.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>:root { --mk-accent: #8b5cf6; --mk-accent-2: #06b6d4; --mk-accent-soft: rgba(139,92,246,.12); }</style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
@@ -23,58 +23,113 @@
             <div class="mk-hero-icon"><i class="fas fa-bullseye"></i></div>
             <div class="mk-kicker">Persönlichkeitsentwicklung · NLP</div>
             <h1>Ein Ziel, das wirklich zieht</h1>
-            <p>Viele Ziele scheitern, weil sie unklar oder fremdbestimmt sind. Die NLP-Wohlgeformtheitskriterien machen dein Ziel präzise, eigenverantwortlich und stimmig – damit dein Unbewusstes mitzieht.</p>
-            <div class="mk-badges"><span class="mk-badge">Positiv</span><span class="mk-badge">Sinnesspezifisch</span><span class="mk-badge">Ökologisch</span></div>
+            <p>Viele Ziele scheitern, weil sie unklar, verneint oder fremdbestimmt sind. Die NLP-Wohlgeformtheitskriterien machen dein Ziel präzise, eigenverantwortlich und stimmig. Der Check unten begleitet dich durch alle Schritte.</p>
+            <div class="mk-badges"><span class="mk-badge">Positiv</span><span class="mk-badge">Eigeninitiativ</span><span class="mk-badge">Sinnesspezifisch</span><span class="mk-badge">Meta-Ziel</span><span class="mk-badge">Ökologisch</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
+        <div class="mg-score" id="mg-score"></div>
+
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
                 <h2>1 · Positiv formuliert</h2>
-                <p class="mk-sub">Beschreibe, was du <em>willst</em> – nicht, was du nicht mehr willst.</p>
-                <div class="mk-field"><label>Mein Ziel</label><textarea class="mk-textarea" data-mk-field="positive" placeholder="z. B. „Ich bin ruhig und präsent in Meetings" (statt „Ich will nicht mehr nervös sein")"></textarea></div>
+                <p class="mk-sub">Beschreibe, was du <em>willst</em> – nicht, was du nicht mehr willst. Das Gehirn kann eine Verneinung nicht als Bild denken.</p>
+                <div class="mk-field"><label for="mg-positive">Mein Ziel</label><textarea class="mk-textarea" id="mg-positive" data-mk-field="positive" placeholder="z. B. „Ich bin ruhig und präsent in Meetings" (statt „Ich will nicht mehr nervös sein")"></textarea></div>
+                <div id="mg-poscheck"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Ist es ein Ziel oder ein Problem?</h3>
+                <div class="mk-grid mg-pairs" id="mg-pairs"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>2 · Eigeninitiative & Kontext</h2>
-                <div class="mk-field"><label>Liegt es in deinem Einfluss? Was kannst <strong>du</strong> selbst tun?</label><textarea class="mk-textarea" data-mk-field="control" placeholder="Was hängt von dir ab – unabhängig von anderen?"></textarea></div>
-                <div class="mk-field"><label>Wo, wann und mit wem willst du das Ziel? (und wo nicht?)</label><textarea class="mk-textarea" data-mk-field="context" placeholder="Konkreter Kontext …"></textarea></div>
+                <h2>2 · Eigeninitiative</h2>
+                <p class="mk-sub">Ein wohlgeformtes Ziel beginnt und erhält sich durch dich selbst. Was andere tun, kannst du nicht zum Ziel machen – wohl aber, wie du dich verhältst.</p>
+                <div class="mk-field"><label for="mg-control">Was kannst <strong>du</strong> selbst tun, um das Ziel zu erreichen?</label><textarea class="mk-textarea" id="mg-control" data-mk-field="control" placeholder="Was hängt von dir ab – unabhängig von anderen?"></textarea></div>
+                <div class="mk-field"><label for="mg-others">Was hängt von anderen ab – und wie gehst du damit um?</label><span class="hint">Alles, was hier steht, ist nicht Teil deines Ziels, sondern Rahmenbedingung.</span><textarea class="mk-textarea" id="mg-others" data-mk-field="others" placeholder="z. B. Ob mein Chef zustimmt, kann ich nicht steuern – wohl aber, wie gut ich vorbereitet bin."></textarea></div>
+                <div id="mg-ctrlcheck"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Kontext</h2>
+                <p class="mk-sub">Wo, wann und mit wem willst du das Ziel – und wo ausdrücklich <em>nicht</em>?</p>
+                <div id="mg-context"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
             <div class="mk-card">
                 <h2>3 · Evidenz – woran erkennst du es?</h2>
-                <p class="mk-sub">Mach es greifbar für deine Sinne. Stell dir vor, du hast es erreicht.</p>
-                <div class="mk-field"><label>👁️ Was siehst du dann?</label><textarea class="mk-textarea" data-mk-field="see"></textarea></div>
-                <div class="mk-field"><label>👂 Was hörst du (auch innerlich)?</label><textarea class="mk-textarea" data-mk-field="hear"></textarea></div>
-                <div class="mk-field"><label>🫀 Was fühlst du?</label><textarea class="mk-textarea" data-mk-field="feel"></textarea></div>
+                <p class="mk-sub">Mach es greifbar für deine Sinne. Stell dir vor, es ist erreicht – du stehst mittendrin.</p>
+                <div id="mg-vakog"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Der Aussen-Test</h3>
+                <div class="mk-field"><label for="mg-outside">Woran würde jemand anderes erkennen, dass du dein Ziel erreicht hast – ohne dass du es sagst?</label><textarea class="mk-textarea" id="mg-outside" data-mk-field="outside" placeholder="Beobachtbares Verhalten …"></textarea></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="mg-date">Bis wann?</label><input class="mk-input" type="date" id="mg-date" data-mk-field="date"></div>
+                    <div class="mk-field"><label for="mg-measure">Woran misst du es?</label><input class="mk-input" id="mg-measure" data-mk-field="measure" placeholder="Zahl, Häufigkeit, Situation"></div>
+                </div>
             </div>
         </section>
 
         <section class="mk-step" data-step="4">
             <div class="mk-card">
-                <h2>4 · Ressourcen & Ökologie</h2>
-                <div class="mk-field"><label>Welche Ressourcen brauchst du (Fähigkeiten, Menschen, Mittel)?</label><textarea class="mk-textarea" data-mk-field="resources"></textarea></div>
-                <div class="mk-field"><label>🌱 Ökologie-Check: Was kostet dich das Ziel? Passt es zu deinem Leben und deinen Beziehungen? Gibt es einen Teil in dir, der dagegen ist?</label><textarea class="mk-textarea" data-mk-field="ecology" placeholder="Ehrlich hinschauen – verhindert späteres Selbst-Sabotieren."></textarea></div>
+                <h2>4 · Meta-Ziel</h2>
+                <p class="mk-sub">Hinter jedem Ziel steht ein grösseres. „Wozu willst du das?" – und dann noch einmal. Das Meta-Ziel ist der eigentliche Motor; oft gibt es mehrere Wege dorthin.</p>
+                <div id="mg-meta"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Sekundärgewinn</h3>
+                <p class="mk-sub">Der Ist-Zustand hat auch Vorteile – sonst hättest du ihn längst geändert. Was würdest du verlieren, wenn du das Ziel erreichst?</p>
+                <div class="mk-field"><textarea class="mk-textarea" id="mg-secondary" data-mk-field="secondary" placeholder="z. B. Solange ich nervös bin, erwartet niemand, dass ich Verantwortung übernehme."></textarea></div>
+                <div class="mk-field"><label for="mg-keep">Wie behältst du diesen Vorteil – oder bekommst ihn anders?</label><textarea class="mk-textarea" id="mg-keep" data-mk-field="keep" placeholder="…"></textarea></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="5">
             <div class="mk-card">
-                <h2>5 · Erster Schritt</h2>
-                <div class="mk-field"><label>Was tust du als Allererstes – heute oder morgen?</label><input class="mk-input" data-mk-field="firststep"></div>
-                <div id="mg-summary" style="margin-top:14px;"></div>
-                <button class="mk-btn mk-btn-primary" id="mg-export" style="margin-top:14px;"><i class="fas fa-download"></i> Ziel herunterladen</button>
+                <h2>5 · Ressourcen</h2>
+                <p class="mk-sub">Was brauchst du – und was davon hast du schon?</p>
+                <div id="mg-resources"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Ökologie-Check</h2>
+                <p class="mk-sub">Passt das Ziel zu deinem Leben als Ganzem? Ehrliche Antworten verhindern späteres Selbst-Sabotieren.</p>
+                <div id="mg-eco"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="6">
+            <div class="mk-card">
+                <h2>6 · Dein wohlgeformtes Ziel</h2>
+                <div id="mg-summary"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Erster Schritt</h3>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="mg-firststep">Was tust du als Allererstes?</label><input class="mk-input" id="mg-firststep" data-mk-field="firststep" placeholder="Klein, konkret, in den nächsten 48 Stunden"></div>
+                    <div class="mk-field"><label for="mg-firstdate">Wann genau?</label><input class="mk-input" type="date" id="mg-firstdate" data-mk-field="firstdate"></div>
+                </div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="mg-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="mg-export"><i class="fas fa-download"></i> Ziel herunterladen</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button>
+                </div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 6</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -89,23 +144,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        (async function () {
-            await MethodKit.init({
-                method: 'nlp-meta-goal',
-                accent: '#8b5cf6', accent2: '#06b6d4',
-                steps: [{icon:'➕',label:'Positiv'},{icon:'🧭',label:'Kontext'},{icon:'👁️',label:'Evidenz'},{icon:'🌱',label:'Ökologie'},{icon:'👣',label:'Schritt'}],
-                defaultState: { positive:'',control:'',context:'',see:'',hear:'',feel:'',resources:'',ecology:'',firststep:'' }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-            MethodKit.onStep=function(n){ if(n===5){
-                document.getElementById('mg-summary').innerHTML=`<div class="mk-result"><h4>🎯 Dein wohlgeformtes Ziel</h4>${MethodKit.esc(S.positive)||'–'}<div style="margin-top:8px;color:var(--mk-muted);">Erster Schritt: ${MethodKit.esc(S.firststep)||'–'}</div></div>`;
-            }};
-            document.getElementById('mg-export').addEventListener('click',()=>{
-                MethodKit.exportText('mein-wohlgeformtes-ziel.txt', `WOHLGEFORMTES ZIEL (NLP)\n========================\n\n1. Positiv: ${S.positive}\n2. Im eigenen Einfluss: ${S.control}\n   Kontext: ${S.context}\n3. Evidenz – Sehen: ${S.see}\n   Hören: ${S.hear}\n   Fühlen: ${S.feel}\n4. Ressourcen: ${S.resources}\n   Ökologie: ${S.ecology}\n5. Erster Schritt: ${S.firststep}\n`);
-            });
-        })();
-    </script>
+    <script src="nlp-meta-goal.js?v=20261003"></script>
 </body>
 </html>

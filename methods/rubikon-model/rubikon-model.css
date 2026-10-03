@@ -1,202 +1,64 @@
-/* Method Styles */
-.workflow-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-}
+/* Rubikon-Modell · Styles */
+.mk-faint { color: var(--mk-faint); font-size: 13px; }
+.rk-river { margin: 0 0 18px; }
+.rk-river-in { display: flex; align-items: center; gap: 4px; background: var(--mk-surface); border: 1px solid var(--mk-line); border-radius: var(--mk-radius); padding: 10px 14px; overflow-x: auto; }
+.rk-ph { flex: 1; min-width: 70px; text-align: center; padding: 6px 4px; border-radius: var(--mk-radius-sm); color: var(--mk-faint); font-size: 11px; display: grid; gap: 2px; }
+.rk-ph .ic { font-size: 18px; }
+.rk-ph.cur { background: var(--mk-accent-soft); color: var(--mk-accent); font-weight: 700; }
+.rk-ph.done { color: var(--mk-muted); }
+.rk-water { flex: 0 0 56px; height: 44px; border-radius: 10px; background: repeating-linear-gradient(135deg, #bae6fd 0 6px, #7dd3fc 6px 12px); color: #0369a1; display: grid; place-items: center; font-size: 16px; position: relative; }
+.rk-water small { font-size: 9px; font-weight: 700; position: absolute; bottom: 2px; }
+.rk-water.crossed { background: repeating-linear-gradient(135deg, #bbf7d0 0 6px, #86efac 6px 12px); color: #166534; }
 
-.workflow-intro {
-    text-align: center;
-    margin-bottom: 2rem;
-}
+.rk-scale-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 8px; }
+.rk-col { background: var(--mk-surface-2); border-radius: var(--mk-radius-sm); padding: 12px; border-top: 4px solid #10b981; }
+.rk-col.con { border-top-color: #ef4444; }
+.rk-col h3 { margin: 0 0 8px; font-size: 14px; }
+.rk-arg { display: grid; grid-template-columns: minmax(0, 1fr) auto 26px; gap: 6px; align-items: center; margin-bottom: 6px; }
+.rk-arg .mk-input { padding: 7px 9px; font-size: 13px; }
+.rk-w { display: flex; gap: 1px; }
+.rk-w button { background: none; border: 0; color: var(--mk-line); font-size: 12px; cursor: pointer; padding: 2px; line-height: 1; }
+.rk-w button.on { color: var(--mk-accent); }
+.rk-col.con .rk-w button.on { color: #ef4444; } .rk-col.pro .rk-w button.on { color: #10b981; }
+.rk-scale { width: 100%; max-width: 340px; height: auto; display: block; margin: 12px auto 8px; }
+.rk-scale .post, .rk-scale .str { stroke: var(--mk-muted); stroke-width: 3; }
+.rk-scale .beam { stroke: var(--mk-muted); stroke-width: 5; stroke-linecap: round; }
+.rk-scale .base { fill: var(--mk-muted); } .rk-scale .pivot { fill: var(--mk-accent); }
+.rk-scale .pan.pro { fill: #10b981; } .rk-scale .pan.con { fill: #ef4444; }
+.rk-scale .pt { font-size: 13px; font-weight: 700; text-anchor: middle; fill: var(--mk-muted); }
+.rk-motiv { margin: 12px 0; }
+.rk-motiv-bar { height: 14px; border-radius: 99px; background: var(--mk-surface-2); border: 1px solid var(--mk-line); overflow: hidden; }
+.rk-motiv-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--mk-accent), var(--mk-accent-2)); transition: width .3s; }
+.rk-motiv-l { font-size: 13px; color: var(--mk-muted); margin-top: 6px; }
+.rk-motiv-l b { color: var(--mk-accent); font-size: 16px; }
 
-.workflow-features {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 1rem;
-    flex-wrap: wrap;
-}
+.rk-commit { display: flex; gap: 14px; align-items: flex-start; background: var(--mk-surface-2); border: 2px solid var(--mk-line); border-radius: var(--mk-radius); padding: 16px; cursor: pointer; margin-top: 8px; }
+.rk-commit input { display: none; }
+.rk-commit .box { flex: 0 0 28px; height: 28px; border-radius: 8px; border: 2px solid var(--mk-line); display: grid; place-items: center; color: #fff; }
+.rk-commit .box i { opacity: 0; }
+.rk-commit.on { border-color: var(--mk-accent); background: var(--mk-accent-soft); }
+.rk-commit.on .box { background: var(--mk-accent); border-color: var(--mk-accent); } .rk-commit.on .box i { opacity: 1; }
+.rk-commit small { display: block; color: var(--mk-muted); margin-top: 3px; font-size: 13px; }
 
-.feature-badge {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 500;
-}
+.rk-ift-prev { background: var(--mk-accent-soft); border-radius: var(--mk-radius-sm); padding: 12px 14px; font-size: 14px; line-height: 1.7; }
+.rk-ift { background: var(--mk-surface-2); border: 1.5px solid var(--mk-line); border-radius: var(--mk-radius-sm); padding: 10px; margin-bottom: 8px; display: grid; gap: 6px; }
+.rk-ift .row { display: flex; gap: 8px; align-items: center; }
+.rk-ift .row .mk-input { flex: 1; padding: 7px 9px; font-size: 13px; }
+.rk-ift .mk-badge { font-size: 10px; padding: 2px 7px; min-width: 42px; text-align: center; }
 
-.workflow-progress {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-}
-
-.progress-step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1rem;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-width: 80px;
-}
-
-.progress-step.active {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    color: white;
-}
-
-.progress-step.completed {
-    background: #10b981;
-    color: white;
-}
-
-.step-number {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    background: rgba(255, 255, 255, 0.2);
-}
-
-.step-title {
-    font-size: 0.8rem;
-    text-align: center;
-}
-
-.workflow-step {
-    display: none;
-    background: white;
-    border-radius: 15px;
-    padding: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-}
-
-.workflow-step.active {
-    display: block;
-}
-
-.step-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.step-header h3 {
-    color: #1f2937;
-    margin-bottom: 1rem;
-}
-
-.step-header p {
-    color: #6b7280;
-    font-size: 1.1rem;
-}
-
-.workflow-navigation {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 2rem;
-}
-
-.nav-buttons {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-}
-
-.btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: none;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    color: white;
-}
-
-.btn-outline {
-    background: transparent;
-    color: #6366f1;
-    border: 2px solid #6366f1;
-}
-
-.btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.progress-info {
-    color: #6b7280;
-    font-weight: 500;
-}
-
-/* Form Styles */
-textarea, input[type="text"] {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    resize: vertical;
-}
-
-textarea:focus, input[type="text"]:focus {
-    outline: none;
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-}
-
-input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: #6366f1;
-}
-
-label {
-    font-weight: 500;
-    color: #374151;
-    cursor: pointer;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .workflow-container {
-        padding: 1rem;
-    }
-    
-    .workflow-progress {
-        gap: 0.5rem;
-    }
-    
-    .progress-step {
-        min-width: 60px;
-        padding: 0.5rem;
-    }
-    
-    .step-title {
-        font-size: 0.7rem;
-    }
-    
-    .nav-buttons {
-        flex-direction: column;
-        gap: 1rem;
-    }
+.rk-prog { height: 10px; border-radius: 99px; background: var(--mk-surface-2); border: 1px solid var(--mk-line); overflow: hidden; margin-bottom: 6px; }
+.rk-prog i { display: block; height: 100%; background: #10b981; transition: width .3s; }
+.rk-act { display: grid; grid-template-columns: 22px minmax(0, 1fr) 140px 28px; gap: 8px; align-items: center; margin-bottom: 6px; }
+.rk-act input[type=checkbox] { width: 18px; height: 18px; accent-color: #10b981; }
+.rk-act .mk-input { padding: 7px 9px; font-size: 13px; }
+.rk-act.done .grow { text-decoration: line-through; opacity: .6; }
+.rk-add { display: flex; gap: 8px; margin-top: 8px; } .rk-add .mk-input { flex: 1; }
+.rk-next .mk-option { text-align: left; }
+.rk-sum { display: grid; gap: 6px; }
+.rk-sum > div { display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: center; background: var(--mk-surface-2); border-radius: var(--mk-radius-sm); padding: 9px 12px; font-size: 14px; }
+.rk-sum b { font-size: 18px; }
+.rk-link { text-decoration: none; color: inherit; text-align: left; }
+@media (max-width: 680px) {
+    .rk-scale-wrap { grid-template-columns: 1fr; }
+    .rk-act { grid-template-columns: 22px minmax(0, 1fr) 28px; } .rk-act .date { grid-column: 2 / -1; }
 }

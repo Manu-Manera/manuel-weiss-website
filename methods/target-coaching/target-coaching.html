@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ziel-Coaching (GROW) | Manuel Weiss</title>
-    <meta name="description" content="Coache dich selbst durch das bewährte GROW-Modell: Goal, Reality, Options, Will – von der Zielklärung bis zum verbindlichen ersten Schritt.">
+    <title>Ziel-Coaching mit GROW | Manuel Weiss</title>
+    <meta name="description" content="Selbstcoaching mit dem GROW-Modell: Goal, Reality, Options, Will – mit Zielskala, Hindernis-Analyse, Wirkung/Aufwand-Matrix für Optionen, Verbindlichkeits-Check und Fortschritts-Check-ins.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="target-coaching.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>:root { --mk-accent: #6366f1; --mk-accent-2: #22c55e; --mk-accent-soft: rgba(99,102,241,.12); }</style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
         <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
-        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-seedling"></i></span><span>Ziel-Coaching · GROW</span></div>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-seedling"></i></span><span>GROW</span></div>
         <span class="mk-topbar-spacer"></span>
         <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
     </header>
@@ -21,52 +21,108 @@
     <main class="mk-shell">
         <section class="mk-hero">
             <div class="mk-hero-icon"><i class="fas fa-seedling"></i></div>
-            <div class="mk-kicker">Persönlichkeitsentwicklung · Coaching</div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Coaching (Whitmore)</div>
             <h1>Coache dich selbst mit GROW</h1>
-            <p>GROW ist das meistgenutzte Coaching-Modell der Welt. In vier Schritten – Goal, Reality, Options, Will – führst du dich selbst von der Zielklärung bis zur konkreten Umsetzung.</p>
-            <div class="mk-badges"><span class="mk-badge">Goal</span><span class="mk-badge">Reality</span><span class="mk-badge">Options</span><span class="mk-badge">Will</span></div>
+            <p>GROW ist das meistgenutzte Coaching-Modell: <strong>G</strong>oal – <strong>R</strong>eality – <strong>O</strong>ptions – <strong>W</strong>ill. Du klärst, wohin du willst, wo du stehst, welche Wege es gibt und was du wirklich tust. Mit Zielskala, Optionen-Matrix und Check-ins zum Dranbleiben.</p>
+            <div class="mk-badges"><span class="mk-badge">Zielskala</span><span class="mk-badge">Hindernis-Analyse</span><span class="mk-badge">Optionen-Matrix</span><span class="mk-badge">Check-ins</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
         <section class="mk-step active" data-step="1">
+            <div class="mk-card tc-g">
+                <h2><span class="tc-letter">G</span> Goal — dein Ziel</h2>
+                <div class="mk-field"><label for="tc-goal">Was willst du erreichen?</label><textarea class="mk-textarea" id="tc-goal" data-mk-field="goal" placeholder="So konkret wie möglich – was ist am Ende anders?"></textarea></div>
+                <div id="tc-goalcheck"></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="tc-until">Bis wann?</label><input class="mk-input" type="date" id="tc-until" data-mk-field="until"></div>
+                    <div class="mk-field"><label for="tc-measure">Woran misst du den Erfolg?</label><input class="mk-input" id="tc-measure" data-mk-field="measure" placeholder="Zahl, Ereignis, Beobachtung"></div>
+                </div>
+                <div class="mk-field"><label for="tc-why">Warum ist dir das wichtig – was ändert sich dadurch für dich?</label><textarea class="mk-textarea" id="tc-why" data-mk-field="why" placeholder="…"></textarea></div>
+            </div>
             <div class="mk-card">
-                <h2>G · Goal — dein Ziel</h2>
-                <div class="mk-field"><label>Was willst du erreichen? Woran erkennst du den Erfolg?</label><textarea class="mk-textarea" data-mk-field="goal"></textarea></div>
-                <div class="mk-field"><label>Warum ist dir das wichtig?</label><textarea class="mk-textarea" data-mk-field="why"></textarea></div>
+                <h3>Die Zielskala</h3>
+                <p class="mk-sub">10 = Ziel vollständig erreicht. Beschreibe, wie 10 aussieht – und was ein realistisches „gut genug" wäre.</p>
+                <div id="tc-scale-def"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
+            <div class="mk-card tc-r">
+                <h2><span class="tc-letter">R</span> Reality — der Ist-Zustand</h2>
+                <div id="tc-now"></div>
+                <div class="mk-field" style="margin-top:14px"><label for="tc-reality">Wo stehst du gerade? Was hast du schon versucht – mit welchem Ergebnis?</label><textarea class="mk-textarea" id="tc-reality" data-mk-field="reality" placeholder="Fakten, nicht Bewertungen."></textarea></div>
+                <div class="mk-field"><label for="tc-nottried">Was hast du noch <strong>nicht</strong> versucht?</label><textarea class="mk-textarea" id="tc-nottried" data-mk-field="nottried" placeholder="Oft der interessanteste Teil."></textarea></div>
+            </div>
             <div class="mk-card">
-                <h2>R · Reality — der Ist-Zustand</h2>
-                <div class="mk-field"><label>Wo stehst du gerade? Was hast du schon versucht?</label><textarea class="mk-textarea" data-mk-field="reality" style="min-height:120px;"></textarea></div>
-                <div class="mk-field"><label>Was hält dich zurück?</label><textarea class="mk-textarea" data-mk-field="obstacles"></textarea></div>
+                <h3>Was hält dich zurück?</h3>
+                <p class="mk-sub">Jedes Hindernis bekommt ein Etikett: liegt es in dir, in anderen oder in den Umständen?</p>
+                <div id="tc-obstacles"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Was hast du schon?</h3>
+                <div class="mk-chips" id="tc-res"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="tc-resnote">Konkret</label><textarea class="mk-textarea" id="tc-resnote" data-mk-field="resnote" placeholder="Fähigkeiten, Menschen, Erfahrungen, Mittel …"></textarea></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
+            <div class="mk-card tc-o">
+                <h2><span class="tc-letter">O</span> Options — Möglichkeiten</h2>
+                <p class="mk-sub">Erst Menge, dann Qualität. Sammle mindestens fünf – auch solche, die du nie tun würdest. Dann bewerte Wirkung und Aufwand.</p>
+                <div class="mk-section-label">Fragen, die neue Optionen öffnen</div>
+                <div class="mk-chips" id="tc-prompts"></div>
+                <div id="tc-options"></div>
+            </div>
             <div class="mk-card">
-                <h2>O · Options — Möglichkeiten</h2>
-                <p class="mk-sub">Sammle Wege, ohne sie zu bewerten. Was wäre alles denkbar?</p>
-                <div style="display:flex; gap:10px;"><input class="mk-input" id="tc-opt" placeholder="Eine Möglichkeit …"><button class="mk-btn mk-btn-ghost" id="tc-add"><i class="fas fa-plus"></i></button></div>
-                <div id="tc-opts" style="margin-top:12px;"></div>
+                <h3>Wirkung × Aufwand</h3>
+                <div id="tc-matrix"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="4">
+            <div class="mk-card tc-w">
+                <h2><span class="tc-letter">W</span> Will — dein Wille</h2>
+                <p class="mk-sub">Nicht „könnte", nicht „sollte" – was <strong>wirst</strong> du tun?</p>
+                <div id="tc-will"></div>
+            </div>
             <div class="mk-card">
-                <h2>W · Will — dein Wille</h2>
-                <div class="mk-field"><label>Für welche Option entscheidest du dich?</label><textarea class="mk-textarea" data-mk-field="choice"></textarea></div>
-                <div class="mk-field"><label>Dein erster Schritt – wann genau?</label><input class="mk-input" data-mk-field="firststep"></div>
-                <div class="mk-field"><label>Wie verbindlich ist das für dich (1–10)?</label><div class="mk-range-wrap"><input class="mk-range" type="range" min="1" max="10" data-mk-field="commitment" value="7"><span class="mk-range-val" data-mk-rangeval="commitment">7</span></div></div>
-                <button class="mk-btn mk-btn-primary" id="tc-export"><i class="fas fa-download"></i> Herunterladen</button>
+                <h3>Verbindlichkeit</h3>
+                <div id="tc-commit"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Wenn-Dann</h3>
+                <p class="mk-sub">Für jedes Hindernis aus Reality: Wenn es auftaucht, dann …</p>
+                <div id="tc-ifthen"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>Check-in</h2>
+                <p class="mk-sub">Komm regelmässig zurück. Wo stehst du auf der Zielskala – und was hat sich bewegt?</p>
+                <div id="tc-checkin"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Dein GROW auf einen Blick</h3>
+                <div id="tc-summary"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="tc-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="tc-export"><i class="fas fa-download"></i> Plan herunterladen</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button>
+                </div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 4</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -81,28 +137,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        (async function () {
-            await MethodKit.init({
-                method: 'target-coaching',
-                accent: '#6366f1', accent2: '#22c55e',
-                steps: [{icon:'🎯',label:'Goal'},{icon:'📍',label:'Reality'},{icon:'💡',label:'Options'},{icon:'✅',label:'Will'}],
-                defaultState: { goal:'',why:'',reality:'',obstacles:'',options:[],choice:'',firststep:'',commitment:7 }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-            function renderOpts(){
-                const host=document.getElementById('tc-opts');
-                if(!S.options.length){ host.innerHTML='<div class="mk-empty">Noch keine Optionen.</div>'; return; }
-                host.innerHTML=S.options.map((o,i)=>`<div class="mk-row"><div class="grow">💡 ${MethodKit.esc(o)}</div><button class="mk-iconbtn" data-d="${i}"><i class="fas fa-trash"></i></button></div>`).join('');
-                host.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',()=>{ S.options.splice(+b.dataset.d,1); MethodKit.save(); renderOpts(); }));
-            }
-            document.getElementById('tc-add').addEventListener('click',()=>{ const i=document.getElementById('tc-opt'); if(!i.value.trim())return; S.options.push(i.value.trim()); i.value=''; MethodKit.save(); renderOpts(); });
-            renderOpts();
-            document.getElementById('tc-export').addEventListener('click',()=>{
-                MethodKit.exportText('mein-grow-plan.txt', `ZIEL-COACHING (GROW)\n====================\n\nGoal: ${S.goal}\nWarum: ${S.why}\n\nReality: ${S.reality}\nHindernisse: ${S.obstacles}\n\nOptions:\n${S.options.map(o=>'  - '+o).join('\n')||'  –'}\n\nWill: ${S.choice}\nErster Schritt: ${S.firststep}\nVerbindlichkeit: ${S.commitment}/10\n`);
-            });
-        })();
-    </script>
+    <script src="target-coaching.js?v=20261003"></script>
 </body>
 </html>

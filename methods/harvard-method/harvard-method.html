@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Harvard-Methode | Manuel Weiss</title>
-    <meta name="description" content="Verhandle sachbezogen nach dem Harvard-Konzept: Mensch und Problem trennen, Interessen vor Positionen, Optionen schaffen, objektive Kriterien und BATNA.">
+    <meta name="description" content="Verhandeln nach der Harvard-Methode: Mensch und Problem trennen, Interessen statt Positionen, Optionen zum beiderseitigen Vorteil, objektive Kriterien und BATNA – mit Interessen-Abgleich und Optionen-Bewertung.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="harvard-method.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>:root { --mk-accent: #6366f1; --mk-accent-2: #0ea5e9; --mk-accent-soft: rgba(99,102,241,.12); }</style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
         <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
-        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-scale-balanced"></i></span><span>Harvard-Methode</span></div>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-scale-balanced"></i></span><span>Harvard</span></div>
         <span class="mk-topbar-spacer"></span>
         <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
     </header>
@@ -21,10 +21,10 @@
     <main class="mk-shell">
         <section class="mk-hero">
             <div class="mk-hero-icon"><i class="fas fa-scale-balanced"></i></div>
-            <div class="mk-kicker">Persönlichkeitsentwicklung · Verhandeln</div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Verhandeln (Fisher & Ury)</div>
             <h1>Hart in der Sache, weich zum Menschen</h1>
-            <p>Das Harvard-Konzept führt zu Ergebnissen, die beide Seiten tragen. Vier Prinzipien plus deine beste Alternative (BATNA) machen dich in jeder Verhandlung souverän.</p>
-            <div class="mk-badges"><span class="mk-badge">Interessen</span><span class="mk-badge">Optionen</span><span class="mk-badge">BATNA</span></div>
+            <p>Die Harvard-Methode ersetzt Feilschen um Positionen durch die Suche nach Interessen. Vier Prinzipien: Mensch und Problem trennen, Interessen statt Positionen, Optionen zum beiderseitigen Vorteil, objektive Kriterien – plus deine BATNA als Rückhalt.</p>
+            <div class="mk-badges"><span class="mk-badge">Interessen-Abgleich</span><span class="mk-badge">Optionen-Matrix</span><span class="mk-badge">BATNA-Vergleich</span><span class="mk-badge">Gesprächsplan</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
@@ -32,49 +32,91 @@
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
                 <h2>Die Verhandlung</h2>
-                <div class="mk-field"><label>Worum geht es, mit wem?</label><textarea class="mk-textarea" data-mk-field="situation" placeholder="z. B. Gehaltsverhandlung mit meiner Vorgesetzten."></textarea></div>
+                <div class="mk-field"><label for="hm-situation">Worum geht es – und mit wem?</label><textarea class="mk-textarea" id="hm-situation" data-mk-field="situation" placeholder="z. B. Gehaltsgespräch mit meiner Chefin · Aufgabenverteilung mit meinem Mitbewohner · Preisverhandlung mit einem Lieferanten"></textarea></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="hm-who">Gegenseite</label><input class="mk-input" id="hm-who" data-mk-field="who" placeholder="Name / Rolle"></div>
+                    <div class="mk-field"><label for="hm-deadline">Bis wann muss es entschieden sein?</label><input class="mk-input" id="hm-deadline" data-mk-field="deadline" placeholder="Datum oder „offen"</div>
+                </div>
+                <div id="hm-stakes"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
                 <h2>1 · Mensch und Problem trennen</h2>
-                <p class="mk-sub">Geh die Sache hart an, die Person wertschätzend. Was ist Sachthema, was ist Beziehungsebene?</p>
-                <div class="mk-field"><label>Sachthema</label><textarea class="mk-textarea" data-mk-field="issue"></textarea></div>
-                <div class="mk-field"><label>Beziehung / Emotionen im Spiel</label><textarea class="mk-textarea" data-mk-field="relationship"></textarea></div>
+                <p class="mk-sub">Was ist die Sache – und was ist Beziehung, Emotion, Geschichte? Beides ist real, aber es wird getrennt behandelt.</p>
+                <div class="mk-field"><label for="hm-issue">Das Sachthema in einem Satz</label><input class="mk-input" id="hm-issue" data-mk-field="issue" placeholder="Worüber genau wird entschieden?"></div>
+                <div id="hm-emotions"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="hm-relationship">Was steht zwischen euch, das nichts mit der Sache zu tun hat?</label><textarea class="mk-textarea" id="hm-relationship" data-mk-field="relationship" placeholder="Alte Konflikte, Missverständnisse, Status, Vertrauen …"></textarea></div>
+                <div class="mk-field"><label for="hm-relplan">Wie sprichst du das Zwischenmenschliche an – getrennt von der Sache?</label><textarea class="mk-textarea" id="hm-relplan" data-mk-field="relplan" placeholder="z. B. „Bevor wir über die Zahlen sprechen: Mir ist wichtig, dass wir danach weiter gut zusammenarbeiten."></textarea></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
             <div class="mk-card">
                 <h2>2 · Interessen statt Positionen</h2>
-                <p class="mk-sub">Hinter jeder Forderung steckt ein Interesse. Frag „Warum?" und „Wozu?".</p>
-                <div class="mk-field"><label>Meine Interessen (das Warum hinter meiner Forderung)</label><textarea class="mk-textarea" data-mk-field="myInterests"></textarea></div>
-                <div class="mk-field"><label>Vermutete Interessen der Gegenseite</label><textarea class="mk-textarea" data-mk-field="theirInterests"></textarea></div>
+                <p class="mk-sub">Eine Position ist, <em>was</em> jemand fordert. Ein Interesse ist, <em>warum</em>. Hinter unvereinbaren Positionen stehen oft vereinbare Interessen.</p>
+                <div class="hm-sides">
+                    <div class="hm-side mine"><h3>Ich</h3><div id="hm-mine"></div></div>
+                    <div class="hm-side theirs"><h3 id="hm-theirs-h">Gegenseite</h3><div id="hm-theirs"></div></div>
+                </div>
+            </div>
+            <div class="mk-card">
+                <h3>Interessen-Abgleich</h3>
+                <div id="hm-match"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="4">
             <div class="mk-card">
                 <h2>3 · Optionen zum beiderseitigen Vorteil</h2>
-                <p class="mk-sub">Sammle erst Möglichkeiten, ohne sofort zu bewerten. Mehr Optionen = mehr Spielraum.</p>
-                <div style="display:flex; gap:10px;"><input class="mk-input" id="hm-opt" placeholder="Mögliche Lösung …"><button class="mk-btn mk-btn-ghost" id="hm-add"><i class="fas fa-plus"></i></button></div>
-                <div id="hm-opts" style="margin-top:12px;"></div>
+                <p class="mk-sub">Erst sammeln, dann bewerten. Je mehr Optionen, desto grösser der Kuchen. Bewerte jede danach, wie gut sie <em>beide</em> Seiten bedient.</p>
+                <div id="hm-options"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Optionen-Matrix</h3>
+                <div id="hm-matrix"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="5">
             <div class="mk-card">
-                <h2>4 · Kriterien &amp; BATNA</h2>
-                <div class="mk-field"><label>⚖️ Objektive Kriterien — woran lässt sich Fairness messen?</label><textarea class="mk-textarea" data-mk-field="criteria" placeholder="Marktwert, Vergleichszahlen, Standards, Gutachten …"></textarea></div>
-                <div class="mk-field"><label>🛟 BATNA — deine beste Alternative, falls keine Einigung gelingt</label><textarea class="mk-textarea" data-mk-field="batna" placeholder="Was tust du, wenn die Verhandlung scheitert? Das ist deine Verhandlungsmacht."></textarea></div>
-                <button class="mk-btn mk-btn-primary" id="hm-export"><i class="fas fa-download"></i> Verhandlungsplan herunterladen</button>
+                <h2>4 · Objektive Kriterien</h2>
+                <p class="mk-sub">Woran lässt sich eine faire Lösung messen – unabhängig vom Willen einer Seite?</p>
+                <div id="hm-criteria"></div>
+            </div>
+            <div class="mk-card">
+                <h2>BATNA</h2>
+                <p class="mk-sub"><strong>B</strong>est <strong>A</strong>lternative <strong>t</strong>o a <strong>N</strong>egotiated <strong>A</strong>greement: Was tust du, wenn ihr euch nicht einigt? Je besser deine BATNA, desto gelassener verhandelst du.</p>
+                <div id="hm-batna"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="6">
+            <div class="mk-card">
+                <h2>Dein Verhandlungsplan</h2>
+                <div id="hm-plan"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Nach der Verhandlung</h3>
+                <div class="mk-field"><label for="hm-result">Ergebnis – und was hat funktioniert?</label><textarea class="mk-textarea" id="hm-result" data-mk-field="result" placeholder="…"></textarea></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="hm-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="hm-export"><i class="fas fa-download"></i> Plan herunterladen</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button>
+                </div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 6</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -89,28 +131,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        (async function () {
-            await MethodKit.init({
-                method: 'harvard-method',
-                accent: '#6366f1', accent2: '#0ea5e9',
-                steps: [{icon:'🤝',label:'Situation'},{icon:'🧍',label:'Trennen'},{icon:'🎯',label:'Interessen'},{icon:'💡',label:'Optionen'},{icon:'⚖️',label:'Kriterien'}],
-                defaultState: { situation:'',issue:'',relationship:'',myInterests:'',theirInterests:'',options:[],criteria:'',batna:'' }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-            function renderOpts(){
-                const host=document.getElementById('hm-opts');
-                if(!S.options.length){ host.innerHTML='<div class="mk-empty">Noch keine Optionen.</div>'; return; }
-                host.innerHTML=S.options.map((o,i)=>`<div class="mk-row"><div class="grow">💡 ${MethodKit.esc(o)}</div><button class="mk-iconbtn" data-d="${i}"><i class="fas fa-trash"></i></button></div>`).join('');
-                host.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',()=>{ S.options.splice(+b.dataset.d,1); MethodKit.save(); renderOpts(); }));
-            }
-            document.getElementById('hm-add').addEventListener('click',()=>{ const i=document.getElementById('hm-opt'); if(!i.value.trim())return; S.options.push(i.value.trim()); i.value=''; MethodKit.save(); renderOpts(); });
-            renderOpts();
-            document.getElementById('hm-export').addEventListener('click',()=>{
-                MethodKit.exportText('mein-verhandlungsplan.txt', `HARVARD-METHODE\n===============\n\nSituation: ${S.situation}\n\nSachthema: ${S.issue}\nBeziehung: ${S.relationship}\n\nMeine Interessen: ${S.myInterests}\nIhre Interessen: ${S.theirInterests}\n\nOptionen:\n${S.options.map(o=>'  - '+o).join('\n')||'  –'}\n\nKriterien: ${S.criteria}\nBATNA: ${S.batna}\n`);
-            });
-        })();
-    </script>
+    <script src="harvard-method.js?v=20261003"></script>
 </body>
 </html>

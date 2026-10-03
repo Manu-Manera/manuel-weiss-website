@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Walt-Disney-Methode | Manuel Weiss</title>
-    <meta name="description" content="Betrachte deine Idee aus drei Rollen – Träumer, Realist und Kritiker – und entwickle daraus einen tragfähigen Plan.">
+    <meta name="description" content="Walt-Disney-Methode: Träumer, Realist, Kritiker – drei getrennte Denkräume mit Rollen-Check, Plan pro Idee, konstruktiver Kritik und zweiter Runde zur Synthese.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="walt-disney.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>:root { --mk-accent: #8b5cf6; --mk-accent-2: #ec4899; --mk-accent-soft: rgba(139,92,246,.12); }</style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
@@ -21,10 +21,10 @@
     <main class="mk-shell">
         <section class="mk-hero">
             <div class="mk-hero-icon"><i class="fas fa-masks-theater"></i></div>
-            <div class="mk-kicker">Persönlichkeitsentwicklung · Kreativtechnik</div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Kreativtechnik (Dilts nach Disney)</div>
             <h1>Drei Rollen, ein starker Plan</h1>
-            <p>Walt Disney trennte beim Entwickeln bewusst drei Denkweisen. Schlüpfe nacheinander in den <strong>Träumer</strong>, den <strong>Realisten</strong> und den <strong>Kritiker</strong> – so entstehen Ideen, die zugleich kühn und umsetzbar sind.</p>
-            <div class="mk-badges"><span class="mk-badge">Träumer</span><span class="mk-badge">Realist</span><span class="mk-badge">Kritiker</span></div>
+            <p>Walt Disney trennte drei Denkweisen in drei Räume: Der <strong>Träumer</strong> darf alles, der <strong>Realist</strong> macht daraus Pläne, der <strong>Kritiker</strong> findet die Lücken. Entscheidend ist die Trennung – wer gleichzeitig träumt und kritisiert, bekommt weder gute Ideen noch gute Pläne.</p>
+            <div class="mk-badges"><span class="mk-badge">Rollen-Check</span><span class="mk-badge">Plan pro Idee</span><span class="mk-badge">Konstruktive Kritik</span><span class="mk-badge">Runde 2</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
@@ -32,42 +32,81 @@
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
                 <h2>Worüber denkst du nach?</h2>
-                <p class="mk-sub">Eine Idee, ein Vorhaben, eine Entscheidung – benenne sie.</p>
-                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="idea" placeholder="z. B. „Ich möchte einen Podcast starten""></textarea></div>
+                <div class="mk-field"><label for="wd-idea">Die Idee, das Projekt oder die Frage</label><textarea class="mk-textarea" id="wd-idea" data-mk-field="idea" placeholder="z. B. Ein eigenes Buch schreiben · Die Teamstruktur neu aufsetzen · Ein Sabbatical nehmen"></textarea></div>
+                <div class="mk-field"><label for="wd-horizon">Zeithorizont</label><select class="mk-select" id="wd-horizon" data-mk-field="horizon"><option value="">–</option><option>Wochen</option><option>Monate</option><option>1 Jahr</option><option>Mehrere Jahre</option></select></div>
+            </div>
+            <div class="mk-card">
+                <h3>Die drei Räume</h3>
+                <div class="wd-rooms">
+                    <div class="wd-room d"><span class="ic">💭</span><b>Träumer</b><small>Alles ist möglich. Keine Einwände, kein „aber". Was wäre ideal?</small></div>
+                    <div class="wd-room r"><span class="ic">🛠️</span><b>Realist</b><small>Wie genau? Was braucht es? Wer, wann, womit? Keine Bewertung.</small></div>
+                    <div class="wd-room c"><span class="ic">🔍</span><b>Kritiker</b><small>Was fehlt? Welche Risiken? Fragen stellen – nicht abwerten.</small></div>
+                </div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
-            <div class="mk-card" style="border-top:4px solid #f59e0b;">
+            <div class="mk-card wd-cd">
                 <h2>💭 Der Träumer</h2>
-                <p class="mk-sub">Keine Grenzen, keine Bedenken. Wenn alles möglich wäre – wie sähe das Ideal aus? Denk groß, bunt, übertrieben.</p>
-                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="dreamer" style="min-height:160px;" placeholder="Träume frei … Was wäre fantastisch? Wie fühlt es sich an, wenn es perfekt läuft?"></textarea></div>
+                <p class="mk-sub">Du bist im Traumraum. Geld, Zeit und Können sind unbegrenzt. Beschreibe die ideale Version – in Bildern, nicht in Plänen. Jeder Einwand wird erst beim Kritiker zugelassen.</p>
+                <div class="mk-section-label">Traum-Starter</div>
+                <div class="mk-chips" id="wd-dprompts"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="wd-dreamtext">Die Vision in Bildern</label><textarea class="mk-textarea" id="wd-dreamtext" data-mk-field="dreamer" placeholder="Es ist [Zeitpunkt]. Ich sehe …"></textarea></div>
+                <div id="wd-dcheck"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Die Traum-Elemente</h3>
+                <p class="mk-sub">Zerlege die Vision in einzelne Bausteine. Jeder bekommt später einen Plan.</p>
+                <div id="wd-dreams"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
-            <div class="mk-card" style="border-top:4px solid #3b82f6;">
+            <div class="mk-card wd-cr">
                 <h2>🛠️ Der Realist</h2>
-                <p class="mk-sub">Jetzt der Macher: Wie lässt sich der Traum konkret umsetzen? Welche Schritte, Ressourcen, Termine?</p>
-                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="realist" style="min-height:160px;" placeholder="Konkrete Schritte, was du brauchst, wer hilft, wann was passiert …"></textarea></div>
+                <p class="mk-sub">Du bist im Planungsraum. Die Träume sind gesetzt – nicht hinterfragen, sondern umsetzen. Für jedes Element: Wie, womit, mit wem, bis wann?</p>
+                <div id="wd-plans"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Ressourcen gesamt</h3>
+                <div id="wd-resources"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="4">
-            <div class="mk-card" style="border-top:4px solid #ef4444;">
+            <div class="mk-card wd-cc">
                 <h2>🔍 Der Kritiker</h2>
-                <p class="mk-sub">Konstruktiv prüfen – nicht zerstören. Was fehlt? Wo sind Risiken? Was würde ein wohlwollender Profi verbessern?</p>
-                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="critic" style="min-height:160px;" placeholder="Welche Schwachstellen, Annahmen, Hürden? Welche Frage ist noch offen?"></textarea></div>
+                <p class="mk-sub">Du bist im Prüfraum. Der Kritiker ist kein Miesmacher, sondern Qualitätssicherung. Er greift die Pläne an – nie den Träumer. Gute Kritik ist eine Frage: „Was passiert, wenn …?"</p>
+                <div id="wd-critics"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Gesamtrisiko</h3>
+                <div id="wd-risk"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="5">
             <div class="mk-card">
-                <h2>✨ Synthese</h2>
-                <p class="mk-sub">Nimm das Beste aus allen drei Rollen und formuliere deinen tragfähigen, verbesserten Plan.</p>
+                <h2>✨ Synthese – Runde 2</h2>
+                <p class="mk-sub">Jetzt geht der Realist noch einmal in seinen Raum und beantwortet jede Kritik. Was sich nicht beantworten lässt, geht zurück zum Träumer – oder fliegt raus.</p>
+                <div id="wd-round2"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Der überarbeitete Plan</h3>
                 <div id="wd-recap"></div>
-                <div class="mk-field" style="margin-top:14px;"><label>Mein überarbeiteter Plan</label><textarea class="mk-textarea" data-mk-field="synthesis" style="min-height:140px;" placeholder="So gehe ich es konkret an …"></textarea></div>
-                <button class="mk-btn mk-btn-primary" id="wd-export"><i class="fas fa-download"></i> Plan herunterladen</button>
+                <div class="mk-field" style="margin-top:12px"><label for="wd-synthesis">Zusammenfassung in eigenen Worten</label><textarea class="mk-textarea" id="wd-synthesis" data-mk-field="synthesis" placeholder="Was tue ich jetzt konkret – und was habe ich bewusst weggelassen?"></textarea></div>
+                <div class="mk-field"><label for="wd-first">Erster Schritt</label><input class="mk-input" id="wd-first" data-mk-field="first" placeholder="In den nächsten 7 Tagen"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="wd-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="wd-export"><i class="fas fa-download"></i> Plan herunterladen</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button>
+                </div>
             </div>
         </section>
 
@@ -88,30 +127,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        (async function () {
-            await MethodKit.init({
-                method: 'walt-disney',
-                accent: '#8b5cf6', accent2: '#ec4899',
-                steps: [{icon:'💡',label:'Idee'},{icon:'💭',label:'Träumer'},{icon:'🛠️',label:'Realist'},{icon:'🔍',label:'Kritiker'},{icon:'✨',label:'Synthese'}],
-                defaultState: { idea:'', dreamer:'', realist:'', critic:'', synthesis:'' }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-            MethodKit.onStep=function(n){
-                if(n===5){
-                    document.getElementById('wd-recap').innerHTML=
-                        `<div class="mk-result" style="margin-bottom:10px;"><h4>💡 Idee</h4>${MethodKit.esc(S.idea)||'–'}</div>`+
-                        `<div class="mk-row"><div class="grow"><strong>💭 Traum:</strong> ${MethodKit.esc(S.dreamer)||'–'}</div></div>`+
-                        `<div class="mk-row"><div class="grow"><strong>🛠️ Plan:</strong> ${MethodKit.esc(S.realist)||'–'}</div></div>`+
-                        `<div class="mk-row"><div class="grow"><strong>🔍 Kritik:</strong> ${MethodKit.esc(S.critic)||'–'}</div></div>`;
-                }
-            };
-            document.getElementById('wd-export').addEventListener('click',()=>{
-                const t=`WALT-DISNEY-METHODE\n===================\n\nIdee: ${S.idea}\n\n💭 TRÄUMER:\n${S.dreamer}\n\n🛠️ REALIST:\n${S.realist}\n\n🔍 KRITIKER:\n${S.critic}\n\n✨ PLAN:\n${S.synthesis}\n`;
-                MethodKit.exportText('walt-disney-plan.txt', t);
-            });
-        })();
-    </script>
+    <script src="walt-disney.js?v=20261003"></script>
 </body>
 </html>

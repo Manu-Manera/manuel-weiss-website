@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AEK-Kommunikation | Manuel Weiss</title>
-    <meta name="description" content="AEK-Kommunikation: verbinde Klarheit (Assertive), Einfühlung (Empathetic) und Wertschätzung (Kind) zu einer überzeugenden, respektvollen Botschaft.">
+    <meta name="description" content="AEK-Kommunikation: Assertive, Empathetic, Kind. Schwierige Botschaften klar, einfühlsam und wertschätzend formulieren – mit Ich-Botschaft-Builder, Ton-Check und Gesprächsvorbereitung.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="aek-communication.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>:root { --mk-accent: #14b8a6; --mk-accent-2: #0ea5e9; --mk-accent-soft: rgba(20,184,166,.12); }</style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
         <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
-        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-handshake-angle"></i></span><span>AEK-Kommunikation</span></div>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-handshake-angle"></i></span><span>AEK</span></div>
         <span class="mk-topbar-spacer"></span>
         <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
     </header>
@@ -21,10 +21,10 @@
     <main class="mk-shell">
         <section class="mk-hero">
             <div class="mk-hero-icon"><i class="fas fa-handshake-angle"></i></div>
-            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Kommunikation</div>
             <h1>Klar, einfühlsam, wertschätzend</h1>
-            <p>AEK steht für <strong>Assertive</strong> (klar &amp; selbstsicher), <strong>Empathetic</strong> (einfühlsam) und <strong>Kind</strong> (wertschätzend). Diese Balance macht schwierige Gespräche möglich, ohne dass jemand das Gesicht verliert.</p>
-            <div class="mk-badges"><span class="mk-badge">Assertiv</span><span class="mk-badge">Empathisch</span><span class="mk-badge">Wertschätzend</span></div>
+            <p>AEK steht für <strong>Assertive</strong> (klar &amp; selbstsicher), <strong>Empathetic</strong> (einfühlsam) und <strong>Kind</strong> (wertschätzend). Die Balance der drei macht schwierige Gespräche möglich, ohne dass jemand das Gesicht verliert. Du baust deine Botschaft Stück für Stück – und prüfst sie auf Ton und Balance.</p>
+            <div class="mk-badges"><span class="mk-badge">Ich-Botschaft</span><span class="mk-badge">Perspektivwechsel</span><span class="mk-badge">Ton-Check</span><span class="mk-badge">Einwände vorbereiten</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
@@ -32,46 +32,97 @@
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
                 <h2>Dein Anliegen</h2>
-                <div class="mk-field"><label>Was musst du wem mitteilen?</label><textarea class="mk-textarea" data-mk-field="topic" placeholder="z. B. Meinem Chef sagen, dass ich die Deadline nicht halten kann."></textarea></div>
+                <div class="mk-field"><label for="aek-topic">Was musst du wem mitteilen?</label><textarea class="mk-textarea" id="aek-topic" data-mk-field="topic" placeholder="z. B. Meinem Chef sagen, dass ich die Deadline nicht halten kann."></textarea></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="aek-who">Gegenüber</label><input class="mk-input" id="aek-who" data-mk-field="who" placeholder="Name oder Rolle"></div>
+                    <div class="mk-field"><label for="aek-rel">Beziehung</label><select class="mk-select" id="aek-rel" data-mk-field="rel"><option value="">–</option><option>Vorgesetzte:r</option><option>Kolleg:in</option><option>Mitarbeiter:in</option><option>Partner:in</option><option>Familie</option><option>Freund:in</option><option>Kund:in</option><option>Fremde:r</option></select></div>
+                </div>
+                <div id="aek-diff"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Dein Muster in solchen Gesprächen</h3>
+                <p class="mk-sub">Ehrlich: Wohin kippst du, wenn es schwierig wird?</p>
+                <div class="mk-grid aek-styles" id="aek-styles"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
-            <div class="mk-card" style="border-top:4px solid #6366f1;">
+            <div class="mk-card aek-a">
                 <h2>💪 Assertive — klar &amp; ehrlich</h2>
-                <p class="mk-sub">Was ist dein Anliegen, unmissverständlich und ohne Drumherum?</p>
-                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="assertive" placeholder="Sag klar, was Sache ist und was du brauchst."></textarea></div>
+                <p class="mk-sub">Eine Ich-Botschaft hat vier Teile. Jeder Teil ist ein Satz – zusammen ergeben sie dein klares Anliegen.</p>
+                <div id="aek-ibuilder"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Dein klarer Satz</h3>
+                <div id="aek-apreview"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
-            <div class="mk-card" style="border-top:4px solid #14b8a6;">
+            <div class="mk-card aek-e">
                 <h2>❤️ Empathetic — die andere Seite</h2>
-                <p class="mk-sub">Wie geht es deinem Gegenüber? Welche Sorgen, Bedürfnisse oder Zwänge hat die Person?</p>
-                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="empathetic" placeholder="Versetze dich hinein: Was ist für sie wichtig?"></textarea></div>
+                <p class="mk-sub">Wechsle den Stuhl. Antworte, als wärst du dein Gegenüber.</p>
+                <div id="aek-persp"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Dein Empathie-Satz</h3>
+                <p class="mk-sub">Zeigt, dass du die andere Seite gesehen hast – ohne dein Anliegen aufzugeben.</p>
+                <div id="aek-epreview"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="4">
-            <div class="mk-card" style="border-top:4px solid #f59e0b;">
+            <div class="mk-card aek-k">
                 <h2>🤝 Kind — wertschätzend</h2>
-                <p class="mk-sub">Was schätzt du an der Person/Zusammenarbeit? Wie hältst du den Ton respektvoll?</p>
-                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="kind" placeholder="Ehrliche Wertschätzung – kein leeres Lob."></textarea></div>
+                <p class="mk-sub">Echte Wertschätzung ist konkret. „Du bist toll" ist leer – „Du hast mir letzte Woche beim Report den Rücken freigehalten" trägt.</p>
+                <div id="aek-kind"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="5">
             <div class="mk-card">
                 <h2>✉️ Deine AEK-Botschaft</h2>
-                <p class="mk-sub">Eine mögliche Reihenfolge: Wertschätzung → Empathie → klares Anliegen.</p>
-                <div class="mk-result" id="aek-out">…</div>
-                <button class="mk-btn mk-btn-primary" id="aek-export" style="margin-top:14px;"><i class="fas fa-download"></i> Herunterladen</button>
+                <p class="mk-sub">Wähle die Reihenfolge, die zur Situation passt, und feile am Text.</p>
+                <div id="aek-order"></div>
+                <div id="aek-message"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Balance &amp; Ton</h3>
+                <div id="aek-balance"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="6">
+            <div class="mk-card">
+                <h2>Vorbereitung</h2>
+                <p class="mk-sub">Was könnte dein Gegenüber einwenden – und wie bleibst du dabei assertiv, empathisch und freundlich?</p>
+                <div id="aek-objections"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Setting</h3>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="aek-when">Wann führst du das Gespräch?</label><input class="mk-input" id="aek-when" data-mk-field="when" placeholder="z. B. Dienstag nach dem Stand-up"></div>
+                    <div class="mk-field"><label for="aek-where">Wo / wie?</label><input class="mk-input" id="aek-where" data-mk-field="where" placeholder="Unter vier Augen, Video, Spaziergang …"></div>
+                </div>
+                <div class="mk-field"><label for="aek-after">Nach dem Gespräch: Wie lief es? Was hat gewirkt?</label><textarea class="mk-textarea" id="aek-after" data-mk-field="after" placeholder="…"></textarea></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="aek-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="aek-export"><i class="fas fa-download"></i> Herunterladen</button>
+                    <button class="mk-btn mk-btn-outline" id="aek-copy"><i class="fas fa-copy"></i> Botschaft kopieren</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button>
+                </div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 6</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -86,24 +137,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        (async function () {
-            await MethodKit.init({
-                method: 'aek-communication',
-                accent: '#14b8a6', accent2: '#0ea5e9',
-                steps: [{icon:'🎯',label:'Anliegen'},{icon:'💪',label:'Assertive'},{icon:'❤️',label:'Empathetic'},{icon:'🤝',label:'Kind'},{icon:'✉️',label:'Botschaft'}],
-                defaultState: { topic:'',assertive:'',empathetic:'',kind:'' }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-            MethodKit.onStep=function(n){ if(n===5){
-                const out=[S.kind, S.empathetic, S.assertive].filter(Boolean).join(' ');
-                document.getElementById('aek-out').innerHTML=`<h4>✉️ Vorschlag</h4>${MethodKit.esc(out)||'Fülle die Schritte 2–4 aus.'}`;
-            }};
-            document.getElementById('aek-export').addEventListener('click',()=>{
-                MethodKit.exportText('meine-aek-botschaft.txt', `AEK-KOMMUNIKATION\n=================\n\nAnliegen: ${S.topic}\n\nAssertive (klar): ${S.assertive}\nEmpathetic (einfühlsam): ${S.empathetic}\nKind (wertschätzend): ${S.kind}\n`);
-            });
-        })();
-    </script>
+    <script src="aek-communication.js?v=20261003"></script>
 </body>
 </html>
