@@ -4,21 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moment of Excellence | Manuel Weiss</title>
-    <meta name="description" content="Aktiviere deine Spitzenleistung auf Knopfdruck: die NLP-Anker-Technik in fünf geführten Schritten – erkennen, eintauchen, ankern, aktivieren, integrieren.">
+    <meta name="description" content="Moment of Excellence (NLP-Ankertechnik): Spitzenmomente sammeln, den stärksten mit allen Sinnen und Submodalitäten intensivieren, einen Körperanker setzen und testen, auf künftige Situationen übertragen und den Anker durch Übung stabil halten.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="moment-excellence.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { --mk-accent: #eab308; --mk-accent-2: #f59e0b; --mk-accent-soft: rgba(234,179,8,.14); }
-        .me-orb { width:160px; height:160px; border-radius:50%; margin:10px auto; display:flex; align-items:center; justify-content:center; font-size:40px; color:#fff; background:radial-gradient(circle at 35% 30%, var(--mk-accent), var(--mk-accent-2)); box-shadow:0 0 0 0 var(--mk-accent-soft); transition:transform .2s; }
-        .me-orb.run { animation:mepulse 4s ease-in-out infinite; }
-        @keyframes mepulse { 0%,100%{transform:scale(.85);} 50%{transform:scale(1.1);} }
-    </style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
         <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
-        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-bolt"></i></span><span>Moment of Excellence</span></div>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-bolt"></i></span><span>Excellence-Anker</span></div>
         <span class="mk-topbar-spacer"></span>
         <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
     </header>
@@ -28,63 +23,83 @@
             <div class="mk-hero-icon"><i class="fas fa-bolt"></i></div>
             <div class="mk-kicker">Persönlichkeitsentwicklung · NLP</div>
             <h1>Spitzenleistung auf Knopfdruck</h1>
-            <p>Du hattest schon Momente, in denen alles gelang. Mit der Anker-Technik koppelst du dieses Hochgefühl an ein körperliches Signal – und rufst es ab, wann immer du es brauchst.</p>
-            <div class="mk-badges"><span class="mk-badge">Anker-Technik</span><span class="mk-badge">Selbstwirksamkeit</span><span class="mk-badge">Geführt</span></div>
+            <p>Du hattest Momente, in denen alles gelang – klar, ruhig, kraftvoll. Dieser Zustand ist in dir gespeichert. Mit der Ankertechnik koppelst du ihn an ein körperliches Signal und rufst ihn ab, wenn du ihn brauchst: vor dem Gespräch, der Präsentation, der Entscheidung. Ein Anker hält, wenn er intensiv, präzise getimt und einzigartig ist – und wenn du ihn pflegst.</p>
+            <div class="mk-badges"><span class="mk-badge">Momente sammeln</span><span class="mk-badge">Submodalitäten</span><span class="mk-badge">Anker setzen & testen</span><span class="mk-badge">Future Pace</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>1 · Erkennen</h2>
-                <p class="mk-sub">Erinnere dich an einen Moment, in dem du voll in deiner Kraft warst – ein Erfolg, ein Flow, ein Stolz-Moment.</p>
-                <div class="mk-field"><label>Wann & wo war das?</label><input class="mk-input" data-mk-field="when" placeholder="z. B. „Meine Abschlusspräsentation 2022""></div>
-                <div class="mk-field"><label>Was hast du erlebt / erreicht?</label><textarea class="mk-textarea" data-mk-field="what" placeholder="Beschreibe die Situation so lebendig wie möglich."></textarea></div>
-                <div class="mk-field"><label>Wie stark war das Gefühl?</label><div class="mk-range-wrap"><input class="mk-range" type="range" min="1" max="10" data-mk-field="intensity" value="7"><span class="mk-range-val" data-mk-rangeval="intensity">7</span></div></div>
+                <h2>1 · Deine Spitzenmomente</h2>
+                <p class="mk-sub">Sammle drei bis fünf Momente, in denen du ganz bei dir und in deiner Kraft warst. Beruflich, privat, Sport, Bühne – egal. Dann wählst du den stärksten.</p>
+                <div id="me-moments"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
                 <h2>2 · Eintauchen</h2>
-                <p class="mk-sub">Geh nochmal voll hinein. Je intensiver die Sinne, desto stärker der Anker.</p>
-                <div class="mk-field"><label>👁️ Was hast du gesehen?</label><textarea class="mk-textarea" data-mk-field="see" placeholder="Bilder, Farben, Gesichter, Umgebung …"></textarea></div>
-                <div class="mk-field"><label>👂 Was hast du gehört?</label><textarea class="mk-textarea" data-mk-field="hear" placeholder="Stimmen, Geräusche, dein innerer Satz …"></textarea></div>
-                <div class="mk-field"><label>🫀 Was hast du im Körper gespürt?</label><textarea class="mk-textarea" data-mk-field="feel" placeholder="Wo im Körper, welche Qualität, welche Temperatur?"></textarea></div>
-                <div class="mk-field"><label>💭 Welcher Gedanke war da?</label><input class="mk-input" data-mk-field="think" placeholder="z. B. „Ich schaffe das""></div>
+                <div id="me-dive-intro"></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="me-see">👁️ Was siehst du? (Farben, Licht, Gesichter, Perspektive)</label><textarea class="mk-textarea" id="me-see" data-mk-field="see" placeholder="…"></textarea></div>
+                    <div class="mk-field"><label for="me-hear">👂 Was hörst du? (Stimmen, Geräusche, innere Stimme)</label><textarea class="mk-textarea" id="me-hear" data-mk-field="hear" placeholder="…"></textarea></div>
+                    <div class="mk-field"><label for="me-feel">✋ Was spürst du im Körper? (Wo genau? Temperatur, Haltung, Atem)</label><textarea class="mk-textarea" id="me-feel" data-mk-field="feel" placeholder="…"></textarea></div>
+                    <div class="mk-field"><label for="me-think">💭 Was denkst oder sagst du dir?</label><textarea class="mk-textarea" id="me-think" data-mk-field="think" placeholder="…"></textarea></div>
+                </div>
+                <div id="me-vak-note"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Verstärken</h3>
+                <p class="mk-sub">Submodalitäten: Verändere, wie du den Moment innerlich repräsentierst – und beobachte, was das Gefühl stärker macht.</p>
+                <div id="me-submod"></div>
+                <div class="mk-field" style="margin-top:12px"><label>Wie intensiv ist das Gefühl jetzt? <span class="mk-range-val" data-mk-rangeval="intensity">7</span>/10</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" data-mk-field="intensity"></div></div>
+                <div id="me-int-note"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
             <div class="mk-card">
                 <h2>3 · Ankern</h2>
-                <p class="mk-sub">Wähle ein eindeutiges, leicht abrufbares Körpersignal. Genau auf dem Höhepunkt des Gefühls setzt du es – immer gleich.</p>
-                <div class="mk-chips" id="me-anchors" style="margin-bottom:14px;"></div>
-                <div class="mk-field"><label>Eigener Anker (optional)</label><input class="mk-input" data-mk-field="anchor" placeholder="z. B. Daumen und Zeigefinger fest zusammendrücken"></div>
-                <div class="mk-result"><h4><i class="fas fa-circle-info"></i> So gehst du vor</h4>
-                    <ol style="margin:6px 0 0; padding-left:18px;"><li>Geh in den Moment, bis das Gefühl ansteigt.</li><li>Auf dem Höhepunkt: setze deinen Anker (3–5 Sek).</li><li>Genau bevor das Gefühl abflacht: löse den Anker.</li><li>Kurz ablenken, dann 3–5× wiederholen.</li></ol>
-                </div>
+                <p class="mk-sub">Ein Körpersignal, das du sonst nie machst – und das du unauffällig überall einsetzen kannst.</p>
+                <div id="me-anchors"></div>
+                <div class="mk-field" style="margin-top:8px"><label for="me-anchor-custom">Oder dein eigener Anker</label><input class="mk-input" id="me-anchor-custom" data-mk-field="anchorCustom" placeholder="z. B. Ring am Finger drehen"></div>
+                <div id="me-anchor-check"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Geführtes Ankern</h3>
+                <div class="me-orb-wrap"><div class="me-orb" id="me-orb"></div><div class="me-guide" id="me-guide">Bereit? Setz dich bequem hin.</div></div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center;"><button class="mk-btn mk-btn-primary" id="me-practice"><i class="fas fa-play"></i> Anker setzen (30 s)</button><span class="mk-faint">Geübt: <strong id="me-count">0</strong>×</span></div>
+                <div id="me-practice-note"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Anker testen</h3>
+                <p class="mk-sub">Mach eine Pause, denk an etwas Neutrales (z. B. deine Einkaufsliste). Dann löse nur den Anker aus – ohne an den Moment zu denken. Was passiert?</p>
+                <div id="me-test"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="4">
-            <div class="mk-card" style="text-align:center;">
-                <h2>4 · Aktivieren</h2>
-                <p class="mk-sub">Übe das Abrufen. Atme ruhig, geh in den Moment – und setze auf dem Höhepunkt deinen Anker.</p>
-                <div class="me-orb" id="me-orb"><i class="fas fa-bolt"></i></div>
-                <div id="me-guide" style="font-weight:600; min-height:24px;">Bereit?</div>
-                <button class="mk-btn mk-btn-primary" id="me-practice" style="margin-top:14px;"><i class="fas fa-play"></i> Anker üben (20 Sek)</button>
-                <div class="mk-savebadge" style="justify-content:center; margin-top:12px;"><i class="fas fa-bolt"></i> <span id="me-count">0</span>× geübt</div>
+            <div class="mk-card">
+                <h2>4 · Future Pace</h2>
+                <p class="mk-sub">In welchen Situationen brauchst du den Zustand? Stell dir jede vor – erst ohne, dann mit Anker.</p>
+                <div id="me-sits"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="5">
             <div class="mk-card">
-                <h2>5 · Integrieren</h2>
-                <p class="mk-sub">In welchen kommenden Situationen wirst du deinen Anker bewusst einsetzen?</p>
-                <div style="display:flex; gap:10px;"><input class="mk-input" id="me-sit" placeholder="z. B. „Vor dem nächsten Vorstellungsgespräch""><button class="mk-btn mk-btn-ghost" id="me-add"><i class="fas fa-plus"></i></button></div>
-                <div id="me-sits" style="margin-top:14px;"></div>
-                <button class="mk-btn mk-btn-primary" id="me-export" style="margin-top:14px;"><i class="fas fa-download"></i> Mein Anker-Protokoll</button>
+                <h2>5 · Anker pflegen</h2>
+                <div id="me-care"></div>
+                <div id="me-summary"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="me-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="me-export"><i class="fas fa-download"></i> Herunterladen</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button></div>
             </div>
         </section>
 
@@ -105,48 +120,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        const ANCHORS = ['👌 Daumen & Zeigefinger drücken','✊ Faust ballen','🤙 Ohrläppchen berühren','👍 Daumen drücken','🖐️ Handfläche pressen'];
-        (async function () {
-            await MethodKit.init({
-                method: 'moment-excellence',
-                accent: '#eab308', accent2: '#f59e0b',
-                steps: [{icon:'🔍',label:'Erkennen'},{icon:'🌊',label:'Eintauchen'},{icon:'⚓',label:'Ankern'},{icon:'⚡',label:'Aktivieren'},{icon:'🔗',label:'Integrieren'}],
-                defaultState: { when:'',what:'',intensity:7,see:'',hear:'',feel:'',think:'',anchor:'',practiced:0,situations:[] }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-
-            const ah=document.getElementById('me-anchors');
-            function renderAnchors(){
-                ah.innerHTML=ANCHORS.map(a=>`<button class="mk-chip ${S.anchor===a?'selected':''}" data-a="${MethodKit.esc(a)}">${a}</button>`).join('');
-                ah.querySelectorAll('[data-a]').forEach(el=>el.addEventListener('click',()=>{ S.anchor=el.dataset.a; document.querySelector('[data-mk-field="anchor"]').value=''; MethodKit.save(); renderAnchors(); }));
-            }
-            renderAnchors();
-
-            document.getElementById('me-count').textContent = S.practiced||0;
-            const orb=document.getElementById('me-orb'), guide=document.getElementById('me-guide'), btn=document.getElementById('me-practice');
-            btn.addEventListener('click',()=>{
-                btn.disabled=true; orb.classList.add('run');
-                const steps=[[0,'Schließe die Augen. Atme ruhig.'],[4,'Geh zurück in deinen Moment …'],[9,'Das Gefühl steigt … sieh, höre, spüre es!'],[14,'Jetzt – setze deinen Anker! 👌'],[18,'Halte … und löse.']];
-                steps.forEach(([t,m])=>setTimeout(()=>guide.textContent=m, t*1000));
-                setTimeout(()=>{ orb.classList.remove('run'); guide.textContent='Stark! 💪'; btn.disabled=false; S.practiced=(S.practiced||0)+1; document.getElementById('me-count').textContent=S.practiced; MethodKit.save(); MethodKit.toast('Übung abgeschlossen','success'); }, 20000);
-            });
-
-            function renderSits(){
-                const h=document.getElementById('me-sits');
-                if(!S.situations.length){ h.innerHTML='<div class="mk-empty">Noch keine Situationen.</div>'; return; }
-                h.innerHTML=S.situations.map(s=>`<div class="mk-row"><div class="grow">${MethodKit.esc(s.text)}</div><button class="mk-iconbtn" data-del="${s.id}"><i class="fas fa-trash"></i></button></div>`).join('');
-                h.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ S.situations=S.situations.filter(x=>x.id!==b.dataset.del); MethodKit.save(); renderSits(); }));
-            }
-            document.getElementById('me-add').addEventListener('click',()=>{ const i=document.getElementById('me-sit'); if(!i.value.trim())return; S.situations.push({id:MethodKit.uid(),text:i.value.trim()}); i.value=''; MethodKit.save(); renderSits(); });
-            renderSits();
-
-            document.getElementById('me-export').addEventListener('click',()=>{
-                const t=`MEIN ANKER-PROTOKOLL\n====================\n\nMoment: ${S.when}\n${S.what}\nIntensität: ${S.intensity}/10\n\nSinne:\n  Sehen: ${S.see}\n  Hören: ${S.hear}\n  Fühlen: ${S.feel}\n  Gedanke: ${S.think}\n\nAnker: ${S.anchor||document.querySelector('[data-mk-field="anchor"]').value||'–'}\nGeübt: ${S.practiced||0}×\n\nEinsatz-Situationen:\n`+S.situations.map(s=>`  - ${s.text}`).join('\n');
-                MethodKit.exportText('mein-anker-protokoll.txt', t);
-            });
-        })();
-    </script>
+    <script src="moment-excellence.js?v=20261003"></script>
 </body>
 </html>

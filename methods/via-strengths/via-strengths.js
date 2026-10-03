@@ -1,939 +1,127 @@
-// VIA Character Strengths Assessment
-class VIAStrengthsAssessment {
-    constructor() {
-        this.currentStep = 1;
-        this.currentQuestion = 0;
-        this.answers = {};
-        this.strengths = {};
-        this.top5Strengths = [];
-        this.totalSteps = 7;
-        this.totalQuestions = 120;
-        
-        this.init();
+/* VIA-Charakterstärken · Logik */
+(function () {
+    'use strict';
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => MethodKit.esc(s);
+    let S;
+
+    const VIRTUES = [
+        { id: 'wis', ic: '🦉', t: 'Weisheit & Wissen', c: '#6366f1', s: [['Kreativität', 'Neue, produktive Wege finden, Dinge zu tun', 'Koch heute ohne Rezept · Löse ein Alltagsproblem auf eine Art, die du noch nie probiert hast'], ['Neugier', 'Interesse an allem, was ist; Entdeckerfreude', 'Nimm einen unbekannten Heimweg · Stell jemandem drei Fragen, die du dich sonst nicht traust'], ['Urteilsvermögen', 'Dinge durchdenken, von allen Seiten betrachten', 'Vertritt heute bewusst die Gegenposition zu deiner Meinung · Suche aktiv nach einem Argument gegen deine Überzeugung'], ['Liebe zum Lernen', 'Neue Fähigkeiten und Wissen erwerben – um ihrer selbst willen', 'Lerne zehn Wörter einer fremden Sprache · Schau eine Dokumentation zu etwas, das dich nie interessiert hat'], ['Weitsicht', 'Anderen weisen Rat geben, das grosse Ganze sehen', 'Frag jemanden, der bei einer Entscheidung ringt, drei Fragen statt eine Antwort zu geben']] },
+        { id: 'cou', ic: '🦁', t: 'Mut', c: '#ef4444', s: [['Tapferkeit', 'Vor Bedrohung oder Schmerz nicht zurückschrecken, für Richtiges eintreten', 'Sprich etwas Unbequemes an, das du seit Wochen aufschiebst'], ['Ausdauer', 'Beenden, was man angefangen hat', 'Bring heute eine liegengebliebene Aufgabe zu Ende – komplett'], ['Ehrlichkeit', 'Die Wahrheit sagen, authentisch sein', 'Sag heute einmal „Ich weiss es nicht" oder „Ich habe das falsch gemacht"'], ['Enthusiasmus', 'Mit Energie und Begeisterung leben', 'Mach etwas Körperliches, das dich wach macht, bevor der Tag richtig losgeht']] },
+        { id: 'hum', ic: '❤️', t: 'Menschlichkeit', c: '#ec4899', s: [['Bindungsfähigkeit', 'Nahe Beziehungen schätzen, Nähe geben und annehmen', 'Schreib jemandem, was du an ihm oder ihr schätzt – ohne Anlass'], ['Freundlichkeit', 'Anderen Gefallen tun, sich kümmern', 'Tu etwas Nettes für jemanden, der es nie erfährt'], ['Soziale Intelligenz', 'Motive und Gefühle anderer wahrnehmen', 'Beobachte in einem Gespräch nur die Körpersprache – und benenne, was du siehst']] },
+        { id: 'jus', ic: '⚖️', t: 'Gerechtigkeit', c: '#f59e0b', s: [['Teamwork', 'Als Mitglied einer Gruppe gut arbeiten, loyal sein', 'Übernimm im Team eine Aufgabe, die niemand will'], ['Fairness', 'Alle gleich behandeln, unvoreingenommen', 'Hör dir heute die Position von jemandem an, dem du normalerweise nicht zuhörst'], ['Führungsvermögen', 'Gruppen organisieren und zum Ziel führen', 'Bring ein Treffen auf den Punkt, das sich im Kreis dreht']] },
+        { id: 'tem', ic: '🧘', t: 'Mässigung', c: '#10b981', s: [['Vergebungsbereitschaft', 'Denen vergeben, die Unrecht getan haben', 'Lass heute eine kleine Kränkung bewusst los – ohne es zu kommentieren'], ['Bescheidenheit', 'Leistungen für sich sprechen lassen', 'Erzähl heute von einem Erfolg, ohne dich selbst zu erwähnen – gib das Lob weiter'], ['Besonnenheit', 'Vorsichtig sein, nichts sagen oder tun, was man bereuen könnte', 'Zähl vor jeder Antwort in einem schwierigen Gespräch bis drei'], ['Selbstregulation', 'Gefühle und Handeln steuern', 'Lass eine Gewohnheit heute einmal aus – Kaffee, Handy, Snack – und beobachte, was passiert']] },
+        { id: 'tra', ic: '✨', t: 'Transzendenz', c: '#8b5cf6', s: [['Sinn für das Schöne', 'Schönheit und Exzellenz wahrnehmen und schätzen', 'Bleib heute drei Minuten vor etwas Schönem stehen, an dem du sonst vorbeigehst'], ['Dankbarkeit', 'Sich des Guten bewusst sein und es ausdrücken', 'Schreib drei Dinge auf, die heute gut waren – und warum'], ['Hoffnung', 'Das Beste erwarten und darauf hinarbeiten', 'Beschreib, wie ein Problem in einem Jahr gelöst aussieht – im Detail'], ['Humor', 'Lachen und andere zum Lachen bringen', 'Erzähl jemandem, was dir heute Komisches passiert ist'], ['Spiritualität', 'Überzeugungen über Sinn und Zweck des Lebens haben', 'Nimm dir fünf Minuten Stille, in denen du nichts tust – nur da bist']] }
+    ];
+    const ALL = []; VIRTUES.forEach(v => v.s.forEach(([name, d, ex]) => ALL.push({ name, d, ex, v })));
+    const LEVELS = [[1, 'kaum'], [2, 'etwas'], [3, 'teils'], [4, 'ziemlich'], [5, 'ganz ich']];
+    const CRIT = [['real', 'Fühlt sich echt an', '„Das bin wirklich ich" – nicht „das sollte ich sein"'], ['energy', 'Gibt Energie', 'Beim Einsatz fühle ich mich lebendig, nicht erschöpft'], ['want', 'Nutze ich gern', 'Ich suche Gelegenheiten dafür – freiwillig']];
+    const LINKS = [
+        { m: 'Stärken finden', l: '../strengths-finder/strengths-finder.html', why: 'Stärken nach Energie, Leistung und Nutzung sortieren.' },
+        { m: 'Dankbarkeit & Achtsamkeit', l: '../mindfulness/mindfulness.html', why: 'Transzendenz-Stärken trainieren.' },
+        { m: 'Gewohnheiten aufbauen', l: '../habit-building/habit-building.html', why: 'Die neue Anwendung zur Routine machen.' },
+        { m: 'Ikigai', l: '../ikigai/ikigai.html', why: 'Stärken mit Sinn verbinden.' }
+    ];
+    const note = (t, m) => `<div class="mk-note ${t}"><i class="fas fa-${t === 'warn' ? 'exclamation-triangle' : t === 'ok' ? 'check-circle' : 'info-circle'}"></i><span>${m}</span></div>`;
+    const n = (v, d) => { const x = parseInt(v, 10); return isNaN(x) ? d : x; };
+    const r = (name) => n(S.ratings[name], 0);
+    const ratedCount = () => ALL.filter(x => r(x.name)).length;
+    const ranked = () => ALL.filter(x => r(x.name)).sort((a, b) => r(b.name) - r(a.name));
+    const sigTest = (name) => { const c = S.sigTest[name] || {}; return CRIT.filter(k => c[k[0]]).length; };
+    const signatures = () => ranked().filter(x => sigTest(x.name) === 3).map(x => x.name);
+
+    /* ---------- 1 ---------- */
+    function renderRate() {
+        $('via-rate').innerHTML = VIRTUES.map(v => `<div class="via-grp" style="--c:${v.c}"><div class="via-grp-h"><span>${v.ic}</span><b>${v.t}</b></div>${v.s.map(([name, d]) => `<div class="via-row"><div class="via-row-l"><b>${name}</b><small>${d}</small></div><div class="via-lv">${LEVELS.map(([x, l]) => `<button class="${r(name) === x ? 'on' : ''}" data-rn="${name}" data-x="${x}" aria-label="${name} ${l}">${l}</button>`).join('')}</div></div>`).join('')}</div>`).join('') +
+            (ratedCount() === ALL.length ? (() => { const vals = ALL.map(x => r(x.name)); const high = vals.filter(v => v === 5).length; return high > 8 ? note('info', `${high} Stärken mit „ganz ich". Bei mehr als 8 lohnt sich ein strengerer Blick – Signaturstärken sind die, die herausragen.`) : high === 0 ? note('info', 'Kein einziges „ganz ich"? Bescheidenheit ist eine Stärke – aber irgendwo bist du mehr du als anderswo. Welche drei würden Freunde nennen?') : note('ok', 'Alle 24 bewertet. Weiter zum Profil.'); })() : `<div class="mk-faint" style="text-align:center">${ratedCount()}/24 bewertet</div>`);
+        $('via-rate').querySelectorAll('[data-rn]').forEach(b => b.addEventListener('click', () => { S.ratings[b.dataset.rn] = +b.dataset.x; MethodKit.save(); renderRate(); }));
     }
 
-    init() {
-        this.setupEventListeners();
-        this.loadStrengthDefinitions();
-        this.generateQuestions();
-        this.updateProgress();
+    /* ---------- 2 ---------- */
+    function renderProfile() {
+        if (ratedCount() < 12) { $('via-profile').innerHTML = note('info', `Bewerte mindestens die Hälfte der Stärken (${ratedCount()}/24) – dann erscheint dein Profil.`); return; }
+        const vs = VIRTUES.map(v => { const vals = v.s.map(([name]) => r(name)).filter(Boolean); return { v, avg: vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0, top: v.s.map(([name]) => name).filter(name => r(name) >= 4) }; }).sort((a, b) => b.avg - a.avg);
+        const cx = 150, cy = 150, R = 110; const pt = (i, val) => { const a = -Math.PI / 2 + i * Math.PI / 3; return [cx + Math.cos(a) * R * val / 5, cy + Math.sin(a) * R * val / 5]; };
+        const ordered = VIRTUES.map(v => vs.find(x => x.v.id === v.id));
+        $('via-profile').innerHTML = `<div class="via-radar"><svg viewBox="0 0 300 300">${[1, 2, 3, 4, 5].map(val => `<polygon points="${ordered.map((_, i) => pt(i, val).join(',')).join(' ')}" fill="none" stroke="var(--mk-line)"/>`).join('')}<polygon points="${ordered.map((x, i) => pt(i, x.avg).join(',')).join(' ')}" fill="rgba(139,92,246,.2)" stroke="var(--mk-accent)" stroke-width="2.5"/>${ordered.map((x, i) => { const [px, py] = pt(i, 6); return `<text x="${px}" y="${py}" text-anchor="middle" dominant-baseline="middle" font-size="20">${x.v.ic}</text>`; }).join('')}</svg><div class="via-vlist">${vs.map((x, i) => `<div class="via-vrow ${i === 0 ? 'top' : ''}" style="--c:${x.v.c}"><span>${x.v.ic}</span><div><b>${x.v.t}</b><small>${x.top.join(', ') || '–'}</small></div><strong>${x.avg.toFixed(1)}</strong></div>`).join('')}</div></div>` +
+            note('info', `Deine stärkste Tugend: <strong>${vs[0].v.ic} ${vs[0].v.t}</strong> (${vs[0].avg.toFixed(1)}/5). ${{ wis: 'Du verstehst die Welt über den Kopf – Wissen, Perspektiven, Ideen. Achte darauf, dass das Herz mitkommt.', cou: 'Du gehst dahin, wo es unbequem wird. Das ist selten und wertvoll – und braucht Erholungsphasen.', hum: 'Beziehungen sind dein Element. Vergiss nicht, dass auch du jemanden brauchst, der sich um dich kümmert.', jus: 'Du denkst in Wir. Fairness und Gemeinschaft sind dir wichtiger als der eigene Vorteil – gut, solange du dich nicht selbst vergisst.', tem: 'Du hast dich im Griff – Mass, Geduld, Vergebung. Die Herausforderung: manchmal braucht es Unmass.', tra: 'Du siehst das Grössere – Schönheit, Sinn, Hoffnung. Hol es in den Alltag, sonst bleibt es Theorie.' }[vs[0].v.id]}`) +
+            (vs[5].avg < 2.5 ? note('info', `Schwächste Tugend: ${vs[5].v.ic} ${vs[5].v.t} (${vs[5].avg.toFixed(1)}). Das ist keine Aufforderung, daran zu arbeiten – VIA setzt auf Stärken. Aber: Wer in deinem Umfeld hat das? Diese Menschen ergänzen dich.`) : '') +
+            (vs[0].avg - vs[5].avg < 0.8 ? note('ok', 'Ein ausgewogenes Profil über alle sechs Tugenden. Deine Signaturstärken werden sich eher auf Ebene der einzelnen Stärken zeigen als auf Tugend-Ebene.') : '');
     }
 
-    setupEventListeners() {
-        const nextStepBtn = document.getElementById('next-step');
-        const prevStepBtn = document.getElementById('prev-step');
-        const nextQuestionBtn = document.getElementById('next-question');
-        const prevQuestionBtn = document.getElementById('prev-question');
-        
-        if (nextStepBtn) nextStepBtn.addEventListener('click', () => this.nextStep());
-        if (prevStepBtn) prevStepBtn.addEventListener('click', () => this.previousStep());
-        if (nextQuestionBtn) nextQuestionBtn.addEventListener('click', () => this.nextQuestion());
-        if (prevQuestionBtn) prevQuestionBtn.addEventListener('click', () => this.previousQuestion());
-        
-        // Add global navigation functions
-        window.nextStep = () => this.nextStep();
-        window.previousStep = () => this.previousStep();
-        window.nextQuestion = () => this.nextQuestion();
-        window.previousQuestion = () => this.previousQuestion();
+    /* ---------- 3 ---------- */
+    function renderSig() {
+        const rk = ranked(); if (rk.length < 5) { $('via-sig').innerHTML = note('info', 'Bewerte zuerst mehr Stärken in Schritt 1.'); return; }
+        const cutoff = rk[Math.min(6, rk.length - 1)] ? r(rk[Math.min(6, rk.length - 1)].name) : 4;
+        const cands = rk.filter(x => r(x.name) >= Math.max(4, cutoff)).slice(0, 8);
+        const sigs = signatures();
+        $('via-sig').innerHTML = `<div class="via-cands">${cands.map(x => { const c = S.sigTest[x.name] || {}; const k = sigTest(x.name); return `<div class="via-cand ${k === 3 ? 'sig' : ''}" style="--c:${x.v.c}"><div class="via-cand-h"><span>${x.v.ic}</span><b>${x.name}</b><small>${r(x.name)}/5</small>${k === 3 ? '<span class="via-badge">🏅 Signatur</span>' : ''}</div><div class="via-crit">${CRIT.map(([id, t, d]) => `<label class="${c[id] ? 'on' : ''}" title="${d}"><input type="checkbox" data-sc="${x.name}" data-c="${id}" ${c[id] ? 'checked' : ''}> ${t}</label>`).join('')}</div></div>`; }).join('')}</div>` +
+            (sigs.length === 0 ? note('info', 'Noch keine Stärke erfüllt alle drei Kriterien. Das ist normal – viele hohe Werte sind erlernte Stärken, die Energie kosten. Prüfe ehrlich.') : sigs.length > 5 ? note('warn', `${sigs.length} Signaturstärken – mehr als fünf ist selten echt. Welche fühlen sich beim Lesen am wenigsten nach dir an?`) : sigs.length >= 3 ? note('ok', `${sigs.length} Signaturstärke${sigs.length > 1 ? 'n' : ''}: <strong>${sigs.join(', ')}</strong>. Das sind die, die dich ausmachen.`) : note('ok', `${sigs.length} Signaturstärke${sigs.length > 1 ? 'n' : ''}: <strong>${sigs.join(', ')}</strong>. Prüfe die anderen Kandidaten – meist sind es drei bis fünf.`)) +
+            (cands.some(x => r(x.name) === 5 && sigTest(x.name) > 0 && sigTest(x.name) < 3 && !(S.sigTest[x.name] || {}).energy) ? note('info', `${cands.filter(x => r(x.name) === 5 && sigTest(x.name) > 0 && sigTest(x.name) < 3 && !(S.sigTest[x.name] || {}).energy).map(x => x.name).join(', ')}: „ganz ich", aber gibt keine Energie? Das sieht nach einer Stärke aus, die du dir antrainiert hast – oder die andere von dir erwarten.`) : '');
+        $('via-sig').querySelectorAll('[data-sc]').forEach(cb => cb.addEventListener('change', () => { (S.sigTest[cb.dataset.sc] = S.sigTest[cb.dataset.sc] || {})[cb.dataset.c] = cb.checked; MethodKit.save(); renderSig(); }));
     }
 
-    loadStrengthDefinitions() {
-        this.strengthDefinitions = {
-            // Wisdom & Knowledge
-            'Creativity': {
-                name: 'Creativity',
-                category: 'Wisdom & Knowledge',
-                description: 'Du denkst über neue und produktive Wege nach, Dinge zu tun.',
-                strengths: ['Innovation', 'Originalität', 'Kreative Problemlösung'],
-                applications: {
-                    career: ['Design', 'Marketing', 'Forschung', 'Kunst'],
-                    relationships: ['Kreative Geschenke', 'Originelle Aktivitäten'],
-                    personal: ['Hobbys', 'Problemlösung', 'Selbstausdruck']
-                }
-            },
-            'Curiosity': {
-                name: 'Curiosity',
-                category: 'Wisdom & Knowledge',
-                description: 'Du interessierst dich für viele verschiedene Dinge.',
-                strengths: ['Lernbereitschaft', 'Offenheit', 'Entdeckungsfreude'],
-                applications: {
-                    career: ['Journalismus', 'Forschung', 'Beratung'],
-                    relationships: ['Interesse an anderen', 'Neue Erfahrungen'],
-                    personal: ['Lebenslanges Lernen', 'Reisen', 'Hobbys']
-                }
-            },
-            'Judgment': {
-                name: 'Judgment',
-                category: 'Wisdom & Knowledge',
-                description: 'Du denkst über Dinge nach und betrachtest sie von allen Seiten.',
-                strengths: ['Kritisches Denken', 'Objektivität', 'Weisheit'],
-                applications: {
-                    career: ['Recht', 'Beratung', 'Management'],
-                    relationships: ['Konfliktlösung', 'Entscheidungsfindung'],
-                    personal: ['Lebensentscheidungen', 'Problemlösung']
-                }
-            },
-            'Love of Learning': {
-                name: 'Love of Learning',
-                category: 'Wisdom & Knowledge',
-                description: 'Du liebst es, neue Dinge zu lernen.',
-                strengths: ['Wissbegierde', 'Bildung', 'Persönliches Wachstum'],
-                applications: {
-                    career: ['Bildung', 'Training', 'Entwicklung'],
-                    relationships: ['Gemeinsames Lernen', 'Wissensaustausch'],
-                    personal: ['Kurse', 'Bücher', 'Neue Fähigkeiten']
-                }
-            },
-            'Perspective': {
-                name: 'Perspective',
-                category: 'Wisdom & Knowledge',
-                description: 'Du kannst anderen Menschen gute Ratschläge geben.',
-                strengths: ['Weisheit', 'Beratung', 'Überblick'],
-                applications: {
-                    career: ['Mentoring', 'Beratung', 'Führung'],
-                    relationships: ['Freundschaft', 'Familie', 'Gemeinschaft'],
-                    personal: ['Lebensphilosophie', 'Spiritualität']
-                }
-            },
-            // Courage
-            'Bravery': {
-                name: 'Bravery',
-                category: 'Courage',
-                description: 'Du bist nicht davor zurückzuschrecken, deine Meinung zu sagen.',
-                strengths: ['Mut', 'Standhaftigkeit', 'Prinzipientreue'],
-                applications: {
-                    career: ['Führung', 'Vertrieb', 'Recht'],
-                    relationships: ['Ehrlichkeit', 'Konflikte angehen'],
-                    personal: ['Herausforderungen', 'Werte vertreten']
-                }
-            },
-            'Perseverance': {
-                name: 'Perseverance',
-                category: 'Courage',
-                description: 'Du arbeitest hart, um das zu beenden, was du begonnen hast.',
-                strengths: ['Durchhaltevermögen', 'Zielstrebigkeit', 'Ausdauer'],
-                applications: {
-                    career: ['Projektmanagement', 'Sport', 'Forschung'],
-                    relationships: ['Langfristige Beziehungen', 'Familie'],
-                    personal: ['Ziele erreichen', 'Gewohnheiten', 'Hobbys']
-                }
-            },
-            'Honesty': {
-                name: 'Honesty',
-                category: 'Courage',
-                description: 'Du sagst die Wahrheit und präsentierst dich authentisch.',
-                strengths: ['Ehrlichkeit', 'Authentizität', 'Integrität'],
-                applications: {
-                    career: ['Vertrauen aufbauen', 'Führung', 'Beratung'],
-                    relationships: ['Vertrauen', 'Ehrliche Kommunikation'],
-                    personal: ['Selbstakzeptanz', 'Werte leben']
-                }
-            },
-            'Zest': {
-                name: 'Zest',
-                category: 'Courage',
-                description: 'Du näherst dich dem Leben mit Begeisterung und Energie.',
-                strengths: ['Enthusiasmus', 'Lebensfreude', 'Motivation'],
-                applications: {
-                    career: ['Motivation', 'Teamgeist', 'Kreativität'],
-                    relationships: ['Positive Energie', 'Aktivitäten'],
-                    personal: ['Lebensqualität', 'Gesundheit', 'Hobbys']
-                }
-            },
-            // Humanity
-            'Love': {
-                name: 'Love',
-                category: 'Humanity',
-                description: 'Du schätzt enge Beziehungen zu anderen Menschen.',
-                strengths: ['Bindungsfähigkeit', 'Intimität', 'Liebe'],
-                applications: {
-                    career: ['Beziehungsarbeit', 'Beratung', 'Pflege'],
-                    relationships: ['Partnerschaft', 'Familie', 'Freundschaft'],
-                    personal: ['Selbstliebe', 'Spiritualität']
-                }
-            },
-            'Kindness': {
-                name: 'Kindness',
-                category: 'Humanity',
-                description: 'Du tust gerne Gefälligkeiten und hilfst anderen.',
-                strengths: ['Hilfsbereitschaft', 'Mitgefühl', 'Großzügigkeit'],
-                applications: {
-                    career: ['Soziale Arbeit', 'Pflege', 'Bildung'],
-                    relationships: ['Unterstützung', 'Fürsorge'],
-                    personal: ['Freiwilligenarbeit', 'Gemeinschaft']
-                }
-            },
-            'Social Intelligence': {
-                name: 'Social Intelligence',
-                category: 'Humanity',
-                description: 'Du bist dir der Motive und Gefühle anderer bewusst.',
-                strengths: ['Empathie', 'Soziale Kompetenz', 'Emotionale Intelligenz'],
-                applications: {
-                    career: ['Führung', 'Beratung', 'Verkauf'],
-                    relationships: ['Konfliktlösung', 'Verständnis'],
-                    personal: ['Selbstreflexion', 'Kommunikation']
-                }
-            },
-            // Justice
-            'Teamwork': {
-                name: 'Teamwork',
-                category: 'Justice',
-                description: 'Du arbeitest gut als Mitglied einer Gruppe.',
-                strengths: ['Kooperation', 'Teamgeist', 'Loyalität'],
-                applications: {
-                    career: ['Projektarbeit', 'Führung', 'Sport'],
-                    relationships: ['Familie', 'Freundeskreis'],
-                    personal: ['Gemeinschaft', 'Vereine']
-                }
-            },
-            'Fairness': {
-                name: 'Fairness',
-                category: 'Justice',
-                description: 'Du behandelst alle Menschen gleich.',
-                strengths: ['Gerechtigkeit', 'Objektivität', 'Ethik'],
-                applications: {
-                    career: ['Recht', 'HR', 'Management'],
-                    relationships: ['Konfliktlösung', 'Familie'],
-                    personal: ['Werte', 'Gemeinschaft']
-                }
-            },
-            'Leadership': {
-                name: 'Leadership',
-                category: 'Justice',
-                description: 'Du kannst eine Gruppe dazu bringen, Dinge zu tun.',
-                strengths: ['Führung', 'Motivation', 'Vision'],
-                applications: {
-                    career: ['Management', 'Politik', 'Sport'],
-                    relationships: ['Familie', 'Gemeinschaft'],
-                    personal: ['Projekte', 'Initiativen']
-                }
-            },
-            // Temperance
-            'Forgiveness': {
-                name: 'Forgiveness',
-                category: 'Temperance',
-                description: 'Du vergibst denen, die dir Unrecht getan haben.',
-                strengths: ['Vergebung', 'Großzügigkeit', 'Frieden'],
-                applications: {
-                    career: ['Konfliktlösung', 'Mediation'],
-                    relationships: ['Beziehungen retten', 'Familie'],
-                    personal: ['Seelenfrieden', 'Spiritualität']
-                }
-            },
-            'Humility': {
-                name: 'Humility',
-                category: 'Temperance',
-                description: 'Du lässt andere das Rampenlicht haben.',
-                strengths: ['Bescheidenheit', 'Demut', 'Selbstlosigkeit'],
-                applications: {
-                    career: ['Teamarbeit', 'Dienstleistung'],
-                    relationships: ['Bescheidenheit', 'Höflichkeit'],
-                    personal: ['Spiritualität', 'Selbstreflexion']
-                }
-            },
-            'Prudence': {
-                name: 'Prudence',
-                category: 'Temperance',
-                description: 'Du bist vorsichtig in deinen Entscheidungen.',
-                strengths: ['Vorsicht', 'Weisheit', 'Besonnenheit'],
-                applications: {
-                    career: ['Risikomanagement', 'Planung'],
-                    relationships: ['Durchdachte Entscheidungen'],
-                    personal: ['Lebensplanung', 'Finanzen']
-                }
-            },
-            'Self-Regulation': {
-                name: 'Self-Regulation',
-                category: 'Temperance',
-                description: 'Du regulierst deine Gefühle und Handlungen.',
-                strengths: ['Selbstkontrolle', 'Disziplin', 'Ausgeglichenheit'],
-                applications: {
-                    career: ['Stressmanagement', 'Führung'],
-                    relationships: ['Emotionale Stabilität'],
-                    personal: ['Gesundheit', 'Gewohnheiten']
-                }
-            },
-            // Transcendence
-            'Appreciation of Beauty': {
-                name: 'Appreciation of Beauty',
-                category: 'Transcendence',
-                description: 'Du bemerkst und schätzt Schönheit in vielen Bereichen.',
-                strengths: ['Ästhetik', 'Kunstverständnis', 'Inspiration'],
-                applications: {
-                    career: ['Kunst', 'Design', 'Architektur'],
-                    relationships: ['Gemeinsame Erlebnisse'],
-                    personal: ['Kunst', 'Natur', 'Kultur']
-                }
-            },
-            'Hope': {
-                name: 'Hope',
-                category: 'Transcendence',
-                description: 'Du erwartest das Beste in der Zukunft.',
-                strengths: ['Optimismus', 'Zuversicht', 'Motivation'],
-                applications: {
-                    career: ['Motivation', 'Vision', 'Führung'],
-                    relationships: ['Unterstützung', 'Ermutigung'],
-                    personal: ['Ziele', 'Träume', 'Resilienz']
-                }
-            },
-            'Humor': {
-                name: 'Humor',
-                category: 'Transcendence',
-                description: 'Du magst es, Menschen zum Lachen zu bringen.',
-                strengths: ['Humor', 'Freude', 'Leichtigkeit'],
-                applications: {
-                    career: ['Teamgeist', 'Präsentationen'],
-                    relationships: ['Freude', 'Entspannung'],
-                    personal: ['Stressabbau', 'Lebensfreude']
-                }
-            },
-            'Spirituality': {
-                name: 'Spirituality',
-                category: 'Transcendence',
-                description: 'Du hast starke und kohärente Überzeugungen über den höheren Zweck.',
-                strengths: ['Sinn', 'Zweck', 'Spiritualität'],
-                applications: {
-                    career: ['Sinnvolle Arbeit', 'Werte'],
-                    relationships: ['Tiefe Verbindung'],
-                    personal: ['Lebenssinn', 'Meditation']
-                }
-            }
+    /* ---------- 4 ---------- */
+    function renderWeek() {
+        const sigs = signatures(); const pool = sigs.length ? sigs : ranked().slice(0, 5).map(x => x.name);
+        if (!pool.length) { $('via-week').innerHTML = note('info', 'Bestimme zuerst deine Signaturstärken.'); return; }
+        if (!S.week.strength || !pool.includes(S.week.strength)) S.week.strength = pool[0];
+        const st = ALL.find(x => x.name === S.week.strength);
+        const W = S.week; W.days = W.days || {};
+        const doneDays = Object.values(W.days).filter(d => d && d.done).length;
+        const started = W.start ? new Date(W.start) : null;
+        const todayIdx = started ? Math.floor((Date.now() - started.getTime()) / 864e5) : -1;
+        $('via-week').innerHTML = `<div class="mk-field"><label>Welche Stärke?</label><div class="mk-chips">${pool.map(nm => `<button class="mk-chip ${W.strength === nm ? 'selected' : ''}" data-ws="${nm}">${nm}</button>`).join('')}</div></div>` +
+            (st ? `<div class="via-ex" style="--c:${st.v.c}"><b>${st.v.ic} ${st.name}</b><small>${st.d}</small><div class="via-ex-ideas"><span class="mk-section-label">Ideen für neue Anwendungen</span>${st.ex.split(' · ').map(e => `<div>· ${e}</div>`).join('')}</div></div>` : '') +
+            (!W.start ? `<button class="mk-btn mk-btn-primary" id="via-start"><i class="fas fa-play"></i> Woche starten</button>` : `<div class="via-days">${[0, 1, 2, 3, 4, 5, 6].map(i => { const d = W.days[i] || {}; const date = new Date(started.getTime() + i * 864e5); const isToday = i === todayIdx; const past = i < todayIdx; return `<div class="via-day ${d.done ? 'done' : ''} ${isToday ? 'today' : ''} ${past && !d.done ? 'missed' : ''}"><div class="via-day-h"><b>Tag ${i + 1}</b><small>${date.toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric', month: 'numeric' })}</small><button class="via-check" data-dd="${i}" aria-label="Tag ${i + 1} erledigt">${d.done ? '✓' : ''}</button></div><input class="mk-input" data-dn="${i}" value="${esc(d.note || '')}" placeholder="Wie hast du ${st ? st.name : 'die Stärke'} heute neu eingesetzt?"></div>`; }).join('')}</div>` +
+                (doneDays === 7 ? note('ok', 'Sieben von sieben. Die Forschung sagt: Der Effekt auf dein Wohlbefinden hält bis zu sechs Monate – wenn du weitermachst. Welche Stärke kommt als Nächstes?') : todayIdx > 6 ? note('info', `Die Woche ist vorbei – ${doneDays} von 7 Tagen. ${doneDays >= 4 ? 'Gut genug, um etwas zu merken. Reflektiere in Schritt 5.' : 'Das ist okay. Starte neu – mit einer anderen Stärke oder derselben.'}`) : todayIdx >= 2 && doneDays === 0 ? note('warn', 'Tag 3 und noch nichts eingetragen. Der Trick: nicht gross denken. Eine Minute, eine neue Art – das zählt.') : doneDays ? note('ok', `${doneDays} Tag${doneDays > 1 ? 'e' : ''} geschafft. ${(W.days[todayIdx] || {}).done ? 'Heute erledigt.' : 'Heute noch offen.'}`) : '') +
+                `<button class="mk-btn mk-btn-outline mk-btn-sm" id="via-restart" style="margin-top:10px"><i class="fas fa-rotate"></i> Neu starten</button>`);
+        $('via-week').querySelectorAll('[data-ws]').forEach(b => b.addEventListener('click', () => { if (W.start && W.strength !== b.dataset.ws && !confirm('Stärke wechseln? Die laufende Woche wird zurückgesetzt.')) return; if (W.strength !== b.dataset.ws) { W.strength = b.dataset.ws; W.start = null; W.days = {}; } MethodKit.save(); renderWeek(); }));
+        const s = $('via-start'); if (s) s.addEventListener('click', () => { W.start = Date.now(); W.days = {}; MethodKit.save({ now: true }); renderWeek(); });
+        const rs = $('via-restart'); if (rs) rs.addEventListener('click', () => { if (!confirm('Woche neu starten? Einträge gehen verloren.')) return; S.history.push({ strength: W.strength, start: W.start, done: doneDays }); W.start = Date.now(); W.days = {}; MethodKit.save({ now: true }); renderWeek(); });
+        $('via-week').querySelectorAll('[data-dd]').forEach(b => b.addEventListener('click', () => { const i = b.dataset.dd; W.days[i] = W.days[i] || {}; W.days[i].done = !W.days[i].done; MethodKit.save(); renderWeek(); }));
+        $('via-week').querySelectorAll('[data-dn]').forEach(inp => inp.addEventListener('input', () => { const i = inp.dataset.dn; W.days[i] = W.days[i] || {}; W.days[i].note = inp.value; if (inp.value.trim() && !W.days[i].done) { W.days[i].done = true; inp.closest('.via-day').classList.add('done'); inp.closest('.via-day').querySelector('.via-check').textContent = '✓'; } MethodKit.save(); }));
+    }
+
+    /* ---------- 5 ---------- */
+    function renderSummary() {
+        const sigs = signatures(); const W = S.week; const doneDays = Object.values(W.days || {}).filter(d => d && d.done).length;
+        $('via-summary').innerHTML = sigs.length || W.start ? `<div class="mk-result"><h4>Dein VIA-Profil</h4>${sigs.length ? `<div><b>🏅 Signaturstärken:</b> ${sigs.join(', ')}</div>` : ''}${W.start ? `<div style="margin-top:6px"><b>7-Tage-Übung:</b> ${esc(W.strength)} – ${doneDays}/7 Tage</div>${Object.entries(W.days).filter(([, d]) => d && d.note).map(([i, d]) => `<div class="mk-faint" style="margin-left:12px">Tag ${+i + 1}: ${esc(d.note)}</div>`).join('')}` : ''}${S.history.length ? `<div class="mk-faint" style="margin-top:6px">Frühere Wochen: ${S.history.map(h => `${h.strength} (${h.done}/7)`).join(', ')}</div>` : ''}${S.reflect ? `<div style="margin-top:8px"><b>Reflexion:</b> ${esc(S.reflect)}</div>` : ''}${S.next ? `<div><b>Als Nächstes:</b> ${esc(S.next)}</div>` : ''}</div>` : '<div class="mk-empty">Die Zusammenfassung füllt sich aus den vorherigen Schritten.</div>';
+    }
+    function renderLinks() { $('via-links').innerHTML = LINKS.map(x => `<a class="mk-option via-link" href="${x.l}"><span class="t">${x.m}</span><span class="d">${x.why}</span></a>`).join(''); }
+    function exportAll() {
+        const sigs = signatures(); const W = S.week;
+        const L = ['VIA-CHARAKTERSTÄRKEN', '='.repeat(40), 'Exportiert: ' + new Date().toLocaleString('de-CH'), ''];
+        VIRTUES.forEach(v => { L.push(`${v.ic} ${v.t.toUpperCase()}`); v.s.forEach(([name]) => L.push(`  ${name}: ${r(name) || '–'}/5${sigs.includes(name) ? '  🏅 Signatur' : ''}`)); L.push(''); });
+        if (W.start) { L.push(`7-TAGE-ÜBUNG: ${W.strength} (ab ${new Date(W.start).toLocaleDateString('de-CH')})`); Object.entries(W.days || {}).forEach(([i, d]) => { if (d && (d.done || d.note)) L.push(`  Tag ${+i + 1}: ${d.done ? '✓ ' : ''}${d.note || ''}`); }); L.push(''); }
+        if (S.reflect) L.push('Reflexion: ' + S.reflect); if (S.next) L.push('Als Nächstes: ' + S.next);
+        MethodKit.exportText('via-staerken.txt', L.filter(x => x !== '').join('\n'));
+    }
+
+    (async function () {
+        await MethodKit.init({
+            method: 'via-strengths', accent: '#8b5cf6', accent2: '#ec4899',
+            steps: [{ icon: '📋', label: 'Bewerten' }, { icon: '🕸️', label: 'Profil' }, { icon: '🏅', label: 'Signatur' }, { icon: '📅', label: '7 Tage' }, { icon: '🌱', label: 'Reflexion' }],
+            defaultState: { ratings: {}, sigTest: {}, week: { strength: '', start: null, days: {} }, history: [], reflect: '', next: '' }
+        });
+        S = MethodKit.state;
+        ['ratings', 'sigTest'].forEach(k => { if (!S[k] || typeof S[k] !== 'object') S[k] = {}; });
+        if (!S.week || typeof S.week !== 'object') S.week = { strength: '', start: null, days: {} };
+        if (!Array.isArray(S.history)) S.history = [];
+        // Migration: altes selected/top → ratings 4/5
+        if (Array.isArray(S.selected)) { S.selected.forEach(nm => { if (!S.ratings[nm]) S.ratings[nm] = 4; }); delete S.selected; }
+        if (Array.isArray(S.top)) { S.top.forEach(nm => { S.ratings[nm] = 5; }); delete S.top; }
+        if (S.newway && !S.reflect) { S.reflect = S.newway; delete S.newway; }
+        MethodKit.bindFields();
+        $('via-export').addEventListener('click', exportAll);
+        ['via-reflect', 'via-next'].forEach(id => $(id).addEventListener('input', renderSummary));
+        MethodKit.onStep = function (k) {
+            if (k === 1) renderRate();
+            if (k === 2) renderProfile();
+            if (k === 3) renderSig();
+            if (k === 4) renderWeek();
+            if (k === 5) { renderSummary(); renderLinks(); }
         };
-    }
-
-    generateQuestions() {
-        this.questions = [];
-        const strengthNames = Object.keys(this.strengthDefinitions);
-        
-        // Generate 120 questions (5 per strength)
-        for (let i = 0; i < this.totalQuestions; i++) {
-            const strength1 = strengthNames[Math.floor(Math.random() * strengthNames.length)];
-            const strength2 = strengthNames[Math.floor(Math.random() * strengthNames.length)];
-            
-            if (strength1 !== strength2) {
-                this.questions.push({
-                    id: i + 1,
-                    strength1: strength1,
-                    strength2: strength2,
-                    question: `Welche Aussage beschreibt dich besser?`,
-                    option1: this.getStrengthStatement(strength1),
-                    option2: this.getStrengthStatement(strength2)
-                });
-            }
-        }
-    }
-
-    getStrengthStatement(strength) {
-        const statements = {
-            'Creativity': 'Ich denke gerne über neue und kreative Wege nach, Dinge zu tun.',
-            'Curiosity': 'Ich interessiere mich für viele verschiedene Dinge und Themen.',
-            'Judgment': 'Ich denke gerne über Dinge nach und betrachte sie von allen Seiten.',
-            'Love of Learning': 'Ich liebe es, neue Dinge zu lernen und zu entdecken.',
-            'Perspective': 'Ich kann anderen Menschen gute Ratschläge geben.',
-            'Bravery': 'Ich bin nicht davor zurückzuschrecken, meine Meinung zu sagen.',
-            'Perseverance': 'Ich arbeite hart daran, das zu beenden, was ich begonnen habe.',
-            'Honesty': 'Ich sage die Wahrheit und präsentiere mich authentisch.',
-            'Zest': 'Ich nähere mich dem Leben mit Begeisterung und Energie.',
-            'Love': 'Ich schätze enge Beziehungen zu anderen Menschen sehr.',
-            'Kindness': 'Ich tue gerne Gefälligkeiten und helfe anderen.',
-            'Social Intelligence': 'Ich bin mir der Motive und Gefühle anderer bewusst.',
-            'Teamwork': 'Ich arbeite gut als Mitglied einer Gruppe.',
-            'Fairness': 'Ich behandle alle Menschen gleich und fair.',
-            'Leadership': 'Ich kann eine Gruppe dazu bringen, Dinge zu tun.',
-            'Forgiveness': 'Ich vergebe denen, die mir Unrecht getan haben.',
-            'Humility': 'Ich lasse andere das Rampenlicht haben.',
-            'Prudence': 'Ich bin vorsichtig in meinen Entscheidungen.',
-            'Self-Regulation': 'Ich reguliere meine Gefühle und Handlungen gut.',
-            'Appreciation of Beauty': 'Ich bemerke und schätze Schönheit in vielen Bereichen.',
-            'Hope': 'Ich erwarte das Beste in der Zukunft.',
-            'Humor': 'Ich mag es, Menschen zum Lachen zu bringen.',
-            'Spirituality': 'Ich habe starke Überzeugungen über den höheren Zweck.'
-        };
-        return statements[strength] || `Ich zeige Eigenschaften von ${strength}.`;
-    }
-
-    nextStep() {
-        if (this.currentStep < this.totalSteps) {
-            this.currentStep++;
-            this.updateStep();
-            this.updateProgress();
-        }
-    }
-
-    previousStep() {
-        if (this.currentStep > 1) {
-            this.currentStep--;
-            this.updateStep();
-            this.updateProgress();
-        }
-    }
-
-    updateStep() {
-        // Hide all steps
-        document.querySelectorAll('.workflow-step').forEach(step => {
-            step.classList.remove('active');
-        });
-
-        // Show current step
-        const currentStepElement = document.querySelector(`[data-step="${this.currentStep}"]`);
-        if (currentStepElement) {
-            currentStepElement.classList.add('active');
-        }
-
-        // Update navigation buttons
-        const prevButton = document.getElementById('prev-step');
-        const nextButton = document.getElementById('next-step');
-
-        prevButton.style.display = this.currentStep > 1 ? 'block' : 'none';
-        nextButton.style.display = this.currentStep < this.totalSteps ? 'block' : 'none';
-
-        // Update step info
-        document.getElementById('step-info').textContent = `Schritt ${this.currentStep} von ${this.totalSteps}`;
-
-        // Load step-specific content
-        this.loadStepContent();
-    }
-
-    loadStepContent() {
-        switch (this.currentStep) {
-            case 2:
-                this.loadAssessmentQuestions();
-                break;
-            case 3:
-                this.calculateResults();
-                this.displayResults();
-                break;
-            case 4:
-                this.displayTop5Strengths();
-                break;
-            case 5:
-                this.displayPracticalApplication();
-                break;
-            case 6:
-                this.displayDevelopmentPlan();
-                break;
-            case 7:
-                this.displayFinalResults();
-                break;
-        }
-    }
-
-    loadAssessmentQuestions() {
-        const container = document.getElementById('question-container');
-        const currentQ = this.questions[this.currentQuestion];
-        
-        container.innerHTML = `
-            <div class="question-card">
-                <h4>${currentQ.question}</h4>
-                <div class="question-options">
-                    <label class="option-card">
-                        <input type="radio" name="question-${currentQ.id}" value="${currentQ.strength1}">
-                        <div class="option-content">
-                            <strong>Option A:</strong>
-                            <p>${currentQ.option1}</p>
-                        </div>
-                    </label>
-                    <label class="option-card">
-                        <input type="radio" name="question-${currentQ.id}" value="${currentQ.strength2}">
-                        <div class="option-content">
-                            <strong>Option B:</strong>
-                            <p>${currentQ.option2}</p>
-                        </div>
-                    </label>
-                </div>
-            </div>
-        `;
-
-        // Update progress
-        document.getElementById('current-question').textContent = this.currentQuestion + 1;
-        document.getElementById('total-questions').textContent = this.totalQuestions;
-        
-        const progressPercent = ((this.currentQuestion + 1) / this.totalQuestions) * 100;
-        document.getElementById('question-progress').style.width = `${progressPercent}%`;
-
-        // Update navigation
-        document.getElementById('prev-question').style.display = this.currentQuestion > 0 ? 'block' : 'none';
-        document.getElementById('next-question').style.display = this.currentQuestion < this.totalQuestions - 1 ? 'block' : 'none';
-    }
-
-    nextQuestion() {
-        // Save current answer
-        const selectedOption = document.querySelector(`input[name="question-${this.questions[this.currentQuestion].id}"]:checked`);
-        if (selectedOption) {
-            this.answers[this.questions[this.currentQuestion].id] = selectedOption.value;
-        }
-
-        if (this.currentQuestion < this.totalQuestions - 1) {
-            this.currentQuestion++;
-            this.loadAssessmentQuestions();
-        } else {
-            // Assessment completed, move to results
-            this.nextStep();
-        }
-    }
-
-    previousQuestion() {
-        if (this.currentQuestion > 0) {
-            this.currentQuestion--;
-            this.loadAssessmentQuestions();
-        }
-    }
-
-    calculateResults() {
-        // Count answers for each strength
-        const strengthCounts = {};
-        
-        Object.values(this.answers).forEach(strength => {
-            strengthCounts[strength] = (strengthCounts[strength] || 0) + 1;
-        });
-
-        // Sort strengths by count
-        this.top5Strengths = Object.entries(strengthCounts)
-            .sort(([,a], [,b]) => b - a)
-            .slice(0, 5)
-            .map(([strength, count]) => ({
-                name: strength,
-                score: count,
-                definition: this.strengthDefinitions[strength]
-            }));
-
-        // Calculate all strength scores
-        this.strengths = strengthCounts;
-    }
-
-    displayResults() {
-        // Display strength categories
-        this.displayStrengthCategories();
-        
-        // Display top 5 preview
-        this.displayTop5Preview();
-    }
-
-    displayStrengthCategories() {
-        const categories = {
-            'Wisdom & Knowledge': ['Creativity', 'Curiosity', 'Judgment', 'Love of Learning', 'Perspective'],
-            'Courage': ['Bravery', 'Perseverance', 'Honesty', 'Zest'],
-            'Humanity': ['Love', 'Kindness', 'Social Intelligence'],
-            'Justice': ['Teamwork', 'Fairness', 'Leadership'],
-            'Temperance': ['Forgiveness', 'Humility', 'Prudence', 'Self-Regulation'],
-            'Transcendence': ['Appreciation of Beauty', 'Hope', 'Humor', 'Spirituality']
-        };
-
-        Object.entries(categories).forEach(([category, strengths]) => {
-            const container = document.getElementById(`${category.toLowerCase().replace(' & ', '-').replace(' ', '-')}-strengths`);
-            if (container) {
-                container.innerHTML = strengths.map(strength => {
-                    const score = this.strengths[strength] || 0;
-                    const isTop5 = this.top5Strengths.some(s => s.name === strength);
-                    return `
-                        <div class="strength-item ${isTop5 ? 'top-strength' : ''}">
-                            <span class="strength-name">${strength}</span>
-                            <span class="strength-score">${score}</span>
-                        </div>
-                    `;
-                }).join('');
-            }
-        });
-    }
-
-    displayTop5Preview() {
-        const container = document.getElementById('top-strengths-preview');
-        container.innerHTML = this.top5Strengths.map((strength, index) => `
-            <div class="top-strength-preview">
-                <div class="strength-rank">${index + 1}</div>
-                <div class="strength-info">
-                    <h5>${strength.name}</h5>
-                    <p>${strength.definition.description}</p>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    displayTop5Strengths() {
-        const container = document.getElementById('strength-detail-container');
-        container.innerHTML = this.top5Strengths.map((strength, index) => `
-            <div class="strength-detail-card">
-                <div class="strength-header">
-                    <div class="strength-rank">#${index + 1}</div>
-                    <h4>${strength.name}</h4>
-                    <div class="strength-score">Score: ${strength.score}</div>
-                </div>
-                
-                <div class="strength-content">
-                    <div class="strength-description">
-                        <h5>Beschreibung</h5>
-                        <p>${strength.definition.description}</p>
-                    </div>
-                    
-                    <div class="strength-category">
-                        <h5>Kategorie</h5>
-                        <p>${strength.definition.category}</p>
-                    </div>
-                    
-                    <div class="strength-applications">
-                        <h5>Anwendungsbereiche</h5>
-                        <div class="application-areas">
-                            <div class="application-area">
-                                <h6>Beruf</h6>
-                                <ul>
-                                    ${strength.definition.applications.career.map(app => `<li>${app}</li>`).join('')}
-                                </ul>
-                            </div>
-                            <div class="application-area">
-                                <h6>Beziehungen</h6>
-                                <ul>
-                                    ${strength.definition.applications.relationships.map(app => `<li>${app}</li>`).join('')}
-                                </ul>
-                            </div>
-                            <div class="application-area">
-                                <h6>Persönlich</h6>
-                                <ul>
-                                    ${strength.definition.applications.personal.map(app => `<li>${app}</li>`).join('')}
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    displayPracticalApplication() {
-        // Application areas
-        this.displayApplicationAreas();
-        this.displayStrengthCombinations();
-    }
-
-    displayApplicationAreas() {
-        // Career applications
-        const careerContainer = document.getElementById('career-applications');
-        careerContainer.innerHTML = this.top5Strengths.map(strength => `
-            <div class="career-application">
-                <h6>${strength.name} im Beruf</h6>
-                <p>${strength.definition.applications.career.join(', ')}</p>
-            </div>
-        `).join('');
-
-        // Relationship applications
-        const relationshipContainer = document.getElementById('relationship-applications');
-        relationshipContainer.innerHTML = this.top5Strengths.map(strength => `
-            <div class="relationship-application">
-                <h6>${strength.name} in Beziehungen</h6>
-                <p>${strength.definition.applications.relationships.join(', ')}</p>
-            </div>
-        `).join('');
-
-        // Personal applications
-        const personalContainer = document.getElementById('personal-applications');
-        personalContainer.innerHTML = this.top5Strengths.map(strength => `
-            <div class="personal-application">
-                <h6>${strength.name} persönlich</h6>
-                <p>${strength.definition.applications.personal.join(', ')}</p>
-            </div>
-        `).join('');
-
-        // Community applications
-        const communityContainer = document.getElementById('community-applications');
-        communityContainer.innerHTML = this.top5Strengths.map(strength => `
-            <div class="community-application">
-                <h6>${strength.name} in der Gemeinschaft</h6>
-                <p>Nutze ${strength.name} für gesellschaftliches Engagement und Gemeinschaftsarbeit.</p>
-            </div>
-        `).join('');
-    }
-
-    displayStrengthCombinations() {
-        const container = document.getElementById('combinations-list');
-        const combinations = this.generateStrengthCombinations();
-        container.innerHTML = combinations.map(combination => `
-            <div class="combination-item">
-                <h6>${combination.title}</h6>
-                <p>${combination.description}</p>
-                <ul>
-                    ${combination.benefits.map(benefit => `<li>${benefit}</li>`).join('')}
-                </ul>
-            </div>
-        `).join('');
-    }
-
-    generateStrengthCombinations() {
-        const combinations = [];
-        const strengths = this.top5Strengths.map(s => s.name);
-        
-        // Generate meaningful combinations
-        if (strengths.includes('Leadership') && strengths.includes('Teamwork')) {
-            combinations.push({
-                title: 'Leadership + Teamwork',
-                description: 'Du kannst sowohl führen als auch im Team arbeiten.',
-                benefits: ['Effektive Teamführung', 'Kooperative Zusammenarbeit', 'Flexible Rollen']
-            });
-        }
-        
-        if (strengths.includes('Creativity') && strengths.includes('Curiosity')) {
-            combinations.push({
-                title: 'Creativity + Curiosity',
-                description: 'Du verbindest kreatives Denken mit natürlicher Neugier.',
-                benefits: ['Innovative Lösungen', 'Kontinuierliches Lernen', 'Neue Perspektiven']
-            });
-        }
-        
-        if (strengths.includes('Kindness') && strengths.includes('Love')) {
-            combinations.push({
-                title: 'Kindness + Love',
-                description: 'Du zeigst sowohl Liebe als auch Freundlichkeit.',
-                benefits: ['Tiefe Beziehungen', 'Mitgefühl', 'Unterstützung anderer']
-            });
-        }
-        
-        return combinations;
-    }
-
-    displayDevelopmentPlan() {
-        // Strengthening plan
-        const strengtheningContainer = document.getElementById('strengthening-plan');
-        strengtheningContainer.innerHTML = this.top5Strengths.map(strength => `
-            <div class="strengthening-item">
-                <h5>${strength.name} stärken</h5>
-                <ul>
-                    <li>Täglich 15 Minuten für ${strength.name}-Aktivitäten einplanen</li>
-                    <li>Wöchentlich reflektieren: Wo habe ich ${strength.name} eingesetzt?</li>
-                    <li>Monatlich neue Anwendungsmöglichkeiten suchen</li>
-                    <li>Feedback von anderen zu deinem ${strength.name}-Einsatz einholen</li>
-                </ul>
-            </div>
-        `).join('');
-
-        // Development areas
-        this.displayDevelopmentAreas();
-        this.displayStrengthHabits();
-        this.displayLongTermDevelopment();
-    }
-
-    displayDevelopmentAreas() {
-        const container = document.getElementById('development-areas');
-        const weakerStrengths = this.getWeakerStrengths();
-        container.innerHTML = weakerStrengths.map(strength => `
-            <div class="development-item">
-                <h5>${strength.name} entwickeln</h5>
-                <p>${strength.definition.description}</p>
-                <ul>
-                    <li>Kleine Schritte: Beginne mit 5 Minuten täglich</li>
-                    <li>Suche nach Vorbildern in diesem Bereich</li>
-                    <li>Übe in sicheren Umgebungen</li>
-                </ul>
-            </div>
-        `).join('');
-    }
-
-    getWeakerStrengths() {
-        const allStrengths = Object.keys(this.strengthDefinitions);
-        const top5Names = this.top5Strengths.map(s => s.name);
-        const weakerStrengths = allStrengths
-            .filter(s => !top5Names.includes(s))
-            .slice(0, 3)
-            .map(s => ({
-                name: s,
-                definition: this.strengthDefinitions[s]
-            }));
-        return weakerStrengths;
-    }
-
-    displayStrengthHabits() {
-        const container = document.getElementById('strength-habits');
-        container.innerHTML = this.top5Strengths.map(strength => `
-            <div class="habit-item">
-                <h5>${strength.name} Gewohnheit</h5>
-                <p>Entwickle eine tägliche Gewohnheit, um ${strength.name} zu stärken:</p>
-                <ul>
-                    <li>Morgens: Überlege, wo du ${strength.name} heute einsetzen kannst</li>
-                    <li>Abends: Reflektiere, wie du ${strength.name} genutzt hast</li>
-                    <li>Wöchentlich: Plane spezifische ${strength.name}-Aktivitäten</li>
-                </ul>
-            </div>
-        `).join('');
-    }
-
-    displayLongTermDevelopment() {
-        const container = document.getElementById('long-term-development');
-        container.innerHTML = `
-            <div class="long-term-item">
-                <h5>6-Monats-Ziel</h5>
-                <p>Entwickle alle deine Top 5 Stärken zu echten Stärken, die dir in allen Lebensbereichen helfen.</p>
-            </div>
-            <div class="long-term-item">
-                <h5>1-Jahres-Ziel</h5>
-                <p>Integriere deine Stärken in deine Karriereplanung und persönliche Entwicklung.</p>
-            </div>
-            <div class="long-term-item">
-                <h5>Langfristiges Ziel</h5>
-                <p>Nutze deine Stärken, um einen positiven Einfluss auf andere und die Gesellschaft zu haben.</p>
-            </div>
-        `;
-    }
-
-    displayFinalResults() {
-        // Top 5 summary
-        const top5Container = document.getElementById('top-5-summary');
-        top5Container.innerHTML = this.top5Strengths.map((strength, index) => `
-            <div class="top-5-item">
-                <span class="rank">${index + 1}.</span>
-                <span class="strength-name">${strength.name}</span>
-                <span class="score">(${strength.score})</span>
-            </div>
-        `).join('');
-
-        // Category summary
-        const categoryContainer = document.getElementById('category-summary');
-        const categories = this.calculateCategoryDistribution();
-        categoryContainer.innerHTML = Object.entries(categories).map(([category, count]) => `
-            <div class="category-item">
-                <span class="category-name">${category}</span>
-                <span class="category-count">${count} Stärken</span>
-            </div>
-        `).join('');
-
-        // Action plan
-        const actionContainer = document.getElementById('action-plan');
-        actionContainer.innerHTML = `
-            <div class="action-item">
-                <h6>Nächste 30 Tage</h6>
-                <ul>
-                    <li>Fokussiere dich auf deine #1 Stärke: ${this.top5Strengths[0].name}</li>
-                    <li>Identifiziere täglich 3 Situationen, wo du sie einsetzen kannst</li>
-                    <li>Führe ein Stärken-Tagebuch</li>
-                </ul>
-            </div>
-            <div class="action-item">
-                <h6>Nächste 90 Tage</h6>
-                <ul>
-                    <li>Entwickle alle 5 Stärken systematisch</li>
-                    <li>Suche nach Mentoring-Möglichkeiten</li>
-                    <li>Integriere deine Stärken in deine Karriereplanung</li>
-                </ul>
-            </div>
-        `;
-    }
-
-    calculateCategoryDistribution() {
-        const categories = {};
-        this.top5Strengths.forEach(strength => {
-            const category = strength.definition.category;
-            categories[category] = (categories[category] || 0) + 1;
-        });
-        return categories;
-    }
-
-    updateProgress() {
-        // Update progress bar
-        document.querySelectorAll('.progress-step').forEach((step, index) => {
-            const stepNumber = index + 1;
-            if (stepNumber < this.currentStep) {
-                step.classList.add('completed');
-                step.classList.remove('active');
-            } else if (stepNumber === this.currentStep) {
-                step.classList.add('active');
-                step.classList.remove('completed');
-            } else {
-                step.classList.remove('active', 'completed');
-            }
-        });
-    }
-
-    exportResults(format) {
-        const data = {
-            top5Strengths: this.top5Strengths,
-            allStrengths: this.strengths,
-            timestamp: new Date().toISOString()
-        };
-
-        let content, filename, mimeType;
-
-        switch (format) {
-            case 'pdf':
-                content = this.generatePDFContent();
-                this.downloadHTML(content, 'via-strengths-results.html');
-                break;
-            case 'csv':
-                content = this.generateCSVContent();
-                filename = 'via-strengths-results.csv';
-                mimeType = 'text/csv';
-                this.downloadFile(content, filename, mimeType);
-                break;
-            case 'json':
-                content = JSON.stringify(data, null, 2);
-                filename = 'via-strengths-results.json';
-                mimeType = 'application/json';
-                this.downloadFile(content, filename, mimeType);
-                break;
-        }
-    }
-
-    generatePDFContent() {
-        return `
-            <html>
-            <head>
-                <title>VIA Character Strengths Ergebnisse</title>
-                <style>
-                    body { font-family: Arial, sans-serif; margin: 20px; }
-                    .header { text-align: center; margin-bottom: 30px; }
-                    .strength-item { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; }
-                    .rank { font-weight: bold; color: #6366f1; }
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <h1>VIA Character Strengths Ergebnisse</h1>
-                    <p>Generiert am: ${new Date().toLocaleDateString('de-DE')}</p>
-                </div>
-                
-                <h2>Deine Top 5 Charakterstärken</h2>
-                ${this.top5Strengths.map((strength, index) => `
-                    <div class="strength-item">
-                        <h3><span class="rank">#${index + 1}</span> ${strength.name}</h3>
-                        <p><strong>Score:</strong> ${strength.score}</p>
-                        <p><strong>Kategorie:</strong> ${strength.definition.category}</p>
-                        <p><strong>Beschreibung:</strong> ${strength.definition.description}</p>
-                    </div>
-                `).join('')}
-            </body>
-            </html>
-        `;
-    }
-
-    generateCSVContent() {
-        let csv = 'Strength,Rank,Score,Category,Description\n';
-        this.top5Strengths.forEach((strength, index) => {
-            csv += `"${strength.name}",${index + 1},${strength.score},"${strength.definition.category}","${strength.definition.description}"\n`;
-        });
-        return csv;
-    }
-
-    downloadFile(content, filename, mimeType) {
-        const blob = new Blob([content], { type: mimeType });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-
-    downloadHTML(content, filename) {
-        const blob = new Blob([content], { type: 'text/html' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-}
-
-// Initialize assessment when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    new VIAStrengthsAssessment();
-});
+        MethodKit.onStep(MethodKit.step);
+    })();
+})();

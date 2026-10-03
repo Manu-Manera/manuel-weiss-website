@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stärken-Finder | Manuel Weiss</title>
-    <meta name="description" content="Entdecke deine größten Stärken, grenze sie auf deine Top 5 ein und finde heraus, wo du sie noch gezielter einsetzen kannst.">
+    <title>Stärken finden | Manuel Weiss</title>
+    <meta name="description" content="Stärken finden mit System: Stärken sammeln, nach Energie, Leistung und Nutzung bewerten, realisierte und ungenutzte Stärken von erlernten Verhaltensweisen unterscheiden, Top 5 wählen, Überdosis-Risiken kennen und Einsatzplan erstellen.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="strengths-finder.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>:root { --mk-accent: #6366f1; --mk-accent-2: #a855f7; --mk-accent-soft: rgba(99,102,241,.12); }</style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
         <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
-        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-star"></i></span><span>Stärken-Finder</span></div>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-star"></i></span><span>Stärken finden</span></div>
         <span class="mk-topbar-spacer"></span>
         <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
     </header>
@@ -21,43 +21,81 @@
     <main class="mk-shell">
         <section class="mk-hero">
             <div class="mk-hero-icon"><i class="fas fa-star"></i></div>
-            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Stärken</div>
             <h1>Spiel deine Stärken aus</h1>
-            <p>Erfolg entsteht seltener durch das Ausbügeln von Schwächen als durch das konsequente Nutzen von Stärken. Finde deine wichtigsten – und entdecke, wo du sie noch mehr einsetzen kannst.</p>
-            <div class="mk-badges"><span class="mk-badge">Entdecken</span><span class="mk-badge">Top 5</span><span class="mk-badge">Einsatz</span></div>
+            <p>Eine Stärke ist nicht einfach etwas, das du gut kannst. Es ist etwas, das du gut kannst <em>und</em> das dir Energie gibt. Vieles, worin du gut bist, laugt dich aus – das sind erlernte Verhaltensweisen, keine Stärken. Hier trennst du die beiden, findest ungenutzte Stärken und planst, wo du sie mehr einsetzt.</p>
+            <div class="mk-badges"><span class="mk-badge">Energie × Leistung</span><span class="mk-badge">Ungenutzte Stärken</span><span class="mk-badge">Top 5</span><span class="mk-badge">Überdosis-Check</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>Welche Stärken erkennst du in dir?</h2>
-                <p class="mk-sub">Wähle großzügig alles, was auf dich zutrifft.</p>
-                <div class="mk-chips" id="sf-pool"></div>
-                <div style="display:flex; gap:10px; margin-top:16px;"><input class="mk-input" id="sf-custom" placeholder="Eigene Stärke …"><button class="mk-btn mk-btn-ghost" id="sf-add"><i class="fas fa-plus"></i></button></div>
+                <h2>1 · Sammeln</h2>
+                <p class="mk-sub">Drei Fragen, die Stärken sichtbar machen – beantworte sie, bevor du aus der Liste wählst.</p>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="sf-q1">⚡ Wobei vergisst du die Zeit?</label><textarea class="mk-textarea" id="sf-q1" data-mk-field="q1" placeholder="Tätigkeiten, bei denen du in den Flow kommst"></textarea></div>
+                    <div class="mk-field"><label for="sf-q2">🗣️ Wofür bekommst du immer wieder Komplimente?</label><textarea class="mk-textarea" id="sf-q2" data-mk-field="q2" placeholder="Was andere an dir hervorheben – auch, wenn es dir selbstverständlich vorkommt"></textarea></div>
+                    <div class="mk-field"><label for="sf-q3">🧒 Was hast du schon als Kind gern und gut gemacht?</label><textarea class="mk-textarea" id="sf-q3" data-mk-field="q3" placeholder="Frühe Muster sind oft die stabilsten"></textarea></div>
+                    <div class="mk-field"><label for="sf-q4">🏆 Dein stolzester Erfolg – welche Stärke steckte dahinter?</label><textarea class="mk-textarea" id="sf-q4" data-mk-field="q4" placeholder="…"></textarea></div>
+                </div>
+            </div>
+            <div class="mk-card">
+                <h3>Welche Stärken erkennst du?</h3>
+                <p class="mk-sub">Wähle 8 bis 15. Lieber grosszügig – aussortiert wird im nächsten Schritt.</p>
+                <div id="sf-pool"></div>
+                <div class="sf-add"><input class="mk-input" id="sf-custom" placeholder="Eigene Stärke ergänzen …"><button class="mk-btn mk-btn-outline mk-btn-sm" id="sf-add" aria-label="Hinzufügen"><i class="fas fa-plus"></i></button></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>Deine Top 5</h2>
-                <p class="mk-sub">Welche 5 machen dich am meisten aus? Tippe sie an.</p>
-                <div class="mk-chips" id="sf-selected"></div>
+                <h2>2 · Bewerten</h2>
+                <p class="mk-sub">Für jede gewählte Stärke drei Fragen: Gibt sie dir <strong>Energie</strong>? Bist du wirklich <strong>gut</strong> darin? Wie oft <strong>nutzt</strong> du sie?</p>
+                <div id="sf-rate"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
             <div class="mk-card">
-                <h2>Stärken gezielt einsetzen</h2>
-                <p class="mk-sub">Für jede Top-Stärke: Wo nutzt du sie schon – und wo könntest du sie noch mehr einbringen?</p>
+                <h2>3 · Deine Stärken-Landkarte</h2>
+                <div id="sf-map"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Deine Top 5</h3>
+                <p class="mk-sub">Wähle aus den echten Stärken (oben rechts) die fünf, auf die du setzen willst.</p>
+                <div id="sf-top"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Einsatz & Überdosis</h2>
+                <p class="mk-sub">Jede Stärke hat eine Schattenseite, wenn sie zu stark eingesetzt wird. Wo willst du sie mehr nutzen – und wo musst du aufpassen?</p>
                 <div id="sf-use"></div>
-                <button class="mk-btn mk-btn-primary" id="sf-export"><i class="fas fa-download"></i> Stärken herunterladen</button>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Dein Stärken-Plan</h2>
+                <div id="sf-summary"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="sf-week">Diese Woche setze ich bewusst ein:</label><input class="mk-input" id="sf-week" data-mk-field="week" placeholder="Welche Stärke · in welcher Situation"></div>
+                <div class="mk-field"><label for="sf-stop">Und das lasse ich – weil es eine erlernte Verhaltensweise ist, die mich auslaugt:</label><input class="mk-input" id="sf-stop" data-mk-field="stop" placeholder="…"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="sf-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="sf-export"><i class="fas fa-download"></i> Herunterladen</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button></div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -72,46 +110,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        const POOL = ['Analytisch','Kreativ','Empathisch','Organisiert','Kommunikativ','Durchsetzungsstark','Geduldig','Strategisch','Detailgenau','Begeisternd','Verlässlich','Mutig','Diszipliniert','Neugierig','Lösungsorientiert','Teamfähig','Eigenständig','Belastbar','Visionär','Pragmatisch','Diplomatisch','Lernbereit','Verantwortungsbewusst','Flexibel','Fokussiert','Inspirierend','Humorvoll','Entscheidungsstark','Hilfsbereit','Beharrlich'];
-        (async function () {
-            await MethodKit.init({
-                method: 'strengths-finder',
-                accent: '#6366f1', accent2: '#a855f7',
-                steps: [{icon:'🔎',label:'Entdecken'},{icon:'⭐',label:'Top 5'},{icon:'🚀',label:'Einsatz'}],
-                defaultState: { pool: [], selected: [], top: [], use: {} }
-            });
-            const S = MethodKit.state;
-            if (!S.pool || !S.pool.length) S.pool = POOL.slice(); else POOL.forEach(v=>{ if(S.pool.indexOf(v)<0) S.pool.push(v); });
-
-            const poolHost=document.getElementById('sf-pool');
-            function renderPool(){
-                poolHost.innerHTML=S.pool.map(v=>`<button class="mk-chip ${S.selected.indexOf(v)>-1?'selected':''}" data-v="${MethodKit.esc(v)}">${MethodKit.esc(v)}</button>`).join('');
-                poolHost.querySelectorAll('[data-v]').forEach(el=>el.addEventListener('click',()=>{ const v=el.dataset.v,i=S.selected.indexOf(v); if(i>-1){S.selected.splice(i,1);S.top=S.top.filter(t=>t!==v);} else S.selected.push(v); MethodKit.save(); renderPool(); }));
-            }
-            document.getElementById('sf-add').addEventListener('click',()=>{ const i=document.getElementById('sf-custom'),v=i.value.trim(); if(!v)return; if(S.pool.indexOf(v)<0)S.pool.push(v); if(S.selected.indexOf(v)<0)S.selected.push(v); i.value=''; MethodKit.save(); renderPool(); });
-            renderPool();
-
-            const selHost=document.getElementById('sf-selected');
-            function renderSelected(){
-                if(!S.selected.length){ selHost.innerHTML='<div class="mk-empty">Wähle zuerst Stärken in Schritt 1.</div>'; return; }
-                selHost.innerHTML=S.selected.map(v=>`<button class="mk-chip ${S.top.indexOf(v)>-1?'selected':''}" data-t="${MethodKit.esc(v)}">${S.top.indexOf(v)>-1?'⭐ ':''}${MethodKit.esc(v)}</button>`).join('');
-                selHost.querySelectorAll('[data-t]').forEach(el=>el.addEventListener('click',()=>{ const v=el.dataset.t,i=S.top.indexOf(v); if(i>-1)S.top.splice(i,1); else { if(S.top.length>=5){MethodKit.toast('Maximal 5','error');return;} S.top.push(v);} MethodKit.save(); renderSelected(); }));
-            }
-
-            function renderUse(){
-                const host=document.getElementById('sf-use');
-                if(!S.top.length){ host.innerHTML='<div class="mk-empty">Wähle zuerst deine Top 5 in Schritt 2.</div>'; return; }
-                host.innerHTML=S.top.map(v=>`<div class="mk-field"><label>⭐ ${MethodKit.esc(v)} — wo (mehr) einsetzen?</label><textarea class="mk-textarea" data-u="${MethodKit.esc(v)}" placeholder="Konkrete Situation, in der diese Stärke mehr wirken könnte.">${MethodKit.esc(S.use[v]||'')}</textarea></div>`).join('');
-                host.querySelectorAll('[data-u]').forEach(el=>el.addEventListener('input',()=>{ S.use[el.dataset.u]=el.value; MethodKit.save(); }));
-            }
-            MethodKit.onStep=function(n){ if(n===2) renderSelected(); if(n===3) renderUse(); };
-
-            document.getElementById('sf-export').addEventListener('click',()=>{
-                let t='MEINE STÄRKEN\n=============\n\nTop 5:\n'; S.top.forEach((v,i)=>t+=`  ${i+1}. ${v} → ${S.use[v]||''}\n`);
-                MethodKit.exportText('meine-staerken.txt', t);
-            });
-        })();
-    </script>
+    <script src="strengths-finder.js?v=20261003"></script>
 </body>
 </html>

@@ -1,373 +1,115 @@
-// Stärken-Analyse JavaScript Functions
+/* Stärken finden · Logik (nach dem Realise2-Modell: Energie × Leistung × Nutzung) */
+(function () {
+    'use strict';
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => MethodKit.esc(s);
+    let S;
 
-function initStrengthsFinder() {
-    console.log('Initializing Strengths Finder...');
-    
-    // Load saved strengths
-    loadSavedStrengths();
-    
-    // Setup event listeners
-    setupStrengthsEventListeners();
-    
-    // Initialize strength categories
-    initializeStrengthCategories();
-}
-
-function setupStrengthsEventListeners() {
-    // Strength selection checkboxes
-    document.querySelectorAll('.strength-item input[type="checkbox"]').forEach(checkbox => {
-        checkbox.addEventListener('change', updateSelectedStrengths);
-    });
-}
-
-function updateSelectedStrengths() {
-    const selectedStrengths = [];
-    document.querySelectorAll('.strength-item input[type="checkbox"]:checked').forEach(checkbox => {
-        selectedStrengths.push({
-            value: checkbox.value,
-            text: checkbox.nextElementSibling.textContent,
-            category: checkbox.closest('.strength-category').dataset.category
-        });
-    });
-    
-    const selectedStrengthsContainer = document.getElementById('selected-strengths');
-    if (selectedStrengths.length === 0) {
-        selectedStrengthsContainer.innerHTML = '<p class="no-strengths">Noch keine Stärken ausgewählt</p>';
-    } else {
-        selectedStrengthsContainer.innerHTML = selectedStrengths.map(strength => 
-            `<span class="selected-strength-tag" data-category="${strength.category}">${strength.text}</span>`
-        ).join('');
-    }
-    
-    // Save to localStorage
-    localStorage.setItem('selectedStrengths', JSON.stringify(selectedStrengths));
-    
-    // Update scoring list if we're on step 2
-    if (document.querySelector('.workflow-step[data-step="2"]').classList.contains('active')) {
-        updateStrengthsScoringList(selectedStrengths);
-    }
-    
-    // Update insights
-    updateStrengthsInsights(selectedStrengths);
-}
-
-function startGallupAssessment() {
-    showNotification('Gallup StrengthsFinder Assessment wird gestartet...', 'info');
-    
-    // In a real application, this would redirect to the actual Gallup assessment
-    // For now, we'll simulate the process
-    setTimeout(() => {
-        showNotification('Assessment abgeschlossen! Deine Top 5 Stärken wurden identifiziert.', 'success');
-        
-        // Simulate results
-        const gallupResults = [
-            { value: 'achiever', text: 'Achiever - Erreicher', category: 'executing' },
-            { value: 'learner', text: 'Learner - Lerner', category: 'strategic-thinking' },
-            { value: 'communication', text: 'Communication - Kommunikation', category: 'influencing' },
-            { value: 'empathy', text: 'Empathy - Empathie', category: 'relationship-building' },
-            { value: 'strategic', text: 'Strategic - Strategisch', category: 'strategic-thinking' }
-        ];
-        
-        // Auto-select the results
-        gallupResults.forEach(result => {
-            const checkbox = document.querySelector(`input[value="${result.value}"]`);
-            if (checkbox) {
-                checkbox.checked = true;
-            }
-        });
-        
-        updateSelectedStrengths();
-    }, 2000);
-}
-
-function startVIAAssessment() {
-    showNotification('VIA Character Strengths Assessment wird gestartet...', 'info');
-    
-    // In a real application, this would redirect to the actual VIA assessment
-    setTimeout(() => {
-        showNotification('Assessment abgeschlossen! Deine Top 5 Charakterstärken wurden identifiziert.', 'success');
-        
-        // Simulate results
-        const viaResults = [
-            { value: 'creativity', text: 'Kreativität', category: 'strategic-thinking' },
-            { value: 'curiosity', text: 'Neugier', category: 'strategic-thinking' },
-            { value: 'love', text: 'Liebe', category: 'relationship-building' },
-            { value: 'kindness', text: 'Freundlichkeit', category: 'relationship-building' },
-            { value: 'perseverance', text: 'Ausdauer', category: 'executing' }
-        ];
-        
-        // Auto-select the results
-        viaResults.forEach(result => {
-            const checkbox = document.querySelector(`input[value="${result.value}"]`);
-            if (checkbox) {
-                checkbox.checked = true;
-            }
-        });
-        
-        updateSelectedStrengths();
-    }, 2000);
-}
-
-function startCustomAssessment() {
-    showNotification('Selbsteinschätzung wird gestartet...', 'info');
-    
-    // Show custom assessment modal or redirect to assessment page
-    const assessmentModal = document.createElement('div');
-    assessmentModal.className = 'modal';
-    assessmentModal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Selbsteinschätzung</h3>
-                <button class="modal-close" onclick="this.closest('.modal').remove()">×</button>
-            </div>
-            <div class="modal-body">
-                <p>Bewerte dich selbst in verschiedenen Bereichen von 1-10:</p>
-                <div class="assessment-questions" id="custom-assessment-questions">
-                    <!-- Questions will be generated here -->
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" onclick="completeCustomAssessment()">Bewertung abschließen</button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(assessmentModal);
-    
-    // Generate assessment questions
-    generateCustomAssessmentQuestions();
-}
-
-function generateCustomAssessmentQuestions() {
-    const questions = [
-        { id: 'leadership', text: 'Wie gut kannst du andere führen und motivieren?' },
-        { id: 'communication', text: 'Wie gut kannst du dich ausdrücken und anderen zuhören?' },
-        { id: 'creativity', text: 'Wie kreativ und innovativ bist du?' },
-        { id: 'analytical', text: 'Wie gut kannst du Probleme analysieren und lösen?' },
-        { id: 'empathy', text: 'Wie gut kannst du dich in andere hineinversetzen?' },
-        { id: 'perseverance', text: 'Wie ausdauernd bist du bei schwierigen Aufgaben?' },
-        { id: 'adaptability', text: 'Wie gut kannst du dich an neue Situationen anpassen?' },
-        { id: 'teamwork', text: 'Wie gut arbeitest du im Team?' }
-    ];
-    
-    const questionsContainer = document.getElementById('custom-assessment-questions');
-    questionsContainer.innerHTML = questions.map(question => `
-        <div class="assessment-question">
-            <label>${question.text}</label>
-            <div class="rating-scale">
-                <input type="range" min="1" max="10" value="5" class="strength-slider" data-strength="${question.id}">
-                <div class="scale-labels">
-                    <span>1 - Schwach</span>
-                    <span>10 - Sehr stark</span>
-                </div>
-                <span class="rating-value">5</span>
-            </div>
-        </div>
-    `).join('');
-    
-    // Add event listeners to sliders
-    document.querySelectorAll('.strength-slider').forEach(slider => {
-        slider.addEventListener('input', function() {
-            this.nextElementSibling.nextElementSibling.textContent = this.value;
-        });
-    });
-}
-
-function completeCustomAssessment() {
-    const results = [];
-    document.querySelectorAll('.strength-slider').forEach(slider => {
-        const value = parseInt(slider.value);
-        if (value >= 7) { // Only include strengths rated 7 or higher
-            results.push({
-                value: slider.dataset.strength,
-                text: slider.closest('.assessment-question').querySelector('label').textContent,
-                category: 'custom',
-                rating: value
-            });
-        }
-    });
-    
-    // Auto-select the results
-    results.forEach(result => {
-        const checkbox = document.querySelector(`input[value="${result.value}"]`);
-        if (checkbox) {
-            checkbox.checked = true;
-        }
-    });
-    
-    updateSelectedStrengths();
-    
-    // Close modal
-    document.querySelector('.modal').remove();
-    
-    showNotification(`Selbsteinschätzung abgeschlossen! ${results.length} Stärken identifiziert.`, 'success');
-}
-
-function updateStrengthsScoringList(selectedStrengths) {
-    const scoringList = document.getElementById('strengths-scoring-list');
-    if (!scoringList) return;
-    
-    scoringList.innerHTML = selectedStrengths.map(strength => `
-        <div class="strength-scoring-item">
-            <div class="strength-name">${strength.text}</div>
-            <div class="strength-category-badge">${getCategoryName(strength.category)}</div>
-            <div class="strength-score">
-                <input type="range" min="1" max="10" value="7" class="score-slider" data-strength="${strength.value}">
-                <span class="score-value">7</span>
-            </div>
-            <div class="strength-description">
-                <textarea placeholder="Beschreibe, wie du diese Stärke in deinem Alltag nutzt..." data-strength="${strength.value}"></textarea>
-            </div>
-        </div>
-    `).join('');
-    
-    // Add event listeners to sliders
-    document.querySelectorAll('.score-slider').forEach(slider => {
-        slider.addEventListener('input', function() {
-            const value = this.value;
-            this.nextElementSibling.textContent = value;
-            saveStrengthScoring();
-        });
-    });
-    
-    // Add event listeners to textareas
-    document.querySelectorAll('.strength-description textarea').forEach(textarea => {
-        textarea.addEventListener('input', saveStrengthScoring);
-    });
-}
-
-function getCategoryName(category) {
-    const categoryNames = {
-        'executing': 'Umsetzung',
-        'influencing': 'Einflussnahme',
-        'relationship-building': 'Beziehungsaufbau',
-        'strategic-thinking': 'Strategisches Denken',
-        'custom': 'Selbsteinschätzung'
+    // Stärke → Schattenseite bei Überdosis
+    const POOL = {
+        'Analytisch': 'Analyse-Paralyse: zu lange prüfen, zu spät entscheiden', 'Kreativ': 'Zu viele Ideen, zu wenig Umsetzung – andere verlieren den Faden', 'Empathisch': 'Grenzen verschwimmen, eigene Bedürfnisse bleiben auf der Strecke', 'Organisiert': 'Starrheit – Pläne werden wichtiger als das Ziel', 'Kommunikativ': 'Zu viel reden, zu wenig zuhören', 'Durchsetzungsstark': 'Überfahren – andere ziehen sich zurück statt mitzugehen', 'Geduldig': 'Dinge aussitzen, die eine Entscheidung bräuchten', 'Strategisch': 'Abgehoben – das Hier und Jetzt kommt zu kurz', 'Detailgenau': 'Perfektionismus, Mikromanagement, verpasste Deadlines', 'Begeisternd': 'Überversprechen – Erwartungen, die nicht gehalten werden', 'Verlässlich': 'Alles selbst machen, nicht delegieren, ausbrennen', 'Mutig': 'Leichtsinn – Risiken, die andere ausbaden', 'Diszipliniert': 'Rigidität, Härte gegen sich und andere', 'Neugierig': 'Verzetteln – zu viel anfangen, zu wenig abschliessen', 'Lösungsorientiert': 'Zu schnell lösen, bevor das Problem verstanden ist', 'Teamfähig': 'Konflikte vermeiden, eigene Meinung zurückhalten', 'Eigenständig': 'Einzelgänger – Hilfe weder holen noch annehmen', 'Belastbar': 'Grenzen ignorieren, bis der Körper sie setzt', 'Visionär': 'Luftschlösser ohne Bodenhaftung', 'Pragmatisch': 'Kurzfristig denken, Qualität opfern', 'Diplomatisch': 'Unklarheit – niemand weiss, wo du stehst', 'Lernbereit': 'Ewiger Student – lernen statt anwenden', 'Verantwortungsbewusst': 'Alles auf die eigenen Schultern, Schuldgefühle', 'Flexibel': 'Beliebigkeit – kein klarer Kurs', 'Fokussiert': 'Tunnelblick – Wichtiges am Rand übersehen', 'Inspirierend': 'Show statt Substanz', 'Humorvoll': 'Ernstes nicht ernst nehmen, Witze als Ausweichen', 'Entscheidungsstark': 'Vorschnell – andere nicht einbeziehen', 'Hilfsbereit': 'Nicht Nein sagen können, ausgenutzt werden', 'Beharrlich': 'Sturheit – an Totem festhalten'
     };
-    return categoryNames[category] || category;
-}
+    const LINKS = [
+        { m: 'VIA-Charakterstärken', l: '../via-strengths/via-strengths.html', why: 'Die 24 wissenschaftlich fundierten Charakterstärken.' },
+        { m: 'Gallup-Domänen', l: '../gallup-strengths/gallup-strengths.html', why: 'Über welche Domäne wirkst du?' },
+        { m: 'Johari-Fenster', l: '../johari-window/johari-window.html', why: 'Welche Stärken sehen andere, die du nicht siehst?' },
+        { m: 'Moment of Excellence', l: '../moment-excellence/moment-excellence.html', why: 'Eine Stärke körperlich verankern.' }
+    ];
+    const note = (t, m) => `<div class="mk-note ${t}"><i class="fas fa-${t === 'warn' ? 'exclamation-triangle' : t === 'ok' ? 'check-circle' : 'info-circle'}"></i><span>${m}</span></div>`;
+    const n = (v, d) => { const x = parseInt(v, 10); return isNaN(x) ? d : x; };
+    const R = (v) => S.ratings[v] || {};
+    const rated = (v) => R(v).e && R(v).p && R(v).u;
+    const Q = { strength: { t: 'Echte Stärke', d: 'gibt Energie & gut darin & oft genutzt', c: '#10b981', ic: '⭐' }, unrealized: { t: 'Ungenutzte Stärke', d: 'gibt Energie & gut darin – aber selten genutzt', c: '#0ea5e9', ic: '💎' }, learned: { t: 'Erlernte Verhaltensweise', d: 'gut darin – aber kostet Energie', c: '#f59e0b', ic: '🔋' }, potential: { t: 'Potenzial', d: 'gibt Energie – aber noch nicht gut darin', c: '#8b5cf6', ic: '🌱' }, weakness: { t: 'Schwäche', d: 'weder Energie noch Leistung', c: '#94a3b8', ic: '·' } };
+    const quad = (v) => { const r = R(v); if (!rated(v)) return null; const e = r.e >= 4, p = r.p >= 4, u = r.u >= 3; if (e && p) return u ? 'strength' : 'unrealized'; if (!e && p) return 'learned'; if (e && !p) return 'potential'; return 'weakness'; };
+    const byQuad = (q) => S.selected.filter(v => quad(v) === q);
 
-function saveStrengthScoring() {
-    const scoring = {};
-    document.querySelectorAll('.strength-scoring-item').forEach(item => {
-        const strength = item.querySelector('.score-slider').dataset.strength;
-        const score = item.querySelector('.score-slider').value;
-        const description = item.querySelector('textarea').value;
-        scoring[strength] = { score: parseInt(score), description };
-    });
-    localStorage.setItem('strengthScoring', JSON.stringify(scoring));
-}
-
-function updateStrengthsInsights(selectedStrengths) {
-    const insightsContainer = document.getElementById('insights-container');
-    if (!insightsContainer) return;
-    
-    if (selectedStrengths.length === 0) {
-        insightsContainer.innerHTML = '<p class="no-insights">Wähle Stärken aus, um Insights zu erhalten</p>';
-        return;
+    /* ---------- 1 ---------- */
+    function renderPool() {
+        const all = [...Object.keys(POOL), ...S.custom];
+        $('sf-pool').innerHTML = `<div class="mk-chips">${all.map(v => `<button class="mk-chip ${S.selected.includes(v) ? 'selected' : ''}" data-v="${esc(v)}">${esc(v)}</button>`).join('')}</div><div class="sf-count ${S.selected.length >= 8 && S.selected.length <= 15 ? 'ok' : S.selected.length > 15 ? 'over' : ''}">${S.selected.length} gewählt</div>` +
+            (S.selected.length > 15 ? note('info', 'Viele. Das ist okay – aber Schritt 2 wird lang. Streiche, was dir beim Lesen kein Nicken entlockt.') : S.selected.length >= 8 ? note('ok', 'Gute Auswahl. Weiter zum Bewerten.') : S.selected.length ? note('info', `Noch ${8 - S.selected.length} mehr – lieber grosszügig, aussortiert wird später.`) : '');
+        $('sf-pool').querySelectorAll('[data-v]').forEach(b => b.addEventListener('click', () => { const v = b.dataset.v; if (S.selected.includes(v)) { S.selected = S.selected.filter(x => x !== v); S.top = S.top.filter(x => x !== v); } else S.selected.push(v); MethodKit.save(); renderPool(); }));
     }
-    
-    // Group strengths by category
-    const strengthsByCategory = {};
-    selectedStrengths.forEach(strength => {
-        if (!strengthsByCategory[strength.category]) {
-            strengthsByCategory[strength.category] = [];
-        }
-        strengthsByCategory[strength.category].push(strength);
-    });
-    
-    // Generate insights
-    const insights = [];
-    
-    Object.keys(strengthsByCategory).forEach(category => {
-        const categoryStrengths = strengthsByCategory[category];
-        if (categoryStrengths.length >= 2) {
-            insights.push({
-                type: 'category-dominance',
-                category: getCategoryName(category),
-                strengths: categoryStrengths,
-                message: `Du hast ${categoryStrengths.length} Stärken in der Kategorie "${getCategoryName(category)}". Das deutet auf eine natürliche Neigung in diesem Bereich hin.`
-            });
-        }
-    });
-    
-    // Generate specific insights
-    selectedStrengths.forEach(strength => {
-        if (strength.value === 'achiever') {
-            insights.push({
-                type: 'specific-strength',
-                strength: strength.text,
-                message: 'Als Achiever bist du motiviert, jeden Tag etwas zu erreichen. Nutze diese Stärke, um dir tägliche Ziele zu setzen.'
-            });
-        } else if (strength.value === 'learner') {
-            insights.push({
-                type: 'specific-strength',
-                strength: strength.text,
-                message: 'Als Learner liebst du es zu lernen. Suche nach neuen Herausforderungen und Lernmöglichkeiten.'
-            });
-        } else if (strength.value === 'communication') {
-            insights.push({
-                type: 'specific-strength',
-                strength: strength.text,
-                message: 'Deine Kommunikationsstärke macht dich zu einem natürlichen Vermittler. Nutze sie in Führungsrollen.'
-            });
-        }
-    });
-    
-    // Display insights
-    insightsContainer.innerHTML = insights.map(insight => `
-        <div class="insight-item insight-${insight.type}">
-            <h5>💡 ${insight.strength || insight.category}</h5>
-            <p>${insight.message}</p>
-        </div>
-    `).join('');
-}
 
-function initializeStrengthCategories() {
-    // Add click handlers to category headers
-    document.querySelectorAll('.strength-category h5').forEach(header => {
-        header.addEventListener('click', function() {
-            const category = this.closest('.strength-category');
-            category.classList.toggle('expanded');
-        });
-    });
-}
-
-function loadSavedStrengths() {
-    // Load selected strengths
-    const selectedStrengths = JSON.parse(localStorage.getItem('selectedStrengths') || '[]');
-    if (selectedStrengths.length > 0) {
-        selectedStrengths.forEach(strength => {
-            const checkbox = document.querySelector(`input[value="${strength.value}"]`);
-            if (checkbox) {
-                checkbox.checked = true;
-            }
-        });
-        updateSelectedStrengths();
+    /* ---------- 2 ---------- */
+    function renderRate() {
+        if (!S.selected.length) { $('sf-rate').innerHTML = note('info', 'Wähle zuerst Stärken in Schritt 1.'); return; }
+        const dots = (v, k, label) => `<div class="sf-dim"><span>${label}</span><div class="sf-dots">${[1, 2, 3, 4, 5].map(x => `<button class="${n(R(v)[k], 0) >= x ? 'on' : ''} ${k}" data-rv="${esc(v)}" data-k="${k}" data-x="${x}" aria-label="${label} ${x}">●</button>`).join('')}</div></div>`;
+        const done = S.selected.filter(rated).length;
+        $('sf-rate').innerHTML = S.selected.map(v => { const q = quad(v); return `<div class="sf-rate ${q ? 'q-' + q : ''}"><div class="sf-rate-h"><b>${esc(v)}</b>${q ? `<span class="sf-qtag" style="--c:${Q[q].c}">${Q[q].ic} ${Q[q].t}</span>` : ''}</div><div class="sf-dims">${dots(v, 'e', '⚡ Energie')}${dots(v, 'p', '🎯 Leistung')}${dots(v, 'u', '🔁 Nutzung')}</div></div>`; }).join('') +
+            (done === S.selected.length ? (() => { const st = byQuad('strength').length, un = byQuad('unrealized').length, le = byQuad('learned').length; return note('ok', `Alle bewertet: ${st} echte Stärke${st !== 1 ? 'n' : ''}, ${un} ungenutzt, ${le} erlernt. ${le > st ? '<strong>Mehr erlernte Verhaltensweisen als echte Stärken</strong> – das erklärt, warum du gut bist und trotzdem müde. Schritt 3 zeigt den Ausweg.' : un ? `${un} ungenutzte Stärke${un > 1 ? 'n' : ''} – das ist dein grösster Hebel: Du kannst es schon, es gibt dir Energie, du tust es nur zu selten.` : 'Weiter zur Landkarte.'}`); })() : `<div class="mk-faint" style="text-align:center">${done}/${S.selected.length} vollständig bewertet</div>`);
+        $('sf-rate').querySelectorAll('[data-rv]').forEach(b => b.addEventListener('click', () => { const v = b.dataset.rv; S.ratings[v] = S.ratings[v] || {}; S.ratings[v][b.dataset.k] = +b.dataset.x; MethodKit.save(); renderRate(); }));
     }
-    
-    // Load strength scoring
-    const scoring = JSON.parse(localStorage.getItem('strengthScoring') || '{}');
-    Object.keys(scoring).forEach(strength => {
-        const slider = document.querySelector(`[data-strength="${strength}"] .score-slider`);
-        const textarea = document.querySelector(`[data-strength="${strength}"] textarea`);
-        if (slider) {
-            slider.value = scoring[strength].score;
-            slider.nextElementSibling.textContent = scoring[strength].score;
-        }
-        if (textarea) {
-            textarea.value = scoring[strength].description || '';
-        }
-    });
-}
 
-// Export functions for use in main file
-window.initStrengthsFinder = initStrengthsFinder;
-window.updateSelectedStrengths = updateSelectedStrengths;
-window.startGallupAssessment = startGallupAssessment;
-window.startVIAAssessment = startVIAAssessment;
-window.startCustomAssessment = startCustomAssessment;
-window.completeCustomAssessment = completeCustomAssessment;
-window.updateStrengthsScoringList = updateStrengthsScoringList;
-window.updateStrengthsInsights = updateStrengthsInsights;
-window.loadSavedStrengths = loadSavedStrengths;
+    /* ---------- 3 ---------- */
+    function renderMap() {
+        const r = S.selected.filter(rated);
+        if (r.length < 3) { $('sf-map').innerHTML = note('info', 'Bewerte mindestens drei Stärken in Schritt 2.'); return; }
+        const cell = (q, title) => `<div class="sf-cell" style="--c:${Q[q].c}"><b>${Q[q].ic} ${Q[q].t}</b><small>${Q[q].d}</small><div>${byQuad(q).map(v => `<span class="sf-tag ${S.top.includes(v) ? 'top' : ''}" ${q === 'unrealized' || q === 'strength' ? `style="--c:${Q[q].c}"` : ''}>${esc(v)}${q === 'unrealized' || q === 'strength' ? ` <em>${R(v).e}·${R(v).p}·${R(v).u}</em>` : ''}</span>`).join('') || '<span class="mk-faint">–</span>'}</div></div>`;
+        $('sf-map').innerHTML = `<div class="sf-axes"><span></span><span>Leistung niedrig</span><span>Leistung hoch</span></div><div class="sf-mapgrid"><span class="sf-axis-y">Energie hoch</span>${cell('potential')}<div class="sf-cell-pair">${cell('unrealized')}${cell('strength')}</div><span class="sf-axis-y">Energie niedrig</span>${cell('weakness')}${cell('learned')}</div>` +
+            (byQuad('learned').length ? note('warn', `<strong>${byQuad('learned').join(', ')}</strong>: Du bist gut darin – und es laugt dich aus. Genau diese Dinge werden dir immer wieder angetragen, weil du sie gut machst. Lerne, sie zu begrenzen oder abzugeben.`) : '') +
+            (byQuad('unrealized').length ? note('ok', `<strong>${byQuad('unrealized').join(', ')}</strong>: Hier liegt Gold. Energie und Können sind da – es fehlt nur die Gelegenheit. Was müsste sich ändern, damit du das öfter tust?`) : '') +
+            (byQuad('potential').length ? note('info', `<strong>${byQuad('potential').join(', ')}</strong>: Gibt dir Energie, du bist aber noch nicht gut darin. Wenn du etwas lernen willst – dann das. Hier zahlt sich Übung aus, weil die Motivation von selbst kommt.`) : '');
+    }
+    function renderTop() {
+        const cands = [...byQuad('strength'), ...byQuad('unrealized')];
+        if (!cands.length) { $('sf-top').innerHTML = note('info', 'Noch keine echten oder ungenutzten Stärken. Bewerte weiter – oder sei grosszügiger bei der Energie-Frage.'); return; }
+        S.top = S.top.filter(v => cands.includes(v));
+        $('sf-top').innerHTML = `<div class="mk-chips">${cands.map(v => `<button class="mk-chip ${S.top.includes(v) ? 'selected' : ''}" data-t="${esc(v)}">${S.top.includes(v) ? '⭐ ' : ''}${esc(v)}${quad(v) === 'unrealized' ? ' 💎' : ''}</button>`).join('')}</div><div class="sf-count ${S.top.length === 5 ? 'ok' : ''}">${S.top.length}/5</div>` +
+            (S.top.length === 5 ? (byQuad('unrealized').some(v => S.top.includes(v)) ? note('ok', 'Top 5 komplett – inklusive mindestens einer ungenutzten Stärke. Die wird in Schritt 4 den grössten Unterschied machen.') : byQuad('unrealized').length ? note('info', 'Top 5 komplett, aber nur aus Bewährtem. Nimm eine ungenutzte Stärke (💎) hinein – da ist das Wachstum.') : note('ok', 'Top 5 komplett.')) : S.top.length > 5 ? note('warn', 'Mehr als fünf – das verwässert den Fokus.') : '');
+        $('sf-top').querySelectorAll('[data-t]').forEach(b => b.addEventListener('click', () => { const v = b.dataset.t; if (S.top.includes(v)) S.top = S.top.filter(x => x !== v); else if (S.top.length >= 5) { MethodKit.toast('Maximal 5 – erst eine abwählen', 'warn'); return; } else S.top.push(v); MethodKit.save(); renderTop(); renderMap(); }));
+    }
+
+    /* ---------- 4 ---------- */
+    function renderUse() {
+        if (!S.top.length) { $('sf-use').innerHTML = note('info', 'Wähle zuerst deine Top 5 in Schritt 3.'); return; }
+        $('sf-use').innerHTML = S.top.map(v => { const u = S.use[v] || {}; const q = quad(v); return `<div class="sf-usebox" style="--c:${Q[q].c}"><div class="sf-usebox-h"><b>⭐ ${esc(v)}</b><span class="sf-qtag" style="--c:${Q[q].c}">${Q[q].ic} ${Q[q].t}</span></div><div class="mk-field"><label>Wo setze ich das (mehr) ein? ${q === 'unrealized' ? '<span class="mk-faint">– du nutzt es bisher selten: Welche Gelegenheit schaffst du dir?</span>' : ''}</label><input class="mk-input" data-uw="${esc(v)}" value="${esc(u.where || '')}" placeholder="Konkrete Situation, Projekt, Rolle"></div><div class="sf-shadow"><b>Überdosis-Risiko</b>${POOL[v] ? esc(POOL[v]) : '<em>Eigene Stärke – was passiert, wenn du davon zu viel hast?</em>'}<div class="sf-shadow-q">Erkennst du das bei dir?<div class="sf-yn"><button class="${u.over === 'yes' ? 'on' : ''}" data-ov="${esc(v)}" data-x="yes">Ja, manchmal</button><button class="${u.over === 'no' ? 'on' : ''}" data-ov="${esc(v)}" data-x="no">Eher nicht</button></div></div>${u.over === 'yes' ? `<input class="mk-input" data-ug="${esc(v)}" value="${esc(u.guard || '')}" placeholder="Mein Gegengewicht: Woran merke ich die Überdosis, und was tue ich dann?">` : ''}</div></div>`; }).join('') +
+            (() => { const overs = S.top.filter(v => (S.use[v] || {}).over === 'yes'); return overs.length >= 3 ? note('info', `Bei ${overs.length} von ${S.top.length} Stärken erkennst du die Überdosis. Das ist typisch: Stärken, die man viel einsetzt, kippen am ehesten. Ein Gegengewicht pro Stärke reicht.`) : ''; })();
+        const host = $('sf-use');
+        host.querySelectorAll('[data-uw]').forEach(i => i.addEventListener('input', () => { (S.use[i.dataset.uw] = S.use[i.dataset.uw] || {}).where = i.value; MethodKit.save(); }));
+        host.querySelectorAll('[data-ug]').forEach(i => i.addEventListener('input', () => { (S.use[i.dataset.ug] = S.use[i.dataset.ug] || {}).guard = i.value; MethodKit.save(); }));
+        host.querySelectorAll('[data-ov]').forEach(b => b.addEventListener('click', () => { (S.use[b.dataset.ov] = S.use[b.dataset.ov] || {}).over = b.dataset.x; MethodKit.save(); renderUse(); }));
+    }
+
+    /* ---------- 5 ---------- */
+    function renderSummary() {
+        $('sf-summary').innerHTML = S.top.length ? `<div class="mk-result"><h4>Deine Top 5</h4><div class="sf-sum">${S.top.map((v, i) => { const u = S.use[v] || {}; const q = quad(v); return `<div style="border-left:3px solid ${Q[q].c}"><b>${i + 1}. ${esc(v)} <small>${Q[q].ic} ${Q[q].t}</small></b>${u.where ? `<div>→ ${esc(u.where)}</div>` : '<div class="mk-faint">noch kein Einsatzort</div>'}${u.over === 'yes' && u.guard ? `<div class="mk-faint">⚠ ${esc(u.guard)}</div>` : ''}</div>`; }).join('')}</div>${byQuad('learned').length ? `<div style="margin-top:10px"><b>🔋 Begrenzen oder abgeben:</b> ${byQuad('learned').map(esc).join(', ')}</div>` : ''}${byQuad('potential').length ? `<div style="margin-top:4px"><b>🌱 Lernen lohnt sich:</b> ${byQuad('potential').map(esc).join(', ')}</div>` : ''}${S.week ? `<div style="margin-top:10px"><b>Diese Woche:</b> ${esc(S.week)}</div>` : ''}${S.stop ? `<div><b>Lasse ich:</b> ${esc(S.stop)}</div>` : ''}</div>` : '<div class="mk-empty">Die Zusammenfassung füllt sich aus den vorherigen Schritten.</div>';
+    }
+    function renderLinks() { $('sf-links').innerHTML = LINKS.map(x => `<a class="mk-option sf-link" href="${x.l}"><span class="t">${x.m}</span><span class="d">${x.why}</span></a>`).join(''); }
+    function exportAll() {
+        const L = ['MEINE STÄRKEN', '='.repeat(40), 'Exportiert: ' + new Date().toLocaleString('de-CH'), ''];
+        ['q1', 'q2', 'q3', 'q4'].forEach((k, i) => { if (S[k]) L.push(['Zeit vergessen: ', 'Komplimente: ', 'Als Kind: ', 'Stolzester Erfolg: '][i] + S[k]); });
+        L.push('', 'LANDKARTE (Energie · Leistung · Nutzung)');
+        Object.keys(Q).forEach(q => { const l = byQuad(q); if (l.length) L.push(`${Q[q].ic} ${Q[q].t}: ${l.map(v => `${v} (${R(v).e}·${R(v).p}·${R(v).u})`).join(', ')}`); });
+        L.push('', 'TOP 5'); S.top.forEach((v, i) => { const u = S.use[v] || {}; L.push(`${i + 1}. ${v}${u.where ? ' → ' + u.where : ''}${u.over === 'yes' ? `  [Überdosis: ${POOL[v] || '–'}${u.guard ? ' | Gegengewicht: ' + u.guard : ''}]` : ''}`); });
+        if (S.week) L.push('', 'Diese Woche: ' + S.week); if (S.stop) L.push('Lasse ich: ' + S.stop);
+        MethodKit.exportText('meine-staerken.txt', L.filter(x => x !== '').join('\n'));
+    }
+
+    (async function () {
+        await MethodKit.init({
+            method: 'strengths-finder', accent: '#6366f1', accent2: '#a855f7',
+            steps: [{ icon: '🔎', label: 'Sammeln' }, { icon: '⚖️', label: 'Bewerten' }, { icon: '🗺️', label: 'Landkarte' }, { icon: '🚀', label: 'Einsatz' }, { icon: '📝', label: 'Plan' }],
+            defaultState: { q1: '', q2: '', q3: '', q4: '', custom: [], selected: [], ratings: {}, top: [], use: {}, week: '', stop: '' }
+        });
+        S = MethodKit.state;
+        ['custom', 'selected', 'top'].forEach(k => { if (!Array.isArray(S[k])) S[k] = []; });
+        ['ratings', 'use'].forEach(k => { if (!S[k] || typeof S[k] !== 'object') S[k] = {}; });
+        // Migration: alter pool (Array) → custom; altes use (String) → {where}
+        if (Array.isArray(S.pool)) { S.pool.forEach(v => { if (!POOL[v] && !S.custom.includes(v)) S.custom.push(v); }); delete S.pool; }
+        Object.keys(S.use).forEach(v => { if (typeof S.use[v] === 'string') S.use[v] = { where: S.use[v] }; });
+        MethodKit.bindFields();
+        $('sf-export').addEventListener('click', exportAll);
+        const add = () => { const i = $('sf-custom'); const v = i.value.trim(); if (!v) return; if (POOL[v] || S.custom.includes(v)) { MethodKit.toast('Gibt es schon', 'warn'); return; } S.custom.push(v); S.selected.push(v); i.value = ''; MethodKit.save(); renderPool(); };
+        $('sf-add').addEventListener('click', add); $('sf-custom').addEventListener('keydown', e => { if (e.key === 'Enter') add(); });
+        ['sf-week', 'sf-stop'].forEach(id => $(id).addEventListener('input', renderSummary));
+        MethodKit.onStep = function (k) {
+            if (k === 1) renderPool();
+            if (k === 2) renderRate();
+            if (k === 3) { renderMap(); renderTop(); }
+            if (k === 4) renderUse();
+            if (k === 5) { renderSummary(); renderLinks(); }
+        };
+        MethodKit.onStep(MethodKit.step);
+    })();
+})();

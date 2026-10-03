@@ -17,18 +17,18 @@ const methodWorkflowDefinitions = {
     },
     
     'strengths-finder': {
-        title: 'Stärken-Analyse',
+        title: "Stärken finden",
         steps: 5,
         stepTitles: [
-            'Stärken-Identifikation',
-            'Stärken-Bewertung',
-            'Entwicklungsplan',
-            'Anwendungsbereiche',
-            'Stärken-Tracking'
+            "Sammeln (4 Fragen + Pool)",
+            "Bewerten: Energie × Leistung × Nutzung",
+            "Stärken-Landkarte & Top 5",
+            "Einsatz & Überdosis-Check",
+            "Stärken-Plan"
         ],
-        description: 'Entdecke deine natürlichen Talente und Stärken. Lerne, wie du sie optimal einsetzen kannst.',
+        description: "Stärken finden mit dem Realise2-Modell: Stärken über vier Reflexionsfragen und einen Pool sammeln, jede nach Energie, Leistung und Nutzung bewerten, auf einer Landkarte echte Stärken, ungenutzte Stärken, erlernte Verhaltensweisen, Potenziale und Schwächen unterscheiden, Top 5 wählen, pro Stärke die Überdosis-Schattenseite prüfen und einen Einsatzplan ableiten.",
         logic: 'assessment-based', // Assessment-basiert
-        features: ['Gallup-Stärken', 'VIA-Test', 'Entwicklungsplan', 'Tracking']
+        features: ["4 Reflexionsfragen", "Energie × Leistung × Nutzung", "Stärken-Landkarte (5 Felder)", "Ungenutzte Stärken", "Überdosis-Check pro Stärke", "Einsatzplan"]
     },
     
     'goal-setting': {
@@ -461,18 +461,49 @@ const methodWorkflowDefinitions = {
         logic: 'competence-based', // Kompetenz-basiert
         features: ["4 Felder + eigene Kompetenzen", "Ist/Soll-Radar", "Lücken-Priorisierung", "Lernwege & 70-20-10-Check", "Zeitbudget-Realitätscheck", "Fortschritts-Verlauf"]
     },
+
+    'via-strengths': {
+        title: "VIA-Charakterstärken",
+        steps: 5,
+        stepTitles: [
+            "24 Stärken bewerten",
+            "Tugend-Profil (Radar)",
+            "Signaturstärken-Test",
+            "7-Tage-Übung: neue Anwendung",
+            "Reflexion"
+        ],
+        description: "Die 24 VIA-Charakterstärken in sechs Tugenden bewerten, das Tugend-Profil als Radar mit Interpretation sehen, Kandidaten mit dem Drei-Kriterien-Test (echt, Energie, gern genutzt) zu Signaturstärken bestätigen und eine Signaturstärke sieben Tage lang auf neue Weise einsetzen – mit Tages-Tracker, Anwendungsideen pro Stärke und Reflexion.",
+        logic: 'character-strengths',
+        features: ["24 Stärken × 5 Stufen", "Tugend-Radar", "Signatur-Test (3 Kriterien)", "Anwendungsideen je Stärke", "7-Tage-Tracker", "Verlauf früherer Wochen"]
+    },
+
+    'gallup-strengths': {
+        title: "Gallup-Stärkendomänen",
+        steps: 4,
+        stepTitles: [
+            "34 Talente wählen",
+            "Top 5 ordnen",
+            "Domänen-Profil & Schattenseiten",
+            "Team-Ergänzung & Einsatz"
+        ],
+        description: "Die 34 CliftonStrengths-Talente mit Kurzbeschreibung wählen, die Top 5 in Reihenfolge bringen, das Domänen-Profil (Ausführen, Einfluss, Beziehungen, Strategie) mit Balance-Analyse und Domänen-Kombinationen deuten, pro Top-Talent die Schattenseite kennen und für schwache Domänen konkrete Partner im Umfeld benennen.",
+        logic: 'strength-domains',
+        features: ["34 Talente mit Beschreibung", "Top 5 sortierbar", "Domänen-Balken + Kombi-Deutung", "Schattenseite je Talent", "Fehlende Domäne → Partner", "Wochen-Einsatz"]
+    },
     
     'moment-excellence': {
-        title: 'Moment of Excellence',
-        steps: 3,
+        title: "Moment of Excellence",
+        steps: 5,
         stepTitles: [
-            'Excellence-Moment finden',
-            'Anker setzen',
-            'Excellence aktivieren'
+            "Spitzenmomente sammeln",
+            "Eintauchen & Submodalitäten",
+            "Ankern, üben & testen",
+            "Future Pace",
+            "Anker pflegen"
         ],
-        description: 'NLP-Technik für Spitzenleistungen.',
+        description: "NLP-Ankertechnik mit Qualitätssicherung: mehrere Spitzenmomente sammeln und den stärksten wählen, mit allen Sinnen eintauchen und über Submodalitäten (grösser, näher, heller, assoziiert) verstärken, Anker wählen und gegen die vier Anker-Kriterien prüfen, geführt setzen, den Anker neutral testen, auf künftige Situationen übertragen (vorher/nachher) und durch Auffrisch-Tracking stabil halten.",
         logic: 'anchoring', // Ankern
-        features: ['Excellence', 'Ankern', 'Aktivierung', 'NLP']
+        features: ["Momente-Sammlung mit Stärke", "VAKOG + Submodalitäten", "4 Anker-Kriterien", "Geführtes Ankern (30 s)", "Anker-Test mit Verlauf", "Future Pace vorher/nachher", "Auffrisch-Kalender"]
     },
     
     'resource-analysis': {
