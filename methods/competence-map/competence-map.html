@@ -4,17 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kompetenz-Map | Manuel Weiss</title>
-    <meta name="description" content="Kartiere deine Kompetenzen in vier Feldern, vergleiche Ist und Soll und erkenne, wo deine Entwicklung den größten Hebel hat.">
+    <meta name="description" content="Kompetenz-Map mit Ist/Soll-Analyse: Kompetenzen in vier Feldern bewerten, eigene ergänzen, Lücken priorisieren, Lernwege und Zeitbudget festlegen und den Fortschritt verfolgen.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="competence-map.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { --mk-accent: #0ea5e9; --mk-accent-2: #6366f1; --mk-accent-soft: rgba(14,165,233,.12); }
-        .cm-row { padding:12px 0; border-bottom:1px solid var(--mk-line); }
-        .cm-sliders { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px; }
-        @media (max-width:520px){ .cm-sliders{grid-template-columns:1fr;} }
-        .cm-mini label { font-size:12px; color:var(--mk-muted); }
-    </style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
@@ -27,35 +21,75 @@
     <main class="mk-shell">
         <section class="mk-hero">
             <div class="mk-hero-icon"><i class="fas fa-diagram-project"></i></div>
-            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Lernen</div>
             <h1>Wo stehst du, wo willst du hin?</h1>
-            <p>Kompetenzen verteilen sich auf vier Felder: Fach-, Methoden-, Sozial- und persönliche Kompetenz. Bewerte Ist und Soll – die größten Lücken zeigen dir, wo Lernen am meisten bringt.</p>
-            <div class="mk-badges"><span class="mk-badge">4 Kompetenzfelder</span><span class="mk-badge">Ist/Soll</span><span class="mk-badge">Lücken-Analyse</span></div>
+            <p>Kompetenzen verteilen sich auf vier Felder: Fach, Methode, Sozial, Persönlich. Du bewertest für jede Kompetenz, wo du heute stehst und wo du für dein Ziel sein musst. Die Lücken zeigen, wo Lernen am meisten bringt – und ein Lernplan mit Zeitbudget macht daraus etwas, das wirklich passiert.</p>
+            <div class="mk-badges"><span class="mk-badge">4 Felder</span><span class="mk-badge">Ist / Soll</span><span class="mk-badge">Lücken-Priorität</span><span class="mk-badge">Lernplan</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>Bewerte deine Kompetenzen</h2>
-                <p class="mk-sub">Ist = wo du heute stehst · Soll = wo du hin willst (1–5).</p>
-                <div id="cm-fields"></div>
+                <h2>1 · Dein Ziel</h2>
+                <div class="mk-field"><label for="cm-target">Für welche Rolle oder welches Ziel brauchst du die Kompetenzen?</label><input class="mk-input" id="cm-target" data-mk-field="target" placeholder="z. B. Senior Consultant in 18 Monaten · Teamleitung · Selbstständigkeit"></div>
+                <div class="mk-field"><label for="cm-horizon">Zeithorizont</label><select class="mk-select" id="cm-horizon" data-mk-field="horizon"><option value="">–</option><option value="3">3 Monate</option><option value="6">6 Monate</option><option value="12">12 Monate</option><option value="24">2 Jahre</option></select></div>
+                <div class="mk-field"><label>Wie viel Zeit kannst du pro Woche ins Lernen stecken? <span class="mk-range-val" data-mk-rangeval="hours">3</span> h</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="0" max="15" step="0.5" data-mk-field="hours"></div></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>Deine größten Lücken</h2>
-                <p class="mk-sub">Sortiert nach Entwicklungs-Potenzial (Soll − Ist).</p>
+                <h2>2 · Ist und Soll</h2>
+                <p class="mk-sub">1 = Grundkenntnisse · 3 = sicher im Alltag · 5 = Expertenniveau, andere fragen dich. Ergänze eigene Kompetenzen, die für dein Ziel zählen.</p>
+                <div id="cm-fields"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>3 · Deine Lücken</h2>
+                <div id="cm-radar"></div>
                 <div id="cm-gaps"></div>
-                <div class="mk-field" style="margin-top:14px;"><label>🎯 Welche Kompetenz packst du zuerst an – und wie?</label><textarea class="mk-textarea" data-mk-field="plan"></textarea></div>
-                <button class="mk-btn mk-btn-primary" id="cm-export"><i class="fas fa-download"></i> Map herunterladen</button>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Lernplan</h2>
+                <p class="mk-sub">Für jede priorisierte Lücke: Wie lernst du das – und wie viel Zeit pro Woche?</p>
+                <div id="cm-plan"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Lernmix</h3>
+                <div id="cm-mix"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Zusammenfassung</h2>
+                <div id="cm-summary"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="cm-first">Dein erster Lernschritt – diese Woche</label><input class="mk-input" id="cm-first" data-mk-field="first" placeholder="…"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Fortschritt</h3>
+                <p class="mk-sub">Speichere deinen Stand und aktualisiere die Ist-Werte später – so siehst du, was sich bewegt.</p>
+                <div id="cm-history"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="cm-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="cm-export"><i class="fas fa-download"></i> Herunterladen</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button></div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 2</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -70,43 +104,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        const CATS = [
-            {c:'🎓 Fachkompetenz', items:['Fachwissen','Digitale Skills','Sprachen']},
-            {c:'🧩 Methodenkompetenz', items:['Problemlösen','Projektmanagement','Analytik']},
-            {c:'🤝 Sozialkompetenz', items:['Kommunikation','Teamarbeit','Konfliktfähigkeit']},
-            {c:'🌱 Persönliche Kompetenz', items:['Selbstorganisation','Resilienz','Lernbereitschaft']}
-        ];
-        (async function () {
-            await MethodKit.init({
-                method: 'competence-map',
-                accent: '#0ea5e9', accent2: '#6366f1',
-                steps: [{icon:'📊',label:'Bewerten'},{icon:'🎯',label:'Lücken'}],
-                defaultState: { ist:{}, soll:{}, plan:'' }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-
-            const host=document.getElementById('cm-fields');
-            function key(c,it){ return c+'|'+it; }
-            host.innerHTML=CATS.map(cat=>`<div style="margin-bottom:14px;"><div style="font-weight:700;margin-bottom:4px;">${cat.c}</div>${cat.items.map(it=>{ const k=key(cat.c,it); return `<div class="cm-row"><strong style="font-size:14px;">${it}</strong><div class="cm-sliders"><div class="cm-mini"><label>Ist: <span data-istv="${k}">${S.ist[k]||2}</span></label><input class="mk-range" type="range" min="1" max="5" data-ist="${k}" value="${S.ist[k]||2}"></div><div class="cm-mini"><label>Soll: <span data-sollv="${k}">${S.soll[k]||4}</span></label><input class="mk-range" type="range" min="1" max="5" data-soll="${k}" value="${S.soll[k]||4}"></div></div></div>`; }).join('')}</div>`).join('');
-            host.querySelectorAll('[data-ist]').forEach(el=>el.addEventListener('input',()=>{ S.ist[el.dataset.ist]=parseInt(el.value,10); host.querySelector(`[data-istv="${CSS.escape(el.dataset.ist)}"]`).textContent=el.value; MethodKit.save(); }));
-            host.querySelectorAll('[data-soll]').forEach(el=>el.addEventListener('input',()=>{ S.soll[el.dataset.soll]=parseInt(el.value,10); host.querySelector(`[data-sollv="${CSS.escape(el.dataset.soll)}"]`).textContent=el.value; MethodKit.save(); }));
-
-            MethodKit.onStep=function(n){ if(n===2){
-                const rows=[];
-                CATS.forEach(cat=>cat.items.forEach(it=>{ const k=key(cat.c,it); const ist=S.ist[k]||2, soll=S.soll[k]||4; rows.push({it,cat:cat.c,gap:soll-ist,ist,soll}); }));
-                rows.sort((a,b)=>b.gap-a.gap);
-                document.getElementById('cm-gaps').innerHTML=rows.map(r=>`<div class="mk-row"><div class="grow">${MethodKit.esc(r.it)} <span style="color:var(--mk-faint);font-size:12px;">${r.cat.replace(/^.. /,'')}</span></div><span class="mk-range-val" style="background:${r.gap>=2?'rgba(239,68,68,.15)':'var(--mk-accent-soft)'};color:${r.gap>=2?'#dc2626':'var(--mk-accent)'};">+${r.gap}</span></div>`).join('');
-            }};
-
-            document.getElementById('cm-export').addEventListener('click',()=>{
-                let t='KOMPETENZ-MAP\n=============\n\n';
-                CATS.forEach(cat=>{ t+=`${cat.c}\n`; cat.items.forEach(it=>{ const k=key(cat.c,it); t+=`  ${it}: Ist ${S.ist[k]||2} → Soll ${S.soll[k]||4}\n`; }); t+='\n'; });
-                t+=`Plan: ${S.plan||'–'}\n`;
-                MethodKit.exportText('meine-kompetenz-map.txt', t);
-            });
-        })();
-    </script>
+    <script src="competence-map.js?v=20261003"></script>
 </body>
 </html>

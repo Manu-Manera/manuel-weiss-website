@@ -157,17 +157,18 @@ const methodWorkflowDefinitions = {
     },
     
     'communication': {
-        title: 'Kommunikation',
-        steps: 4,
+        title: "4-Ohren-Modell (Schulz von Thun)",
+        steps: 5,
         stepTitles: [
-            'Kommunikations-Assessment',
-            'Aktives Zuhören',
-            'Nonverbale Kommunikation',
-            'Konfliktlösung'
+            "Situation & Rolle",
+            "Vier Seiten · gemeint vs. gehört",
+            "Ohren-Profil",
+            "Ich-Botschaft & Nachfrage",
+            "Zusammenfassung"
         ],
-        description: 'Verbessere deine Kommunikationsfähigkeiten und lerne, effektiver zu kommunizieren.',
+        description: "Das Kommunikationsquadrat als Analyse-Werkzeug: eine echte Aussage auf Sach-, Selbstoffenbarungs-, Beziehungs- und Appellseite zerlegen, das Missverständnis zwischen gemeinter und gehörter Seite lokalisieren, per Quiz das eigene Lieblingsohr erkennen, eine geprüfte Ich-Botschaft bauen und eine Nachfrage für Metakommunikation generieren.",
         logic: 'skill-based', // Fähigkeiten-basiert
-        features: ['Assessment', 'Aktives Zuhören', 'Nonverbal', 'Konfliktlösung']
+        features: ["4 Seiten zerlegen", "Gemeint vs. gehört", "Ohren-Profil-Quiz", "Ich-Botschaft mit Check", "Nachfrage-Generator"]
     },
     
     'time-management': {
@@ -200,18 +201,34 @@ const methodWorkflowDefinitions = {
         features: ["Interaktive Pyramide", "Aufstieg & Abstieg", "Stimmigkeits-Check", "Glaubenssatz-Erkennung", "Hebel-Vorschlag"]
     },
     
-    'johari-window': {
-        title: 'Johari-Fenster',
-        steps: 4,
+    'self-assessment': {
+        title: 'Selbsteinschätzung',
+        steps: 5,
         stepTitles: [
-            'Selbstbild erstellen',
-            'Fremdbild sammeln',
-            'Blinde Flecken identifizieren',
-            'Entwicklungsplan erstellen'
+            'Selbstbild & Relevanz',
+            'Belege',
+            'Fremdbild',
+            'Profil & Prioritäten-Matrix',
+            'Fokus & Verlauf'
         ],
-        description: 'Erweitere dein Selbstbewusstsein durch das Johari-Fenster-Modell.',
+        description: 'Selbsteinschätzung mit Tiefgang: acht Kompetenzfelder bewerten und nach Relevanz gewichten, Extremwerte mit konkreten Situationen belegen, das vermutete Fremdbild gegenüberstellen (Über-/Unterschätzung), Felder in eine Prioritäten-Matrix sortieren, ein Fokus-Feld wählen und per Momentaufnahme den Verlauf verfolgen.',
+        logic: 'self-reflection', // Selbstreflexion
+        features: ['8 Felder × Relevanz', 'Belege für Extremwerte', 'Selbst- vs. Fremdbild', 'Prioritäten-Matrix', 'Fokus-Vorschlag', 'Momentaufnahmen']
+    },
+
+    'johari-window': {
+        title: "Johari-Fenster",
+        steps: 5,
+        stepTitles: [
+            "Selbstbild",
+            "Fremdbilder (mehrere Personen)",
+            "Das Fenster",
+            "Reflexion",
+            "Fenster vergrössern"
+        ],
+        description: "Johari-Fenster mit mehreren Feedbackgebern: aus 56 Eigenschaften das Selbstbild wählen, Fremdbilder von bis zu sechs Personen aus verschiedenen Kontexten eintragen, das Fenster mit Konsens-Gewichtung sehen (offen, blind, verborgen, unbekannt), blinde Flecken und verborgene Seiten reflektieren und konkrete Schritte zum Feedback-Einholen und Sich-Mitteilen ableiten.",
         logic: 'feedback-based', // Feedback-basiert
-        features: ['Selbstbild', 'Fremdbild', 'Blinde Flecken', 'Entwicklung']
+        features: ["56 Johari-Adjektive", "Bis zu 6 Feedbackgeber", "Konsens-Gewichtung", "Fenster-Statistik", "Reflexions-Hinweise", "Frage-Text zum Teilen"]
     },
     
     'walt-disney': {
@@ -431,17 +448,18 @@ const methodWorkflowDefinitions = {
     },
     
     'competence-map': {
-        title: 'Kompetenz-Landkarte',
-        steps: 4,
+        title: "Kompetenz-Map",
+        steps: 5,
         stepTitles: [
-            'Kompetenzen identifizieren',
-            'Niveau bewerten',
-            'Lücken analysieren',
-            'Entwicklungsplan erstellen'
+            "Ziel & Zeitbudget",
+            "Ist / Soll bewerten",
+            "Lücken & Radar",
+            "Lernplan & Lernmix",
+            "Zusammenfassung & Fortschritt"
         ],
-        description: 'Erstelle deine persönliche Kompetenz-Landkarte.',
+        description: "Kompetenz-Map mit Ist/Soll-Analyse: Kompetenzen in vier Feldern (plus eigene) auf einer 5er-Skala bewerten, Lücken im Radar-Diagramm sehen und bis zu drei priorisieren, pro Lücke Lernwege (Tun, von anderen, Kurs, Weitergeben) und Wochenstunden festlegen, das Zeitbudget gegen den Horizont prüfen und den Fortschritt per Stand-Speicherung verfolgen.",
         logic: 'competence-based', // Kompetenz-basiert
-        features: ['Kompetenzen', 'Bewertung', 'Lücken', 'Entwicklung']
+        features: ["4 Felder + eigene Kompetenzen", "Ist/Soll-Radar", "Lücken-Priorisierung", "Lernwege & 70-20-10-Check", "Zeitbudget-Realitätscheck", "Fortschritts-Verlauf"]
     },
     
     'moment-excellence': {

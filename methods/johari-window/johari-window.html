@@ -4,76 +4,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Johari-Fenster | Manuel Weiss</title>
-    <meta name="description" content="Entdecke blinde Flecken und verborgene Seiten: Vergleiche dein Selbstbild mit dem Fremdbild und erweitere deinen offenen Bereich.">
+    <meta name="description" content="Johari-Fenster mit mehreren Feedbackgebern: Selbstbild wählen, Fremdbilder von bis zu fünf Personen erfassen, das Fenster mit Konsens-Gewichtung sehen, blinde Flecken und verborgene Seiten reflektieren und den offenen Bereich gezielt vergrössern.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="johari-window.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { --mk-accent: #06b6d4; --mk-accent-2: #3b82f6; --mk-accent-soft: rgba(6,182,212,.12); }
-        .jo-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-        .jo-cell { border-radius:var(--mk-radius-sm); padding:14px; border:1.5px solid var(--mk-line); min-height:90px; }
-        .jo-open { background:rgba(6,182,212,.08); border-color:rgba(6,182,212,.4); }
-        .jo-blind { background:rgba(245,158,11,.09); border-color:rgba(245,158,11,.4); }
-        .jo-hidden { background:rgba(139,92,246,.08); border-color:rgba(139,92,246,.4); }
-        .jo-unknown { background:var(--mk-surface-2); }
-        .jo-cell h4 { margin:0 0 6px; font-size:13px; }
-        .jo-tag { display:inline-block; background:#fff; border:1px solid var(--mk-line); border-radius:999px; padding:2px 9px; font-size:12px; margin:0 4px 4px 0; }
-        @media (max-width:520px){ .jo-grid{grid-template-columns:1fr;} }
-    </style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
         <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
-        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-window-restore"></i></span><span>Johari-Fenster</span></div>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-border-all"></i></span><span>Johari-Fenster</span></div>
         <span class="mk-topbar-spacer"></span>
         <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
     </header>
 
     <main class="mk-shell">
         <section class="mk-hero">
-            <div class="mk-hero-icon"><i class="fas fa-window-restore"></i></div>
-            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <div class="mk-hero-icon"><i class="fas fa-border-all"></i></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Selbst- & Fremdbild</div>
             <h1>Was andere sehen – und du nicht</h1>
-            <p>Das Johari-Fenster macht den Unterschied zwischen Selbst- und Fremdbild sichtbar. So entdeckst du blinde Flecken, entscheidest, was du teilen willst, und wächst über deinen offenen Bereich.</p>
-            <div class="mk-badges"><span class="mk-badge">Selbstbild</span><span class="mk-badge">Fremdbild</span><span class="mk-badge">Blinde Flecken</span></div>
+            <p>Das Johari-Fenster von Luft und Ingham teilt dich in vier Bereiche: was du und andere kennen (offen), was nur du kennst (verborgen), was nur andere sehen (blinder Fleck) und was niemand kennt (unbekannt). Hier wählst du dein Selbstbild, trägst echte Fremdbilder ein – idealerweise von mehreren Personen – und siehst, wo dein Fenster wächst, wenn du mehr fragst und mehr zeigst.</p>
+            <div class="mk-badges"><span class="mk-badge">56 Eigenschaften</span><span class="mk-badge">Mehrere Feedbackgeber</span><span class="mk-badge">Konsens</span><span class="mk-badge">Fenster vergrössern</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>So sehe ich mich</h2>
-                <p class="mk-sub">Wähle die Eigenschaften, die auf dich zutreffen.</p>
-                <div class="mk-chips" id="jo-self"></div>
+                <h2>1 · Dein Selbstbild</h2>
+                <p class="mk-sub">Wähle 5 bis 8 Eigenschaften, die dich am besten beschreiben – nicht die, die du gern hättest.</p>
+                <div id="jo-self"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>So sehen mich andere</h2>
-                <p class="mk-sub">Wähle, was andere über dich sagen würden (oder dir schon gesagt haben). Am ehrlichsten wird es, wenn du jemanden wirklich fragst.</p>
-                <div class="mk-chips" id="jo-others"></div>
+                <h2>2 · Fremdbilder</h2>
+                <p class="mk-sub">Frag echte Menschen: „Welche 5–8 Wörter beschreiben mich am besten?" Trag jede Antwort einzeln ein. Je mehr Personen, desto aussagekräftiger.</p>
+                <div id="jo-raters"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
             <div class="mk-card">
-                <h2>Dein Johari-Fenster</h2>
-                <div class="jo-grid">
-                    <div class="jo-cell jo-open"><h4>🪟 Offen <span style="color:var(--mk-faint)">(ich & andere)</span></h4><div id="jo-c-open"></div></div>
-                    <div class="jo-cell jo-blind"><h4>🙈 Blinder Fleck <span style="color:var(--mk-faint)">(nur andere)</span></h4><div id="jo-c-blind"></div></div>
-                    <div class="jo-cell jo-hidden"><h4>🔒 Verborgen <span style="color:var(--mk-faint)">(nur ich)</span></h4><div id="jo-c-hidden"></div></div>
-                    <div class="jo-cell jo-unknown"><h4>❓ Unbekannt <span style="color:var(--mk-faint)">(Potenzial)</span></h4><div id="jo-c-unknown"></div></div>
+                <h2>3 · Dein Fenster</h2>
+                <div id="jo-window"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Reflexion</h2>
+                <div id="jo-reflect"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="jo-rblind">Blinder Fleck: Was überrascht dich – und woran könnte es liegen, dass du es nicht siehst?</label><textarea class="mk-textarea" id="jo-rblind" data-mk-field="reflectBlind" placeholder="…"></textarea></div>
+                <div class="mk-field"><label for="jo-rhidden">Verborgen: Warum zeigst du das nicht? Was würde passieren, wenn du es zeigst?</label><textarea class="mk-textarea" id="jo-rhidden" data-mk-field="reflectHidden" placeholder="…"></textarea></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Fenster vergrössern</h2>
+                <p class="mk-sub">Der offene Bereich wächst auf zwei Wegen: Feedback einholen (verkleinert den blinden Fleck) und sich mitteilen (verkleinert das Verborgene).</p>
+                <div id="jo-grow"></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="jo-ask">🙋 Wen frage ich als Nächstes – und was genau?</label><input class="mk-input" id="jo-ask" data-mk-field="ask" placeholder="Person · Frage"></div>
+                    <div class="mk-field"><label for="jo-show">🪟 Was zeige ich bewusst – wem, in welcher Situation?</label><input class="mk-input" id="jo-show" data-mk-field="show" placeholder="Eigenschaft · wem · wann"></div>
                 </div>
-                <div class="mk-field" style="margin-top:16px;"><label>💡 Was im blinden Fleck überrascht dich?</label><textarea class="mk-textarea" data-mk-field="reflectBlind" placeholder="Welches Fremdbild war dir neu?"></textarea></div>
-                <div class="mk-field"><label>🔓 Was aus dem Verborgenen möchtest du mehr zeigen?</label><textarea class="mk-textarea" data-mk-field="reflectHidden" placeholder="Wo lohnt sich mehr Offenheit?"></textarea></div>
-                <button class="mk-btn mk-btn-primary" id="jo-export"><i class="fas fa-download"></i> Fenster herunterladen</button>
+                <div id="jo-summary"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="jo-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="jo-export"><i class="fas fa-download"></i> Herunterladen</button><button class="mk-btn mk-btn-outline" id="jo-share"><i class="fas fa-share"></i> Frage-Text kopieren</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button></div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -88,45 +99,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        const ADJ = ['freundlich','klug','mutig','geduldig','kreativ','zuverlässig','humorvoll','energisch','ruhig','durchsetzungsstark','einfühlsam','organisiert','spontan','ehrgeizig','bescheiden','selbstbewusst','hilfsbereit','ehrlich','neugierig','gelassen','willensstark','aufmerksam','optimistisch','anpassungsfähig'];
-        (async function () {
-            await MethodKit.init({
-                method: 'johari-window',
-                accent: '#06b6d4', accent2: '#3b82f6',
-                steps: [{icon:'🙂',label:'Selbstbild'},{icon:'👥',label:'Fremdbild'},{icon:'🪟',label:'Fenster'}],
-                defaultState: { self:[], others:[], reflectBlind:'', reflectHidden:'' }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-
-            function renderChips(kind, host){
-                host.innerHTML=ADJ.map(a=>`<button class="mk-chip ${S[kind].indexOf(a)>-1?'selected':''}" data-a="${a}">${a}</button>`).join('');
-                host.querySelectorAll('[data-a]').forEach(el=>el.addEventListener('click',()=>{ const a=el.dataset.a,i=S[kind].indexOf(a); if(i>-1)S[kind].splice(i,1); else S[kind].push(a); MethodKit.save(); renderChips(kind,host); }));
-            }
-            renderChips('self', document.getElementById('jo-self'));
-            renderChips('others', document.getElementById('jo-others'));
-
-            function tags(arr){ return arr.length?arr.map(a=>`<span class="jo-tag">${a}</span>`).join(''):'<span style="color:var(--mk-faint);font-size:13px;">–</span>'; }
-            function renderWindow(){
-                const open=S.self.filter(a=>S.others.indexOf(a)>-1);
-                const hidden=S.self.filter(a=>S.others.indexOf(a)<0);
-                const blind=S.others.filter(a=>S.self.indexOf(a)<0);
-                const unknown=ADJ.filter(a=>S.self.indexOf(a)<0 && S.others.indexOf(a)<0);
-                document.getElementById('jo-c-open').innerHTML=tags(open);
-                document.getElementById('jo-c-blind').innerHTML=tags(blind);
-                document.getElementById('jo-c-hidden').innerHTML=tags(hidden);
-                document.getElementById('jo-c-unknown').innerHTML=tags(unknown);
-                return {open,hidden,blind,unknown};
-            }
-            MethodKit.onStep=function(n){ if(n===3) renderWindow(); };
-
-            document.getElementById('jo-export').addEventListener('click',()=>{
-                const w=renderWindow();
-                const t=`JOHARI-FENSTER\n==============\n\nOffen (ich & andere): ${w.open.join(', ')||'–'}\nBlinder Fleck (nur andere): ${w.blind.join(', ')||'–'}\nVerborgen (nur ich): ${w.hidden.join(', ')||'–'}\nUnbekannt (Potenzial): ${w.unknown.join(', ')||'–'}\n\nÜberraschung im blinden Fleck: ${S.reflectBlind||'–'}\nMehr zeigen aus dem Verborgenen: ${S.reflectHidden||'–'}\n`;
-                MethodKit.exportText('mein-johari-fenster.txt', t);
-            });
-        })();
-    </script>
+    <script src="johari-window.js?v=20261003"></script>
 </body>
 </html>

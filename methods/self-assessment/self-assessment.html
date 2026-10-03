@@ -4,20 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Selbsteinschätzung | Manuel Weiss</title>
-    <meta name="description" content="Ein ehrlicher Blick auf dich selbst: bewerte deine Kompetenzen, erkenne Stärken und Entwicklungsfelder und leite deinen nächsten Schritt ab.">
+    <meta name="description" content="Selbsteinschätzung mit Tiefgang: acht Kompetenzfelder bewerten, Relevanz gewichten, Belege prüfen, das vermutete Fremdbild gegenüberstellen, Über- und Unterschätzung erkennen und den wichtigsten Entwicklungsschritt ableiten.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="self-assessment.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { --mk-accent: #6366f1; --mk-accent-2: #8b5cf6; --mk-accent-soft: rgba(99,102,241,.12); }
-        .sa-bar { height:10px; border-radius:999px; background:var(--mk-line); overflow:hidden; }
-        .sa-bar > span { display:block; height:100%; background:linear-gradient(90deg,var(--mk-accent),var(--mk-accent-2)); }
-    </style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
         <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
-        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-user-check"></i></span><span>Selbsteinschätzung</span></div>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-user-check"></i></span><span>Selbst-Check</span></div>
         <span class="mk-topbar-spacer"></span>
         <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
     </header>
@@ -25,43 +21,85 @@
     <main class="mk-shell">
         <section class="mk-hero">
             <div class="mk-hero-icon"><i class="fas fa-user-check"></i></div>
-            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Standort</div>
             <h1>Wie gut kennst du dich?</h1>
-            <p>Selbsterkenntnis ist der Anfang jeder Entwicklung. Bewerte dich ehrlich in zentralen Kompetenzfeldern, halte Stärken und Wachstumsfelder fest – und finde deinen wichtigsten nächsten Schritt.</p>
-            <div class="mk-badges"><span class="mk-badge">Kompetenzfelder</span><span class="mk-badge">Stärken</span><span class="mk-badge">Nächster Schritt</span></div>
+            <p>Selbsteinschätzungen sind notorisch ungenau – wir überschätzen, was uns leichtfällt, und unterschätzen, was andere an uns sehen. Hier bewertest du acht Kompetenzfelder, gewichtest, was für deine Ziele zählt, prüfst deine Belege, stellst das Fremdbild daneben und findest das eine Feld, in dem Entwicklung am meisten bringt.</p>
+            <div class="mk-badges"><span class="mk-badge">8 Felder</span><span class="mk-badge">Relevanz</span><span class="mk-badge">Belege</span><span class="mk-badge">Selbst- vs. Fremdbild</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>Dein Selbstbild</h2>
-                <p class="mk-sub">Wie schätzt du dich aktuell ein? 1 = großer Entwicklungsbedarf, 10 = sehr stark.</p>
+                <h2>1 · Dein Selbstbild</h2>
+                <p class="mk-sub">Wie stark bist du heute – und wie wichtig ist das Feld für deine aktuelle Rolle oder dein nächstes Ziel?</p>
+                <div class="mk-field"><label for="sa-goal">Bezogen worauf? (Rolle, Ziel, Kontext)</label><input class="mk-input" id="sa-goal" data-mk-field="goal" placeholder="z. B. Meine Rolle als Teamlead · Der Wechsel in die Beratung"></div>
                 <div id="sa-dims"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>Stärken & Wachstumsfelder</h2>
-                <div class="mk-field"><label>💎 Worin bist du richtig gut?</label><textarea class="mk-textarea" data-mk-field="strengths" placeholder="Drei Dinge, die dir leichtfallen und auf die du stolz bist."></textarea></div>
-                <div class="mk-field"><label>🌱 Woran möchtest du wachsen?</label><textarea class="mk-textarea" data-mk-field="growth" placeholder="Wo spürst du den größten Hebel?"></textarea></div>
-                <div class="mk-field"><label>🗣️ Was schätzen andere an dir?</label><textarea class="mk-textarea" data-mk-field="others" placeholder="Welches Feedback bekommst du immer wieder?"></textarea></div>
+                <h2>2 · Woran machst du das fest?</h2>
+                <p class="mk-sub">Eine Einschätzung ohne Beleg ist ein Bauchgefühl. Für deine höchsten und tiefsten Werte: Welche konkrete Situation zeigt das?</p>
+                <div id="sa-evidence"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
             <div class="mk-card">
-                <h2>Dein Profil & nächster Schritt</h2>
+                <h2>3 · Das Fremdbild</h2>
+                <p class="mk-sub">Wie würde dich jemand bewerten, der dich bei der Arbeit erlebt – ehrlich, nicht höflich?</p>
+                <div class="mk-field"><label for="sa-rater">Wen hast du dabei im Kopf?</label><input class="mk-input" id="sa-rater" data-mk-field="rater" placeholder="Name oder Rolle, z. B. meine Vorgesetzte"></div>
+                <div id="sa-others"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="sa-otherstxt">Welches Feedback bekommst du immer wieder?</label><textarea class="mk-textarea" id="sa-otherstxt" data-mk-field="others" placeholder="Sätze, die du schon mehrfach gehört hast"></textarea></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Dein Profil</h2>
+                <div id="sa-profile"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Prioritäten-Matrix</h3>
+                <p class="mk-sub">Relevanz × Ausprägung: Wo einsetzen, wo entwickeln, wo in Ruhe lassen?</p>
+                <div id="sa-matrix"></div>
+            </div>
+            <div class="mk-card">
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="sa-strengths">💎 Deine Stärken – in eigenen Worten</label><textarea class="mk-textarea" id="sa-strengths" data-mk-field="strengths" placeholder="Was fällt dir leicht, worauf bist du stolz?"></textarea></div>
+                    <div class="mk-field"><label for="sa-growth">🌱 Deine Wachstumsfelder</label><textarea class="mk-textarea" id="sa-growth" data-mk-field="growth" placeholder="Wo spürst du den grössten Hebel?"></textarea></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Dein nächster Schritt</h2>
+                <div id="sa-focus"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="sa-next">Die eine konkrete Sache, die du diese Woche angehst</label><input class="mk-input" id="sa-next" data-mk-field="next" placeholder="…"></div>
+                <div class="mk-field"><label for="sa-measure">Woran merkst du in 4 Wochen, dass es gewirkt hat?</label><input class="mk-input" id="sa-measure" data-mk-field="measure" placeholder="…"></div>
                 <div id="sa-summary"></div>
-                <div class="mk-field" style="margin-top:16px;"><label>🎯 Mein wichtigster nächster Schritt</label><input class="mk-input" data-mk-field="next" placeholder="Eine konkrete Sache, die du diese Woche angehst."></div>
-                <button class="mk-btn mk-btn-primary" id="sa-export"><i class="fas fa-download"></i> Einschätzung herunterladen</button>
+            </div>
+            <div class="mk-card">
+                <h3>Verlauf</h3>
+                <p class="mk-sub">Speichere deine Einschätzung als Momentaufnahme – und wiederhole sie in ein paar Wochen.</p>
+                <div id="sa-history"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="sa-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="sa-export"><i class="fas fa-download"></i> Herunterladen</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button></div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -76,41 +114,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        const DIMS = [
-            {id:'fach',ic:'🎓',label:'Fachkompetenz'},{id:'komm',ic:'💬',label:'Kommunikation'},
-            {id:'orga',ic:'🗂️',label:'Selbstorganisation'},{id:'resil',ic:'🛡️',label:'Resilienz'},
-            {id:'kreativ',ic:'💡',label:'Kreativität'},{id:'team',ic:'🤝',label:'Zusammenarbeit'},
-            {id:'fuehrung',ic:'🧭',label:'Führung / Initiative'},{id:'lernen',ic:'📈',label:'Lernbereitschaft'}
-        ];
-        (async function () {
-            await MethodKit.init({
-                method: 'self-assessment',
-                accent: '#6366f1', accent2: '#8b5cf6',
-                steps: [{icon:'📊',label:'Selbstbild'},{icon:'💎',label:'Stärken'},{icon:'🎯',label:'Profil'}],
-                defaultState: { ratings:{}, strengths:'', growth:'', others:'', next:'' }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-
-            const host=document.getElementById('sa-dims');
-            host.innerHTML=DIMS.map(d=>`<div class="mk-field"><label>${d.ic} ${d.label}</label><div class="mk-range-wrap"><input class="mk-range" type="range" min="1" max="10" data-r="${d.id}" value="${S.ratings[d.id]||5}"><span class="mk-range-val" data-rv="${d.id}">${S.ratings[d.id]||5}</span></div></div>`).join('');
-            host.querySelectorAll('[data-r]').forEach(el=>el.addEventListener('input',()=>{ S.ratings[el.dataset.r]=parseInt(el.value,10); host.querySelector(`[data-rv="${el.dataset.r}"]`).textContent=el.value; MethodKit.save(); }));
-
-            function renderSummary(){
-                const sh=document.getElementById('sa-summary');
-                const sorted=DIMS.slice().sort((a,b)=>(S.ratings[b.id]||5)-(S.ratings[a.id]||5));
-                sh.innerHTML=sorted.map(d=>{ const v=S.ratings[d.id]||5; return `<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:14px;"><span>${d.ic} ${d.label}</span><strong>${v}/10</strong></div><div class="sa-bar"><span style="width:${v*10}%"></span></div></div>`; }).join('');
-            }
-            MethodKit.onStep=function(n){ if(n===3) renderSummary(); };
-
-            document.getElementById('sa-export').addEventListener('click',()=>{
-                let t='MEINE SELBSTEINSCHÄTZUNG\n========================\n\n';
-                DIMS.forEach(d=>t+=`${d.label}: ${S.ratings[d.id]||5}/10\n`);
-                t+=`\nStärken: ${S.strengths}\nWachstumsfelder: ${S.growth}\nWas andere schätzen: ${S.others}\n\nNächster Schritt: ${S.next}\n`;
-                MethodKit.exportText('meine-selbsteinschaetzung.txt', t);
-            });
-        })();
-    </script>
+    <script src="self-assessment.js?v=20261003"></script>
 </body>
 </html>

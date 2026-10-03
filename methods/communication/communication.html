@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kommunikation (4-Ohren) | Manuel Weiss</title>
-    <meta name="description" content="Verstehe und sende Botschaften klarer mit dem 4-Ohren-Modell von Schulz von Thun und der Ich-Botschaft.">
+    <title>4-Ohren-Modell (Schulz von Thun) | Manuel Weiss</title>
+    <meta name="description" content="Das Kommunikationsquadrat nach Schulz von Thun: eine konkrete Aussage auf vier Seiten zerlegen, das Missverständnis zwischen gemeinter und gehörter Seite finden, das eigene Ohren-Profil kennen und mit Ich-Botschaft und Nachfrage klarer kommunizieren.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="communication.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>:root { --mk-accent: #0ea5e9; --mk-accent-2: #6366f1; --mk-accent-soft: rgba(14,165,233,.12); }</style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
         <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
-        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-comments"></i></span><span>Kommunikation</span></div>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-comments"></i></span><span>4-Ohren-Modell</span></div>
         <span class="mk-topbar-spacer"></span>
         <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
     </header>
@@ -21,49 +21,94 @@
     <main class="mk-shell">
         <section class="mk-hero">
             <div class="mk-hero-icon"><i class="fas fa-comments"></i></div>
-            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Kommunikation</div>
             <h1>Gehört ist nicht gemeint</h1>
-            <p>Jede Nachricht hat vier Seiten – und jeder hört mit vier Ohren. Das Modell von Schulz von Thun erklärt Missverständnisse und hilft dir, klarer zu senden und besser zu verstehen.</p>
-            <div class="mk-badges"><span class="mk-badge">4-Ohren-Modell</span><span class="mk-badge">Ich-Botschaft</span><span class="mk-badge">Klarheit</span></div>
+            <p>Jede Nachricht hat vier Seiten – Sache, Selbstoffenbarung, Beziehung, Appell – und jeder hört mit vier Ohren. Missverständnisse entstehen, wenn die gemeinte Seite nicht die gehörte ist. Hier zerlegst du eine echte Situation, findest den Punkt, an dem es kippte, lernst dein Ohren-Profil kennen und formulierst, was du eigentlich sagen willst.</p>
+            <div class="mk-badges"><span class="mk-badge">4 Seiten</span><span class="mk-badge">Gemeint vs. gehört</span><span class="mk-badge">Ohren-Profil</span><span class="mk-badge">Ich-Botschaft</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>Welche Aussage beschäftigt dich?</h2>
-                <p class="mk-sub">Ein Satz, den jemand gesagt hat – oder den du sagen möchtest.</p>
-                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="message" placeholder="z. B. „Du bist ja heute wieder spät dran.""></textarea></div>
+                <h2>1 · Die Situation</h2>
+                <div class="mk-field"><label>Welche Rolle hattest du?</label><div class="mk-grid-2" id="co-role"></div></div>
+                <div class="mk-field"><label for="co-message">Die Aussage – möglichst wörtlich</label><textarea class="mk-textarea" id="co-message" data-mk-field="message" placeholder="z. B. „Die Präsentation ist ja ganz okay geworden.""></textarea></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="co-who">Wer war die andere Person?</label><input class="mk-input" id="co-who" data-mk-field="who" placeholder="Name oder Rolle"></div>
+                    <div class="mk-field"><label for="co-context">Kontext</label><input class="mk-input" id="co-context" data-mk-field="context" placeholder="Wo, wann, Stimmung"></div>
+                </div>
+                <div class="mk-field"><label for="co-reaction">Was passierte danach – die Reaktion?</label><textarea class="mk-textarea" id="co-reaction" data-mk-field="reaction" placeholder="Was wurde erwidert, was hat sich verändert?"></textarea></div>
+                <div id="co-sitnote"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>Die vier Ohren</h2>
-                <p class="mk-sub">Was steckt auf jeder Ebene? So entlarvst du Missverständnisse.</p>
-                <div class="mk-field"><label>📄 Sachebene — worum geht es sachlich?</label><textarea class="mk-textarea" data-mk-field="fact"></textarea></div>
-                <div class="mk-field"><label>🙋 Selbstoffenbarung — was sagt es über den Sender?</label><textarea class="mk-textarea" data-mk-field="self"></textarea></div>
-                <div class="mk-field"><label>↔️ Beziehung — wie steht der Sender zu dir?</label><textarea class="mk-textarea" data-mk-field="relation"></textarea></div>
-                <div class="mk-field"><label>📣 Appell — was will der Sender erreichen?</label><textarea class="mk-textarea" data-mk-field="appeal"></textarea></div>
+                <h2>2 · Die vier Seiten</h2>
+                <div id="co-quote"></div>
+                <div class="mk-grid-2" id="co-sides"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Gemeint und gehört</h3>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label>Welche Seite war <strong>gemeint</strong> – vermutlich?</label><div id="co-meant"></div></div>
+                    <div class="mk-field"><label>Mit welchem Ohr wurde <strong>gehört</strong>?</label><div id="co-heard"></div></div>
+                </div>
+                <div id="co-gap"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
             <div class="mk-card">
-                <h2>Klar senden: die Ich-Botschaft</h2>
-                <p class="mk-sub">Formuliere dein Anliegen ohne Vorwurf – nach der bewährten Formel.</p>
-                <div class="mk-field"><label>Wenn … (beobachtbare Situation, ohne Wertung)</label><input class="mk-input" data-mk-field="ibWhen" placeholder="„Wenn die Abgabe später kommt als vereinbart …""></div>
-                <div class="mk-field"><label>… fühle ich mich / geht es mir …</label><input class="mk-input" data-mk-field="ibFeel" placeholder="„… fühle ich mich unter Druck …""></div>
-                <div class="mk-field"><label>… weil mir … wichtig ist (Bedürfnis)</label><input class="mk-input" data-mk-field="ibNeed" placeholder="„… weil mir Verlässlichkeit wichtig ist.""></div>
-                <div class="mk-field"><label>Ich wünsche mir / bitte dich …</label><input class="mk-input" data-mk-field="ibWish" placeholder="„Können wir Termine vorher abstimmen?""></div>
-                <div class="mk-result"><h4>✉️ Deine Ich-Botschaft</h4><div id="co-ib">…</div></div>
-                <button class="mk-btn mk-btn-primary" id="co-export" style="margin-top:14px;"><i class="fas fa-download"></i> Herunterladen</button>
+                <h2>3 · Dein Ohren-Profil</h2>
+                <p class="mk-sub">Jeder hat ein Lieblingsohr. Wie sehr treffen diese Aussagen auf dich zu?</p>
+                <div id="co-quiz"></div>
+            </div>
+            <div class="mk-card">
+                <div id="co-profile"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Klarer sprechen</h2>
+                <div id="co-ib-intro"></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="co-ibwhen">Wenn … (Situation, beobachtbar)</label><input class="mk-input" id="co-ibwhen" data-mk-field="ibWhen" placeholder="Wenn du sagst, die Präsentation sei „ganz okay" …"></div>
+                    <div class="mk-field"><label for="co-ibfeel">… fühle ich mich / bin ich … (Gefühl)</label><input class="mk-input" id="co-ibfeel" data-mk-field="ibFeel" placeholder="… bin ich verunsichert"></div>
+                    <div class="mk-field"><label for="co-ibneed">… weil mir … wichtig ist (Bedürfnis)</label><input class="mk-input" id="co-ibneed" data-mk-field="ibNeed" placeholder="… weil mir klares Feedback wichtig ist"></div>
+                    <div class="mk-field"><label for="co-ibwish">Ich wünsche mir … (Bitte, konkret)</label><input class="mk-input" id="co-ibwish" data-mk-field="ibWish" placeholder="… dass du mir zwei Dinge nennst, die ich besser machen kann"></div>
+                </div>
+                <div id="co-ib-check"></div>
+                <div class="mk-result"><h4>Deine Ich-Botschaft</h4><div class="co-msg" id="co-ib">…</div><div class="co-copy-row"><button class="mk-btn mk-btn-outline mk-btn-sm" id="co-copy"><i class="fas fa-copy"></i> Kopieren</button></div></div>
+            </div>
+            <div class="mk-card">
+                <h3>Klarer hören – die Nachfrage</h3>
+                <p class="mk-sub">Metakommunikation: Statt zu reagieren, benennst du, was du gehört hast, und fragst nach.</p>
+                <div id="co-meta"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Zusammenfassung</h2>
+                <div id="co-summary"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="co-next">Was nimmst du dir für das nächste Gespräch vor?</label><input class="mk-input" id="co-next" data-mk-field="next" placeholder="…"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="co-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="co-export"><i class="fas fa-download"></i> Herunterladen</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button></div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -78,30 +123,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        (async function () {
-            await MethodKit.init({
-                method: 'communication',
-                accent: '#0ea5e9', accent2: '#6366f1',
-                steps: [{icon:'💬',label:'Aussage'},{icon:'👂',label:'4 Ohren'},{icon:'✉️',label:'Ich-Botschaft'}],
-                defaultState: { message:'',fact:'',self:'',relation:'',appeal:'',ibWhen:'',ibFeel:'',ibNeed:'',ibWish:'' }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-            function renderIB(){
-                const parts=[];
-                if(S.ibWhen) parts.push(S.ibWhen.replace(/^Wenn\s*/i,'Wenn '));
-                if(S.ibFeel) parts.push(S.ibFeel);
-                if(S.ibNeed) parts.push(S.ibNeed);
-                if(S.ibWish) parts.push(S.ibWish);
-                document.getElementById('co-ib').textContent = parts.length? parts.join(' ') : '…';
-            }
-            document.querySelectorAll('[data-mk-field]').forEach(el=>el.addEventListener('input',renderIB));
-            MethodKit.onStep=function(n){ if(n===3) renderIB(); };
-            document.getElementById('co-export').addEventListener('click',()=>{
-                MethodKit.exportText('meine-kommunikation.txt', `KOMMUNIKATION (4-OHREN)\n=======================\n\nAussage: ${S.message}\n\nSachebene: ${S.fact}\nSelbstoffenbarung: ${S.self}\nBeziehung: ${S.relation}\nAppell: ${S.appeal}\n\nICH-BOTSCHAFT:\n${S.ibWhen} ${S.ibFeel} ${S.ibNeed} ${S.ibWish}\n`);
-            });
-        })();
-    </script>
+    <script src="communication.js?v=20261003"></script>
 </body>
 </html>
