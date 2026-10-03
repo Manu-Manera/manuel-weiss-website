@@ -127,33 +127,33 @@ const methodWorkflowDefinitions = {
     },
     
     'emotional-intelligence': {
-        title: 'Emotionale Intelligenz',
+        title: "Emotionale Intelligenz",
         steps: 5,
         stepTitles: [
-            'EQ-Assessment',
-            'Emotions-Tracking',
-            'Regulations-Tools',
-            'Empathie-Training',
-            'EQ-Entwicklung'
+            "Selbsteinschätzung (20 Aussagen)",
+            "EQ-Profil mit Radar & Konsistenz-Check",
+            "Situationstest",
+            "Gefühlstagebuch",
+            "Training für dein Entwicklungsfeld"
         ],
-        description: 'Verbessere deine emotionale Intelligenz und lerne, Emotionen besser zu verstehen und zu regulieren.',
+        description: "EQ-Check nach Goleman: 20 Aussagen in fünf Bereichen, davon fünf invers kodiert für einen Konsistenz-Check, Profil mit Radar, Deutung pro Bereich und Hinweisen auf Verzerrung, vier Alltagssituationen als Reaktionstest mit Abgleich zum Selbstbild, Gefühlstagebuch mit Wortschatz-Analyse (Granularität, Familien, Körperbezug) und ein 14-Tage-Training mit Auslöser und Erfolgszeichen für das schwächste Feld.",
         logic: 'development-based', // Entwicklungs-basiert
-        features: ['EQ-Test', 'Emotionsregulation', 'Empathie-Training', 'Entwicklung']
+        features: ["20 Items, 5 invers", "Radar + Deutung", "Konsistenz-Check", "4 Situationen", "Selbstbild vs. Verhalten", "Gefühlstagebuch", "14-Tage-Training"]
     },
     
     'habit-building': {
-        title: 'Gewohnheiten aufbauen',
+        title: "Gewohnheiten aufbauen",
         steps: 5,
         stepTitles: [
-            'Gewohnheits-Analyse',
-            'Habit-Stacking',
-            '21-Tage-Challenge',
-            'Progress-Tracking',
-            'Gewohnheits-Optimierung'
+            "Gewohnheit designen (Cue · Routine · Reward · Identität)",
+            "Reibung senken: 4 Gesetze + Wenn-dann-Plan",
+            "Täglich tracken (Streak, 28-Tage-Kalender)",
+            "Auswerten: Quote, Wochentage, Anpassung",
+            "Dein Gewohnheits-System"
         ],
-        description: 'Lerne, positive Gewohnheiten zu entwickeln und schlechte zu durchbrechen mit bewährten Methoden.',
+        description: "Gewohnheiten nach Clear und Fogg: Auslöser, winzige Handlung, Belohnung und Identität designen (mit Prüfung auf Grösse und Auslöser-Qualität), die vier Gesetze anwenden, Wenn-dann-Pläne gegen Hindernisse formulieren, täglich mit Streak und 28-Tage-Kalender tracken und nach ein bis zwei Wochen auswerten – mit konkreten Empfehlungen: verkleinern, Auslöser wechseln oder vergrössern.",
         logic: 'habit-loop', // Gewohnheits-Schleife
-        features: ['Analyse', 'Habit-Stacking', '21-Tage-Regel', 'Optimierung']
+        features: ["Habit-Formel mit Qualitätscheck", "Max. 3 aktive Gewohnheiten", "4 Gesetze (Clear)", "Wenn-dann-Plan", "Streak + Kalender", "Nie-zweimal-Regel", "Wochentag-Analyse", "Anpassungs-Empfehlung"]
     },
     
     'communication': {
@@ -507,31 +507,33 @@ const methodWorkflowDefinitions = {
     },
     
     'resource-analysis': {
-        title: 'Ressourcen-Analyse',
-        steps: 4,
+        title: "Ressourcen-Analyse",
+        steps: 5,
         stepTitles: [
-            'Ressourcen identifizieren',
-            'Ressourcen bewerten',
-            'Ressourcen aktivieren',
-            'Ressourcen optimieren'
+            "Inventar in 6 Bereichen",
+            "Verfügbarkeit × Nutzung bewerten",
+            "Ressourcen-Landkarte",
+            "Für eine Herausforderung aktivieren",
+            "Ressourcen-Karte"
         ],
-        description: 'Analysiere und nutze deine Ressourcen optimal.',
+        description: "Ressourcen in sechs Bereichen sammeln (Fähigkeiten, Körper, Menschen, Mittel, Erfahrungen, Sinn), jede nach Verfügbarkeit und tatsächlicher Nutzung bewerten, schlafende Ressourcen, Säulen und überlastete Ressourcen auf der Landkarte erkennen, Einseitigkeit und Lücken sehen und für eine konkrete Herausforderung aktivieren – mit Erfahrungsschatz-Frage und erstem Schritt pro Ressource.",
         logic: 'resource-based', // Ressourcen-basiert
-        features: ['Identifikation', 'Bewertung', 'Aktivierung', 'Optimierung']
+        features: ["6 Bereiche mit Vorschlägen", "Verfügbar × genutzt", "Schlafende Ressourcen", "Säulen & Überlastung", "Balance-Analyse", "Aktivierungsplan"]
     },
     
     'swot-analysis': {
-        title: 'SWOT-Analyse',
-        steps: 4,
+        title: "Persönliche SWOT-Analyse",
+        steps: 5,
         stepTitles: [
-            'Stärken analysieren',
-            'Schwächen identifizieren',
-            'Chancen erkennen',
-            'Risiken bewerten'
+            "Entscheidungsfrage & Bereich",
+            "Vier Felder mit Gewichtung",
+            "Strategische Position & TOWS",
+            "Massnahmen mit Priorität",
+            "Deine Antwort"
         ],
-        description: 'Stärken, Schwächen, Chancen und Risiken analysieren.',
+        description: "SWOT mit Konsequenz: Entscheidungsfrage formulieren (mit Prüfung), Stärken, Schwächen, Chancen und Risiken mit Leitfragen sammeln und gewichten, Innen/Aussen-Verwechslungen und Verzerrungen (zu rosig, zu streng) erkennen, strategische Position (Offensiv, Absichern, Aufholen, Stabilisieren) bestimmen, TOWS-Strategien mit den wichtigsten Punkten als Anstoss ableiten und in priorisierte, terminierte Massnahmen übersetzen.",
         logic: 'analysis-based', // Analyse-basiert
-        features: ['Stärken', 'Schwächen', 'Chancen', 'Risiken']
+        features: ["Fragen-Check", "Gewichtete Matrix", "Innen/Aussen-Erkennung", "Positions-Chart", "TOWS mit Hauptstrategie", "Massnahmen A/B/C mit Termin"]
     },
     
     'wheel-of-life': {
@@ -563,17 +565,18 @@ const methodWorkflowDefinitions = {
     },
     
     'vision-board': {
-        title: 'Vision Board',
-        steps: 4,
+        title: "Vision-Board",
+        steps: 5,
         stepTitles: [
-            'Vision entwickeln',
-            'Bilder sammeln',
-            'Board erstellen',
-            'Vision leben'
+            "Das grosse Bild (Präsens-Check)",
+            "10 Lebensbereiche: Bild, Satz, Wichtigkeit",
+            "Visuelles Board & Fokus",
+            "Vom Bild zur Handlung",
+            "Ritual & Überblick"
         ],
-        description: 'Erstelle dein persönliches Vision Board für Ziele und Träume.',
+        description: "Vision-Board mit Substanz: Zukunftsbild als Leitsatz und Tagesbeschreibung im Präsens schreiben (mit Hinweis bei Zukunftsform oder Weg-von-Formulierung), zehn Lebensbereiche mit Emoji, Satz und Wichtigkeit füllen, das Board visuell nach Wichtigkeit ordnen, bis zu drei Fokus-Bausteine wählen und mit Beweis, erstem Schritt und Loslassen in Handlung übersetzen – plus Ritual und Check-in-Zähler.",
         logic: 'visualization-based', // Visualisierungs-basiert
-        features: ['Vision', 'Bilder', 'Board', 'Umsetzung']
+        features: ["Präsens- und Weg-von-Check", "10 Lebensbereiche", "Emoji + Wichtigkeit", "Visuelles Board", "Max. 3 Fokus", "Beweis · Schritt · Loslassen", "Ritual + Check-ins"]
     },
     
     'stress-management': {

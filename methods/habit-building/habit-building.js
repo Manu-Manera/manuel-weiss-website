@@ -1,695 +1,166 @@
-// Gewohnheiten aufbauen JavaScript Functions
+/* Gewohnheiten aufbauen · Logik */
+(function () {
+    'use strict';
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => MethodKit.esc(s);
+    let S;
 
-let habits = {
-    positive: [],
-    negative: [],
-    new: []
-};
-let habitStacks = [];
-let challenges = [];
-let dailyProgress = [];
-let currentDate = new Date();
-
-function initHabitBuilding() {
-    console.log('Initializing Habit Building...');
-    
-    // Load saved data
-    loadSavedHabits();
-    loadSavedStacks();
-    loadSavedChallenges();
-    loadSavedProgress();
-    
-    // Setup event listeners
-    setupHabitEventListeners();
-    
-    // Set current date
-    document.getElementById('tracking-date').value = new Date().toISOString().split('T')[0];
-    document.getElementById('challenge-start-date').value = new Date().toISOString().split('T')[0];
-    
-    // Initialize UI
-    updateHabitCounts();
-    updateHabitInsights();
-    updateDashboard();
-    generateCalendar();
-}
-
-function setupHabitEventListeners() {
-    // Habit stack form updates
-    document.getElementById('anchor-habit').addEventListener('change', updateStackPreview);
-    document.getElementById('new-habit-select').addEventListener('change', updateStackPreview);
-    
-    // Challenge form updates
-    const challengeHabitSelect = document.getElementById('challenge-habit');
-    if (challengeHabitSelect) {
-        challengeHabitSelect.addEventListener('change', updateChallengeForm);
-    }
-}
-
-function addPositiveHabit() {
-    const habitsList = document.getElementById('positive-habits');
-    const newHabit = document.createElement('div');
-    newHabit.className = 'habit-item';
-    newHabit.innerHTML = `
-        <input type="text" placeholder="z.B. 'Ich trinke morgens ein Glas Wasser'" class="habit-input">
-        <button class="btn btn-sm btn-danger" onclick="removeHabit(this)">×</button>
-    `;
-    habitsList.appendChild(newHabit);
-    updateHabitCounts();
-}
-
-function addNegativeHabit() {
-    const habitsList = document.getElementById('negative-habits');
-    const newHabit = document.createElement('div');
-    newHabit.className = 'habit-item';
-    newHabit.innerHTML = `
-        <input type="text" placeholder="z.B. 'Ich schaue abends zu lange aufs Handy'" class="habit-input">
-        <button class="btn btn-sm btn-danger" onclick="removeHabit(this)">×</button>
-    `;
-    habitsList.appendChild(newHabit);
-    updateHabitCounts();
-}
-
-function addNewHabit() {
-    const habitsList = document.getElementById('new-habits');
-    const newHabit = document.createElement('div');
-    newHabit.className = 'habit-item';
-    newHabit.innerHTML = `
-        <input type="text" placeholder="z.B. 'Ich lese täglich 20 Minuten'" class="habit-input">
-        <button class="btn btn-sm btn-danger" onclick="removeHabit(this)">×</button>
-    `;
-    habitsList.appendChild(newHabit);
-    updateHabitCounts();
-}
-
-function removeHabit(button) {
-    button.parentElement.remove();
-    updateHabitCounts();
-}
-
-function updateHabitCounts() {
-    const positiveCount = document.querySelectorAll('#positive-habits .habit-item').length;
-    const negativeCount = document.querySelectorAll('#negative-habits .habit-item').length;
-    const newCount = document.querySelectorAll('#new-habits .habit-item').length;
-    const totalCount = positiveCount + negativeCount + newCount;
-    
-    document.getElementById('positive-count').textContent = positiveCount;
-    document.getElementById('negative-count').textContent = negativeCount;
-    document.getElementById('new-count').textContent = newCount;
-    
-    if (totalCount > 0) {
-        document.getElementById('positive-percentage').textContent = Math.round((positiveCount / totalCount) * 100) + '%';
-        document.getElementById('negative-percentage').textContent = Math.round((negativeCount / totalCount) * 100) + '%';
-        document.getElementById('new-percentage').textContent = Math.round((newCount / totalCount) * 100) + '%';
-    } else {
-        document.getElementById('positive-percentage').textContent = '0%';
-        document.getElementById('negative-percentage').textContent = '0%';
-        document.getElementById('new-percentage').textContent = '0%';
-    }
-    
-    updateHabitInsights();
-    updateHabitSelects();
-}
-
-function updateHabitInsights() {
-    const positiveCount = document.querySelectorAll('#positive-habits .habit-item').length;
-    const negativeCount = document.querySelectorAll('#negative-habits .habit-item').length;
-    const newCount = document.querySelectorAll('#new-habits .habit-item').length;
-    
-    const insightsContainer = document.getElementById('habit-insights');
-    
-    if (positiveCount + negativeCount + newCount === 0) {
-        insightsContainer.innerHTML = '<div class="no-insights"><p>Füge Gewohnheiten hinzu, um Erkenntnisse zu erhalten.</p></div>';
-        return;
-    }
-    
-    let insights = [];
-    
-    if (positiveCount > negativeCount) {
-        insights.push('✅ Du hast mehr positive als negative Gewohnheiten - das ist großartig!');
-    } else if (negativeCount > positiveCount) {
-        insights.push('⚠️ Du hast mehr negative als positive Gewohnheiten. Fokussiere dich auf positive Veränderungen.');
-    }
-    
-    if (newCount > 0) {
-        insights.push(`🆕 Du möchtest ${newCount} neue Gewohnheit${newCount > 1 ? 'en' : ''} entwickeln. Beginne mit einer!`);
-    }
-    
-    if (positiveCount > 0) {
-        insights.push('💪 Nutze deine positiven Gewohnheiten als Anker für neue Gewohnheiten.');
-    }
-    
-    insightsContainer.innerHTML = insights.map(insight => `<div class="insight-item">${insight}</div>`).join('');
-}
-
-function updateHabitSelects() {
-    // Update anchor habit select
-    const anchorSelect = document.getElementById('anchor-habit');
-    const positiveHabits = Array.from(document.querySelectorAll('#positive-habits .habit-input')).map(input => input.value.trim()).filter(v => v);
-    
-    anchorSelect.innerHTML = '<option value="">Wähle eine bestehende Gewohnheit...</option>' +
-        positiveHabits.map(habit => `<option value="${habit}">${habit}</option>`).join('');
-    
-    // Update new habit select
-    const newHabitSelect = document.getElementById('new-habit-select');
-    const newHabits = Array.from(document.querySelectorAll('#new-habits .habit-input')).map(input => input.value.trim()).filter(v => v);
-    
-    newHabitSelect.innerHTML = '<option value="">Wähle eine neue Gewohnheit...</option>' +
-        newHabits.map(habit => `<option value="${habit}">${habit}</option>`).join('');
-    
-    // Update challenge habit select
-    const challengeSelect = document.getElementById('challenge-habit');
-    challengeSelect.innerHTML = '<option value="">Wähle eine Gewohnheit...</option>' +
-        newHabits.map(habit => `<option value="${habit}">${habit}</option>`).join('');
-}
-
-function updateStackPreview() {
-    const anchorHabit = document.getElementById('anchor-habit').value;
-    const newHabit = document.getElementById('new-habit-select').value;
-    
-    const preview = document.getElementById('stack-preview');
-    
-    if (anchorHabit && newHabit) {
-        preview.textContent = `Nach "${anchorHabit}" werde ich "${newHabit}"`;
-        preview.style.background = '#f0f9ff';
-        preview.style.border = '1px solid #0ea5e9';
-    } else {
-        preview.textContent = 'Wähle Anker und neue Gewohnheit, um die Formel zu sehen.';
-        preview.style.background = '#f8fafc';
-        preview.style.border = '1px solid #e2e8f0';
-    }
-}
-
-function createHabitStack() {
-    const anchorHabit = document.getElementById('anchor-habit').value;
-    const newHabit = document.getElementById('new-habit-select').value;
-    const details = document.getElementById('stack-details').value;
-    
-    if (!anchorHabit || !newHabit) {
-        showNotification('Bitte wähle sowohl eine Anker- als auch eine neue Gewohnheit!', 'warning');
-        return;
-    }
-    
-    const stack = {
-        id: Date.now(),
-        anchorHabit: anchorHabit,
-        newHabit: newHabit,
-        formula: `Nach "${anchorHabit}" werde ich "${newHabit}"`,
-        details: details,
-        active: true,
-        createdAt: new Date().toISOString()
-    };
-    
-    habitStacks.push(stack);
-    saveStacks();
-    updateStacksList();
-    
-    // Clear form
-    document.getElementById('anchor-habit').value = '';
-    document.getElementById('new-habit-select').value = '';
-    document.getElementById('stack-details').value = '';
-    updateStackPreview();
-    
-    showNotification('Habit-Stack erstellt!', 'success');
-}
-
-function updateStacksList() {
-    const stacksList = document.getElementById('habit-stacks-list');
-    
-    if (habitStacks.length === 0) {
-        stacksList.innerHTML = '<div class="no-stacks"><p>Erstelle deine ersten Habit-Stacks, um sie hier zu sehen.</p></div>';
-        return;
-    }
-    
-    stacksList.innerHTML = habitStacks.map(stack => `
-        <div class="stack-item ${stack.active ? 'active' : 'inactive'}" data-stack-id="${stack.id}">
-            <div class="stack-content">
-                <div class="stack-formula">${stack.formula}</div>
-                ${stack.details ? `<div class="stack-details">${stack.details}</div>` : ''}
-            </div>
-            <div class="stack-actions">
-                <button class="btn btn-sm ${stack.active ? 'btn-secondary' : 'btn-success'}" onclick="toggleStack(${stack.id})">
-                    ${stack.active ? 'Pausieren' : 'Aktivieren'}
-                </button>
-                <button class="btn btn-sm btn-danger" onclick="deleteStack(${stack.id})">Löschen</button>
-            </div>
-        </div>
-    `).join('');
-}
-
-function toggleStack(stackId) {
-    const stack = habitStacks.find(s => s.id === stackId);
-    if (stack) {
-        stack.active = !stack.active;
-        saveStacks();
-        updateStacksList();
-        showNotification(stack.active ? 'Habit-Stack aktiviert!' : 'Habit-Stack pausiert!', 'info');
-    }
-}
-
-function deleteStack(stackId) {
-    if (confirm('Möchtest du diesen Habit-Stack wirklich löschen?')) {
-        habitStacks = habitStacks.filter(s => s.id !== stackId);
-        saveStacks();
-        updateStacksList();
-        showNotification('Habit-Stack gelöscht!', 'warning');
-    }
-}
-
-function startChallenge() {
-    const habit = document.getElementById('challenge-habit').value;
-    const startDate = document.getElementById('challenge-start-date').value;
-    const goal = document.getElementById('challenge-goal').value;
-    const reward = document.getElementById('challenge-reward').value;
-    const reminder = document.getElementById('challenge-reminder').value;
-    
-    if (!habit || !startDate) {
-        showNotification('Bitte wähle eine Gewohnheit und ein Startdatum!', 'warning');
-        return;
-    }
-    
-    const challenge = {
-        id: Date.now(),
-        habit: habit,
-        startDate: startDate,
-        endDate: addDays(startDate, 21),
-        goal: goal,
-        reward: reward,
-        reminder: reminder,
-        status: 'active',
-        progress: [],
-        createdAt: new Date().toISOString()
-    };
-    
-    challenges.push(challenge);
-    saveChallenges();
-    updateChallengesList();
-    generateCalendar();
-    
-    // Clear form
-    document.getElementById('challenge-habit').value = '';
-    document.getElementById('challenge-goal').value = '';
-    document.getElementById('challenge-reward').value = '';
-    
-    showNotification('21-Tage-Challenge gestartet! 🚀', 'success');
-}
-
-function addDays(dateString, days) {
-    const date = new Date(dateString);
-    date.setDate(date.getDate() + days);
-    return date.toISOString().split('T')[0];
-}
-
-function updateChallengesList() {
-    const challengesList = document.getElementById('active-challenges');
-    
-    if (challenges.length === 0) {
-        challengesList.innerHTML = '<div class="no-challenges"><p>Starte deine erste 21-Tage-Challenge!</p></div>';
-        return;
-    }
-    
-    challengesList.innerHTML = challenges.map(challenge => {
-        const daysLeft = getDaysLeft(challenge.endDate);
-        const progress = challenge.progress.length;
-        const progressPercent = Math.round((progress / 21) * 100);
-        
-        return `
-            <div class="challenge-item ${challenge.status}" data-challenge-id="${challenge.id}">
-                <div class="challenge-header">
-                    <h5>${challenge.habit}</h5>
-                    <div class="challenge-status">
-                        <span class="days-left">${daysLeft} Tage übrig</span>
-                        <span class="progress-percent">${progressPercent}%</span>
-                    </div>
-                </div>
-                <div class="challenge-details">
-                    ${challenge.goal ? `<p><strong>Ziel:</strong> ${challenge.goal}</p>` : ''}
-                    ${challenge.reward ? `<p><strong>Belohnung:</strong> ${challenge.reward}</p>` : ''}
-                    <p><strong>Fortschritt:</strong> ${progress}/21 Tage</p>
-                </div>
-                <div class="challenge-actions">
-                    <button class="btn btn-sm btn-primary" onclick="markChallengeDay(${challenge.id})">Tag abschließen</button>
-                    <button class="btn btn-sm btn-outline" onclick="viewChallengeDetails(${challenge.id})">Details</button>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-function getDaysLeft(endDate) {
-    const today = new Date();
-    const end = new Date(endDate);
-    const diffTime = end - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return Math.max(0, diffDays);
-}
-
-function markChallengeDay(challengeId) {
-    const challenge = challenges.find(c => c.id === challengeId);
-    if (!challenge) return;
-    
-    const today = new Date().toISOString().split('T')[0];
-    
-    if (challenge.progress.includes(today)) {
-        showNotification('Dieser Tag wurde bereits abgeschlossen!', 'info');
-        return;
-    }
-    
-    challenge.progress.push(today);
-    saveChallenges();
-    updateChallengesList();
-    updateDashboard();
-    
-    showNotification('Tag erfolgreich abgeschlossen! 🎉', 'success');
-}
-
-function generateCalendar() {
-    const calendarGrid = document.getElementById('calendar-grid');
-    const monthNames = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
-                       'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
-    
-    document.getElementById('calendar-month').textContent = 
-        `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
-    
-    const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-    const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
-    
-    let calendarHTML = '';
-    
-    // Generate calendar days
-    for (let i = 0; i < 42; i++) {
-        const date = new Date(startDate);
-        date.setDate(startDate.getDate() + i);
-        const dateString = date.toISOString().split('T')[0];
-        const isCurrentMonth = date.getMonth() === currentDate.getMonth();
-        const isToday = dateString === new Date().toISOString().split('T')[0];
-        
-        // Check if this date has challenge progress
-        const hasProgress = challenges.some(challenge => 
-            challenge.progress.includes(dateString)
-        );
-        
-        calendarHTML += `
-            <div class="calendar-day ${isCurrentMonth ? 'current-month' : 'other-month'} ${isToday ? 'today' : ''} ${hasProgress ? 'has-progress' : ''}" 
-                 data-date="${dateString}">
-                <span class="day-number">${date.getDate()}</span>
-                ${hasProgress ? '<span class="progress-indicator">✓</span>' : ''}
-            </div>
-        `;
-    }
-    
-    calendarGrid.innerHTML = calendarHTML;
-}
-
-function previousMonth() {
-    currentDate.setMonth(currentDate.getMonth() - 1);
-    generateCalendar();
-}
-
-function nextMonth() {
-    currentDate.setMonth(currentDate.getMonth() + 1);
-    generateCalendar();
-}
-
-function saveDailyProgress() {
-    const date = document.getElementById('tracking-date').value;
-    const notes = document.getElementById('daily-notes').value;
-    
-    if (!date) {
-        showNotification('Bitte wähle ein Datum!', 'warning');
-        return;
-    }
-    
-    // Get checked habits
-    const checkedHabits = Array.from(document.querySelectorAll('#daily-habits-checklist input:checked'))
-        .map(input => input.value);
-    
-    const progress = {
-        id: Date.now(),
-        date: date,
-        habits: checkedHabits,
-        notes: notes,
-        createdAt: new Date().toISOString()
-    };
-    
-    dailyProgress.push(progress);
-    saveProgress();
-    updateDashboard();
-    
-    // Clear form
-    document.getElementById('daily-notes').value = '';
-    document.querySelectorAll('#daily-habits-checklist input').forEach(input => {
-        input.checked = false;
-    });
-    
-    showNotification('Fortschritt gespeichert!', 'success');
-}
-
-function updateDashboard() {
-    // Calculate metrics
-    const activeHabits = habitStacks.filter(stack => stack.active).length;
-    const totalDays = dailyProgress.length;
-    const successfulDays = dailyProgress.filter(progress => progress.habits.length > 0).length;
-    const successRate = totalDays > 0 ? Math.round((successfulDays / totalDays) * 100) : 0;
-    
-    // Calculate longest streak
-    const longestStreak = calculateLongestStreak();
-    
-    // Count completed challenges
-    const completedChallenges = challenges.filter(challenge => 
-        challenge.progress.length >= 21
-    ).length;
-    
-    // Update display
-    document.getElementById('active-habits-count').textContent = activeHabits;
-    document.getElementById('success-rate').textContent = successRate + '%';
-    document.getElementById('longest-streak').textContent = longestStreak + ' Tage';
-    document.getElementById('completed-challenges').textContent = completedChallenges;
-}
-
-function calculateLongestStreak() {
-    if (dailyProgress.length === 0) return 0;
-    
-    // Sort by date
-    const sortedProgress = dailyProgress.sort((a, b) => new Date(a.date) - new Date(b.date));
-    
-    let maxStreak = 0;
-    let currentStreak = 0;
-    let lastDate = null;
-    
-    sortedProgress.forEach(progress => {
-        const currentDate = new Date(progress.date);
-        
-        if (lastDate) {
-            const daysDiff = Math.floor((currentDate - lastDate) / (1000 * 60 * 60 * 24));
-            
-            if (daysDiff === 1 && progress.habits.length > 0) {
-                currentStreak++;
-            } else if (daysDiff > 1 || progress.habits.length === 0) {
-                maxStreak = Math.max(maxStreak, currentStreak);
-                currentStreak = progress.habits.length > 0 ? 1 : 0;
-            }
-        } else if (progress.habits.length > 0) {
-            currentStreak = 1;
-        }
-        
-        lastDate = currentDate;
-    });
-    
-    return Math.max(maxStreak, currentStreak);
-}
-
-function showAnalyticsTab(tabName) {
-    // Remove active class from all tabs
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.analytics-tab').forEach(tab => tab.classList.remove('active'));
-    
-    // Add active class to selected tab
-    document.querySelector(`[onclick="showAnalyticsTab('${tabName}')"]`).classList.add('active');
-    document.getElementById(`${tabName}-tab`).classList.add('active');
-    
-    // Update content based on tab
-    switch(tabName) {
-        case 'streaks':
-            updateStreaksTab();
-            break;
-        case 'patterns':
-            updatePatternsTab();
-            break;
-        case 'insights':
-            updateInsightsTab();
-            break;
-    }
-}
-
-function updateStreaksTab() {
-    const streaksList = document.getElementById('current-streaks');
-    
-    if (habitStacks.length === 0) {
-        streaksList.innerHTML = '<p>Starte Gewohnheiten, um Streaks zu sehen.</p>';
-        return;
-    }
-    
-    const streaks = habitStacks.map(stack => {
-        const streak = calculateHabitStreak(stack.newHabit);
-        return `
-            <div class="streak-item">
-                <h6>${stack.newHabit}</h6>
-                <div class="streak-count">${streak} Tage</div>
-            </div>
-        `;
-    }).join('');
-    
-    streaksList.innerHTML = streaks;
-}
-
-function calculateHabitStreak(habitName) {
-    // This would calculate the streak for a specific habit
-    // For now, return a placeholder
-    return Math.floor(Math.random() * 30);
-}
-
-function updatePatternsTab() {
-    const patternsAnalysis = document.getElementById('patterns-analysis');
-    
-    if (dailyProgress.length === 0) {
-        patternsAnalysis.innerHTML = '<p>Verfolge deine Gewohnheiten, um Muster zu erkennen.</p>';
-        return;
-    }
-    
-    // Analyze patterns
-    const patterns = [
-        'Du bist am Wochenende weniger aktiv.',
-        'Morgens hast du die höchste Erfolgsrate.',
-        'Deine beste Gewohnheit ist das Trinken von Wasser.'
+    const LAWS = [
+        ['obv', '👀', 'Offensichtlich', 'Wo liegt der Auslöser sichtbar bereit? (Matte vor dem Bett, Buch auf dem Kissen, App auf dem Startbildschirm)'],
+        ['attr', '🍬', 'Attraktiv', 'Womit koppelst du es, worauf du dich freust? (Podcast nur beim Laufen, Lieblingskaffee nur beim Schreiben)'],
+        ['easy', '🪶', 'Einfach', 'Was bereitest du am Vorabend vor, damit es null Entscheidungen braucht?'],
+        ['sat', '✅', 'Befriedigend', 'Was ist die sofortige Belohnung direkt danach – nicht in drei Monaten?']
     ];
-    
-    patternsAnalysis.innerHTML = patterns.map(pattern => 
-        `<div class="pattern-item">${pattern}</div>`
-    ).join('');
-}
-
-function updateInsightsTab() {
-    const insightsAnalysis = document.getElementById('insights-analysis');
-    
-    if (dailyProgress.length === 0) {
-        insightsAnalysis.innerHTML = '<p>Analysiere deine Daten für wertvolle Erkenntnisse.</p>';
-        return;
-    }
-    
-    const insights = [
-        'Deine Erfolgsrate steigt kontinuierlich.',
-        'Du solltest mehr auf deine morgendlichen Gewohnheiten fokussieren.',
-        'Betrachte deine Fortschritte wöchentlich, nicht täglich.'
+    const WD = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+    const LINKS = [
+        { m: 'Ziele setzen', l: '../goal-setting/goal-setting.html', why: 'Wohin die Gewohnheit führen soll.' },
+        { m: 'Rubikon-Modell', l: '../rubikon-model/rubikon-model.html', why: 'Vom Wunsch über die Entscheidung ins Handeln.' },
+        { m: 'Stress-Kompass', l: '../stress-management/stress-management.html', why: 'Erholungsgewohnheiten gezielt aufbauen.' },
+        { m: 'Journaling', l: '../journaling/journaling.html', why: 'Die Abendreflexion als Gewohnheit.' }
     ];
-    
-    insightsAnalysis.innerHTML = insights.map(insight => 
-        `<div class="insight-item">${insight}</div>`
-    ).join('');
-}
+    const note = (t, m) => `<div class="mk-note ${t}"><i class="fas fa-${t === 'warn' ? 'exclamation-triangle' : t === 'ok' ? 'check-circle' : 'info-circle'}"></i><span>${m}</span></div>`;
+    const n = (v, d) => { const x = parseInt(v, 10); return isNaN(x) ? d : x; };
+    const key = (d) => { const x = new Date(d); x.setMinutes(x.getMinutes() - x.getTimezoneOffset()); return x.toISOString().slice(0, 10); };
+    const today = () => key(new Date());
+    const daysAgo = (k) => { const d = new Date(); d.setDate(d.getDate() - k); return d; };
+    const H = (id) => S.habits.find(h => h.id === id);
+    const cueT = (c) => (c || '').trim().replace(/^(nachdem|sobald|wenn|immer wenn|direkt nachdem|jedes mal wenn)\s+/i, '');
 
-// Data persistence functions
-function saveHabits() {
-    const positiveHabits = Array.from(document.querySelectorAll('#positive-habits .habit-input')).map(input => input.value.trim()).filter(v => v);
-    const negativeHabits = Array.from(document.querySelectorAll('#negative-habits .habit-input')).map(input => input.value.trim()).filter(v => v);
-    const newHabits = Array.from(document.querySelectorAll('#new-habits .habit-input')).map(input => input.value.trim()).filter(v => v);
-    
-    habits = {
-        positive: positiveHabits,
-        negative: negativeHabits,
-        new: newHabits
-    };
-    
-    localStorage.setItem('habit-building-habits', JSON.stringify(habits));
-}
-
-function loadSavedHabits() {
-    const saved = localStorage.getItem('habit-building-habits');
-    if (saved) {
-        habits = JSON.parse(saved);
-        
-        // Populate UI
-        populateHabitList('positive-habits', habits.positive);
-        populateHabitList('negative-habits', habits.negative);
-        populateHabitList('new-habits', habits.new);
+    /* ---------- Analyse ---------- */
+    const cueQuality = (c) => { c = (c || '').toLowerCase(); if (!c.trim()) return 0; if (/nachdem|sobald|wenn ich|direkt nach|bevor|um \d|uhr|jeden morgen|jeden abend|beim /.test(c)) return 2; return 1; };
+    const routineMinutes = (r) => { const m = /(\d+)\s*(min|minute|stunde|std|h\b)/i.exec(r || ''); if (!m) return null; let v = +m[1]; if (/stunde|std|h\b/i.test(m[2])) v *= 60; return v; };
+    function streak(h, from) {
+        let s = 0; const d = from ? new Date(from) : new Date();
+        if (!from && !(h.done || {})[key(d)]) d.setDate(d.getDate() - 1); // heute noch offen zählt nicht als Bruch
+        for (; ;) { if ((h.done || {})[key(d)]) { s++; d.setDate(d.getDate() - 1); } else break; }
+        return s;
     }
-}
+    function longest(h) { const ks = Object.keys(h.done || {}).sort(); let best = 0, cur = 0, prev = null; ks.forEach(k => { if (prev && (new Date(k) - new Date(prev)) / 86400000 === 1) cur++; else cur = 1; best = Math.max(best, cur); prev = k; }); return best; }
+    function rate(h, days) { const start = h.created ? new Date(h.created) : null; let total = 0, hit = 0; for (let i = 0; i < days; i++) { const d = daysAgo(i); if (start && d < new Date(key(start))) break; total++; if ((h.done || {})[key(d)]) hit++; } return total ? { pct: Math.round(hit / total * 100), hit, total } : { pct: 0, hit: 0, total: 0 }; }
+    function byWeekday(h) { const c = [0, 0, 0, 0, 0, 0, 0], t = [0, 0, 0, 0, 0, 0, 0]; for (let i = 0; i < 28; i++) { const d = daysAgo(i); if (h.created && d < new Date(key(new Date(h.created)))) break; t[d.getDay()]++; if ((h.done || {})[key(d)]) c[d.getDay()]++; } return WD.map((w, i) => ({ w, pct: t[i] ? Math.round(c[i] / t[i] * 100) : null })); }
+    const lawsDone = (h) => LAWS.filter(([k]) => ((h.laws || {})[k] || '').trim()).length;
+    const missedYesterday = (h) => !(h.done || {})[key(daysAgo(1))] && h.created && new Date(h.created) < daysAgo(1);
 
-function populateHabitList(containerId, habitList) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = '';
-    
-    habitList.forEach(habit => {
-        const habitItem = document.createElement('div');
-        habitItem.className = 'habit-item';
-        habitItem.innerHTML = `
-            <input type="text" value="${habit}" class="habit-input">
-            <button class="btn btn-sm btn-danger" onclick="removeHabit(this)">×</button>
-        `;
-        container.appendChild(habitItem);
-    });
-    
-    // Add empty item if no habits
-    if (habitList.length === 0) {
-        addEmptyHabitItem(containerId);
+    /* ---------- 1 ---------- */
+    function renderPreview() {
+        const v = (id) => $(id).value.trim();
+        const cue = v('hb-cue'), r = v('hb-routine');
+        const cq = cueQuality(cue);
+        $('hb-cue-note').innerHTML = cue ? (cq === 2 ? '' : note('info', 'Mach den Auslöser konkreter: „Nachdem ich …" oder eine feste Uhrzeit/einen festen Ort. Vage Auslöser („morgens") feuern nicht.')) : '';
+        const mins = routineMinutes(r);
+        $('hb-routine-note').innerHTML = !r ? '' : mins !== null && mins > 5 ? note('warn', `${mins} Minuten ist für den Start zu gross. Fogg: Unter zwei Minuten – „eine Seite lesen", „einen Liegestütz", „Schuhe anziehen". Die Grösse kommt von allein, die Regelmässigkeit nicht.`) : /jeden tag|immer|täglich/i.test(r) && !mins ? note('info', 'Die Handlung selbst, nicht die Häufigkeit: Was genau tust du, wenn der Auslöser kommt?') : '';
+        $('hb-preview').innerHTML = (cue || r) ? `<div class="hb-formula"><b>Nachdem</b> ${esc(cueT(cue) || '…')}, <b>werde ich</b> ${esc(r || '…')}${v('hb-reward') ? `, <b>und danach</b> ${esc(v('hb-reward'))}` : ''}.${v('hb-identity') ? `<small>${esc(v('hb-identity'))}</small>` : ''}</div>` : '';
     }
-}
-
-function addEmptyHabitItem(containerId) {
-    const container = document.getElementById(containerId);
-    const habitItem = document.createElement('div');
-    habitItem.className = 'habit-item';
-    habitItem.innerHTML = `
-        <input type="text" placeholder="z.B. 'Ich trinke morgens ein Glas Wasser'" class="habit-input">
-        <button class="btn btn-sm btn-danger" onclick="removeHabit(this)">×</button>
-    `;
-    container.appendChild(habitItem);
-}
-
-function saveStacks() {
-    localStorage.setItem('habit-building-stacks', JSON.stringify(habitStacks));
-}
-
-function loadSavedStacks() {
-    const saved = localStorage.getItem('habit-building-stacks');
-    if (saved) {
-        habitStacks = JSON.parse(saved);
-        updateStacksList();
+    function addHabit() {
+        const v = (id) => $(id).value.trim();
+        if (!v('hb-name')) { MethodKit.toast('Was willst du aufbauen?', 'warn'); $('hb-name').focus(); return; }
+        if (!v('hb-cue') || !v('hb-routine')) { MethodKit.toast('Auslöser und Handlung sind Pflicht – ohne sie gibt es keine Gewohnheit', 'warn'); return; }
+        if (S.habits.filter(h => !h.paused).length >= 3 && !confirm('Du hast schon drei aktive Gewohnheiten. Mehr als drei gleichzeitig scheitern fast immer. Trotzdem anlegen?')) return;
+        S.habits.push({ id: MethodKit.uid(), name: v('hb-name'), cue: v('hb-cue'), routine: v('hb-routine'), reward: v('hb-reward'), identity: v('hb-identity'), laws: {}, ifthen: { if: '', then: '' }, done: {}, review: {}, created: Date.now() });
+        ['hb-name', 'hb-cue', 'hb-routine', 'hb-reward', 'hb-identity'].forEach(id => $(id).value = '');
+        MethodKit.save({ now: true }); MethodKit.toast('Angelegt – Schritt 2 macht sie leichter', 'ok'); renderPreview(); renderHabits();
     }
-}
-
-function saveChallenges() {
-    localStorage.setItem('habit-building-challenges', JSON.stringify(challenges));
-}
-
-function loadSavedChallenges() {
-    const saved = localStorage.getItem('habit-building-challenges');
-    if (saved) {
-        challenges = JSON.parse(saved);
-        updateChallengesList();
+    function renderHabits() {
+        const act = S.habits.filter(h => !h.paused).length;
+        $('hb-count').textContent = S.habits.length ? `${act} aktiv${S.habits.length - act ? ` · ${S.habits.length - act} pausiert` : ''}` : '';
+        if (!S.habits.length) { $('hb-habits').innerHTML = '<div class="mk-empty">Noch keine Gewohnheit. Fang mit genau einer an.</div>'; return; }
+        $('hb-habits').innerHTML = S.habits.map(h => `<div class="hb-habit ${h.paused ? 'paused' : ''}"><div class="hb-habit-top"><div class="hb-habit-t"><h4>${esc(h.name)}</h4><div class="hb-meta">Nachdem ${esc(cueT(h.cue))} → ${esc(h.routine)}${h.reward ? ` → ${esc(h.reward)}` : ''}</div>${h.identity ? `<div class="hb-id">${esc(h.identity)}</div>` : ''}</div><div class="hb-habit-a"><button class="mk-iconbtn" data-pause="${h.id}" aria-label="${h.paused ? 'Fortsetzen' : 'Pausieren'}" title="${h.paused ? 'Fortsetzen' : 'Pausieren'}"><i class="fas fa-${h.paused ? 'play' : 'pause'}"></i></button><button class="mk-iconbtn" data-del="${h.id}" aria-label="Löschen"><i class="fas fa-trash"></i></button></div></div>${routineMinutes(h.routine) > 5 ? note('warn', 'Diese Handlung ist gross. Wenn sie im Tracking hakt: verkleinern.') : ''}</div>`).join('') +
+            (act > 3 ? note('warn', `${act} aktive Gewohnheiten gleichzeitig: Wähle eine „Keystone"-Gewohnheit und pausiere die anderen, bis sie sitzt (≈ 3–4 Wochen).`) : '');
+        $('hb-habits').querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => { if (!confirm('Gewohnheit samt Tracking löschen?')) return; S.habits = S.habits.filter(h => h.id !== b.dataset.del); MethodKit.save(); renderHabits(); }));
+        $('hb-habits').querySelectorAll('[data-pause]').forEach(b => b.addEventListener('click', () => { H(b.dataset.pause).paused = !H(b.dataset.pause).paused; MethodKit.save(); renderHabits(); }));
     }
-}
 
-function saveProgress() {
-    localStorage.setItem('habit-building-progress', JSON.stringify(dailyProgress));
-}
-
-function loadSavedProgress() {
-    const saved = localStorage.getItem('habit-building-progress');
-    if (saved) {
-        dailyProgress = JSON.parse(saved);
+    /* ---------- 2 ---------- */
+    function renderLaws() {
+        const hs = S.habits.filter(h => !h.paused);
+        if (!hs.length) { $('hb-laws').innerHTML = note('info', 'Lege in Schritt 1 eine Gewohnheit an.'); return; }
+        $('hb-laws').innerHTML = hs.map(h => { const L = h.laws || {}, I = h.ifthen || {}; const d = lawsDone(h); return `<div class="hb-law-card"><div class="hb-law-h"><b>${esc(h.name)}</b><span class="mk-badge">${d}/4 Gesetze</span></div><div class="mk-grid-2">${LAWS.map(([k, ic, t, q]) => `<div class="mk-field"><label>${ic} ${t}</label><textarea class="mk-textarea" rows="2" data-law="${h.id}" data-k="${k}" placeholder="${q}">${esc(L[k] || '')}</textarea></div>`).join('')}</div><div class="mk-section-label">Wenn-dann-Plan (Implementation Intention)</div><div class="mk-grid-2"><div class="mk-field"><label>Wenn dieses Hindernis kommt …</label><input class="mk-input" data-if="${h.id}" value="${esc(I.if || '')}" placeholder="z. B. ich verschlafe / Besuch ist da / ich bin müde"></div><div class="mk-field"><label>… dann tue ich</label><input class="mk-input" data-then="${h.id}" value="${esc(I.then || '')}" placeholder="z. B. die Minimalversion: 3 Atemzüge statt 2 Minuten"></div></div>${lawNote(h)}</div>`; }).join('');
+        const host = $('hb-laws');
+        host.querySelectorAll('[data-law]').forEach(t => t.addEventListener('input', () => { const h = H(t.dataset.law); h.laws = h.laws || {}; h.laws[t.dataset.k] = t.value; MethodKit.save(); }));
+        host.querySelectorAll('[data-if]').forEach(i => i.addEventListener('input', () => { const h = H(i.dataset.if); h.ifthen = h.ifthen || {}; h.ifthen.if = i.value; MethodKit.save(); }));
+        host.querySelectorAll('[data-then]').forEach(i => i.addEventListener('input', () => { const h = H(i.dataset.then); h.ifthen = h.ifthen || {}; h.ifthen.then = i.value; MethodKit.save(); }));
+        host.querySelectorAll('textarea, input').forEach(el => el.addEventListener('change', renderLaws));
+        MethodKit._autosizeAll && MethodKit._autosizeAll();
     }
-}
-
-function updateChallengeForm() {
-    // Update challenge form based on selected habit
-    const selectedHabit = document.getElementById('challenge-habit').value;
-    if (selectedHabit) {
-        // Update goal placeholder
-        const goalInput = document.getElementById('challenge-goal');
-        if (goalInput && !goalInput.value) {
-            goalInput.placeholder = `z.B. '21 Tage ${selectedHabit.toLowerCase()}'`;
-        }
+    function lawNote(h) {
+        const L = h.laws || {}, I = h.ifthen || {}, d = lawsDone(h);
+        if (!d) return note('info', 'Die meisten Gewohnheiten scheitern nicht am Willen, sondern an der Umgebung. Fang mit „Einfach" an: Was bereitest du vor?');
+        if (!(L.sat || '').trim()) return note('info', 'Die Belohnung fehlt. Das Gehirn wiederholt, was sich sofort gut anfühlt – nicht, was in drei Monaten gesund ist.');
+        if (!(I.if || '').trim() || !(I.then || '').trim()) return note('info', 'Plane das Scheitern: Wenn-dann-Pläne verdoppeln die Umsetzungsrate (Gollwitzer). Welches Hindernis kommt sicher?');
+        if (/mehr|später|morgen|nachholen/i.test(I.then)) return note('warn', '„Nachholen" ist keine Strategie – es verdoppelt die Last. Besser: eine Minimalversion, die du auch an schlechten Tagen schaffst.');
+        return note('ok', 'System komplett: vier Gesetze und ein Plan B. Jetzt zählt nur noch das tägliche Häkchen.');
     }
-}
+
+    /* ---------- 3 ---------- */
+    function renderTrack() {
+        const hs = S.habits.filter(h => !h.paused);
+        if (!hs.length) { $('hb-track').innerHTML = note('info', 'Noch keine aktive Gewohnheit.'); return; }
+        const tk = today();
+        $('hb-track').innerHTML = hs.map(h => { const done = (h.done || {})[tk]; const st = streak(h); const my = missedYesterday(h); return `<div class="hb-habit"><div class="hb-habit-top"><button class="hb-check ${done ? 'done' : ''}" data-c="${h.id}" aria-label="Heute erledigt">${done ? '<i class="fas fa-check"></i>' : ''}</button><div class="hb-habit-t"><h4>${esc(h.name)}</h4><div class="hb-meta">${esc(h.routine)}</div></div><span class="hb-streak">🔥 ${st}</span></div>${my && !done ? note('warn', `Gestern ausgelassen. Heute ist der wichtigste Tag: <strong>Nie zweimal.</strong>${(h.ifthen || {}).then ? ` Plan B: ${esc(h.ifthen.then)}` : ' Zur Not die Minimalversion.'}`) : ''}<div class="hb-cal" data-cal="${h.id}">${[...Array(28)].map((_, i) => { const d = daysAgo(27 - i); const k = key(d); const before = h.created && d < new Date(key(new Date(h.created))); return `<button class="${(h.done || {})[k] ? 'on' : ''} ${before ? 'pre' : ''} ${k === tk ? 'today' : ''}" data-d="${k}" data-h="${h.id}" ${before ? 'disabled' : ''} title="${d.toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric', month: 'numeric' })}" aria-label="${k}"></button>`; }).join('')}</div><div class="hb-cal-l"><span>vor 4 Wochen</span><span>heute</span></div></div>`; }).join('');
+        const host = $('hb-track');
+        host.querySelectorAll('[data-c]').forEach(b => b.addEventListener('click', () => { const h = H(b.dataset.c); h.done = h.done || {}; if (h.done[tk]) delete h.done[tk]; else { h.done[tk] = true; const s = streak(h); MethodKit.toast(s >= 7 ? `🔥 ${s} Tage – das wird eine Gewohnheit` : s >= 3 ? `🔥 ${s} Tage am Stück` : 'Erledigt ✓', 'ok'); } MethodKit.save({ now: true }); renderTrack(); }));
+        host.querySelectorAll('.hb-cal [data-d]').forEach(b => b.addEventListener('click', () => { const h = H(b.dataset.h); h.done = h.done || {}; if (h.done[b.dataset.d]) delete h.done[b.dataset.d]; else h.done[b.dataset.d] = true; MethodKit.save(); renderTrack(); }));
+    }
+
+    /* ---------- 4 ---------- */
+    function renderEval() {
+        const hs = S.habits.filter(h => !h.paused);
+        if (!hs.length) { $('hb-eval').innerHTML = note('info', 'Noch keine aktive Gewohnheit.'); return; }
+        $('hb-eval').innerHTML = hs.map(h => {
+            const r7 = rate(h, 7), r28 = rate(h, 28), lg = longest(h), wd = byWeekday(h).filter(x => x.pct !== null);
+            const best = wd.length > 2 ? [...wd].sort((a, b) => b.pct - a.pct)[0] : null, worst = wd.length > 2 ? [...wd].sort((a, b) => a.pct - b.pct)[0] : null;
+            const R = h.review || {};
+            let verdict;
+            if (r28.total < 5) verdict = note('info', `Erst ${r28.total} Tag${r28.total === 1 ? '' : 'e'} getrackt – Muster zeigen sich ab etwa einer Woche. Weitermachen.`);
+            else if (r7.pct < 50) verdict = note('warn', `${r7.pct} % in den letzten 7 Tagen. Das ist kein Charakterproblem, die Gewohnheit ist zu gross oder der Auslöser zu schwach. <strong>Halbiere die Handlung</strong> („${esc(h.routine)}" → was wäre die halbe Version?) oder koppel sie an einen zuverlässigeren Auslöser.`);
+            else if (r7.pct < 80) verdict = note('info', `${r7.pct} % – solide, aber wacklig. Schau auf die schwachen Tage${worst && worst.pct < 50 ? ` (${worst.w}: ${worst.pct} %)` : ''}: Was ist da anders? Oft hilft ein zweiter Auslöser für diese Tage.`);
+            else if (r28.total >= 14 && r28.pct >= 80) verdict = note('ok', `${r28.pct} % über ${r28.total} Tage – die Gewohnheit sitzt. Jetzt darfst du <strong>vergrössern</strong>: etwa 10–20 % mehr („${esc(h.routine)}" → etwas länger oder eine Stufe anspruchsvoller). Oder du hängst die nächste Gewohnheit direkt dahinter.`);
+            else verdict = note('ok', `${r7.pct} % diese Woche. Noch nicht vergrössern – erst zwei Wochen stabil über 80 %, dann steigern.`);
+            return `<div class="hb-eval-card"><div class="hb-law-h"><b>${esc(h.name)}</b><span class="hb-streak">🔥 ${streak(h)}</span></div><div class="hb-stats"><div><b>${r7.pct}%</b><span>7 Tage (${r7.hit}/${r7.total})</span></div><div><b>${r28.pct}%</b><span>28 Tage (${r28.hit}/${r28.total})</span></div><div><b>${lg}</b><span>längste Serie</span></div><div><b>${Object.keys(h.done || {}).length}</b><span>gesamt</span></div></div>${wd.length > 2 ? `<div class="hb-wd">${byWeekday(h).map(x => `<div><i style="height:${x.pct === null ? 0 : Math.max(4, x.pct * 0.4)}px" class="${x.pct === null ? '' : x.pct >= 70 ? 'ok' : x.pct >= 40 ? 'mid' : 'low'}"></i><span>${x.w}</span></div>`).join('')}</div>${best && worst && best.pct - worst.pct >= 40 ? `<div class="mk-faint" style="font-size:12px">Stärkster Tag ${best.w} (${best.pct} %), schwächster ${worst.w} (${worst.pct} %).</div>` : ''}` : ''}${verdict}<div class="mk-grid-2" style="margin-top:10px"><div class="mk-field"><label>Was hat geholfen?</label><input class="mk-input" data-rv="${h.id}" data-k="helped" value="${esc(R.helped || '')}" placeholder="z. B. Sachen am Vorabend bereitlegen"></div><div class="mk-field"><label>Was hat gestört?</label><input class="mk-input" data-rv="${h.id}" data-k="hindered" value="${esc(R.hindered || '')}" placeholder="z. B. Handy zuerst in die Hand genommen"></div></div></div>`;
+        }).join('');
+        $('hb-eval').querySelectorAll('[data-rv]').forEach(i => i.addEventListener('input', () => { const h = H(i.dataset.rv); h.review = h.review || {}; h.review[i.dataset.k] = i.value; MethodKit.save(); }));
+    }
+
+    /* ---------- 5 ---------- */
+    function renderSummary() {
+        if (!S.habits.length) { $('hb-summary').innerHTML = note('info', 'Noch nichts angelegt.'); return; }
+        $('hb-summary').innerHTML = S.habits.map(h => { const r = rate(h, 28); return `<div class="mk-result" style="margin-bottom:10px"><h4>${esc(h.name)}${h.paused ? ' <span class="mk-badge">pausiert</span>' : ''}</h4><div class="hb-formula" style="margin:6px 0"><b>Nachdem</b> ${esc(cueT(h.cue))}, <b>werde ich</b> ${esc(h.routine)}${h.reward ? `, <b>und danach</b> ${esc(h.reward)}` : ''}.${h.identity ? `<small>${esc(h.identity)}</small>` : ''}</div><div class="mk-faint" style="font-size:13px">${lawsDone(h)}/4 Gesetze · ${(h.ifthen || {}).then ? 'Plan B ✓' : 'kein Plan B'} · 🔥 ${streak(h)} · ${r.total ? `${r.pct} % (${r.total} Tage)` : 'noch kein Tracking'}</div></div>`; }).join('');
+    }
+    function renderLinks() { $('hb-links').innerHTML = LINKS.map(x => `<a class="mk-option hb-link" href="${x.l}"><span class="t">${x.m}</span><span class="d">${x.why}</span></a>`).join(''); }
+    function exportAll() {
+        const L = ['GEWOHNHEITS-SYSTEM', '='.repeat(40), 'Exportiert: ' + new Date().toLocaleString('de-CH'), ''];
+        S.habits.forEach(h => {
+            const r = rate(h, 28), L2 = h.laws || {}, I = h.ifthen || {};
+            L.push(`■ ${h.name}${h.paused ? ' (pausiert)' : ''}`, `  Nachdem ${cueT(h.cue)}, werde ich ${h.routine}${h.reward ? `, und danach ${h.reward}` : ''}.`);
+            if (h.identity) L.push(`  Identität: ${h.identity}`);
+            LAWS.forEach(([k, , t]) => { if ((L2[k] || '').trim()) L.push(`  ${t}: ${L2[k].trim()}`); });
+            if ((I.if || '').trim()) L.push(`  Wenn ${I.if.trim()} → dann ${(I.then || '').trim()}`);
+            L.push(`  Streak ${streak(h)} · längste Serie ${longest(h)} · ${r.total ? `${r.pct} % in ${r.total} Tagen` : 'kein Tracking'}`);
+            if ((h.review || {}).helped) L.push(`  Geholfen: ${h.review.helped}`); if ((h.review || {}).hindered) L.push(`  Gestört: ${h.review.hindered}`);
+            L.push('');
+        });
+        MethodKit.exportText('gewohnheiten.txt', L.join('\n'));
+    }
+
+    (async function () {
+        await MethodKit.init({
+            method: 'habit-building', accent: '#22c55e', accent2: '#14b8a6',
+            steps: [{ icon: '🎨', label: 'Designen' }, { icon: '🪶', label: 'Reibung' }, { icon: '✅', label: 'Tracken' }, { icon: '📈', label: 'Auswerten' }, { icon: '🧭', label: 'System' }],
+            defaultState: { habits: [] }
+        });
+        S = MethodKit.state;
+        if (!Array.isArray(S.habits)) S.habits = [];
+        S.habits.forEach(h => { h.laws = h.laws || {}; h.ifthen = h.ifthen || { if: '', then: '' }; h.done = h.done || {}; h.review = h.review || {}; if (!h.created) { const ks = Object.keys(h.done).sort(); h.created = ks.length ? new Date(ks[0]).getTime() : Date.now(); } });
+        ['hb-name', 'hb-cue', 'hb-routine', 'hb-reward', 'hb-identity'].forEach(id => $(id).addEventListener('input', renderPreview));
+        $('hb-add').addEventListener('click', addHabit);
+        $('hb-export').addEventListener('click', exportAll);
+        MethodKit.onStep = function (k) {
+            if (k === 1) { renderPreview(); renderHabits(); }
+            if (k === 2) renderLaws();
+            if (k === 3) renderTrack();
+            if (k === 4) renderEval();
+            if (k === 5) { renderSummary(); renderLinks(); }
+        };
+        MethodKit.onStep(MethodKit.step);
+    })();
+})();

@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ressourcen-Analyse | Manuel Weiss</title>
-    <meta name="description" content="Mach dir bewusst, worauf du bauen kannst: innere Stärken, Fähigkeiten, Menschen und Mittel – und aktiviere sie für deine aktuelle Herausforderung.">
+    <meta name="description" content="Ressourcen-Analyse in sechs Bereichen: Inventar mit Vorschlägen, Verfügbarkeit und Nutzung bewerten, schlafende Ressourcen und Lücken auf der Ressourcen-Landkarte erkennen und für eine konkrete Herausforderung aktivieren – mit Erfahrungsschatz-Frage und Aktivierungsplan.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="resource-analysis.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>:root { --mk-accent: #10b981; --mk-accent-2: #22c55e; --mk-accent-soft: rgba(16,185,129,.12); }</style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
         <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
-        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-hand-holding-heart"></i></span><span>Ressourcen-Analyse</span></div>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-hand-holding-heart"></i></span><span>Ressourcen</span></div>
         <span class="mk-topbar-spacer"></span>
         <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
     </header>
@@ -21,48 +21,67 @@
     <main class="mk-shell">
         <section class="mk-hero">
             <div class="mk-hero-icon"><i class="fas fa-hand-holding-heart"></i></div>
-            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Ressourcenorientierung</div>
             <h1>Worauf kannst du bauen?</h1>
-            <p>In schwierigen Phasen vergessen wir leicht, wie viel uns trägt. Diese Analyse macht deine Ressourcen sichtbar – innere Stärken, Fähigkeiten, Menschen und Mittel – damit du sie gezielt aktivieren kannst.</p>
-            <div class="mk-badges"><span class="mk-badge">Innere Stärken</span><span class="mk-badge">Soziales Netz</span><span class="mk-badge">Aktivierung</span></div>
+            <p>Unter Druck sehen wir, was fehlt – und übersehen, was da ist. Die Ressourcen-Analyse macht sichtbar, was dich trägt: Fähigkeiten, Menschen, Mittel, Erfahrungen, Körper und Sinn. Dann bewertest du, was verfügbar ist, aber ungenutzt bleibt – und aktivierst es gezielt für das, was gerade ansteht.</p>
+            <div class="mk-badges"><span class="mk-badge">6 Bereiche</span><span class="mk-badge">Verfügbar × genutzt</span><span class="mk-badge">Schlafende Ressourcen</span><span class="mk-badge">Aktivierungsplan</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>Innere Ressourcen</h2>
-                <p class="mk-sub">Charaktereigenschaften, Fähigkeiten und Erfahrungen, die in dir stecken.</p>
-                <div id="ra-list-inner"></div>
-                <div style="display:flex; gap:10px; margin-top:12px;"><input class="mk-input" id="ra-inner" placeholder="z. B. Durchhaltevermögen, Humor, Organisationstalent …"><button class="mk-btn mk-btn-ghost" data-add="inner"><i class="fas fa-plus"></i></button></div>
-                <div class="mk-chips" style="margin-top:12px;" id="ra-inner-sug"></div>
+                <h2>1 · Inventar</h2>
+                <p class="mk-sub">Sammle grosszügig in allen sechs Bereichen. Nutze die Vorschläge als Anstoss – deine eigenen Worte sind besser.</p>
+                <div id="ra-inv"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>Äußere Ressourcen</h2>
-                <p class="mk-sub">Menschen, die dich unterstützen, und Mittel, die dir zur Verfügung stehen.</p>
-                <div id="ra-list-outer"></div>
-                <div style="display:flex; gap:10px; margin-top:12px;"><input class="mk-input" id="ra-outer" placeholder="z. B. Familie, Mentor, Ersparnisse, Zeit, Werkzeug …"><button class="mk-btn mk-btn-ghost" data-add="outer"><i class="fas fa-plus"></i></button></div>
-                <div class="mk-chips" style="margin-top:12px;" id="ra-outer-sug"></div>
+                <h2>2 · Bewerten</h2>
+                <p class="mk-sub">Zwei Fragen je Ressource: Wie <strong>verfügbar</strong> ist sie gerade? Und wie stark <strong>nutzt</strong> du sie tatsächlich?</p>
+                <div id="ra-rate"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
             <div class="mk-card">
-                <h2>Aktivieren</h2>
-                <p class="mk-sub">Vor welcher Herausforderung stehst du gerade – und welche Ressourcen helfen dir konkret?</p>
-                <div class="mk-field"><label>Meine aktuelle Herausforderung</label><textarea class="mk-textarea" data-mk-field="challenge" placeholder="Was beschäftigt dich gerade?"></textarea></div>
-                <div class="mk-result"><h4>🔑 Diese Ressourcen setze ich ein</h4><div id="ra-activate">Wähle unten aus.</div></div>
-                <div class="mk-chips" id="ra-pick" style="margin-top:12px;"></div>
-                <button class="mk-btn mk-btn-primary" id="ra-export" style="margin-top:16px;"><i class="fas fa-download"></i> Ressourcen-Karte herunterladen</button>
+                <h2>3 · Ressourcen-Landkarte</h2>
+                <div id="ra-map"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Aktivieren</h2>
+                <p class="mk-sub">Jetzt wird es konkret: eine Herausforderung, die passenden Ressourcen, ein erster Schritt.</p>
+                <div class="mk-field"><label for="ra-challenge">Meine aktuelle Herausforderung</label><textarea class="mk-textarea" id="ra-challenge" data-mk-field="challenge" rows="2" placeholder="Was steht an? Was beschäftigt dich?"></textarea></div>
+                <div class="mk-field"><label for="ra-past">Wann hast du etwas Ähnliches schon einmal gemeistert – und was hat dir damals geholfen?</label><textarea class="mk-textarea" id="ra-past" data-mk-field="past" rows="2" placeholder="Erfahrungsschatz: Du hast schon einmal Schwieriges geschafft."></textarea><div id="ra-past-note"></div></div>
+                <div class="mk-section-label">Welche Ressourcen setzt du ein? (max. 5)</div>
+                <div id="ra-pick"></div>
+                <div id="ra-plan"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Deine Ressourcen-Karte</h2>
+                <div id="ra-summary"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="ra-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="ra-export"><i class="fas fa-download"></i> Herunterladen</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button></div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -77,52 +96,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        const SUG_INNER = ['Geduld','Mut','Neugier','Disziplin','Empathie','Kreativität','Humor','Optimismus','Ausdauer','Fachwissen'];
-        const SUG_OUTER = ['Familie','Freunde','Mentor:in','Kolleg:innen','Ersparnisse','Zeit','Gesundheit','Werkzeuge/Technik','Community','Arzt/Therapeut'];
-        (async function () {
-            await MethodKit.init({
-                method: 'resource-analysis',
-                accent: '#10b981', accent2: '#22c55e',
-                steps: [{icon:'💪',label:'Innen'},{icon:'🤝',label:'Außen'},{icon:'🔑',label:'Aktivieren'}],
-                defaultState: { inner:[], outer:[], challenge:'', picked:[] }
-            });
-            const S = MethodKit.state;
-
-            function renderList(kind){
-                const host=document.getElementById('ra-list-'+kind);
-                const arr=S[kind];
-                if(!arr.length){ host.innerHTML='<div class="mk-empty">Noch nichts erfasst.</div>'; return; }
-                host.innerHTML=arr.map(x=>`<div class="mk-row"><div class="grow">${MethodKit.esc(x)}</div><button class="mk-iconbtn" data-del="${kind}|${MethodKit.esc(x)}"><i class="fas fa-trash"></i></button></div>`).join('');
-                host.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ const [k,v]=b.dataset.del.split('|'); S[k]=S[k].filter(z=>z!==v); S.picked=S.picked.filter(z=>z!==v); MethodKit.save(); renderList(k); }));
-            }
-            function add(kind,val){ if(!val) return; if(S[kind].indexOf(val)<0) S[kind].push(val); MethodKit.save(); renderList(kind); }
-            document.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.add; const i=document.getElementById('ra-'+k); add(k,i.value.trim()); i.value=''; }));
-
-            function renderSug(kind,arr){
-                const host=document.getElementById('ra-'+kind+'-sug');
-                host.innerHTML='<span style="color:var(--mk-faint);font-size:13px;width:100%;">Vorschläge:</span>'+arr.map(v=>`<button class="mk-chip" data-s="${v}">+ ${v}</button>`).join('');
-                host.querySelectorAll('[data-s]').forEach(el=>el.addEventListener('click',()=>add(kind,el.dataset.s)));
-            }
-            renderSug('inner',SUG_INNER); renderSug('outer',SUG_OUTER);
-            renderList('inner'); renderList('outer');
-            MethodKit.bindFields();
-
-            function renderPick(){
-                const all=[...S.inner,...S.outer];
-                const host=document.getElementById('ra-pick');
-                if(!all.length){ host.innerHTML='<div class="mk-empty">Erfasse zuerst Ressourcen in Schritt 1 & 2.</div>'; document.getElementById('ra-activate').textContent='–'; return; }
-                host.innerHTML=all.map(v=>`<button class="mk-chip ${S.picked.indexOf(v)>-1?'selected':''}" data-p="${MethodKit.esc(v)}">${MethodKit.esc(v)}</button>`).join('');
-                host.querySelectorAll('[data-p]').forEach(el=>el.addEventListener('click',()=>{ const v=el.dataset.p, i=S.picked.indexOf(v); if(i>-1)S.picked.splice(i,1); else S.picked.push(v); MethodKit.save(); renderPick(); }));
-                document.getElementById('ra-activate').innerHTML = S.picked.length ? S.picked.map(v=>`<strong>${MethodKit.esc(v)}</strong>`).join(' · ') : 'Wähle unten aus.';
-            }
-            MethodKit.onStep=function(n){ if(n===3) renderPick(); };
-
-            document.getElementById('ra-export').addEventListener('click',()=>{
-                const t=`MEINE RESSOURCEN-KARTE\n======================\n\nHerausforderung: ${S.challenge||'–'}\n\nInnere Ressourcen:\n${S.inner.map(x=>'  - '+x).join('\n')||'  –'}\n\nÄußere Ressourcen:\n${S.outer.map(x=>'  - '+x).join('\n')||'  –'}\n\nDiese aktiviere ich jetzt:\n${S.picked.map(x=>'  ★ '+x).join('\n')||'  –'}\n`;
-                MethodKit.exportText('meine-ressourcen-karte.txt', t);
-            });
-        })();
-    </script>
+    <script src="resource-analysis.js?v=20261003"></script>
 </body>
 </html>

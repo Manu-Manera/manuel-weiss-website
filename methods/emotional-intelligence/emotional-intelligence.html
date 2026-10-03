@@ -4,25 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emotionale Intelligenz | Manuel Weiss</title>
-    <meta name="description" content="Wie ausgeprägt ist deine emotionale Intelligenz? Ein Selbsttest über fünf Domänen mit Profil und konkreten Entwicklungstipps.">
+    <meta name="description" content="EQ-Check nach Goleman: 20 Aussagen in fünf Bereichen mit Konsistenzprüfung, Profil mit Radar und Deutung, vier Alltagssituationen als Reaktionstest, Gefühlstagebuch mit Wortschatz-Analyse und ein Trainingsplan für dein schwächstes Feld.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="emotional-intelligence.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { --mk-accent: #a855f7; --mk-accent-2: #ec4899; --mk-accent-soft: rgba(168,85,247,.12); }
-        .ei-item { padding:14px 0; border-bottom:1px solid var(--mk-line); }
-        .ei-scale { display:flex; gap:6px; margin-top:10px; }
-        .ei-dot { flex:1; border:1.5px solid var(--mk-line); background:#fff; border-radius:10px; padding:8px 0; text-align:center; cursor:pointer; font-weight:700; color:var(--mk-muted); transition:all .12s; }
-        .ei-dot:hover { border-color:var(--mk-accent); }
-        .ei-dot.sel { background:var(--mk-accent); border-color:var(--mk-accent); color:#fff; }
-        .ei-bar { height:10px; border-radius:999px; background:var(--mk-line); overflow:hidden; }
-        .ei-bar > span { display:block; height:100%; background:linear-gradient(90deg,var(--mk-accent),var(--mk-accent-2)); }
-    </style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
         <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
-        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-heart-pulse"></i></span><span>Emotionale Intelligenz</span></div>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-heart-pulse"></i></span><span>EQ-Check</span></div>
         <span class="mk-topbar-spacer"></span>
         <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
     </header>
@@ -30,34 +21,64 @@
     <main class="mk-shell">
         <section class="mk-hero">
             <div class="mk-hero-icon"><i class="fas fa-heart-pulse"></i></div>
-            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Goleman</div>
             <h1>Wie gut verstehst du Gefühle?</h1>
-            <p>Emotionale Intelligenz ist oft entscheidender als der IQ. Sie umfasst fünf Domänen nach Daniel Goleman. Schätze dich in 15 Aussagen ein und erhalte ein Profil mit gezielten Entwicklungstipps.</p>
-            <div class="mk-badges"><span class="mk-badge">5 Domänen</span><span class="mk-badge">15 Aussagen</span><span class="mk-badge">Profil & Tipps</span></div>
+            <p>Emotionale Intelligenz entscheidet öfter über Erfolg und Zufriedenheit als der IQ – und sie ist trainierbar. Du schätzt dich in fünf Bereichen ein, prüfst dein Profil an echten Situationen, erweiterst deinen Gefühlswortschatz und bekommst ein Training für das Feld, das dich am meisten weiterbringt.</p>
+            <div class="mk-badges"><span class="mk-badge">20 Aussagen</span><span class="mk-badge">5 Bereiche</span><span class="mk-badge">Konsistenz-Check</span><span class="mk-badge">Situationstest</span><span class="mk-badge">Gefühlstagebuch</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>Selbsteinschätzung</h2>
-                <p class="mk-sub">1 = trifft gar nicht zu · 5 = trifft voll zu. Antworte spontan.</p>
+                <h2>1 · Selbsteinschätzung</h2>
+                <p class="mk-sub">1 = trifft gar nicht zu · 5 = trifft voll zu. Antworte spontan und ehrlich – nicht, wie du gern wärst.</p>
                 <div id="ei-items"></div>
-                <div class="mk-savebadge" style="margin-top:12px;"><span id="ei-progress">0</span> / 15 beantwortet</div>
+                <div class="mk-savebadge" style="margin-top:12px;"><span id="ei-progress">0</span> / 20 beantwortet</div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>Dein EQ-Profil</h2>
+                <h2>2 · Dein EQ-Profil</h2>
                 <div id="ei-results"></div>
-                <button class="mk-btn mk-btn-primary" id="ei-export" style="margin-top:14px;"><i class="fas fa-download"></i> Profil herunterladen</button>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>3 · Situationen</h2>
+                <p class="mk-sub">Selbstbild trifft Alltag. Wähle, was du <strong>wirklich</strong> tun würdest – nicht, was richtig klingt.</p>
+                <div id="ei-sits"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Gefühlstagebuch</h2>
+                <p class="mk-sub">Wer Gefühle präzise benennen kann, kann sie steuern. Trage ein, was du gerade fühlst – je differenzierter das Wort, desto besser.</p>
+                <div id="ei-diary"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Dein Training</h2>
+                <div id="ei-train"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="ei-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="ei-export"><i class="fas fa-download"></i> Herunterladen</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button></div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 2</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -72,69 +93,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        const DOMAINS = {
-            self:   {label:'Selbstwahrnehmung', tip:'Führe ein Gefühlstagebuch: Benenne mehrmals täglich, was du fühlst und warum. Wer Emotionen benennt, kann sie steuern.'},
-            reg:    {label:'Selbstregulation', tip:'Übe die Pause: zwischen Reiz und Reaktion 3-mal atmen. So reagierst du bewusst statt impulsiv.'},
-            motiv:  {label:'Motivation', tip:'Verbinde Aufgaben mit deinem Warum und feiere kleine Fortschritte – das hält die innere Antriebskraft hoch.'},
-            emp:    {label:'Empathie', tip:'Höre aktiv zu, ohne sofort zu antworten. Frage „Wie ging es dir damit?" und beobachte Körpersprache.'},
-            social: {label:'Soziale Kompetenz', tip:'Suche bewusst Gespräche, gib ehrliches, wertschätzendes Feedback und pflege dein Netzwerk regelmäßig.'}
-        };
-        const ITEMS = [
-            {d:'self',t:'Ich merke schnell, wenn sich meine Stimmung ändert.'},
-            {d:'self',t:'Ich weiß meist genau, warum ich mich so fühle, wie ich mich fühle.'},
-            {d:'self',t:'Ich kenne meine emotionalen Auslöser („Trigger") gut.'},
-            {d:'reg',t:'Auch unter Stress bleibe ich handlungsfähig.'},
-            {d:'reg',t:'Ich kann impulsive Reaktionen zurückhalten.'},
-            {d:'reg',t:'Nach Ärger beruhige ich mich relativ schnell wieder.'},
-            {d:'motiv',t:'Ich verfolge meine Ziele auch bei Rückschlägen weiter.'},
-            {d:'motiv',t:'Ich kann mich selbst motivieren, ohne Druck von außen.'},
-            {d:'motiv',t:'Ich sehe in Problemen eher Chancen als Bedrohungen.'},
-            {d:'emp',t:'Ich spüre, wie es anderen geht, auch wenn sie nichts sagen.'},
-            {d:'emp',t:'Ich kann mich gut in andere Sichtweisen hineinversetzen.'},
-            {d:'emp',t:'Andere fühlen sich von mir verstanden.'},
-            {d:'social',t:'Mir fällt es leicht, mit unterschiedlichen Menschen klarzukommen.'},
-            {d:'social',t:'Ich kann Konflikte ansprechen, ohne zu verletzen.'},
-            {d:'social',t:'Ich baue und pflege Beziehungen aktiv.'}
-        ];
-        (async function () {
-            await MethodKit.init({
-                method: 'emotional-intelligence',
-                accent: '#a855f7', accent2: '#ec4899',
-                steps: [{icon:'📝',label:'Test'},{icon:'📊',label:'Profil'}],
-                defaultState: { answers:{} }
-            });
-            const S = MethodKit.state;
-
-            const host=document.getElementById('ei-items');
-            function renderItems(){
-                host.innerHTML=ITEMS.map((it,i)=>`<div class="ei-item"><div>${i+1}. ${it.t}</div><div class="ei-scale">${[1,2,3,4,5].map(v=>`<div class="ei-dot ${S.answers[i]===v?'sel':''}" data-i="${i}" data-v="${v}">${v}</div>`).join('')}</div></div>`).join('');
-                host.querySelectorAll('[data-v]').forEach(el=>el.addEventListener('click',()=>{ S.answers[el.dataset.i]=parseInt(el.dataset.v,10); MethodKit.save(); renderItems(); updateProg(); }));
-            }
-            function updateProg(){ document.getElementById('ei-progress').textContent=Object.keys(S.answers).length; }
-            renderItems(); updateProg();
-
-            function scores(){
-                const sum={}, cnt={};
-                ITEMS.forEach((it,i)=>{ if(S.answers[i]){ sum[it.d]=(sum[it.d]||0)+S.answers[i]; cnt[it.d]=(cnt[it.d]||0)+1; } });
-                const out={}; Object.keys(DOMAINS).forEach(d=>{ out[d]= cnt[d]? Math.round(sum[d]/cnt[d]/5*100) : 0; });
-                return out;
-            }
-            MethodKit.onStep=function(n){ if(n===2){
-                const sc=scores();
-                const sorted=Object.keys(DOMAINS).sort((a,b)=>sc[b]-sc[a]);
-                const weakest=sorted[sorted.length-1];
-                document.getElementById('ei-results').innerHTML=
-                    sorted.map(d=>`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;font-size:14px;"><span>${DOMAINS[d].label}</span><strong>${sc[d]}%</strong></div><div class="ei-bar"><span style="width:${sc[d]}%"></span></div></div>`).join('')+
-                    `<div class="mk-result" style="margin-top:14px;"><h4>💡 Dein Entwicklungsfeld: ${DOMAINS[weakest].label}</h4>${DOMAINS[weakest].tip}</div>`;
-            }};
-
-            document.getElementById('ei-export').addEventListener('click',()=>{
-                const sc=scores(); let t='EQ-PROFIL\n=========\n\n';
-                Object.keys(DOMAINS).forEach(d=>t+=`${DOMAINS[d].label}: ${sc[d]}%\n`);
-                MethodKit.exportText('mein-eq-profil.txt', t);
-            });
-        })();
-    </script>
+    <script src="emotional-intelligence.js?v=20261003"></script>
 </body>
 </html>

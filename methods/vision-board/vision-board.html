@@ -4,16 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vision-Board | Manuel Weiss</title>
-    <meta name="description" content="Gestalte ein lebendiges Bild deiner Zukunft – ein digitales Vision-Board mit Bausteinen für jeden Lebensbereich.">
+    <meta name="description" content="Vision-Board mit Substanz: Zukunftsbild im Präsens schreiben, zehn Lebensbereiche mit Bild, Satz und Wichtigkeit füllen, das Board visuell ordnen, Fokus-Bausteine wählen und mit Beweis, erstem Schritt und Loslassen in Handlung übersetzen – plus Ritual und Check-ins.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="vision-board.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { --mk-accent: #0ea5e9; --mk-accent-2: #6366f1; --mk-accent-soft: rgba(14,165,233,.12); }
-        .vb-board { display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); }
-        .vb-tile { border-radius:var(--mk-radius-sm); padding:18px; color:#fff; min-height:130px; display:flex; flex-direction:column; box-shadow:var(--mk-shadow); }
-        .vb-tile .ic { font-size:32px; } .vb-tile .t { font-weight:700; margin-top:8px; } .vb-tile .d { font-size:13px; opacity:.92; margin-top:4px; }
-    </style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
@@ -26,54 +21,68 @@
     <main class="mk-shell">
         <section class="mk-hero">
             <div class="mk-hero-icon"><i class="fas fa-images"></i></div>
-            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Zukunftsbild</div>
             <h1>Mal dir deine Zukunft</h1>
-            <p>Was du dir lebhaft vorstellst, ziehst du eher an. Ein Vision-Board macht deine Ziele sichtbar und emotional greifbar. Formuliere dein großes Bild und fülle es mit Bausteinen.</p>
-            <div class="mk-badges"><span class="mk-badge">Big Picture</span><span class="mk-badge">Lebensbereiche</span><span class="mk-badge">Visuell</span></div>
+            <p>Ein Vision-Board ist kein Wunschzettel. Es ist ein Bild davon, wie dein Leben aussieht, wenn du die Richtung hältst – so konkret, dass dein Gehirn anfängt, Gelegenheiten zu erkennen. Du schreibst das grosse Bild, füllst die Lebensbereiche, ordnest das Board und übersetzt die wichtigsten Bausteine in erste Schritte.</p>
+            <div class="mk-badges"><span class="mk-badge">Big Picture</span><span class="mk-badge">10 Lebensbereiche</span><span class="mk-badge">Visuelles Board</span><span class="mk-badge">Fokus → Handlung</span><span class="mk-badge">Ritual</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>Dein großes Bild</h2>
-                <p class="mk-sub">Versetz dich in deine Zukunft. Schreib im Präsens – als wäre es schon wahr.</p>
-                <div class="mk-field">
-                    <label>In 3 Jahren …</label>
-                    <textarea class="mk-textarea" data-mk-field="headline" placeholder="z. B. „Ich lebe in einer hellen Wohnung am Wasser, arbeite an Projekten, die mich begeistern, und bin körperlich fit."" style="min-height:120px;"></textarea>
-                </div>
-                <div class="mk-field">
-                    <label>Wie fühlt sich dieses Leben an? (ein Wort)</label>
-                    <input class="mk-input" data-mk-field="feeling" placeholder="z. B. frei, lebendig, ruhig, stolz">
-                </div>
+                <h2>1 · Das grosse Bild</h2>
+                <p class="mk-sub">Schreib im Präsens, als wäre es schon so. Nicht „ich werde", sondern „ich bin", „ich habe", „ich lebe".</p>
+                <div class="mk-field"><label>Zeithorizont</label><div class="mk-chips" id="vb-horizon"></div></div>
+                <div class="mk-field"><label for="vb-headline">Mein Leben in einem Satz</label><input class="mk-input" id="vb-headline" data-mk-field="headline" placeholder="z. B. Ich arbeite selbstbestimmt an Dingen, die zählen – und habe Zeit für die Menschen, die mir wichtig sind."><div id="vb-headline-note"></div></div>
+                <div class="mk-field"><label for="vb-day">Ein gewöhnlicher Dienstag in dieser Zukunft – von morgens bis abends</label><textarea class="mk-textarea" id="vb-day" data-mk-field="day" rows="4" placeholder="Wo wachst du auf? Was tust du zuerst? Mit wem arbeitest du? Wie fühlt sich der Abend an?"></textarea><div id="vb-day-note"></div></div>
+                <div class="mk-field"><label for="vb-feeling">Das Grundgefühl dieses Lebens in drei Wörtern</label><input class="mk-input" id="vb-feeling" data-mk-field="feeling" placeholder="z. B. frei, verbunden, wach"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>Bausteine hinzufügen</h2>
-                <p class="mk-sub">Für jeden Lebensbereich ein konkretes Bild deiner Vision.</p>
-                <label class="mk-label">Bereich</label>
-                <div class="mk-chips" id="vb-areas" style="margin:8px 0 16px;"></div>
-                <div class="mk-field"><label>Titel</label><input class="mk-input" id="vb-title" placeholder="z. B. „Eigenes Studio""></div>
-                <div class="mk-field"><label>Beschreibung</label><textarea class="mk-textarea" id="vb-desc" placeholder="Was genau stellst du dir vor?"></textarea></div>
-                <button class="mk-btn mk-btn-ghost mk-btn-sm" id="vb-add"><i class="fas fa-plus"></i> Baustein hinzufügen</button>
-                <div id="vb-list" style="margin-top:18px;"></div>
+                <h2>2 · Lebensbereiche</h2>
+                <p class="mk-sub">Ein Baustein pro Bereich reicht. Bild (Emoji), ein Satz im Präsens, Wichtigkeit. Bereiche, die dir egal sind, darfst du leer lassen.</p>
+                <div id="vb-areas"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
             <div class="mk-card">
-                <h2>Dein Vision-Board</h2>
-                <p class="mk-sub" id="vb-headline-disp"></p>
-                <div class="vb-board" id="vb-board"></div>
-                <button class="mk-btn mk-btn-primary" id="vb-export" style="margin-top:18px;"><i class="fas fa-download"></i> Als Text exportieren</button>
+                <h2>3 · Dein Board</h2>
+                <p class="mk-sub">Tippe auf bis zu drei Bausteine, die den grössten Unterschied machen – dein Fokus für die nächsten Monate.</p>
+                <div id="vb-board"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Vom Bild zur Handlung</h2>
+                <p class="mk-sub">Visionen ohne Schritte sind Tagträume. Für jeden Fokus-Baustein: Woran merkst du, dass es wahr wird – und was tust du in den nächsten sieben Tagen?</p>
+                <div id="vb-action"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Ritual & Überblick</h2>
+                <div id="vb-ritual"></div>
+                <div id="vb-summary"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="vb-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="vb-export"><i class="fas fa-download"></i> Herunterladen</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button></div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -88,61 +97,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        const AREAS = [
-            {id:'beruf',ic:'💼',label:'Beruf',c:'#6366f1'},{id:'gesundheit',ic:'💪',label:'Gesundheit',c:'#22c55e'},
-            {id:'beziehung',ic:'❤️',label:'Beziehungen',c:'#ef4444'},{id:'reisen',ic:'✈️',label:'Reisen',c:'#0ea5e9'},
-            {id:'zuhause',ic:'🏡',label:'Zuhause',c:'#f59e0b'},{id:'finanzen',ic:'💰',label:'Finanzen',c:'#10b981'},
-            {id:'lernen',ic:'📚',label:'Lernen',c:'#8b5cf6'},{id:'kreativ',ic:'🎨',label:'Kreativität',c:'#ec4899'},
-            {id:'koerper',ic:'🧘',label:'Innere Ruhe',c:'#14b8a6'},{id:'abenteuer',ic:'🏔️',label:'Abenteuer',c:'#f97316'}
-        ];
-        function area(id){ return AREAS.find(a=>a.id===id)||AREAS[0]; }
-
-        (async function () {
-            await MethodKit.init({
-                method: 'vision-board',
-                accent: '#0ea5e9', accent2: '#6366f1',
-                steps: [{icon:'🌅',label:'Big Picture'},{icon:'🧩',label:'Bausteine'},{icon:'🖼️',label:'Board'}],
-                defaultState: { headline:'', feeling:'', cards:[], pickArea:'beruf' }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-
-            const areaHost = document.getElementById('vb-areas');
-            function renderAreas(){
-                areaHost.innerHTML = AREAS.map(a=>`<button class="mk-chip ${S.pickArea===a.id?'selected':''}" data-a="${a.id}">${a.ic} ${a.label}</button>`).join('');
-                areaHost.querySelectorAll('[data-a]').forEach(el=>el.addEventListener('click',()=>{ S.pickArea=el.dataset.a; MethodKit.save(); renderAreas(); }));
-            }
-            renderAreas();
-
-            function renderList(){
-                const host=document.getElementById('vb-list');
-                if(!S.cards.length){ host.innerHTML='<div class="mk-empty">Noch keine Bausteine.</div>'; return; }
-                host.innerHTML=S.cards.map(c=>{ const a=area(c.area); return `<div class="mk-row"><div class="grow">${a.ic} <strong>${MethodKit.esc(c.title)}</strong> <span style="color:var(--mk-muted);font-size:13px;">${MethodKit.esc(c.desc||'')}</span></div><button class="mk-iconbtn" data-del="${c.id}"><i class="fas fa-trash"></i></button></div>`; }).join('');
-                host.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ S.cards=S.cards.filter(x=>x.id!==b.dataset.del); MethodKit.save(); renderList(); }));
-            }
-            document.getElementById('vb-add').addEventListener('click',()=>{
-                const t=document.getElementById('vb-title'), d=document.getElementById('vb-desc');
-                if(!t.value.trim()){ MethodKit.toast('Bitte Titel eingeben','error'); return; }
-                S.cards.push({ id:MethodKit.uid(), area:S.pickArea, title:t.value.trim(), desc:d.value.trim() });
-                t.value=''; d.value=''; MethodKit.save(); renderList(); MethodKit.toast('Baustein hinzugefügt','success');
-            });
-            renderList();
-
-            function renderBoard(){
-                document.getElementById('vb-headline-disp').textContent = S.headline ? `„${S.headline}"${S.feeling?' · '+S.feeling:''}` : '';
-                const host=document.getElementById('vb-board');
-                if(!S.cards.length){ host.innerHTML='<div class="mk-empty" style="grid-column:1/-1">Füge in Schritt 2 Bausteine hinzu.</div>'; return; }
-                host.innerHTML=S.cards.map(c=>{ const a=area(c.area); return `<div class="vb-tile" style="background:linear-gradient(135deg,${a.c},${a.c}cc)"><span class="ic">${a.ic}</span><span class="t">${MethodKit.esc(c.title)}</span><span class="d">${MethodKit.esc(c.desc||'')}</span></div>`; }).join('');
-            }
-            MethodKit.onStep=function(n){ if(n===3) renderBoard(); };
-
-            document.getElementById('vb-export').addEventListener('click',()=>{
-                let t=`MEIN VISION-BOARD\n=================\n\nGroßes Bild: ${S.headline||'–'}\nGefühl: ${S.feeling||'–'}\n\nBausteine:\n`;
-                S.cards.forEach(c=>{ const a=area(c.area); t+=`  ${a.ic} ${a.label} – ${c.title}: ${c.desc||''}\n`; });
-                MethodKit.exportText('mein-vision-board.txt', t);
-            });
-        })();
-    </script>
+    <script src="vision-board.js?v=20261003"></script>
 </body>
 </html>

@@ -3,26 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SWOT-Analyse | Manuel Weiss</title>
-    <meta name="description" content="Analysiere Stärken, Schwächen, Chancen und Risiken – und leite daraus konkrete Strategien ab. Interaktiv und Schritt für Schritt.">
+    <title>Persönliche SWOT-Analyse | Manuel Weiss</title>
+    <meta name="description" content="Persönliche SWOT-Analyse mit Substanz: Entscheidungsfrage klären, Stärken, Schwächen, Chancen und Risiken mit Leitfragen sammeln und gewichten, innen/aussen-Verwechslungen erkennen, strategische Position bestimmen, TOWS-Strategien (SO, ST, WO, WT) ableiten und in priorisierte Massnahmen übersetzen.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="swot-analysis.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { --mk-accent: #3b82f6; --mk-accent-2: #06b6d4; --mk-accent-soft: rgba(59,130,246,.12); }
-        .sw-quad { border-radius:var(--mk-radius-sm); padding:16px; border:1.5px solid var(--mk-line); }
-        .sw-quad h3 { display:flex; align-items:center; gap:8px; }
-        .sw-S { background:rgba(34,197,94,.07); border-color:rgba(34,197,94,.4); }
-        .sw-W { background:rgba(239,68,68,.06); border-color:rgba(239,68,68,.35); }
-        .sw-O { background:rgba(59,130,246,.07); border-color:rgba(59,130,246,.4); }
-        .sw-T { background:rgba(245,158,11,.08); border-color:rgba(245,158,11,.4); }
-        .sw-add { display:flex; gap:8px; margin-top:10px; }
-    </style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
         <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
-        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-table-cells-large"></i></span><span>SWOT-Analyse</span></div>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-table-cells-large"></i></span><span>SWOT</span></div>
         <span class="mk-topbar-spacer"></span>
         <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
     </header>
@@ -30,42 +21,71 @@
     <main class="mk-shell">
         <section class="mk-hero">
             <div class="mk-hero-icon"><i class="fas fa-table-cells-large"></i></div>
-            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Strategie</div>
             <h1>Klarheit durch vier Felder</h1>
-            <p>Die SWOT-Analyse stellt deine inneren Stärken und Schwächen den äußeren Chancen und Risiken gegenüber. Aus der Kombination entstehen konkrete Strategien – nicht nur eine Liste.</p>
-            <div class="mk-badges"><span class="mk-badge">Stärken/Schwächen</span><span class="mk-badge">Chancen/Risiken</span><span class="mk-badge">Strategien</span></div>
+            <p>Die SWOT trennt, was in dir liegt (Stärken, Schwächen), von dem, was von aussen kommt (Chancen, Risiken). Richtig gemacht endet sie nicht bei vier Listen, sondern bei Strategien: Welche Stärke nutzt welche Chance? Welche Schwäche macht welches Risiko gefährlich? Und was tust du als Erstes?</p>
+            <div class="mk-badges"><span class="mk-badge">Entscheidungsfrage</span><span class="mk-badge">Gewichtete Matrix</span><span class="mk-badge">Strategische Position</span><span class="mk-badge">TOWS-Strategien</span><span class="mk-badge">Massnahmen</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>Worum geht es?</h2>
-                <p class="mk-sub">Benenne, was du analysierst – dann füll die vier Felder.</p>
-                <div class="mk-field"><input class="mk-input" data-mk-field="context" placeholder="z. B. „Meine Bewerbung als Projektleiter" oder „Meine Selbstständigkeit""></div>
-                <div class="mk-grid-2" id="sw-grid"></div>
+                <h2>1 · Worum geht es?</h2>
+                <p class="mk-sub">Eine SWOT ohne Frage ist eine Liste. Formuliere, wofür du Klarheit brauchst.</p>
+                <div class="mk-field"><label>Bereich</label><div class="mk-chips" id="sw-scope"></div></div>
+                <div class="mk-field"><label for="sw-context">Meine Frage / Entscheidung</label><input class="mk-input" id="sw-context" data-mk-field="context" placeholder="z. B. Soll ich mich auf die Teamleitung bewerben?"><div id="sw-context-note"></div></div>
+                <div class="mk-field"><label for="sw-horizon">Zeithorizont</label><select class="mk-select" id="sw-horizon" data-mk-field="horizon"><option value="">– wählen –</option><option value="3m">3 Monate</option><option value="12m">12 Monate</option><option value="3y">3 Jahre</option></select></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>Strategien ableiten</h2>
-                <p class="mk-sub">Hier entsteht der eigentliche Wert: Kombiniere die Felder.</p>
-                <div id="sw-strat"></div>
+                <h2>2 · Die vier Felder</h2>
+                <p class="mk-sub">Oben: in dir (jetzt). Unten: um dich herum (künftig). Gewichte jeden Punkt: wie stark wirkt er auf deine Frage?</p>
+                <div id="sw-grid"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
             <div class="mk-card">
-                <h2>Deine SWOT auf einen Blick</h2>
+                <h2>3 · Position & Strategien</h2>
+                <div id="sw-position"></div>
+            </div>
+            <div class="mk-card">
+                <h3>TOWS: Felder kombinieren</h3>
+                <p class="mk-sub">Jede Strategie verbindet ein inneres mit einem äusseren Feld. Die wichtigsten Punkte stehen als Anstoss dabei.</p>
+                <div id="sw-tows"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Massnahmen</h2>
+                <p class="mk-sub">Aus Strategien werden Handlungen: konkret, mit Termin, priorisiert.</p>
+                <div id="sw-actions"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Deine Antwort</h2>
                 <div id="sw-summary"></div>
-                <button class="mk-btn mk-btn-primary" id="sw-export" style="margin-top:16px;"><i class="fas fa-download"></i> SWOT herunterladen</button>
+                <div class="mk-field" style="margin-top:12px"><label for="sw-answer">Meine Antwort auf die Frage – in einem Satz</label><textarea class="mk-textarea" id="sw-answer" data-mk-field="answer" rows="2" placeholder="Was entscheidest du – und warum?"></textarea></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="sw-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="sw-export"><i class="fas fa-download"></i> Herunterladen</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button></div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -80,67 +100,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        const QUAD = [
-            {k:'S',ic:'💪',label:'Stärken',hint:'intern · positiv'},
-            {k:'W',ic:'🔧',label:'Schwächen',hint:'intern · negativ'},
-            {k:'O',ic:'🌱',label:'Chancen',hint:'extern · positiv'},
-            {k:'T',ic:'⚠️',label:'Risiken',hint:'extern · negativ'}
-        ];
-        (async function () {
-            await MethodKit.init({
-                method: 'swot-analysis',
-                accent: '#3b82f6', accent2: '#06b6d4',
-                steps: [{icon:'▦',label:'Matrix'},{icon:'♟️',label:'Strategien'},{icon:'🏁',label:'Überblick'}],
-                defaultState: { context:'', S:[],W:[],O:[],T:[], strat:{so:'',st:'',wo:'',wt:''} }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-
-            const grid=document.getElementById('sw-grid');
-            grid.innerHTML=QUAD.map(q=>`
-                <div class="sw-quad sw-${q.k}">
-                    <h3>${q.ic} ${q.label} <span style="font-size:12px;color:var(--mk-faint);font-weight:500;">${q.hint}</span></h3>
-                    <div id="sw-list-${q.k}"></div>
-                    <div class="sw-add"><input class="mk-input" id="sw-in-${q.k}" placeholder="Hinzufügen …"><button class="mk-btn mk-btn-ghost" data-q="${q.k}"><i class="fas fa-plus"></i></button></div>
-                </div>`).join('');
-            function renderQuad(k){
-                const host=document.getElementById('sw-list-'+k);
-                if(!S[k].length){ host.innerHTML='<div style="color:var(--mk-faint);font-size:13px;">noch leer</div>'; return; }
-                host.innerHTML=S[k].map((x,i)=>`<div class="mk-row" style="padding:6px 10px;margin-bottom:6px;"><div class="grow" style="font-size:14px;">${MethodKit.esc(x)}</div><button class="mk-iconbtn" data-d="${k}|${i}"><i class="fas fa-xmark"></i></button></div>`).join('');
-                host.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',()=>{ const [kk,ii]=b.dataset.d.split('|'); S[kk].splice(+ii,1); MethodKit.save(); renderQuad(kk); }));
-            }
-            grid.querySelectorAll('[data-q]').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.q, i=document.getElementById('sw-in-'+k); if(!i.value.trim())return; S[k].push(i.value.trim()); i.value=''; MethodKit.save(); renderQuad(k); }));
-            QUAD.forEach(q=>renderQuad(q.k));
-
-            function list(k){ return S[k].length?S[k].join(', '):'–'; }
-            function renderStrat(){
-                const host=document.getElementById('sw-strat');
-                const defs=[
-                    {k:'so',t:'SO · Stärken × Chancen',d:`Wie nutzt du deine Stärken (${list('S')}), um Chancen (${list('O')}) zu ergreifen?`},
-                    {k:'st',t:'ST · Stärken × Risiken',d:`Wie setzt du Stärken (${list('S')}) ein, um Risiken (${list('T')}) abzuwehren?`},
-                    {k:'wo',t:'WO · Schwächen × Chancen',d:`Wie baust du Schwächen (${list('W')}) ab, indem du Chancen (${list('O')}) nutzt?`},
-                    {k:'wt',t:'WT · Schwächen × Risiken',d:`Wie schützt du dich, wo Schwächen (${list('W')}) auf Risiken (${list('T')}) treffen?`}
-                ];
-                host.innerHTML=defs.map(x=>`<div class="mk-field"><label>${x.t}</label><div class="hint">${x.d}</div><textarea class="mk-textarea" data-st="${x.k}" placeholder="Deine Strategie …">${MethodKit.esc(S.strat[x.k]||'')}</textarea></div>`).join('');
-                host.querySelectorAll('[data-st]').forEach(el=>el.addEventListener('input',()=>{ S.strat[el.dataset.st]=el.value; MethodKit.save(); }));
-            }
-            function renderSummary(){
-                const host=document.getElementById('sw-summary');
-                host.innerHTML=`<div class="mk-result" style="margin-bottom:14px;"><h4>${MethodKit.esc(S.context||'SWOT-Analyse')}</h4></div>`+
-                    `<div class="mk-grid-2">`+QUAD.map(q=>`<div class="sw-quad sw-${q.k}"><h3>${q.ic} ${q.label}</h3><ul style="margin:6px 0 0;padding-left:18px;">${S[q.k].map(x=>`<li>${MethodKit.esc(x)}</li>`).join('')||'<li style="color:var(--mk-faint)">–</li>'}</ul></div>`).join('')+`</div>`+
-                    `<h3 style="margin-top:16px;">♟️ Strategien</h3>`+
-                    [['so','SO'],['st','ST'],['wo','WO'],['wt','WT']].map(([k,l])=>S.strat[k]?`<div class="mk-row"><div class="grow"><strong>${l}:</strong> ${MethodKit.esc(S.strat[k])}</div></div>`:'').join('');
-            }
-            MethodKit.onStep=function(n){ if(n===2) renderStrat(); if(n===3) renderSummary(); };
-
-            document.getElementById('sw-export').addEventListener('click',()=>{
-                let t=`SWOT-ANALYSE\n============\n\nThema: ${S.context||'–'}\n\n`;
-                QUAD.forEach(q=>{ t+=`${q.label}:\n${S[q.k].map(x=>'  - '+x).join('\n')||'  –'}\n\n`; });
-                t+=`Strategien:\n  SO: ${S.strat.so}\n  ST: ${S.strat.st}\n  WO: ${S.strat.wo}\n  WT: ${S.strat.wt}\n`;
-                MethodKit.exportText('meine-swot-analyse.txt', t);
-            });
-        })();
-    </script>
+    <script src="swot-analysis.js?v=20261003"></script>
 </body>
 </html>
