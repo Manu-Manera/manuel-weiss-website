@@ -186,19 +186,18 @@ const methodWorkflowDefinitions = {
     },
     
     'nlp-dilts': {
-        title: 'NLP Dilts - Logische Ebenen',
-        steps: 6,
+        title: "Logische Ebenen (Dilts)",
+        steps: 5,
         stepTitles: [
-            'Umgebung analysieren',
-            'Verhalten identifizieren',
-            'Fähigkeiten bewerten',
-            'Überzeugungen erkunden',
-            'Identität klären',
-            'Spiritualität verstehen'
+            "Thema",
+            "Aufstieg – wie ist es heute",
+            "Abstieg – mit der Ressource",
+            "Stimmigkeit & Glaubenssatz",
+            "Hebel & erster Schritt"
         ],
-        description: 'Die logischen Ebenen der Veränderung - verstehe die verschiedenen Ebenen deiner Persönlichkeit.',
+        description: "Die Dilts-Pyramide als Werkzeug: ein Thema von Umgebung bis Sinn aufsteigen, mit der Ressource der oberen Ebenen absteigen, die Stimmigkeit jeder Ebene bewerten, einschränkende Glaubenssätze erkennen und umformulieren und den Hebel eine Ebene über dem Problem finden.",
         logic: 'hierarchical', // Hierarchisch
-        features: ['6 Ebenen', 'Veränderung', 'Persönlichkeit', 'Integration']
+        features: ["Interaktive Pyramide", "Aufstieg & Abstieg", "Stimmigkeits-Check", "Glaubenssatz-Erkennung", "Hebel-Vorschlag"]
     },
     
     'johari-window': {
@@ -340,22 +339,18 @@ const methodWorkflowDefinitions = {
     },
     
     'conflict-escalation': {
-        title: 'Konflikt-Eskalation',
-        steps: 9,
+        title: "Konflikteskalation (Glasl)",
+        steps: 5,
         stepTitles: [
-            'Verhärtung',
-            'Debatte',
-            'Taten statt Worte',
-            'Koalitionen',
-            'Gesichtsverlust',
-            'Drohstrategien',
-            'Begrenzte Vernichtung',
-            'Zersplitterung',
-            'Gemeinsam in den Abgrund'
+            "Der Konflikt",
+            "Symptom-Check",
+            "Stufe & eigener Anteil",
+            "De-Eskalation & Interessen",
+            "Plan & Verlauf"
         ],
-        description: 'Das 9-Stufen-Modell der Konflikteskalation nach Glasl.',
+        description: "Die neun Eskalationsstufen nach Glasl als Diagnose-Werkzeug: Symptome ankreuzen, die Stufe auf dem Thermometer bestimmen, den eigenen Anteil an der Eskalation erkennen, phasengerechte De-Eskalationsstrategien wählen (ab Stufe 4 mit Hinweis auf externe Hilfe), Interessen statt Positionen klären und den Verlauf protokollieren.",
         logic: 'escalation-stages', // Eskalationsstufen
-        features: ['9 Stufen', 'Konflikte', 'Eskalation', 'Deeskalation']
+        features: ["Symptom-Check → Stufe", "9-Stufen-Thermometer", "Eigener Anteil", "Strategien je Phase", "Interessen-Klärung", "Verlaufs-Log"]
     },
     
     'harvard-method': {
@@ -421,19 +416,18 @@ const methodWorkflowDefinitions = {
     },
     
     'change-stages': {
-        title: 'Veränderungsstufen',
-        steps: 6,
+        title: "Stufen der Veränderung (Prochaska)",
+        steps: 5,
         stepTitles: [
-            'Vorüberlegung',
-            'Überlegung',
-            'Vorbereitung',
-            'Handlung',
-            'Aufrechterhaltung',
-            'Rückfall'
+            "Verhalten, Wichtigkeit & Zuversicht",
+            "Standort-Quiz",
+            "Phase, Beschreibung & Falle",
+            "Phasengerechter Schritt & Waage",
+            "Rückfall-Plan & Verlauf"
         ],
-        description: 'Die 6 Stufen der Veränderung nach Prochaska.',
+        description: "Das transtheoretische Modell als Standortbestimmung: Wichtigkeit und Zuversicht einschätzen, per Quiz die Phase ermitteln (Absichtslosigkeit bis Aufrechterhaltung), die typische Falle der Phase kennen, den passenden Schritt wählen, in frühen Phasen die Entscheidungs-Waage füllen, Risikosituationen und Wenn-Dann-Rückfallplan festlegen und per Check-in den Verlauf verfolgen.",
         logic: 'change-process', // Veränderungsprozess
-        features: ['6 Stufen', 'Veränderung', 'Prozess', 'Rückfallprävention']
+        features: ["Wichtigkeit × Zuversicht", "Standort-Quiz", "Phasen-Treppe", "Entscheidungs-Waage", "Wenn-Dann-Rückfallplan", "Check-in-Verlauf"]
     },
     
     'competence-map': {
@@ -534,18 +528,19 @@ const methodWorkflowDefinitions = {
     },
     
     'stress-management': {
-        title: 'Stress-Management',
-        steps: 5,
+        title: 'Stressmanagement',
+        steps: 6,
         stepTitles: [
-            'Stress-Analyse',
-            'Bewältigungsstrategien',
-            'Entspannungstechniken',
-            'Prävention',
-            'Stress-Monitoring'
+            'Stress-Check',
+            'Stressoren-Landkarte',
+            'Frühwarnsignale',
+            'Love it · Change it · Leave it',
+            'Bewertung & Reframe',
+            'SOS-Plan & Erholung'
         ],
-        description: 'Effektive Techniken für Stressbewältigung und Entspannung.',
+        description: 'Stressoren mit Intensität und Häufigkeit auf einer Landkarte sichtbar machen, Frühwarnsignale erkennen, jeden Stressor einer Strategie zuordnen (ändern, annehmen, verlassen), die Bewertung nach Lazarus prüfen (Bedrohung vs. Ressourcen), einen SOS-Plan erstellen und Belastung gegen Erholung abwägen.',
         logic: 'stress-management', // Stress-Management
-        features: ['Analyse', 'Strategien', 'Entspannung', 'Prävention']
+        features: ['Stressoren-Landkarte', 'Frühwarnsignale', 'Love it / Change it / Leave it', 'Lazarus-Bewertung', 'SOS-Plan', 'Erholungs-Waage']
     }
 };
 

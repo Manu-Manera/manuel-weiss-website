@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phasen der Veränderung | Manuel Weiss</title>
-    <meta name="description" content="Erkenne, in welcher Phase deiner Veränderung du stehst (nach Prochaska) – und finde den passenden nächsten Schritt statt dich zu überfordern.">
+    <title>Stufen der Veränderung (Prochaska) | Manuel Weiss</title>
+    <meta name="description" content="Das transtheoretische Modell nach Prochaska & DiClemente: herausfinden, in welcher Phase der Veränderung du steckst, die typischen Fallen kennen und den passenden nächsten Schritt wählen – inklusive Rückfall-Plan.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="change-stages.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>:root { --mk-accent: #0ea5e9; --mk-accent-2: #22c55e; --mk-accent-soft: rgba(14,165,233,.12); }</style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
         <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
-        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-stairs"></i></span><span>Phasen der Veränderung</span></div>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-stairs"></i></span><span>Stufen der Veränderung</span></div>
         <span class="mk-topbar-spacer"></span>
         <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
     </header>
@@ -21,43 +21,86 @@
     <main class="mk-shell">
         <section class="mk-hero">
             <div class="mk-hero-icon"><i class="fas fa-stairs"></i></div>
-            <div class="mk-kicker">Persönlichkeitsentwicklung · Verhaltensänderung</div>
-            <h1>Veränderung passiert in Phasen</h1>
-            <p>Nach dem Modell von Prochaska durchläuft jede Veränderung sechs Phasen. Wer weiß, wo er steht, wählt den richtigen nächsten Schritt – und vermeidet, sich zu früh zu überfordern.</p>
-            <div class="mk-badges"><span class="mk-badge">Standortbestimmung</span><span class="mk-badge">Passender Schritt</span><span class="mk-badge">Rückfall-Plan</span></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Veränderung</div>
+            <h1>Veränderung ist kein Schalter – sie ist eine Treppe</h1>
+            <p>Prochaska & DiClemente haben gezeigt: Menschen verändern sich in Phasen – von „kein Thema" über „ich überlege" und „ich bereite vor" bis „ich tue es" und „ich halte durch". Wer den passenden Schritt für seine Phase wählt, kommt weiter. Wer die Phase überspringt, scheitert. Hier findest du heraus, wo du stehst.</p>
+            <div class="mk-badges"><span class="mk-badge">5 Phasen</span><span class="mk-badge">Standort-Quiz</span><span class="mk-badge">Entscheidungs-Waage</span><span class="mk-badge">Rückfall-Plan</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>Was willst du verändern?</h2>
-                <p class="mk-sub">Eine Gewohnheit, ein Verhalten, eine Routine.</p>
-                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="behavior" placeholder="z. B. „Regelmäßig Sport treiben" oder „Weniger am Handy sein""></textarea></div>
+                <h2>1 · Das Verhalten</h2>
+                <div class="mk-field"><label for="cs-behavior">Was willst du verändern?</label><input class="mk-input" id="cs-behavior" data-mk-field="behavior" placeholder="z. B. Abends nicht mehr am Handy · Dreimal pro Woche laufen · Weniger Ja sagen"></div>
+                <div class="mk-field"><label for="cs-why">Warum jetzt?</label><textarea class="mk-textarea" id="cs-why" data-mk-field="why" placeholder="Was hat das Thema ausgelöst?"></textarea></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label>Wie wichtig ist dir die Veränderung? <span class="mk-range-val" data-mk-rangeval="importance">5</span>/10</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" data-mk-field="importance"></div></div>
+                    <div class="mk-field"><label>Wie zuversichtlich bist du, dass du es schaffst? <span class="mk-range-val" data-mk-rangeval="confidence">5</span>/10</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" data-mk-field="confidence"></div></div>
+                </div>
+                <div id="cs-ic-note"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>Wo stehst du gerade?</h2>
-                <p class="mk-sub">Wähle ehrlich die Phase, die am besten passt.</p>
-                <div id="cs-stages"></div>
+                <h2>2 · Standort</h2>
+                <p class="mk-sub">Wie sehr treffen diese Aussagen auf dich zu – bezogen auf dein Verhalten?</p>
+                <div id="cs-quiz"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
             <div class="mk-card">
-                <h2>Dein passender nächster Schritt</h2>
-                <div id="cs-guide"></div>
-                <div class="mk-field" style="margin-top:14px;"><label>Mein konkreter nächster Schritt</label><input class="mk-input" data-mk-field="next" placeholder="Was tust du als Nächstes?"></div>
-                <div class="mk-field"><label>🛟 Mein Rückfall-Plan</label><textarea class="mk-textarea" data-mk-field="relapse" placeholder="Was tust du, wenn du strauchelst? Rückfall ist normal – wichtig ist der Wiedereinstieg."></textarea></div>
-                <button class="mk-btn mk-btn-primary" id="cs-export"><i class="fas fa-download"></i> Plan herunterladen</button>
+                <h2>3 · Deine Phase</h2>
+                <div id="cs-stairs"></div>
+                <div id="cs-phase"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Der passende Schritt</h2>
+                <div id="cs-task"></div>
+            </div>
+            <div class="mk-card" id="cs-balance-card">
+                <h3>Entscheidungs-Waage</h3>
+                <p class="mk-sub">Was spricht dafür, was dagegen? Erst wenn das Dafür überwiegt, trägt eine Entscheidung.</p>
+                <div id="cs-balance"></div>
+            </div>
+            <div class="mk-card">
+                <div class="mk-field"><label for="cs-next">Mein nächster Schritt – passend zur Phase</label><input class="mk-input" id="cs-next" data-mk-field="next" placeholder="…"></div>
+                <div class="mk-field"><label for="cs-when">Bis wann?</label><input class="mk-input" id="cs-when" data-mk-field="when" placeholder="…"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Rückfall & Dranbleiben</h2>
+                <p class="mk-sub">Rückfälle gehören zum Modell – die meisten Menschen brauchen mehrere Anläufe. Entscheidend ist, was du danach tust.</p>
+                <div id="cs-risks"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="cs-relapse">Mein Wenn-Dann-Plan für den Rückfall</label><textarea class="mk-textarea" id="cs-relapse" data-mk-field="relapse" placeholder="Wenn ich …, dann …"></textarea></div>
+                <div id="cs-relapse-note"></div>
+                <div class="mk-field"><label for="cs-support">Wer unterstützt mich – und wie?</label><input class="mk-input" id="cs-support" data-mk-field="support" placeholder="Person · was sie konkret tut"></div>
+                <div id="cs-summary"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Verlauf</h3>
+                <div id="cs-log"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="cs-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="cs-export"><i class="fas fa-download"></i> Herunterladen</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button></div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -72,41 +115,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        const STAGES = [
-            {id:'pre',ic:'😶',t:'Absichtslosigkeit',d:'Ich sehe (noch) kein Problem oder will nichts ändern.',tip:'Informiere dich ohne Druck: Welche Nachteile hat das jetzige Verhalten, welche Vorteile hätte die Änderung? Nur abwägen, noch nichts tun müssen.'},
-            {id:'con',ic:'🤔',t:'Absichtsbildung',d:'Ich denke darüber nach, bin aber unentschlossen.',tip:'Schreib eine Pro-/Contra-Liste. Stell dir dein Leben in 1 Jahr mit und ohne Änderung vor. Sprich mit jemandem darüber.'},
-            {id:'prep',ic:'📝',t:'Vorbereitung',d:'Ich habe mich entschieden und plane den Start (bald).',tip:'Setze ein konkretes Startdatum, besorge, was du brauchst, und mach den ersten Schritt winzig. Sag es jemandem.'},
-            {id:'act',ic:'🏃',t:'Handlung',d:'Ich habe vor Kurzem begonnen (< 6 Monate).',tip:'Belohne dich für Dranbleiben, baue feste Anker in den Alltag und vermeide Auslöser für den Rückfall. Tracke deine Erfolge.'},
-            {id:'main',ic:'🌳',t:'Aufrechterhaltung',d:'Ich halte die Änderung schon länger durch (> 6 Monate).',tip:'Mach die Gewohnheit zur Identität („Ich bin jemand, der …"). Plane für Stressphasen vor und feiere Meilensteine.'},
-            {id:'relapse',ic:'🔄',t:'Rückfall',d:'Ich bin in alte Muster zurückgefallen.',tip:'Kein Drama – Rückfälle gehören dazu. Analysiere den Auslöser ohne Selbstvorwürfe und steige so schnell wie möglich wieder ein.'}
-        ];
-        (async function () {
-            await MethodKit.init({
-                method: 'change-stages',
-                accent: '#0ea5e9', accent2: '#22c55e',
-                steps: [{icon:'🎯',label:'Verhalten'},{icon:'📍',label:'Phase'},{icon:'👣',label:'Schritt'}],
-                defaultState: { behavior:'', stage:'', next:'', relapse:'' }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-
-            const host=document.getElementById('cs-stages');
-            function renderStages(){
-                host.innerHTML=STAGES.map(s=>`<button class="mk-option ${S.stage===s.id?'selected':''}" data-s="${s.id}"><span class="ic">${s.ic}</span><span class="t">${s.t}</span><span class="d">${s.d}</span></button>`).join('');
-                host.querySelectorAll('[data-s]').forEach(el=>el.addEventListener('click',()=>{ S.stage=el.dataset.s; MethodKit.save(); renderStages(); }));
-            }
-            renderStages();
-
-            MethodKit.onStep=function(n){ if(n===3){
-                const st=STAGES.find(s=>s.id===S.stage);
-                document.getElementById('cs-guide').innerHTML = st ? `<div class="mk-result"><h4>${st.ic} ${st.t}</h4>${st.tip}</div>` : '<div class="mk-empty">Wähle zuerst deine Phase in Schritt 2.</div>';
-            }};
-            document.getElementById('cs-export').addEventListener('click',()=>{
-                const st=STAGES.find(s=>s.id===S.stage)||{t:'–'};
-                MethodKit.exportText('meine-veraenderung.txt', `PHASEN DER VERÄNDERUNG\n======================\n\nVerhalten: ${S.behavior}\nAktuelle Phase: ${st.t}\nNächster Schritt: ${S.next}\nRückfall-Plan: ${S.relapse}\n`);
-            });
-        })();
-    </script>
+    <script src="change-stages.js?v=20261003"></script>
 </body>
 </html>

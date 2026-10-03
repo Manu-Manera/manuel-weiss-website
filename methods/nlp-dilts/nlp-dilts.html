@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Logische Ebenen (Dilts) | Manuel Weiss</title>
-    <meta name="description" content="Die logischen Ebenen nach Robert Dilts: Betrachte eine Veränderung von der Umgebung bis zur Sinnfrage – und bring alle Ebenen in Einklang.">
+    <meta name="description" content="Logische Ebenen nach Robert Dilts: ein Thema von der Umgebung bis zum Sinn durchgehen, mit der Ressource der oberen Ebenen wieder absteigen, Stimmigkeit prüfen, blockierende Glaubenssätze erkennen und den Hebel eine Ebene höher finden.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="nlp-dilts.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>:root { --mk-accent: #6366f1; --mk-accent-2: #8b5cf6; --mk-accent-soft: rgba(99,102,241,.12); }</style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
         <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
-        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-layer-group"></i></span><span>Logische Ebenen</span></div>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-layer-group"></i></span><span>Dilts-Pyramide</span></div>
         <span class="mk-topbar-spacer"></span>
         <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
     </header>
@@ -23,41 +23,74 @@
             <div class="mk-hero-icon"><i class="fas fa-layer-group"></i></div>
             <div class="mk-kicker">Persönlichkeitsentwicklung · NLP</div>
             <h1>Veränderung auf allen Ebenen</h1>
-            <p>Robert Dilts beschreibt sechs Ebenen – von der Umgebung bis zum Sinn. Probleme lösen sich oft, wenn man sie eine Ebene höher betrachtet. Geh dein Thema von unten nach oben durch und bring alles in Einklang.</p>
-            <div class="mk-badges"><span class="mk-badge">6 Ebenen</span><span class="mk-badge">Ausrichtung</span><span class="mk-badge">Tiefer Hebel</span></div>
+            <p>Robert Dilts beschreibt sechs Ebenen – von der Umgebung bis zum Sinn. Eine Veränderung auf einer höheren Ebene verändert alles darunter; umgekehrt gilt das nicht. Du gehst dein Thema hinauf, holst dir oben die Ressource und steigst damit wieder hinunter. Dann siehst du, wo es hakt – und wo der Hebel liegt.</p>
+            <div class="mk-badges"><span class="mk-badge">6 Ebenen</span><span class="mk-badge">Aufstieg & Abstieg</span><span class="mk-badge">Stimmigkeit</span><span class="mk-badge">Glaubenssatz-Check</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>Dein Thema</h2>
-                <p class="mk-sub">Eine Veränderung, ein Ziel oder eine Herausforderung.</p>
-                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="topic" placeholder="z. B. „Ich will souveräner vor Gruppen sprechen""></textarea></div>
+                <h2>1 · Dein Thema</h2>
+                <div class="mk-field"><label for="dl-topic">Worum geht es?</label><input class="mk-input" id="dl-topic" data-mk-field="topic" placeholder="z. B. Ich schiebe wichtige Gespräche auf · Ich will selbstbewusster präsentieren"></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="dl-now">Wie ist es heute?</label><textarea class="mk-textarea" id="dl-now" data-mk-field="now" placeholder="Der Ist-Zustand in zwei Sätzen"></textarea></div>
+                    <div class="mk-field"><label for="dl-want">Wie soll es sein?</label><textarea class="mk-textarea" id="dl-want" data-mk-field="want" placeholder="Der gewünschte Zustand"></textarea></div>
+                </div>
+                <div class="mk-field"><label>Auf welcher Ebene zeigt sich das Problem am deutlichsten?</label><div id="dl-problem-lvl"></div></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>Die sechs Ebenen</h2>
-                <p class="mk-sub">Beantworte sie der Reihe nach – von konkret (unten) zu sinnstiftend (oben).</p>
-                <div id="nd-levels"></div>
+                <h2>2 · Aufstieg – wie ist es heute?</h2>
+                <p class="mk-sub">Geh von unten nach oben. Jede Ebene bekommt eine ehrliche Antwort für den Ist-Zustand. Oben angekommen, sieht die Welt meist anders aus.</p>
+                <div class="dl-wrap"><div id="dl-pyramid"></div><div id="dl-up"></div></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
             <div class="mk-card">
-                <h2>Ausrichtung & Hebel</h2>
-                <div id="nd-recap"></div>
-                <div class="mk-field" style="margin-top:14px;"><label>Auf welcher Ebene liegt dein größter Hebel?</label><textarea class="mk-textarea" data-mk-field="lever" placeholder="Wo bringt eine Veränderung am meisten?"></textarea></div>
-                <div class="mk-field"><label>Wichtigste Erkenntnis</label><textarea class="mk-textarea" data-mk-field="insight"></textarea></div>
-                <button class="mk-btn mk-btn-primary" id="nd-export"><i class="fas fa-download"></i> Herunterladen</button>
+                <h2>3 · Abstieg – mit der Ressource von oben</h2>
+                <p class="mk-sub">Nimm das mit, was du bei Sinn und Identität gefunden hast. Geh von oben nach unten und frag auf jeder Ebene: Wie verändert sich das, wenn ich von dort aus handle?</p>
+                <div id="dl-resource"></div>
+                <div id="dl-down"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Stimmigkeit</h2>
+                <p class="mk-sub">Passen die Ebenen zusammen? Ein Verhalten, das der Identität widerspricht, kostet Kraft – jeden Tag. Bewerte, wie gut jede Ebene zum Rest passt.</p>
+                <div id="dl-align"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Glaubenssatz-Check</h3>
+                <div id="dl-belief"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Der Hebel</h2>
+                <div id="dl-lever"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="dl-insight">Was ist dir klar geworden?</label><textarea class="mk-textarea" id="dl-insight" data-mk-field="insight" placeholder="…"></textarea></div>
+                <div class="mk-field"><label for="dl-first">Erster konkreter Schritt – auf der Hebel-Ebene</label><input class="mk-input" id="dl-first" data-mk-field="first" placeholder="…"></div>
+                <div id="dl-summary"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="dl-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="dl-export"><i class="fas fa-download"></i> Herunterladen</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button></div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -72,40 +105,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        const LEVELS = [
-            {id:'env',ic:'🌍',t:'Umgebung',q:'Wo, wann und mit wem? Welche äußeren Umstände spielen eine Rolle?'},
-            {id:'beh',ic:'🚶',t:'Verhalten',q:'Was genau tust du (oder nicht)? Welche konkreten Handlungen?'},
-            {id:'cap',ic:'🛠️',t:'Fähigkeiten',q:'Welche Fähigkeiten und Strategien setzt du ein – oder bräuchtest du?'},
-            {id:'val',ic:'❤️',t:'Werte & Glaubenssätze',q:'Was ist dir dabei wichtig? Welche Überzeugung treibt dich – oder hält dich zurück?'},
-            {id:'id',ic:'🪞',t:'Identität',q:'Wer bist du in diesem Kontext? „Ich bin jemand, der …"'},
-            {id:'pur',ic:'✨',t:'Zugehörigkeit & Sinn',q:'Wozu das alles? Für wen/was über dich hinaus tust du es?'}
-        ];
-        (async function () {
-            await MethodKit.init({
-                method: 'nlp-dilts',
-                accent: '#6366f1', accent2: '#8b5cf6',
-                steps: [{icon:'🎯',label:'Thema'},{icon:'🪜',label:'Ebenen'},{icon:'✨',label:'Ausrichtung'}],
-                defaultState: { topic:'', levels:{}, lever:'', insight:'' }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-
-            const host=document.getElementById('nd-levels');
-            host.innerHTML=LEVELS.map(l=>`<div class="mk-field"><label>${l.ic} ${l.t}</label><div class="hint">${l.q}</div><textarea class="mk-textarea" data-l="${l.id}" placeholder="…">${MethodKit.esc(S.levels[l.id]||'')}</textarea></div>`).join('');
-            host.querySelectorAll('[data-l]').forEach(el=>el.addEventListener('input',()=>{ S.levels[el.dataset.l]=el.value; MethodKit.save(); }));
-
-            MethodKit.onStep=function(n){ if(n===3){
-                document.getElementById('nd-recap').innerHTML=`<div class="mk-result"><h4>${MethodKit.esc(S.topic||'Dein Thema')}</h4></div>`+
-                    LEVELS.map(l=>S.levels[l.id]?`<div class="mk-row"><div class="grow"><strong>${l.ic} ${l.t}:</strong> ${MethodKit.esc(S.levels[l.id])}</div></div>`:'').join('');
-            }};
-            document.getElementById('nd-export').addEventListener('click',()=>{
-                let t=`LOGISCHE EBENEN (DILTS)\n=======================\n\nThema: ${S.topic}\n\n`;
-                LEVELS.forEach(l=>t+=`${l.t}: ${S.levels[l.id]||'–'}\n`);
-                t+=`\nGrößter Hebel: ${S.lever}\nErkenntnis: ${S.insight}\n`;
-                MethodKit.exportText('meine-logischen-ebenen.txt', t);
-            });
-        })();
-    </script>
+    <script src="nlp-dilts.js?v=20261003"></script>
 </body>
 </html>

@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konflikt-Eskalation (Glasl) | Manuel Weiss</title>
-    <meta name="description" content="Erkenne mit dem 9-Stufen-Modell von Friedrich Glasl, wie weit ein Konflikt eskaliert ist – und welche De-Eskalation jetzt wirklich hilft.">
+    <title>Konflikteskalation nach Glasl | Manuel Weiss</title>
+    <meta name="description" content="Die neun Eskalationsstufen nach Friedrich Glasl: Symptome prüfen, die Stufe deines Konflikts bestimmen, den eigenen Anteil sehen und die passende De-Eskalationsstrategie wählen.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="conflict-escalation.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>:root { --mk-accent: #f97316; --mk-accent-2: #ef4444; --mk-accent-soft: rgba(249,115,22,.12); }</style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
         <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
-        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-fire"></i></span><span>Konflikt-Eskalation</span></div>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-fire"></i></span><span>Glasl-Eskalation</span></div>
         <span class="mk-topbar-spacer"></span>
         <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
     </header>
@@ -21,41 +21,92 @@
     <main class="mk-shell">
         <section class="mk-hero">
             <div class="mk-hero-icon"><i class="fas fa-fire"></i></div>
-            <div class="mk-kicker">Persönlichkeitsentwicklung · Glasl</div>
-            <h1>Wie heiß ist der Konflikt?</h1>
-            <p>Friedrich Glasl beschreibt neun Eskalationsstufen in drei Phasen. Wer die Stufe kennt, wählt die passende De-Eskalation – und weiß, ab wann Hilfe von außen nötig wird.</p>
-            <div class="mk-badges"><span class="mk-badge">9 Stufen</span><span class="mk-badge">3 Phasen</span><span class="mk-badge">De-Eskalation</span></div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Konflikt</div>
+            <h1>Wo steht dein Konflikt – und was hilft jetzt?</h1>
+            <p>Friedrich Glasl beschreibt neun Stufen, auf denen Konflikte eskalieren – von „Verhärtung" bis „gemeinsam in den Abgrund". Jede Stufe hat typische Symptome und braucht eine andere Antwort. Hier bestimmst du die Stufe, siehst deinen eigenen Anteil und wählst eine Strategie, die zur Stufe passt.</p>
+            <div class="mk-badges"><span class="mk-badge">9 Stufen</span><span class="mk-badge">Symptom-Check</span><span class="mk-badge">Eigener Anteil</span><span class="mk-badge">De-Eskalation</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>Der Konflikt</h2>
-                <div class="mk-field"><label>Worum geht es, mit wem?</label><textarea class="mk-textarea" data-mk-field="conflict"></textarea></div>
+                <h2>1 · Der Konflikt</h2>
+                <div class="mk-field"><label for="ce-conflict">Worum geht es – in zwei, drei Sätzen?</label><textarea class="mk-textarea" id="ce-conflict" data-mk-field="conflict" placeholder="Sachlich, wie ein Beobachter es beschreiben würde"></textarea></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="ce-who">Mit wem?</label><input class="mk-input" id="ce-who" data-mk-field="who" placeholder="Name oder Rolle"></div>
+                    <div class="mk-field"><label for="ce-since">Seit wann?</label><select class="mk-select" id="ce-since" data-mk-field="since"><option value="">–</option><option value="days">Tagen</option><option value="weeks">Wochen</option><option value="months">Monaten</option><option value="years">Jahren</option></select></div>
+                </div>
+                <div class="mk-field"><label for="ce-trigger">Was war der Auslöser – der erste Moment, an dem es kippte?</label><input class="mk-input" id="ce-trigger" data-mk-field="trigger" placeholder="…"></div>
+                <div class="mk-field"><label>Wie belastend ist der Konflikt für dich gerade? <span class="mk-range-val" data-mk-rangeval="load">5</span>/10</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" data-mk-field="load"></div></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>Auf welcher Stufe steht ihr?</h2>
-                <p class="mk-sub">Wähle ehrlich die Stufe, die den aktuellen Umgang am besten beschreibt.</p>
-                <div id="ce-stages"></div>
+                <h2>2 · Symptom-Check</h2>
+                <p class="mk-sub">Kreuze alles an, was auf euren Konflikt zutrifft. Daraus ergibt sich die wahrscheinliche Stufe.</p>
+                <div id="ce-symptoms"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
             <div class="mk-card">
-                <h2>Was jetzt hilft</h2>
-                <div id="ce-help"></div>
-                <div class="mk-field" style="margin-top:14px;"><label>Mein nächster Schritt zur De-Eskalation</label><textarea class="mk-textarea" data-mk-field="next"></textarea></div>
-                <button class="mk-btn mk-btn-primary" id="ce-export"><i class="fas fa-download"></i> Herunterladen</button>
+                <h2>3 · Die Stufe</h2>
+                <div id="ce-thermo"></div>
+                <div id="ce-stagecard"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Dein eigener Anteil</h3>
+                <p class="mk-sub">Eskalation ist nie einseitig. Was tust du, das den Konflikt – auch unbeabsichtigt – weiter nach unten zieht?</p>
+                <div id="ce-own"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="ce-ownnote">Mein Anteil in eigenen Worten</label><textarea class="mk-textarea" id="ce-ownnote" data-mk-field="ownNote" placeholder="…"></textarea></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · De-Eskalation</h2>
+                <div id="ce-strategy"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Was will ich wirklich?</h3>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="ce-want">Mein Interesse hinter der Position</label><textarea class="mk-textarea" id="ce-want" data-mk-field="want" placeholder="Nicht „Recht haben", sondern: Was brauche ich?"></textarea></div>
+                    <div class="mk-field"><label for="ce-theirs">Was könnte das Interesse der anderen Seite sein?</label><textarea class="mk-textarea" id="ce-theirs" data-mk-field="theirs" placeholder="Vermutung – aus ihrer Perspektive"></textarea></div>
+                </div>
+                <div id="ce-interest-note"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Plan</h2>
+                <div class="mk-field"><label for="ce-next">Mein nächster Schritt</label><input class="mk-input" id="ce-next" data-mk-field="next" placeholder="Konkret, in den nächsten 7 Tagen"></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="ce-when">Wann?</label><input class="mk-input" id="ce-when" data-mk-field="when" placeholder="z. B. Dienstag nach dem Meeting"></div>
+                    <div class="mk-field"><label for="ce-stop">Meine Stopp-Regel: Woran merke ich, dass ich selbst eskaliere – und was tue ich dann?</label><input class="mk-input" id="ce-stop" data-mk-field="stop" placeholder="Wenn ich …, dann …"></div>
+                </div>
+                <div id="ce-summary"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Verlauf</h3>
+                <p class="mk-sub">Halte fest, wo der Konflikt steht – so siehst du, ob eure Schritte wirken.</p>
+                <div id="ce-log"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="ce-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="ce-export"><i class="fas fa-download"></i> Herunterladen</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button></div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -70,41 +121,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        const STAGES=[
-            {n:1,t:'Verhärtung',p:0},{n:2,t:'Debatte & Polemik',p:0},{n:3,t:'Taten statt Worte',p:0},
-            {n:4,t:'Images & Koalitionen',p:1},{n:5,t:'Gesichtsverlust',p:1},{n:6,t:'Drohstrategien',p:1},
-            {n:7,t:'Begrenzte Vernichtung',p:2},{n:8,t:'Zersplitterung',p:2},{n:9,t:'Gemeinsam in den Abgrund',p:2}
-        ];
-        const PHASES=[
-            {label:'Phase 1 · win-win (1–3)',c:'#22c55e',help:'Noch gut selbst lösbar: Sucht das direkte Gespräch, hört aktiv zu, trennt Sache von Person und sucht gemeinsame Interessen. Eine moderierte Klärung genügt meist.'},
-            {label:'Phase 2 · win-lose (4–6)',c:'#f59e0b',help:'Aus eigener Kraft schwierig: Holt eine neutrale Moderation oder Mediation dazu. Sorgt für gesichtswahrende Lösungen und klare Spielregeln im Gespräch.'},
-            {label:'Phase 3 · lose-lose (7–9)',c:'#ef4444',help:'Selbsthilfe reicht nicht mehr: Es braucht entschiedene Intervention von außen (Mediation mit Machtbasis, Führungs- oder rechtliche Instanz). Schutz und Deeskalation haben Vorrang.'}
-        ];
-        (async function () {
-            await MethodKit.init({
-                method: 'conflict-escalation',
-                accent: '#f97316', accent2: '#ef4444',
-                steps: [{icon:'🎯',label:'Konflikt'},{icon:'🌡️',label:'Stufe'},{icon:'🧯',label:'De-Eskalation'}],
-                defaultState: { conflict:'', stage:0, next:'' }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-            const host=document.getElementById('ce-stages');
-            function render(){
-                host.innerHTML=STAGES.map(s=>`<button class="mk-option ${S.stage===s.n?'selected':''}" data-s="${s.n}" style="border-left:4px solid ${PHASES[s.p].c};"><span class="t">${s.n}. ${s.t}</span><span class="d">${PHASES[s.p].label.split('·')[1].trim()}</span></button>`).join('');
-                host.querySelectorAll('[data-s]').forEach(el=>el.addEventListener('click',()=>{ S.stage=parseInt(el.dataset.s,10); MethodKit.save(); render(); }));
-            }
-            render();
-            MethodKit.onStep=function(n){ if(n===3){
-                const st=STAGES.find(s=>s.n===S.stage);
-                document.getElementById('ce-help').innerHTML = st ? `<div class="mk-result"><h4>Stufe ${st.n}: ${st.t} — ${PHASES[st.p].label}</h4>${PHASES[st.p].help}</div>` : '<div class="mk-empty">Wähle zuerst die Stufe in Schritt 2.</div>';
-            }};
-            document.getElementById('ce-export').addEventListener('click',()=>{
-                const st=STAGES.find(s=>s.n===S.stage)||{t:'–',n:'–'};
-                MethodKit.exportText('mein-konflikt.txt', `KONFLIKT-ESKALATION (GLASL)\n===========================\n\nKonflikt: ${S.conflict}\nStufe: ${st.n} – ${st.t}\nNächster Schritt: ${S.next}\n`);
-            });
-        })();
-    </script>
+    <script src="conflict-escalation.js?v=20261003"></script>
 </body>
 </html>

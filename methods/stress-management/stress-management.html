@@ -4,19 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stressmanagement | Manuel Weiss</title>
-    <meta name="description" content="Erkenne deine Stressoren und Frühwarnsignale, unterscheide Beeinflussbares von Nicht-Beeinflussbarem und baue einen persönlichen Anti-Stress-Plan.">
+    <meta name="description" content="Stressmanagement: Stressoren mit Intensität und Häufigkeit erfassen, Frühwarnsignale erkennen, Beeinflussbares trennen (Love it, change it, leave it), Bewertung nach Lazarus umdeuten und einen SOS- und Erholungsplan aufstellen.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="stress-management.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { --mk-accent: #14b8a6; --mk-accent-2: #0ea5e9; --mk-accent-soft: rgba(20,184,166,.12); }
-        .br-circle{width:180px;height:180px;border-radius:50%;margin:14px auto;display:flex;align-items:center;justify-content:center;background:var(--mk-accent-soft);border:2px solid var(--mk-accent);transition:transform 4s ease-in-out;font-weight:700;color:var(--mk-accent);font-size:18px;text-align:center}
-    </style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
         <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Übersicht</button>
-        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-spa"></i></span><span>Stressmanagement</span></div>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-spa"></i></span><span>Stress-Kompass</span></div>
         <span class="mk-topbar-spacer"></span>
         <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Lokal gespeichert</span></span>
     </header>
@@ -26,51 +23,92 @@
             <div class="mk-hero-icon"><i class="fas fa-spa"></i></div>
             <div class="mk-kicker">Persönlichkeitsentwicklung · Wohlbefinden</div>
             <h1>Stress verstehen und steuern</h1>
-            <p>Stress entsteht nicht durch Ereignisse allein, sondern durch ihre Bewertung. Erkenne deine Auslöser und Frühwarnsignale, trenne Beeinflussbares von Nicht-Beeinflussbarem – und finde sofort Ruhe mit einer Atemübung.</p>
-            <div class="mk-badges"><span class="mk-badge">Stressoren</span><span class="mk-badge">Signale</span><span class="mk-badge">Atemübung</span></div>
+            <p>Stress entsteht nicht durch Ereignisse, sondern durch ihre Bewertung – und durch das Verhältnis von Belastung zu Erholung. Hier kartierst du deine Stressoren, erkennst deine Frühwarnsignale, trennst Beeinflussbares von Nicht-Beeinflussbarem und baust dir einen Plan für den Akutfall und für die Woche.</p>
+            <div class="mk-badges"><span class="mk-badge">Stress-Landkarte</span><span class="mk-badge">Frühwarnsignale</span><span class="mk-badge">Love it · Change it · Leave it</span><span class="mk-badge">Lazarus</span><span class="mk-badge">SOS-Plan</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>Deine Stressoren</h2>
-                <div class="mk-field"><label>Was stresst dich aktuell am meisten?</label><textarea class="mk-textarea" data-mk-field="stressors"></textarea></div>
-                <div class="mk-field"><label>Woran merkst du Stress? (körperlich, mental, im Verhalten)</label><textarea class="mk-textarea" data-mk-field="signals" placeholder="z. B. flacher Atem, Gereiztheit, schlechter Schlaf"></textarea></div>
-                <div class="mk-field"><label>Dein aktuelles Stresslevel</label><div class="mk-range-wrap"><input class="mk-range" type="range" min="0" max="10" data-mk-field="level" value="5"><span class="mk-range-val" data-mk-rangeval="level">5</span></div></div>
+                <h2>1 · Wo stehst du?</h2>
+                <div class="mk-field"><label>Dein Stresslevel in den letzten zwei Wochen</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" data-mk-field="level" value="5"><span class="mk-range-val" data-mk-rangeval="level">5</span></div><span class="hint">1 = entspannt · 10 = am Limit</span></div>
+                <div class="mk-section-label">Seit wann?</div>
+                <div id="sm-duration"></div>
+                <div class="mk-section-label" style="margin-top:12px">In welchen Lebensbereichen?</div>
+                <div id="sm-domains"></div>
+                <div id="sm-checknote"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>Beeinflussbar oder nicht?</h2>
-                <p class="mk-sub">Klarheit reduziert Stress. Was kannst du verändern – und was musst du akzeptieren?</p>
-                <div class="mk-field"><label>✅ Das kann ich beeinflussen (und tun)</label><textarea class="mk-textarea" data-mk-field="control"></textarea></div>
-                <div class="mk-field"><label>🕊️ Das kann ich nicht beeinflussen (und loslassen)</label><textarea class="mk-textarea" data-mk-field="accept"></textarea></div>
+                <h2>2 · Deine Stressoren</h2>
+                <p class="mk-sub">Was genau stresst dich? Bewerte jeden Stressor nach Intensität und Häufigkeit – daraus entsteht deine Stress-Landkarte.</p>
+                <div class="sm-add"><input class="mk-input" id="sm-in" placeholder="z. B. Unklare Erwartungen im Job · Lärm · Finanzen" maxlength="100"><button class="mk-btn mk-btn-primary" id="sm-add" aria-label="Stressor hinzufügen"><i class="fas fa-plus"></i></button></div>
+                <div id="sm-stressors"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Stress-Landkarte</h3>
+                <div id="sm-map"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
             <div class="mk-card">
-                <h2>Sofort-Ruhe: 4-7-8-Atmung</h2>
-                <p class="mk-sub">4 Sek. einatmen, 7 Sek. halten, 8 Sek. ausatmen. Folge dem Kreis.</p>
-                <div class="br-circle" id="sm-circle">Bereit?</div>
-                <div style="text-align:center"><button class="mk-btn mk-btn-primary" id="sm-breath"><i class="fas fa-play"></i> Atemzyklus starten</button></div>
+                <h2>3 · Deine Frühwarnsignale</h2>
+                <p class="mk-sub">Stress kündigt sich an – auf vier Kanälen. Wer seine Signale kennt, kann gegensteuern, bevor der Körper die Notbremse zieht.</p>
+                <div id="sm-signals"></div>
+                <div class="mk-field" style="margin-top:12px"><label>Ab welchem Level merkst du es normalerweise?</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" data-mk-field="noticeAt" value="7"><span class="mk-range-val" data-mk-rangeval="noticeAt">7</span></div></div>
+                <div id="sm-signote"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="4">
             <div class="mk-card">
-                <h2>Dein Anti-Stress-Plan</h2>
-                <div class="mk-field"><label>Welche 1–2 Dinge tust du ab jetzt regelmäßig für dich?</label><textarea class="mk-textarea" data-mk-field="plan"></textarea></div>
-                <div class="mk-field"><label>Was hilft dir akut, wenn der Stress hochkocht?</label><textarea class="mk-textarea" data-mk-field="acute"></textarea></div>
-                <button class="mk-btn mk-btn-primary" id="sm-export"><i class="fas fa-download"></i> Plan herunterladen</button>
+                <h2>4 · Love it, change it or leave it</h2>
+                <p class="mk-sub">Für jeden Stressor gibt es genau drei ehrliche Optionen. Die vierte – sich weiter darüber ärgern – ist keine.</p>
+                <div id="sm-control"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Die Bewertung umdrehen</h2>
+                <p class="mk-sub">Nach Lazarus entscheidet nicht die Situation, sondern zwei Fragen: „Was steht auf dem Spiel?" und „Was habe ich, um damit umzugehen?" Nimm deinen grössten Stressor.</p>
+                <div id="sm-appraisal"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="6">
+            <div class="mk-card">
+                <h2>6 · Dein SOS-Plan</h2>
+                <p class="mk-sub">Drei Dinge, die du in den nächsten 10 Minuten tun kannst, wenn du deine Frühwarnsignale bemerkst. Entscheide jetzt – im Stress entscheidest du nicht mehr gut.</p>
+                <div id="sm-sos"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Erholung – die andere Seite der Waage</h3>
+                <p class="mk-sub">Stress ist nicht das Problem. Fehlende Erholung ist es. Was füllt dich auf, und wie oft kommt es wirklich vor?</p>
+                <div id="sm-recovery"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Dein Plan</h3>
+                <div id="sm-summary"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="sm-first">Die eine Sache, die du diese Woche änderst</label><input class="mk-input" id="sm-first" data-mk-field="first" placeholder="Klein genug, dass sie trotz Stress passiert."></div>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="sm-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="sm-export"><i class="fas fa-download"></i> Plan herunterladen</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button></div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 4</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 6</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -85,35 +123,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        (async function () {
-            await MethodKit.init({
-                method: 'stress-management',
-                accent: '#14b8a6', accent2: '#0ea5e9',
-                steps: [{icon:'⚡',label:'Stressoren'},{icon:'⚖️',label:'Einfluss'},{icon:'🫁',label:'Atmen'},{icon:'🛡️',label:'Plan'}],
-                defaultState: { stressors:'',signals:'',level:5,control:'',accept:'',plan:'',acute:'' }
-            });
-            MethodKit.bindFields();
-            const S = MethodKit.state;
-
-            let breathing=false;
-            const circle=document.getElementById('sm-circle');
-            document.getElementById('sm-breath').addEventListener('click',function(){
-                if(breathing)return; breathing=true; this.disabled=true;
-                const phases=[['Einatmen…',4000,1.25],['Halten…',7000,1.25],['Ausatmen…',8000,0.8]];
-                let i=0;
-                function run(){
-                    if(i>=phases.length){ circle.textContent='Geschafft 🌿'; circle.style.transform='scale(1)'; breathing=false; document.getElementById('sm-breath').disabled=false; return; }
-                    const [t,d,sc]=phases[i]; circle.textContent=t; circle.style.transition='transform '+(d/1000)+'s ease-in-out'; circle.style.transform='scale('+sc+')';
-                    i++; setTimeout(run,d);
-                }
-                run();
-            });
-
-            document.getElementById('sm-export').addEventListener('click',()=>{
-                MethodKit.exportText('anti-stress-plan.txt', `STRESSMANAGEMENT\n================\n\nStressoren: ${S.stressors}\nSignale: ${S.signals}\nStresslevel: ${S.level}/10\n\nBeeinflussbar: ${S.control}\nLoslassen: ${S.accept}\n\nMein Plan: ${S.plan}\nAkut-Hilfe: ${S.acute}\n`);
-            });
-        })();
-    </script>
+    <script src="stress-management.js?v=20261003"></script>
 </body>
 </html>

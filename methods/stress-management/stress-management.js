@@ -1,929 +1,183 @@
-// Stress Management JavaScript Functions
+/* Stressmanagement · Logik */
+(function () {
+    'use strict';
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => MethodKit.esc(s);
+    let S;
 
-let stressData = {
-    sources: {
-        work: [],
-        relationships: [],
-        finances: [],
-        daily: []
-    },
-    symptoms: {
-        emotional: [],
-        physical: [],
-        cognitive: []
-    },
-    assessment: {
-        stressFrequency: 3,
-        sleepQuality: 3,
-        lifeSatisfaction: 3
-    },
-    strategies: [],
-    relaxationPlan: {
-        time: 'evening',
-        duration: 15,
-        technique: 'breathing'
-    },
-    preventionMeasures: [],
-    monitoring: {
-        dailyLevels: [],
-        weeklyReviews: [],
-        goals: []
-    }
-};
-
-function initStressManagement() {
-    console.log('Initializing Stress Management...');
-    
-    // Load saved data
-    loadSavedStressData();
-    
-    // Setup event listeners
-    setupStressEventListeners();
-    
-    // Initialize UI
-    updateStressAssessment();
-}
-
-function setupStressEventListeners() {
-    // Setup stress sliders
-    document.querySelectorAll('.stress-slider').forEach(slider => {
-        slider.addEventListener('input', function() {
-            const value = this.value;
-            const valueDisplay = this.parentElement.querySelector('.stress-value');
-            valueDisplay.textContent = value;
-            updateStressAssessment();
-        });
-    });
-    
-    // Setup assessment sliders
-    document.querySelectorAll('.assessment-slider').forEach(slider => {
-        slider.addEventListener('input', function() {
-            updateStressAssessment();
-        });
-    });
-    
-    // Setup symptom checkboxes
-    document.querySelectorAll('.symptom-item input[type="checkbox"]').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            updateStressAssessment();
-        });
-    });
-    
-    // Setup relaxation plan
-    document.getElementById('relaxation-time').addEventListener('change', function() {
-        stressData.relaxationPlan.time = this.value;
-        saveStressData();
-    });
-    
-    document.getElementById('relaxation-duration').addEventListener('change', function() {
-        stressData.relaxationPlan.duration = parseInt(this.value);
-        saveStressData();
-    });
-    
-    document.getElementById('preferred-technique').addEventListener('change', function() {
-        stressData.relaxationPlan.technique = this.value;
-        saveStressData();
-    });
-    
-    // Setup prevention checkboxes
-    document.querySelectorAll('.prevention-tips input[type="checkbox"]').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            saveStressData();
-        });
-    });
-}
-
-function addStressSource(category) {
-    const categoryElement = document.querySelector(`[onclick="addStressSource('${category}')"]`).closest('.source-category');
-    const stressList = categoryElement.querySelector('.stress-list');
-    
-    const newItem = document.createElement('div');
-    newItem.className = 'stress-item';
-    newItem.innerHTML = `
-        <input type="text" placeholder="Neue Stressquelle hinzufügen...">
-        <div class="stress-intensity">
-            <label>Intensität:</label>
-            <input type="range" min="1" max="10" value="5" class="stress-slider">
-            <span class="stress-value">5</span>
-        </div>
-        <button class="remove-btn" onclick="removeStressSource(this)">&times;</button>
-    `;
-    
-    stressList.appendChild(newItem);
-    
-    // Setup event listener for new slider
-    const newSlider = newItem.querySelector('.stress-slider');
-    newSlider.addEventListener('input', function() {
-        const value = this.value;
-        const valueDisplay = this.parentElement.querySelector('.stress-value');
-        valueDisplay.textContent = value;
-        updateStressAssessment();
-    });
-}
-
-function removeStressSource(button) {
-    button.closest('.stress-item').remove();
-    updateStressAssessment();
-}
-
-function updateStressAssessment() {
-    // Calculate stress level based on various factors
-    let totalStress = 0;
-    let factorCount = 0;
-    
-    // Get stress source intensities
-    document.querySelectorAll('.stress-slider').forEach(slider => {
-        totalStress += parseInt(slider.value);
-        factorCount++;
-    });
-    
-    // Get assessment scores (inverted for sleep and satisfaction)
-    const stressFreq = parseInt(document.querySelector('.assessment-slider').value);
-    const sleepQuality = 6 - parseInt(document.querySelectorAll('.assessment-slider')[1].value);
-    const lifeSatisfaction = 6 - parseInt(document.querySelectorAll('.assessment-slider')[2].value);
-    
-    totalStress += stressFreq + sleepQuality + lifeSatisfaction;
-    factorCount += 3;
-    
-    // Count symptoms
-    const symptomCount = document.querySelectorAll('.symptom-item input[type="checkbox"]:checked').length;
-    totalStress += symptomCount * 2;
-    factorCount += 1;
-    
-    const averageStress = totalStress / factorCount;
-    const stressLevel = Math.round(averageStress);
-    
-    // Update display
-    const levelFill = document.getElementById('stress-level-fill');
-    const levelText = document.getElementById('stress-level-text');
-    
-    levelFill.style.width = `${(stressLevel / 10) * 100}%`;
-    
-    if (stressLevel <= 3) {
-        levelText.textContent = 'Niedrig';
-        levelFill.style.background = '#10b981';
-    } else if (stressLevel <= 6) {
-        levelText.textContent = 'Mittel';
-        levelFill.style.background = '#f59e0b';
-    } else {
-        levelText.textContent = 'Hoch';
-        levelFill.style.background = '#ef4444';
-    }
-}
-
-function showStrategyGuide(strategy) {
-    const guides = {
-        'thought-stopping': {
-            title: 'Gedankenstopp-Technik',
-            content: `
-                <h4>Anleitung:</h4>
-                <ol>
-                    <li>Erkenne negative Gedankenspiralen</li>
-                    <li>Sage laut oder innerlich "STOPP!"</li>
-                    <li>Atme tief durch</li>
-                    <li>Ersetze den negativen Gedanken durch einen positiven</li>
-                </ol>
-                <h4>Beispiel:</h4>
-                <p>Negativ: "Ich schaffe das nie!"<br>
-                Positiv: "Ich gebe mein Bestes und lerne dabei."</p>
-            `
-        },
-        'reality-check': {
-            title: 'Realitätscheck',
-            content: `
-                <h4>Fragen zur Realitätsprüfung:</h4>
-                <ul>
-                    <li>Ist meine Einschätzung realistisch?</li>
-                    <li>Was würde ich einem Freund in dieser Situation raten?</li>
-                    <li>Welche Beweise habe ich für meine Annahme?</li>
-                    <li>Gibt es alternative Erklärungen?</li>
-                </ul>
-            `
-        },
-        'reframing': {
-            title: 'Positive Umformulierung',
-            content: `
-                <h4>Technik:</h4>
-                <ol>
-                    <li>Identifiziere den negativen Aspekt</li>
-                    <li>Suche nach positiven oder neutralen Aspekten</li>
-                    <li>Formuliere die Situation neu</li>
-                    <li>Fokussiere auf das, was du kontrollieren kannst</li>
-                </ol>
-            `
-        },
-        'problem-analysis': {
-            title: 'Problem-Analyse',
-            content: `
-                <h4>Schritte:</h4>
-                <ol>
-                    <li>Definiere das Problem genau</li>
-                    <li>Identifiziere die Ursachen</li>
-                    <li>Brainstorme Lösungsansätze</li>
-                    <li>Bewerte die Optionen</li>
-                    <li>Wähle die beste Lösung</li>
-                    <li>Setze sie um</li>
-                </ol>
-            `
-        },
-        'priorities': {
-            title: 'Prioritäten setzen',
-            content: `
-                <h4>Eisenhower-Matrix:</h4>
-                <ul>
-                    <li><strong>Wichtig & Dringend:</strong> Sofort erledigen</li>
-                    <li><strong>Wichtig & Nicht dringend:</strong> Terminieren</li>
-                    <li><strong>Nicht wichtig & Dringend:</strong> Delegieren</li>
-                    <li><strong>Nicht wichtig & Nicht dringend:</strong> Eliminieren</li>
-                </ul>
-            `
-        },
-        'time-management': {
-            title: 'Zeitmanagement',
-            content: `
-                <h4>Tipps:</h4>
-                <ul>
-                    <li>Erstelle To-Do-Listen</li>
-                    <li>Verwende Zeitblöcke</li>
-                    <li>Setze realistische Deadlines</li>
-                    <li>Vermeide Multitasking</li>
-                    <li>Plane Pufferzeiten ein</li>
-                </ul>
-            `
-        },
-        'social-support': {
-            title: 'Soziale Unterstützung',
-            content: `
-                <h4>Unterstützung finden:</h4>
-                <ul>
-                    <li>Familie und Freunde</li>
-                    <li>Kollegen und Vorgesetzte</li>
-                    <li>Selbsthilfegruppen</li>
-                    <li>Online-Communities</li>
-                    <li>Professionelle Beratung</li>
-                </ul>
-            `
-        },
-        'communication': {
-            title: 'Kommunikation',
-            content: `
-                <h4>Grenzen kommunizieren:</h4>
-                <ul>
-                    <li>Sei klar und direkt</li>
-                    <li>Verwende "Ich"-Botschaften</li>
-                    <li>Erkläre deine Bedürfnisse</li>
-                    <li>Biete Alternativen an</li>
-                    <li>Bleibe respektvoll</li>
-                </ul>
-            `
-        },
-        'professional-help': {
-            title: 'Professionelle Hilfe',
-            content: `
-                <h4>Wann professionelle Hilfe suchen:</h4>
-                <ul>
-                    <li>Anhaltende Stresssymptome</li>
-                    <li>Schlafstörungen</li>
-                    <li>Depressive Verstimmungen</li>
-                    <li>Angstzustände</li>
-                    <li>Probleme im Alltag</li>
-                </ul>
-                <h4>Anlaufstellen:</h4>
-                <ul>
-                    <li>Psychologen/Psychotherapeuten</li>
-                    <li>Hausarzt</li>
-                    <li>Beratungsstellen</li>
-                    <li>Online-Therapie</li>
-                </ul>
-            `
-        }
+    const DUR = [['acute', 'Akut – seit Tagen'], ['weeks', 'Seit Wochen'], ['months', 'Seit Monaten'], ['chronic', 'Eigentlich immer']];
+    const DOMAINS = ['Arbeit', 'Familie', 'Partnerschaft', 'Gesundheit', 'Finanzen', 'Studium', 'Zukunft', 'Soziales', 'Wohnen'];
+    const FREQ = [['daily', 'täglich', 3], ['weekly', 'wöchentlich', 2], ['rare', 'selten', 1]];
+    const SIGNALS = {
+        body: { l: '🫀 Körper', items: ['Verspannter Nacken', 'Kopfschmerzen', 'Schlafprobleme', 'Magen/Verdauung', 'Herzklopfen', 'Zähneknirschen', 'Ständige Müdigkeit', 'Flache Atmung'] },
+        mind: { l: '🧠 Gedanken', items: ['Grübeln', 'Konzentrationsprobleme', 'Vergesslichkeit', 'Schwarzmalen', 'Gedankenkreisen nachts', '„Ich schaffe das nicht"'] },
+        emo: { l: '💭 Gefühle', items: ['Gereiztheit', 'Innere Unruhe', 'Dünnhäutigkeit', 'Lustlosigkeit', 'Angst', 'Gleichgültigkeit'] },
+        act: { l: '🚶 Verhalten', items: ['Rückzug', 'Mehr essen / Süsses', 'Mehr Alkohol / Nikotin', 'Aufschieben', 'Hektik', 'Keine Pausen', 'Schneller reden', 'Mehr Bildschirm'] }
     };
-    
-    const guide = guides[strategy];
-    if (guide) {
-        showGuideModal(guide.title, guide.content);
-    }
-}
-
-function addPersonalStrategy() {
-    const input = document.getElementById('strategy-input');
-    const strategy = input.value.trim();
-    
-    if (!strategy) {
-        showNotification('Bitte gib eine Strategie ein!', 'warning');
-        return;
-    }
-    
-    stressData.strategies.push({
-        id: Date.now(),
-        text: strategy,
-        date: new Date().toISOString()
-    });
-    
-    input.value = '';
-    updateStrategiesList();
-    saveStressData();
-    showNotification('Strategie hinzugefügt!', 'success');
-}
-
-function updateStrategiesList() {
-    const strategiesList = document.getElementById('personal-strategies-list');
-    const strategies = stressData.strategies;
-    
-    if (strategies.length === 0) {
-        strategiesList.innerHTML = '<p>Füge deine eigenen Bewältigungsstrategien hinzu.</p>';
-        return;
-    }
-    
-    strategiesList.innerHTML = strategies.map(strategy => `
-        <div class="strategy-item">
-            <span class="strategy-text">${strategy.text}</span>
-            <button class="remove-strategy" onclick="removeStrategy(${strategy.id})">&times;</button>
-        </div>
-    `).join('');
-}
-
-function removeStrategy(strategyId) {
-    stressData.strategies = stressData.strategies.filter(s => s.id !== strategyId);
-    updateStrategiesList();
-    saveStressData();
-}
-
-function startBreathingExercise() {
-    showBreathingModal('4-7-8 Atmung', {
-        inhale: 4,
-        hold: 7,
-        exhale: 8,
-        cycles: 4
-    });
-}
-
-function startMeditation() {
-    showMeditationModal('Achtsamkeitsmeditation', 10);
-}
-
-function startMuscleRelaxation() {
-    showMuscleRelaxationModal('Progressive Muskelentspannung', 15);
-}
-
-function startVisualization() {
-    showVisualizationModal('Ruheort visualisieren', 10);
-}
-
-function startMusicRelaxation() {
-    showMusicModal('Entspannungsmusik', 15);
-}
-
-function startMovementRelaxation() {
-    showMovementModal('Yoga & Dehnung', 20);
-}
-
-function showBreathingModal(title, settings) {
-    const modal = document.createElement('div');
-    modal.className = 'breathing-modal';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>${title}</h3>
-                <button class="close-btn" onclick="closeModal(this)">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="breathing-circle">
-                    <div class="breathing-text" id="breathing-text">Bereit?</div>
-                    <div class="breathing-instruction" id="breathing-instruction">Klicke auf Start</div>
-                </div>
-                <div class="breathing-controls">
-                    <button class="btn btn-primary" id="breathing-start" onclick="startBreathing(${settings.inhale}, ${settings.hold}, ${settings.exhale}, ${settings.cycles})">Start</button>
-                    <button class="btn btn-outline" id="breathing-pause" onclick="pauseBreathing()" style="display:none">Pause</button>
-                    <button class="btn btn-outline" id="breathing-stop" onclick="stopBreathing()" style="display:none">Stop</button>
-                </div>
-                <div class="breathing-progress">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="breathing-progress"></div>
-                    </div>
-                    <div class="cycle-counter" id="cycle-counter">Zyklus 0 von ${settings.cycles}</div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    modal.style.display = 'flex';
-}
-
-function startBreathing(inhale, hold, exhale, cycles) {
-    let currentCycle = 0;
-    let isRunning = true;
-    
-    const breathingText = document.getElementById('breathing-text');
-    const breathingInstruction = document.getElementById('breathing-instruction');
-    const progressFill = document.getElementById('breathing-progress');
-    const cycleCounter = document.getElementById('cycle-counter');
-    const startBtn = document.getElementById('breathing-start');
-    const pauseBtn = document.getElementById('breathing-pause');
-    const stopBtn = document.getElementById('breathing-stop');
-    
-    startBtn.style.display = 'none';
-    pauseBtn.style.display = 'inline-block';
-    stopBtn.style.display = 'inline-block';
-    
-    function breathingCycle() {
-        if (!isRunning || currentCycle >= cycles) {
-            if (currentCycle >= cycles) {
-                breathingText.textContent = 'Fertig!';
-                breathingInstruction.textContent = 'Du hast die Übung abgeschlossen.';
-                progressFill.style.width = '100%';
-            }
-            return;
-        }
-        
-        currentCycle++;
-        cycleCounter.textContent = `Zyklus ${currentCycle} von ${cycles}`;
-        
-        // Einatmen
-        breathingText.textContent = 'Einatmen';
-        breathingInstruction.textContent = `Atme langsam ein (${inhale} Sekunden)`;
-        progressFill.style.width = '33%';
-        
-        setTimeout(() => {
-            if (!isRunning) return;
-            
-            // Anhalten
-            breathingText.textContent = 'Anhalten';
-            breathingInstruction.textContent = `Halte den Atem an (${hold} Sekunden)`;
-            progressFill.style.width = '66%';
-            
-            setTimeout(() => {
-                if (!isRunning) return;
-                
-                // Ausatmen
-                breathingText.textContent = 'Ausatmen';
-                breathingInstruction.textContent = `Atme langsam aus (${exhale} Sekunden)`;
-                progressFill.style.width = '100%';
-                
-                setTimeout(() => {
-                    if (isRunning) {
-                        breathingCycle();
-                    }
-                }, exhale * 1000);
-            }, hold * 1000);
-        }, inhale * 1000);
-    }
-    
-    breathingCycle();
-    
-    // Store references for pause/stop
-    window.currentBreathing = {
-        isRunning: () => isRunning,
-        pause: () => { isRunning = false; },
-        stop: () => {
-            isRunning = false;
-            breathingText.textContent = 'Gestoppt';
-            breathingInstruction.textContent = 'Die Übung wurde beendet.';
-            startBtn.style.display = 'inline-block';
-            pauseBtn.style.display = 'none';
-            stopBtn.style.display = 'none';
-        }
-    };
-}
-
-function pauseBreathing() {
-    if (window.currentBreathing) {
-        window.currentBreathing.pause();
-        document.getElementById('breathing-text').textContent = 'Pausiert';
-        document.getElementById('breathing-instruction').textContent = 'Klicke auf Fortsetzen';
-    }
-}
-
-function stopBreathing() {
-    if (window.currentBreathing) {
-        window.currentBreathing.stop();
-    }
-}
-
-function showMeditationModal(title, duration) {
-    const modal = document.createElement('div');
-    modal.className = 'meditation-modal';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>${title}</h3>
-                <button class="close-btn" onclick="closeModal(this)">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="meditation-content">
-                    <div class="meditation-timer" id="meditation-timer">${duration}:00</div>
-                    <div class="meditation-instruction" id="meditation-instruction">
-                        <p>Setze dich bequem hin und schließe die Augen.</p>
-                        <p>Konzentriere dich auf deinen Atem.</p>
-                        <p>Lasse Gedanken kommen und gehen, ohne sie zu bewerten.</p>
-                    </div>
-                </div>
-                <div class="meditation-controls">
-                    <button class="btn btn-primary" onclick="startMeditationTimer(${duration})">Start</button>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    modal.style.display = 'flex';
-}
-
-function startMeditationTimer(duration) {
-    let timeLeft = duration * 60; // Convert to seconds
-    const timer = document.getElementById('meditation-timer');
-    const instruction = document.getElementById('meditation-instruction');
-    
-    const interval = setInterval(() => {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        timer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        
-        if (timeLeft <= 0) {
-            clearInterval(interval);
-            timer.textContent = 'Fertig!';
-            instruction.innerHTML = '<p>Die Meditation ist beendet. Öffne langsam die Augen.</p>';
-        }
-        
-        timeLeft--;
-    }, 1000);
-}
-
-function showMuscleRelaxationModal(title, duration) {
-    const modal = document.createElement('div');
-    modal.className = 'muscle-relaxation-modal';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>${title}</h3>
-                <button class="close-btn" onclick="closeModal(this)">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="relaxation-content">
-                    <div class="relaxation-step" id="relaxation-step">
-                        <h4>Bereit?</h4>
-                        <p>Wir werden systematisch alle Muskelgruppen anspannen und entspannen.</p>
-                    </div>
-                </div>
-                <div class="relaxation-controls">
-                    <button class="btn btn-primary" onclick="startMuscleRelaxationSequence()">Start</button>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    modal.style.display = 'flex';
-}
-
-function startMuscleRelaxationSequence() {
-    const muscleGroups = [
-        { name: 'Füße', instruction: 'Spanne deine Füße an und halte 5 Sekunden...' },
-        { name: 'Waden', instruction: 'Spanne deine Waden an und halte 5 Sekunden...' },
-        { name: 'Oberschenkel', instruction: 'Spanne deine Oberschenkel an und halte 5 Sekunden...' },
-        { name: 'Bauch', instruction: 'Spanne deine Bauchmuskeln an und halte 5 Sekunden...' },
-        { name: 'Arme', instruction: 'Spanne deine Arme an und halte 5 Sekunden...' },
-        { name: 'Schultern', instruction: 'Spanne deine Schultern an und halte 5 Sekunden...' },
-        { name: 'Gesicht', instruction: 'Spanne dein Gesicht an und halte 5 Sekunden...' }
+    const CTRL = [['change', 'Change it', 'Ich kann es ändern', '🔧', 'Was tust du konkret, bis wann?'], ['love', 'Love it', 'Ich nehme es an und gestalte meinen Umgang', '🤲', 'Was änderst du an deiner Haltung oder deinem Umgang?'], ['leave', 'Leave it', 'Ich verlasse die Situation', '🚪', 'Was lässt du los oder beendest du – und was kostet das?']];
+    const RES = ['Erfahrung mit Ähnlichem', 'Fähigkeiten', 'Unterstützung durch andere', 'Zeit', 'Geld', 'Gesundheit', 'Humor', 'Klare Prioritäten', 'Ich habe Schlimmeres überstanden', 'Gute Routinen'];
+    const SOS = ['4-7-8-Atmung (3 Runden)', '10 Minuten rausgehen', 'Glas Wasser, langsam', 'Schultern hoch – fallen lassen', 'Jemanden anrufen', 'Die 3 wichtigsten Dinge aufschreiben', 'Handy weglegen, Augen schliessen', 'Kalt übers Gesicht', 'Eine Sache zu Ende bringen', 'Sagen: „Ich melde mich in 30 Minuten"'];
+    const RECOV = ['Schlaf (7+ h)', 'Bewegung', 'Natur', 'Zeit mit Menschen, die guttun', 'Allein-Zeit', 'Hobby ohne Zweck', 'Musik', 'Lesen', 'Nichts tun', 'Kochen / Essen in Ruhe', 'Humor & Lachen', 'Dankbarkeit'];
+    const RFREQ = [['daily', 'täglich', 7], ['several', 'mehrmals/Woche', 3], ['weekly', '1×/Woche', 1], ['rare', 'selten', 0.3]];
+    const LINKS = [
+        { m: 'Achtsamkeit', l: '../mindfulness/mindfulness.html', why: 'Atem-Anker und Body-Scan für den Akutfall.' },
+        { m: 'Eisenhower', l: '../time-management/time-management.html', why: 'Wenn Zeitdruck der Hauptstressor ist.' },
+        { m: 'Fünf Säulen', l: '../five-pillars/five-pillars.html', why: 'Wo ist das Leben aus der Balance?' },
+        { m: 'Gewohnheiten aufbauen', l: '../habit-building/habit-building.html', why: 'Erholung zur festen Routine machen.' }
     ];
-    
-    let currentGroup = 0;
-    const stepElement = document.getElementById('relaxation-step');
-    
-    function nextStep() {
-        if (currentGroup >= muscleGroups.length) {
-            stepElement.innerHTML = '<h4>Fertig!</h4><p>Du hast alle Muskelgruppen entspannt. Fühle die Entspannung in deinem ganzen Körper.</p>';
-            return;
-        }
-        
-        const group = muscleGroups[currentGroup];
-        stepElement.innerHTML = `
-            <h4>${group.name}</h4>
-            <p>${group.instruction}</p>
-            <div class="countdown" id="countdown">5</div>
-        `;
-        
-        let countdown = 5;
-        const countdownElement = document.getElementById('countdown');
-        
-        const countdownInterval = setInterval(() => {
-            countdown--;
-            countdownElement.textContent = countdown;
-            
-            if (countdown <= 0) {
-                clearInterval(countdownInterval);
-                stepElement.innerHTML += '<p>Jetzt entspanne und lasse los...</p>';
-                setTimeout(() => {
-                    currentGroup++;
-                    nextStep();
-                }, 3000);
-            }
-        }, 1000);
+    const n = (v, d) => { const x = parseInt(v, 10); return isNaN(x) ? d : x; };
+    const load = (s) => n(s.int, 3) * ((FREQ.find(f => f[0] === s.freq) || FREQ[1])[2]);
+    const stressors = () => S.stressors.filter(s => s.text.trim());
+    const note = (t, m) => `<div class="mk-note ${t}"><i class="fas fa-${t === 'warn' ? 'exclamation-triangle' : t === 'ok' ? 'check-circle' : 'info-circle'}"></i><span>${m}</span></div>`;
+    const chips = (host, items, key, single) => { $(host).innerHTML = `<div class="mk-chips">${items.map(i => { const v = Array.isArray(i) ? i[0] : i, l = Array.isArray(i) ? i[1] : i; const on = single ? S[key] === v : S[key].includes(v); return `<button class="mk-chip ${on ? 'selected' : ''}" data-c="${esc(v)}">${esc(l)}</button>`; }).join('')}</div>`; $(host).querySelectorAll('[data-c]').forEach(b => b.addEventListener('click', () => { const v = b.dataset.c; if (single) S[key] = S[key] === v ? '' : v; else S[key] = S[key].includes(v) ? S[key].filter(x => x !== v) : [...S[key], v]; MethodKit.save(); chips(host, items, key, single); renderCheckNote(); })); };
+
+    /* ---------- 1 ---------- */
+    function renderCheckNote() {
+        const l = n(S.level, 5); const H = [];
+        if (l >= 8 && ['months', 'chronic'].includes(S.duration)) H.push(note('warn', 'Hoher Stress über Monate – das ist der Bereich, in dem Erschöpfung entsteht. Dieses Werkzeug hilft beim Sortieren; sprich zusätzlich mit jemandem, dem du vertraust, oder mit einer Fachperson.'));
+        else if (l >= 8) H.push(note('info', 'Akut hoch. Spring gern direkt zu Schritt 6 (SOS-Plan) und komm danach zurück zum Sortieren.'));
+        if (S.domains.length >= 4) H.push(note('info', `${S.domains.length} Bereiche gleichzeitig – oft steckt dahinter ein gemeinsamer Nenner (zu wenig Erholung, zu wenig Nein). Achte in Schritt 2 darauf.`));
+        $('sm-checknote').innerHTML = H.join('');
     }
-    
-    nextStep();
-}
 
-function showVisualizationModal(title, duration) {
-    const modal = document.createElement('div');
-    modal.className = 'visualization-modal';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>${title}</h3>
-                <button class="close-btn" onclick="closeModal(this)">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="visualization-content">
-                    <div class="visualization-text" id="visualization-text">
-                        <h4>Stelle dir einen ruhigen Ort vor...</h4>
-                        <p>Schließe die Augen und stelle dir einen Ort vor, an dem du dich vollkommen entspannt und sicher fühlst.</p>
-                        <p>Das kann ein Strand, ein Wald, ein Berg oder ein anderer Ort sein, der dir Ruhe gibt.</p>
-                    </div>
-                </div>
-                <div class="visualization-controls">
-                    <button class="btn btn-primary" onclick="startVisualization(${duration})">Start</button>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    modal.style.display = 'flex';
-}
-
-function startVisualization(duration) {
-    const textElement = document.getElementById('visualization-text');
-    const steps = [
-        'Schließe deine Augen und atme tief ein...',
-        'Stelle dir vor, du stehst an einem wunderschönen Strand...',
-        'Du hörst das sanfte Rauschen der Wellen...',
-        'Die Sonne wärmt deine Haut angenehm...',
-        'Du spürst den weichen Sand unter deinen Füßen...',
-        'Ein sanfter Wind weht durch deine Haare...',
-        'Du fühlst dich vollkommen entspannt und friedlich...',
-        'Langsam öffnest du deine Augen und kehrst zurück...'
-    ];
-    
-    let currentStep = 0;
-    const stepDuration = (duration * 60 * 1000) / steps.length; // Convert to milliseconds per step
-    
-    function nextVisualizationStep() {
-        if (currentStep >= steps.length) {
-            textElement.innerHTML = '<h4>Fertig!</h4><p>Du hast eine wunderschöne Visualisierung erlebt. Fühle die Entspannung in dir.</p>';
-            return;
-        }
-        
-        textElement.innerHTML = `<p>${steps[currentStep]}</p>`;
-        currentStep++;
-        
-        setTimeout(nextVisualizationStep, stepDuration);
+    /* ---------- 2 ---------- */
+    function renderStressors() {
+        $('sm-stressors').innerHTML = S.stressors.length ? S.stressors.map(s => `<div class="sm-str"><input class="mk-input" data-st="${s.id}" value="${esc(s.text)}" placeholder="Stressor"><div class="sm-str-r"><span class="sm-lab">Intensität</span><div class="sm-dots">${[1, 2, 3, 4, 5].map(v => `<button class="${n(s.int, 3) >= v ? 'on' : ''}" data-si="${s.id}" data-v="${v}" aria-label="Intensität ${v}">●</button>`).join('')}</div><div class="sm-freq">${FREQ.map(f => `<button class="${s.freq === f[0] ? 'on' : ''}" data-sf="${s.id}" data-f="${f[0]}">${f[1]}</button>`).join('')}</div><button class="mk-iconbtn" data-sx="${s.id}" aria-label="Entfernen"><i class="fas fa-times"></i></button></div></div>`).join('') : '<div class="mk-empty">Noch keine Stressoren. Was hat dich in den letzten zwei Wochen am meisten belastet?</div>';
+        const h = $('sm-stressors');
+        h.querySelectorAll('[data-st]').forEach(el => el.addEventListener('input', () => { const s = S.stressors.find(x => x.id === el.dataset.st); if (s) { s.text = el.value; MethodKit.save(); renderMap(); } }));
+        h.querySelectorAll('[data-si]').forEach(b => b.addEventListener('click', () => { const s = S.stressors.find(x => x.id === b.dataset.si); if (s) { s.int = +b.dataset.v; MethodKit.save(); renderStressors(); renderMap(); } }));
+        h.querySelectorAll('[data-sf]').forEach(b => b.addEventListener('click', () => { const s = S.stressors.find(x => x.id === b.dataset.sf); if (s) { s.freq = b.dataset.f; MethodKit.save(); renderStressors(); renderMap(); } }));
+        h.querySelectorAll('[data-sx]').forEach(b => b.addEventListener('click', () => { S.stressors = S.stressors.filter(x => x.id !== b.dataset.sx); MethodKit.save(); renderStressors(); renderMap(); }));
     }
-    
-    nextVisualizationStep();
-}
-
-function showMusicModal(title, duration) {
-    const modal = document.createElement('div');
-    modal.className = 'music-modal';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>${title}</h3>
-                <button class="close-btn" onclick="closeModal(this)">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="music-content">
-                    <div class="music-options">
-                        <h4>Wähle deine Entspannungsmusik:</h4>
-                        <div class="music-types">
-                            <button class="btn btn-outline" onclick="playRelaxationMusic('nature')">🌿 Naturgeräusche</button>
-                            <button class="btn btn-outline" onclick="playRelaxationMusic('classical')">🎼 Klassische Musik</button>
-                            <button class="btn btn-outline" onclick="playRelaxationMusic('ambient')">🎵 Ambient</button>
-                            <button class="btn btn-outline" onclick="playRelaxationMusic('meditation')">🧘‍♀️ Meditationsmusik</button>
-                        </div>
-                    </div>
-                    <div class="music-player" id="music-player" style="display:none">
-                        <div class="music-info">
-                            <h5 id="music-title">Musik läuft...</h5>
-                            <p id="music-description">Entspanne dich und lass die Musik wirken.</p>
-                        </div>
-                        <div class="music-timer" id="music-timer">${duration}:00</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    modal.style.display = 'flex';
-}
-
-function playRelaxationMusic(type) {
-    const musicTypes = {
-        nature: { title: 'Naturgeräusche', description: 'Regen, Meeresrauschen, Vogelgezwitscher' },
-        classical: { title: 'Klassische Musik', description: 'Sanfte Melodien von Mozart, Bach und anderen' },
-        ambient: { title: 'Ambient Musik', description: 'Atmosphärische Klänge für tiefe Entspannung' },
-        meditation: { title: 'Meditationsmusik', description: 'Speziell für Meditation komponierte Stücke' }
-    };
-    
-    const music = musicTypes[type];
-    document.getElementById('music-title').textContent = music.title;
-    document.getElementById('music-description').textContent = music.description;
-    document.getElementById('music-player').style.display = 'block';
-    
-    // Start timer
-    let timeLeft = 15 * 60; // 15 minutes
-    const timer = document.getElementById('music-timer');
-    
-    const interval = setInterval(() => {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        timer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        
-        if (timeLeft <= 0) {
-            clearInterval(interval);
-            timer.textContent = 'Fertig!';
-        }
-        
-        timeLeft--;
-    }, 1000);
-}
-
-function showMovementModal(title, duration) {
-    const modal = document.createElement('div');
-    modal.className = 'movement-modal';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>${title}</h3>
-                <button class="close-btn" onclick="closeModal(this)">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="movement-content">
-                    <div class="movement-exercises">
-                        <h4>Entspannungsübungen:</h4>
-                        <div class="exercise-list">
-                            <div class="exercise-item">
-                                <h5>Schulterkreisen</h5>
-                                <p>Kreise langsam mit den Schultern</p>
-                            </div>
-                            <div class="exercise-item">
-                                <h5>Nackendehnung</h5>
-                                <p>Dehne sanft deinen Nacken</p>
-                            </div>
-                            <div class="exercise-item">
-                                <h5>Rückenstreckung</h5>
-                                <p>Strecke deinen Rücken</p>
-                            </div>
-                            <div class="exercise-item">
-                                <h5>Atemübungen</h5>
-                                <p>Kombiniere Bewegung mit Atmung</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="movement-timer" id="movement-timer">${duration}:00</div>
-                </div>
-                <div class="movement-controls">
-                    <button class="btn btn-primary" onclick="startMovementTimer(${duration})">Start</button>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    modal.style.display = 'flex';
-}
-
-function startMovementTimer(duration) {
-    let timeLeft = duration * 60;
-    const timer = document.getElementById('movement-timer');
-    
-    const interval = setInterval(() => {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        timer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        
-        if (timeLeft <= 0) {
-            clearInterval(interval);
-            timer.textContent = 'Fertig!';
-        }
-        
-        timeLeft--;
-    }, 1000);
-}
-
-function createRelaxationPlan() {
-    const time = document.getElementById('relaxation-time').value;
-    const duration = document.getElementById('relaxation-duration').value;
-    const technique = document.getElementById('preferred-technique').value;
-    
-    stressData.relaxationPlan = { time, duration: parseInt(duration), technique };
-    
-    showNotification('Entspannungsplan erstellt!', 'success');
-    saveStressData();
-}
-
-function addPreventionMeasure() {
-    const input = document.getElementById('prevention-input');
-    const measure = input.value.trim();
-    
-    if (!measure) {
-        showNotification('Bitte gib eine Präventionsmaßnahme ein!', 'warning');
-        return;
+    function addStressor(t) { t = (t || '').trim(); if (!t) { MethodKit.toast('Bitte Stressor eingeben', 'warn'); return; } S.stressors.push({ id: MethodKit.uid(), text: t, int: 3, freq: 'weekly', ctrl: '', action: '' }); MethodKit.save(); $('sm-in').value = ''; renderStressors(); renderMap(); $('sm-in').focus(); }
+    function renderMap() {
+        const L = stressors().map(s => ({ ...s, load: load(s) })).sort((a, b) => b.load - a.load);
+        if (!L.length) { $('sm-map').innerHTML = '<div class="mk-empty">Die Landkarte entsteht aus deinen Stressoren.</div>'; return; }
+        const max = L[0].load, total = L.reduce((a, s) => a + s.load, 0);
+        $('sm-map').innerHTML = `<div class="sm-bars">${L.map(s => `<div class="sm-bar"><span class="sm-bar-l">${esc(s.text)}</span><div class="sm-bar-t"><i style="width:${s.load / max * 100}%" class="${s.load >= 12 ? 'hi' : s.load >= 6 ? 'mid' : ''}"></i></div><small>${Math.round(s.load / total * 100)} %</small></div>`).join('')}</div>
+            ${L[0].load / total >= 0.4 ? note('info', `<strong>${esc(L[0].text)}</strong> macht ${Math.round(L[0].load / total * 100)} % deiner Belastung aus. Wenn du nur einen Stressor angehst, dann diesen – Schritt 5 nimmt ihn sich vor.`) : L.length >= 4 ? note('info', 'Viele mittlere Stressoren statt eines grossen – typisch für „Tausend kleine Schnitte". Hier hilft weniger das Lösen einzelner Punkte als mehr Erholung (Schritt 6).') : ''}
+            ${L.filter(s => s.freq === 'daily' && n(s.int, 3) >= 4).length ? note('warn', `Täglich und intensiv: ${L.filter(s => s.freq === 'daily' && n(s.int, 3) >= 4).map(s => esc(s.text)).join(', ')}. Dauerstress ohne Pause ist das, was krank macht – nicht die Spitzen.`) : ''}`;
     }
-    
-    stressData.preventionMeasures.push({
-        id: Date.now(),
-        text: measure,
-        date: new Date().toISOString()
-    });
-    
-    input.value = '';
-    updatePreventionList();
-    saveStressData();
-    showNotification('Präventionsmaßnahme hinzugefügt!', 'success');
-}
 
-function updatePreventionList() {
-    const preventionList = document.getElementById('prevention-measures-list');
-    const measures = stressData.preventionMeasures;
-    
-    if (measures.length === 0) {
-        preventionList.innerHTML = '<p>Füge deine eigenen Präventionsmaßnahmen hinzu.</p>';
-        return;
+    /* ---------- 3 ---------- */
+    function renderSignals() {
+        const counts = Object.fromEntries(Object.keys(SIGNALS).map(k => [k, S.signals.filter(s => SIGNALS[k].items.includes(s)).length]));
+        $('sm-signals').innerHTML = Object.entries(SIGNALS).map(([k, g]) => `<div class="mk-section-label">${g.l} ${counts[k] ? `<span class="mk-badge">${counts[k]}</span>` : ''}</div><div class="mk-chips">${g.items.map(i => `<button class="mk-chip ${S.signals.includes(i) ? 'selected' : ''}" data-sg="${esc(i)}">${esc(i)}</button>`).join('')}</div>`).join('');
+        $('sm-signals').querySelectorAll('[data-sg]').forEach(b => b.addEventListener('click', () => { const v = b.dataset.sg; S.signals = S.signals.includes(v) ? S.signals.filter(x => x !== v) : [...S.signals, v]; MethodKit.save(); renderSignals(); renderSigNote(); }));
+        renderSigNote();
     }
-    
-    preventionList.innerHTML = measures.map(measure => `
-        <div class="prevention-item">
-            <span class="prevention-text">${measure.text}</span>
-            <button class="remove-prevention" onclick="removePreventionMeasure(${measure.id})">&times;</button>
-        </div>
-    `).join('');
-}
-
-function removePreventionMeasure(measureId) {
-    stressData.preventionMeasures = stressData.preventionMeasures.filter(m => m.id !== measureId);
-    updatePreventionList();
-    saveStressData();
-}
-
-function openStressTracker() {
-    showNotification('Stress-Tracker würde hier geöffnet werden', 'info');
-}
-
-function openWeeklyReview() {
-    showNotification('Wöchentliche Bewertung würde hier geöffnet werden', 'info');
-}
-
-function setStressGoals() {
-    showNotification('Zielsetzung würde hier geöffnet werden', 'info');
-}
-
-function showGuideModal(title, content) {
-    const modal = document.createElement('div');
-    modal.className = 'guide-modal';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>${title}</h3>
-                <button class="close-btn" onclick="closeModal(this)">&times;</button>
-            </div>
-            <div class="modal-body">
-                ${content}
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    modal.style.display = 'flex';
-}
-
-function closeModal(button) {
-    const modal = button.closest('.breathing-modal, .meditation-modal, .muscle-relaxation-modal, .visualization-modal, .music-modal, .movement-modal, .guide-modal');
-    modal.remove();
-}
-
-// Data persistence functions
-function saveStressData() {
-    localStorage.setItem('stress-management-data', JSON.stringify(stressData));
-}
-
-function loadSavedStressData() {
-    const saved = localStorage.getItem('stress-management-data');
-    if (saved) {
-        stressData = JSON.parse(saved);
-        
-        // Restore relaxation plan
-        if (stressData.relaxationPlan) {
-            document.getElementById('relaxation-time').value = stressData.relaxationPlan.time;
-            document.getElementById('relaxation-duration').value = stressData.relaxationPlan.duration;
-            document.getElementById('preferred-technique').value = stressData.relaxationPlan.technique;
-        }
-        
-        // Restore strategies and prevention measures
-        updateStrategiesList();
-        updatePreventionList();
+    function renderSigNote() {
+        const total = S.signals.length; const body = S.signals.filter(s => SIGNALS.body.items.includes(s)).length; const na = n(S.noticeAt, 7); const H = [];
+        if (!total) { $('sm-signote').innerHTML = ''; return; }
+        const first = S.signals[0];
+        H.push(note('ok', `Dein Frühwarnprofil: ${total} Signale. Das erste, das du bemerkst, ist vermutlich <strong>${esc(first)}</strong> – mach es zu deinem Alarm: Sobald es auftaucht, greift dein SOS-Plan.`));
+        if (body >= 4) H.push(note('warn', 'Viele körperliche Signale. Der Körper spricht, wenn der Kopf nicht hinhört – nimm die Erholungsseite in Schritt 6 ernst.'));
+        if (na >= 8) H.push(note('info', `Du bemerkst Stress erst bei ${na}/10 – dann ist er schon weit fortgeschritten. Ziel: die Signale schon bei 5 oder 6 erkennen. Ein kurzer Check-in am Mittag hilft.`));
+        $('sm-signote').innerHTML = H.join('');
     }
-}
+
+    /* ---------- 4 ---------- */
+    function renderControl() {
+        const L = stressors();
+        if (!L.length) { $('sm-control').innerHTML = '<div class="mk-empty">Zuerst Stressoren in Schritt 2.</div>'; return; }
+        const dist = Object.fromEntries(CTRL.map(c => [c[0], L.filter(s => s.ctrl === c[0]).length]));
+        $('sm-control').innerHTML = L.sort((a, b) => load(b) - load(a)).map(s => `<div class="sm-ctl"><div class="sm-ctl-h"><b>${esc(s.text)}</b><small>Belastung ${load(s)}</small></div><div class="sm-ctl-opts">${CTRL.map(c => `<button class="${s.ctrl === c[0] ? 'on ' + c[0] : ''}" data-sc="${s.id}" data-k="${c[0]}"><span>${c[3]}</span>${c[1]}</button>`).join('')}</div>${s.ctrl ? `<input class="mk-input" data-sa="${s.id}" value="${esc(s.action || '')}" placeholder="${CTRL.find(c => c[0] === s.ctrl)[4]}">` : ''}</div>`).join('') +
+            (L.every(s => s.ctrl) ? `<div class="sm-dist">${CTRL.map(c => `<span class="${c[0]}">${c[3]} ${c[1]}: ${dist[c[0]]}</span>`).join('')}</div>` + (dist.love === L.length ? note('info', 'Alles „Love it"? Prüf ehrlich: Ist das Annahme – oder Resignation? Mindestens ein Stressor lässt sich meist verändern.') : dist.change === L.length ? note('info', 'Alles ändern wollen ist selbst ein Stressor. Was davon darfst du einfach annehmen?') : note('ok', 'Jeder Stressor hat eine Entscheidung. Das allein senkt die Belastung – Unentschiedenes stresst am meisten.')) : '');
+        $('sm-control').querySelectorAll('[data-sc]').forEach(b => b.addEventListener('click', () => { const s = S.stressors.find(x => x.id === b.dataset.sc); if (s) { s.ctrl = s.ctrl === b.dataset.k ? '' : b.dataset.k; MethodKit.save(); renderControl(); } }));
+        $('sm-control').querySelectorAll('[data-sa]').forEach(el => el.addEventListener('input', () => { const s = S.stressors.find(x => x.id === el.dataset.sa); if (s) { s.action = el.value; MethodKit.save(); } }));
+    }
+
+    /* ---------- 5 ---------- */
+    function renderAppraisal() {
+        const L = stressors().sort((a, b) => load(b) - load(a)); const A = S.appraisal;
+        if (!L.length) { $('sm-appraisal').innerHTML = '<div class="mk-empty">Zuerst Stressoren in Schritt 2.</div>'; return; }
+        if (!A.target || !L.some(s => s.id === A.target)) A.target = L[0].id;
+        const t = L.find(s => s.id === A.target); const threat = n(A.threat, 7); const res = A.res.length;
+        const ratio = res >= 4 && threat <= 5 ? 'challenge' : res <= 1 && threat >= 7 ? 'threat' : 'mixed';
+        $('sm-appraisal').innerHTML = `
+            <div class="mk-field"><label>Welchen Stressor nimmst du dir vor?</label><select class="mk-select" id="sm-target">${L.map(s => `<option value="${s.id}" ${s.id === A.target ? 'selected' : ''}>${esc(s.text)}</option>`).join('')}</select></div>
+            <div class="mk-section-label">Primäre Bewertung – was steht auf dem Spiel?</div>
+            <div class="mk-field"><textarea class="mk-textarea" id="sm-stake" placeholder="Was befürchtest du konkret? Was wäre das Schlimmste – und wie wahrscheinlich ist es wirklich?">${esc(A.stake || '')}</textarea></div>
+            <div class="mk-field"><label>Wie fühlt es sich an?</label><div class="sm-scale"><span>Herausforderung</span><input type="range" class="mk-range" min="1" max="10" id="sm-threat" value="${threat}"><span>Bedrohung</span></div></div>
+            <div class="mk-section-label">Sekundäre Bewertung – was hast du?</div>
+            <div class="mk-chips">${RES.map(r => `<button class="mk-chip ${A.res.includes(r) ? 'selected' : ''}" data-ar="${esc(r)}">${esc(r)}</button>`).join('')}</div>
+            <div class="sm-appr ${ratio}"><div><b>${threat}</b><span>Bedrohung</span></div><div class="vs">vs.</div><div><b>${res}</b><span>Ressourcen</span></div></div>
+            ${ratio === 'threat' ? note('warn', 'Hohe Bedrohung, kaum Ressourcen – so fühlt sich Stress an. Die Frage ist nicht, ob die Bedrohung real ist, sondern: Welche Ressource übersiehst du gerade? Wer könnte helfen?') : ratio === 'challenge' ? note('ok', 'Mehr Ressourcen als Bedrohung – das Gehirn bewertet das als Herausforderung, nicht als Gefahr. Derselbe Stressor, anderer Stress.') : note('info', 'Noch unentschieden. Jede Ressource, die du dir bewusst machst, verschiebt die Waage – und zwar wirklich, nicht nur gefühlt.')}
+            <div class="mk-field" style="margin-top:12px"><label for="sm-reframe">Formuliere den Stressor als Herausforderung</label><input class="mk-input" id="sm-reframe" value="${esc(A.reframe || '')}" placeholder="„Ich muss …" → „Ich habe die Gelegenheit, … / Ich will herausfinden, ob …""></div>
+            ${A.reframe && /\bmuss\b|\bmüssen\b|\bsollte\b/i.test(A.reframe) ? note('info', '„Muss" steckt noch drin. Herausforderungen klingen nach „will", „kann", „probiere".') : ''}`;
+        $('sm-target').addEventListener('change', e => { A.target = e.target.value; MethodKit.save(); renderAppraisal(); });
+        $('sm-stake').addEventListener('input', e => { A.stake = e.target.value; MethodKit.save(); });
+        $('sm-threat').addEventListener('input', e => { A.threat = n(e.target.value, 7); MethodKit.save(); }); $('sm-threat').addEventListener('change', renderAppraisal);
+        $('sm-appraisal').querySelectorAll('[data-ar]').forEach(b => b.addEventListener('click', () => { const v = b.dataset.ar; A.res = A.res.includes(v) ? A.res.filter(x => x !== v) : [...A.res, v]; MethodKit.save(); renderAppraisal(); }));
+        $('sm-reframe').addEventListener('input', e => { A.reframe = e.target.value; MethodKit.save(); }); $('sm-reframe').addEventListener('change', renderAppraisal);
+        MethodKit._autosizeAll();
+    }
+
+    /* ---------- 6 ---------- */
+    function renderSos() {
+        $('sm-sos').innerHTML = `<div class="mk-chips">${SOS.map(s => `<button class="mk-chip ${S.sos.includes(s) ? 'selected' : ''}" data-so="${esc(s)}">${esc(s)}</button>`).join('')}</div>
+            <div class="sm-add" style="margin-top:8px"><input class="mk-input" id="sm-sos-in" placeholder="Eigenes …" maxlength="60"><button class="mk-btn mk-btn-outline mk-btn-sm" id="sm-sos-add" aria-label="Hinzufügen"><i class="fas fa-plus"></i></button></div>
+            ${S.sos.length ? `<div class="mk-result" style="margin-top:12px"><h4>Wenn ich ${S.signals.length ? esc(S.signals[0]) : 'meine Signale'} bemerke:</h4><ol class="sm-sos-list">${S.sos.map(s => `<li>${esc(s)}</li>`).join('')}</ol></div>` : ''}
+            ${S.sos.length > 3 ? note('info', 'Mehr als drei – im Akutfall entscheidest du nicht mehr. Streich auf die drei, die du wirklich tust.') : S.sos.length === 3 ? note('ok', 'Drei Schritte, fertig entschieden. Schreib sie auf einen Zettel an den Bildschirm.') : ''}`;
+        $('sm-sos').querySelectorAll('[data-so]').forEach(b => b.addEventListener('click', () => { const v = b.dataset.so; S.sos = S.sos.includes(v) ? S.sos.filter(x => x !== v) : [...S.sos, v]; MethodKit.save(); renderSos(); renderSummary(); }));
+        const add = () => { const v = $('sm-sos-in').value.trim(); if (!v) return; if (!SOS.includes(v)) SOS.push(v); S.sos.push(v); MethodKit.save(); renderSos(); renderSummary(); };
+        $('sm-sos-add').addEventListener('click', add); $('sm-sos-in').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); add(); } });
+    }
+    function recoveryScore() { return Object.entries(S.recovery).reduce((a, [, f]) => a + ((RFREQ.find(r => r[0] === f) || [0, 0, 0])[2]), 0); }
+    function renderRecovery() {
+        const R = S.recovery; const score = recoveryScore(); const loadSum = stressors().reduce((a, s) => a + load(s), 0);
+        $('sm-recovery').innerHTML = `<div class="sm-rec">${RECOV.map(r => `<div class="sm-rec-row"><span>${esc(r)}</span><div class="sm-freq">${RFREQ.map(f => `<button class="${R[r] === f[0] ? 'on' : ''}" data-rc="${esc(r)}" data-f="${f[0]}">${f[1]}</button>`).join('')}</div></div>`).join('')}</div>
+            ${Object.keys(R).length ? `<div class="sm-balance"><div class="sm-bal-side"><b>${loadSum}</b><span>Belastung</span></div><div class="sm-bal-bar"><i class="load" style="flex:${loadSum || 1}"></i><i class="rec" style="flex:${Math.round(score) || 1}"></i></div><div class="sm-bal-side"><b>${Math.round(score)}</b><span>Erholung</span></div></div>
+            ${score < loadSum * 0.5 ? note('warn', 'Die Waage kippt deutlich zur Belastung. Du brauchst nicht weniger Stress – du brauchst mehr Erholung, und zwar geplant, nicht „wenn Zeit ist".') : score < loadSum ? note('info', 'Erholung hinkt der Belastung hinterher. Welche eine Erholungsquelle könnte von „selten" auf „mehrmals pro Woche"?') : note('ok', 'Erholung hält mit der Belastung mit – das ist Resilienz. Schütze diese Zeiten wie Termine.')}` : ''}`;
+        $('sm-recovery').querySelectorAll('[data-rc]').forEach(b => b.addEventListener('click', () => { const k = b.dataset.rc; R[k] = R[k] === b.dataset.f ? undefined : b.dataset.f; if (!R[k]) delete R[k]; MethodKit.save(); renderRecovery(); renderSummary(); }));
+    }
+    function renderSummary() {
+        const L = stressors(); const top = L.sort((a, b) => load(b) - load(a))[0]; const A = S.appraisal;
+        $('sm-summary').innerHTML = L.length || S.signals.length ? `<div class="sm-sum">
+            ${top ? `<div><b>Grösster Stressor</b>${esc(top.text)}${top.ctrl ? ` · ${CTRL.find(c => c[0] === top.ctrl)[1]}${top.action ? ': ' + esc(top.action) : ''}` : ''}</div>` : ''}
+            ${S.signals.length ? `<div><b>Alarmsignal</b>${esc(S.signals[0])}</div>` : ''}
+            ${S.sos.length ? `<div><b>SOS</b>${S.sos.slice(0, 3).map(esc).join(' → ')}</div>` : ''}
+            ${A.reframe ? `<div><b>Neue Bewertung</b>${esc(A.reframe)}</div>` : ''}
+            ${Object.keys(S.recovery).length ? `<div><b>Erholung</b>${Object.entries(S.recovery).filter(([, f]) => f === 'daily' || f === 'several').map(([k]) => esc(k)).join(', ') || 'noch nichts Regelmässiges'}</div>` : ''}</div>` : '<div class="mk-empty">Der Plan füllt sich aus den vorherigen Schritten.</div>';
+    }
+    function renderLinks() { $('sm-links').innerHTML = LINKS.map(x => `<a class="mk-option sm-link" href="${x.l}"><span class="t">${x.m}</span><span class="d">${x.why}</span></a>`).join(''); }
+    function exportAll() {
+        const L = ['STRESSMANAGEMENT', '='.repeat(40), 'Exportiert: ' + new Date().toLocaleString('de-CH'), '', `Level: ${n(S.level, 5)}/10 · ${(DUR.find(d => d[0] === S.duration) || [])[1] || ''} · ${S.domains.join(', ')}`, ''];
+        L.push('STRESSOREN'); stressors().sort((a, b) => load(b) - load(a)).forEach(s => L.push(`  ${s.text} · Intensität ${n(s.int, 3)} · ${(FREQ.find(f => f[0] === s.freq) || [])[1]} · Belastung ${load(s)}${s.ctrl ? ' · ' + CTRL.find(c => c[0] === s.ctrl)[1] + (s.action ? ': ' + s.action : '') : ''}`)); L.push('');
+        if (S.signals.length) L.push('FRÜHWARNSIGNALE', '  ' + S.signals.join(', '), `  Bemerke ich ab Level ${n(S.noticeAt, 7)}`, '');
+        const A = S.appraisal; if (A.stake || A.reframe) L.push('BEWERTUNG', A.stake ? '  Auf dem Spiel: ' + A.stake : '', `  Bedrohung ${n(A.threat, 7)}/10 · Ressourcen: ${A.res.join(', ') || '–'}`, A.reframe ? '  Als Herausforderung: ' + A.reframe : '', '');
+        if (S.sos.length) L.push('SOS-PLAN', ...S.sos.map((s, i) => `  ${i + 1}. ${s}`), '');
+        const R = Object.entries(S.recovery); if (R.length) L.push('ERHOLUNG', ...R.map(([k, f]) => `  ${k}: ${(RFREQ.find(r => r[0] === f) || [])[1]}`), '');
+        if (S.first) L.push('DIESE WOCHE: ' + S.first);
+        MethodKit.exportText('stressmanagement.txt', L.filter(x => x !== '').join('\n'));
+    }
+
+    (async function () {
+        await MethodKit.init({
+            method: 'stress-management', accent: '#14b8a6', accent2: '#0ea5e9',
+            steps: [{ icon: '🌡️', label: 'Check' }, { icon: '⚡', label: 'Stressoren' }, { icon: '🚨', label: 'Signale' }, { icon: '⚖️', label: 'Einfluss' }, { icon: '🔄', label: 'Bewertung' }, { icon: '🛡️', label: 'Plan' }],
+            defaultState: { level: 5, duration: '', domains: [], stressors: [], signals: [], noticeAt: 7, appraisal: { target: '', stake: '', threat: 7, res: [], reframe: '' }, sos: [], recovery: {}, first: '' }
+        });
+        S = MethodKit.state;
+        ['domains', 'stressors', 'signals', 'sos'].forEach(k => { if (!Array.isArray(S[k])) S[k] = []; }); if (!S.appraisal || typeof S.appraisal !== 'object') S.appraisal = { res: [] }; if (!Array.isArray(S.appraisal.res)) S.appraisal.res = []; if (!S.recovery || typeof S.recovery !== 'object') S.recovery = {};
+        // Migration: alte Freitexte
+        if (typeof S.stressors === 'string') { S.stressors = S.stressors.split(/[,;\n]/).map(x => x.trim()).filter(Boolean).map(t => ({ id: MethodKit.uid(), text: t, int: 3, freq: 'weekly', ctrl: '', action: '' })); }
+        if (typeof S.signals === 'string') { S.signals = S.signals.split(/[,;\n]/).map(x => x.trim()).filter(Boolean); }
+        ['control', 'accept', 'plan', 'acute'].forEach(k => { if (typeof S[k] === 'string') { if (k === 'acute' && S[k].trim() && !S.sos.length) S.sos.push(S[k].trim().slice(0, 60)); if (k === 'plan' && S[k].trim() && !S.first) S.first = S[k].trim(); delete S[k]; } });
+        MethodKit.bindFields();
+        chips('sm-duration', DUR, 'duration', true); chips('sm-domains', DOMAINS, 'domains', false);
+        document.querySelector('[data-mk-field="level"]').addEventListener('input', renderCheckNote);
+        document.querySelector('[data-mk-field="noticeAt"]').addEventListener('input', renderSigNote);
+        $('sm-add').addEventListener('click', () => addStressor($('sm-in').value)); $('sm-in').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addStressor(e.target.value); } });
+        $('sm-export').addEventListener('click', exportAll);
+        MethodKit.onStep = function (k) {
+            if (k === 1) renderCheckNote();
+            if (k === 2) { renderStressors(); renderMap(); }
+            if (k === 3) renderSignals();
+            if (k === 4) renderControl();
+            if (k === 5) renderAppraisal();
+            if (k === 6) { renderSos(); renderRecovery(); renderSummary(); renderLinks(); }
+        };
+        MethodKit.onStep(MethodKit.step);
+    })();
+})();
