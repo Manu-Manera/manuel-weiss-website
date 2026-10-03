@@ -3,16 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fünf Säulen | Manuel Weiss</title>
-    <meta name="description" content="Entwickle dich ganzheitlich über die fünf Säulen Körper, Geist, Seele, Beziehungen und Beruf – Bestandsaufnahme, Schwerpunkt und Plan.">
+    <title>Fünf Säulen der Identität | Manuel Weiss</title>
+    <meta name="description" content="Die fünf Säulen der Identität nach Petzold: Leiblichkeit, soziales Netz, Arbeit & Leistung, materielle Sicherheit, Werte & Sinn. Zufriedenheit und Trend je Säule einschätzen, das Säulen-Bild mit Klumpenrisiko- und Balance-Analyse lesen, Wechselwirkungen verstehen, eine Säule gezielt stärken und den Verlauf über Snapshots verfolgen.">
     <link rel="stylesheet" href="../_kit/method-light.css?v=20261003">
+    <link rel="stylesheet" href="five-pillars.css?v=20261003">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { --mk-accent: #16a34a; --mk-accent-2: #10b981; --mk-accent-soft: rgba(22,163,74,.12); }
-        .fp-bar { height:10px; border-radius:999px; background:var(--mk-line); overflow:hidden; }
-        .fp-bar > span { display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,var(--mk-accent),var(--mk-accent-2)); }
-    </style>
 </head>
 <body class="mk-body">
     <header class="mk-topbar">
@@ -25,46 +21,63 @@
     <main class="mk-shell">
         <section class="mk-hero">
             <div class="mk-hero-icon"><i class="fas fa-archway"></i></div>
-            <div class="mk-kicker">Persönlichkeitsentwicklung</div>
+            <div class="mk-kicker">Persönlichkeitsentwicklung · Petzold</div>
             <h1>Steht dein Leben auf festen Säulen?</h1>
-            <p>Ein erfülltes Leben ruht auf fünf Säulen: Körper, Geist, Seele, Beziehungen und Beruf. Wackelt eine, gerät alles ins Wanken. Finde heraus, wie stabil deine Säulen sind – und wo du als Nächstes ansetzt.</p>
-            <div class="mk-badges"><span class="mk-badge">Ganzheitlich</span><span class="mk-badge">Bestandsaufnahme</span><span class="mk-badge">Aktionsplan</span></div>
+            <p>Hilarion Petzold beschreibt Identität als Dach auf fünf Säulen: Körper, Beziehungen, Arbeit, Sicherheit, Sinn. Bricht eine weg, tragen die anderen – wenn sie stark genug sind. Wer alles auf eine Säule stellt, stürzt mit ihr. Du schätzt jede Säule ein, erkennst Klumpenrisiken, verstehst die Wechselwirkungen und stärkst gezielt, was wackelt.</p>
+            <div class="mk-badges"><span class="mk-badge">5 Säulen</span><span class="mk-badge">Zufriedenheit + Trend</span><span class="mk-badge">Klumpenrisiko</span><span class="mk-badge">Wechselwirkung</span><span class="mk-badge">Verlauf</span></div>
         </section>
 
         <div class="mk-progress" id="mk-progress"></div>
 
         <section class="mk-step active" data-step="1">
             <div class="mk-card">
-                <h2>Bestandsaufnahme</h2>
-                <p class="mk-sub">Bewerte ehrlich, wie zufrieden du in jeder Säule gerade bist.</p>
-                <div id="fp-pillars"></div>
+                <h2>1 · Bestandsaufnahme</h2>
+                <p class="mk-sub">Für jede Säule: Wie zufrieden bist du gerade (1–10)? In welche Richtung bewegt sie sich? Und was trägt oder wackelt konkret?</p>
+                <div id="fp-rate"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="2">
             <div class="mk-card">
-                <h2>Wähle deinen Schwerpunkt</h2>
-                <p class="mk-sub">Oft lohnt es, bei der schwächsten Säule anzusetzen. Was möchtest du als Erstes stärken?</p>
-                <div class="mk-chips" id="fp-focus" style="margin-bottom:16px;"></div>
-                <div class="mk-field"><label>Konkrete Maßnahme</label>
-                    <div style="display:flex; gap:10px;"><input class="mk-input" id="fp-action" placeholder="z. B. „3× pro Woche 20 Min spazieren""><button class="mk-btn mk-btn-ghost" id="fp-add"><i class="fas fa-plus"></i></button></div>
-                </div>
-                <div id="fp-actions"></div>
+                <h2>2 · Dein Säulen-Bild</h2>
+                <div id="fp-chart"></div>
             </div>
         </section>
 
         <section class="mk-step" data-step="3">
             <div class="mk-card">
-                <h2>Dein Säulen-Profil</h2>
-                <p class="mk-sub">Dein ganzheitliches Bild auf einen Blick.</p>
+                <h2>3 · Wechselwirkungen</h2>
+                <p class="mk-sub">Säulen stehen nicht allein. Welche willst du stärken – und welche starke Säule kann dabei helfen?</p>
+                <div id="fp-focus"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Stärken & schützen</h2>
+                <p class="mk-sub">Ein bis drei konkrete Schritte für die Fokus-Säule. Und ein Schutz für deine stärkste – damit sie nicht aus Vernachlässigung wackelt.</p>
+                <div id="fp-plan"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Dein Profil</h2>
                 <div id="fp-summary"></div>
-                <button class="mk-btn mk-btn-primary" id="fp-export" style="margin-top:18px;"><i class="fas fa-download"></i> Profil herunterladen</button>
+            </div>
+            <div class="mk-card">
+                <h3>Passende nächste Methoden</h3>
+                <div class="mk-grid" id="fp-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Mitnehmen</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="fp-export"><i class="fas fa-download"></i> Herunterladen</button><button class="mk-btn mk-btn-outline" id="fp-snapshot"><i class="fas fa-camera"></i> Snapshot speichern</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Alles zurücksetzen</button></div>
             </div>
         </section>
 
         <div class="mk-nav">
             <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Zurück</button>
-            <span class="info" id="mk-step-info">Schritt 1 von 3</span>
+            <span class="info" id="mk-step-info">Schritt 1 von 5</span>
             <button class="mk-btn mk-btn-primary" id="mk-next">Weiter <i class="fas fa-arrow-right"></i></button>
         </div>
     </main>
@@ -79,71 +92,6 @@
     <script src="/js/workflow-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="../_kit/method-kit.js?v=20261003"></script>
-    <script>
-        const PILLARS = [
-            {id:'body',ic:'💪',label:'Körper',d:'Gesundheit, Fitness, Ernährung, Schlaf'},
-            {id:'mind',ic:'🧠',label:'Geist',d:'Lernen, Kreativität, Fokus, Wissen'},
-            {id:'soul',ic:'🌟',label:'Seele',d:'Werte, Sinn, Achtsamkeit, Spiritualität'},
-            {id:'rel',ic:'❤️',label:'Beziehungen',d:'Familie, Freunde, Partnerschaft, Netzwerk'},
-            {id:'career',ic:'💼',label:'Beruf',d:'Karriere, Finanzen, Ziele, Erfüllung'}
-        ];
-        function pill(id){ return PILLARS.find(p=>p.id===id)||PILLARS[0]; }
-
-        (async function () {
-            await MethodKit.init({
-                method: 'five-pillars',
-                accent: '#16a34a', accent2: '#10b981',
-                steps: [{icon:'📊',label:'Analyse'},{icon:'🎯',label:'Schwerpunkt'},{icon:'🏛️',label:'Profil'}],
-                defaultState: { ratings:{}, notes:{}, focus:'', actions:[] }
-            });
-            const S = MethodKit.state;
-
-            const host = document.getElementById('fp-pillars');
-            host.innerHTML = PILLARS.map(p => `
-                <div class="mk-card" style="box-shadow:none; margin-bottom:12px;">
-                    <div style="display:flex; align-items:center; gap:10px;"><span style="font-size:24px;">${p.ic}</span><div><strong>${p.label}</strong><div style="color:var(--mk-muted); font-size:13px;">${p.d}</div></div></div>
-                    <div class="mk-range-wrap" style="margin-top:12px;"><input class="mk-range" type="range" min="1" max="10" data-r="${p.id}" value="${S.ratings[p.id]||5}"><span class="mk-range-val" data-rv="${p.id}">${S.ratings[p.id]||5}</span></div>
-                    <input class="mk-input" data-n="${p.id}" placeholder="Was läuft gut / was fehlt?" value="${MethodKit.esc(S.notes[p.id]||'')}" style="margin-top:10px;">
-                </div>`).join('');
-            host.querySelectorAll('[data-r]').forEach(el=>el.addEventListener('input',()=>{ S.ratings[el.dataset.r]=parseInt(el.value,10); host.querySelector(`[data-rv="${el.dataset.r}"]`).textContent=el.value; MethodKit.save(); }));
-            host.querySelectorAll('[data-n]').forEach(el=>el.addEventListener('input',()=>{ S.notes[el.dataset.n]=el.value; MethodKit.save(); }));
-
-            function renderFocus(){
-                const fh=document.getElementById('fp-focus');
-                // suggest weakest
-                let weakest=PILLARS[0].id, min=11; PILLARS.forEach(p=>{ const v=S.ratings[p.id]||5; if(v<min){min=v;weakest=p.id;} });
-                if(!S.focus) S.focus=weakest;
-                fh.innerHTML=PILLARS.map(p=>`<button class="mk-chip ${S.focus===p.id?'selected':''}" data-f="${p.id}">${p.ic} ${p.label} (${S.ratings[p.id]||5})</button>`).join('');
-                fh.querySelectorAll('[data-f]').forEach(el=>el.addEventListener('click',()=>{ S.focus=el.dataset.f; MethodKit.save(); renderFocus(); }));
-            }
-            function renderActions(){
-                const ah=document.getElementById('fp-actions');
-                if(!S.actions.length){ ah.innerHTML='<div class="mk-empty">Noch keine Maßnahmen.</div>'; return; }
-                ah.innerHTML=S.actions.map(a=>`<div class="mk-row"><div class="grow">${pill(a.pillar).ic} ${MethodKit.esc(a.text)}</div><button class="mk-iconbtn" data-del="${a.id}"><i class="fas fa-trash"></i></button></div>`).join('');
-                ah.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{ S.actions=S.actions.filter(x=>x.id!==b.dataset.del); MethodKit.save(); renderActions(); }));
-            }
-            document.getElementById('fp-add').addEventListener('click',()=>{
-                const i=document.getElementById('fp-action'); if(!i.value.trim()){ MethodKit.toast('Bitte Maßnahme eingeben','error'); return; }
-                S.actions.push({ id:MethodKit.uid(), pillar:S.focus, text:i.value.trim() }); i.value=''; MethodKit.save(); renderActions();
-            });
-
-            function renderSummary(){
-                const sh=document.getElementById('fp-summary');
-                const avg=Math.round(PILLARS.reduce((s,p)=>s+(S.ratings[p.id]||5),0)/PILLARS.length*10)/10;
-                sh.innerHTML=`<div class="mk-result" style="margin-bottom:14px;"><h4>Gesamtbalance</h4><strong style="font-size:22px;">${avg}/10</strong></div>`+
-                    PILLARS.map(p=>{ const v=S.ratings[p.id]||5; return `<div style="margin-bottom:12px;"><div style="display:flex; justify-content:space-between; font-size:14px;"><span>${p.ic} ${p.label}</span><strong>${v}/10</strong></div><div class="fp-bar"><span style="width:${v*10}%"></span></div></div>`; }).join('')+
-                    (S.actions.length?`<h3 style="margin-top:16px;">🎯 Maßnahmen (${pill(S.focus).label})</h3><ul>${S.actions.map(a=>`<li>${MethodKit.esc(a.text)}</li>`).join('')}</ul>`:'');
-            }
-            MethodKit.onStep=function(n){ if(n===2) renderFocus(); if(n===3) renderSummary(); };
-            renderActions();
-
-            document.getElementById('fp-export').addEventListener('click',()=>{
-                let t='MEINE FÜNF SÄULEN\n=================\n\n';
-                PILLARS.forEach(p=>{ t+=`${p.ic} ${p.label}: ${S.ratings[p.id]||5}/10 — ${S.notes[p.id]||''}\n`; });
-                t+=`\nSchwerpunkt: ${pill(S.focus).label}\nMaßnahmen:\n`; S.actions.forEach(a=>t+=`  - ${a.text}\n`);
-                MethodKit.exportText('meine-fuenf-saeulen.txt', t);
-            });
-        })();
-    </script>
+    <script src="five-pillars.js?v=20261003"></script>
 </body>
 </html>

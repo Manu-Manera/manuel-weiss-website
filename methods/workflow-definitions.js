@@ -2,18 +2,18 @@
 
 const methodWorkflowDefinitions = {
     'values-clarification': {
-        title: 'Werte-Klärung',
+        title: "Werte-Kompass",
         steps: 5,
         stepTitles: [
-            'Werte-Identifikation',
-            'Werte-Ranking', 
-            'Konflikt-Analyse',
-            'Lebensbereiche-Mapping',
-            'Werte-Tracking'
+            "Entdecken: 40+ Werte in 6 Gruppen + Impulsfragen",
+            "Verdichten: Paarvergleich zur Rangfolge",
+            "Bedeutung: Definition, Verhalten, Verrat",
+            "Alltag: gelebt, Lebensbereiche, Zeitbudget",
+            "Kompass: Lücke, Wochenentscheidung, Nein"
         ],
-        description: 'Identifiziere deine persönlichen Werte und schaffe Klarheit darüber, was dir im Leben wirklich wichtig ist.',
+        description: "Werteklärung mit Entscheidungszwang: Aus über 40 Werten in sechs Gruppen (plus eigene) auswählen, mit Impulsfragen (stolz, wütend, neidisch) auf die Spur kommen, per Paarvergleich eine echte Rangfolge bilden (mit Zirkel-Erkennung und manueller Korrektur), jeden Top-5-Wert konkret definieren – Bedeutung, beobachtbares Verhalten, letzter Verrat – und Spannungspaare wie Freiheit ↔ Sicherheit erkennen. Dann ehrlich abgleichen: Wie stark gelebt, in welchen Lebensbereichen, wie viele Stunden pro Woche? Der Kompass zeigt die grösste Lücke zwischen wichtig und gelebt und führt zu einer konkreten Wochenentscheidung mit Nein-Liste und Erfolgszeichen.",
         logic: 'sequential', // Schritt-für-Schritt
-        features: ['Werte-Bibliothek', 'Konflikt-Detektor', 'Lebensbereiche', 'Tracking']
+        features: ["40+ Werte in 6 Gruppen", "Eigene Werte", "Impulsfragen", "Paarvergleich", "Zirkel-Erkennung", "Spannungspaare", "Verhalten statt Haltung", "Gelebt vs. wichtig", "Zeitbudget-Check", "Wochenentscheidung + Nein"]
     },
     
     'strengths-finder': {
@@ -32,19 +32,18 @@ const methodWorkflowDefinitions = {
     },
     
     'goal-setting': {
-        title: 'Ziel-Setting',
-        steps: 6,
+        title: "Ziele setzen",
+        steps: 5,
         stepTitles: [
-            'Ziel-Identifikation',
-            'SMART-Formulierung',
-            'Aktionsplan',
-            'Habit-Stacking',
-            'Progress-Tracking',
-            'Ziel-Review'
+            "Ziel & Warum (Vermeidungs-Check, Warum-Tiefe)",
+            "SMART schärfen: Prüfungen, Score, Zielsatz",
+            "Der Weg: Meilensteine & Wenn-dann-Pläne",
+            "Nächste Schritte & Gewohnheit",
+            "Überblick, Fortschritt & Wochen-Check-in"
         ],
-        description: 'Setze dir klare, erreichbare Ziele mit der SMART-Methode und entwickle einen Aktionsplan.',
+        description: "Ziele setzen mit Prüflogik: Ziel und Warum formulieren – mit Hinweis bei Weg-von-Zielen, vagen Wörtern ohne Zahl, mehreren Zielen in einem Satz und dünnem oder fremdem Warum. SMART mit echten Checks: Messgrösse mit Zahl oder Ja/Nein-Kriterium, Zeithorizont (zu kurz, zu lang, vergangen), Zuversicht im motivierenden Bereich 5–8, SMART-Score und automatisch generierter Zielsatz. Dann der Weg: Meilensteine (auto bei 25/50/75 %) mit Chronologie- und Lücken-Check, Hindernisse mit Wenn-dann-Plänen (Willenskraft-Warnung), nächste Schritte mit 7-Tage-Check und Überfälligkeit, Trägergewohnheit mit Anker, Fortschritt in Prozent, Soll-Ist-Vergleich und wöchentlicher Check-in mit Zuversichts-Trend.",
         logic: 'goal-oriented', // Ziel-orientiert
-        features: ['SMART-Ziele', 'Aktionsplan', 'Habit-Stacking', 'Tracking']
+        features: ["Weg-von-Erkennung", "Warum in 2 Ebenen", "SMART-Checks", "SMART-Score", "Generierter Zielsatz", "Auto-Meilensteine", "Wenn-dann-Pläne", "7-Tage-Check", "Trägergewohnheit", "Fortschritt & Soll-Ist", "Wochen-Check-in"]
     },
     
     'mindfulness': {
@@ -263,18 +262,18 @@ const methodWorkflowDefinitions = {
     },
     
     'five-pillars': {
-        title: 'Fünf Säulen der Identität',
+        title: "Fünf Säulen der Identität",
         steps: 5,
         stepTitles: [
-            'Körperliche Identität',
-            'Soziale Identität',
-            'Berufliche Identität',
-            'Materielle Identität',
-            'Spirituelle Identität'
+            "Bestand: 5 Säulen bewerten (Zufriedenheit, Trend, Notiz)",
+            "Dein Haus: Säulen-Chart & Analyse",
+            "Wirkung: Schwächste Säule & was sie trägt",
+            "Plan: Massnahmen mit Aufwand & Schutz",
+            "Identitäts-Profil & Verlauf"
         ],
-        description: 'Die fünf Säulen der Identität - verstehe die Grundpfeiler deiner Persönlichkeit.',
+        description: "Fünf Säulen der Identität nach Petzold mit echter Analyse: Leiblichkeit, soziales Netz, Arbeit/Leistung, materielle Sicherheit und Werte je mit Zufriedenheit, Trend und Notiz bewerten, das eigene Haus als Chart sehen – mit Hinweisen zu Klumpenrisiko, zwei schwachen Säulen, fallenden Trends und typischen Mustern (Arbeit hoch/Körper tief, Werte tief trotz Zufriedenheit) – die schwächste Säule und ihre Wirkung auf die anderen klären, Massnahmen nach Aufwand planen, die stärkste Säule schützen und Entwicklung über Snapshots verfolgen.",
         logic: 'identity-based', // Identitäts-basiert
-        features: ['5 Säulen', 'Identität', 'Persönlichkeit', 'Ganzheitlich']
+        features: ["5 Säulen (Petzold)", "Zufriedenheit + Trend", "Haus-Chart", "Klumpenrisiko-Analyse", "Muster-Hinweise", "Fokus & Wirkung", "Massnahmen nach Aufwand", "Snapshot-Verlauf"]
     },
     
     'nlp-meta-goal': {
@@ -551,17 +550,18 @@ const methodWorkflowDefinitions = {
     },
     
     'journaling': {
-        title: 'Journaling',
-        steps: 4,
+        title: "Journaling",
+        steps: 5,
         stepTitles: [
-            'Journaling-Setup',
-            'Reflexions-Techniken',
-            'Muster erkennen',
-            'Wachstum dokumentieren'
+            "Schreiben: 5 Modi, Impulse, Stimmung vorher/nachher, Sprint",
+            "Muster: Modi-Wirkung, Themen, Gefühlswörter, Streak",
+            "Verlauf: suchen, filtern, nachlesen",
+            "Vertiefen: Kern · Bedürfnis · Schritt",
+            "Ritual & Journal-Überblick"
         ],
-        description: 'Journaling für Selbstreflexion und persönliches Wachstum.',
+        description: "Journaling mit Struktur und Analyse: fünf Modi (Morgenseiten, Abendreflexion, Dankbarkeit, Frei, Impuls) mit rotierenden Fragen, Stimmung vorher/nachher, Wortzähler und 5/10-Minuten-Schreibsprint; Hinweise beim Schreiben (zu kurz, zu allgemein, nur Fragen, viel „man“, Belastung ohne Bedürfnis). Die Muster-Analyse zeigt, welcher Modus die Stimmung am meisten hebt, welche Themen wiederkehren, wie sich der Gefühlston entwickelt und an welchen Wochentagen du schreibst. Wiederkehrende Themen vertiefst du mit drei Fragen (Kern, Bedürfnis, Schritt), ein Ritual mit Mindestmass sichert die Regelmässigkeit.",
         logic: 'reflection-based', // Reflexions-basiert
-        features: ['Setup', 'Techniken', 'Muster', 'Wachstum']
+        features: ["5 Modi mit Impulsen", "Stimmung vorher/nachher", "Schreibsprint-Timer", "Schreib-Hinweise", "Themen-Analyse", "Gefühlston-Verlauf", "Streak", "Vertiefung in 3 Fragen", "Volltext-Suche", "Export"]
     },
     
     'vision-board': {
