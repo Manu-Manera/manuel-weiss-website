@@ -31,10 +31,16 @@
 }
 
 @media (max-width: 768px) {
+    /* Verhindert, dass das lange Wort «Führungskräfteentwicklung» das Grid sprengt */
+    .hero.hero-with-video .hero-layer-inner { grid-template-columns: minmax(0, 1fr) !important; }
+    .hero-with-video .hero-container,
+    .hero-with-video .hero-content { min-width: 0; max-width: 100%; }
     .hero-with-video #hero-title {
-        font-size: clamp(1.7rem, 8vw, 2.35rem) !important;
-        line-height: 1.12 !important;
+        font-size: clamp(1.45rem, 6.6vw, 2.35rem) !important;
+        line-height: 1.14 !important;
         white-space: normal !important;
+        overflow-wrap: anywhere;
+        margin-bottom: 0.6rem !important;
     }
     .hero-with-video #hero-title .gradient-text {
         font-size: inherit;
@@ -43,6 +49,22 @@
         display: block !important;
         font-size: 0.98rem;
         padding: 0 0.5rem;
+    }
+    /* Hero-Buttons auf Mobile wieder anzeigen (styles.css blendet sie global aus) */
+    .hero-with-video .hero-actions {
+        display: flex !important;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.65rem;
+        width: min(100%, 320px);
+        margin: 1.1rem auto 0;
+        position: relative;
+        z-index: 12;
+    }
+    .hero-with-video .hero-actions .btn {
+        display: inline-flex !important;
+        justify-content: center;
+        pointer-events: auto;
     }
 }
 
@@ -117,6 +139,9 @@
     box-shadow: 0 12px 28px -22px rgba(11, 42, 74, 0.5);
     cursor: pointer;
     overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    -webkit-tap-highlight-color: rgba(22, 125, 140, 0.15);
     transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
     --c1: var(--sea, #167d8c);
     --c2: var(--sea-glass, #3aa6a6);
