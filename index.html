@@ -27,14 +27,14 @@
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css?v=20261005">
     <link rel="stylesheet" href="css/coastal-theme.css?v=20261005">
-    <link rel="stylesheet" href="css/landing-pe.css?v=20261005f">
+    <link rel="stylesheet" href="css/landing-pe.css?v=20261006a">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
-<body data-hero-preset="pe-landing">
+<body data-hero-preset="pe-landing" class="mw-landing mw-top">
     <!-- Navigation -->
     <nav class="navbar">
         <!-- Mobile: Nur Hamburger-Icon -->
@@ -53,9 +53,10 @@
             
             <div class="nav-menu" id="navMenu">
                 <a href="#home" class="nav-link active" data-de="Start" data-en="Home">Start</a>
-                <a href="#methoden" class="nav-link" data-de="Methoden" data-en="Methods">Methoden</a>
-                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link" data-de="Alle Methoden" data-en="All methods">Alle Methoden</a>
+                <a href="#persoenlichkeit" class="nav-link" data-de="Persönlichkeit" data-en="Personality">Persönlichkeit</a>
+                <a href="#fuehrung" class="nav-link" data-de="Führung" data-en="Leadership">Führung</a>
                 <a href="#unternehmen" class="nav-link" data-de="Unternehmen" data-en="Business">Unternehmen</a>
+                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link" data-de="Alle Methoden" data-en="All methods">Alle Methoden</a>
                 <a href="#contact" class="nav-link" data-de="Kontakt" data-en="Contact">Kontakt</a>
                     <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
                     <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
@@ -67,9 +68,10 @@
         <div class="mobile-menu-fullscreen" id="mobileMenuFullscreen">
             <div class="mobile-menu-content">
                 <a href="#home" class="mobile-menu-link active" data-de="Start" data-en="Home">Start</a>
-                <a href="#methoden" class="mobile-menu-link" data-de="Methoden" data-en="Methods">Methoden</a>
-                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="mobile-menu-link" data-de="Alle Methoden" data-en="All methods">Alle Methoden</a>
+                <a href="#persoenlichkeit" class="mobile-menu-link" data-de="Persönlichkeit" data-en="Personality">Persönlichkeit</a>
+                <a href="#fuehrung" class="mobile-menu-link" data-de="Führung" data-en="Leadership">Führung</a>
                 <a href="#unternehmen" class="mobile-menu-link" data-de="Unternehmen" data-en="Business">Unternehmen</a>
+                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="mobile-menu-link" data-de="Alle Methoden" data-en="All methods">Alle Methoden</a>
                 <a href="#contact" class="mobile-menu-link" data-de="Kontakt" data-en="Contact">Kontakt</a>
                 <div class="mobile-language-switcher">
                     <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
@@ -79,465 +81,610 @@
         </div>
     </nav>
 
-    <!-- Hero Section mit Video-Hintergrund -->
-    <section id="home" class="hero hero-with-video">
-        <!-- Zuerst Hintergrund-Ebene (Safari: Mal-Reihenfolge + z-index; Kacheln unter Video) -->
-        <div class="hero-layer-back">
-            <div class="hero-layer-inner">
-                <div class="hero-grid-spacer" aria-hidden="true"></div>
-                <div class="hero-visual hero-about-visual">
-                    <div class="about-image hero-about-image">
-                        <img src="manuel-weiss-portrait.jpg"
-                             alt="Manuel Weiss"
-                             class="profile-image dynamic-profile-image"
-                             id="profile-photo"
-                             onerror="handleProfileImageError(this);">
+    <!-- Marke oben links (Mobile, über dem Video) -->
+    <a href="#home" class="mw-brand" aria-label="Manuel Weiss – Start">
+        <img src="manuel-weiss-portrait.jpg" alt="">
+        <span>Manuel Weiss</span>
+    </a>
+
+    <!-- Bühne: fixiertes Hero-Video, darüber gleiten die Panels -->
+    <div class="mw-stage">
+        <section id="home" class="mw-hero" aria-label="Intro">
+            <div class="hero-video-wrapper">
+                <!-- Video wird dynamisch von API geladen (kein source Element nötig) -->
+                <video class="hero-video" autoplay muted loop playsinline webkit-playsinline preload="metadata" disablepictureinpicture disableremoteplayback id="heroVideo"></video>
+            </div>
+            <div class="mw-hero-shade" aria-hidden="true"></div>
+            <div class="mw-hero-text">
+                <h1 class="hero-title" id="hero-title">
+                    <span class="gradient-text" data-de="Persönlichkeits- und Führungskräfte&shy;entwicklung" data-en="Personality and Leadership Development">Persönlichkeits- und Führungskräfte&shy;entwicklung</span>
+                </h1>
+                <p class="hero-subtitle" id="hero-subtitle" data-de="Über 40 interaktive Methoden – von Werten und Zielen über Kommunikation bis Achtsamkeit. Für dich selbst und für Menschen, die führen." data-en="Over 40 interactive methods – from values and goals to communication and mindfulness. For yourself and for people who lead.">Über 40 interaktive Methoden – von Werten und Zielen über Kommunikation bis Achtsamkeit. Für dich selbst und für Menschen, die führen.</p>
+            </div>
+            <span class="mw-scroll-hint" aria-hidden="true"></span>
+        </section>
+
+        <div class="mw-panels" id="methoden">
+            <!-- Panel 1: Persönlichkeit -->
+            <section class="mw-panel" id="persoenlichkeit" style="--i:0" data-peek="01">
+                <div class="mw-panel-head">
+                    <span class="mw-panel-num">01</span>
+                    <h2 data-de="Persönlichkeit" data-en="Personality">Persönlichkeit</h2>
+                    <span class="mw-panel-tag" data-de="6 Methoden · ohne Konto" data-en="6 methods · no account">6 Methoden · ohne Konto</span>
+                </div>
+                <div class="mw-panel-body">
+                    <div class="mw-panel-intro mw-reveal">
+                        <div class="mw-panel-visual" aria-hidden="true">
+                            <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="mwg1" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#167d8c"/><stop offset="1" stop-color="#3aa6a6"/></linearGradient>
+                                    <linearGradient id="mwg2" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#e8a04b"/><stop offset="1" stop-color="#e9775b"/></linearGradient>
+                                </defs>
+                                <rect width="320" height="200" fill="#ffffff"/>
+                                <circle cx="130" cy="85" r="60" fill="url(#mwg1)" opacity=".55"/>
+                                <circle cx="190" cy="85" r="60" fill="url(#mwg2)" opacity=".55"/>
+                                <circle cx="130" cy="125" r="60" fill="#0f4c75" opacity=".35"/>
+                                <circle cx="190" cy="125" r="60" fill="#3aa6a6" opacity=".4"/>
+                                <circle cx="160" cy="105" r="12" fill="#101a24"/>
+                                <text x="160" y="186" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#101a24" letter-spacing="2">IKIGAI · WERTE · STÄRKEN</text>
+                            </svg>
+                        </div>
+                        <h3 data-de="Herausfinden, was dich wirklich trägt" data-en="Find out what really carries you">Herausfinden, was dich wirklich trägt</h3>
+                        <p data-de="Sinn, Werte, Stärken und Lebensbalance – geführte Workflows mit Leitfragen und direkter Auswertung. Du startest sofort, ohne Konto, und nimmst am Ende einen konkreten Plan mit." data-en="Purpose, values, strengths and life balance – guided workflows with prompts and instant evaluation. Start right away, no account needed, and leave with a concrete plan.">Sinn, Werte, Stärken und Lebensbalance – geführte Workflows mit Leitfragen und direkter Auswertung. Du startest sofort, ohne Konto, und nimmst am Ende einen konkreten Plan mit.</p>
+                        <a href="persoenlichkeitsentwicklung-uebersicht.html" class="mw-btn"><span data-de="Alle 40+ Methoden" data-en="All 40+ methods">Alle 40+ Methoden</span> <i class="fas fa-chevron-right"></i></a>
                     </div>
-                    <div class="about-stats hero-about-stats">
-                        <div class="stat-card">
-                            <div class="stat-number" id="stat1-number">6+</div>
-                            <div class="stat-label" id="stat1-label" data-de="JAHRE IT PROJEKT ERFAHRUNG" data-en="YEARS IT PROJECT EXPERIENCE">JAHRE IT PROJEKT ERFAHRUNG</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" id="stat2-number">60+</div>
-                            <div class="stat-label" id="stat2-label" data-de="ERFOLGREICH IMPLEMENTIERTE PROJEKTE" data-en="SUCCESSFULLY IMPLEMENTED PROJECTS">ERFOLGREICH IMPLEMENTIERTE PROJEKTE</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" id="stat3-number">100%</div>
-                            <div class="stat-label" id="stat3-label" data-de="LERNKURVENEFFEKT ;)" data-en="LEARNING CURVE EFFECT ;)">LERNKURVENEFFEKT ;)</div>
-                        </div>
+                    <div class="mw-cards">
+                        <a class="mw-card mw-reveal" href="methods/ikigai/ikigai.html" data-category="self-discovery" onclick="startMethod('ikigai'); return false;">
+                            <div class="mw-card-top">
+                                <div class="mw-card-icon"><i class="fas fa-compass"></i></div>
+                                <span class="mw-pill mw-pill-hot" data-de="Beliebt" data-en="Popular">Beliebt</span>
+                            </div>
+                            <h3 data-de="Ikigai-Workflow" data-en="Ikigai workflow">Ikigai-Workflow</h3>
+                            <p data-de="Die vier Kreise – Lieben, Können, Welt, Bezahlung – füllen und daraus Sinn, Satz und Aktionsplan ableiten." data-en="Fill the four circles – love, skill, world, pay – and turn them into purpose, a sentence and an action plan.">Die vier Kreise – Lieben, Können, Welt, Bezahlung – füllen und daraus Sinn, Satz und Aktionsplan ableiten.</p>
+                            <ul>
+                                <li data-de="16 Leitfragen" data-en="16 guiding questions">16 Leitfragen</li>
+                                <li data-de="Live-Venn-Diagramm" data-en="Live Venn diagram">Live-Venn-Diagramm</li>
+                            </ul>
+                            <span class="mw-card-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
+                        </a>
+
+                        <a class="mw-card mw-reveal" href="methods/wheel-of-life/wheel-of-life.html" data-category="analysis" onclick="startMethod('wheel-of-life'); return false;">
+                            <div class="mw-card-top">
+                                <div class="mw-card-icon"><i class="fas fa-dharmachakra"></i></div>
+                                <span class="mw-pill mw-pill-hot" data-de="Beliebt" data-en="Popular">Beliebt</span>
+                            </div>
+                            <h3>Wheel of Life</h3>
+                            <p data-de="Lebensbereiche bewerten, Ungleichgewichte sehen und die nächsten 90 Tage priorisieren." data-en="Rate life areas, see imbalances and prioritise the next 90 days.">Lebensbereiche bewerten, Ungleichgewichte sehen und die nächsten 90 Tage priorisieren.</p>
+                            <ul>
+                                <li data-de="8 Lebensbereiche" data-en="8 life areas">8 Lebensbereiche</li>
+                                <li data-de="Sofort-Radar" data-en="Instant radar">Sofort-Radar</li>
+                            </ul>
+                            <span class="mw-card-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
+                        </a>
+
+                        <a class="mw-card mw-reveal" href="methods/via-strengths/via-strengths.html" data-category="self-discovery" onclick="startMethod('via-strengths'); return false;">
+                            <div class="mw-card-top">
+                                <div class="mw-card-icon"><i class="fas fa-gem"></i></div>
+                                <span class="mw-pill mw-pill-hot" data-de="Beliebt" data-en="Popular">Beliebt</span>
+                            </div>
+                            <h3 data-de="VIA-Charakterstärken" data-en="VIA character strengths">VIA-Charakterstärken</h3>
+                            <p data-de="Die 24 Stärken der positiven Psychologie – Signaturstärken erkennen und im Alltag nutzen." data-en="The 24 strengths of positive psychology – spot signature strengths and use them every day.">Die 24 Stärken der positiven Psychologie – Signaturstärken erkennen und im Alltag nutzen.</p>
+                            <ul>
+                                <li data-de="24 Stärken" data-en="24 strengths">24 Stärken</li>
+                                <li data-de="Signaturprofil" data-en="Signature profile">Signaturprofil</li>
+                            </ul>
+                            <span class="mw-card-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
+                        </a>
+
+                        <a class="mw-card mw-reveal" href="methods/values-clarification/values-clarification.html" data-category="self-discovery" onclick="startMethod('values-clarification'); return false;">
+                            <div class="mw-card-top">
+                                <div class="mw-card-icon"><i class="fas fa-compass-drafting"></i></div>
+                            </div>
+                            <h3 data-de="Werte-Kompass" data-en="Values compass">Werte-Kompass</h3>
+                            <p data-de="Werte sortieren, Kernwerte festlegen und Entscheidungen daran ausrichten." data-en="Sort values, lock in core values and align decisions to them.">Werte sortieren, Kernwerte festlegen und Entscheidungen daran ausrichten.</p>
+                            <ul>
+                                <li data-de="Werte-Ranking" data-en="Values ranking">Werte-Ranking</li>
+                                <li data-de="Alltags-Check" data-en="Everyday check">Alltags-Check</li>
+                            </ul>
+                            <span class="mw-card-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
+                        </a>
+
+                        <a class="mw-card mw-reveal" href="methods/johari-window/johari-window.html" data-category="self-discovery" onclick="startMethod('johari-window'); return false;">
+                            <div class="mw-card-top">
+                                <div class="mw-card-icon"><i class="fas fa-window-maximize"></i></div>
+                            </div>
+                            <h3 data-de="Johari-Fenster" data-en="Johari window">Johari-Fenster</h3>
+                            <p data-de="Selbstbild und Fremdbild abgleichen, blinde Flecken sehen und den offenen Bereich vergrössern." data-en="Compare self-image and others' view, see blind spots and grow the open area.">Selbstbild und Fremdbild abgleichen, blinde Flecken sehen und den offenen Bereich vergrössern.</p>
+                            <ul>
+                                <li data-de="56 Eigenschaften" data-en="56 traits">56 Eigenschaften</li>
+                                <li data-de="Mehrere Feedbackgeber" data-en="Several raters">Mehrere Feedbackgeber</li>
+                            </ul>
+                            <span class="mw-card-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
+                        </a>
+
+                        <a class="mw-card mw-reveal" href="raisec-persoenlichkeitsentwicklung.html" data-category="analysis" onclick="startMethod('raisec'); return false;">
+                            <div class="mw-card-top">
+                                <div class="mw-card-icon"><i class="fas fa-chart-bar"></i></div>
+                                <span class="mw-pill mw-pill-hot" data-de="Beliebt" data-en="Popular">Beliebt</span>
+                            </div>
+                            <h3 data-de="RAISEC-Modell" data-en="RAISEC model">RAISEC-Modell</h3>
+                            <p data-de="Berufliche Interessen nach Holland: Typ finden und passende Felder ableiten." data-en="Career interests after Holland: find your type and matching fields.">Berufliche Interessen nach Holland: Typ finden und passende Felder ableiten.</p>
+                            <ul>
+                                <li data-de="30 Fragen · 5 Min" data-en="30 questions · 5 min">30 Fragen · 5 Min</li>
+                                <li data-de="6 Persönlichkeitstypen" data-en="6 personality types">6 Persönlichkeitstypen</li>
+                            </ul>
+                            <span class="mw-card-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
+                        </a>
                     </div>
                 </div>
-            </div>
-        </div>
-        <!-- Text/CTA unter dem Video (Desktop); vor Video im DOM für Safari-Compositor -->
-        <div class="hero-layer-front">
-            <div class="hero-layer-inner">
-                <div class="hero-container">
-                    <div class="hero-content">
-                        <h1 class="hero-title" id="hero-title">
-                            <span class="gradient-text" data-de="Persönlichkeits- und Führungskräfteentwicklung" data-en="Personality and Leadership Development">Persönlichkeits- und<br>Führungskräfteentwicklung</span>
-                        </h1>
-                        <p class="hero-subtitle desktop-only" id="hero-subtitle" data-de="Über 40 interaktive Methoden – von Werten und Zielen über Kommunikation bis Achtsamkeit. Für dich selbst und für Menschen, die führen." data-en="Over 40 interactive methods – from values and goals to communication and mindfulness. For yourself and for people who lead.">
-                            Über 40 interaktive Methoden – von Werten und Zielen über Kommunikation bis Achtsamkeit. Für dich selbst und für Menschen, die führen.
-                        </p>
-                        <div class="hero-actions">
-                            <a href="#methoden" class="btn btn-primary"><span data-de="Methoden entdecken" data-en="Explore methods">Methoden entdecken</span></a>
-                            <a href="#contact" class="btn btn-outline"><span data-de="Kontakt aufnehmen" data-en="Get in Touch">Kontakt aufnehmen</span></a>
+            </section>
+
+            <!-- Panel 2: Führung -->
+            <section class="mw-panel" id="fuehrung" style="--i:1" data-peek="02">
+                <div class="mw-panel-head">
+                    <span class="mw-panel-num">02</span>
+                    <h2 data-de="Führung" data-en="Leadership">Führung</h2>
+                    <span class="mw-panel-tag" data-de="4 Klassiker für den Führungsalltag" data-en="4 classics for everyday leadership">4 Klassiker für den Führungsalltag</span>
+                </div>
+                <div class="mw-panel-body">
+                    <div class="mw-panel-intro mw-reveal">
+                        <div class="mw-panel-visual" aria-hidden="true">
+                            <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="320" height="200" fill="#ffffff"/>
+                                <g fill="none" stroke-width="14" stroke-linecap="round">
+                                    <circle cx="160" cy="100" r="74" stroke="#e9e4d8"/>
+                                    <path d="M160 26 A74 74 0 0 1 234 100" stroke="#e8a04b"/>
+                                    <path d="M234 100 A74 74 0 0 1 160 174" stroke="#e9775b"/>
+                                    <path d="M160 174 A74 74 0 0 1 86 100" stroke="#167d8c"/>
+                                    <path d="M86 100 A74 74 0 0 1 160 26" stroke="#0f4c75"/>
+                                </g>
+                                <g font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#101a24" text-anchor="middle">
+                                    <text x="208" y="54">G</text><text x="208" y="156">R</text><text x="112" y="156">O</text><text x="112" y="54">W</text>
+                                </g>
+                                <text x="160" y="106" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#101a24" letter-spacing="2">FÜHREN</text>
+                            </svg>
                         </div>
+                        <h3 data-de="Klar führen, ohne zu verletzen" data-en="Lead clearly without hurting">Klar führen, ohne zu verletzen</h3>
+                        <p data-de="Verhandeln, Feedback geben, coachen und die eigenen Emotionen regulieren – die vier Modelle, die im Führungsalltag am meisten bewegen. Jeweils als Workflow mit Beispielsätzen und Transfer in deine nächste Situation." data-en="Negotiate, give feedback, coach and regulate your own emotions – the four models that move the most in everyday leadership. Each as a workflow with example sentences and transfer to your next situation.">Verhandeln, Feedback geben, coachen und die eigenen Emotionen regulieren – die vier Modelle, die im Führungsalltag am meisten bewegen. Jeweils als Workflow mit Beispielsätzen und Transfer in deine nächste Situation.</p>
+                        <a href="persoenlichkeitsentwicklung-uebersicht.html#leadership" class="mw-btn"><span data-de="Mehr zu Führung" data-en="More on leadership">Mehr zu Führung</span> <i class="fas fa-chevron-right"></i></a>
+                    </div>
+                    <div class="mw-cards">
+                        <a class="mw-card mw-reveal" href="methods/harvard-method/harvard-method.html" data-category="leadership" onclick="startMethod('harvard-method'); return false;">
+                            <div class="mw-card-top">
+                                <div class="mw-card-icon"><i class="fas fa-graduation-cap"></i></div>
+                                <span class="mw-pill mw-pill-lead" data-de="Führung" data-en="Leadership">Führung</span>
+                            </div>
+                            <h3 data-de="Harvard-Methode" data-en="Harvard method">Harvard-Methode</h3>
+                            <p data-de="Verhandeln nach Fisher &amp; Ury: Interessen statt Positionen, Optionen, Kriterien und BATNA." data-en="Negotiate after Fisher &amp; Ury: interests over positions, options, criteria and BATNA.">Verhandeln nach Fisher &amp; Ury: Interessen statt Positionen, Optionen, Kriterien und BATNA.</p>
+                            <ul>
+                                <li data-de="Win-Win-Matrix" data-en="Win-win matrix">Win-Win-Matrix</li>
+                                <li>BATNA</li>
+                            </ul>
+                            <span class="mw-card-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
+                        </a>
+
+                        <a class="mw-card mw-reveal" href="methods/emotional-intelligence/emotional-intelligence.html" data-category="leadership" onclick="startMethod('emotional-intelligence'); return false;">
+                            <div class="mw-card-top">
+                                <div class="mw-card-icon"><i class="fas fa-heart-pulse"></i></div>
+                                <span class="mw-pill mw-pill-lead" data-de="Führung" data-en="Leadership">Führung</span>
+                            </div>
+                            <h3 data-de="Emotionale Intelligenz" data-en="Emotional intelligence">Emotionale Intelligenz</h3>
+                            <p data-de="Selbstwahrnehmung, Empathie und Regulation – der Kern guter Führung im Alltag." data-en="Self-awareness, empathy and regulation – the core of everyday leadership.">Selbstwahrnehmung, Empathie und Regulation – der Kern guter Führung im Alltag.</p>
+                            <ul>
+                                <li data-de="4 EQ-Dimensionen" data-en="4 EQ dimensions">4 EQ-Dimensionen</li>
+                                <li data-de="Alltags-Transfer" data-en="Everyday transfer">Alltags-Transfer</li>
+                            </ul>
+                            <span class="mw-card-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
+                        </a>
+
+                        <a class="mw-card mw-reveal" href="methods/nonviolent-communication/nonviolent-communication.html" data-category="communication" onclick="startMethod('nonviolent-communication'); return false;">
+                            <div class="mw-card-top">
+                                <div class="mw-card-icon"><i class="fas fa-comments"></i></div>
+                                <span class="mw-pill mw-pill-lead" data-de="Führung" data-en="Leadership">Führung</span>
+                            </div>
+                            <h3 data-de="Gewaltfreie Kommunikation" data-en="Nonviolent communication">Gewaltfreie Kommunikation</h3>
+                            <p data-de="Beobachtung, Gefühl, Bedürfnis, Bitte – klar ansprechen, ohne zu verletzen." data-en="Observation, feeling, need, request – speak clearly without hurting.">Beobachtung, Gefühl, Bedürfnis, Bitte – klar ansprechen, ohne zu verletzen.</p>
+                            <ul>
+                                <li data-de="4-Schritte-Modell" data-en="4-step model">4-Schritte-Modell</li>
+                                <li data-de="Feedback-Sätze" data-en="Feedback sentences">Feedback-Sätze</li>
+                            </ul>
+                            <span class="mw-card-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
+                        </a>
+
+                        <a class="mw-card mw-reveal" href="methods/target-coaching/target-coaching.html" data-category="coaching" onclick="startMethod('target-coaching'); return false;">
+                            <div class="mw-card-top">
+                                <div class="mw-card-icon"><i class="fas fa-bullseye"></i></div>
+                                <span class="mw-pill mw-pill-lead" data-de="Führung" data-en="Leadership">Führung</span>
+                            </div>
+                            <h3 data-de="Ziel-Coaching (GROW)" data-en="Goal coaching (GROW)">Ziel-Coaching (GROW)</h3>
+                            <p data-de="Goal, Reality, Options, Will – das Gesprächsmodell für Coaching und Mitarbeiterführung." data-en="Goal, Reality, Options, Will – the conversation model for coaching and people leadership.">Goal, Reality, Options, Will – das Gesprächsmodell für Coaching und Mitarbeiterführung.</p>
+                            <ul>
+                                <li data-de="4 GROW-Phasen" data-en="4 GROW phases">4 GROW-Phasen</li>
+                                <li data-de="Nächster Schritt" data-en="Next step">Nächster Schritt</li>
+                            </ul>
+                            <span class="mw-card-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
+                        </a>
                     </div>
                 </div>
-                <div class="hero-grid-spacer" aria-hidden="true"></div>
-            </div>
-        </div>
-        <div class="hero-video-wrapper">
-            <!-- Video wird dynamisch von API geladen (kein source Element nötig) -->
-            <video class="hero-video" autoplay muted loop playsinline webkit-playsinline preload="metadata" disablepictureinpicture disableremoteplayback id="heroVideo">
-            </video>
-            <div class="hero-video-overlay"></div>
-        </div>
-    </section>
+            </section>
 
-    <!-- Populärste Methoden -->
-    <section id="methoden" class="pe-landing-methods">
-        <div class="container">
-            <div class="section-header pe-landing-head">
-                <div>
-                    <span class="pe-landing-kicker" data-de="Beliebteste Tools" data-en="Most popular tools">Beliebteste Tools</span>
-                    <h2 class="section-title" data-de="Persönlichkeit &amp; Führung starten" data-en="Start personality &amp; leadership">Persönlichkeit &amp; Führung starten</h2>
-                    <p class="section-subtitle" data-de="Die meistgenutzten Methoden – direkt mit Auswertung, ohne Konto. Führungskräfte-Klassiker sind markiert." data-en="The most used methods – with an evaluation, no account needed. Leadership classics are marked.">
-                        Die meistgenutzten Methoden – direkt mit Auswertung, ohne Konto. Führungskräfte-Klassiker sind markiert.
-                    </p>
+            <!-- Panel 3: Unternehmen -->
+            <section class="mw-panel" id="unternehmen" style="--i:2" data-peek="03">
+                <div class="mw-panel-head">
+                    <span class="mw-panel-num">03</span>
+                    <h2 data-de="Unternehmen" data-en="Business">Unternehmen</h2>
+                    <span class="mw-panel-tag" data-de="HR, KI &amp; Transformation" data-en="HR, AI &amp; transformation">HR, KI &amp; Transformation</span>
                 </div>
-                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="pe-landing-all" data-de="Alle 40+ Methoden" data-en="All 40+ methods">Alle 40+ Methoden <i class="fas fa-arrow-right"></i></a>
-            </div>
-
-            <div class="pe-landing-grid">
-                <a class="pe-tile" href="methods/ikigai/ikigai.html" data-category="self-discovery" onclick="startMethod('ikigai'); return false;">
-                    <div class="pe-tile-top">
-                        <div class="pe-tile-icon"><i class="fas fa-compass"></i></div>
-                        <span class="pe-tile-badge pe-tile-badge-hot" data-de="Beliebt" data-en="Popular">Beliebt</span>
-                    </div>
-                    <h3 data-de="Ikigai-Workflow" data-en="Ikigai workflow">Ikigai-Workflow</h3>
-                    <p data-de="Die vier Kreise – Lieben, Können, Welt, Bezahlung – füllen und daraus Sinn, Satz und Aktionsplan ableiten." data-en="Fill the four circles – love, skill, world, pay – and turn them into purpose, a sentence and an action plan.">Die vier Kreise – Lieben, Können, Welt, Bezahlung – füllen und daraus Sinn, Satz und Aktionsplan ableiten.</p>
-                    <ul>
-                        <li data-de="16 Leitfragen" data-en="16 guiding questions">16 Leitfragen</li>
-                        <li data-de="Live-Venn-Diagramm" data-en="Live Venn diagram">Live-Venn-Diagramm</li>
-                    </ul>
-                    <span class="pe-tile-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
-                </a>
-
-                <a class="pe-tile" href="methods/wheel-of-life/wheel-of-life.html" data-category="analysis" onclick="startMethod('wheel-of-life'); return false;">
-                    <div class="pe-tile-top">
-                        <div class="pe-tile-icon"><i class="fas fa-dharmachakra"></i></div>
-                        <span class="pe-tile-badge pe-tile-badge-hot" data-de="Beliebt" data-en="Popular">Beliebt</span>
-                    </div>
-                    <h3>Wheel of Life</h3>
-                    <p data-de="Lebensbereiche bewerten, Ungleichgewichte sehen und die nächsten 90 Tage priorisieren." data-en="Rate life areas, see imbalances and prioritise the next 90 days.">Lebensbereiche bewerten, Ungleichgewichte sehen und die nächsten 90 Tage priorisieren.</p>
-                    <ul>
-                        <li data-de="8 Lebensbereiche" data-en="8 life areas">8 Lebensbereiche</li>
-                        <li data-de="Sofort-Radar" data-en="Instant radar">Sofort-Radar</li>
-                    </ul>
-                    <span class="pe-tile-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
-                </a>
-
-                <a class="pe-tile" href="methods/harvard-method/harvard-method.html" data-category="leadership" onclick="startMethod('harvard-method'); return false;">
-                    <div class="pe-tile-top">
-                        <div class="pe-tile-icon"><i class="fas fa-graduation-cap"></i></div>
-                        <span class="pe-tile-badge pe-tile-badge-lead" data-de="Führung" data-en="Leadership">Führung</span>
-                    </div>
-                    <h3 data-de="Harvard-Methode" data-en="Harvard method">Harvard-Methode</h3>
-                    <p data-de="Verhandeln nach Fisher &amp; Ury: Interessen statt Positionen, Optionen, Kriterien und BATNA." data-en="Negotiate after Fisher &amp; Ury: interests over positions, options, criteria and BATNA.">Verhandeln nach Fisher &amp; Ury: Interessen statt Positionen, Optionen, Kriterien und BATNA.</p>
-                    <ul>
-                        <li data-de="Win-Win-Matrix" data-en="Win-win matrix">Win-Win-Matrix</li>
-                        <li>BATNA</li>
-                    </ul>
-                    <span class="pe-tile-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
-                </a>
-
-                <a class="pe-tile" href="methods/emotional-intelligence/emotional-intelligence.html" data-category="leadership" onclick="startMethod('emotional-intelligence'); return false;">
-                    <div class="pe-tile-top">
-                        <div class="pe-tile-icon"><i class="fas fa-heart-pulse"></i></div>
-                        <span class="pe-tile-badge pe-tile-badge-lead" data-de="Führung" data-en="Leadership">Führung</span>
-                    </div>
-                    <h3 data-de="Emotionale Intelligenz" data-en="Emotional intelligence">Emotionale Intelligenz</h3>
-                    <p data-de="Selbstwahrnehmung, Empathie und Regulation – der Kern guter Führung im Alltag." data-en="Self-awareness, empathy and regulation – the core of everyday leadership.">Selbstwahrnehmung, Empathie und Regulation – der Kern guter Führung im Alltag.</p>
-                    <ul>
-                        <li data-de="4 EQ-Dimensionen" data-en="4 EQ dimensions">4 EQ-Dimensionen</li>
-                        <li data-de="Alltags-Transfer" data-en="Everyday transfer">Alltags-Transfer</li>
-                    </ul>
-                    <span class="pe-tile-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
-                </a>
-
-                <a class="pe-tile" href="methods/nonviolent-communication/nonviolent-communication.html" data-category="communication" onclick="startMethod('nonviolent-communication'); return false;">
-                    <div class="pe-tile-top">
-                        <div class="pe-tile-icon"><i class="fas fa-comments"></i></div>
-                        <span class="pe-tile-badge pe-tile-badge-lead" data-de="Führung" data-en="Leadership">Führung</span>
-                    </div>
-                    <h3 data-de="Gewaltfreie Kommunikation" data-en="Nonviolent communication">Gewaltfreie Kommunikation</h3>
-                    <p data-de="Beobachtung, Gefühl, Bedürfnis, Bitte – klar ansprechen, ohne zu verletzen." data-en="Observation, feeling, need, request – speak clearly without hurting.">Beobachtung, Gefühl, Bedürfnis, Bitte – klar ansprechen, ohne zu verletzen.</p>
-                    <ul>
-                        <li data-de="4-Schritte-Modell" data-en="4-step model">4-Schritte-Modell</li>
-                        <li data-de="Feedback-Sätze" data-en="Feedback sentences">Feedback-Sätze</li>
-                    </ul>
-                    <span class="pe-tile-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
-                </a>
-
-                <a class="pe-tile" href="methods/target-coaching/target-coaching.html" data-category="coaching" onclick="startMethod('target-coaching'); return false;">
-                    <div class="pe-tile-top">
-                        <div class="pe-tile-icon"><i class="fas fa-bullseye"></i></div>
-                        <span class="pe-tile-badge pe-tile-badge-lead" data-de="Führung" data-en="Leadership">Führung</span>
-                    </div>
-                    <h3 data-de="Ziel-Coaching (GROW)" data-en="Goal coaching (GROW)">Ziel-Coaching (GROW)</h3>
-                    <p data-de="Goal, Reality, Options, Will – das Gesprächsmodell für Coaching und Mitarbeiterführung." data-en="Goal, Reality, Options, Will – the conversation model for coaching and people leadership.">Goal, Reality, Options, Will – das Gesprächsmodell für Coaching und Mitarbeiterführung.</p>
-                    <ul>
-                        <li data-de="4 GROW-Phasen" data-en="4 GROW phases">4 GROW-Phasen</li>
-                        <li data-de="Nächster Schritt" data-en="Next step">Nächster Schritt</li>
-                    </ul>
-                    <span class="pe-tile-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
-                </a>
-
-                <a class="pe-tile" href="raisec-persoenlichkeitsentwicklung.html" data-category="analysis" onclick="startMethod('raisec'); return false;">
-                    <div class="pe-tile-top">
-                        <div class="pe-tile-icon"><i class="fas fa-chart-bar"></i></div>
-                        <span class="pe-tile-badge pe-tile-badge-hot" data-de="Beliebt" data-en="Popular">Beliebt</span>
-                    </div>
-                    <h3 data-de="RAISEC-Modell" data-en="RAISEC model">RAISEC-Modell</h3>
-                    <p data-de="Berufliche Interessen nach Holland: Typ finden und passende Felder ableiten." data-en="Career interests after Holland: find your type and matching fields.">Berufliche Interessen nach Holland: Typ finden und passende Felder ableiten.</p>
-                    <ul>
-                        <li data-de="30 Fragen · 5 Min" data-en="30 questions · 5 min">30 Fragen · 5 Min</li>
-                        <li data-de="6 Persönlichkeitstypen" data-en="6 personality types">6 Persönlichkeitstypen</li>
-                    </ul>
-                    <span class="pe-tile-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
-                </a>
-
-                <a class="pe-tile" href="methods/via-strengths/via-strengths.html" data-category="self-discovery" onclick="startMethod('via-strengths'); return false;">
-                    <div class="pe-tile-top">
-                        <div class="pe-tile-icon"><i class="fas fa-gem"></i></div>
-                        <span class="pe-tile-badge pe-tile-badge-hot" data-de="Beliebt" data-en="Popular">Beliebt</span>
-                    </div>
-                    <h3 data-de="VIA-Charakterstärken" data-en="VIA character strengths">VIA-Charakterstärken</h3>
-                    <p data-de="Die 24 Stärken der positiven Psychologie – Signaturstärken erkennen und im Alltag nutzen." data-en="The 24 strengths of positive psychology – spot signature strengths and use them every day.">Die 24 Stärken der positiven Psychologie – Signaturstärken erkennen und im Alltag nutzen.</p>
-                    <ul>
-                        <li data-de="24 Stärken" data-en="24 strengths">24 Stärken</li>
-                        <li data-de="Signaturprofil" data-en="Signature profile">Signaturprofil</li>
-                    </ul>
-                    <span class="pe-tile-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
-                </a>
-
-                <a class="pe-tile" href="methods/johari-window/johari-window.html" data-category="self-discovery" onclick="startMethod('johari-window'); return false;">
-                    <div class="pe-tile-top">
-                        <div class="pe-tile-icon"><i class="fas fa-window-maximize"></i></div>
-                    </div>
-                    <h3 data-de="Johari-Fenster" data-en="Johari window">Johari-Fenster</h3>
-                    <p data-de="Selbstbild und Fremdbild abgleichen, blinde Flecken sehen und den offenen Bereich vergrössern." data-en="Compare self-image and others' view, see blind spots and grow the open area.">Selbstbild und Fremdbild abgleichen, blinde Flecken sehen und den offenen Bereich vergrössern.</p>
-                    <ul>
-                        <li data-de="56 Eigenschaften" data-en="56 traits">56 Eigenschaften</li>
-                        <li data-de="Mehrere Feedbackgeber" data-en="Several raters">Mehrere Feedbackgeber</li>
-                    </ul>
-                    <span class="pe-tile-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
-                </a>
-
-                <a class="pe-tile" href="methods/values-clarification/values-clarification.html" data-category="self-discovery" onclick="startMethod('values-clarification'); return false;">
-                    <div class="pe-tile-top">
-                        <div class="pe-tile-icon"><i class="fas fa-compass-drafting"></i></div>
-                    </div>
-                    <h3 data-de="Werte-Kompass" data-en="Values compass">Werte-Kompass</h3>
-                    <p data-de="Werte sortieren, Kernwerte festlegen und Entscheidungen daran ausrichten." data-en="Sort values, lock in core values and align decisions to them.">Werte sortieren, Kernwerte festlegen und Entscheidungen daran ausrichten.</p>
-                    <ul>
-                        <li data-de="Werte-Ranking" data-en="Values ranking">Werte-Ranking</li>
-                        <li data-de="Alltags-Check" data-en="Everyday check">Alltags-Check</li>
-                    </ul>
-                    <span class="pe-tile-cta"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span> <i class="fas fa-arrow-right"></i></span>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Für Unternehmen (bisherige HR-Kacheln, kompakter) -->
-    <section id="unternehmen" class="pe-biz">
-        <div class="container">
-            <div class="section-header pe-landing-head">
-                <div>
-                    <span class="pe-landing-kicker" data-de="Für Unternehmen" data-en="For organisations">Für Unternehmen</span>
-                    <h2 class="section-title" data-de="HR, KI &amp; Transformation" data-en="HR, AI &amp; transformation">HR, KI &amp; Transformation</h2>
-                    <p class="section-subtitle" data-de="Wenn du HR digitalisieren oder eine Organisation weiterentwickeln willst." data-en="If you want to digitise HR or develop an organisation further.">
-                        Wenn du HR digitalisieren oder eine Organisation weiterentwickeln willst.
-                    </p>
-                </div>
-            </div>
-            <div class="pe-biz-grid">
-                <a class="pe-biz-card" href="hr-coach-framework.html">
-                    <i class="fas fa-layer-group"></i>
-                    <h3>HR Coach Framework</h3>
-                    <p data-de="10 HR-Dimensionen, ein Reifegrad." data-en="10 HR dimensions, one maturity level.">10 HR-Dimensionen, ein Reifegrad.</p>
-                </a>
-                <a class="pe-biz-card" href="hr-selbsttest.html">
-                    <i class="fas fa-clipboard-check"></i>
-                    <h3 data-de="HR Selbsttest" data-en="HR self-assessment">HR Selbsttest</h3>
-                    <p data-de="Vier Dimensionen, personalisierte Empfehlungen." data-en="Four dimensions, personalised recommendations.">Vier Dimensionen, personalisierte Empfehlungen.</p>
-                </a>
-                <a class="pe-biz-card" href="ki-strategieentwicklung.html">
-                    <i class="fas fa-brain"></i>
-                    <h3 data-de="KI-Strategieentwicklung" data-en="AI strategy">KI-Strategieentwicklung</h3>
-                    <p data-de="Harvard- &amp; MIT-Methoden für HR-KI." data-en="Harvard &amp; MIT methods for HR AI.">Harvard- &amp; MIT-Methoden für HR-KI.</p>
-                </a>
-                <a class="pe-biz-card" href="hr-transformation.html">
-                    <i class="fas fa-users"></i>
-                    <h3>HR Transformation</h3>
-                    <p data-de="Strukturen, Prozesse, Change." data-en="Structures, processes, change.">Strukturen, Prozesse, Change.</p>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Blüten-Spiel & Highscore Section - Gleicher Stil wie Hero -->
-    <section class="snowflake-section">
-        <div class="container">
-            <div class="snowflake-content">
-                <!-- Highscore Card -->
-                <div class="highscore-feature-card">
-                    <div class="highscore-header">
-                        <div class="highscore-icon-large">🌸🏆</div>
-                        <h2 data-de="Blüten Highscores" data-en="Petal Highscores">Blüten Highscores</h2>
-                    </div>
-                    <div class="highscore-body">
-                        <p class="highscore-description" data-de="Fange die Blütenblätter und werde zur Legende! Kleines Frühlingsspiel mit grosser HR-Metapher: Welche „Blüten“ bekommen deine Mitarbeitenden gerade – Anerkennung, klare Ziele oder nur Druck? Wie verteilst du Aufmerksamkeit und Energie, wenn Ressourcen begrenzt sind wie im Alltag? Der High Score zum letzten Tag im Monat gewinnt eine HR-Standortbestimmung (4 Std. Online Analyse) mit anschliessender Empfehlung für eine Digitalisierungsroadmap." data-en="Catch the petals and become a legend! A small spring game with an HR metaphor: what “flowers” are your people getting right now—recognition, clarity, or just pressure? How do you allocate attention when resources are limited, like in real work? The high score at month-end wins an HR location assessment (4 hours online) plus a digitalization roadmap recommendation.">
-                        </p>
-                        <div id="highscoresList" class="highscores-list">
-                            <p class="no-highscores">Noch keine Highscores. Fange Blüten!</p>
+                <div class="mw-panel-body">
+                    <div class="mw-panel-intro mw-reveal">
+                        <div class="mw-panel-visual" aria-hidden="true">
+                            <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="320" height="200" fill="#ffffff"/>
+                                <g fill="#0b2a4a" opacity=".9">
+                                    <rect x="40" y="120" width="34" height="50" rx="6"/>
+                                    <rect x="90" y="96" width="34" height="74" rx="6" fill="#0f4c75"/>
+                                    <rect x="140" y="74" width="34" height="96" rx="6" fill="#167d8c"/>
+                                    <rect x="190" y="52" width="34" height="118" rx="6" fill="#3aa6a6"/>
+                                    <rect x="240" y="30" width="34" height="140" rx="6" fill="#e8a04b"/>
+                                </g>
+                                <path d="M57 104 L107 80 L157 58 L207 36 L257 16" fill="none" stroke="#101a24" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 7"/>
+                                <circle cx="257" cy="16" r="6" fill="#101a24"/>
+                                <text x="40" y="188" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#101a24" letter-spacing="2">REIFEGRAD · ROADMAP</text>
+                            </svg>
                         </div>
+                        <h3 data-de="HR digitalisieren, Organisation entwickeln" data-en="Digitise HR, develop the organisation">HR digitalisieren, Organisation entwickeln</h3>
+                        <p data-de="Vom Reifegrad-Check über die KI-Strategie bis zur HR-Transformation: Frameworks und Selbsttests, mit denen Teams in einer Stunde wissen, wo sie stehen – und was der nächste sinnvolle Schritt ist." data-en="From maturity check to AI strategy and HR transformation: frameworks and self-assessments that show teams within an hour where they stand – and what the next sensible step is.">Vom Reifegrad-Check über die KI-Strategie bis zur HR-Transformation: Frameworks und Selbsttests, mit denen Teams in einer Stunde wissen, wo sie stehen – und was der nächste sinnvolle Schritt ist.</p>
+                        <a href="#contact" class="mw-btn"><span data-de="Gespräch vereinbaren" data-en="Book a conversation">Gespräch vereinbaren</span> <i class="fas fa-chevron-right"></i></a>
+                    </div>
+                    <div class="mw-cards">
+                        <a class="mw-card mw-reveal" href="hr-coach-framework.html" data-category="business">
+                            <div class="mw-card-top">
+                                <div class="mw-card-icon"><i class="fas fa-layer-group"></i></div>
+                                <span class="mw-pill">Framework</span>
+                            </div>
+                            <h3>HR Coach Framework</h3>
+                            <p data-de="10 HR-Dimensionen, ein Reifegrad – mit Handlungsfeldern pro Dimension." data-en="10 HR dimensions, one maturity level – with action areas per dimension.">10 HR-Dimensionen, ein Reifegrad – mit Handlungsfeldern pro Dimension.</p>
+                            <ul>
+                                <li data-de="10 Dimensionen" data-en="10 dimensions">10 Dimensionen</li>
+                                <li data-de="Reifegrad-Profil" data-en="Maturity profile">Reifegrad-Profil</li>
+                            </ul>
+                            <span class="mw-card-cta"><span data-de="Öffnen" data-en="Open">Öffnen</span> <i class="fas fa-arrow-right"></i></span>
+                        </a>
+                        <a class="mw-card mw-reveal" href="hr-selbsttest.html" data-category="business">
+                            <div class="mw-card-top">
+                                <div class="mw-card-icon"><i class="fas fa-clipboard-check"></i></div>
+                                <span class="mw-pill" data-de="Selbsttest" data-en="Self-test">Selbsttest</span>
+                            </div>
+                            <h3 data-de="HR Selbsttest" data-en="HR self-assessment">HR Selbsttest</h3>
+                            <p data-de="Vier Dimensionen, personalisierte Empfehlungen – in 10 Minuten." data-en="Four dimensions, personalised recommendations – in 10 minutes.">Vier Dimensionen, personalisierte Empfehlungen – in 10 Minuten.</p>
+                            <ul>
+                                <li data-de="4 Dimensionen" data-en="4 dimensions">4 Dimensionen</li>
+                                <li data-de="Empfehlungen" data-en="Recommendations">Empfehlungen</li>
+                            </ul>
+                            <span class="mw-card-cta"><span data-de="Öffnen" data-en="Open">Öffnen</span> <i class="fas fa-arrow-right"></i></span>
+                        </a>
+                        <a class="mw-card mw-reveal" href="ki-strategieentwicklung.html" data-category="business">
+                            <div class="mw-card-top">
+                                <div class="mw-card-icon"><i class="fas fa-brain"></i></div>
+                                <span class="mw-pill">KI</span>
+                            </div>
+                            <h3 data-de="KI-Strategieentwicklung" data-en="AI strategy">KI-Strategieentwicklung</h3>
+                            <p data-de="Harvard- &amp; MIT-Methoden für den Einsatz von KI im HR." data-en="Harvard &amp; MIT methods for using AI in HR.">Harvard- &amp; MIT-Methoden für den Einsatz von KI im HR.</p>
+                            <ul>
+                                <li data-de="Use-Case-Portfolio" data-en="Use-case portfolio">Use-Case-Portfolio</li>
+                                <li>Roadmap</li>
+                            </ul>
+                            <span class="mw-card-cta"><span data-de="Öffnen" data-en="Open">Öffnen</span> <i class="fas fa-arrow-right"></i></span>
+                        </a>
+                        <a class="mw-card mw-reveal" href="hr-transformation.html" data-category="business">
+                            <div class="mw-card-top">
+                                <div class="mw-card-icon"><i class="fas fa-users"></i></div>
+                                <span class="mw-pill">Change</span>
+                            </div>
+                            <h3>HR Transformation</h3>
+                            <p data-de="Strukturen, Prozesse, Change – von der Analyse bis zur Umsetzung." data-en="Structures, processes, change – from analysis to implementation.">Strukturen, Prozesse, Change – von der Analyse bis zur Umsetzung.</p>
+                            <ul>
+                                <li data-de="Prozesse" data-en="Processes">Prozesse</li>
+                                <li data-de="Change-Begleitung" data-en="Change support">Change-Begleitung</li>
+                            </ul>
+                            <span class="mw-card-cta"><span data-de="Öffnen" data-en="Open">Öffnen</span> <i class="fas fa-arrow-right"></i></span>
+                        </a>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
-    </section>
-    
-    <style>
-        /* Schneeflocken Section - Gleicher violetter Hintergrund wie Hero */
-        .snowflake-section {
-            padding: 4rem 0;
-            background: linear-gradient(135deg, rgba(11, 42, 74, 1) 0%, rgba(15, 76, 117, 1) 50%, rgba(15, 76, 117, 1) 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        /* Sternen-Funkeln bis ganz nach unten */
-        .snowflake-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image:
-                radial-gradient(circle, rgba(255,255,255,0.85) 0.4px, transparent 1.2px),
-                radial-gradient(circle, rgba(255,255,255,0.5) 0.8px, transparent 2px),
-                radial-gradient(circle, rgba(255,255,255,0.25) 1.2px, transparent 2.8px);
-            background-size: 180px 220px, 280px 320px, 380px 440px;
-            opacity: 0.6;
-            animation: starsTwinkle 12s ease-in-out infinite;
-            z-index: 0;
-            pointer-events: none;
-        }
-        @keyframes starsTwinkle {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 0.75; }
-        }
-        
-        .snowflake-content {
-            max-width: 700px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .highscore-feature-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 2.5rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .highscore-header {
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-        
-        .highscore-icon-large {
-            font-size: 3rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .highscore-header h2 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: white;
-            margin: 0;
-        }
-        
-        .highscore-body {
-            text-align: center;
-        }
-        
-        .highscore-description {
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.7;
-            margin-bottom: 1.5rem;
-        }
-        
-        .highscores-list {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            padding: 1rem;
-            min-height: 100px;
-        }
-        
-        .no-highscores {
-            color: rgba(255, 255, 255, 0.7);
-            font-style: italic;
-            margin: 0;
-            padding: 1rem 0;
-        }
-        
-        @media (max-width: 768px) {
-            .highscore-feature-card {
-                padding: 1.5rem;
-            }
-            
-            .highscore-header h2 {
-                font-size: 1.5rem;
-            }
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.9; }
-        }
-    </style>
-
-    <!-- Contact Section -->
-    <div class="coastal-wave coastal-wave--to-sand" aria-hidden="true">
-        <svg viewBox="0 0 1440 56" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,32 C240,56 480,8 720,24 C960,40 1200,56 1440,20 L1440,56 L0,56 Z"></path>
-        </svg>
     </div>
-    <section id="contact" class="contact">
-        <div class="container">
-            <div class="contact-content">
-                <div class="contact-info">
-                    <h2 class="section-title" data-de="Kontakt" data-en="Contact">Kontakt</h2>
-                    <p class="contact-description" data-de="Bereit für den nächsten Schritt – für dich oder dein Team? Schreib mir, dann schauen wir, welche Methode oder welches Format passt." data-en="Ready for the next step – for you or your team? Write to me and we will find the method or format that fits.">
-                        Bereit für den nächsten Schritt – für dich oder dein Team? Schreib mir, dann schauen wir, welche Methode oder welches Format passt.
-                    </p>
-                    
-                    <div class="contact-details">
-                        <div class="contact-item">
-                            <i class="fas fa-envelope"></i>
-                            <div>
-                                <h4 data-de="E-Mail" data-en="Email">E-Mail</h4>
-                                <a href="mailto:info@manuel-weiss.ch">info@manuel-weiss.ch</a>
-                            </div>
-                        </div>
-                        
-                        <div class="contact-item">
-                            <i class="fas fa-phone"></i>
-                            <div>
-                                <h4 data-de="Telefon" data-en="Phone">Telefon</h4>
-                                <a href="tel:+41798385590">+41 79 838 55 90</a>
-                            </div>
-                        </div>
-                        
-                        <div class="contact-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <div>
-                                <h4 data-de="Adresse" data-en="Address">Adresse</h4>
-                                <p>Pilatusstrasse 40<br>8330 Pfäffikon ZH</p>
-                            </div>
-                        </div>
-                        
-                        <div class="contact-item">
-                            <i class="fas fa-clock"></i>
-                            <div>
-                                <h4 data-de="Verfügbarkeit" data-en="Availability">Verfügbarkeit</h4>
-                                <p data-de="Mo-Fr: 9:00 - 18:00" data-en="Mon-Fri: 9:00 - 18:00">Mo-Fr: 9:00 - 18:00</p>
-                            </div>
-                        </div>
-                    </div>
+
+    <!-- Kopfzeilen der kommenden Panels (unten fixiert, wie hr-campus) -->
+    <div class="mw-peek is-off" id="mwPeek" aria-hidden="true"></div>
+    <div class="mw-stack" id="mwStack" aria-hidden="true"></div>
+
+    <!-- Weitere Methoden: Slider -->
+    <section class="mw-section" id="weitere" aria-labelledby="weitere-title">
+        <div class="mw-wrap">
+            <div class="mw-section-head mw-reveal">
+                <div>
+                    <h2 id="weitere-title" data-de="Weitere Methoden" data-en="More methods">Weitere Methoden</h2>
+                    <p data-de="Für Ziele, Gewohnheiten, Stress und Kreativität – kurz, geführt und mit Ergebnis zum Mitnehmen." data-en="For goals, habits, stress and creativity – short, guided and with a result to take away.">Für Ziele, Gewohnheiten, Stress und Kreativität – kurz, geführt und mit Ergebnis zum Mitnehmen.</p>
                 </div>
-                
-                <div class="contact-form">
-                    <form id="contactForm">
-                        <div class="form-group">
-                            <label for="name" data-de="Name" data-en="Name">Name</label>
-                            <input type="text" id="name" name="name" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="email" data-de="E-Mail" data-en="Email">E-Mail</label>
-                            <input type="email" id="email" name="email" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="subject" data-de="Betreff" data-en="Subject">Betreff</label>
-                            <input type="text" id="subject" name="subject" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="message" data-de="Nachricht" data-en="Message">Nachricht</label>
-                            <textarea id="message" name="message" rows="5" required></textarea>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-paper-plane"></i>
-                            <span data-de="Nachricht senden" data-en="Send Message">Nachricht senden</span>
-                        </button>
-                    </form>
+                <div class="mw-section-nav">
+                    <button class="mw-icon-btn" type="button" data-slide="-1" aria-label="Zurück"><i class="fas fa-chevron-left"></i></button>
+                    <button class="mw-icon-btn" type="button" data-slide="1" aria-label="Weiter"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+            <div class="mw-slider" id="mwSlider">
+                <a class="mw-slide" data-tint="foam" href="methods/walt-disney/walt-disney.html" onclick="startMethod('walt-disney'); return false;">
+                    <div class="mw-slide-top"><span class="mw-pill" data-de="Kreativität" data-en="Creativity">Kreativität</span><i class="fas fa-wand-magic-sparkles mw-slide-icon"></i></div>
+                    <div><h3 data-de="Walt-Disney-Methode" data-en="Walt Disney method">Walt-Disney-Methode</h3><p data-de="Träumer, Realist, Kritiker – eine Idee aus drei Rollen durchdenken." data-en="Dreamer, realist, critic – think an idea through from three roles.">Träumer, Realist, Kritiker – eine Idee aus drei Rollen durchdenken.</p></div>
+                    <div class="mw-slide-foot"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span><span class="mw-icon-btn"><i class="fas fa-arrow-right"></i></span></div>
+                </a>
+                <a class="mw-slide" data-tint="sun" href="methods/goal-setting/goal-setting.html" onclick="startMethod('goal-setting'); return false;">
+                    <div class="mw-slide-top"><span class="mw-pill" data-de="Ziele" data-en="Goals">Ziele</span><i class="fas fa-flag-checkered mw-slide-icon"></i></div>
+                    <div><h3 data-de="Ziele setzen" data-en="Goal setting">Ziele setzen</h3><p data-de="SMART, WOOP und Ziel-Hierarchie – vom Wunsch zum nächsten Schritt." data-en="SMART, WOOP and goal hierarchy – from wish to next step.">SMART, WOOP und Ziel-Hierarchie – vom Wunsch zum nächsten Schritt.</p></div>
+                    <div class="mw-slide-foot"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span><span class="mw-icon-btn"><i class="fas fa-arrow-right"></i></span></div>
+                </a>
+                <a class="mw-slide" data-tint="mint" href="methods/habit-building/habit-building.html" onclick="startMethod('habit-building'); return false;">
+                    <div class="mw-slide-top"><span class="mw-pill" data-de="Gewohnheiten" data-en="Habits">Gewohnheiten</span><i class="fas fa-repeat mw-slide-icon"></i></div>
+                    <div><h3 data-de="Gewohnheiten aufbauen" data-en="Habit building">Gewohnheiten aufbauen</h3><p data-de="Auslöser, Routine, Belohnung – kleine Schritte, die bleiben." data-en="Cue, routine, reward – small steps that stick.">Auslöser, Routine, Belohnung – kleine Schritte, die bleiben.</p></div>
+                    <div class="mw-slide-foot"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span><span class="mw-icon-btn"><i class="fas fa-arrow-right"></i></span></div>
+                </a>
+                <a class="mw-slide" data-tint="coral" href="methods/stress-management/stress-management.html" onclick="startMethod('stress-management'); return false;">
+                    <div class="mw-slide-top"><span class="mw-pill" data-de="Resilienz" data-en="Resilience">Resilienz</span><i class="fas fa-wind mw-slide-icon"></i></div>
+                    <div><h3 data-de="Stress-Management" data-en="Stress management">Stress-Management</h3><p data-de="Stressoren erkennen, Ressourcen aktivieren, Erholung planen." data-en="Spot stressors, activate resources, plan recovery.">Stressoren erkennen, Ressourcen aktivieren, Erholung planen.</p></div>
+                    <div class="mw-slide-foot"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span><span class="mw-icon-btn"><i class="fas fa-arrow-right"></i></span></div>
+                </a>
+                <a class="mw-slide" data-tint="sky" href="methods/time-management/time-management.html" onclick="startMethod('time-management'); return false;">
+                    <div class="mw-slide-top"><span class="mw-pill" data-de="Fokus" data-en="Focus">Fokus</span><i class="fas fa-hourglass-half mw-slide-icon"></i></div>
+                    <div><h3 data-de="Zeitmanagement" data-en="Time management">Zeitmanagement</h3><p data-de="Eisenhower, Zeitblöcke und Energie-Kurve – die Woche neu sortieren." data-en="Eisenhower, time blocks and energy curve – re-sort your week.">Eisenhower, Zeitblöcke und Energie-Kurve – die Woche neu sortieren.</p></div>
+                    <div class="mw-slide-foot"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span><span class="mw-icon-btn"><i class="fas fa-arrow-right"></i></span></div>
+                </a>
+                <a class="mw-slide" data-tint="sand" href="methods/journaling/journaling.html" onclick="startMethod('journaling'); return false;">
+                    <div class="mw-slide-top"><span class="mw-pill" data-de="Reflexion" data-en="Reflection">Reflexion</span><i class="fas fa-pen-nib mw-slide-icon"></i></div>
+                    <div><h3>Journaling</h3><p data-de="Geführte Schreibimpulse für Klarheit, Dankbarkeit und Entscheidungen." data-en="Guided writing prompts for clarity, gratitude and decisions.">Geführte Schreibimpulse für Klarheit, Dankbarkeit und Entscheidungen.</p></div>
+                    <div class="mw-slide-foot"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span><span class="mw-icon-btn"><i class="fas fa-arrow-right"></i></span></div>
+                </a>
+                <a class="mw-slide" data-tint="foam" href="methods/mindfulness/mindfulness.html" onclick="startMethod('mindfulness'); return false;">
+                    <div class="mw-slide-top"><span class="mw-pill" data-de="Achtsamkeit" data-en="Mindfulness">Achtsamkeit</span><i class="fas fa-spa mw-slide-icon"></i></div>
+                    <div><h3 data-de="Achtsamkeit" data-en="Mindfulness">Achtsamkeit</h3><p data-de="Kurze Übungen für Präsenz im Alltag – auch zwischen zwei Meetings." data-en="Short exercises for presence in everyday life – even between two meetings.">Kurze Übungen für Präsenz im Alltag – auch zwischen zwei Meetings.</p></div>
+                    <div class="mw-slide-foot"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span><span class="mw-icon-btn"><i class="fas fa-arrow-right"></i></span></div>
+                </a>
+                <a class="mw-slide" data-tint="sun" href="methods/swot-analysis/swot-analysis.html" onclick="startMethod('swot-analysis'); return false;">
+                    <div class="mw-slide-top"><span class="mw-pill" data-de="Analyse" data-en="Analysis">Analyse</span><i class="fas fa-table-cells-large mw-slide-icon"></i></div>
+                    <div><h3 data-de="Persönliche SWOT" data-en="Personal SWOT">Persönliche SWOT</h3><p data-de="Stärken, Schwächen, Chancen, Risiken – und daraus Strategien ableiten." data-en="Strengths, weaknesses, opportunities, threats – and derive strategies.">Stärken, Schwächen, Chancen, Risiken – und daraus Strategien ableiten.</p></div>
+                    <div class="mw-slide-foot"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span><span class="mw-icon-btn"><i class="fas fa-arrow-right"></i></span></div>
+                </a>
+                <a class="mw-slide" data-tint="coral" href="methods/vision-board/vision-board.html" onclick="startMethod('vision-board'); return false;">
+                    <div class="mw-slide-top"><span class="mw-pill" data-de="Vision" data-en="Vision">Vision</span><i class="fas fa-images mw-slide-icon"></i></div>
+                    <div><h3>Vision Board</h3><p data-de="Dein Zielbild in Worten und Bildern – mit Fokus auf das nächste Jahr." data-en="Your target picture in words and images – focused on the next year.">Dein Zielbild in Worten und Bildern – mit Fokus auf das nächste Jahr.</p></div>
+                    <div class="mw-slide-foot"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span><span class="mw-icon-btn"><i class="fas fa-arrow-right"></i></span></div>
+                </a>
+                <a class="mw-slide" data-tint="sky" href="methods/rubikon-model/rubikon-model.html" onclick="startMethod('rubikon-model'); return false;">
+                    <div class="mw-slide-top"><span class="mw-pill" data-de="Umsetzung" data-en="Execution">Umsetzung</span><i class="fas fa-water mw-slide-icon"></i></div>
+                    <div><h3 data-de="Rubikon-Modell" data-en="Rubicon model">Rubikon-Modell</h3><p data-de="Vom Abwägen ins Handeln – die vier Phasen bewusst durchlaufen." data-en="From weighing up to acting – move through the four phases consciously.">Vom Abwägen ins Handeln – die vier Phasen bewusst durchlaufen.</p></div>
+                    <div class="mw-slide-foot"><span data-de="Jetzt starten" data-en="Start now">Jetzt starten</span><span class="mw-icon-btn"><i class="fas fa-arrow-right"></i></span></div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Zitat + Person -->
+    <section class="mw-section mw-section-tint mw-quote" id="ueber-mich" aria-label="Über Manuel Weiss">
+        <div class="mw-wrap">
+            <blockquote class="mw-reveal" data-de="Führen heisst, Menschen Sinn, Klarheit und Verantwortung zu geben – und bei sich selbst anzufangen." data-en="Leading means giving people purpose, clarity and responsibility – and starting with yourself.">Führen heisst, Menschen Sinn, Klarheit und Verantwortung zu geben – und bei sich selbst anzufangen.</blockquote>
+            <div class="mw-quote-person mw-reveal">
+                <div class="mw-quote-photo">
+                    <img src="manuel-weiss-portrait.jpg"
+                         alt="Manuel Weiss"
+                         class="profile-image dynamic-profile-image"
+                         id="profile-photo"
+                         onerror="handleProfileImageError(this);">
+                </div>
+                <div class="mw-quote-name">Manuel Weiss</div>
+                <div class="mw-quote-role" data-de="HR-Berater für KI &amp; Transformation, Coach" data-en="HR consultant for AI &amp; transformation, coach">HR-Berater für KI &amp; Transformation, Coach</div>
+            </div>
+            <div class="mw-stats hero-about-stats mw-reveal">
+                <div class="stat-card">
+                    <div class="stat-number" id="stat1-number">6+</div>
+                    <div class="stat-label" id="stat1-label" data-de="JAHRE IT PROJEKT ERFAHRUNG" data-en="YEARS IT PROJECT EXPERIENCE">JAHRE IT PROJEKT ERFAHRUNG</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat2-number">60+</div>
+                    <div class="stat-label" id="stat2-label" data-de="ERFOLGREICH IMPLEMENTIERTE PROJEKTE" data-en="SUCCESSFULLY IMPLEMENTED PROJECTS">ERFOLGREICH IMPLEMENTIERTE PROJEKTE</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="stat3-number">100%</div>
+                    <div class="stat-label" id="stat3-label" data-de="LERNKURVENEFFEKT ;)" data-en="LEARNING CURVE EFFECT ;)">LERNKURVENEFFEKT ;)</div>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Blüten-Spiel & Highscore -->
+    <section class="mw-section" id="spiel" aria-labelledby="spiel-title">
+        <div class="mw-wrap mw-split">
+            <div class="mw-reveal">
+                <h2 id="spiel-title" data-de="Blüten fangen, Haltung zeigen" data-en="Catch petals, show attitude">Blüten fangen, Haltung zeigen</h2>
+                <p data-de="Kleines Frühlingsspiel mit grosser HR-Metapher: Welche „Blüten“ bekommen deine Mitarbeitenden gerade – Anerkennung, klare Ziele oder nur Druck? Wie verteilst du Aufmerksamkeit und Energie, wenn Ressourcen begrenzt sind wie im Alltag?" data-en="A small spring game with an HR metaphor: what “flowers” are your people getting right now – recognition, clear goals or just pressure? How do you allocate attention and energy when resources are limited, like in real work?">Kleines Frühlingsspiel mit grosser HR-Metapher: Welche „Blüten“ bekommen deine Mitarbeitenden gerade – Anerkennung, klare Ziele oder nur Druck? Wie verteilst du Aufmerksamkeit und Energie, wenn Ressourcen begrenzt sind wie im Alltag?</p>
+                <p data-de="Der High Score zum letzten Tag im Monat gewinnt eine HR-Standortbestimmung (4 Std. Online-Analyse) mit Empfehlung für eine Digitalisierungsroadmap. Tippe einfach auf eine Blüte, die über die Seite fliegt." data-en="The high score at month-end wins an HR location assessment (4 hours online) plus a digitalisation roadmap recommendation. Just tap a petal flying across the page.">Der High Score zum letzten Tag im Monat gewinnt eine HR-Standortbestimmung (4 Std. Online-Analyse) mit Empfehlung für eine Digitalisierungsroadmap. Tippe einfach auf eine Blüte, die über die Seite fliegt.</p>
+            </div>
+            <div class="mw-split-media mw-reveal">
+                <h3><span>🌸🏆</span> <span data-de="Blüten Highscores" data-en="Petal Highscores">Blüten Highscores</span></h3>
+                <p class="highscore-description" style="display:none" data-de="Fange die Blütenblätter und werde zur Legende!" data-en="Catch the petals and become a legend!"></p>
+                <div id="highscoresList" class="highscores-list">
+                    <p class="no-highscores">Noch keine Highscores. Fange Blüten!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Kontakt -->
+    <section id="contact" class="mw-section mw-section-tint" aria-labelledby="contact-title">
+        <div class="mw-wrap mw-contact-grid">
+            <div class="contact-info mw-reveal">
+                <h2 id="contact-title" data-de="Kontakt" data-en="Contact">Kontakt</h2>
+                <p class="contact-description" data-de="Bereit für den nächsten Schritt – für dich oder dein Team? Schreib mir, dann schauen wir, welche Methode oder welches Format passt." data-en="Ready for the next step – for you or your team? Write to me and we will find the method or format that fits.">
+                    Bereit für den nächsten Schritt – für dich oder dein Team? Schreib mir, dann schauen wir, welche Methode oder welches Format passt.
+                </p>
+                <div class="mw-contact-list">
+                    <div class="mw-contact-item contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4 data-de="E-Mail" data-en="Email">E-Mail</h4>
+                            <a href="mailto:info@manuel-weiss.ch">info@manuel-weiss.ch</a>
+                        </div>
+                    </div>
+                    <div class="mw-contact-item contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4 data-de="Telefon" data-en="Phone">Telefon</h4>
+                            <a href="tel:+41798385590">+41 79 838 55 90</a>
+                        </div>
+                    </div>
+                    <div class="mw-contact-item contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4 data-de="Adresse" data-en="Address">Adresse</h4>
+                            <p>Pilatusstrasse 40, 8330 Pfäffikon ZH</p>
+                        </div>
+                    </div>
+                    <div class="mw-contact-item contact-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h4 data-de="Verfügbarkeit" data-en="Availability">Verfügbarkeit</h4>
+                            <p data-de="Mo-Fr: 9:00 - 18:00" data-en="Mon-Fri: 9:00 - 18:00">Mo-Fr: 9:00 - 18:00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mw-reveal">
+                <form id="contactForm" class="mw-form">
+                    <div class="form-group">
+                        <label for="name" data-de="Name" data-en="Name">Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" data-de="E-Mail" data-en="Email">E-Mail</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject" data-de="Betreff" data-en="Subject">Betreff</label>
+                        <input type="text" id="subject" name="subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message" data-de="Nachricht" data-en="Message">Nachricht</label>
+                        <textarea id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="mw-btn mw-btn-solid">
+                        <span data-de="Nachricht senden" data-en="Send Message">Nachricht senden</span>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Landing-Verhalten: Nav über Video, Peek-Kopfzeilen, Slider, Reveal -->
+    <script>
+    (function () {
+        var body = document.body;
+        body.classList.add('mw-landing');
+
+        /* Nav transparent, solange das Hero-Video oben steht */
+        var hero = document.getElementById('home');
+        function onTop() {
+            var y = window.scrollY || window.pageYOffset;
+            var limit = Math.max(80, (hero ? hero.offsetHeight : window.innerHeight) * 0.55);
+            body.classList.toggle('mw-top', y < limit);
+        }
+
+        /* Kopfzeilen der kommenden Panels unten einblenden */
+        var panels = Array.prototype.slice.call(document.querySelectorAll('.mw-panel'));
+        var peek = document.getElementById('mwPeek');
+        var stack = document.getElementById('mwStack');
+        var items = [], tops = [];
+        function headH() {
+            return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--mw-head')) || 64;
+        }
+        function makeClone(p, i) {
+            var a = document.createElement('a');
+            a.className = 'mw-peek-item';
+            a.href = '#' + p.id;
+            a.style.cssText = '--i:' + i;
+            var num = p.querySelector('.mw-panel-num');
+            var h = p.querySelector('h2');
+            a.innerHTML = '<span class="mw-panel-num">' + (num ? num.textContent : '') + '</span><span data-de="' +
+                (h ? (h.getAttribute('data-de') || h.textContent) : '') + '" data-en="' +
+                (h ? (h.getAttribute('data-en') || h.textContent) : '') + '">' + (h ? h.textContent : '') + '</span>';
+            a.addEventListener('click', function (e) {
+                e.preventDefault();
+                window.scrollTo({ top: p.offsetTop - i * headH(), behavior: 'smooth' });
+            });
+            return a;
+        }
+        if (peek && stack && panels.length) {
+            panels.forEach(function (p, i) {
+                var a = makeClone(p, i); peek.appendChild(a); items.push(a);
+                var b = makeClone(p, i); stack.appendChild(b); tops.push(b);
+            });
+        }
+        function onPeek() {
+            if (!peek || !stack || !panels.length) return;
+            var vh = window.innerHeight;
+            var hh = headH();
+            var y = window.scrollY || window.pageYOffset;
+            var n = panels.length;
+            var last = panels[n - 1];
+            var stageEndRel = last.getBoundingClientRect().bottom; /* Unterkante des letzten Panels im Viewport */
+            var off = y < 30 || stageEndRel < vh - 10;
+            peek.classList.toggle('is-off', off);
+            panels.forEach(function (p, i) {
+                var r = p.getBoundingClientRect();
+                /* unten: kommende Panels */
+                var slot = vh - (n - i) * hh;
+                items[i].classList.toggle('is-hidden', r.top <= slot + 1);
+                /* oben: Panels, deren eigene Kopfzeile schon rausgeschoben wurde */
+                var passed = r.bottom <= (i + 1) * hh + 1;
+                var stageGone = stageEndRel <= n * hh;
+                tops[i].classList.toggle('is-on', passed && !stageGone);
+            });
+        }
+
+        /* Reveal beim Scrollen */
+        var reveals = document.querySelectorAll('.mw-reveal');
+        if ('IntersectionObserver' in window) {
+            var io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (en) {
+                    if (en.isIntersecting) { en.target.classList.add('is-in'); io.unobserve(en.target); }
+                });
+            }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+            reveals.forEach(function (el) { io.observe(el); });
+        } else {
+            reveals.forEach(function (el) { el.classList.add('is-in'); });
+        }
+
+        /* Slider-Pfeile */
+        var slider = document.getElementById('mwSlider');
+        document.querySelectorAll('[data-slide]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                if (!slider) return;
+                var card = slider.querySelector('.mw-slide');
+                var step = card ? card.getBoundingClientRect().width + 16 : 340;
+                slider.scrollBy({ left: step * parseInt(btn.getAttribute('data-slide'), 10), behavior: 'smooth' });
+            });
+        });
+
+        function tick() { onTop(); onPeek(); }
+        var raf = null;
+        window.addEventListener('scroll', function () {
+            if (raf) return;
+            raf = requestAnimationFrame(function () { raf = null; tick(); });
+        }, { passive: true });
+        window.addEventListener('resize', tick);
+        window.addEventListener('load', tick);
+        tick();
+    })();
+    </script>
 
 
     <!-- Translation Manager -->
