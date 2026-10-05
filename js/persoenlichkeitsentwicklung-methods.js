@@ -129,7 +129,8 @@ function startMethod(methodId) {
             'methods/solution-focused/solution-focused.html',
             'methods/moment-excellence/moment-excellence.html',
             'methods/nlp-meta-goal/nlp-meta-goal.html',
-            'methods/raisec/index-raisec.html'
+            'methods/raisec/index-raisec.html',
+            'methods/how-of-happiness/how-of-happiness.html'
         ];
         const hasEnVersion = enPagesAvailable.includes(url);
         let fullUrl = (isEnglish && hasEnVersion) ? `/en/${url}` : `/${url}`;
