@@ -1,0 +1,370 @@
+/* ========================================
+   SWOT-MATRIX SPEZIFISCHE STYLES
+   Interaktive Matrix mit Hover-Effekten
+   ======================================== */
+
+/* Matrix Container */
+.swot-matrix-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-lg);
+}
+
+/* Matrix Grid */
+.swot-matrix {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr;
+    grid-template-rows: auto 1fr 1fr;
+    gap: 3px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-lg);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    min-width: 450px;
+    min-height: 350px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Matrix Header */
+.matrix-header {
+    display: contents;
+}
+
+.header-cell {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    text-align: center;
+    font-weight: var(--font-weight-semibold);
+    color: white;
+    font-size: 0.9rem;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.header-cell::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.header-cell:hover::before {
+    left: 100%;
+}
+
+.header-cell.internal {
+    background: linear-gradient(135deg, var(--strengths-color), #059669);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.header-cell.external {
+    background: linear-gradient(135deg, var(--opportunities-color), #2563eb);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+/* Matrix Rows */
+.matrix-row {
+    display: contents;
+}
+
+.row-header {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    text-align: center;
+    font-weight: var(--font-weight-semibold);
+    color: white;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.row-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.row-header:hover::before {
+    left: 100%;
+}
+
+.row-header.positive {
+    background: linear-gradient(135deg, var(--strengths-color), #059669);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.row-header.negative {
+    background: linear-gradient(135deg, var(--weaknesses-color), #dc2626);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+/* Matrix Quadrants */
+.matrix-quadrant {
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+
+.matrix-quadrant::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.matrix-quadrant:hover::before {
+    transform: translateX(100%);
+}
+
+.matrix-quadrant:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+/* Strengths Quadrant */
+.matrix-quadrant.strengths {
+    background: linear-gradient(135deg, 
+        rgba(16, 185, 129, 0.3), 
+        rgba(16, 185, 129, 0.1),
+        rgba(5, 150, 105, 0.2));
+    border-color: var(--strengths-color);
+    box-shadow: 
+        0 8px 25px rgba(16, 185, 129, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.matrix-quadrant.strengths:hover {
+    box-shadow: 
+        0 20px 40px rgba(16, 185, 129, 0.3),
+        0 0 0 1px var(--strengths-color);
+}
+
+/* Weaknesses Quadrant */
+.matrix-quadrant.weaknesses {
+    background: linear-gradient(135deg, 
+        rgba(239, 68, 68, 0.3), 
+        rgba(239, 68, 68, 0.1),
+        rgba(220, 38, 38, 0.2));
+    border-color: var(--weaknesses-color);
+    box-shadow: 
+        0 8px 25px rgba(239, 68, 68, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.matrix-quadrant.weaknesses:hover {
+    box-shadow: 
+        0 20px 40px rgba(239, 68, 68, 0.3),
+        0 0 0 1px var(--weaknesses-color);
+}
+
+/* Opportunities Quadrant */
+.matrix-quadrant.opportunities {
+    background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.3), 
+        rgba(59, 130, 246, 0.1),
+        rgba(37, 99, 235, 0.2));
+    border-color: var(--opportunities-color);
+    box-shadow: 
+        0 8px 25px rgba(59, 130, 246, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.matrix-quadrant.opportunities:hover {
+    box-shadow: 
+        0 20px 40px rgba(59, 130, 246, 0.3),
+        0 0 0 1px var(--opportunities-color);
+}
+
+/* Threats Quadrant */
+.matrix-quadrant.threats {
+    background: linear-gradient(135deg, 
+        rgba(245, 158, 11, 0.3), 
+        rgba(245, 158, 11, 0.1),
+        rgba(217, 119, 6, 0.2));
+    border-color: var(--threats-color);
+    box-shadow: 
+        0 8px 25px rgba(245, 158, 11, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.matrix-quadrant.threats:hover {
+    box-shadow: 
+        0 20px 40px rgba(245, 158, 11, 0.3),
+        0 0 0 1px var(--threats-color);
+}
+
+/* Quadrant Content */
+.quadrant-content {
+    position: relative;
+    z-index: 2;
+    color: white;
+    text-align: center;
+    transition: all var(--transition-normal);
+}
+
+.matrix-quadrant:hover .quadrant-content {
+    transform: scale(1.05);
+}
+
+.quadrant-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-sm);
+    display: block;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+}
+
+.quadrant-title {
+    font-size: 1.2rem;
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-xs);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.quadrant-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    font-style: italic;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Matrix Animation */
+.swot-matrix {
+    animation: matrixEntrance 1s ease-out;
+}
+
+@keyframes matrixEntrance {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) rotateY(15deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotateY(0deg);
+    }
+}
+
+/* Responsive Matrix */
+@media (max-width: 768px) {
+    .swot-matrix {
+        min-width: 350px;
+        min-height: 280px;
+        padding: var(--spacing-md);
+    }
+    
+    .matrix-quadrant {
+        min-height: 100px;
+        padding: var(--spacing-md);
+    }
+    
+    .quadrant-icon {
+        font-size: 2rem;
+    }
+    
+    .quadrant-title {
+        font-size: 1rem;
+    }
+    
+    .quadrant-subtitle {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .swot-matrix {
+        min-width: 280px;
+        min-height: 220px;
+        padding: var(--spacing-sm);
+    }
+    
+    .matrix-quadrant {
+        min-height: 80px;
+        padding: var(--spacing-sm);
+    }
+    
+    .quadrant-icon {
+        font-size: 1.5rem;
+    }
+    
+    .quadrant-title {
+        font-size: 0.9rem;
+    }
+    
+    .quadrant-subtitle {
+        font-size: 0.7rem;
+    }
+}
+
+/* Matrix Glow Effects */
+.matrix-quadrant.strengths:active {
+    box-shadow: 
+        0 0 20px var(--strengths-color),
+        0 0 40px var(--strengths-color);
+}
+
+.matrix-quadrant.weaknesses:active {
+    box-shadow: 
+        0 0 20px var(--weaknesses-color),
+        0 0 40px var(--weaknesses-color);
+}
+
+.matrix-quadrant.opportunities:active {
+    box-shadow: 
+        0 0 20px var(--opportunities-color),
+        0 0 40px var(--opportunities-color);
+}
+
+.matrix-quadrant.threats:active {
+    box-shadow: 
+        0 0 20px var(--threats-color),
+        0 0 40px var(--threats-color);
+}

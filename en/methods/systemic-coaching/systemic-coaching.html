@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Systemic coaching | Manuel Weiss</title>
+    <meta name="description" content="Systemic self-coaching: draw a system map, ask circular questions, recognize pattern loops, form hypotheses and plan an experiment to interrupt the pattern.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="systemic-coaching.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-diagram-project"></i></span><span>Systemic</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-diagram-project"></i></div>
+            <div class="mk-kicker">Personal development · Systemic perspective</div>
+            <h1>The problem has a system</h1>
+            <p>Systemic coaching does not look at you alone, but at the web of relationships, expectations and patterns in which a topic arises – and holds. You map your system, ask circular questions, recognize loops and plan a small experiment that interrupts the pattern.</p>
+            <div class="mk-badges"><span class="mk-badge">System map</span><span class="mk-badge">Circular questions</span><span class="mk-badge">Pattern loop</span><span class="mk-badge">Hypotheses</span><span class="mk-badge">Experiment</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <!-- 1 · Anliegen & System -->
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Your concern</h2>
+                <div class="mk-field"><label for="sc-topic">What is it about – and in which context does it show up?</label><textarea class="mk-textarea" id="sc-topic" data-mk-field="topic" placeholder="e.g. In the team I get passed over, even though I contribute the most expertise. At home I hear I should stand up for myself more."></textarea></div>
+                <div class="mk-section-label">Context</div>
+                <div class="mk-chips" id="sc-context"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Who belongs to the system?</h2>
+                <p class="mk-sub">Everyone connected to the topic – including people who are absent, whose expectations still play along. Closeness = how tightly you are connected, quality = how the relationship feels right now.</p>
+                <div class="sc-map-wrap">
+                    <div class="sc-map" id="sc-map"></div>
+                    <div class="sc-members" id="sc-members"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2 · Wechselwirkungen -->
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>Circular questions</h2>
+                <p class="mk-sub">The heart of systemic work: You answer questions <em>from other people's perspective</em>. That makes differences and interactions visible that are invisible from your position.</p>
+                <div id="sc-circular"></div>
+            </div>
+            <div class="mk-card">
+                <h2>The pattern loop</h2>
+                <p class="mk-sub">Problems in systems usually hold through a loop: I do A → the other does B → I do even more A … Rebuild your loop.</p>
+                <div id="sc-loop"></div>
+            </div>
+        </section>
+
+        <!-- 3 · Funktion & Reframing -->
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>What is the problem good for?</h2>
+                <p class="mk-sub">An irritating but central question: Every stable pattern has a function in the system. It protects, stabilizes, prevents or enables something. For whom – and what?</p>
+                <div id="sc-function"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Reframing</h2>
+                <p class="mk-sub">Give the problem behavior a new frame. Not sugarcoating – name the skill or intention behind it.</p>
+                <div id="sc-reframe"></div>
+            </div>
+        </section>
+
+        <!-- 4 · Ressourcen & Hypothesen -->
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>Resources in the system</h2>
+                <p class="mk-sub">Who or what in the system is a resource – even in an unexpected place?</p>
+                <div id="sc-resources"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Hypotheses</h2>
+                <p class="mk-sub">Systemic hypotheses are not truths, but useful guesses. Good is whatever opens new options for action. Write at least two – the more different, the better.</p>
+                <div id="sc-hypotheses"></div>
+            </div>
+        </section>
+
+        <!-- 5 · Experiment -->
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>Pattern interruption</h2>
+                <p class="mk-sub">You cannot change others – but you can change your part of the loop. Choose where you start.</p>
+                <div id="sc-interrupt"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Your experiment</h2>
+                <div id="sc-experiment"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="sc-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="sc-export"><i class="fas fa-download"></i> Export as text file</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset title="Delete all data of this method"><i class="fas fa-trash"></i> Reset everything</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 5</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="systemic-coaching.js?v=20261003"></script>
+</body>
+</html>

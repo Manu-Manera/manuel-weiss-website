@@ -130,7 +130,10 @@ function startMethod(methodId) {
             'methods/moment-excellence/moment-excellence.html',
             'methods/nlp-meta-goal/nlp-meta-goal.html',
             'methods/raisec/index-raisec.html',
-            'methods/how-of-happiness/how-of-happiness.html'
+            'methods/how-of-happiness/how-of-happiness.html',
+            'methods/goal-setting/goal-setting.html',
+            'methods/systemic-coaching/systemic-coaching.html',
+            'methods/swot-analysis/swot-analysis.html'
         ];
         const hasEnVersion = enPagesAvailable.includes(url);
         let fullUrl = (isEnglish && hasEnVersion) ? `/en/${url}` : `/${url}`;
