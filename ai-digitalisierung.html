@@ -11,7 +11,8 @@
     <meta name="author" content="Manuel Weiss">
     
     <!-- Styles -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=20261005">
+    <link rel="stylesheet" href="css/coastal-theme.css?v=20261005">
     <link rel="stylesheet" href="css/starry-background.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -24,7 +25,7 @@
         /* Sternefunkeln Hintergrund */
         .ai-page-wrapper {
             min-height: 100vh;
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #071a2e 50%, #0b2a4a 100%);
             position: relative;
             overflow: hidden;
         }
@@ -84,7 +85,7 @@
         .ai-hero-content h1 {
             font-size: 3.5rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #fff 0%, #c7d2fe 50%, #a5b4fc 100%);
+            background: linear-gradient(135deg, #fff 0%, #cfe9e6 50%, #8fcfcf 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -110,7 +111,7 @@
             border-radius: 50px;
             font-size: 0.9rem;
             font-weight: 500;
-            color: #c7d2fe;
+            color: #cfe9e6;
             margin-bottom: 1.5rem;
         }
         
@@ -126,9 +127,9 @@
             height: 200px;
             border-radius: 20px; /* Abgerundete Ecken statt komplett rund */
             overflow: hidden;
-            border: 4px solid rgba(99, 102, 241, 0.5);
-            box-shadow: 0 0 60px rgba(99, 102, 241, 0.4), 0 20px 50px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: 4px solid rgba(22, 125, 140, 0.5);
+            box-shadow: 0 0 60px rgba(22, 125, 140, 0.4), 0 20px 50px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #167d8c, #1f6f8b);
         }
         
         .ai-profile-image img {
@@ -154,7 +155,7 @@
         .ai-stat-number {
             font-size: 1.5rem;
             font-weight: 800;
-            color: #c7d2fe;
+            color: #cfe9e6;
         }
         
         .ai-stat-label {
@@ -208,7 +209,7 @@
             scroll-behavior: smooth;
             padding: 1rem 0 2rem 0;
             scrollbar-width: thin;
-            scrollbar-color: rgba(99, 102, 241, 0.5) rgba(255, 255, 255, 0.1);
+            scrollbar-color: rgba(22, 125, 140, 0.5) rgba(255, 255, 255, 0.1);
         }
         
         .ai-services-grid::-webkit-scrollbar {
@@ -221,12 +222,12 @@
         }
         
         .ai-services-grid::-webkit-scrollbar-thumb {
-            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            background: linear-gradient(90deg, #167d8c, #1f6f8b);
             border-radius: 10px;
         }
         
         .ai-services-grid::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            background: linear-gradient(90deg, #0f4c75, #0f4c75);
         }
         
         /* Service Cards - Glassmorphism */
@@ -260,10 +261,10 @@
         .ai-service-card:hover {
             transform: translateY(-8px) scale(1.02);
             background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(99, 102, 241, 0.5);
+            border-color: rgba(22, 125, 140, 0.5);
             box-shadow: 
                 0 25px 50px rgba(0, 0, 0, 0.3),
-                0 0 40px rgba(99, 102, 241, 0.2),
+                0 0 40px rgba(22, 125, 140, 0.2),
                 inset 0 0 60px rgba(255, 255, 255, 0.05);
         }
         
@@ -289,10 +290,10 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         }
         
-        .card-icon.strategy { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .card-icon.strategy { background: linear-gradient(135deg, #2a7f9e, #0b2a4a); }
         .card-icon.automation { background: linear-gradient(135deg, #10b981, #059669); }
         .card-icon.workplace { background: linear-gradient(135deg, #f59e0b, #d97706); }
-        .card-icon.coach { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+        .card-icon.coach { background: linear-gradient(135deg, #167d8c, #1f6f8b); }
         
         .ai-service-card h3 {
             font-size: 1.35rem;
@@ -303,7 +304,7 @@
         }
         
         .ai-service-card:hover h3 {
-            color: #c7d2fe;
+            color: #cfe9e6;
         }
         
         .ai-service-card > p {
@@ -338,7 +339,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            color: #a5b4fc;
+            color: #8fcfcf;
             font-weight: 600;
             font-size: 0.95rem;
             padding-top: 1rem;
@@ -347,7 +348,7 @@
         }
         
         .ai-service-card:hover .ai-service-cta {
-            color: #c7d2fe;
+            color: #cfe9e6;
         }
         
         .ai-service-cta i {
@@ -392,7 +393,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
             padding: 2rem;
-            border-left: 4px solid #6366f1;
+            border-left: 4px solid #167d8c;
         }
         
         .ai-methodology-card h3 {
@@ -407,7 +408,7 @@
         }
         
         .university-badge {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, #167d8c, #1f6f8b);
             color: white;
             padding: 0.25rem 0.75rem;
             border-radius: 20px;
@@ -422,7 +423,7 @@
         }
         
         .ai-methodology-card strong {
-            color: #c7d2fe;
+            color: #cfe9e6;
         }
         
         /* CTA Section */
@@ -437,9 +438,9 @@
             margin: 0 auto;
             text-align: center;
             padding: 3rem;
-            background: rgba(99, 102, 241, 0.15);
+            background: rgba(22, 125, 140, 0.15);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(99, 102, 241, 0.3);
+            border: 1px solid rgba(22, 125, 140, 0.3);
             border-radius: 24px;
         }
         
@@ -476,14 +477,14 @@
         }
         
         .ai-btn-primary {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, #167d8c, #1f6f8b);
             color: white;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 20px rgba(22, 125, 140, 0.4);
         }
         
         .ai-btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.5);
+            box-shadow: 0 8px 30px rgba(22, 125, 140, 0.5);
         }
         
         .ai-btn-outline {
@@ -514,7 +515,7 @@
         }
         
         .ai-page-wrapper .footer a:hover {
-            color: #c7d2fe !important;
+            color: #cfe9e6 !important;
         }
         
         /* Responsive */
@@ -835,5 +836,7 @@
             }
         });
     </script>
+    <!-- DE/EN Umschaltung -->
+    <script src="js/simple-translation.js?v=20261005"></script>
 </body>
 </html>

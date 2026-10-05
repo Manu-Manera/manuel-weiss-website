@@ -6,7 +6,7 @@
 /* Dark gradient background */
 .starry-bg,
 body.starry-theme {
-    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%) !important;
+    background: linear-gradient(135deg, #0f172a 0%, #071a2e 50%, #0b2a4a 100%) !important;
     min-height: 100vh;
     position: relative;
 }
@@ -117,8 +117,8 @@ body.starry-theme::after {
     height: 2px;
     background: linear-gradient(90deg, 
         rgba(255,255,255,1) 0%, 
-        rgba(165,180,252,0.8) 20%, 
-        rgba(139,92,246,0.5) 50%, 
+        rgba(143,207,207,0.8) 20%, 
+        rgba(31,111,139,0.5) 50%, 
         transparent 100%);
     transform: translateX(-150px) translateY(0.5px);
     border-radius: 2px;
@@ -131,7 +131,7 @@ body.starry-theme::after {
     position: absolute;
     width: 6px;
     height: 6px;
-    background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(165,180,252,0.5) 50%, transparent 100%);
+    background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(143,207,207,0.5) 50%, transparent 100%);
     border-radius: 50%;
     transform: translate(-1.5px, -1.5px);
     filter: blur(1px);

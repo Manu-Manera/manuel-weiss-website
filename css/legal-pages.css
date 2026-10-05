@@ -1,8 +1,8 @@
 /* Legal Pages Styles */
 :root {
-    --primary-color: #6366f1;
-    --primary-dark: #4f46e5;
-    --secondary-color: #8b5cf6;
+    --primary-color: #167d8c;
+    --primary-dark: #0f4c75;
+    --secondary-color: #1f6f8b;
     --success-color: #10b981;
     --warning-color: #f59e0b;
     --error-color: #ef4444;
@@ -33,7 +33,7 @@
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #2a7f9e 0%, #0b2a4a 100%);
     min-height: 100vh;
     color: var(--text-primary);
     line-height: 1.6;

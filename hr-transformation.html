@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HR-Transformation - Manuel Weiss</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=20261005">
+    <link rel="stylesheet" href="css/coastal-theme.css?v=20261005">
     <link rel="stylesheet" href="css/starry-background.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -16,7 +17,7 @@
            ═══════════════════════════════════════════════════════════════════════════ */
         
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%) !important;
+            background: linear-gradient(135deg, #0f172a 0%, #071a2e 50%, #0b2a4a 100%) !important;
             min-height: 100vh;
             color: #e2e8f0;
         }
@@ -32,6 +33,13 @@
             color: #fff !important;
         }
         
+        .navbar .nav-container {
+            background: transparent !important;
+            box-shadow: none !important;
+            border: none !important;
+            backdrop-filter: none !important;
+        }
+        
         .nav-links a {
             color: rgba(255, 255, 255, 0.8) !important;
         }
@@ -42,9 +50,9 @@
         
         /* Hero Section */
         .hr-transformation-hero {
-            background: rgba(99, 102, 241, 0.15);
+            background: rgba(22, 125, 140, 0.15);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            border-bottom: 1px solid rgba(22, 125, 140, 0.2);
             color: white;
             padding: 4rem 2rem;
             text-align: center;
@@ -57,7 +65,7 @@
             font-size: 3rem;
             font-weight: 800;
             margin-bottom: 1rem;
-            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            background: linear-gradient(135deg, #fff 0%, #8fcfcf 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -68,12 +76,12 @@
             opacity: 0.9;
             max-width: 800px;
             margin: 0 auto 2rem auto;
-            color: #c7d2fe;
+            color: #cfe9e6;
         }
         
         .methodology-badge {
             display: inline-block;
-            background: rgba(99, 102, 241, 0.3);
+            background: rgba(22, 125, 140, 0.3);
             backdrop-filter: blur(10px);
             color: white;
             padding: 0.75rem 1.5rem;
@@ -81,7 +89,7 @@
             font-size: 0.95rem;
             font-weight: 600;
             margin-bottom: 2rem;
-            border: 1px solid rgba(165, 180, 252, 0.3);
+            border: 1px solid rgba(143, 207, 207, 0.3);
         }
         
         .container {
@@ -134,7 +142,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            background: linear-gradient(135deg, rgba(22, 125, 140, 0.1) 0%, rgba(31, 111, 139, 0.1) 100%);
             opacity: 0;
             transition: opacity 0.4s ease;
             pointer-events: none;
@@ -144,7 +152,7 @@
             transform: translateY(-8px) scale(1.02);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4),
                         inset 0 1px 0 rgba(255, 255, 255, 0.15);
-            border-color: rgba(165, 180, 252, 0.3);
+            border-color: rgba(143, 207, 207, 0.3);
             background: rgba(255, 255, 255, 0.08);
         }
         
@@ -159,7 +167,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            background: linear-gradient(90deg, #167d8c, #1f6f8b);
             z-index: 1;
         }
         
@@ -189,11 +197,11 @@
         
         .service-card:hover .service-icon {
             transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 12px 32px rgba(22, 125, 140, 0.4);
         }
         
         .service-card:nth-child(1) .service-icon {
-            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            background: linear-gradient(135deg, #167d8c, #0f4c75);
         }
         
         .service-card:nth-child(2) .service-icon {
@@ -210,14 +218,14 @@
             margin-bottom: 1rem;
             position: relative;
             z-index: 2;
-            background: linear-gradient(135deg, #fff 0%, #c7d2fe 100%);
+            background: linear-gradient(135deg, #fff 0%, #cfe9e6 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         
         .service-card p {
-            color: #a5b4fc;
+            color: #8fcfcf;
             line-height: 1.7;
             margin-bottom: 1.5rem;
             position: relative;
@@ -254,7 +262,7 @@
         
         .service-features li::before {
             content: '✓';
-            color: #a5b4fc;
+            color: #8fcfcf;
             margin-right: 0.75rem;
             font-weight: 700;
             font-size: 1.1rem;
@@ -277,19 +285,19 @@
             align-items: center;
             justify-content: space-between;
             padding: 1.25rem;
-            background: rgba(99, 102, 241, 0.15);
+            background: rgba(22, 125, 140, 0.15);
             backdrop-filter: blur(10px);
             border-radius: 12px;
             margin-top: auto;
-            border: 1px solid rgba(165, 180, 252, 0.2);
+            border: 1px solid rgba(143, 207, 207, 0.2);
             position: relative;
             z-index: 2;
             transition: all 0.3s ease;
         }
         
         .service-card:hover .service-cta {
-            background: rgba(99, 102, 241, 0.25);
-            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.2);
+            background: rgba(22, 125, 140, 0.25);
+            box-shadow: 0 4px 16px rgba(22, 125, 140, 0.2);
         }
         
         .cta-text {
@@ -299,7 +307,7 @@
         }
         
         .cta-arrow {
-            color: #a5b4fc;
+            color: #8fcfcf;
             font-size: 1.3rem;
             transition: transform 0.3s ease;
         }
@@ -342,12 +350,12 @@
         }
         
         .workflow-step {
-            background: rgba(99, 102, 241, 0.1);
+            background: rgba(22, 125, 140, 0.1);
             padding: 1rem;
             border-radius: 8px;
-            border-left: 3px solid #6366f1;
+            border-left: 3px solid #167d8c;
             font-size: 0.9rem;
-            color: #c7d2fe;
+            color: #cfe9e6;
         }
         
         .workflow-step strong {
@@ -370,7 +378,7 @@
             font-weight: 700;
             margin-bottom: 1.5rem;
             text-align: center;
-            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            background: linear-gradient(135deg, #fff 0%, #8fcfcf 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -378,7 +386,7 @@
         
         .intro-section p {
             font-size: 1.1rem;
-            color: #a5b4fc;
+            color: #8fcfcf;
             line-height: 1.7;
             text-align: center;
             max-width: 800px;
@@ -396,19 +404,19 @@
             display: flex;
             align-items: center;
             padding: 1rem;
-            background: rgba(99, 102, 241, 0.1);
+            background: rgba(22, 125, 140, 0.1);
             border-radius: 12px;
-            border: 1px solid rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(22, 125, 140, 0.2);
             transition: all 0.3s ease;
         }
         
         .benefit-item:hover {
-            background: rgba(99, 102, 241, 0.2);
+            background: rgba(22, 125, 140, 0.2);
             transform: translateX(4px);
         }
         
         .benefit-item i {
-            color: #a5b4fc;
+            color: #8fcfcf;
             margin-right: 1rem;
             font-size: 1.2rem;
         }
@@ -444,7 +452,7 @@
         }
         
         .footer-section p {
-            color: #a5b4fc;
+            color: #8fcfcf;
         }
         
         .footer-section ul {
@@ -457,7 +465,7 @@
         }
         
         .footer-section ul li a {
-            color: #a5b4fc;
+            color: #8fcfcf;
             text-decoration: none;
             transition: color 0.3s ease;
         }
@@ -731,5 +739,7 @@
     <script src="js/real-aws-auth.js"></script>
     <script src="js/global-auth-system.js"></script>
     <script src="js/shooting-stars.js"></script>
+    <!-- DE/EN Umschaltung -->
+    <script src="js/simple-translation.js?v=20261005"></script>
 </body>
 </html>

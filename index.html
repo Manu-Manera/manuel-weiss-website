@@ -25,7 +25,8 @@
     <link rel="apple-touch-icon" href="images/icon-192.png">
     
     <!-- Styles -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=20261005">
+    <link rel="stylesheet" href="css/coastal-theme.css?v=20261005">
     <!-- ENTFERNT: persoenlichkeitsentwicklung-uebersicht.css - Diese Datei gehört nur auf die Persönlichkeitsentwicklung-Seite -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -127,7 +128,7 @@
         </div>
         <div class="hero-video-wrapper">
             <!-- Video wird dynamisch von API geladen (kein source Element nötig) -->
-            <video class="hero-video" autoplay muted loop playsinline id="heroVideo">
+            <video class="hero-video" autoplay muted loop playsinline webkit-playsinline preload="metadata" disablepictureinpicture disableremoteplayback id="heroVideo">
             </video>
             <div class="hero-video-overlay"></div>
         </div>
@@ -258,7 +259,7 @@
         /* Schneeflocken Section - Gleicher violetter Hintergrund wie Hero */
         .snowflake-section {
             padding: 4rem 0;
-            background: linear-gradient(135deg, rgba(30, 58, 138, 1) 0%, rgba(55, 48, 163, 1) 50%, rgba(124, 58, 237, 1) 100%);
+            background: linear-gradient(135deg, rgba(11, 42, 74, 1) 0%, rgba(15, 76, 117, 1) 50%, rgba(15, 76, 117, 1) 100%);
             position: relative;
             overflow: hidden;
         }
@@ -359,6 +360,11 @@
     </style>
 
     <!-- Contact Section -->
+    <div class="coastal-wave coastal-wave--to-sand" aria-hidden="true">
+        <svg viewBox="0 0 1440 56" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,32 C240,56 480,8 720,24 C960,40 1200,56 1440,20 L1440,56 L0,56 Z"></path>
+        </svg>
+    </div>
     <section id="contact" class="contact">
         <div class="container">
             <div class="contact-content">
@@ -443,7 +449,7 @@
     <!-- Scripts -->
     <script src="js/universal-navigation.js"></script>
     <!-- Simple Translation Manager -->
-    <script src="js/simple-translation.js"></script>
+    <script src="js/simple-translation.js?v=20261005"></script>
     
     <script src="script.js"></script>
     
@@ -668,7 +674,7 @@
                             text-align: center;
                             margin-bottom: 3rem;
                             padding: 2rem;
-                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            background: linear-gradient(135deg, #2a7f9e 0%, #0b2a4a 100%);
                             color: white;
                             border-radius: 12px;
                         }
@@ -691,8 +697,8 @@
                             margin-bottom: 2.5rem;
                         }
                         .section h3 {
-                            color: #667eea;
-                            border-bottom: 2px solid #667eea;
+                            color: #2a7f9e;
+                            border-bottom: 2px solid #2a7f9e;
                             padding-bottom: 0.5rem;
                             margin-bottom: 1.5rem;
                         }
@@ -701,7 +707,7 @@
                             padding: 1rem;
                             background: #f8f9fa;
                             border-radius: 8px;
-                            border-left: 4px solid #667eea;
+                            border-left: 4px solid #2a7f9e;
                         }
                         .experience-item h4, .project-item h4 {
                             color: #1f2937;
@@ -713,7 +719,7 @@
                             gap: 0.5rem;
                         }
                         .skill-tag {
-                            background: #667eea;
+                            background: #2a7f9e;
                             color: white;
                             padding: 0.25rem 0.75rem;
                             border-radius: 12px;
@@ -769,7 +775,7 @@
                         <h3>Fähigkeiten</h3>
                         ${Object.entries(data.skills).map(([category, skills]) => `
                             <div style="margin-bottom: 1.5rem;">
-                                <h4 style="color: #667eea; margin-bottom: 0.5rem;">${category}</h4>
+                                <h4 style="color: #2a7f9e; margin-bottom: 0.5rem;">${category}</h4>
                                 <div class="skills-grid">
                                     ${skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
                                 </div>
@@ -2882,13 +2888,17 @@
                 
                 // Timeout setzen
                 videoLoadTimeout = setTimeout(() => {
-                    console.warn('Video-Lade-Timeout erreicht (10s)');
+                    console.warn('Video-Lade-Timeout erreicht (15s)');
                     const currentSrc = videoElement.src || '';
-                    if (!currentSrc || (!currentSrc.includes('s3.') && !currentSrc.includes('amazonaws.com'))) {
-                        console.warn('Video konnte nicht geladen werden nach 10s');
+                    if (!currentSrc) {
+                        console.warn('Keine Video-URL nach 15s – Wrapper ausblenden');
                         hideVideo();
+                    } else if (videoElement.readyState < 2) {
+                        // URL gesetzt, aber noch keine Daten (z. B. langsames Netz im In-App-Browser):
+                        // Wrapper mit Gradient behalten, Video weiterladen lassen
+                        console.warn('Video lädt noch – Gradient bleibt sichtbar');
                     }
-                }, 10000);
+                }, 15000);
                 
                 try {
                     const apiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : (window.AWS_APP_CONFIG?.API_BASE || 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1') + '/hero-video-settings';
@@ -2927,78 +2937,95 @@
                     
                     if (data.videoUrl && data.videoUrl.trim() !== '' && videoElement) {
                         console.log('Video-URL gefunden:', data.videoUrl);
-                        
-                        // Mobile: Video sofort verstecken, erst anzeigen wenn geladen
+
                         const isMobile = window.innerWidth <= 768;
-                        if (isMobile && videoWrapper) {
-                            videoWrapper.style.display = 'none'; // Verstecke sofort auf Mobile
-                        }
-                        
-                        // Video vorhanden: Setze die Video-URL direkt auf videoElement
+                        const isInApp = /Instagram|FBAN|FBAV|FB_IAB|Line\/|Snapchat|TikTok/i.test(navigator.userAgent || '');
+
+                        // Wrapper bleibt sichtbar (Overlay/Gradient als Hintergrund, Video blendet darüber ein)
+                        videoWrapper.style.display = 'block';
+                        videoElement.style.opacity = '0';
+                        videoElement.style.transition = 'opacity 0.8s ease';
+
+                        // Autoplay-Voraussetzungen explizit als Properties setzen
+                        // (In-App-Browser wie Instagram ignorieren teilweise die HTML-Attribute)
+                        videoElement.muted = true;
+                        videoElement.defaultMuted = true;
+                        videoElement.playsInline = true;
+                        videoElement.setAttribute('muted', '');
+                        videoElement.setAttribute('playsinline', '');
+                        videoElement.setAttribute('webkit-playsinline', '');
+                        videoElement.loop = true;
+                        videoElement.autoplay = true;
+                        videoElement.preload = (isMobile || isInApp) ? 'metadata' : 'auto';
                         videoElement.src = data.videoUrl;
-                        
-                        // Mobile Optimierung: Preload auf "none" für schnellste Ladezeit
-                        if (isMobile) {
-                            videoElement.preload = 'none'; // Kein Preload auf Mobile
-                            videoElement.load(); // Lade nur Metadaten
-                        } else {
-                            videoElement.preload = 'auto';
-                            videoElement.load(); // Lade das Video neu
-                        }
-                        
-                        // Desktop: Zeige Video-Wrapper sofort
-                        if (!isMobile && videoWrapper) {
-                            videoWrapper.style.display = 'block';
-                        }
-                        
-                        // Prüfe ob Video erfolgreich geladen wurde
-                        const onLoadedData = () => {
+                        videoElement.load();
+
+                        let shown = false;
+                        const showVideo = () => {
+                            if (shown) return;
+                            shown = true;
                             clearTimeout(videoLoadTimeout);
-                            console.log('✅ Video erfolgreich geladen');
-                            // Nur auf Desktop oder wenn Mobile-Video vollständig geladen ist
-                            if (videoWrapper) {
-                                if (isMobile) {
-                                    // Auf Mobile: Zeige Video nur wenn es vollständig geladen ist
-                                    if (videoElement.readyState >= 3) { // HAVE_FUTURE_DATA
-                                        videoWrapper.style.display = 'block';
-                                    }
-                                } else {
-                                    videoWrapper.style.display = 'block';
-                                }
-                            }
-                            videoElement.removeEventListener('loadeddata', onLoadedData);
+                            videoWrapper.style.display = 'block';
+                            videoElement.style.opacity = '1';
+                            console.log('✅ Hero-Video sichtbar');
                         };
-                        
-                        // Mobile: Zusätzlicher Event-Listener für canplay (Video kann abgespielt werden)
-                        if (isMobile) {
-                            const onCanPlay = () => {
-                                console.log('✅ Mobile Video kann abgespielt werden');
-                                if (videoWrapper) {
-                                    videoWrapper.style.display = 'block';
-                                }
-                                videoElement.removeEventListener('canplay', onCanPlay);
-                            };
-                            videoElement.addEventListener('canplay', onCanPlay, { once: true });
-                        }
-                        
-                        // Falls Video nicht geladen werden kann, verstecke es
+
+                        // play() aktiv anstossen – mit Retry bei erster Nutzerinteraktion
+                        let playAttempts = 0;
+                        const tryPlay = () => {
+                            playAttempts++;
+                            const p = videoElement.play();
+                            if (p && typeof p.then === 'function') {
+                                p.then(() => {
+                                    showVideo();
+                                }).catch((err) => {
+                                    console.warn('⚠️ Autoplay blockiert (' + playAttempts + '):', err && err.name);
+                                    if (playAttempts === 1) {
+                                        // Instagram/Facebook WKWebView: Autoplay erst nach Touch/Scroll
+                                        const retry = () => {
+                                            ['touchstart', 'touchend', 'scroll', 'click', 'pointerdown'].forEach(ev =>
+                                                window.removeEventListener(ev, retry, { passive: true }));
+                                            tryPlay();
+                                        };
+                                        ['touchstart', 'touchend', 'scroll', 'click', 'pointerdown'].forEach(ev =>
+                                            window.addEventListener(ev, retry, { passive: true, once: true }));
+                                        // Ohne Interaktion: Video trotzdem als Standbild zeigen, sobald Daten da sind
+                                        if (videoElement.readyState >= 2) showVideo();
+                                    }
+                                });
+                            } else {
+                                showVideo();
+                            }
+                        };
+
+                        videoElement.addEventListener('loadedmetadata', () => {
+                            console.log('📐 Video-Metadaten geladen');
+                            tryPlay();
+                        }, { once: true });
+                        videoElement.addEventListener('loadeddata', () => {
+                            // Erstes Frame vorhanden → anzeigen (auch wenn play() noch hängt)
+                            showVideo();
+                        }, { once: true });
+                        videoElement.addEventListener('canplay', showVideo, { once: true });
+                        videoElement.addEventListener('playing', showVideo, { once: true });
+
+                        // Sichtbarkeit zurück (Tab-Wechsel, In-App-Browser) → erneut abspielen
+                        document.addEventListener('visibilitychange', () => {
+                            if (!document.hidden && videoElement.paused && videoElement.src) {
+                                videoElement.play().catch(() => {});
+                            }
+                        });
+
+                        // Falls Video nicht geladen werden kann: Wrapper behalten (Gradient), Video ausblenden
                         const onError = () => {
                             clearTimeout(videoLoadTimeout);
-                            const currentSrc = videoElement.src || '';
-                            console.warn('❌ Video konnte nicht geladen werden:', currentSrc);
-                            hideVideo();
-                            videoElement.removeEventListener('error', onError);
+                            console.warn('❌ Video konnte nicht geladen werden:', videoElement.src || '');
+                            videoElement.style.opacity = '0';
                         };
-                        
-                        videoElement.addEventListener('loadeddata', onLoadedData, { once: true });
                         videoElement.addEventListener('error', onError, { once: true });
-                        
-                        // Zusätzlich: Prüfe ob Video nach 5 Sekunden noch lädt
-                        setTimeout(() => {
-                            if (videoElement.readyState < 2) { // HAVE_CURRENT_DATA
-                                console.warn('Video lädt sehr langsam, könnte ein Problem sein');
-                            }
-                        }, 5000);
+
+                        // Sicherheitsnetz: erster play()-Versuch auch ohne loadedmetadata (manche WebViews feuern spät)
+                        setTimeout(() => { if (!shown) tryPlay(); }, 1500);
                         
                     } else {
                         clearTimeout(videoLoadTimeout);

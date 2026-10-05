@@ -1,0 +1,326 @@
+/* ============================================================================
+   Coastal Theme – dezenter "Sonne, Strand, Meer"-Look für manuel-weiss.ch
+   Wird NACH styles.css / legal-pages.css geladen und überschreibt nur Farben,
+   Verläufe und ein paar Akzente. Layout und Komponenten bleiben unverändert.
+   Palette: Tiefes Ozeanblau · Sea-Glass-Teal · warmer Sand · Sonnenuntergang
+   ============================================================================ */
+
+:root {
+    /* Kernpalette */
+    --ocean-deep: #0b2a4a;
+    --ocean: #0f4c75;
+    --sea: #167d8c;
+    --sea-glass: #3aa6a6;
+    --sea-foam: #cfe9e6;
+    --sand: #f7f2e9;
+    --sand-dark: #e9dfcc;
+    --sunset: #e8a04b;
+    --coral: #e9775b;
+    --driftwood: #6b5d4f;
+
+    /* Überschreibt die bisherige Indigo/Violett-Palette aus styles.css */
+    --primary: var(--sea);
+    --primary-dark: var(--ocean);
+    --primary-light: var(--sea-glass);
+    --secondary: var(--ocean);
+    --accent: var(--sunset);
+    --info: var(--sea-glass);
+
+    /* legal-pages.css */
+    --primary-color: var(--sea);
+    --secondary-color: var(--ocean);
+    --bg-secondary: #fbf8f2;
+    --bg-tertiary: var(--sand-dark);
+
+    /* Wiederverwendbare Verläufe */
+    --coastal-gradient: linear-gradient(135deg, var(--ocean-deep) 0%, var(--ocean) 48%, var(--sea) 100%);
+    --coastal-gradient-soft: linear-gradient(135deg, rgba(11, 42, 74, 0.62) 0%, rgba(15, 76, 117, 0.55) 50%, rgba(22, 125, 140, 0.55) 100%);
+    --sunset-gradient: linear-gradient(135deg, var(--sunset) 0%, var(--coral) 100%);
+}
+
+/* ---------------------------------------------------------------------------
+   Grundfläche: warmer Sandton statt kühlem Blau-Weiss
+   --------------------------------------------------------------------------- */
+body {
+    background-color: var(--sand);
+}
+
+*:focus-visible {
+    outline-color: var(--sea-glass);
+}
+
+::selection {
+    background: rgba(58, 166, 166, 0.28);
+}
+
+/* ---------------------------------------------------------------------------
+   Dunkle Sektionen (Hero, Services, About) → Ozean-Verlauf mit Sonnen-Glow
+   --------------------------------------------------------------------------- */
+.hero,
+.services,
+.about,
+.snowflake-section,
+.hero.hero-with-video {
+    background:
+        radial-gradient(ellipse 60% 45% at 85% 0%, rgba(232, 160, 75, 0.22) 0%, rgba(232, 160, 75, 0) 70%),
+        var(--coastal-gradient) !important;
+}
+
+/* Sternenfunkeln wird zu zartem Lichtglitzern auf dem Wasser */
+.hero::after,
+.services::after,
+.about::after {
+    opacity: 0.32;
+    animation-duration: 40s, 16s;
+}
+
+/* Video-Overlay in Ozeanfarben, etwas transparenter → Video sichtbarer */
+.hero-video-overlay {
+    background: var(--coastal-gradient-soft) !important;
+}
+
+@media (max-width: 768px) {
+    .hero-video-overlay {
+        background: linear-gradient(180deg, rgba(11, 42, 74, 0.35) 0%, rgba(11, 42, 74, 0.55) 100%) !important;
+    }
+}
+
+/* Hero-Headline-Verlauf: Weiss → heller Sand (statt Indigo-Weiss) */
+.hero .gradient-text {
+    background: linear-gradient(135deg, #ffffff 0%, #f6e7c8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+/* Sonnen-Akzentlinie unter Sektions-Titeln auf dunklem Grund */
+.services .section-title::after,
+.about .section-title::after {
+    content: '';
+    display: block;
+    width: 56px;
+    height: 3px;
+    margin: 0.9rem auto 0;
+    border-radius: 999px;
+    background: var(--sunset-gradient);
+    opacity: 0.9;
+}
+
+.about .section-title::after {
+    margin-left: 0;
+}
+
+@media (max-width: 768px) {
+    .about .section-title::after {
+        margin-left: auto;
+    }
+}
+
+/* ---------------------------------------------------------------------------
+   Wellen-Trenner zwischen dunklen Sektionen und hellen Flächen
+   --------------------------------------------------------------------------- */
+.coastal-wave {
+    display: block;
+    width: 100%;
+    height: 56px;
+    line-height: 0;
+    overflow: hidden;
+    position: relative;
+    z-index: 11;
+    pointer-events: none;
+}
+
+.coastal-wave svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.coastal-wave--to-sand {
+    background: var(--coastal-gradient);
+    margin-top: -1px;
+}
+
+.coastal-wave--to-sand svg path {
+    fill: var(--sand);
+}
+
+/* ---------------------------------------------------------------------------
+   Buttons
+   --------------------------------------------------------------------------- */
+.btn-primary {
+    background: var(--sea);
+    border-color: var(--sea);
+    box-shadow: 0 6px 18px rgba(22, 125, 140, 0.22);
+}
+
+.btn-primary:hover {
+    background: var(--ocean);
+    border-color: var(--ocean);
+    box-shadow: 0 10px 26px rgba(15, 76, 117, 0.3);
+}
+
+.btn-outline {
+    color: var(--sea);
+    border-color: var(--sea);
+}
+
+.btn-outline:hover {
+    background: var(--sea);
+    border-color: var(--sea);
+}
+
+/* Buttons auf dunklem Grund (Hero / Services): Sand statt Weiss */
+.hero .btn-primary,
+.services .btn-primary {
+    background: var(--sunset-gradient);
+    border-color: transparent;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.hero .btn-primary:hover,
+.services .btn-primary:hover {
+    filter: brightness(1.06);
+    box-shadow: 0 12px 30px rgba(233, 119, 91, 0.35);
+}
+
+.hero .btn-outline,
+.services .btn-outline {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+.hero .btn-outline:hover,
+.services .btn-outline:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: #fff;
+}
+
+/* ---------------------------------------------------------------------------
+   Karten & Icons
+   --------------------------------------------------------------------------- */
+.service-card {
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow: 0 10px 34px rgba(5, 24, 46, 0.28);
+}
+
+.service-card:hover {
+    border-color: rgba(246, 231, 200, 0.55);
+}
+
+.service-card:hover .service-icon {
+    background: var(--sunset-gradient);
+}
+
+.service-icon,
+.stat-icon,
+.feature-icon,
+.contact-icon {
+    background: linear-gradient(135deg, var(--sea) 0%, var(--sea-glass) 100%);
+}
+
+.nav-link.active::after,
+.nav-link:hover::after {
+    background: var(--sunset) !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Helle Sektionen: Sand & Seeglas
+   --------------------------------------------------------------------------- */
+.contact {
+    background: linear-gradient(180deg, var(--sand) 0%, #fbf8f2 100%);
+}
+
+.contact-form,
+.stat-card {
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(107, 93, 79, 0.1);
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: var(--sea-glass) !important;
+    box-shadow: 0 0 0 3px rgba(58, 166, 166, 0.18) !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Footer: tiefes Nachtmeer
+   --------------------------------------------------------------------------- */
+.footer {
+    background:
+        radial-gradient(ellipse 50% 60% at 100% 100%, rgba(22, 125, 140, 0.25) 0%, rgba(22, 125, 140, 0) 70%),
+        #081c30;
+    color: #c9d6df;
+}
+
+.footer a:hover,
+.footer-section a:hover,
+.footer-social a:hover {
+    color: #f6e7c8 !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Rechtsseiten (legal-pages.css)
+   --------------------------------------------------------------------------- */
+.legal-header,
+.legal-hero {
+    background: var(--coastal-gradient) !important;
+}
+
+.legal-nav {
+    background: rgba(250, 247, 242, 0.96) !important;
+    border-bottom: 1px solid rgba(107, 93, 79, 0.12) !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Sprachumschalter (global, auch auf Seiten ohne eigenen Switcher)
+   --------------------------------------------------------------------------- */
+.lang-link-compact {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    padding: 0.15rem 0.35rem;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.lang-link-compact:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+}
+
+.lang-link-compact.active {
+    opacity: 1;
+    border-color: rgba(232, 160, 75, 0.7);
+}
+
+.coastal-lang-switch {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 9990;
+    display: flex;
+    gap: 0.2rem;
+    padding: 0.3rem 0.45rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(107, 93, 79, 0.15);
+    box-shadow: 0 8px 24px rgba(5, 24, 46, 0.18);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.coastal-lang-switch .lang-link-compact {
+    font-size: 1.15rem;
+}
+
+@media print {
+    .coastal-lang-switch,
+    .coastal-wave {
+        display: none !important;
+    }
+}

@@ -11,7 +11,8 @@
     <meta name="author" content="Manuel Weiss">
     
     <!-- Styles -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=20261005">
+    <link rel="stylesheet" href="css/coastal-theme.css?v=20261005">
     <link rel="stylesheet" href="css/starry-background.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -22,7 +23,7 @@
            ═══════════════════════════════════════════════════════════════════════════ */
         
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%) !important;
+            background: linear-gradient(135deg, #0f172a 0%, #071a2e 50%, #0b2a4a 100%) !important;
             min-height: 100vh;
             color: #e2e8f0;
         }
@@ -48,14 +49,14 @@
         
         /* Hero Section */
         .hr-coach-hero {
-            background: rgba(99, 102, 241, 0.15);
+            background: rgba(22, 125, 140, 0.15);
             backdrop-filter: blur(20px);
             color: white;
             padding: 4rem 0;
             text-align: center;
             position: relative;
             overflow: hidden;
-            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            border-bottom: 1px solid rgba(22, 125, 140, 0.2);
             z-index: 2;
         }
         
@@ -68,8 +69,8 @@
             width: 100px;
             height: 100px;
             margin: 0 auto 2rem;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3));
-            border: 1px solid rgba(165, 180, 252, 0.3);
+            background: linear-gradient(135deg, rgba(22, 125, 140, 0.3), rgba(31, 111, 139, 0.3));
+            border: 1px solid rgba(143, 207, 207, 0.3);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -82,7 +83,7 @@
             font-size: 3rem;
             font-weight: 800;
             margin-bottom: 1rem;
-            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            background: linear-gradient(135deg, #fff 0%, #8fcfcf 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -90,7 +91,7 @@
         
         .hero-subtitle {
             font-size: 1.25rem;
-            color: #c7d2fe;
+            color: #cfe9e6;
             max-width: 600px;
             margin: 0 auto 2rem;
         }
@@ -99,8 +100,8 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: rgba(99, 102, 241, 0.3);
-            border: 1px solid rgba(165, 180, 252, 0.3);
+            background: rgba(22, 125, 140, 0.3);
+            border: 1px solid rgba(143, 207, 207, 0.3);
             padding: 0.75rem 1.5rem;
             border-radius: 50px;
             font-weight: 500;
@@ -154,7 +155,7 @@
             top: 20px;
             left: 40px;
             height: 3px;
-            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            background: linear-gradient(90deg, #167d8c, #1f6f8b);
             transition: width 0.5s ease;
             width: 0%;
         }
@@ -178,15 +179,15 @@
             align-items: center;
             justify-content: center;
             font-weight: 600;
-            color: #a5b4fc;
+            color: #8fcfcf;
             transition: all 0.3s ease;
         }
         
         .step-item.active .step-circle {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            border-color: #6366f1;
+            background: linear-gradient(135deg, #167d8c, #1f6f8b);
+            border-color: #167d8c;
             color: white;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 15px rgba(22, 125, 140, 0.4);
         }
         
         .step-item.completed .step-circle {
@@ -197,7 +198,7 @@
         
         .step-label {
             font-size: 0.75rem;
-            color: #a5b4fc;
+            color: #8fcfcf;
             font-weight: 500;
             text-align: center;
             max-width: 80px;
@@ -236,7 +237,7 @@
         }
         
         .step-description {
-            color: #a5b4fc;
+            color: #8fcfcf;
             margin-bottom: 2rem;
         }
         
@@ -259,21 +260,21 @@
         }
         
         .option-card:hover {
-            border-color: rgba(99, 102, 241, 0.5);
-            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(22, 125, 140, 0.5);
+            background: rgba(22, 125, 140, 0.1);
         }
         
         .option-card.selected {
-            border-color: #6366f1;
-            background: rgba(99, 102, 241, 0.2);
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            border-color: #167d8c;
+            background: rgba(22, 125, 140, 0.2);
+            box-shadow: 0 4px 15px rgba(22, 125, 140, 0.3);
         }
         
         .option-icon {
             width: 50px;
             height: 50px;
             margin: 0 auto 1rem;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, #167d8c, #1f6f8b);
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -290,7 +291,7 @@
         
         .option-description {
             font-size: 0.875rem;
-            color: #a5b4fc;
+            color: #8fcfcf;
         }
         
         /* Checkbox Options */
@@ -313,12 +314,12 @@
         }
         
         .checkbox-option:hover {
-            border-color: rgba(99, 102, 241, 0.5);
+            border-color: rgba(22, 125, 140, 0.5);
         }
         
         .checkbox-option.checked {
-            border-color: #6366f1;
-            background: rgba(99, 102, 241, 0.15);
+            border-color: #167d8c;
+            background: rgba(22, 125, 140, 0.15);
         }
         
         .checkbox-option input {
@@ -339,8 +340,8 @@
         }
         
         .checkbox-option.checked .checkbox-box {
-            background: #6366f1;
-            border-color: #6366f1;
+            background: #167d8c;
+            border-color: #167d8c;
             color: white;
         }
         
@@ -369,7 +370,7 @@
         
         .wizard-textarea:focus {
             outline: none;
-            border-color: #6366f1;
+            border-color: #167d8c;
         }
         
         /* Timeline Selector */
@@ -392,18 +393,18 @@
         }
         
         .timeline-option:hover {
-            border-color: rgba(99, 102, 241, 0.5);
+            border-color: rgba(22, 125, 140, 0.5);
         }
         
         .timeline-option.selected {
-            border-color: #6366f1;
-            background: rgba(99, 102, 241, 0.2);
+            border-color: #167d8c;
+            background: rgba(22, 125, 140, 0.2);
         }
         
         .timeline-value {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #a5b4fc;
+            color: #8fcfcf;
         }
         
         .timeline-option.selected .timeline-value {
@@ -412,7 +413,7 @@
         
         .timeline-label {
             font-size: 0.875rem;
-            color: #a5b4fc;
+            color: #8fcfcf;
         }
         
         /* Wizard Navigation */
@@ -439,7 +440,7 @@
         
         .btn-back {
             background: rgba(255, 255, 255, 0.1);
-            color: #a5b4fc;
+            color: #8fcfcf;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
@@ -449,13 +450,13 @@
         }
         
         .btn-next {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, #167d8c, #1f6f8b);
             color: white;
         }
         
         .btn-next:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 15px rgba(22, 125, 140, 0.4);
         }
         
         .btn-generate {
@@ -477,15 +478,15 @@
         }
         
         .summary-item {
-            background: rgba(99, 102, 241, 0.1);
+            background: rgba(22, 125, 140, 0.1);
             padding: 1rem;
             border-radius: 12px;
-            border-left: 4px solid #6366f1;
+            border-left: 4px solid #167d8c;
         }
         
         .summary-label {
             font-size: 0.75rem;
-            color: #a5b4fc;
+            color: #8fcfcf;
             text-transform: uppercase;
             font-weight: 600;
             margin-bottom: 0.25rem;
@@ -525,7 +526,7 @@
         }
         
         .plan-header p {
-            color: #a5b4fc;
+            color: #8fcfcf;
         }
         
         /* Roadmap */
@@ -541,7 +542,7 @@
             top: 0;
             bottom: 0;
             width: 3px;
-            background: linear-gradient(180deg, #6366f1, #8b5cf6, #a855f7);
+            background: linear-gradient(180deg, #167d8c, #1f6f8b, #a855f7);
             border-radius: 3px;
         }
         
@@ -558,7 +559,7 @@
         }
         
         .roadmap-item:hover {
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.2);
+            box-shadow: 0 4px 20px rgba(22, 125, 140, 0.2);
             transform: translateX(5px);
             background: rgba(255, 255, 255, 0.08);
         }
@@ -570,15 +571,15 @@
             top: 1.75rem;
             width: 16px;
             height: 16px;
-            background: #6366f1;
+            background: #167d8c;
             border-radius: 50%;
-            border: 3px solid #1e1b4b;
-            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+            border: 3px solid #071a2e;
+            box-shadow: 0 2px 8px rgba(22, 125, 140, 0.4);
         }
         
         .roadmap-phase {
             font-size: 0.75rem;
-            color: #a5b4fc;
+            color: #8fcfcf;
             font-weight: 600;
             text-transform: uppercase;
             margin-bottom: 0.5rem;
@@ -592,7 +593,7 @@
         }
         
         .roadmap-description {
-            color: #a5b4fc;
+            color: #8fcfcf;
             font-size: 0.95rem;
             margin-bottom: 1rem;
         }
@@ -604,11 +605,11 @@
         }
         
         .roadmap-task {
-            background: rgba(99, 102, 241, 0.2);
+            background: rgba(22, 125, 140, 0.2);
             padding: 0.5rem 1rem;
             border-radius: 20px;
             font-size: 0.85rem;
-            color: #c7d2fe;
+            color: #cfe9e6;
         }
         
         /* Plan Actions */
@@ -633,18 +634,18 @@
         }
         
         .btn-download {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, #167d8c, #1f6f8b);
             color: white;
         }
         
         .btn-download:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 15px rgba(22, 125, 140, 0.4);
         }
         
         .btn-restart {
             background: rgba(255, 255, 255, 0.1);
-            color: #a5b4fc;
+            color: #8fcfcf;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
@@ -677,7 +678,7 @@
             width: 60px;
             height: 60px;
             border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top-color: #6366f1;
+            border-top-color: #167d8c;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -688,7 +689,7 @@
         
         .loading-text {
             font-size: 1.1rem;
-            color: #a5b4fc;
+            color: #8fcfcf;
         }
         
         /* Responsive */
@@ -755,11 +756,11 @@
                 </div>
                 
                 <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                    <a href="hr-coach-framework.html" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; transition: all 0.3s ease;">
+                    <a href="hr-coach-framework.html" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: linear-gradient(135deg, #167d8c, #1f6f8b); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; transition: all 0.3s ease;">
                         <i class="fas fa-th-large"></i>
                         HR Coach Framework
                     </a>
-                    <a href="hr-selbsttest.html" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #1e1b4b; text-decoration: none; border-radius: 12px; font-weight: 600; transition: all 0.3s ease;">
+                    <a href="hr-selbsttest.html" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #071a2e; text-decoration: none; border-radius: 12px; font-weight: 600; transition: all 0.3s ease;">
                         <i class="fas fa-smile"></i>
                         HR Selbsttest starten
                     </a>
@@ -1389,5 +1390,7 @@ https://manuel-weiss.ch
             showStep(1);
         });
     </script>
+    <!-- DE/EN Umschaltung -->
+    <script src="js/simple-translation.js?v=20261005"></script>
 </body>
 </html>
