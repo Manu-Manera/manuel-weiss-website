@@ -31,6 +31,14 @@
 }
 
 @media (max-width: 768px) {
+    /* iOS: 100vh schliesst die Safari-Leisten ein – Inhalt wird sonst zu tief zentriert
+       und die Buttons landen unter der Leiste. svh = tatsächlich sichtbare Höhe. */
+    .hero.hero-with-video { min-height: 100vh; min-height: 100svh; }
+    .hero.hero-with-video .hero-container {
+        min-height: calc(100vh - 125px) !important;
+        min-height: calc(100svh - 125px) !important;
+        justify-content: center;
+    }
     /* Verhindert, dass das lange Wort «Führungskräfteentwicklung» das Grid sprengt */
     .hero.hero-with-video .hero-layer-inner { grid-template-columns: minmax(0, 1fr) !important; }
     .hero-with-video .hero-container,

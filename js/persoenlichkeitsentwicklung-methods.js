@@ -82,8 +82,15 @@ function startMethod(methodId) {
     const url = methodUrls[methodId] || methodUrls[normalizedId];
     
     if (url) {
-        // Füge Sprach-Präfix hinzu wenn nötig
-        const fullUrl = isEnglish ? `/en/${url}` : `/${url}`;
+        // Sprach-Präfix nur, wenn die Seite unter /en/ wirklich existiert.
+        // Die Methoden-Workflows (methods/...) gibt es nur einmal – ein /en/-Pfad
+        // würde über den CloudFront-Fallback auf die Startseite zurückfallen.
+        const enPagesAvailable = ['raisec-persoenlichkeitsentwicklung.html'];
+        const hasEnVersion = enPagesAvailable.includes(url);
+        let fullUrl = (isEnglish && hasEnVersion) ? `/en/${url}` : `/${url}`;
+        if (isEnglish && !hasEnVersion) {
+            fullUrl += (fullUrl.includes('?') ? '&' : '?') + 'lang=en';
+        }
         console.log('✓ Method found:', methodId, '-> Navigating to:', fullUrl);
         window.location.href = fullUrl;
     } else {
