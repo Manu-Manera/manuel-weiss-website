@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEK communication | Manuel Weiss</title>
+    <meta name="description" content="AEK communication: Assertive, Empathetic, Kind. Phrase difficult messages clearly, empathetically and kindly – with an I-message builder, tone check and conversation prep.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="aek-communication.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-handshake-angle"></i></span><span>AEK</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-handshake-angle"></i></div>
+            <div class="mk-kicker">Personality development · Communication</div>
+            <h1>Clear, empathetic, kind</h1>
+            <p>AEK stands for <strong>Assertive</strong> (clear &amp; confident), <strong>Empathetic</strong> (empathetic) and <strong>Kind</strong> (kind). The balance of the three makes difficult conversations possible without anyone losing face. You build your message piece by piece – and check it for tone and balance.</p>
+            <div class="mk-badges"><span class="mk-badge">I-message</span><span class="mk-badge">Perspective shift</span><span class="mk-badge">Tone check</span><span class="mk-badge">Prepare for objections</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Your concern</h2>
+                <div class="mk-field"><label for="aek-topic">What do you need to tell whom?</label><textarea class="mk-textarea" id="aek-topic" data-mk-field="topic" placeholder="e.g. Tell my boss I cannot keep the deadline."></textarea></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="aek-who">Other person</label><input class="mk-input" id="aek-who" data-mk-field="who" placeholder="Name or role"></div>
+                    <div class="mk-field"><label for="aek-rel">Relationship</label><select class="mk-select" id="aek-rel" data-mk-field="rel"><option value="">–</option><option>Manager</option><option>Colleague</option><option>Employee</option><option>Partner</option><option>Family</option><option>Friend</option><option>Customer</option><option>Stranger</option></select></div>
+                </div>
+                <div id="aek-diff"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Your pattern in such conversations</h3>
+                <p class="mk-sub">Honestly: where do you tip when it gets hard?</p>
+                <div class="mk-grid aek-styles" id="aek-styles"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card aek-a">
+                <h2>💪 Assertive — clear &amp; honest</h2>
+                <p class="mk-sub">An I-message has four parts. Each part is a sentence – together they make your clear concern.</p>
+                <div id="aek-ibuilder"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Your clear sentence</h3>
+                <div id="aek-apreview"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card aek-e">
+                <h2>❤️ Empathetic — the other side</h2>
+                <p class="mk-sub">Switch chairs. Answer as if you were the other person.</p>
+                <div id="aek-persp"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Your empathy sentence</h3>
+                <p class="mk-sub">Shows you have seen the other side – without dropping your concern.</p>
+                <div id="aek-epreview"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card aek-k">
+                <h2>🤝 Kind — appreciative</h2>
+                <p class="mk-sub">Real appreciation is specific. “You’re great” is empty – “You had my back on the report last week” carries weight.</p>
+                <div id="aek-kind"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>✉️ Your AEK message</h2>
+                <p class="mk-sub">Choose the order that fits the situation and refine the text.</p>
+                <div id="aek-order"></div>
+                <div id="aek-message"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Balance &amp; tone</h3>
+                <div id="aek-balance"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="6">
+            <div class="mk-card">
+                <h2>Preparation</h2>
+                <p class="mk-sub">What might the other person object – and how do you stay assertive, empathetic and kind?</p>
+                <div id="aek-objections"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Setting</h3>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="aek-when">When will you have the conversation?</label><input class="mk-input" id="aek-when" data-mk-field="when" placeholder="e.g. Tuesday after stand-up"></div>
+                    <div class="mk-field"><label for="aek-where">Where / how?</label><input class="mk-input" id="aek-where" data-mk-field="where" placeholder="In private, video, a walk …"></div>
+                </div>
+                <div class="mk-field"><label for="aek-after">After the conversation: how did it go? What worked?</label><textarea class="mk-textarea" id="aek-after" data-mk-field="after" placeholder="…"></textarea></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="aek-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="aek-export"><i class="fas fa-download"></i> Download</button>
+                    <button class="mk-btn mk-btn-outline" id="aek-copy"><i class="fas fa-copy"></i> Copy message</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Reset everything</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 6</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="aek-communication.js?v=20261003"></script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rubicon model | Manuel Weiss</title>
+    <meta name="description" content="From wish to action with the Rubicon model (Heckhausen & Gollwitzer): weigh with weights, decide bindingly, prepare with if-then plans, act, and evaluate.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="rubikon-model.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-water"></i></span><span>Rubicon model</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-water"></i></div>
+            <div class="mk-kicker">Personal development · Motivation psychology (Heckhausen & Gollwitzer)</div>
+            <h1>Crossing the Rubicon</h1>
+            <p>Between wish and deed lies a river. Before the Rubicon you weigh things – open, deliberating. Afterward there is no going back: you plan, act, evaluate. Most projects fail because they never leave the bank. This tool takes you across.</p>
+            <div class="mk-badges"><span class="mk-badge">Weighted scale</span><span class="mk-badge">Motivation score</span><span class="mk-badge">Wenn-Dann-Pläne</span><span class="mk-badge">Action log</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <div class="rk-river" id="rk-river"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>1 · Weighing</h2>
+                <p class="mk-sub">Here you may still doubt. Collect reasons – and weigh them. One strong argument counts more than three weak ones.</p>
+                <div class="mk-field"><label for="rk-topic">Worum geht es?</label><textarea class="mk-textarea" id="rk-topic" data-mk-field="topic" placeholder="The project you are deciding on"></textarea></div>
+                <div class="rk-scale-wrap">
+                    <div class="rk-col pro"><h3>👍 For</h3><div id="rk-pro"></div></div>
+                    <div class="rk-col con"><h3>👎 Against</h3><div id="rk-con"></div></div>
+                </div>
+                <div id="rk-balance"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Expectancy × value</h3>
+                <p class="mk-sub">Motivation comes from two questions: How important is it to me – and how likely am I to succeed?</p>
+                <div id="rk-motiv"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>2 · Crossing the Rubicon</h2>
+                <p class="mk-sub">From here the wish becomes an intention. Weighing is over – whoever keeps doubting after the decision never crosses the river.</p>
+                <div class="mk-field"><label for="rk-decision">I decide for:</label><textarea class="mk-textarea" id="rk-decision" data-mk-field="decision" placeholder="Clear and in the present: “I will …"></textarea></div>
+                <div class="mk-field"><label for="rk-giveup">And I consciously let go of:</label><span class="hint">Every decision is also a letting go. Name it – that prevents later regret.</span><textarea class="mk-textarea" id="rk-giveup" data-mk-field="giveup" placeholder="Alternatives, comfort, open options …"></textarea></div>
+                <div id="rk-commit"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>3 · Planning</h2>
+                <p class="mk-sub">Gollwitzer's finding: Those who formulate <em>Wenn-Dann-Pläne</em> implement intentions two to three times more often. The if is a concrete situation, the then a concrete action.</p>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="rk-start">When do you start?</label><input class="mk-input" type="date" id="rk-start" data-mk-field="startDate"></div>
+                    <div class="mk-field"><label for="rk-where">Where / in which situation?</label><input class="mk-input" id="rk-where" data-mk-field="where" placeholder="Place, routine, trigger"></div>
+                </div>
+                <div class="mk-section-label">Start plan</div>
+                <div id="rk-startplan"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Obstacles & if-then plans</h3>
+                <p class="mk-sub">What will slow you down? An if-then for each obstacle.</p>
+                <div id="rk-ifthen"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Acting</h2>
+                <p class="mk-sub">Now only doing counts. Log actions and check them off.</p>
+                <div id="rk-actions"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Dranbleiben</h3>
+                <div class="mk-field"><label for="rk-evidence">How will you know you are staying with it?</label><input class="mk-input" id="rk-evidence" data-mk-field="evidence" placeholder="e.g. Three times a week for 30 minutes"></div>
+                <div class="mk-field"><label for="rk-shield">How do you protect your project from distraction and doubt?</label><span class="hint">The acting phase means: doubts are not discussed, they are postponed.</span><textarea class="mk-textarea" id="rk-shield" data-mk-field="shield" placeholder="e.g. Phone away, calendar block, accountability partner"></textarea></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Evaluating</h2>
+                <p class="mk-sub">Only now may you evaluate again. What is achieved, what is not – and what follows from that?</p>
+                <div class="mk-field"><label for="rk-success">Success looks like this to me:</label><textarea class="mk-textarea" id="rk-success" data-mk-field="success" placeholder="Concrete and measurable"></textarea></div>
+                <div id="rk-review"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Your path across the Rubicon</h3>
+                <div id="rk-summary"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="rk-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="rk-export"><i class="fas fa-download"></i> Download plan</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Reset everything</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 5</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="rubikon-model.js?v=20261003"></script>
+</body>
+</html>

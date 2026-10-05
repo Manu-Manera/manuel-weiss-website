@@ -44,16 +44,37 @@ body { padding-top: 0; }
 .pe-hero-login[hidden] { display: none !important; }
 
 .pe-search { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2); border-radius: var(--pe-radius); padding: 12px; backdrop-filter: blur(12px); }
-.pe-search.is-stuck { position: sticky; top: 5.25rem; z-index: 40; box-shadow: 0 10px 28px rgba(15,23,42,.18); }
+.pe-search.is-stuck {
+    position: sticky; top: 4.6rem; z-index: 40;
+    background: rgba(15, 23, 42, .86);
+    border-color: rgba(255,255,255,.16);
+    box-shadow: 0 12px 32px rgba(15,23,42,.28);
+}
 .pe-search-input { position: relative; }
 .pe-search-input > i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--pe-faint); pointer-events: none; }
 .pe-search .search-input { width: 100% !important; box-sizing: border-box; font: inherit; font-size: 15px !important; padding: 14px 44px 14px 44px !important; border-radius: 14px !important; border: 1.5px solid transparent !important; background: var(--pe-surface) !important; color: var(--pe-text) !important; box-shadow: 0 4px 14px rgba(15,23,42,.12); transition: box-shadow .15s, border-color .15s; }
 .pe-search .search-input:focus { outline: none; border-color: #c7d2fe !important; box-shadow: 0 0 0 4px rgba(199,210,254,.45); }
 .pe-search .search-clear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; border: 0; background: var(--pe-bg); color: var(--pe-muted); cursor: pointer; }
 .pe-search .filter-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; justify-content: flex-start; }
-.pe-search .filter-tag { padding: 7px 13px !important; border-radius: 999px !important; font-size: 13px !important; font-weight: 600 !important; border: 1px solid rgba(255,255,255,.25) !important; background: rgba(255,255,255,.08) !important; color: rgba(255,255,255,.9) !important; cursor: pointer; transition: all .15s; box-shadow: none !important; transform: none !important; }
+.pe-search .filter-tag {
+    padding: 6px 11px 6px 13px !important; border-radius: 999px !important;
+    font-size: 13px !important; font-weight: 600 !important; line-height: 1.2;
+    border: 1px solid rgba(255,255,255,.25) !important; background: rgba(255,255,255,.08) !important;
+    color: rgba(255,255,255,.92) !important; cursor: pointer; transition: background .15s, color .15s, border-color .15s;
+    box-shadow: none !important; transform: none !important;
+    display: inline-flex; align-items: center; gap: 7px; appearance: none; font-family: inherit;
+}
 .pe-search .filter-tag:hover { background: rgba(255,255,255,.18) !important; transform: none !important; }
 .pe-search .filter-tag.active { background: #fff !important; color: #312e81 !important; border-color: #fff !important; }
+.pe-search .filter-tag:focus-visible { outline: 2px solid #c7d2fe; outline-offset: 2px; }
+.pe-chip-n {
+    min-width: 1.35em; height: 1.35em; padding: 0 5px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; line-height: 1.35em; text-align: center;
+    background: rgba(15,23,42,.18); color: inherit;
+}
+.pe-search .filter-tag.active .pe-chip-n { background: #e0e7ff; color: #312e81; }
+.method-card.is-filtered { display: none !important; }
+.method-card.is-hit { border-color: color-mix(in srgb, var(--c1) 55%, var(--pe-line)) !important; }
 .personality-hero .particles-container { opacity: .6; }
 
 /* ---------------- Methoden-Sektion: hell ---------------- */

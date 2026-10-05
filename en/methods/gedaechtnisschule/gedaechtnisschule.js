@@ -1,0 +1,2052 @@
+/* =========================================================
+   Memory school
+   Ein lebenslanger Meisterschaftsweg für das Gedächtnis.
+
+   Vereint die evidenzbasierten Säulen der Gedächtnisforschung in
+   EINER adaptiven Engine:
+   - Arbeitsgedächtnis (Dual-N-Back, Zahlenspanne)
+   - Mnemotechnik der Gedächtnissportler (Loci/Palast, Major-System)
+   - Gedächtnissport (Speed Numbers, Wörter, Names & faces, Karten)
+   - Spaced Repetition (FSRS-artiger Scheduler + Vergessenskurve)
+
+   Architektur identisch zur "Sensory school":
+   Persistenz: window.workflowAPI (DynamoDB) + localStorage-Fallback.
+   Rangliste: /snowflake-highscores?game=gedaechtnisschule (anonym).
+   ========================================================= */
+
+const GS_METHOD = 'gedaechtnisschule';
+
+/* ---------------- Graduierungs-System (→ ∞) ---------------- */
+const GS_TITLES = [
+    'Awakening', 'Attention', 'Anchoring', 'Retention', 'Structure',
+    'Architecture', 'Speed', 'Clarity', 'Mastery', 'Completion',
+    'Grandmaster', 'Keeper of images', 'Palace builder', 'Mind reader', 'Chronicler',
+    'True mnemonist', 'Enlightened mind', 'Time shifter', 'Timeless one', 'The complete'
+];
+function GS_gap(g) { return Math.round(120 * Math.pow(g, 1.45)); }
+const _gsTcache = [0, 0];
+function GS_T(g) {
+    if (g < 1) return 0;
+    for (let k = _gsTcache.length; k <= g; k++) _gsTcache[k] = _gsTcache[k - 1] + GS_gap(k - 1);
+    return _gsTcache[g];
+}
+function GS_gradeFromXP(xp) {
+    let g = 1;
+    while (g < 2000 && xp >= GS_T(g + 1)) g++;
+    return g;
+}
+function GS_roman(n) {
+    if (n <= 0) return '';
+    const map = [[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
+    let r = ''; for (const [v, s] of map) while (n >= v) { r += s; n -= v; } return r;
+}
+function GS_titleFor(g) {
+    if (g <= GS_TITLES.length) return GS_TITLES[g - 1];
+    const tier = g - GS_TITLES.length;
+    return `${GS_TITLES[GS_TITLES.length - 1]} ${GS_roman(tier + 1)}`;
+}
+function GS_reqExam(g) { return Math.min(96, 64 + g * 2); }
+
+/* ---------------- Die sieben Disziplinen ---------------- */
+const GS_DISCIPLINES = [
+    { id: 'arbeitsgedaechtnis', name: 'Working memory', short: 'Work. mem.', icon: '🧠', accent: '#818cf8', soft: 'rgba(129,140,248,.16)', glow: 'rgba(129,140,248,.18)',
+      tags: ['Dual-N-Back', 'Digit span'], blurb: 'The capacity to hold and process information actively in your mind – the foundation of every thinking skill.',
+      trainers: ['nback', 'span'], exam: 'nback' },
+    { id: 'zahlen', name: 'Number memory', short: 'Numbers', icon: '🔢', accent: '#22d3ee', soft: 'rgba(34,211,238,.16)', glow: 'rgba(34,211,238,.18)',
+      tags: ['Speed Numbers', 'Number-shape system', 'Major system'], blurb: 'Memorize long digit sequences in seconds – turn digits into images (number-shape and Major system).',
+      trainers: ['speednum', 'shapes', 'major'], exam: 'speednum' },
+    { id: 'woerter', name: 'Words', short: 'Words', icon: '📝', accent: '#34d399', soft: 'rgba(52,211,153,.16)', glow: 'rgba(52,211,153,.18)',
+      tags: ['Word lists', 'Story chain'], blurb: 'Keep word lists in exact order – the original exercise of all mnemonic technique.',
+      trainers: ['words'], exam: 'words' },
+    { id: 'namen', name: 'Names & faces', short: 'Names', icon: '🧑‍🤝‍🧑', accent: '#fb923c', soft: 'rgba(251,146,60,.16)', glow: 'rgba(251,146,60,.18)',
+      tags: ['Faces', 'Everyday'], blurb: 'The most everyday – and most feared – memory skill: matching names to faces.',
+      trainers: ['names'], exam: 'names' },
+    { id: 'palast', name: 'Memory palace', short: 'Palace', icon: '🏛️', accent: '#e0b04a', soft: 'rgba(224,176,74,.16)', glow: 'rgba(224,176,74,.18)',
+      tags: ['Method of loci', 'Number journey', 'Your own routes'], blurb: 'The supreme discipline: place content – including numbers as images – along a familiar route. Build your own routes.',
+      trainers: ['loci', 'zahlenreise'], exam: 'loci' },
+    { id: 'karten', name: 'Playing cards', short: 'Cards', icon: '🃏', accent: '#f472b6', soft: 'rgba(244,114,182,.16)', glow: 'rgba(244,114,182,.18)',
+      tags: ['Card sequence', 'Speed Cards'], blurb: 'Memorize the order of shuffled cards – the showcase discipline of memory world champions.',
+      trainers: ['cards'], exam: 'cards' },
+    { id: 'langzeit', name: 'Long-term · spaced repetition', short: 'Long-term', icon: '♾️', accent: '#a78bfa', soft: 'rgba(167,139,250,.16)', glow: 'rgba(167,139,250,.18)',
+      tags: ['FSRS-Scheduler', 'Forgetting curve'], blurb: 'Anchor your own knowledge for life – scientifically timed repetition instead of rote cramming.',
+      trainers: [], exam: null, isSrs: true }
+];
+const GS_DISC_MAP = Object.fromEntries(GS_DISCIPLINES.map(d => [d.id, d]));
+
+const GS_TRAINERS = {
+    nback:    { disc: 'arbeitsgedaechtnis', icon: '🔁', title: 'Dual-N-Back', xp: 30, blurb: 'Spot when position and letter match the stimulus N steps back.' },
+    span:     { disc: 'arbeitsgedaechtnis', icon: '↔️', title: 'Digit span', xp: 20, blurb: 'Repeat digit sequences forward and backward – the classic span.' },
+    speednum: { disc: 'zahlen', icon: '⚡', title: 'Speed Numbers', xp: 26, blurb: 'Memorize a digit sequence in limited time and recall it.' },
+    shapes:   { disc: 'zahlen', icon: '🖼️', title: 'Number-shape system', xp: 16, blurb: 'Give each digit a fixed image (1 = candle, 3 = trident …) – invent your own and drill them.' },
+    major:    { disc: 'zahlen', icon: '🔤', title: 'Major system trainer', xp: 16, blurb: 'Translate digits into consonants in a flash – the gateway to unlimited number memory.' },
+    words:    { disc: 'woerter', icon: '📚', title: 'Memorize word list', xp: 24, blurb: 'Keep a list of words in exact order.' },
+    names:    { disc: 'namen', icon: '😊', title: 'Names & faces', xp: 24, blurb: 'Match the right names to faces.' },
+    loci:     { disc: 'palast', icon: '🗺️', title: 'Palace route', xp: 28, blurb: 'Place terms at the stations of a route and recall them in order.' },
+    zahlenreise: { disc: 'palast', icon: '🧭', title: 'Number journey', xp: 32, blurb: 'Your “Eselswelt” technique: turn digits into images and place them on your route – that’s how you remember whole numbers.' },
+    cards:    { disc: 'karten', icon: '🃏', title: 'Card sequence', xp: 26, blurb: 'Memorize the order of shuffled playing cards.' }
+};
+
+/* ---------------- Inhalts-Pools ---------------- */
+const GS_WORDS = ['Apple', 'Anchor', 'Mountain', 'Bridge', 'Dragon', 'Owl', 'Feather', 'River', 'Fork', 'Garden', 'Hammer', 'Hat', 'Island', 'Beetle', 'Candle', 'Crown', 'Lamp', 'Lion', 'Moon', 'Needle', 'Fog', 'Oven', 'Arrow', 'Mushroom', 'Spring', 'Raven', 'Rocket', 'Ring', 'Saw', 'Ship', 'Key', 'Star', 'Tiger', 'Drum', 'Clock', 'Vase', 'Bird', 'Whale', 'Cloud', 'Root', 'Pliers', 'Tent', 'Lemon', 'Dwarf', 'Glasses', 'Camel', 'Ladder', 'Shell', 'Brush', 'Mirror'];
+const GS_NAMES = ['Anna', 'Ben', 'Clara', 'David', 'Emma', 'Felix', 'Greta', 'Hannah', 'Igor', 'Jana', 'Klaus', 'Lena', 'Mara', 'Noah', 'Olga', 'Paul', 'Quirin', 'Rosa', 'Sven', 'Tina', 'Uwe', 'Vera', 'Walter', 'Xenia', 'Yara', 'Zoe', 'Lukas', 'Mia', 'Jonas', 'Sophie'];
+const GS_FACE_EMOJI = ['👩', '👨', '👵', '👴', '👱‍♀️', '👱', '🧔', '👩‍🦰', '👨‍🦰', '👩‍🦱', '👨‍🦱', '👩‍🦳', '👨‍🦳', '🧑', '👲', '🧕'];
+const GS_FACE_BG = ['#fca5a5', '#fdba74', '#fcd34d', '#86efac', '#67e8f9', '#93c5fd', '#c4b5fd', '#f9a8d4'];
+
+// Vertraute Routen für den Gedächtnispalast (Loci)
+const GS_PALACES = [
+    { name: 'Your apartment', stations: ['Apartment door', 'Coat rack', 'Kitchen', 'Fridge', 'Dining table', 'Sofa', 'TV', 'Window', 'Bed', 'Bad'] },
+    { name: 'The commute', stations: ['Front door', 'Mailbox', 'Bus stop', 'Bakery', 'Traffic light', 'Park', 'Bridge', 'Entrance', 'Elevator', 'Desk'] },
+    { name: 'The body', stations: ['Head', 'Nose', 'Shoulders', 'Chest', 'Belly', 'Hands', 'Hips', 'Knees', 'Feet', 'Toes'] }
+];
+
+// Major-System: Ziffer → Konsonantenlaut + Merkhilfe
+const GS_MAJOR = [
+    { d: 0, c: 's, z', ex: '“z” as in Zero (0)' },
+    { d: 1, c: 't, d', ex: '“t” has 1 downstroke' },
+    { d: 2, c: 'n', ex: '“n” has 2 legs' },
+    { d: 3, c: 'm', ex: '“m” has 3 legs' },
+    { d: 4, c: 'r', ex: '“r” – fouR ends with r' },
+    { d: 5, c: 'l', ex: 'L = Roman 50' },
+    { d: 6, c: 'sch, j, g', ex: 'mirrored “J” ~ 6' },
+    { d: 7, c: 'k, g', ex: 'two 7s form a “K”' },
+    { d: 8, c: 'f, w', ex: 'cursive “f” ~ 8' },
+    { d: 9, c: 'p, b', ex: 'mirrored “p” ~ 9' }
+];
+const GS_MAJOR_WORDS = { '0': 'Cup', '1': 'Tea', '2': 'Noah', '3': 'Grandma', '4': 'Ear', '5': 'Eel', '6': 'Shoe', '7': 'Cow', '8': 'Ivy', '9': 'Farmer' };
+
+/* ---------------- Zahl-Form-System (Methode aus „Eselswelt") ----------------
+   Jede Ziffer bekommt ein festes Bild, das ihrer Form ähnelt. Der Nutzer kann
+   jedes Bild durch ein eigenes ersetzen – selbst erfundene Bilder wirken am
+   stärksten (Generationseffekt). Die Bilder werden später auf einer vertrauten
+   Route abgelegt (Loci-/Wegmethode) → so merkt man sich beliebig lange Zahlen. */
+const GS_NUMSHAPES = [
+    { d: 0, emoji: '🥚', word: 'Egg' },
+    { d: 1, emoji: '🕯️', word: 'Candle' },
+    { d: 2, emoji: '🦢', word: 'Swan' },
+    { d: 3, emoji: '🔱', word: 'Trident' },
+    { d: 4, emoji: '⛵', word: 'Sail' },
+    { d: 5, emoji: '✋', word: 'Hand' },
+    { d: 6, emoji: '🍒', word: 'Cherry' },
+    { d: 7, emoji: '🚩', word: 'Flag' },
+    { d: 8, emoji: '⛄', word: 'Snowman' },
+    { d: 9, emoji: '🎈', word: 'Balloon' }
+];
+
+/* ---------------- Dojo-Themes (persönlicher Stil) ---------------- */
+const GS_THEMES = [
+    { id: 'indigo', name: 'Indigo', a: '#8b5cf6', a2: '#6366f1', gm: '#818cf8' },
+    { id: 'smaragd', name: 'Emerald', a: '#10b981', a2: '#059669', gm: '#34d399' },
+    { id: 'amber', name: 'Amber', a: '#f59e0b', a2: '#d97706', gm: '#e0b04a' },
+    { id: 'rose', name: 'Rosé', a: '#f43f5e', a2: '#e11d48', gm: '#fb7185' },
+    { id: 'ozean', name: 'Ocean', a: '#06b6d4', a2: '#0891b2', gm: '#22d3ee' },
+    { id: 'mitternacht', name: 'Midnight', a: '#a78bfa', a2: '#7c3aed', gm: '#c4b5fd' }
+];
+// Rang-Emblem wächst mit dem Gesamtgrad
+function GS_emblem(g) {
+    if (g >= 12) return '👑';
+    if (g >= 9) return '💎';
+    if (g >= 6) return '⭐';
+    if (g >= 3) return '🔥';
+    if (g >= 1) return '🌿';
+    return '🌱';
+}
+
+/* ---------------- Arena-Ligen (Saison-Wertung) ---------------- */
+const GS_LEAGUES = [
+    { id: 'holz', name: 'Wood league', icon: '🪵', min: 0, color: '#a8a29e' },
+    { id: 'bronze', name: 'Bronze league', icon: '🥉', min: 60, color: '#d97706' },
+    { id: 'silber', name: 'Silver league', icon: '🥈', min: 150, color: '#94a3b8' },
+    { id: 'gold', name: 'Gold league', icon: '🥇', min: 320, color: '#e0b04a' },
+    { id: 'platin', name: 'Platinum league', icon: '💠', min: 600, color: '#22d3ee' },
+    { id: 'diamant', name: 'Diamond league', icon: '💎', min: 1000, color: '#818cf8' },
+    { id: 'meister', name: 'Master league', icon: '👑', min: 1600, color: '#f472b6' }
+];
+function GS_leagueFor(xp) {
+    let l = GS_LEAGUES[0];
+    for (const x of GS_LEAGUES) { if (xp >= x.min) l = x; }
+    return l;
+}
+function GS_nextLeague(xp) {
+    return GS_LEAGUES.find(x => x.min > xp) || null;
+}
+
+/* ---------------- Starter-Decks (Spaced Repetition) ---------------- */
+const GS_STARTER_DECKS = [
+    { id: 'cap', name: 'World capitals', cards: [
+        ['France', 'Paris'], ['Japan', 'Tokyo'], ['Australia', 'Canberra'], ['Canada', 'Ottawa'],
+        ['Brazil', 'Brasília'], ['Egypt', 'Cairo'], ['Norway', 'Oslo'], ['Turkey', 'Ankara'],
+        ['South Korea', 'Seoul'], ['Switzerland', 'Bern']
+    ]},
+    { id: 'en', name: 'English vocabulary', cards: [
+        ['to remember', 'to remember'], ['memory', 'Memory'], ['to forget', 'vergessen'],
+        ['knowledge', 'Knowledge'], ['to learn', 'lernen'], ['skill', 'Ability'],
+        ['mind', 'Mind'], ['brain', 'Brain'], ['to practice', 'üben'], ['challenge', 'Challenge']
+    ]}
+];
+
+/* ---------------- Pseudonym-Generator (anonym) ---------------- */
+const GS_ALIAS_ADJ = ['Silent', 'Alert', 'Swift', 'Clearer', 'Deep', 'Sharp', 'Bright', 'Patient', 'Wandering', 'Timeless one', 'Resourceful', 'Clever', 'Nimble', 'Wise', 'True'];
+const GS_ALIAS_NOUN = ['Mnemonist', 'Architect', 'Chronicler', 'Thinker', 'Seer', 'Master builder', 'Wanderer', 'Mind', 'Cartographer', 'Keeper', 'Master', 'Scholar', 'Strategist', 'Pilgrim', 'Magician'];
+
+/* =========================================================
+   App
+   ========================================================= */
+class GedaechtnisSchule {
+    constructor() {
+        this.view = 'dashboard';
+        this.activeDisc = 'arbeitsgedaechtnis';
+        this.timer = null;
+        this.mode = 'practice';
+        this.exam = null;
+        this.leaderboard = null;
+        this.arenaMode = 'season';
+        this.state = this._defaultState();
+    }
+
+    _defaultState() {
+        const disc = {};
+        GS_DISCIPLINES.forEach(d => { disc[d.id] = { xp: 0, sessions: 0, doorGrade: 0, bestExam: 0, examScores: [], best: {} }; });
+        return {
+            startedAt: new Date().toISOString().slice(0, 10),
+            alias: null,
+            disc,
+            streak: 0,
+            lastPracticeDate: null,
+            totalSessions: 0,
+            totalMinutes: 0,
+            log: [],
+            practiceDays: [],
+            srs: { decks: null, reviewsToday: 0, reviewsDate: null, totalReviews: 0 },
+            numShapes: null,
+            palaces: [],
+            theme: 'indigo'
+        };
+    }
+
+    _applyTheme() {
+        const t = GS_THEMES.find(x => x.id === this.state.theme) || GS_THEMES[0];
+        const r = document.documentElement.style;
+        r.setProperty('--ss-accent', t.a);
+        r.setProperty('--ss-accent-2', t.a2);
+        r.setProperty('--gm-accent', t.gm);
+    }
+    _rankEmblem() { return GS_emblem(this._overallGrade()); }
+
+    _handleDeepLink() {
+        try {
+            const sp = new URLSearchParams(window.location.search);
+            const start = sp.get('start');
+            if (!start) return;
+            if (GS_TRAINERS[start]) { this.go('practice'); this._startTrainer(start, 'practice'); }
+            else if (start === 'srs') { this.go('srs'); }
+            else if (['arena', 'exams', 'journal', 'practice'].includes(start)) { this.go(start); }
+        } catch (e) { /* ignore */ }
+    }
+
+    _seedShapes() {
+        const o = {};
+        GS_NUMSHAPES.forEach(s => { o[s.d] = { emoji: s.emoji, word: s.word }; });
+        return o;
+    }
+    _numShape(d) {
+        const s = (this.state.numShapes && this.state.numShapes[d]) || GS_NUMSHAPES[d];
+        return { emoji: (s && s.emoji) || '•', word: (s && s.word) || String(d) };
+    }
+    _setNumShape(d, patch) {
+        if (!this.state.numShapes) this.state.numShapes = this._seedShapes();
+        this.state.numShapes[d] = Object.assign({}, this._numShape(d), patch);
+        this._save();
+    }
+    _allPalaces() {
+        return [...(this.state.palaces || []), ...GS_PALACES];
+    }
+    _pickPalace() {
+        const custom = (this.state.palaces || []).filter(p => p.stations && p.stations.length >= 4);
+        if (custom.length && Math.random() < 0.7) return custom[Math.floor(Math.random() * custom.length)];
+        const all = [...custom, ...GS_PALACES.filter(p => p.stations.length >= 4)];
+        return all[Math.floor(Math.random() * all.length)];
+    }
+
+    async init() {
+        await this._load();
+        if (!this.state.alias) this.state.alias = this._generateAlias();
+        if (!this.state.srs.decks) this.state.srs.decks = this._seedDecks();
+        if (!this.state.numShapes) this.state.numShapes = this._seedShapes();
+        if (!Array.isArray(this.state.palaces)) this.state.palaces = [];
+        if (!this.state.theme) this.state.theme = 'indigo';
+        this._applyTheme();
+        this._bindNav();
+        this.render();
+        this._handleDeepLink();
+    }
+
+    _seedDecks() {
+        const now = new Date().toISOString();
+        return GS_STARTER_DECKS.map(d => ({
+            id: d.id, name: d.name, createdAt: now,
+            cards: d.cards.map((c, i) => ({
+                id: d.id + '_' + i, front: c[0], back: c[1],
+                due: now, stability: 0, difficulty: 5, reps: 0, lapses: 0, last: null, state: 'new'
+            }))
+        }));
+    }
+
+    /* ---------------- Persistenz ---------------- */
+    _merge(base, incoming) {
+        const out = JSON.parse(JSON.stringify(base));
+        if (!incoming) return out;
+        Object.keys(incoming).forEach(k => {
+            if (k === 'disc' && incoming.disc) {
+                GS_DISCIPLINES.forEach(d => { out.disc[d.id] = Object.assign({}, out.disc[d.id], incoming.disc[d.id] || {}); });
+            } else {
+                out[k] = incoming[k];
+            }
+        });
+        return out;
+    }
+
+    async _load() {
+        try {
+            const local = JSON.parse(localStorage.getItem('gs_state'));
+            if (local && local.startedAt) this.state = this._merge(this._defaultState(), local);
+        } catch (e) { /* ignore */ }
+        try {
+            if (window.workflowAPI) {
+                const res = await window.workflowAPI.getWorkflowResults(GS_METHOD);
+                const remote = res && (res.results || res.state || (res.startedAt ? res : null));
+                if (remote && remote.startedAt) {
+                    this.state = this._merge(this._defaultState(), remote);
+                    localStorage.setItem('gs_state', JSON.stringify(this.state));
+                }
+            }
+        } catch (e) { console.warn('Cloud load failed:', e); }
+    }
+
+    async _save() {
+        localStorage.setItem('gs_state', JSON.stringify(this.state));
+        let synced = false;
+        try {
+            if (window.workflowAPI) {
+                const loggedIn = this._isLoggedIn();
+                await window.workflowAPI.saveWorkflowResults(GS_METHOD, this.state);
+                synced = !!loggedIn;
+            }
+        } catch (e) { console.warn('Cloud save failed:', e); }
+        this._setSyncBadge(synced);
+    }
+
+    _setSyncBadge(synced) {
+        const badge = document.getElementById('ss-sync-badge');
+        const text = document.getElementById('ss-sync-text');
+        if (!badge || !text) return;
+        if (synced) {
+            badge.classList.add('synced');
+            badge.querySelector('i').className = 'fas fa-cloud';
+            text.textContent = 'Saved across devices';
+        } else {
+            badge.classList.remove('synced');
+            badge.querySelector('i').className = 'fas fa-cloud-slash';
+            text.textContent = 'Saved locally';
+        }
+    }
+
+    /* ---------------- Identität ---------------- */
+    _isLoggedIn() {
+        try { return !!(window.realUserAuth && window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn()); }
+        catch (e) { return false; }
+    }
+    _identityId() {
+        try {
+            if (!this._isLoggedIn()) return null;
+            const u = window.realUserAuth.getCurrentUser ? window.realUserAuth.getCurrentUser() : null;
+            return (u && (u.id || u.sub || u.email)) || null;
+        } catch (e) { return null; }
+    }
+    _openLogin() {
+        try {
+            if (window.realUserAuth && window.realUserAuth.showAuthModal) return window.realUserAuth.showAuthModal();
+            if (window.realUserAuth && window.realUserAuth.openModal) return window.realUserAuth.openModal();
+        } catch (e) { /* ignore */ }
+        this._toast('Please sign in via the website.');
+    }
+    _generateAlias() {
+        const a = GS_ALIAS_ADJ[Math.floor(Math.random() * GS_ALIAS_ADJ.length)];
+        const n = GS_ALIAS_NOUN[Math.floor(Math.random() * GS_ALIAS_NOUN.length)];
+        const num = Math.floor(1000 + Math.random() * 9000);
+        return `${a} ${n} #${num}`;
+    }
+
+    /* ---------------- Praxis-Tage / Streak ---------------- */
+    _registerPracticeDay(minutes) {
+        const today = this._today();
+        const yest = this._dayOffset(-1);
+        if (this.state.lastPracticeDate !== today) {
+            if (this.state.lastPracticeDate === yest || !this.state.lastPracticeDate) this.state.streak = (this.state.streak || 0) + 1;
+            else this.state.streak = 1;
+            this.state.lastPracticeDate = today;
+        }
+        if (!this.state.practiceDays.includes(today)) this.state.practiceDays.push(today);
+        this.state.totalSessions++;
+        this.state.totalMinutes += minutes;
+    }
+    _today() { return new Date().toISOString().slice(0, 10); }
+    _dayOffset(d) { return new Date(Date.now() + d * 86400000).toISOString().slice(0, 10); }
+
+    /* ---------------- Graduierung ---------------- */
+    _rawGrade(id) { return GS_gradeFromXP(this.state.disc[id].xp); }
+    _grade(id) {
+        const d = GS_DISC_MAP[id];
+        if (d && !d.exam) return this._rawGrade(id); // Disziplinen ohne Prüfung steigen frei
+        return Math.min(this._rawGrade(id), (this.state.disc[id].doorGrade || 0) + 1);
+    }
+    _needsExam(id) { return this._rawGrade(id) > this._grade(id); }
+    _gradeProgress(id) {
+        if (this._needsExam(id)) return 100;
+        const g = this._grade(id);
+        const base = GS_T(g), next = GS_T(g + 1);
+        const xp = this.state.disc[id].xp;
+        return Math.max(0, Math.min(100, Math.round(((xp - base) / (next - base)) * 100)));
+    }
+    _totalXP() { return GS_DISCIPLINES.reduce((a, d) => a + (this.state.disc[d.id].xp || 0), 0); }
+    _overallGrade() { return GS_gradeFromXP(Math.round(this._totalXP() / GS_DISCIPLINES.length)); }
+    _overallTitle() { return GS_titleFor(this._overallGrade()); }
+
+    /* ---------------- Navigation / Router ---------------- */
+    _bindNav() {
+        document.querySelectorAll('.ss-nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => this.go(btn.dataset.view));
+        });
+        this._bindSwipe();
+    }
+    _bindSwipe() {
+        const main = document.getElementById('ss-main');
+        if (!main || main._swipeBound) return;
+        main._swipeBound = true;
+        let x0 = null, y0 = null;
+        main.addEventListener('touchstart', e => {
+            if (e.touches.length !== 1) { x0 = null; return; }
+            x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+        }, { passive: true });
+        main.addEventListener('touchend', e => {
+            if (x0 == null) return;
+            const t = e.changedTouches[0];
+            const dx = t.clientX - x0, dy = t.clientY - y0;
+            x0 = null;
+            if (Math.abs(dx) < 65 || Math.abs(dy) > 55) return;
+            if (this.timer) return; // nicht während eines laufenden Spiels/Trainers
+            const views = [...document.querySelectorAll('#ss-nav .ss-nav-btn')].map(b => b.dataset.view);
+            const cur = views.indexOf(this.view);
+            if (cur < 0) return;
+            const next = dx < 0 ? cur + 1 : cur - 1;
+            if (next < 0 || next >= views.length) return;
+            this._haptic('light');
+            this.go(views[next]);
+        }, { passive: true });
+    }
+    go(view) {
+        this.view = view;
+        this._stopTimer();
+        document.querySelectorAll('.ss-nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+        this.render();
+    }
+    render() {
+        const main = document.getElementById('ss-main');
+        if (!main) return;
+        switch (this.view) {
+            case 'dashboard': main.innerHTML = this._renderDashboard(); this._afterDashboard(); break;
+            case 'practice':  main.innerHTML = this._renderPractice(); this._afterPractice(); break;
+            case 'srs':       main.innerHTML = this._renderSrs(); this._afterSrs(); break;
+            case 'exams':     main.innerHTML = this._renderExams(); this._afterExams(); break;
+            case 'journal':   main.innerHTML = this._renderJournal(); this._afterJournal(); break;
+            case 'arena':     main.innerHTML = this._renderArena(); this._afterArena(); break;
+            default:          main.innerHTML = this._renderDashboard(); this._afterDashboard();
+        }
+        window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+    }
+
+    /* ===================== DASHBOARD ===================== */
+    _renderDashboard() {
+        const total = this._totalXP();
+        const due = this._dueCount();
+        return `
+        <div class="ss-hero gm-hero-id">
+            <div class="gm-hero-emblem" title="Your rank grows with your level">${this._rankEmblem()}</div>
+            <div class="gm-hero-body">
+                <div class="ss-kicker">Your memory dojo · ${this._overallTitle()}</div>
+                <h1>Train your memory – for a lifetime</h1>
+                <p>Seven disciplines, from working memory and mnemonics through memory sport to scientific spaced repetition. Train daily, take exams, and rise through a level that never ends.</p>
+            </div>
+        </div>
+
+        <div class="gm-theme-row">
+            <span class="gm-theme-label"><i class="fas fa-palette"></i> Dojo style</span>
+            ${GS_THEMES.map(t => `<button class="gm-theme-dot ${this.state.theme === t.id ? 'active' : ''}" data-theme="${t.id}" title="${t.name}" style="background:linear-gradient(135deg,${t.a2},${t.a})"></button>`).join('')}
+        </div>
+
+        <div class="ss-stats">
+            <div class="ss-stat"><div class="ss-stat-num">${total.toLocaleString('de-DE')}</div><div class="ss-stat-label">Memory power</div></div>
+            <div class="ss-stat"><div class="ss-stat-num">${this._overallTitle()}</div><div class="ss-stat-label">Title · level ${this._overallGrade()}</div></div>
+            <div class="ss-stat"><div class="ss-stat-num">${this.state.streak || 0}🔥</div><div class="ss-stat-label">Days in a row</div></div>
+            <div class="ss-stat"><div class="ss-stat-num">${due}</div><div class="ss-stat-label">Cards due</div></div>
+        </div>
+
+        ${due > 0 ? `<div class="ss-panel" style="--accent:#a78bfa"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+            <div><h3 style="margin:0"><i class="fas fa-layer-group"></i> ${due} Karten warten auf Wiederholung</h3><p class="sub" style="margin:4px 0 0">Halte dein Wissen mit getakteter Wiederholung lebendig.</p></div>
+            <button class="ss-btn ss-btn-primary" id="gs-goto-srs">Jetzt wiederholen</button>
+        </div></div>` : ''}
+
+        ${this._coachPanel()}
+
+        <h2 style="margin:8px 0 14px;font-size:20px">Your disciplines</h2>
+        <div class="ss-grid">
+            ${GS_DISCIPLINES.map(d => this._discCard(d)).join('')}
+        </div>`;
+    }
+
+    /* ===================== KI-COACH (Schwächen-Analyse) ===================== */
+    _coachAdvice() {
+        const recs = [];
+        const due = this._dueCount();
+        if (due > 0) recs.push({ icon: '🗂️', title: 'Review flashcards', reason: `${due} Card(s) are due – review now before the forgetting curve hits.`, view: 'srs' });
+        const discs = GS_DISCIPLINES.filter(d => !d.isSrs);
+        const examReady = discs.find(d => this._needsExam(d.id));
+        if (examReady) recs.push({ icon: '🏅', title: `Exam open: ${examReady.name}`, reason: 'You’ve trained enough – the exam opens the door to the next level.', disc: examReady.id, view: 'exams' });
+        const untrained = discs.find(d => (this.state.disc[d.id].sessions || 0) === 0);
+        if (untrained) recs.push({ icon: untrained.icon, title: `Discover new: ${untrained.name}`, reason: 'You haven’t trained this discipline yet – a well-rounded memory needs every area.', trainer: untrained.trainers[0], disc: untrained.id });
+        const trained = discs.filter(d => (this.state.disc[d.id].sessions || 0) > 0);
+        if (trained.length) {
+            const weak = [...trained].sort((a, b) => this._grade(a.id) - this._grade(b.id))[0];
+            recs.push({ icon: weak.icon, title: `Strengthen a weakness: ${weak.name}`, reason: `Your lowest trained level (level ${this._grade(weak.id)}). Gezieltes Üben hier bringt den größten Sprung.`, trainer: weak.trainers[0], disc: weak.id });
+        }
+        if ((this.state.streak || 0) === 0) recs.push({ icon: '🔥', title: 'Start a streak', reason: 'Even a short session today starts your streak – consistency beats intensity.', trainer: 'speednum', disc: 'zahlen' });
+        return recs.slice(0, 3);
+    }
+    _coachPanel() {
+        const recs = this._coachAdvice();
+        this._coachRecs = recs;
+        if (!recs.length) return '';
+        return `
+        <div class="ss-panel gm-coach">
+            <h3 style="margin:0 0 4px"><i class="fas fa-wand-magic-sparkles"></i> Your coach</h3>
+            <p class="sub" style="margin:0 0 14px">Analyzes your data and suggests what will take you furthest right now.</p>
+            <div class="gm-coach-list">
+                ${recs.map((r, i) => `<button class="gm-coach-rec" data-i="${i}"><span class="ic">${r.icon}</span><span class="body"><span class="t">${this._esc(r.title)}</span><span class="r">${this._esc(r.reason)}</span></span><i class="fas fa-arrow-right go"></i></button>`).join('')}
+            </div>
+        </div>`;
+    }
+    _coachDo(r) {
+        if (!r) return;
+        if (r.trainer) { if (r.disc) this.activeDisc = r.disc; this.go('practice'); this._startTrainer(r.trainer, 'practice'); return; }
+        if (r.view) { if (r.disc) this.activeDisc = r.disc; this.go(r.view); return; }
+    }
+
+    _discCard(d) {
+        const st = this.state.disc[d.id];
+        const grade = this._grade(d.id);
+        const prog = d.isSrs ? null : this._gradeProgress(d.id);
+        const needs = !d.isSrs && this._needsExam(d.id);
+        const sub = d.isSrs
+            ? `${this._totalCards()} Cards · ${this._dueCount()} due`
+            : `Level ${grade} · ${GS_titleFor(grade)}`;
+        return `
+        <div class="ss-sense-card" data-disc="${d.id}" style="--accent:${d.accent};--accent-soft:${d.soft};--accent-glow:${d.glow}">
+            <div class="ss-sense-head">
+                <div class="ss-sense-icon">${d.icon}</div>
+                <div>
+                    <div class="ss-sense-name">${d.name}</div>
+                    <div class="ss-sense-grade-name">${sub}</div>
+                </div>
+                ${needs ? `<div class="ss-sense-rank">⚑</div>` : `<div class="ss-sense-rank">${st.xp.toLocaleString('de-DE')}</div>`}
+            </div>
+            <p class="ss-sense-meta" style="margin:8px 0 0">${d.blurb}</p>
+            <div class="gm-disc-tags">${d.tags.map(t => `<span class="gm-tag">${t}</span>`).join('')}</div>
+            ${prog !== null ? `<div class="ss-prog"><div class="ss-prog-bar"><div class="ss-prog-fill" style="width:${prog}%"></div></div></div>` : ''}
+        </div>`;
+    }
+
+    _afterDashboard() {
+        document.querySelectorAll('.ss-sense-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const id = card.dataset.disc;
+                if (GS_DISC_MAP[id].isSrs) { this.go('srs'); return; }
+                this.activeDisc = id;
+                this.go('practice');
+            });
+        });
+        const g = document.getElementById('gs-goto-srs');
+        if (g) g.addEventListener('click', () => this.go('srs'));
+        document.querySelectorAll('.gm-coach-rec').forEach(b => b.addEventListener('click', () => this._coachDo(this._coachRecs[+b.dataset.i])));
+        document.querySelectorAll('.gm-theme-dot').forEach(dot => dot.addEventListener('click', () => {
+            this.state.theme = dot.dataset.theme;
+            this._save();
+            this._applyTheme();
+            this.render();
+        }));
+    }
+
+    /* ===================== PRACTICE ===================== */
+    _renderPractice() {
+        const d = GS_DISC_MAP[this.activeDisc];
+        const grade = this._grade(this.activeDisc);
+        const needsExam = this._needsExam(this.activeDisc);
+        const trainers = (d.trainers || []).map(id => ({ id, ...GS_TRAINERS[id] }));
+        return `
+        <div class="ss-sense-picker">
+            ${GS_DISCIPLINES.filter(x => !x.isSrs).map(x => `<button class="ss-chip ${x.id === this.activeDisc ? 'active' : ''}" data-disc="${x.id}">${x.icon} ${x.short}</button>`).join('')}
+        </div>
+        <div class="ss-panel" style="--accent:${d.accent};--accent-soft:${d.soft}">
+            <h2>${d.icon} ${d.name} — ${GS_titleFor(grade)} (Level ${grade})</h2>
+            <p class="sub">${d.blurb}</p>
+            ${needsExam ? `<div style="background:rgba(224,176,74,.12);border:1px solid rgba(224,176,74,.35);color:#e0b04a;padding:12px 16px;border-radius:12px;margin-bottom:16px;font-size:14px"><i class="fas fa-medal"></i> Du hast genug trainiert – die <strong>Prüfung</strong> öffnet die Tür zum nächsten Grad. <button class="ss-btn ss-btn-gold" style="margin-left:10px;padding:6px 14px;font-size:13px" id="gs-goto-exam">Zur Prüfung</button></div>` : ''}
+            <div class="ss-exercise-list">
+                ${trainers.map(t => `
+                    <div class="ss-exercise-item" data-trainer="${t.id}">
+                        <div class="ic">${t.icon}</div>
+                        <div class="body">
+                            <div class="title">${t.title}</div>
+                            <div class="desc">${t.blurb}</div>
+                        </div>
+                        <div class="dur">+${t.xp}</div>
+                    </div>`).join('')}
+            </div>
+            ${this.activeDisc === 'palast' ? `<button class="ss-btn ss-btn-ghost ss-btn-block" id="gs-manage-routes" style="margin-top:14px"><i class="fas fa-map-signs"></i> Your own routes verwalten (${(this.state.palaces || []).length})</button>` : ''}
+        </div>`;
+    }
+
+    _afterPractice() {
+        document.querySelectorAll('.ss-chip').forEach(c => c.addEventListener('click', () => { this.activeDisc = c.dataset.disc; this.render(); }));
+        document.querySelectorAll('.ss-exercise-item').forEach(item => item.addEventListener('click', () => this._startTrainer(item.dataset.trainer, 'practice')));
+        const examBtn = document.getElementById('gs-goto-exam');
+        if (examBtn) examBtn.addEventListener('click', () => this.go('exams'));
+        const routesBtn = document.getElementById('gs-manage-routes');
+        if (routesBtn) routesBtn.addEventListener('click', () => this._palaceManager());
+    }
+
+    /* ===================== TRAINER-DISPATCH ===================== */
+    _startTrainer(trainerId, mode) {
+        this._stopTimer();
+        this.mode = mode || 'practice';
+        this.currentTrainer = trainerId;
+        const t = GS_TRAINERS[trainerId];
+        if (t) this.activeDisc = t.disc;
+        const g = this._grade(this.activeDisc);
+        switch (trainerId) {
+            case 'nback': return this._tNback(g);
+            case 'span': return this._tSpan(g);
+            case 'speednum': return this._tSpeedNum(g);
+            case 'shapes': return this._tShapes(g);
+            case 'major': return this._tMajor(g);
+            case 'words': return this._tWords(g);
+            case 'names': return this._tNames(g);
+            case 'loci': return this._tLoci(g);
+            case 'zahlenreise': return this._tZahlenreise(g);
+            case 'cards': return this._tCards(g);
+        }
+    }
+
+    _gameShell(title, icon, introHtml, bodyId) {
+        const d = GS_DISC_MAP[this.activeDisc];
+        const main = document.getElementById('ss-main');
+        const examTag = this.mode === 'exam' ? '<span class="gm-tag" style="margin-left:8px">Exam</span>' : '';
+        main.innerHTML = `
+        <div class="ss-panel ss-player" style="--accent:${d.accent};--accent-soft:${d.soft}">
+            <h2>${icon} ${title}${examTag}</h2>
+            ${introHtml ? `<p class="sub">${introHtml}</p>` : ''}
+            <div id="${bodyId}" class="gm-stage"></div>
+            <div class="ss-player-controls" style="margin-top:14px">
+                <button class="ss-btn ss-btn-ghost" id="gs-stop"><i class="fas fa-xmark"></i> End</button>
+            </div>
+        </div>`;
+        document.getElementById('gs-stop').addEventListener('click', () => { this._stopTimer(); this.mode === 'exam' ? this.go('exams') : this.go('practice'); });
+    }
+
+    // Abschluss eines Trainers (Übung) bzw. Weiterleitung an die Prüfung
+    _finishTrainer(score, detail) {
+        score = Math.max(0, Math.min(100, Math.round(score)));
+        if (this.mode === 'exam') { this._finishExam(score); return; }
+        const id = this.activeDisc;
+        const t = GS_TRAINERS[this.currentTrainer];
+        const xp = Math.max(5, Math.round((t ? t.xp : 20) * (0.45 + score / 180)));
+        const before = this._grade(id);
+        this._registerPracticeDay(2);
+        this.state.disc[id].xp += xp;
+        this.state.disc[id].sessions++;
+        if (!this.state.disc[id].best) this.state.disc[id].best = {};
+        const bestKey = this.currentTrainer;
+        if (!this.state.disc[id].best[bestKey] || score > this.state.disc[id].best[bestKey]) this.state.disc[id].best[bestKey] = score;
+        const after = this._grade(id);
+        this.state.log.unshift({ id: Date.now(), date: this._today(), disc: id, trainer: t ? t.title : '', score, detail: detail || '', xp });
+        this.state.log = this.state.log.slice(0, 120);
+        this._save();
+        this._chime(after > before);
+        if (after > before) { this._haptic('level'); this._celebrate(); }
+        else this._haptic(score >= 70 ? 'ok' : 'light');
+        this._showTrainerResult(score, xp, detail, after > before, after);
+    }
+
+    _showTrainerResult(score, xp, detail, levelUp, grade) {
+        const d = GS_DISC_MAP[this.activeDisc];
+        const deg = Math.round(score * 3.6);
+        const main = document.getElementById('ss-main');
+        main.innerHTML = `
+        <div class="ss-panel" style="text-align:center;--accent:${d.accent}">
+            <h2>${d.icon} outcome</h2>
+            <div class="ss-score-circle" style="--deg:${deg}deg"><span class="val">${score}</span></div>
+            <p class="sub" style="text-align:center">+${xp} Memory power${detail ? ' · ' + this._esc(detail) : ''}</p>
+            ${levelUp ? `<p style="color:#e0b04a;font-weight:600">Aufstieg in Grad ${grade}: ${GS_titleFor(grade)}!</p>` : ''}
+            <div class="ss-player-controls">
+                <button class="ss-btn ss-btn-ghost" id="gs-again">Again</button>
+                <button class="ss-btn ss-btn-primary" id="gs-back">Next</button>
+            </div>
+        </div>`;
+        main.querySelector('#gs-again').addEventListener('click', () => this._startTrainer(this.currentTrainer, 'practice'));
+        main.querySelector('#gs-back').addEventListener('click', () => this.go('practice'));
+        if (levelUp) this._toast(`Level ${grade}: ${GS_titleFor(grade)}!`, 'gold');
+    }
+
+    /* ===================== TRAINER: DUAL N-BACK ===================== */
+    _tNback(grade) {
+        const n = this.mode === 'exam' ? Math.min(2 + Math.floor(grade / 3), 6) : Math.min(1 + Math.floor(grade / 4), 5);
+        const trials = (this.mode === 'exam' ? 24 : 18) + n;
+        const isi = 2700;
+        this._gameShell('Dual-N-Back', '🔁',
+            `Remember position <em>and</em> letter. If the current stimulus matches the one from <strong>${n}</strong> step(s) back, press the matching key. <span style="color:var(--ss-text-dim)">(A = position, L = letter)</span>`,
+            'gs-game');
+        const letters = ['K', 'T', 'L', 'R', 'S', 'P', 'H', 'Q'];
+
+        // Sequenz vorab erzeugen, mit gezielt eingestreuten Treffern (~28%)
+        const seq = [];
+        for (let i = 0; i < trials; i++) {
+            let pos = Math.floor(Math.random() * 9);
+            let lt = letters[Math.floor(Math.random() * letters.length)];
+            if (i >= n) {
+                if (Math.random() < 0.28) pos = seq[i - n].pos;
+                if (Math.random() < 0.28) lt = seq[i - n].let;
+            }
+            seq.push({ pos, let: lt });
+        }
+        const posTargets = seq.filter((s, i) => i >= n && s.pos === seq[i - n].pos).length;
+        const letTargets = seq.filter((s, i) => i >= n && s.let === seq[i - n].let).length;
+
+        const body = document.getElementById('gs-game');
+        body.innerHTML = `
+            <div class="gm-head"><strong>N = ${n}</strong><span class="meta" id="gs-nb-prog">0 / ${trials}</span></div>
+            <div class="gm-nback-letter" id="gs-nb-letter">Ready …</div>
+            <div class="gm-nback-grid">${Array.from({ length: 9 }, (_, i) => `<div class="gm-nback-cell" data-c="${i}"></div>`).join('')}</div>
+            <div class="gm-nback-controls">
+                <button class="ss-btn ss-btn-ghost gm-match-btn" id="gs-nb-pos">Position (A)</button>
+                <button class="ss-btn ss-btn-ghost gm-match-btn" id="gs-nb-let">Letter (L)</button>
+            </div>`;
+        const cells = body.querySelectorAll('.gm-nback-cell');
+        const letterEl = body.querySelector('#gs-nb-letter');
+        const progEl = body.querySelector('#gs-nb-prog');
+        const posBtn = body.querySelector('#gs-nb-pos');
+        const letBtn = body.querySelector('#gs-nb-let');
+
+        const stats = { posHit: 0, posFA: 0, letHit: 0, letFA: 0, posTargets, letTargets };
+        let i = -1; let answeredPos = false, answeredLet = false;
+        const speak = (ltr) => { try { if (window.speechSynthesis) { const u = new SpeechSynthesisUtterance(ltr); u.lang = 'de-DE'; u.rate = 1.05; speechSynthesis.cancel(); speechSynthesis.speak(u); } } catch (e) { /* ignore */ } };
+
+        const markPos = () => {
+            if (answeredPos || i < n || i >= trials) return; answeredPos = true;
+            if (seq[i].pos === seq[i - n].pos) { stats.posHit++; posBtn.classList.add('hit'); }
+            else { stats.posFA++; posBtn.classList.add('miss'); }
+        };
+        const markLet = () => {
+            if (answeredLet || i < n || i >= trials) return; answeredLet = true;
+            if (seq[i].let === seq[i - n].let) { stats.letHit++; letBtn.classList.add('hit'); }
+            else { stats.letFA++; letBtn.classList.add('miss'); }
+        };
+        posBtn.addEventListener('click', markPos);
+        letBtn.addEventListener('click', markLet);
+        this._keyHandler = (e) => {
+            if (e.key === 'a' || e.key === 'A') markPos();
+            if (e.key === 'l' || e.key === 'L') markLet();
+        };
+        document.addEventListener('keydown', this._keyHandler);
+
+        const step = () => {
+            i++;
+            progEl.textContent = `${Math.min(i + 1, trials)} / ${trials}`;
+            if (i >= trials) { this._endNback(stats); return; }
+            answeredPos = false; answeredLet = false;
+            posBtn.classList.remove('hit', 'miss'); letBtn.classList.remove('hit', 'miss');
+            cells.forEach(c => c.classList.remove('active'));
+            const cell = cells[seq[i].pos];
+            cell.classList.add('active');
+            letterEl.textContent = seq[i].let;
+            speak(seq[i].let);
+            setTimeout(() => { cell.classList.remove('active'); }, isi * 0.6);
+        };
+        this.timer = setInterval(step, isi);
+        setTimeout(step, 600);
+    }
+
+    _endNback(stats) {
+        this._stopTimer();
+        const posAcc = stats.posTargets ? stats.posHit / stats.posTargets : (stats.posFA ? 0 : 1);
+        const letAcc = stats.letTargets ? stats.letHit / stats.letTargets : (stats.letFA ? 0 : 1);
+        const fpPenalty = (stats.posFA + stats.letFA) * 0.06;
+        let score = ((posAcc + letAcc) / 2 - fpPenalty) * 100;
+        score = Math.max(0, Math.min(100, score));
+        const detail = `Position ${stats.posHit}/${stats.posTargets}, letter ${stats.letHit}/${stats.letTargets}`;
+        this._finishTrainer(score, detail);
+    }
+
+    /* ===================== TRAINER: ZAHLENSPANNE ===================== */
+    _tSpan(grade) {
+        const startLen = 3 + Math.floor(grade / 4);
+        const backward = Math.random() < 0.4;
+        this._gameShell('Digit span', '↔️',
+            backward ? 'The digits appear one after another – then enter them <strong>backward</strong> .' : 'The digits appear one after another – then enter them <strong>forward</strong> .',
+            'gs-game');
+        const body = document.getElementById('gs-game');
+        const st = { len: startLen, maxReached: startLen - 1, fails: 0 };
+
+        const showSequence = () => {
+            const seq = Array.from({ length: st.len }, () => Math.floor(Math.random() * 10));
+            body.innerHTML = `
+                <div class="gm-head"><strong>Length ${st.len}${backward ? ' · rückwärts' : ''}</strong><span class="meta">Longest: ${st.maxReached}</span></div>
+                <div class="gm-memorize"><div class="gm-digit" id="gs-span-show">…</div></div>`;
+            const showEl = body.querySelector('#gs-span-show');
+            let k = -1;
+            const tick = () => {
+                k++;
+                if (k >= seq.length) { this._stopTimer(); setTimeout(() => askInput(seq), 350); return; }
+                showEl.textContent = seq[k];
+                showEl.style.opacity = 1;
+                setTimeout(() => { showEl.style.opacity = .15; }, 550);
+            };
+            this.timer = setInterval(tick, 850);
+            tick();
+        };
+        const askInput = (seq) => {
+            const target = backward ? seq.slice().reverse() : seq;
+            body.innerHTML = `
+                <div class="gm-head"><strong>Recall${backward ? ' rückwärts' : ''}</strong></div>
+                <div class="gm-recall-grid">${target.map((_, i) => `<input data-i="${i}" inputmode="numeric" maxlength="1">`).join('')}</div>
+                <button class="ss-btn ss-btn-primary" id="gs-span-check"><i class="fas fa-check"></i> Check</button>`;
+            const inputs = [...body.querySelectorAll('input')];
+            inputs[0] && inputs[0].focus();
+            inputs.forEach((inp, idx) => inp.addEventListener('input', () => { if (inp.value && idx < inputs.length - 1) inputs[idx + 1].focus(); }));
+            body.querySelector('#gs-span-check').addEventListener('click', () => {
+                let correct = true;
+                inputs.forEach((inp, i) => { const ok = String(target[i]) === inp.value.trim(); inp.classList.add(ok ? 'ok' : 'bad'); if (!ok) correct = false; });
+                if (correct) { st.maxReached = Math.max(st.maxReached, st.len); st.len++; st.fails = 0; setTimeout(showSequence, 700); }
+                else {
+                    st.fails++;
+                    if (st.fails >= 2) { const score = Math.min(100, Math.max(0, (st.maxReached - 2) * 14)); this._finishTrainer(score, `Longest span: ${st.maxReached}`); }
+                    else { this._toast('One attempt left', 'error'); setTimeout(() => askInput(seq), 700); }
+                }
+            });
+        };
+        showSequence();
+    }
+
+    /* ===================== TRAINER: SPEED NUMBERS ===================== */
+    _tSpeedNum(grade) {
+        const count = (this.mode === 'exam' ? 14 : 10) + grade * 2;
+        const showMs = Math.max(4000, (this.mode === 'exam' ? 9000 : 13000) - grade * 350);
+        this._gameShell('Speed Numbers', '⚡',
+            `Memorize <strong>${count} digits</strong>  – you have ${Math.round(showMs / 1000)} seconds. Tip: turn each digit into its image (number-shape system) and place it on your route.`,
+            'gs-game');
+        const seq = Array.from({ length: count }, () => Math.floor(Math.random() * 10));
+        const body = document.getElementById('gs-game');
+        let left = Math.round(showMs / 1000);
+        body.innerHTML = `
+            <div class="gm-countdown">Memorizing – still <span class="gm-bigtimer" id="gs-sn-t">${left}</span> s</div>
+            <div class="gm-memorize">${seq.map((d, i) => `<span class="gm-digit grouped">${d}</span>${(i + 1) % 2 === 0 ? '<span style="width:8px"></span>' : ''}`).join('')}</div>
+            <button class="ss-btn ss-btn-ghost" id="gs-sn-ready">Ready – recall now</button>`;
+        const tEl = body.querySelector('#gs-sn-t');
+        const toRecall = () => {
+            this._stopTimer();
+            body.innerHTML = `
+                <div class="gm-head"><strong>Enter the ${count} digits</strong></div>
+                <div class="gm-recall-grid">${seq.map((_, i) => `<input data-i="${i}" inputmode="numeric" maxlength="1">`).join('')}</div>
+                <button class="ss-btn ss-btn-primary" id="gs-sn-check"><i class="fas fa-check"></i> Evaluate</button>`;
+            const inputs = [...body.querySelectorAll('input')];
+            inputs[0] && inputs[0].focus();
+            inputs.forEach((inp, idx) => inp.addEventListener('input', () => { if (inp.value && idx < inputs.length - 1) inputs[idx + 1].focus(); }));
+            body.querySelector('#gs-sn-check').addEventListener('click', () => {
+                let correct = 0;
+                inputs.forEach((inp, i) => { const ok = String(seq[i]) === inp.value.trim(); inp.classList.add(ok ? 'ok' : 'bad'); if (ok) correct++; });
+                this._finishTrainer(correct / count * 100, `${correct}/${count} digits correct`);
+            });
+        };
+        this.timer = setInterval(() => { left--; if (tEl) tEl.textContent = left; if (left <= 0) toRecall(); }, 1000);
+        body.querySelector('#gs-sn-ready').addEventListener('click', toRecall);
+    }
+
+    /* ===================== TRAINER: MAJOR-SYSTEM ===================== */
+    _tMajor(grade) {
+        // Lehr-/Drill-Modus: Ziffer → Konsonant abfragen
+        this._gameShell('Major system trainer', '🔤',
+            'The Major system turns each digit into a consonant sound – so numbers become memorable words. Learn the table and practice in the drill.',
+            'gs-game');
+        const body = document.getElementById('gs-game');
+        body.innerHTML = `
+            <div class="gm-major-table">
+                ${GS_MAJOR.map(m => `<div class="gm-major-cell"><div class="d">${m.d}</div><div class="c">${m.c}</div><div class="ex">${m.ex}</div></div>`).join('')}
+            </div>
+            <button class="ss-btn ss-btn-primary" id="gs-major-drill"><i class="fas fa-play"></i> Start drill (10 questions)</button>
+            <div id="gs-major-drillarea" style="margin-top:16px"></div>`;
+        body.querySelector('#gs-major-drill').addEventListener('click', () => this._majorDrill(body.querySelector('#gs-major-drillarea')));
+    }
+
+    _majorDrill(area) {
+        const rounds = 10;
+        const st = { i: 0, correct: 0 };
+        const render = () => {
+            if (st.i >= rounds) { this._finishTrainer(st.correct / rounds * 100, `${st.correct}/${rounds} correct`); return; }
+            const d = Math.floor(Math.random() * 10);
+            const right = GS_MAJOR[d];
+            const opts = [right];
+            while (opts.length < 4) { const c = GS_MAJOR[Math.floor(Math.random() * 10)]; if (!opts.includes(c)) opts.push(c); }
+            opts.sort(() => Math.random() - 0.5);
+            area.innerHTML = `
+                <div class="gm-head"><strong>Question ${st.i + 1}/${rounds}</strong><span class="meta">Which sound belongs to the digit?</span></div>
+                <div class="gm-memorize" style="min-height:90px"><div class="gm-digit">${d}</div></div>
+                <div class="ss-options">${opts.map(o => `<button class="ss-option" data-d="${o.d}">${o.c}</button>`).join('')}</div>`;
+            area.querySelectorAll('.ss-option').forEach(b => b.addEventListener('click', () => {
+                const chosen = +b.dataset.d;
+                area.querySelectorAll('.ss-option').forEach(x => { const xd = +x.dataset.d; if (xd === d) x.classList.add('correct'); else if (xd === chosen) x.classList.add('wrong'); x.disabled = true; });
+                if (chosen === d) st.correct++;
+                this._haptic(chosen === d ? 'ok' : 'err');
+                st.i++;
+                setTimeout(render, 650);
+            }));
+        };
+        render();
+    }
+
+    /* ===================== TRAINER: ZAHL-FORM-SYSTEM ===================== */
+    _tShapes() {
+        this._gameShell('Number-shape system', '🖼️',
+            'Each digit gets a fixed image – from <strong>1</strong> comes a candle, from <strong>3</strong> a trident, from <strong>5</strong> a hand. <strong>Invent your own images</strong> (self-made ones stick best) and place them on your route later.',
+            'gs-game');
+        const body = document.getElementById('gs-game');
+        const render = () => {
+            body.innerHTML = `
+                <div class="gm-shapes-grid">
+                    ${GS_NUMSHAPES.map(s0 => { const s = this._numShape(s0.d); return `
+                        <div class="gm-shape-cell">
+                            <div class="head"><span class="em">${s.emoji}</span><span class="d">${s0.d}</span></div>
+                            <input class="gm-shape-emoji" data-de="${s0.d}" value="${this._esc(s.emoji)}" maxlength="4" title="Symbol/emoji">
+                            <input class="gm-shape-word" data-d="${s0.d}" value="${this._esc(s.word)}" title="Image word">
+                        </div>`; }).join('')}
+                </div>
+                <p class="sub" style="margin-top:8px"><i class="fas fa-lightbulb"></i> Tap image or word to replace it with your own – that’s scientifically most effective (generation effect).</p>
+                <div style="display:flex;gap:10px;flex-wrap:wrap">
+                    <button class="ss-btn ss-btn-primary" id="gs-shapes-drill"><i class="fas fa-play"></i> Start drill (10 questions)</button>
+                    <button class="ss-btn ss-btn-ghost" id="gs-shapes-reset"><i class="fas fa-rotate-left"></i> Restore default</button>
+                </div>
+                <div id="gs-shapes-drillarea" style="margin-top:16px"></div>`;
+            body.querySelectorAll('.gm-shape-word').forEach(inp => inp.addEventListener('change', () => { const v = inp.value.trim(); if (v) this._setNumShape(+inp.dataset.d, { word: v }); }));
+            body.querySelectorAll('.gm-shape-emoji').forEach(inp => inp.addEventListener('change', () => { const v = inp.value.trim(); if (v) { this._setNumShape(+inp.dataset.de, { emoji: v }); render(); } }));
+            body.querySelector('#gs-shapes-drill').addEventListener('click', () => this._shapesDrill(body.querySelector('#gs-shapes-drillarea')));
+            body.querySelector('#gs-shapes-reset').addEventListener('click', () => { this.state.numShapes = this._seedShapes(); this._save(); render(); });
+        };
+        render();
+    }
+
+    _shapeOptions(correct) {
+        const ds = [correct];
+        while (ds.length < 4) { const x = Math.floor(Math.random() * 10); if (!ds.includes(x)) ds.push(x); }
+        return ds.sort(() => Math.random() - 0.5).map(d => ({ d, ...this._numShape(d) }));
+    }
+
+    _shapesDrill(area) {
+        const rounds = 10;
+        const st = { i: 0, correct: 0 };
+        const render = () => {
+            if (st.i >= rounds) { this._finishTrainer(st.correct / rounds * 100, `${st.correct}/${rounds} correct`); return; }
+            const d = Math.floor(Math.random() * 10);
+            const s = this._numShape(d);
+            const opts = this._shapeOptions(d);
+            const d2w = Math.random() < 0.5;
+            if (d2w) {
+                area.innerHTML = `
+                    <div class="gm-head"><strong>Question ${st.i + 1}/${rounds}</strong><span class="meta">Which image belongs to the digit?</span></div>
+                    <div class="gm-memorize" style="min-height:90px"><div class="gm-digit">${d}</div></div>
+                    <div class="ss-options">${opts.map(o => `<button class="ss-option" data-d="${o.d}">${o.emoji} ${this._esc(o.word)}</button>`).join('')}</div>`;
+            } else {
+                area.innerHTML = `
+                    <div class="gm-head"><strong>Question ${st.i + 1}/${rounds}</strong><span class="meta">Which digit is behind the image?</span></div>
+                    <div class="gm-memorize" style="min-height:90px;gap:8px"><div style="font-size:52px">${s.emoji}</div><div class="gm-word-chip">${this._esc(s.word)}</div></div>
+                    <div class="ss-options">${opts.map(o => `<button class="ss-option" data-d="${o.d}">${o.d}</button>`).join('')}</div>`;
+            }
+            area.querySelectorAll('.ss-option').forEach(b => b.addEventListener('click', () => {
+                const chosen = +b.dataset.d;
+                area.querySelectorAll('.ss-option').forEach(x => { const xd = +x.dataset.d; if (xd === d) x.classList.add('correct'); else if (xd === chosen) x.classList.add('wrong'); x.disabled = true; });
+                if (chosen === d) st.correct++;
+                this._haptic(chosen === d ? 'ok' : 'err');
+                st.i++;
+                setTimeout(render, 650);
+            }));
+        };
+        render();
+    }
+
+    /* ===================== TRAINER: PAO-SYSTEM (Weltmeister-Technik) ===================== */
+    _tPao(grade) {
+        this._gameShell('PAO system', '🎬',
+            'Each digit has a <strong>Person</strong>, an <strong>Action</strong> and an <strong>Object</strong>. Fuse three digits into ONE scene: <em>Person</em> of the first, <em>Action</em> of the second, <em>Object</em> of the third – e.g. <strong>1-5-3</strong> → Einstein <em>strikes</em> a trident. That packs 3 digits into one image. Make the table your own.',
+            'gs-game');
+        const body = document.getElementById('gs-game');
+        const render = () => {
+            body.innerHTML = `
+                <div class="gm-pao-table">
+                    <div class="gm-pao-row gm-pao-head"><span class="d">#</span><span>Person</span><span>Action</span><span>Object</span></div>
+                    ${GS_PAO.map(s0 => { const s = this._pao(s0.d); return `<div class="gm-pao-row"><span class="d">${s0.d}</span><input class="gm-pao-in" data-d="${s0.d}" data-f="p" value="${this._esc(s.p)}"><input class="gm-pao-in" data-d="${s0.d}" data-f="a" value="${this._esc(s.a)}"><input class="gm-pao-in" data-d="${s0.d}" data-f="o" value="${this._esc(s.o)}"></div>`; }).join('')}
+                </div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+                    <button class="ss-btn ss-btn-primary" id="gs-pao-run"><i class="fas fa-play"></i> Start scene drill</button>
+                    <button class="ss-btn ss-btn-ghost" id="gs-pao-reset"><i class="fas fa-rotate-left"></i> Restore default</button>
+                </div>
+                <div id="gs-pao-area" style="margin-top:16px"></div>`;
+            body.querySelectorAll('.gm-pao-in').forEach(inp => inp.addEventListener('change', () => { const v = inp.value.trim(); if (v) this._setPao(+inp.dataset.d, { [inp.dataset.f]: v }); }));
+            body.querySelector('#gs-pao-reset').addEventListener('click', () => { this.state.pao = this._seedPao(); this._save(); render(); });
+            body.querySelector('#gs-pao-run').addEventListener('click', () => this._paoDrill(body.querySelector('#gs-pao-area'), grade));
+        };
+        render();
+    }
+    _paoDrill(area, grade) {
+        const triples = (this.mode === 'exam' ? 4 : 3) + Math.floor(grade / 4);
+        const scenes = Array.from({ length: triples }, () => [Math.floor(Math.random() * 10), Math.floor(Math.random() * 10), Math.floor(Math.random() * 10)]);
+        const showMs = Math.max(9000, 16000 - grade * 150) + triples * 1700;
+        let left = Math.round(showMs / 1000);
+        area.innerHTML = `
+            <div class="gm-countdown">Memorizing scenes – still <span class="gm-bigtimer" id="gs-pao-t">${left}</span> s</div>
+            <div class="gm-pao-scenes">${scenes.map(t => { const P = this._pao(t[0]), A = this._pao(t[1]), O = this._pao(t[2]); return `<div class="gm-pao-scene"><span class="num">${t.join('')}</span><span class="txt"><b>${this._esc(P.p)}</b> ${this._esc(A.a)} <b>${this._esc(O.o)}</b></span></div>`; }).join('')}</div>
+            <button class="ss-btn ss-btn-ghost" id="gs-pao-ready">Ready – recall digits</button>`;
+        const tEl = area.querySelector('#gs-pao-t');
+        const toRecall = () => {
+            this._stopTimer();
+            area.innerHTML = `
+                <div class="gm-head"><strong>Which digits were in each scene?</strong></div>
+                <div class="gm-pao-scenes">${scenes.map((t, i) => `<div class="gm-pao-scene recall"><span class="num">Szene ${i + 1}</span><div class="gm-pao-inputs">${t.map((_, j) => `<input data-i="${i}" data-j="${j}" inputmode="numeric" maxlength="1">`).join('')}</div></div>`).join('')}</div>
+                <button class="ss-btn ss-btn-primary" id="gs-pao-check"><i class="fas fa-check"></i> Evaluate</button>`;
+            const inputs = [...area.querySelectorAll('input')];
+            inputs[0] && inputs[0].focus();
+            inputs.forEach((inp, idx) => inp.addEventListener('input', () => { if (inp.value && idx < inputs.length - 1) inputs[idx + 1].focus(); }));
+            area.querySelector('#gs-pao-check').addEventListener('click', () => {
+                let correct = 0, total = 0;
+                scenes.forEach((t, i) => t.forEach((d, j) => {
+                    total++;
+                    const inp = area.querySelector(`input[data-i="${i}"][data-j="${j}"]`);
+                    const ok = String(d) === inp.value.trim();
+                    inp.classList.add(ok ? 'ok' : 'bad');
+                    if (ok) correct++;
+                }));
+                this._finishTrainer(correct / total * 100, `${correct}/${total} digits · ${triples} scenes`);
+            });
+        };
+        this.timer = setInterval(() => { left--; if (tEl) tEl.textContent = left; if (left <= 0) toRecall(); }, 1000);
+        area.querySelector('#gs-pao-ready').addEventListener('click', toRecall);
+    }
+
+    /* ===================== TRAINER: DOMINIC-SYSTEM ===================== */
+    _tDominic() {
+        this._gameShell('Dominic system', '🎩',
+            'Each digit becomes a letter: <strong>1=A · 2=B · 3=C · 4=D · 5=E · 6=S · 7=G · 8=H · 9=N · 0=O</strong>. Two digits become a person’s initials – <strong>15 = A.E. = Albert Einstein</strong>, who then does something typical. Learn the table and practice in the drill.',
+            'gs-game');
+        const body = document.getElementById('gs-game');
+        body.innerHTML = `
+            <div class="gm-major-table">
+                ${GS_DOMINIC.map(m => `<div class="gm-major-cell"><div class="d">${m.d}</div><div class="c">${m.l}</div><div class="ex">${m.ex}</div></div>`).join('')}
+            </div>
+            <div class="gm-pao-examples">${GS_DOMINIC_EXAMPLES.map(e => `<span><b>${e.num}</b> → ${e.init} → ${this._esc(e.person)}</span>`).join('')}</div>
+            <button class="ss-btn ss-btn-primary" id="gs-dom-drill"><i class="fas fa-play"></i> Start drill (10 questions)</button>
+            <div id="gs-dom-area" style="margin-top:16px"></div>`;
+        body.querySelector('#gs-dom-drill').addEventListener('click', () => this._dominicDrill(body.querySelector('#gs-dom-area')));
+    }
+    _dominicDrill(area) {
+        const rounds = 10;
+        const st = { i: 0, correct: 0 };
+        const render = () => {
+            if (st.i >= rounds) { this._finishTrainer(st.correct / rounds * 100, `${st.correct}/${rounds} correct`); return; }
+            const d = Math.floor(Math.random() * 10);
+            const opts = [GS_DOMINIC[d]];
+            while (opts.length < 4) { const c = GS_DOMINIC[Math.floor(Math.random() * 10)]; if (!opts.includes(c)) opts.push(c); }
+            opts.sort(() => Math.random() - 0.5);
+            area.innerHTML = `
+                <div class="gm-head"><strong>Question ${st.i + 1}/${rounds}</strong><span class="meta">Which letter belongs to the digit?</span></div>
+                <div class="gm-memorize" style="min-height:90px"><div class="gm-digit">${d}</div></div>
+                <div class="ss-options">${opts.map(o => `<button class="ss-option" data-d="${o.d}">${o.l}</button>`).join('')}</div>`;
+            area.querySelectorAll('.ss-option').forEach(b => b.addEventListener('click', () => {
+                const chosen = +b.dataset.d;
+                area.querySelectorAll('.ss-option').forEach(x => { const xd = +x.dataset.d; if (xd === d) x.classList.add('correct'); else if (xd === chosen) x.classList.add('wrong'); x.disabled = true; });
+                if (chosen === d) st.correct++;
+                this._haptic(chosen === d ? 'ok' : 'err');
+                st.i++;
+                setTimeout(render, 650);
+            }));
+        };
+        render();
+    }
+
+    /* ===================== TRAINER: ZAHLEN-REISE (Eselswelt-Methode) ===================== */
+    _tZahlenreise(grade) {
+        const route = this._pickPalace();
+        const maxLen = Math.min(route.stations.length, (this.mode === 'exam' ? 6 : 4) + Math.floor(grade / 3));
+        const stations = route.stations.slice(0, maxLen);
+        const digits = Array.from({ length: stations.length }, () => Math.floor(Math.random() * 10));
+        const showMs = Math.max(7000, 18000 - grade * 200) + stations.length * 900;
+        this._gameShell('Number journey', '🧭',
+            `Your technique from “Eselswelt”: route <strong>${this._esc(route.name)}</strong>${route.id ? ' (deine Route)' : ''}. Turn each digit into its image and place it vividly at the station – see, for example, the candle burning on the bedspread. Then walk the route and read the number back.`,
+            'gs-game');
+        const body = document.getElementById('gs-game');
+        let left = Math.round(showMs / 1000);
+        body.innerHTML = `
+            <div class="gm-countdown">Placing images – still <span class="gm-bigtimer" id="gs-zr-t">${left}</span> s</div>
+            <div class="gm-loci-route">${stations.map((s, i) => { const sh = this._numShape(digits[i]); return `<div class="gm-loci-station"><div class="pin">${i + 1}</div><div class="place">${this._esc(s)}</div><div class="item">${sh.emoji} ${this._esc(sh.word)} <b style="color:var(--ss-text)">(${digits[i]})</b></div></div>`; }).join('')}</div>
+            <button class="ss-btn ss-btn-ghost" id="gs-zr-ready">Ready – recall the number</button>`;
+        const tEl = body.querySelector('#gs-zr-t');
+        const toRecall = () => {
+            this._stopTimer();
+            body.innerHTML = `
+                <div class="gm-head"><strong>Walk the route – which digit was where?</strong></div>
+                <div class="gm-loci-route">${stations.map((s, i) => `<div class="gm-loci-station"><div class="pin">${i + 1}</div><div class="place">${this._esc(s)}</div><input data-i="${i}" inputmode="numeric" maxlength="1" placeholder="?" style="max-width:84px;text-align:center;font-size:20px;font-weight:700"></div>`).join('')}</div>
+                <button class="ss-btn ss-btn-primary" id="gs-zr-check"><i class="fas fa-check"></i> Evaluate</button>`;
+            const inputs = [...body.querySelectorAll('input')];
+            inputs[0] && inputs[0].focus();
+            inputs.forEach((inp, idx) => inp.addEventListener('input', () => { if (inp.value && idx < inputs.length - 1) inputs[idx + 1].focus(); }));
+            body.querySelector('#gs-zr-check').addEventListener('click', () => {
+                let correct = 0;
+                inputs.forEach((inp, i) => { const ok = String(digits[i]) === inp.value.trim(); inp.closest('.gm-loci-station').classList.add(ok ? 'ok' : 'bad'); if (ok) correct++; });
+                this._finishTrainer(correct / stations.length * 100, `Number ${digits.join('')} · ${correct}/${stations.length} correct`);
+            });
+        };
+        this.timer = setInterval(() => { left--; if (tEl) tEl.textContent = left; if (left <= 0) toRecall(); }, 1000);
+        body.querySelector('#gs-zr-ready').addEventListener('click', toRecall);
+    }
+
+    /* ===================== ROUTEN-VERWALTUNG (eigene Wege) ===================== */
+    _palaceManager() {
+        this._stopTimer();
+        const main = document.getElementById('ss-main');
+        const custom = this.state.palaces || [];
+        main.innerHTML = `
+        <div class="ss-panel" style="--accent:#e0b04a">
+            <h2>🗺️ Your own routes</h2>
+            <p class="sub">A route is a path you know by heart – e.g. from the bedspread in the morning to campus. The more familiar, the better. Add stations in the order you walk them. Your routes are used in “Palace route” and “Number journey”.</p>
+            <div class="gm-deck-list">
+                ${custom.map(p => `<div class="gm-deck"><div class="icon"><i class="fas fa-route"></i></div><div class="body"><div class="name">${this._esc(p.name)}</div><div class="stats">${p.stations.length} Stationen · ${this._esc(p.stations.slice(0, 3).join(', '))}…</div></div><button class="ss-btn ss-btn-ghost gs-route-del" data-id="${p.id}" style="padding:8px 12px;font-size:13px"><i class="fas fa-trash"></i></button></div>`).join('')}
+                ${GS_PALACES.map(p => `<div class="gm-deck" style="opacity:.75"><div class="icon" style="background:var(--ss-line)"><i class="fas fa-bookmark"></i></div><div class="body"><div class="name">${this._esc(p.name)}</div><div class="stats">Vorlage · ${p.stations.length} Stationen</div></div></div>`).join('')}
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+                <button class="ss-btn ss-btn-primary" id="gs-route-new"><i class="fas fa-plus"></i> Create new route</button>
+                <button class="ss-btn ss-btn-ghost" id="gs-route-back"><i class="fas fa-arrow-left"></i> Back</button>
+            </div>
+        </div>`;
+        main.querySelector('#gs-route-back').addEventListener('click', () => { this.activeDisc = 'palast'; this.go('practice'); });
+        main.querySelector('#gs-route-new').addEventListener('click', () => this._routeEditor());
+        main.querySelectorAll('.gs-route-del').forEach(b => b.addEventListener('click', () => {
+            this.state.palaces = (this.state.palaces || []).filter(p => p.id !== b.dataset.id);
+            this._save();
+            this._palaceManager();
+        }));
+    }
+
+    _routeEditor() {
+        const main = document.getElementById('ss-main');
+        main.innerHTML = `
+        <div class="ss-panel" style="--accent:#e0b04a">
+            <h2>🧭 New route</h2>
+            <div class="ss-field"><label>Route name</label><input class="gm-route-input" id="gs-rname" placeholder="e.g. My way to campus" autocomplete="off"></div>
+            <p class="sub">Stations in order (at least 4):</p>
+            <div class="gm-recall-rows" id="gs-rstations"></div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+                <button class="ss-btn ss-btn-ghost" id="gs-radd"><i class="fas fa-plus"></i> Station</button>
+                <button class="ss-btn ss-btn-primary" id="gs-rsave"><i class="fas fa-check"></i> Save route</button>
+                <button class="ss-btn ss-btn-ghost" id="gs-rcancel">Cancel</button>
+            </div>
+        </div>`;
+        const wrap = main.querySelector('#gs-rstations');
+        const addRow = (val) => {
+            const i = wrap.children.length;
+            const div = document.createElement('div');
+            div.className = 'gm-recall-row';
+            div.innerHTML = `<span class="num">${i + 1}</span><input class="gm-route-input" value="${this._esc(val || '')}" placeholder="Station ${i + 1}" autocomplete="off">`;
+            wrap.appendChild(div);
+        };
+        for (let i = 0; i < 6; i++) addRow('');
+        main.querySelector('#gs-radd').addEventListener('click', () => addRow(''));
+        main.querySelector('#gs-rcancel').addEventListener('click', () => this._palaceManager());
+        main.querySelector('#gs-rsave').addEventListener('click', () => {
+            const name = main.querySelector('#gs-rname').value.trim();
+            const stations = [...wrap.querySelectorAll('input')].map(i => i.value.trim()).filter(Boolean);
+            if (!name) { this._toast('Please give it a name', 'error'); return; }
+            if (stations.length < 4) { this._toast('At least 4 stations needed', 'error'); return; }
+            this.state.palaces.push({ id: 'r' + Date.now(), name, stations });
+            this._save();
+            this._toast('Route saved!', 'success');
+            this._palaceManager();
+        });
+        main.querySelector('#gs-rname').focus();
+    }
+
+    /* ===================== TRAINER: WÖRTER ===================== */
+    _tWords(grade) {
+        const count = (this.mode === 'exam' ? 9 : 7) + Math.floor(grade / 2);
+        const showMs = Math.max(5000, (this.mode === 'exam' ? 11000 : 15000) - grade * 300);
+        this._gameShell('Memorize word list', '📚',
+            `Memorize <strong>${count} Words</strong>  in order (${Math.round(showMs / 1000)} s). Tip: weave them into an absurd story.`,
+            'gs-game');
+        const pool = GS_WORDS.slice().sort(() => Math.random() - 0.5).slice(0, count);
+        const body = document.getElementById('gs-game');
+        let left = Math.round(showMs / 1000);
+        body.innerHTML = `
+            <div class="gm-countdown">Memorizing – still <span class="gm-bigtimer" id="gs-w-t">${left}</span> s</div>
+            <div class="gm-memorize">${pool.map((w, i) => `<span class="gm-word-chip">${i + 1}. ${w}</span>`).join('')}</div>
+            <button class="ss-btn ss-btn-ghost" id="gs-w-ready">Ready – recall now</button>`;
+        const tEl = body.querySelector('#gs-w-t');
+        const toRecall = () => {
+            this._stopTimer();
+            body.innerHTML = `
+                <div class="gm-head"><strong>Enter the words in order</strong></div>
+                <div class="gm-recall-rows">${pool.map((_, i) => `<div class="gm-recall-row"><span class="num">${i + 1}</span><input data-i="${i}" autocomplete="off"></div>`).join('')}</div>
+                <button class="ss-btn ss-btn-primary" id="gs-w-check"><i class="fas fa-check"></i> Evaluate</button>`;
+            const inputs = [...body.querySelectorAll('input')];
+            inputs[0] && inputs[0].focus();
+            body.querySelector('#gs-w-check').addEventListener('click', () => {
+                let correct = 0;
+                inputs.forEach((inp, i) => {
+                    const ok = this._norm(inp.value) === this._norm(pool[i]);
+                    inp.closest('.gm-recall-row').classList.add(ok ? 'ok' : 'bad');
+                    if (!ok) { const r = inp.closest('.gm-recall-row'); if (!r.querySelector('.truth')) { const s = document.createElement('span'); s.className = 'truth'; s.textContent = '→ ' + pool[i]; r.appendChild(s); } }
+                    if (ok) correct++;
+                });
+                this._finishTrainer(correct / count * 100, `${correct}/${count} words correct`);
+            });
+        };
+        this.timer = setInterval(() => { left--; if (tEl) tEl.textContent = left; if (left <= 0) toRecall(); }, 1000);
+        body.querySelector('#gs-w-ready').addEventListener('click', toRecall);
+    }
+
+    /* ===================== TRAINER: GESCHICHTEN-KETTE (Link-Methode) ===================== */
+    _tStory(grade) {
+        const count = (this.mode === 'exam' ? 8 : 6) + Math.floor(grade / 2);
+        const showMs = Math.max(9000, (this.mode === 'exam' ? 14000 : 19000) - grade * 250) + count * 700;
+        this._gameShell('Story chain', '🪢',
+            'The <strong>link method</strong>: connect the words into ONE absurd, vivid story – each word acts directly with the next. The crazier and more kinetic the scene, the firmer it sticks. Then retell the chain in order.',
+            'gs-game');
+        const pool = GS_WORDS.slice().sort(() => Math.random() - 0.5).slice(0, count);
+        const body = document.getElementById('gs-game');
+        let left = Math.round(showMs / 1000);
+        body.innerHTML = `
+            <div class="gm-countdown">Building the chain – still <span class="gm-bigtimer" id="gs-st-t">${left}</span> s</div>
+            <div class="gm-chain">${pool.map((w, i) => `<div class="gm-chain-link"><span class="n">${i + 1}</span><span class="w">${w}</span></div>${i < pool.length - 1 ? '<span class="gm-chain-join"><i class="fas fa-link"></i></span>' : ''}`).join('')}</div>
+            <p class="sub" style="margin-top:10px"><i class="fas fa-lightbulb"></i> Example link: “${pool[0]} bumps into ${pool[1]}, from it jumps ${pool[2] || '…'} …"</p>
+            <button class="ss-btn ss-btn-ghost" id="gs-st-ready">Ready – recall the chain</button>`;
+        const tEl = body.querySelector('#gs-st-t');
+        const toRecall = () => {
+            this._stopTimer();
+            body.innerHTML = `
+                <div class="gm-head"><strong>Retell the chain – word by word</strong></div>
+                <div class="gm-recall-rows">${pool.map((_, i) => `<div class="gm-recall-row"><span class="num">${i + 1}</span><input data-i="${i}" autocomplete="off"></div>`).join('')}</div>
+                <button class="ss-btn ss-btn-primary" id="gs-st-check"><i class="fas fa-check"></i> Evaluate</button>`;
+            const inputs = [...body.querySelectorAll('input')];
+            inputs[0] && inputs[0].focus();
+            body.querySelector('#gs-st-check').addEventListener('click', () => {
+                let correct = 0;
+                inputs.forEach((inp, i) => {
+                    const ok = this._norm(inp.value) === this._norm(pool[i]);
+                    inp.closest('.gm-recall-row').classList.add(ok ? 'ok' : 'bad');
+                    if (!ok) { const r = inp.closest('.gm-recall-row'); if (!r.querySelector('.truth')) { const s = document.createElement('span'); s.className = 'truth'; s.textContent = '→ ' + pool[i]; r.appendChild(s); } }
+                    if (ok) correct++;
+                });
+                this._finishTrainer(correct / count * 100, `${correct}/${count} links correct`);
+            });
+        };
+        this.timer = setInterval(() => { left--; if (tEl) tEl.textContent = left; if (left <= 0) toRecall(); }, 1000);
+        body.querySelector('#gs-st-ready').addEventListener('click', toRecall);
+    }
+
+    /* ===================== TRAINER: NAMEN & GESICHTER ===================== */
+    _tNames(grade) {
+        const count = (this.mode === 'exam' ? 6 : 4) + Math.floor(grade / 3);
+        const showMs = Math.max(6000, (this.mode === 'exam' ? 10000 : 14000) - grade * 250);
+        this._gameShell('Names & faces', '😊',
+            `Memorize <strong>${count} Faces</strong>  with names (${Math.round(showMs / 1000)} s). Tip: link the name to a striking feature.`,
+            'gs-game');
+        const people = [];
+        const usedN = new Set(), usedE = new Set();
+        for (let i = 0; i < count; i++) {
+            let nm; do { nm = GS_NAMES[Math.floor(Math.random() * GS_NAMES.length)]; } while (usedN.has(nm)); usedN.add(nm);
+            let em; do { em = GS_FACE_EMOJI[Math.floor(Math.random() * GS_FACE_EMOJI.length)]; } while (usedE.has(em) && usedE.size < GS_FACE_EMOJI.length); usedE.add(em);
+            people.push({ name: nm, emoji: em, bg: GS_FACE_BG[i % GS_FACE_BG.length] });
+        }
+        const body = document.getElementById('gs-game');
+        let left = Math.round(showMs / 1000);
+        body.innerHTML = `
+            <div class="gm-countdown">Memorizing – still <span class="gm-bigtimer" id="gs-n-t">${left}</span> s</div>
+            <div class="gm-faces">${people.map(p => `<div class="gm-face-card"><div class="gm-avatar" style="background:${p.bg}">${p.emoji}</div><div class="gm-face-name">${p.name}</div></div>`).join('')}</div>
+            <button class="ss-btn ss-btn-ghost" id="gs-n-ready">Ready – recall now</button>`;
+        const tEl = body.querySelector('#gs-n-t');
+        const toRecall = () => {
+            this._stopTimer();
+            const shuffled = people.slice().sort(() => Math.random() - 0.5);
+            body.innerHTML = `
+                <div class="gm-head"><strong>What are their names?</strong></div>
+                <div class="gm-faces">${shuffled.map((p, i) => `<div class="gm-face-card"><div class="gm-avatar" style="background:${p.bg}">${p.emoji}</div><input data-name="${p.name}" placeholder="Name?" autocomplete="off"></div>`).join('')}</div>
+                <button class="ss-btn ss-btn-primary" id="gs-n-check"><i class="fas fa-check"></i> Evaluate</button>`;
+            const inputs = [...body.querySelectorAll('input')];
+            inputs[0] && inputs[0].focus();
+            body.querySelector('#gs-n-check').addEventListener('click', () => {
+                let correct = 0;
+                inputs.forEach(inp => {
+                    const ok = this._norm(inp.value) === this._norm(inp.dataset.name);
+                    inp.classList.add(ok ? 'ok' : 'bad');
+                    if (!ok) { const c = inp.closest('.gm-face-card'); if (!c.querySelector('.truth')) { const s = document.createElement('div'); s.className = 'truth'; s.textContent = inp.dataset.name; c.appendChild(s); } }
+                    if (ok) correct++;
+                });
+                this._finishTrainer(correct / count * 100, `${correct}/${count} names correct`);
+            });
+        };
+        this.timer = setInterval(() => { left--; if (tEl) tEl.textContent = left; if (left <= 0) toRecall(); }, 1000);
+        body.querySelector('#gs-n-ready').addEventListener('click', toRecall);
+    }
+
+    /* ===================== TRAINER: GEDÄCHTNISPALAST (LOCI) ===================== */
+    _tLoci(grade) {
+        const count = (this.mode === 'exam' ? 7 : 5) + Math.floor(grade / 3);
+        const palace = this._pickPalace();
+        const stations = palace.stations.slice(0, Math.min(count, palace.stations.length));
+        const items = GS_WORDS.slice().sort(() => Math.random() - 0.5).slice(0, stations.length);
+        const showMs = Math.max(6000, 16000 - grade * 250) + stations.length * 800;
+        this._gameShell('Memory palace', '🗺️',
+            `Route: <strong>${palace.name}</strong>. Place the term vividly at each station – picture it lying there. Then recall them in order.`,
+            'gs-game');
+        const body = document.getElementById('gs-game');
+        let left = Math.round(showMs / 1000);
+        body.innerHTML = `
+            <div class="gm-countdown">Placing & memorizing – still <span class="gm-bigtimer" id="gs-l-t">${left}</span> s</div>
+            <div class="gm-loci-route">${stations.map((s, i) => `<div class="gm-loci-station"><div class="pin">${i + 1}</div><div class="place">${s}</div><div class="item">${items[i]}</div></div>`).join('')}</div>
+            <button class="ss-btn ss-btn-ghost" id="gs-l-ready">Ready – recall now</button>`;
+        const tEl = body.querySelector('#gs-l-t');
+        const toRecall = () => {
+            this._stopTimer();
+            body.innerHTML = `
+                <div class="gm-head"><strong>Walk the route – what was where?</strong></div>
+                <div class="gm-loci-route">${stations.map((s, i) => `<div class="gm-loci-station"><div class="pin">${i + 1}</div><div class="place">${s}</div><input data-i="${i}" placeholder="Term?" autocomplete="off"></div>`).join('')}</div>
+                <button class="ss-btn ss-btn-primary" id="gs-l-check"><i class="fas fa-check"></i> Evaluate</button>`;
+            const inputs = [...body.querySelectorAll('input')];
+            inputs[0] && inputs[0].focus();
+            body.querySelector('#gs-l-check').addEventListener('click', () => {
+                let correct = 0;
+                inputs.forEach((inp, i) => {
+                    const ok = this._norm(inp.value) === this._norm(items[i]);
+                    inp.closest('.gm-loci-station').classList.add(ok ? 'ok' : 'bad');
+                    if (ok) correct++;
+                });
+                this._finishTrainer(correct / stations.length * 100, `${correct}/${stations.length} stations correct`);
+            });
+        };
+        this.timer = setInterval(() => { left--; if (tEl) tEl.textContent = left; if (left <= 0) toRecall(); }, 1000);
+        body.querySelector('#gs-l-ready').addEventListener('click', toRecall);
+    }
+
+    /* ===================== TRAINER: SPIELKARTEN ===================== */
+    _tCards(grade) {
+        const count = Math.min((this.mode === 'exam' ? 7 : 5) + Math.floor(grade / 2), 20);
+        const showMs = Math.max(6000, (this.mode === 'exam' ? 11000 : 16000) - grade * 200) + count * 600;
+        this._gameShell('Card sequence', '🃏',
+            `Memorize the order of <strong>${count} Cards</strong> (${Math.round(showMs / 1000)} s) and then lay them in exactly that sequence.`,
+            'gs-game');
+        const deck = this._buildDeck();
+        const seq = deck.sort(() => Math.random() - 0.5).slice(0, count);
+        const body = document.getElementById('gs-game');
+        let left = Math.round(showMs / 1000);
+        body.innerHTML = `
+            <div class="gm-countdown">Memorizing – still <span class="gm-bigtimer" id="gs-c-t">${left}</span> s</div>
+            <div class="gm-cards">${seq.map(c => this._cardHtml(c)).join('')}</div>
+            <button class="ss-btn ss-btn-ghost" id="gs-c-ready">Ready – lay them out now</button>`;
+        const tEl = body.querySelector('#gs-c-t');
+        const toRecall = () => {
+            this._stopTimer();
+            const picker = this._buildDeck();
+            const chosen = [];
+            body.innerHTML = `
+                <div class="gm-head"><strong>Lay the cards in order</strong><span class="meta" id="gs-c-prog">0 / ${count}</span></div>
+                <div class="gm-card-slots" id="gs-c-slots">${seq.map((_, i) => `<div class="gm-card-slot" data-slot="${i}">${i + 1}</div>`).join('')}</div>
+                <div class="gm-cards" id="gs-c-picker">${picker.map(c => `<div class="gm-card pick ${c.red ? 'red' : ''}" data-id="${c.id}"><div>${c.rank}</div><div>${c.suit}</div></div>`).join('')}</div>
+                <button class="ss-btn ss-btn-primary" id="gs-c-check" style="margin-top:14px" disabled><i class="fas fa-check"></i> Evaluate</button>`;
+            const slots = body.querySelectorAll('.gm-card-slot');
+            const prog = body.querySelector('#gs-c-prog');
+            const checkBtn = body.querySelector('#gs-c-check');
+            body.querySelectorAll('.gm-card.pick').forEach(el => el.addEventListener('click', () => {
+                if (el.classList.contains('chosen') || chosen.length >= count) return;
+                el.classList.add('chosen');
+                const id = el.dataset.id;
+                const slot = slots[chosen.length];
+                const card = picker.find(c => c.id === id);
+                slot.innerHTML = `<div class="gm-card ${card.red ? 'red' : ''}" style="width:100%;height:100%"><div>${card.rank}</div><div>${card.suit}</div></div>`;
+                chosen.push(id);
+                prog.textContent = `${chosen.length} / ${count}`;
+                if (chosen.length === count) checkBtn.disabled = false;
+            }));
+            checkBtn.addEventListener('click', () => {
+                let correct = 0;
+                seq.forEach((c, i) => { if (chosen[i] === c.id) { correct++; slots[i].classList.add('ok'); } });
+                this._finishTrainer(correct / count * 100, `${correct}/${count} cards in the right place`);
+            });
+        };
+        this.timer = setInterval(() => { left--; if (tEl) tEl.textContent = left; if (left <= 0) toRecall(); }, 1000);
+        body.querySelector('#gs-c-ready').addEventListener('click', toRecall);
+    }
+    _buildDeck() {
+        const suits = [{ s: '♠', r: false }, { s: '♥', r: true }, { s: '♦', r: true }, { s: '♣', r: false }];
+        const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'B', 'D', 'K'];
+        const deck = [];
+        suits.forEach(su => ranks.forEach(r => deck.push({ id: r + su.s, rank: r, suit: su.s, red: su.r })));
+        return deck;
+    }
+    _cardHtml(c) { return `<div class="gm-card ${c.red ? 'red' : ''}"><div>${c.rank}</div><div>${c.suit}</div></div>`; }
+
+    /* ===================== PRÜFUNGEN ===================== */
+    _renderExams() {
+        return `
+        <div class="ss-hero">
+            <div class="ss-kicker">Exams</div>
+            <h1>Open the next door</h1>
+            <p>Every trainable discipline has its exam – a harder, scored version of the training. Pass it to rise to the next level. The required score grows with each stage.</p>
+        </div>
+        <div class="ss-grid">
+            ${GS_DISCIPLINES.filter(d => d.exam).map(d => {
+                const st = this.state.disc[d.id];
+                const grade = this._grade(d.id);
+                const req = GS_reqExam(grade);
+                const best = st.examScores.length ? Math.max(...st.examScores.map(e => e.score)) : 0; const needs = this._needsExam(d.id); return `
+                <div class="ss-sense-card" data-exam="${d.id}" style="--accent:${d.accent};--accent-soft:${d.soft};--accent-glow:${d.glow}">
+                    <div class="ss-sense-head">
+                        <div class="ss-sense-icon">${d.icon}</div>
+                        <div>
+                            <div class="ss-sense-name">Prüfung · ${d.name}</div>
+                            <div class="ss-sense-grade-name">${st.examScores.length} Versuche · Best ${best}</div>
+                        </div>
+                        <div class="ss-sense-rank">≥ ${req}</div>
+                    </div>
+                    <p class="ss-sense-meta" style="margin-top:8px">${needs ? '⚑ A door is waiting for you' : `Level ${grade} · ${GS_titleFor(grade)}`}</p>
+                </div>`;
+            }).join('')}
+        </div>`;
+    }
+    _afterExams() {
+        document.querySelectorAll('[data-exam]').forEach(c => c.addEventListener('click', () => {
+            const id = c.dataset.exam;
+            this.activeDisc = id;
+            this._startTrainer(GS_DISC_MAP[id].exam, 'exam');
+        }));
+    }
+    _finishExam(score) {
+        const id = this.activeDisc;
+        const d = GS_DISC_MAP[id];
+        const st = this.state.disc[id];
+        const before = this._grade(id);
+        const req = GS_reqExam(before);
+        st.examScores.push({ date: this._today(), grade: before, score });
+        if (score > (st.bestExam || 0)) st.bestExam = score;
+        const passed = score >= req;
+        if (passed) st.doorGrade = Math.max(st.doorGrade || 0, before);
+        const xpGain = Math.round(score);
+        st.xp += xpGain;
+        this._registerPracticeDay(3);
+        this.state.log.unshift({ id: Date.now(), date: this._today(), disc: id, trainer: 'Exam', score, xp: xpGain });
+        this.state.log = this.state.log.slice(0, 120);
+        const after = this._grade(id);
+        this._save();
+        this._chime(passed);
+        if (passed) { this._haptic('level'); this._celebrate(); }
+        else this._haptic('err');
+        const deg = Math.round(score * 3.6);
+        const main = document.getElementById('ss-main');
+        main.innerHTML = `
+        <div class="ss-panel" style="text-align:center;--accent:${d.accent}">
+            <h2>${d.icon} Exam result</h2>
+            <div class="ss-score-circle" style="--deg:${deg}deg"><span class="val">${score}</span></div>
+            <p class="sub" style="text-align:center">${passed
+                ? '<strong style="color:#34d399">Door opened!</strong> +' + xpGain + ' Gedächtniskraft'
+                : `Noch nicht bestanden (≥ ${req} nötig). +${xpGain} Gedächtniskraft. Übe weiter – jeder Versuch zählt.`}</p>
+            ${after > before ? `<p style="color:#e0b04a;font-weight:600">Aufstieg in Grad ${after}: ${GS_titleFor(after)}!</p>` : ''}
+            <div class="ss-player-controls">
+                <button class="ss-btn ss-btn-ghost" id="gs-exam-retry">Again</button>
+                <button class="ss-btn ss-btn-primary" id="gs-exam-back">Back to overview</button>
+            </div>
+        </div>`;
+        main.querySelector('#gs-exam-retry').addEventListener('click', () => this._startTrainer(d.exam, 'exam'));
+        main.querySelector('#gs-exam-back').addEventListener('click', () => this.go('exams'));
+    }
+
+    /* ===================== SPACED REPETITION ===================== */
+    _allCards() { return (this.state.srs.decks || []).flatMap(d => d.cards.map(c => ({ c, deck: d }))); }
+    _totalCards() { return this._allCards().length; }
+    _dueCount() { const now = Date.now(); return this._allCards().filter(({ c }) => new Date(c.due).getTime() <= now).length; }
+
+    _renderSrs() {
+        const decks = this.state.srs.decks || [];
+        const due = this._dueCount();
+        const total = this._totalCards();
+        const retention = this._avgRetention();
+        return `
+        <div class="ss-hero">
+            <div class="ss-kicker">Long-term · spaced repetition</div>
+            <h1>Your scientific flashcard box</h1>
+            <p>An adaptive scheduler (FSRS principle) models your personal forgetting curve for each card and times the review exactly when it helps most – instead of rote cramming.</p>
+        </div>
+        <div class="ss-panel">
+            <div class="gm-statline">
+                <div class="s"><b>${total}</b><span>Cards total</span></div>
+                <div class="s"><b style="color:#a78bfa">${due}</b><span>due now</span></div>
+                <div class="s"><b>${Math.round(retention * 100)}%</b><span>Avg. retention</span></div>
+                <div class="s"><b>${this.state.srs.totalReviews || 0}</b><span>Reviews</span></div>
+            </div>
+            ${due > 0 ? `<button class="ss-btn ss-btn-primary ss-btn-block" id="gs-srs-start"><i class="fas fa-play"></i> ${due} fällige Karten wiederholen</button>`
+                      : `<div style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:#34d399;padding:14px 16px;border-radius:12px"><i class="fas fa-check-circle"></i> Alles erledigt für jetzt. Komm später wieder – der Scheduler meldet sich.</div>`}
+        </div>
+
+        ${this._curveHtml()}
+
+        <div class="ss-panel">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+                <h3 style="margin:0"><i class="fas fa-layer-group"></i> Your decks</h3>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                    <button class="ss-btn ss-btn-ghost" id="gs-deck-ai" style="padding:8px 14px;font-size:14px"><i class="fas fa-wand-magic-sparkles"></i> Cards from text</button>
+                    <button class="ss-btn ss-btn-ghost" id="gs-deck-new" style="padding:8px 14px;font-size:14px"><i class="fas fa-plus"></i> New deck</button>
+                </div>
+            </div>
+            <div class="gm-deck-list" style="margin-top:14px">
+                ${decks.map(dk => {
+                    const dueN = dk.cards.filter(c => new Date(c.due).getTime() <= Date.now()).length;
+                    return `
+                    <div class="gm-deck" data-deck="${dk.id}">
+                        <div class="icon"><i class="fas fa-clone"></i></div>
+                        <div class="body">
+                            <div class="name">${this._esc(dk.name)}</div>
+                            <div class="stats">${dk.cards.length} Karten · ${dueN} fällig</div>
+                        </div>
+                        <span class="due-badge ${dueN ? '' : 'zero'}">${dueN}</span>
+                        <button class="ss-btn ss-btn-ghost gs-deck-add" data-deck="${dk.id}" style="padding:8px 12px;font-size:13px"><i class="fas fa-plus"></i></button>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>`;
+    }
+
+    _afterSrs() {
+        const start = document.getElementById('gs-srs-start');
+        if (start) start.addEventListener('click', () => this._srsReview());
+        const nw = document.getElementById('gs-deck-new');
+        if (nw) nw.addEventListener('click', () => this._srsNewDeck());
+        const ai = document.getElementById('gs-deck-ai');
+        if (ai) ai.addEventListener('click', () => this._srsGenerate());
+        document.querySelectorAll('.gs-deck-add').forEach(b => b.addEventListener('click', (e) => { e.stopPropagation(); this._srsAddCard(b.dataset.deck); }));
+        document.querySelectorAll('.gm-deck').forEach(d => d.addEventListener('click', () => this._srsAddCard(d.dataset.deck)));
+    }
+
+    _srsReview() {
+        const now = Date.now();
+        const queue = this._allCards().filter(({ c }) => new Date(c.due).getTime() <= now).sort((a, b) => new Date(a.c.due) - new Date(b.c.due));
+        if (!queue.length) { this.go('srs'); return; }
+        let idx = 0;
+        const renderCard = () => {
+            if (idx >= queue.length) { this._toast('Session complete!', 'success'); this._save(); this.go('srs'); return; }
+            const { c, deck } = queue[idx];
+            const main = document.getElementById('ss-main');
+            main.innerHTML = `
+            <div class="ss-panel" style="--accent:#a78bfa">
+                <div class="gm-head"><strong>${this._esc(deck.name)}</strong><span class="meta">${idx + 1} / ${queue.length}</span></div>
+                <div class="gm-review-card">
+                    <div class="gm-review-front">${this._esc(c.front)}</div>
+                    <div class="gm-review-back" id="gs-back" style="display:none">${this._esc(c.back)}</div>
+                </div>
+                <button class="ss-btn ss-btn-primary ss-btn-block" id="gs-show"><i class="fas fa-eye"></i> Show answer</button>
+                <div class="gm-grade-btns" id="gs-grades" style="display:none;margin-top:12px">
+                    <button class="gm-grade-btn" data-g="1">Again<small>&lt; 1 min</small></button>
+                    <button class="gm-grade-btn" data-g="2">Hard<small>${this._previewInterval(c, 2)}</small></button>
+                    <button class="gm-grade-btn" data-g="3">Good<small>${this._previewInterval(c, 3)}</small></button>
+                    <button class="gm-grade-btn" data-g="4">Easy<small>${this._previewInterval(c, 4)}</small></button>
+                </div>
+                <div class="ss-player-controls" style="margin-top:14px">
+                    <button class="ss-btn ss-btn-ghost" id="gs-srs-quit"><i class="fas fa-xmark"></i> End</button>
+                </div>
+            </div>`;
+            main.querySelector('#gs-show').addEventListener('click', () => {
+                main.querySelector('#gs-back').style.display = 'block';
+                main.querySelector('#gs-show').style.display = 'none';
+                main.querySelector('#gs-grades').style.display = 'grid';
+            });
+            main.querySelector('#gs-srs-quit').addEventListener('click', () => { this._save(); this.go('srs'); });
+            main.querySelectorAll('.gm-grade-btn').forEach(b => b.addEventListener('click', () => {
+                this._applyFsrs(c, +b.dataset.g);
+                this.state.srs.totalReviews = (this.state.srs.totalReviews || 0) + 1;
+                this.state.disc.langzeit.xp += 3;
+                this._registerPracticeDay(1);
+                idx++;
+                renderCard();
+            }));
+        };
+        renderCard();
+    }
+
+    // FSRS-artige Aktualisierung von Stabilität/Schwierigkeit/Fälligkeit
+    _applyFsrs(card, g) {
+        const now = new Date();
+        card.reps = (card.reps || 0) + 1;
+        if (card.state === 'new' || !card.stability) {
+            const initS = [0, 0.4, 1.0, 2.5, 5.0][g] || 2.5;
+            card.stability = initS;
+            card.difficulty = Math.min(10, Math.max(1, 6 - (g - 2)));
+            card.state = 'review';
+        } else {
+            if (g === 1) {
+                card.lapses = (card.lapses || 0) + 1;
+                card.stability = Math.max(0.4, card.stability * 0.35);
+                card.difficulty = Math.min(10, card.difficulty + 1);
+            } else {
+                card.difficulty = Math.min(10, Math.max(1, card.difficulty - (g - 3) * 0.7));
+                const mult = g === 2 ? 1.25 : g === 3 ? 2.4 : 3.8;
+                const diffFactor = 1.1 - card.difficulty * 0.04;
+                card.stability = card.stability * mult * Math.max(0.4, diffFactor);
+            }
+        }
+        card.last = now.toISOString();
+        const days = g === 1 ? 0.007 : card.stability; // ~10 Min bei "Again"
+        card.due = new Date(now.getTime() + days * 86400000).toISOString();
+    }
+    _previewInterval(card, g) {
+        const tmp = JSON.parse(JSON.stringify(card));
+        this._applyFsrs(tmp, g);
+        const days = (new Date(tmp.due) - Date.now()) / 86400000;
+        if (days < 1) return Math.round(days * 24 * 60) + ' min';
+        if (days < 30) return Math.round(days) + ' d';
+        if (days < 365) return Math.round(days / 30) + ' mo';
+        return (days / 365).toFixed(1) + ' J';
+    }
+    _avgRetention() {
+        const cards = this._allCards().map(x => x.c).filter(c => c.stability && c.last);
+        if (!cards.length) return 1;
+        const now = Date.now();
+        const sum = cards.reduce((a, c) => {
+            const elapsed = (now - new Date(c.last).getTime()) / 86400000;
+            return a + Math.exp(-elapsed / Math.max(0.1, c.stability));
+        }, 0);
+        return sum / cards.length;
+    }
+    _curveHtml() {
+        const cards = this._allCards().map(x => x.c).filter(c => c.stability && c.last);
+        const W = 600, H = 160, pad = 28;
+        const days = 30;
+        const pts = [];
+        for (let d = 0; d <= days; d++) {
+            let r;
+            if (!cards.length) { r = Math.exp(-d / 4); }
+            else {
+                r = cards.reduce((a, c) => {
+                    const elapsed = (Date.now() - new Date(c.last).getTime()) / 86400000 + d;
+                    return a + Math.exp(-elapsed / Math.max(0.1, c.stability));
+                }, 0) / cards.length;
+            }
+            const x = pad + (d / days) * (W - 2 * pad);
+            const y = pad + (1 - r) * (H - 2 * pad);
+            pts.push([x, y]);
+        }
+        const line = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+        const fill = `M${pad} ${H - pad} ` + pts.map(p => 'L' + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ') + ` L${W - pad} ${H - pad} Z`;
+        return `
+        <div class="ss-panel">
+            <h3 style="margin:0 0 6px"><i class="fas fa-chart-line"></i> Your forgetting curve (30-day forecast)</h3>
+            <p class="sub" style="margin:0 0 10px">Without review, the chance of remembering drops. The scheduler plans reviews before you forget.</p>
+            <div class="gm-curve">
+                <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+                    <line class="axis" x1="${pad}" y1="${pad}" x2="${pad}" y2="${H - pad}"/>
+                    <line class="axis" x1="${pad}" y1="${H - pad}" x2="${W - pad}" y2="${H - pad}"/>
+                    <path class="curve-fill" d="${fill}"/>
+                    <path class="curve-line" d="${line}"/>
+                </svg>
+            </div>
+        </div>`;
+    }
+
+    _srsNewDeck() {
+        const name = (prompt('Name of the new deck:') || '').trim();
+        if (!name) return;
+        this.state.srs.decks.push({ id: 'd' + Date.now(), name, createdAt: new Date().toISOString(), cards: [] });
+        this._save();
+        this.render();
+    }
+
+    /* ----- Karteikarten aus Text erzeugen ----- */
+    _srsGenerate() {
+        const main = document.getElementById('ss-main');
+        const decks = this.state.srs.decks || [];
+        main.innerHTML = `
+        <div class="ss-panel" style="--accent:#a78bfa">
+            <h2><i class="fas fa-wand-magic-sparkles"></i> Generate cards from text</h2>
+            <p class="sub">Paste a text (notes, definitions, vocab). The generator spots definitions and “term – explanation” lines and otherwise makes cloze cards. You review everything before it lands in the deck.</p>
+            <div class="ss-field"><label>Deck</label>
+                <select class="ss-select" id="gs-gen-deck">
+                    ${decks.map(d => `<option value="${d.id}">${this._esc(d.name)}</option>`).join('')}
+                    <option value="__new">+ New deck …</option>
+                </select>
+            </div>
+            <div class="ss-field"><label>Your text</label><textarea class="ss-textarea" id="gs-gen-text" rows="8" placeholder="Mitochondria are the powerhouses of the cell.&#10;Photosynthesis: conversion of light into chemical energy.&#10;Water = H2O"></textarea></div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button class="ss-btn ss-btn-primary" id="gs-gen-run"><i class="fas fa-bolt"></i> Generate cards</button>
+                <button class="ss-btn ss-btn-ghost" id="gs-gen-back">Back</button>
+            </div>
+            <div id="gs-gen-preview" style="margin-top:18px"></div>
+        </div>`;
+        main.querySelector('#gs-gen-back').addEventListener('click', () => this.go('srs'));
+        main.querySelector('#gs-gen-run').addEventListener('click', () => {
+            const text = main.querySelector('#gs-gen-text').value;
+            const cards = this._cardsFromText(text);
+            const prev = main.querySelector('#gs-gen-preview');
+            if (!cards.length) { prev.innerHTML = `<div class="ss-empty"><i class="fas fa-circle-info"></i>No cards found. Write sentences like “A is B” or “Term: explanation”.</div>`; return; }
+            this._genCards = cards;
+            prev.innerHTML = `<p class="sub">${cards.length} Cards found – uncheck what you don’t need:</p>
+                <div class="gm-gen-list">${cards.map((c, i) => `<label class="gm-gen-card"><input type="checkbox" data-i="${i}" checked><span class="gm-gen-body"><b>${this._esc(c.front)}</b><span class="bk">${this._esc(c.back)}</span></span></label>`).join('')}</div>
+                <button class="ss-btn ss-btn-gold ss-btn-block" id="gs-gen-add" style="margin-top:14px"><i class="fas fa-plus"></i> Add selected cards</button>`;
+            prev.querySelector('#gs-gen-add').addEventListener('click', () => {
+                const chosen = [...prev.querySelectorAll('input:checked')].map(x => this._genCards[+x.dataset.i]).filter(Boolean);
+                if (!chosen.length) { this._toast('Nothing selected', 'error'); return; }
+                let deckId = main.querySelector('#gs-gen-deck').value;
+                if (deckId === '__new') {
+                    const nm = (prompt('Name of the new deck:') || 'From text').trim() || 'From text';
+                    const nd = { id: 'd' + Date.now(), name: nm, createdAt: new Date().toISOString(), cards: [] };
+                    this.state.srs.decks.push(nd); deckId = nd.id;
+                }
+                const deck = this.state.srs.decks.find(d => d.id === deckId);
+                chosen.forEach((c, k) => deck.cards.push({ id: deckId + '_' + Date.now() + '_' + k, front: c.front, back: c.back, due: new Date().toISOString(), stability: 0, difficulty: 5, reps: 0, lapses: 0, last: null, state: 'new' }));
+                this._save();
+                this._toast(`${chosen.length} Cards added!`, 'success');
+                this.go('srs');
+            });
+        });
+    }
+
+    _cardsFromText(text) {
+        const out = [], seen = new Set();
+        const push = (f, b) => {
+            f = (f || '').trim().replace(/\s+/g, ' ');
+            b = (b || '').trim().replace(/\s+/g, ' ').replace(/[.;,]$/, '');
+            if (f.length < 3 || b.length < 1 || b.length > 200) return;
+            const k = f.toLowerCase(); if (seen.has(k)) return; seen.add(k);
+            out.push({ front: f, back: b });
+        };
+        const lines = (text || '').split(/\n+/);
+        for (let line of lines) {
+            line = line.trim();
+            if (line.length < 4) continue;
+            const m = line.match(/^(.{2,80}?)\s*[:\u2013\-=]\s*(.{2,})$/);
+            if (m && m[1].split(/\s+/).length <= 6) { push('What is ' + m[1].replace(/[.?!]$/, '') + '?', m[2]); continue; }
+            const sentences = line.split(/(?<=[.!?])\s+/);
+            for (let s of sentences) {
+                s = s.trim();
+                if (s.length < 12) continue;
+                const d = s.match(/^(.{2,70}?)\s+(?:ist|sind|war|waren|bezeichnet|bedeutet|heißt|nennt man|beschreibt)\s+(.{3,})$/i);
+                if (d && d[1].split(/\s+/).length <= 8) {
+                    const plural = /\bsind|waren\b/i.test(s);
+                    push('What ' + (plural ? 'sind' : 'ist') + ' ' + d[1].replace(/^(der|die|das|ein|eine|the|a)\s+/i, '') + '?', d[2].replace(/[.?!]$/, ''));
+                    continue;
+                }
+                const cz = this._clozeFrom(s);
+                if (cz) push(cz.q, cz.a);
+            }
+        }
+        return out.slice(0, 30);
+    }
+    _clozeFrom(s) {
+        const words = s.split(/\s+/);
+        const cand = [];
+        words.forEach((w, i) => {
+            const clean = w.replace(/[.,;:!?()"'»«]/g, '');
+            if (!clean) return;
+            if (/^\d[\d.,]*$/.test(clean) || (i > 0 && /^[A-ZÄÖÜ][A-Za-zäöüß]{3,}$/.test(clean))) cand.push({ i, clean });
+        });
+        if (!cand.length) return null;
+        const pick = cand[Math.floor(cand.length / 2)];
+        const q = words.map((w, i) => i === pick.i ? w.replace(pick.clean, '_____') : w).join(' ');
+        return { q, a: pick.clean };
+    }
+    _srsAddCard(deckId) {
+        const deck = this.state.srs.decks.find(d => d.id === deckId);
+        if (!deck) return;
+        const main = document.getElementById('ss-main');
+        main.innerHTML = `
+        <div class="ss-panel" style="--accent:#a78bfa">
+            <h2><i class="fas fa-plus-circle"></i> Card for “${this._esc(deck.name)}"</h2>
+            <div class="ss-field"><label>Front (question)</label><textarea class="ss-textarea" id="gs-cf" placeholder="e.g. Capital of Italy"></textarea></div>
+            <div class="ss-field"><label>Back (answer)</label><textarea class="ss-textarea" id="gs-cb" placeholder="e.g. Rome"></textarea></div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button class="ss-btn ss-btn-primary" id="gs-card-save"><i class="fas fa-check"></i> Save & add another</button>
+                <button class="ss-btn ss-btn-ghost" id="gs-card-done">Done</button>
+            </div>
+            <div id="gs-card-list" style="margin-top:18px"></div>
+        </div>`;
+        const renderList = () => {
+            const el = main.querySelector('#gs-card-list');
+            el.innerHTML = deck.cards.length ? `<p class="sub">${deck.cards.length} cards in the deck. Latest:</p>` + deck.cards.slice(-5).reverse().map(c => `<div class="gm-recall-row"><span class="truth" style="flex:1">${this._esc(c.front)} → ${this._esc(c.back)}</span></div>`).join('') : '';
+        };
+        renderList();
+        const save = () => {
+            const f = main.querySelector('#gs-cf').value.trim();
+            const b = main.querySelector('#gs-cb').value.trim();
+            if (!f || !b) { this._toast('Please fill in both sides', 'error'); return; }
+            deck.cards.push({ id: deckId + '_' + Date.now(), front: f, back: b, due: new Date().toISOString(), stability: 0, difficulty: 5, reps: 0, lapses: 0, last: null, state: 'new' });
+            this._save();
+            main.querySelector('#gs-cf').value = ''; main.querySelector('#gs-cb').value = ''; main.querySelector('#gs-cf').focus();
+            renderList();
+        };
+        main.querySelector('#gs-card-save').addEventListener('click', save);
+        main.querySelector('#gs-card-done').addEventListener('click', () => this.go('srs'));
+    }
+
+    /* ===================== JOURNAL ===================== */
+    _renderJournal() {
+        const log = this.state.log || [];
+        return `
+        <div class="ss-hero">
+            <div class="ss-kicker">Logbook</div>
+            <h1>Your training diary</h1>
+            <p>${log.length} entries. Every session is a step on your lifelong path.</p>
+        </div>
+        <div id="gs-journal-list">
+            ${log.length === 0
+                ? `<div class="ss-empty"><i class="fas fa-feather"></i>Noch keine Einträge. Beginne im Dojo mit einer Übung.</div>`
+                : log.map(e => {
+                    const d = GS_DISC_MAP[e.disc] || GS_DISCIPLINES[0];
+                    return `<div class="ss-log-entry" style="--accent:${d.accent};--accent-soft:${d.soft}">
+                        <div class="ss-log-meta">
+                            <span class="ss-log-tag">${d.icon} ${d.short}</span>
+                            <span>${this._fmtDate(e.date)}</span>
+                            ${e.trainer ? `<span>· ${this._esc(e.trainer)}</span>` : ''}
+                            <span style="color:#e0b04a">· ${e.score}%</span>
+                            <span style="color:var(--ss-green)">+${e.xp}</span>
+                        </div>
+                        ${e.detail ? `<div class="ss-log-text">${this._esc(e.detail)}</div>` : ''}
+                    </div>`;
+                }).join('')}
+        </div>`;
+    }
+    _afterJournal() { /* nichts */ }
+
+    /* ===================== ARENA ===================== */
+    _renderArena() {
+        const total = this._totalXP();
+        const loggedIn = this._isLoggedIn();
+        const weekly = this._weeklyXp();
+        const league = GS_leagueFor(weekly);
+        const next = GS_nextLeague(weekly);
+        const head = `
+        <div class="ss-hero">
+            <div class="ss-kicker">Arena · anonymousous</div>
+            <h1>Who has the strongest memory?</h1>
+            <p>Compete anonymously with everyone training. Each week a new <strong>season</strong> starts – collect memory power and rise through higher <strong>leagues</strong> . Nobody sees who you are; only your alias.</p>
+        </div>`;
+        const seasonPanel = `
+        <div class="ss-panel gm-season" style="--lg:${league.color}">
+            <div class="gm-season-top">
+                <div class="gm-league-badge"><span class="ic">${league.icon}</span><div><div class="nm">${league.name}</div><div class="meta">season ${this._isoWeekKey()} · ends in ${this._seasonCountdown()}</div></div></div>
+                <div class="gm-season-xp"><div class="v">${weekly.toLocaleString('de-DE')}</div><div class="l">Season power</div></div>
+            </div>
+            ${next ? `<div class="gm-league-prog"><div class="bar"><span style="width:${Math.min(100, Math.round((weekly - league.min) / (next.min - league.min) * 100))}%"></span></div><div class="lbl">Noch ${(next.min - weekly).toLocaleString('de-DE')} bis ${next.icon} ${next.name}</div></div>` : `<div class="gm-league-prog"><div class="lbl">Höchste Liga erreicht – verteidige deinen Thron! 👑</div></div>`}
+        </div>`;
+        const aliasPanel = `
+        <div class="ss-panel">
+            <h3><i class="fas fa-user-secret"></i> Your alias</h3>
+            <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+                <div style="font-size:22px;font-weight:800">${this._esc(this.state.alias)}</div>
+                <button class="ss-btn ss-btn-ghost" id="gs-alias-reroll" style="padding:8px 14px;font-size:13px"><i class="fas fa-dice"></i> Reroll</button>
+                <button class="ss-btn ss-btn-ghost" id="gs-arena-share" style="padding:8px 14px;font-size:13px"><i class="fas fa-user-plus"></i> Challenge friends</button>
+            </div>
+            <div style="margin-top:14px;display:flex;gap:20px;flex-wrap:wrap">
+                <div><div style="font-size:24px;font-weight:800">${total.toLocaleString('de-DE')}</div><div style="color:var(--ss-text-dim);font-size:12px">Total memory power</div></div>
+                <div><div style="font-size:24px;font-weight:800;color:#e0b04a">${this._overallTitle()}</div><div style="color:var(--ss-text-dim);font-size:12px">Title (level ${this._overallGrade()})</div></div>
+            </div>
+            ${loggedIn
+                ? `<button class="ss-btn ss-btn-gold ss-btn-block" id="gs-arena-submit" style="margin-top:18px"><i class="fas fa-trophy"></i> In die Arena eintragen / aktualisieren</button>`
+                : `<div style="margin-top:18px;background:rgba(99,102,241,.12);border:1px solid var(--ss-line);padding:14px 16px;border-radius:12px;color:var(--ss-text-dim);font-size:14px">
+                     <i class="fas fa-lock"></i> Melde dich an, um anzutreten – so bleibt dein Rang geräteübergreifend erhalten.
+                     <button class="ss-btn ss-btn-primary" id="gs-arena-login" style="margin-top:10px;padding:9px 16px;font-size:14px">Anmelden</button>
+                   </div>`}
+        </div>`;
+        const board = `
+        <div class="ss-panel">
+            <h3><i class="fas fa-ranking-star"></i> Leaderboard</h3>
+            <div class="gm-arena-tabs">
+                <button class="gm-arena-tab ${this.arenaMode === 'season' ? 'active' : ''}" data-mode="season"><i class="fas fa-calendar-week"></i> This season</button>
+                <button class="gm-arena-tab ${this.arenaMode === 'all' ? 'active' : ''}" data-mode="all"><i class="fas fa-infinity"></i> All-time best</button>
+            </div>
+            <div id="gs-lb-list"><div class="ss-empty"><i class="fas fa-circle-notch fa-spin"></i>Loading leaderboard …</div></div>
+        </div>`;
+        return head + seasonPanel + aliasPanel + board;
+    }
+    _afterArena() {
+        const reroll = document.getElementById('gs-alias-reroll');
+        if (reroll) reroll.addEventListener('click', () => { this.state.alias = this._generateAlias(); this._save(); this.render(); });
+        const login = document.getElementById('gs-arena-login');
+        if (login) login.addEventListener('click', () => this._openLogin());
+        const share = document.getElementById('gs-arena-share');
+        if (share) share.addEventListener('click', () => this._shareChallenge());
+        const submit = document.getElementById('gs-arena-submit');
+        if (submit) submit.addEventListener('click', async () => {
+            submit.disabled = true;
+            submit.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Submitting …';
+            await this._lbSubmit();
+            await this._lbRefresh();
+            this._toast('Entered in the arena!', 'gold');
+            this.render();
+        });
+        document.querySelectorAll('.gm-arena-tab').forEach(t => t.addEventListener('click', () => {
+            this.arenaMode = t.dataset.mode;
+            document.querySelectorAll('.gm-arena-tab').forEach(x => x.classList.toggle('active', x === t));
+            document.getElementById('gs-lb-list').innerHTML = '<div class="ss-empty"><i class="fas fa-circle-notch fa-spin"></i>Loading leaderboard …</div>';
+            this._lbRefresh();
+        }));
+        if (this._isLoggedIn() && this._totalXP() > 0) this._lbSubmit();
+        this._lbRefresh();
+    }
+    async _shareChallenge() {
+        const url = location.origin + location.pathname + '?start=arena';
+        const text = `Challenge me in the memory arena! Currently: ${this._overallTitle()} · ${GS_leagueFor(this._weeklyXp()).name}.`;
+        try {
+            if (navigator.share) { await navigator.share({ title: 'Memory arena', text, url }); return; }
+            await navigator.clipboard.writeText(text + ' ' + url);
+            this._toast('Invite link copied!', 'success');
+        } catch (e) { this._toast('Link: ' + url, 'success'); }
+    }
+    _lbBase() {
+        const base = (window.AWS_APP_CONFIG && window.AWS_APP_CONFIG.API_BASE) || 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1';
+        return base.replace(/\/$/, '') + '/snowflake-highscores';
+    }
+    async _lbSubmit() {
+        const id = this._identityId();
+        if (!id) return;
+        const title = this._overallTitle();
+        const post = (game, score) => fetch(this._lbBase(), {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ game, userId: id, name: this.state.alias, title, score })
+        });
+        try {
+            // All-time best (Gesamt) + Saison-Bestenliste (Wochen-Kraft)
+            await Promise.all([
+                post(GS_METHOD, this._totalXP()),
+                post(this._seasonGame(), this._weeklyXp())
+            ]);
+        } catch (e) { console.warn('Arena submit failed:', e); }
+    }
+    async _lbRefresh() {
+        const listEl = document.getElementById('gs-lb-list');
+        if (!listEl) return;
+        const game = this.arenaMode === 'season' ? this._seasonGame() : GS_METHOD;
+        try {
+            const res = await fetch(this._lbBase() + '?game=' + encodeURIComponent(game) + '&limit=25');
+            const data = await res.json();
+            this.leaderboard = (data && data.highscores) || [];
+        } catch (e) { this.leaderboard = []; console.warn('Arena load failed:', e); }
+        const board = this.leaderboard || [];
+        if (board.length === 0) { listEl.innerHTML = `<div class="ss-empty"><i class="fas fa-trophy"></i>No entries yet. Be the first!</div>`; return; }
+        const myAlias = this.state.alias;
+        const medals = ['🥇', '🥈', '🥉'];
+        const season = this.arenaMode === 'season';
+        listEl.innerHTML = `<div class="ss-lb">${board.map((e, i) => { const mine = e.name === myAlias; const rank = i < 3 ? medals[i] : (i + 1);
+            const lg = season ? GS_leagueFor(Number(e.score)) : null;
+            const sub = lg ? `<span class="ss-lb-title">${lg.icon} ${lg.name}</span>` : (e.title ? `<span class="ss-lb-title">${this._esc(e.title)}</span>` : ''); return `<div class="ss-lb-row ${mine ? 'me' : ''}"><div class="ss-lb-rank">${rank}</div><div class="ss-lb-name">${this._esc(e.name)}${sub}</div><div class="ss-lb-score">${Number(e.score).toLocaleString('de-DE')}</div></div>`;
+        }).join('')}</div>`;
+    }
+
+    /* ===================== HELPERS ===================== */
+    _stopTimer() {
+        if (this.timer) { clearInterval(this.timer); this.timer = null; }
+        if (this._keyHandler) { document.removeEventListener('keydown', this._keyHandler); this._keyHandler = null; }
+        try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+    }
+    _isoWeekKey(d) {
+        d = d ? new Date(d) : new Date();
+        const dt = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+        const dayNum = (dt.getUTCDay() + 6) % 7;
+        dt.setUTCDate(dt.getUTCDate() - dayNum + 3);
+        const firstThu = new Date(Date.UTC(dt.getUTCFullYear(), 0, 4));
+        const week = 1 + Math.round(((dt - firstThu) / 86400000 - 3 + ((firstThu.getUTCDay() + 6) % 7)) / 7);
+        return dt.getUTCFullYear() + '-W' + String(week).padStart(2, '0');
+    }
+    _weeklyXp() {
+        const wk = this._isoWeekKey();
+        return (this.state.log || []).filter(e => this._isoWeekKey(e.date) === wk).reduce((s, e) => s + (e.xp || 0), 0);
+    }
+    _seasonGame() { return GS_METHOD + '@' + this._isoWeekKey(); }
+    _seasonCountdown() {
+        const now = new Date();
+        const day = (now.getDay() + 6) % 7; // Montag = 0
+        const end = new Date(now); end.setHours(0, 0, 0, 0); end.setDate(end.getDate() + (7 - day));
+        const ms = end - now;
+        const d = Math.floor(ms / 86400000), h = Math.floor((ms % 86400000) / 3600000);
+        return d > 0 ? `${d} d ${h} h` : `${h} h`;
+    }
+    _norm(s) { return (s == null ? '' : String(s)).trim().toLowerCase().replace(/\s+/g, ' '); }
+    _esc(s) { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+    _mmss(sec) { const m = Math.floor(sec / 60), s = sec % 60; return `${m}:${s.toString().padStart(2, '0')}`; }
+    _fmtDate(d) { try { return new Date(d).toLocaleDateString('de-DE', { day: '2-digit', month: 'short' }); } catch (e) { return d; } }
+    _toast(msg, type) {
+        const t = document.getElementById('ss-toast');
+        if (!t) return;
+        t.textContent = msg;
+        t.className = 'ss-toast show' + (type ? ' ' + type : '');
+        clearTimeout(this._toastTimer);
+        this._toastTimer = setTimeout(() => t.className = 'ss-toast', 2200);
+    }
+    _haptic(type) {
+        try {
+            if (!navigator.vibrate) return;
+            const p = { light: 12, ok: [0, 22], err: [0, 45, 35, 45], level: [0, 30, 40, 30, 40, 70] }[type] || 12;
+            navigator.vibrate(p);
+        } catch (e) { /* ignore */ }
+    }
+
+    _celebrate() {
+        try {
+            if (!document.getElementById('gs-celebrate-style')) {
+                const st = document.createElement('style');
+                st.id = 'gs-celebrate-style';
+                st.textContent = '@keyframes gsConfFall{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(110vh) rotate(var(--rot));opacity:.15}}.gs-conf{position:fixed;top:-16px;width:10px;height:14px;border-radius:2px;z-index:99999;pointer-events:none;will-change:transform;animation:gsConfFall var(--dur) cubic-bezier(.25,.6,.45,1) forwards}';
+                document.head.appendChild(st);
+            }
+            const colors = ['#818cf8', '#22d3ee', '#34d399', '#fb923c', '#e0b04a', '#f472b6', '#a78bfa'];
+            for (let i = 0; i < 44; i++) {
+                const c = document.createElement('div');
+                c.className = 'gs-conf';
+                c.style.left = (Math.random() * 100) + 'vw';
+                c.style.top = (-16 - Math.random() * 60) + 'px';
+                c.style.background = colors[i % colors.length];
+                c.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+                c.style.setProperty('--dur', (1.3 + Math.random() * 1.4) + 's');
+                if (Math.random() < 0.4) c.style.borderRadius = '50%';
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 2900);
+            }
+        } catch (e) { /* ignore */ }
+    }
+
+    _chime(big) {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const notes = big ? [523.25, 659.25, 783.99, 1046.5] : [659.25, 880];
+            notes.forEach((f, i) => {
+                const o = ctx.createOscillator(), g = ctx.createGain();
+                o.connect(g); g.connect(ctx.destination);
+                o.type = 'sine'; o.frequency.value = f;
+                const t0 = ctx.currentTime + i * 0.12;
+                g.gain.setValueAtTime(0.0001, t0);
+                g.gain.exponentialRampToValueAtTime(0.25, t0 + 0.03);
+                g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.5);
+                o.start(t0); o.stop(t0 + 0.5);
+            });
+        } catch (e) { /* ignore */ }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    window.gedaechtnisschule = new GedaechtnisSchule();
+    window.gedaechtnisschule.init();
+});

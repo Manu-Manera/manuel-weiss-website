@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stages of change (Prochaska) | Manuel Weiss</title>
+    <meta name="description" content="The transtheoretical model by Prochaska & DiClemente: find out which stage of change you are in, know the typical traps and choose the matching next step – including a relapse plan.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="change-stages.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-stairs"></i></span><span>Stages of change</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-stairs"></i></div>
+            <div class="mk-kicker">Personal development · Change</div>
+            <h1>Change is not a switch – it is a staircase</h1>
+            <p>Prochaska & DiClemente showed: people change in stages – from “not an issue” via “I’m considering” and “I’m preparing” to “I’m doing it” and “I’m sticking with it”. Choose the step that fits your stage and you move forward. Skip a stage and you stall. Here you find out where you stand.</p>
+            <div class="mk-badges"><span class="mk-badge">5 stages</span><span class="mk-badge">Position quiz</span><span class="mk-badge">Decision scale</span><span class="mk-badge">Relapse plan</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>1 · The behavior</h2>
+                <div class="mk-field"><label for="cs-behavior">What do you want to change?</label><input class="mk-input" id="cs-behavior" data-mk-field="behavior" placeholder="e.g. No more phone in the evening · Run three times a week · Say yes less often"></div>
+                <div class="mk-field"><label for="cs-why">Why now?</label><textarea class="mk-textarea" id="cs-why" data-mk-field="why" placeholder="What brought this up?"></textarea></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label>How important is the change to you? <span class="mk-range-val" data-mk-rangeval="importance">5</span>/10</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" data-mk-field="importance"></div></div>
+                    <div class="mk-field"><label>How confident are you that you can do it? <span class="mk-range-val" data-mk-rangeval="confidence">5</span>/10</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" data-mk-field="confidence"></div></div>
+                </div>
+                <div id="cs-ic-note"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>2 · Position</h2>
+                <p class="mk-sub">How much do these statements apply to you – related to your behavior?</p>
+                <div id="cs-quiz"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>3 · Your stage</h2>
+                <div id="cs-stairs"></div>
+                <div id="cs-phase"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · The matching step</h2>
+                <div id="cs-task"></div>
+            </div>
+            <div class="mk-card" id="cs-balance-card">
+                <h3>Decision scale</h3>
+                <p class="mk-sub">What speaks for it, what against? A decision only holds once the pros outweigh the cons.</p>
+                <div id="cs-balance"></div>
+            </div>
+            <div class="mk-card">
+                <div class="mk-field"><label for="cs-next">My next step – matching the stage</label><input class="mk-input" id="cs-next" data-mk-field="next" placeholder="…"></div>
+                <div class="mk-field"><label for="cs-when">By when?</label><input class="mk-input" id="cs-when" data-mk-field="when" placeholder="…"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Relapse & sticking with it</h2>
+                <p class="mk-sub">Relapses belong to the model – most people need several attempts. What matters is what you do afterwards.</p>
+                <div id="cs-risks"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="cs-relapse">My if-then plan for relapse</label><textarea class="mk-textarea" id="cs-relapse" data-mk-field="relapse" placeholder="If I …, then …"></textarea></div>
+                <div id="cs-relapse-note"></div>
+                <div class="mk-field"><label for="cs-support">Who supports me – and how?</label><input class="mk-input" id="cs-support" data-mk-field="support" placeholder="Person · what they specifically do"></div>
+                <div id="cs-summary"></div>
+            </div>
+            <div class="mk-card">
+                <h3>History</h3>
+                <div id="cs-log"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="cs-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="cs-export"><i class="fas fa-download"></i> Download</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Reset everything</button></div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 5</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="change-stages.js?v=20261003"></script>
+</body>
+</html>

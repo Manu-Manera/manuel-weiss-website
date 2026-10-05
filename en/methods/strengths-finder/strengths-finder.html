@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find your strengths | Manuel Weiss</title>
+    <meta name="description" content="Find strengths with a system: collect strengths, rate them by energy, performance and use, separate realized and unused strengths from learned behaviors, pick a top 5, know overuse risks, and build a use plan.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="strengths-finder.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-star"></i></span><span>Finding strengths</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-star"></i></div>
+            <div class="mk-kicker">Personal development · Strengths</div>
+            <h1>Play to your strengths</h1>
+            <p>A strength is not just something you’re good at. It’s something you’re good at <em>and</em> that gives you energy. A lot of what you’re good at drains you – those are learned behaviors, not strengths. Here you separate the two, find unused strengths, and plan where to use them more.</p>
+            <div class="mk-badges"><span class="mk-badge">Energy × performance</span><span class="mk-badge">Unused strengths</span><span class="mk-badge">Top 5</span><span class="mk-badge">Overuse check</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>1 · Collect</h2>
+                <p class="mk-sub">Three questions that make strengths visible – answer them before you pick from the list.</p>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="sf-q1">⚡ When do you lose track of time?</label><textarea class="mk-textarea" id="sf-q1" data-mk-field="q1" placeholder="Activities where you slip into flow"></textarea></div>
+                    <div class="mk-field"><label for="sf-q2">🗣️ What do people keep complimenting you on?</label><textarea class="mk-textarea" id="sf-q2" data-mk-field="q2" placeholder="What others highlight in you – even when it feels obvious to you"></textarea></div>
+                    <div class="mk-field"><label for="sf-q3">🧒 What did you already enjoy and do well as a child?</label><textarea class="mk-textarea" id="sf-q3" data-mk-field="q3" placeholder="Early patterns are often the most stable"></textarea></div>
+                    <div class="mk-field"><label for="sf-q4">🏆 Your proudest win – which strength was behind it?</label><textarea class="mk-textarea" id="sf-q4" data-mk-field="q4" placeholder="…"></textarea></div>
+                </div>
+            </div>
+            <div class="mk-card">
+                <h3>Which strengths do you recognize?</h3>
+                <p class="mk-sub">Pick 8 to 15. Be generous – you’ll sort in the next step.</p>
+                <div id="sf-pool"></div>
+                <div class="sf-add"><input class="mk-input" id="sf-custom" placeholder="Add your own strength …"><button class="mk-btn mk-btn-outline mk-btn-sm" id="sf-add" aria-label="Add"><i class="fas fa-plus"></i></button></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>2 · Rate</h2>
+                <p class="mk-sub">For each chosen strength, three questions: Does it give you <strong>Energy</strong>? Are you really <strong>gut</strong> at it? How often do <strong>nutzt</strong> you use it?</p>
+                <div id="sf-rate"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>3 · Your strengths map</h2>
+                <div id="sf-map"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Your top 5</h3>
+                <p class="mk-sub">From the real strengths (top right), pick the five you want to bet on.</p>
+                <div id="sf-top"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Use & overuse</h2>
+                <p class="mk-sub">Every strength has a shadow side when you use it too hard. Where do you want to use it more – and where do you need to watch out?</p>
+                <div id="sf-use"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Your strengths plan</h2>
+                <div id="sf-summary"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="sf-week">This week I’ll deliberately use:</label><input class="mk-input" id="sf-week" data-mk-field="week" placeholder="Which strength · in which situation"></div>
+                <div class="mk-field"><label for="sf-stop">And I’ll drop this – because it’s a learned behavior that drains me:</label><input class="mk-input" id="sf-stop" data-mk-field="stop" placeholder="…"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="sf-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="sf-export"><i class="fas fa-download"></i> Download</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Reset everything</button></div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 5</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="strengths-finder.js?v=20261003"></script>
+</body>
+</html>

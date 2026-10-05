@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circular questioning | Manuel Weiss</title>
+    <meta name="description" content="Circular questioning: capture the people involved, generate questions from six question types for specific pairs of people, collect perspectives, recognize patterns and arrive at a new insight.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="circular-interview.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-arrows-spin"></i></span><span>Circular questioning</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-arrows-spin"></i></div>
+            <div class="mk-kicker">Personal development · Systemic</div>
+            <h1>See the situation through different eyes</h1>
+            <p>Circular questions don't ask “What do you think?” but “What do you think A thinks about B?”. That loosens stuck thinking because you look at the web of relationships from the outside. Here the questions are generated for your specific people involved – and the answers are examined for patterns.</p>
+            <div class="mk-badges"><span class="mk-badge">Perspektivwechsel</span><span class="mk-badge">6 question types</span><span class="mk-badge">Patterns</span><span class="mk-badge">Systemic</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>1 · The situation</h2>
+                <div class="mk-field"><label for="ci-situation">What's going on – in two or three sentences?</label><textarea class="mk-textarea" id="ci-situation" data-mk-field="situation" placeholder="Describe the situation as you see it right now."></textarea></div>
+                <div class="mk-field"><label for="ci-want">What would you like to understand better?</label><input class="mk-input" id="ci-want" data-mk-field="want" placeholder="e.g. Why does my colleague react so dismissively?"></div>
+                <div class="mk-field"><label>How stuck does your view feel?</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" data-mk-field="stuck" value="6"><span class="mk-range-val" data-mk-rangeval="stuck">6</span></div><span class="hint">1 = I'm open · 10 = I know exactly who's to blame</span></div>
+            </div>
+            <div class="mk-card">
+                <h3>Who is involved?</h3>
+                <p class="mk-sub">Everyone who plays a role in the system – including absent people who still have an influence.</p>
+                <div id="ci-people"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>2 · Circular questions</h2>
+                <p class="mk-sub">Choose a question type and the people. The question is formulated for you – answer the way the person would probably answer, not how you see it.</p>
+                <div id="ci-generator"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Your answers</h3>
+                <div id="ci-answers"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>3 · Perspective wheel</h2>
+                <p class="mk-sub">One sentence per person: how would they describe the situation in one sentence – and what do they wish for?</p>
+                <div id="ci-wheel"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Recognize patterns</h2>
+                <p class="mk-sub">Systems keep problems alive through recurring loops. Mark which patterns you recognize in your answers.</p>
+                <div id="ci-patterns"></div>
+            </div>
+            <div class="mk-card">
+                <h3>The problem loop</h3>
+                <p class="mk-sub">The more A …, the more B … – and the more B …, the more A. Where is the circle?</p>
+                <div id="ci-loop"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Insight</h2>
+                <div id="ci-shift"></div>
+                <div class="mk-field"><label for="ci-insight">What do you see now that you didn't see before?</label><textarea class="mk-textarea" id="ci-insight" data-mk-field="insight" placeholder="…"></textarea></div>
+                <div class="mk-field"><label for="ci-surprise">Which answer surprised you the most?</label><input class="mk-input" id="ci-surprise" data-mk-field="surprise" placeholder="…"></div>
+                <div class="mk-field"><label for="ci-next">What will you do differently – first of all?</label><input class="mk-input" id="ci-next" data-mk-field="next" placeholder="A small change in your behavior changes the whole system."></div>
+                <div class="mk-field"><label>How stuck now?</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" data-mk-field="stuckAfter" value="4"><span class="mk-range-val" data-mk-rangeval="stuckAfter">4</span></div></div>
+                <div id="ci-summary"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="ci-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="ci-export"><i class="fas fa-download"></i> Download</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Reset everything</button></div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 5</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="circular-interview.js?v=20261003"></script>
+</body>
+</html>

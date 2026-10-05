@@ -1,0 +1,21 @@
+/* Dilts · Styles */
+.dl-wrap { display: grid; grid-template-columns: 180px 1fr; gap: 18px; align-items: start; }
+.dl-pyr { position: sticky; top: 80px; display: grid; gap: 4px; }
+.dl-pyr-lvl { --w: calc(45% + var(--i) * 11%); width: var(--w); margin: 0 auto; background: var(--mk-surface-2); border: 1.5px solid var(--mk-line); border-radius: 8px; padding: 6px 4px; text-align: center; font-size: 10px; line-height: 1.2; cursor: pointer; display: grid; gap: 2px; transition: all .2s; }
+.dl-pyr-lvl span { font-size: 15px; } .dl-pyr-lvl b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dl-pyr-lvl.done { background: var(--mk-accent-soft); border-color: var(--mk-accent); } .dl-pyr-lvl.active { box-shadow: 0 0 0 3px var(--mk-accent-soft); border-color: var(--mk-accent-2); } .dl-pyr-lvl.problem { border-style: dashed; border-color: #ef4444; }
+.dl-lvl { border-left: 4px solid var(--c, var(--mk-accent)); background: var(--mk-surface-2); border-radius: var(--mk-radius-sm); padding: 12px 14px; margin-bottom: 10px; }
+.dl-lvl.done { background: var(--mk-surface); box-shadow: inset 0 0 0 1px var(--mk-line); }
+.dl-lvl-h { display: flex; gap: 10px; align-items: center; margin-bottom: 6px; } .dl-lvl-h .ic { font-size: 22px; } .dl-lvl-h b { display: block; font-size: 15px; } .dl-lvl-h small { color: var(--mk-muted); font-size: 12px; display: block; }
+.dl-lvl .hint { font-size: 13px; color: var(--mk-muted); margin-bottom: 8px; } .dl-lvl .mk-textarea { min-height: 52px; } .dl-lvl .mk-note { margin-top: 8px; margin-bottom: 0; }
+.dl-res { background: linear-gradient(135deg, var(--mk-accent-soft), transparent); border: 1.5px solid var(--mk-accent); border-radius: var(--mk-radius); padding: 14px 16px; margin-bottom: 14px; display: grid; gap: 8px; }
+.dl-res-row { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; font-weight: 600; } .dl-res-row span { font-size: 20px; }
+.dl-align { display: grid; gap: 8px; margin-bottom: 8px; }
+.dl-al-row { display: grid; grid-template-columns: minmax(0, 190px) auto 1fr; gap: 10px; align-items: center; font-size: 14px; }
+.dl-al-dots { display: flex; gap: 2px; } .dl-al-dots button { width: 22px; height: 22px; border: 0; background: none; font: inherit; font-size: 14px; cursor: pointer; color: var(--mk-line); padding: 0; } .dl-al-dots button.on { color: var(--mk-accent); }
+.dl-al-bar { height: 10px; background: var(--mk-line); border-radius: 99px; overflow: hidden; } .dl-al-bar i { display: block; height: 100%; background: var(--mk-accent); transition: width .2s; } .dl-al-bar i.low { background: #ef4444; } .dl-al-bar i.hi { background: #10b981; }
+.dl-belief-q { background: var(--mk-surface-2); border-left: 4px solid #f59e0b; border-radius: var(--mk-radius-sm); padding: 10px 14px; font-style: italic; margin-bottom: 10px; white-space: pre-wrap; }
+.dl-sum { display: grid; gap: 6px; } .dl-sum-row { display: grid; grid-template-columns: 24px 150px 1fr; gap: 8px; align-items: start; font-size: 14px; padding: 6px 8px; border-radius: 8px; } .dl-sum-row.lever { background: var(--mk-accent-soft); box-shadow: inset 0 0 0 1.5px var(--mk-accent); }
+.dl-sum-row b { font-size: 13px; }
+.dl-link { text-decoration: none; color: inherit; text-align: left; }
+@media (max-width: 700px) { .dl-wrap { grid-template-columns: 1fr; } .dl-pyr { position: static; } .dl-pyr-lvl { --w: calc(50% + var(--i) * 10%); } .dl-al-row { grid-template-columns: 1fr auto; } .dl-al-bar { grid-column: 1 / -1; } .dl-sum-row { grid-template-columns: 24px 1fr; } .dl-sum-row div { grid-column: 1 / -1; } }

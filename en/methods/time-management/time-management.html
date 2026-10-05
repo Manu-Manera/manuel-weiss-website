@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time management · Eisenhower | Manuel Weiss</title>
+    <meta name="description" content="Eisenhower matrix with time budget: rate tasks by importance and urgency, set a weekly focus, plan them into days, delegate, drop, and review weekly.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="time-management.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-table-cells-large"></i></span><span>Eisenhower</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-table-cells-large"></i></div>
+            <div class="mk-kicker">Personality development</div>
+            <h1>Important first, not just urgent</h1>
+            <p>Urgent shouts, important whispers. The Eisenhower matrix splits the two – and this tool goes further: it calculates your time budget, sets the weekly focus, spreads tasks across days, and shows you in the end where your time really went.</p>
+            <div class="mk-badges"><span class="mk-badge">Matrix</span><span class="mk-badge">Time budget</span><span class="mk-badge">Weekly plan</span><span class="mk-badge">Review</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>1 · Get it all out of your head</h2>
+                <p class="mk-sub">Collect first, rate after. Each task gets importance, urgency, and a rough duration.</p>
+                <div class="tm-add"><input class="mk-input" id="tm-in" placeholder="Type a task, Enter adds it" maxlength="120"><button class="mk-btn mk-btn-primary" id="tm-add" aria-label="Add task"><i class="fas fa-plus"></i></button></div>
+                <div id="tm-list"></div>
+                <div id="tm-collect-note"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>2 · The matrix</h2>
+                <p class="mk-sub">Important is what moves you toward your goals. Urgent is what has a deadline. The combination decides what to do.</p>
+                <div id="tm-matrix"></div>
+                <div id="tm-insight"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>3 · Time budget & weekly focus</h2>
+                <p class="mk-sub">How much time do you really have this week for these tasks – minus meetings, routine, and interruptions?</p>
+                <div id="tm-budget"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Big rocks – max. 3 important, not urgent tasks</h3>
+                <p class="mk-sub">What gets done in Quadrant II this week won’t land in Quadrant I next week.</p>
+                <div id="tm-focus"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Spread across the week</h2>
+                <p class="mk-sub">Every task from I and II gets a day. III gets delegated, IV gets dropped.</p>
+                <div id="tm-plan"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Your week</h3>
+                <div id="tm-week"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Weekly review</h2>
+                <p class="mk-sub">Check off what’s done – and look honestly at what pulled you off the plan.</p>
+                <div id="tm-review"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="tm-learn">What am I taking into next week?</label><textarea class="mk-textarea" id="tm-learn" data-mk-field="learn" placeholder="e.g. No mail in the morning · Plan buffer for the unexpected"></textarea></div>
+                <div style="margin-top:10px"><button class="mk-btn mk-btn-primary" id="tm-close"><i class="fas fa-flag-checkered"></i> Close the week</button></div>
+                <div id="tm-history"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="tm-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="tm-export"><i class="fas fa-download"></i> Download weekly plan</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Reset everything</button></div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 5</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="time-management.js?v=20261003"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+/* Zirkuläres Fragen · Styles */
+.ci-person { display: grid; grid-template-columns: minmax(0, 1fr) 150px 32px; gap: 8px; align-items: center; margin-bottom: 8px; }
+.ci-pair { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; } .ci-pair label { font-size: 13px; color: var(--mk-muted); } .ci-pair .mk-select { width: auto; min-width: 120px; }
+.ci-q { background: var(--mk-accent-soft); border-radius: var(--mk-radius-sm); padding: 14px 16px; margin: 10px 0; }
+.ci-q-t { font-size: 16px; font-weight: 600; line-height: 1.45; margin-bottom: 10px; } .ci-q-a { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ci-ans { background: var(--mk-surface-2); border: 1.5px solid var(--mk-line); border-radius: var(--mk-radius-sm); padding: 12px; margin-bottom: 10px; }
+.ci-ans-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; } .ci-ans-q { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+.ci-wheel { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; margin-bottom: 10px; }
+.ci-spoke { background: var(--mk-surface-2); border-radius: var(--mk-radius-sm); padding: 12px; display: grid; gap: 8px; border-top: 4px solid var(--mk-accent-2); } .ci-spoke.me { border-top-color: var(--mk-accent); }
+.ci-spoke-h { display: flex; gap: 8px; align-items: baseline; } .ci-spoke-h small { color: var(--mk-muted); font-size: 12px; } .ci-spoke .mk-input { font-size: 13px; padding: 8px 10px; }
+.ci-pat { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.ci-loop { background: var(--mk-surface-2); border-radius: var(--mk-radius-sm); padding: 14px; display: grid; gap: 8px; }
+.ci-loop-row { display: grid; grid-template-columns: auto 130px minmax(0, 1fr); gap: 8px; align-items: center; font-size: 14px; } .ci-loop-row:nth-child(3) { grid-template-columns: 130px minmax(0, 1fr); }
+.ci-loop-arrow { text-align: center; font-size: 13px; color: var(--mk-muted); }
+.ci-shift { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; text-align: center; margin-bottom: 10px; }
+.ci-shift div { background: var(--mk-surface-2); border-radius: var(--mk-radius-sm); padding: 10px; } .ci-shift b { display: block; font-size: 26px; color: var(--mk-accent); } .ci-shift b.ok { color: #10b981; } .ci-shift span { font-size: 12px; color: var(--mk-muted); } .ci-shift-arrow { font-size: 26px; background: none !important; }
+.ci-sum { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; }
+.ci-link { text-decoration: none; color: inherit; text-align: left; }
+@media (max-width: 600px) { .ci-person { grid-template-columns: minmax(0, 1fr) 32px; } .ci-person .mk-select { grid-column: 1 / -1; } .ci-loop-row, .ci-loop-row:nth-child(3) { grid-template-columns: minmax(0, 1fr); } }

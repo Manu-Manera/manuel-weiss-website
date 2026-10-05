@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Four-ears model (Schulz von Thun) | Manuel Weiss</title>
+    <meta name="description" content="Schulz von Thun's communication square: break a concrete statement down into four sides, find the misunderstanding between the side meant and the side heard, know your own ear profile and communicate more clearly with an I-message and a follow-up question.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="communication.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-comments"></i></span><span>Four-ears model</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-comments"></i></div>
+            <div class="mk-kicker">Personality development · Communication</div>
+            <h1>What's heard isn't what's meant</h1>
+            <p>Every message has four sides – factual, self-disclosure, relationship, appeal – and everyone listens with four ears. Misunderstandings arise when the side that was meant isn't the side that was heard. Here you break down a real situation, find the point where it tipped, get to know your ear profile and formulate what you actually want to say.</p>
+            <div class="mk-badges"><span class="mk-badge">4 sides</span><span class="mk-badge">Meant vs. heard</span><span class="mk-badge">Ear profile</span><span class="mk-badge">Ich-Botschaft</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>1 · The situation</h2>
+                <div class="mk-field"><label>Which role did you have?</label><div class="mk-grid-2" id="co-role"></div></div>
+                <div class="mk-field"><label for="co-message">The statement – as literal as possible</label><textarea class="mk-textarea" id="co-message" data-mk-field="message" placeholder="e.g. “Well, the presentation turned out quite okay.""></textarea></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="co-who">Who was the other person?</label><input class="mk-input" id="co-who" data-mk-field="who" placeholder="Name or role"></div>
+                    <div class="mk-field"><label for="co-context">Context</label><input class="mk-input" id="co-context" data-mk-field="context" placeholder="Where, when, mood"></div>
+                </div>
+                <div class="mk-field"><label for="co-reaction">What happened next – the reaction?</label><textarea class="mk-textarea" id="co-reaction" data-mk-field="reaction" placeholder="What was the reply, what changed?"></textarea></div>
+                <div id="co-sitnote"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>2 · The four sides</h2>
+                <div id="co-quote"></div>
+                <div class="mk-grid-2" id="co-sides"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Meant and heard</h3>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label>Which side was <strong>meant</strong> – presumably?</label><div id="co-meant"></div></div>
+                    <div class="mk-field"><label>With which ear was it <strong>heard</strong>?</label><div id="co-heard"></div></div>
+                </div>
+                <div id="co-gap"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>3 · Your ear profile</h2>
+                <p class="mk-sub">Everyone has a favorite ear. How much do these statements apply to you?</p>
+                <div id="co-quiz"></div>
+            </div>
+            <div class="mk-card">
+                <div id="co-profile"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Speak more clearly</h2>
+                <div id="co-ib-intro"></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="co-ibwhen">When … (situation, observable)</label><input class="mk-input" id="co-ibwhen" data-mk-field="ibWhen" placeholder="When you say the presentation was “quite okay" …"></div>
+                    <div class="mk-field"><label for="co-ibfeel">… I feel / I am … (feeling)</label><input class="mk-input" id="co-ibfeel" data-mk-field="ibFeel" placeholder="… I feel unsure"></div>
+                    <div class="mk-field"><label for="co-ibneed">… because … matters to me (need)</label><input class="mk-input" id="co-ibneed" data-mk-field="ibNeed" placeholder="… because clear feedback matters to me"></div>
+                    <div class="mk-field"><label for="co-ibwish">I would like … (request, concrete)</label><input class="mk-input" id="co-ibwish" data-mk-field="ibWish" placeholder="… that you name two things I can do better"></div>
+                </div>
+                <div id="co-ib-check"></div>
+                <div class="mk-result"><h4>Your I-message</h4><div class="co-msg" id="co-ib">…</div><div class="co-copy-row"><button class="mk-btn mk-btn-outline mk-btn-sm" id="co-copy"><i class="fas fa-copy"></i> Copy</button></div></div>
+            </div>
+            <div class="mk-card">
+                <h3>Hear more clearly – the follow-up question</h3>
+                <p class="mk-sub">Metacommunication: instead of reacting, you name what you heard and ask.</p>
+                <div id="co-meta"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Summary</h2>
+                <div id="co-summary"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="co-next">What do you resolve to do for the next conversation?</label><input class="mk-input" id="co-next" data-mk-field="next" placeholder="…"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="co-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="co-export"><i class="fas fa-download"></i> Download</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Reset everything</button></div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 5</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="communication.js?v=20261003"></script>
+</body>
+</html>

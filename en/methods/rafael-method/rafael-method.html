@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAFAEL method | Manuel Weiss</title>
+    <meta name="description" content="RAFAEL method: Report, Alternatives, Feedback, Exchange, Elaboration, Learning steps – structured reflection after a concrete situation, with self-image / how-others-see-you comparison and a learning plan.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="rafael-method.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-puzzle-piece"></i></span><span>RAFAEL</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-puzzle-piece"></i></div>
+            <div class="mk-kicker">Personal development · Structured reflection</div>
+            <h1>Learn from a situation – systematically</h1>
+            <p>RAFAEL is a feedback and reflection method for concrete situations: a presentation, a difficult conversation, a meeting you led. Six steps take you from a sober report through alternatives and outside feedback to one to three learning steps you try next time.</p>
+            <div class="rf-acro">
+                <span><b>R</b>eport</span><span><b>A</b>lternativen</span><span><b>F</b>eedback</span><span><b>A</b>ustausch</span><span><b>E</b>rarbeitung</span><span><b>L</b>ernschritte</span>
+            </div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <!-- 1 · Report -->
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2><span class="rf-letter">R</span> Report</h2>
+                <p class="mk-sub">The situation you want to reflect on – and first, what <strong>gut</strong> went well. This order is part of the method.</p>
+                <div class="mk-section-label">What kind of situation is this?</div>
+                <div class="mk-chips" id="rf-types"></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="rf-title">Short title</label><input class="mk-input" id="rf-title" data-mk-field="title" placeholder="e.g. Quarterly presentation to the leadership team"></div>
+                    <div class="mk-field"><label for="rf-date">When was this?</label><input class="mk-input" type="date" id="rf-date" data-mk-field="date"></div>
+                </div>
+                <div class="mk-field"><label for="rf-report">What happened? Descriptive, not evaluative</label><span class="hint">Like a camera: who was there, what was said, what did you do, how did people react.</span><textarea class="mk-textarea" id="rf-report" data-mk-field="report" placeholder="…"></textarea></div>
+                <div id="rf-report-check"></div>
+            </div>
+            <div class="mk-card">
+                <h3>What went well?</h3>
+                <p class="mk-sub">At least three points before you get to the weak spots.</p>
+                <div id="rf-positives"></div>
+            </div>
+            <div class="mk-card">
+                <h3>What went less well?</h3>
+                <p class="mk-sub">Concrete moments – not “I was nervous,” but “on slide 4 I lost the thread and spoke too fast.”</p>
+                <div id="rf-weak"></div>
+                <div class="mk-field" style="margin-top:14px"><label>Your overall rating of the situation</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" id="rf-self" data-mk-field="selfRating" value="6"><span class="mk-range-val" data-mk-rangeval="selfRating">6</span></div></div>
+            </div>
+        </section>
+
+        <!-- 2 · Alternativen -->
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2><span class="rf-letter">A</span> Alternatives</h2>
+                <p class="mk-sub">For each weak spot: what could you have done instead? Several options – even unrealistic ones. The choice comes later.</p>
+                <div id="rf-alts"></div>
+            </div>
+        </section>
+
+        <!-- 3 · Feedback -->
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2><span class="rf-letter">F</span> Feedback</h2>
+                <p class="mk-sub">Now the others get a say. Get feedback from people who were there – or enter what you've already heard.</p>
+                <div id="rf-request"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Feedback received</h3>
+                <div id="rf-feedback"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Self-image vs. how others see you</h3>
+                <div id="rf-compare"></div>
+            </div>
+        </section>
+
+        <!-- 4 · Austausch -->
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2><span class="rf-letter">A</span> Exchange</h2>
+                <p class="mk-sub">Sort every piece of feedback. Don't justify – sort. What matches your picture, what's new, where do you see it differently?</p>
+                <div id="rf-sort"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Follow-up questions</h3>
+                <p class="mk-sub">On points you see differently or don't understand: what do you still want to ask the person who gave feedback?</p>
+                <div class="mk-field"><textarea class="mk-textarea" id="rf-questions" data-mk-field="questions" placeholder="e.g. What exactly do you mean by “too detailed" – welche Stelle?"></textarea></div>
+            </div>
+        </section>
+
+        <!-- 5 · Erarbeitung -->
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2><span class="rf-letter">E</span> Elaboration</h2>
+                <p class="mk-sub">Now we condense: which topics show up for you <em>and</em> in the feedback? What's the actual pattern behind it?</p>
+                <div id="rf-themes"></div>
+            </div>
+            <div class="mk-card">
+                <h3>The pattern behind it</h3>
+                <div class="mk-field"><label for="rf-pattern">If you take the points together: what's the larger theme?</label><span class="hint">Often not “slide 4,” but “under pressure I lose contact with the audience.”</span><textarea class="mk-textarea" id="rf-pattern" data-mk-field="pattern" placeholder="…"></textarea></div>
+                <div class="mk-field"><label for="rf-strength">And which strength shows up throughout – in you and in the feedback?</label><textarea class="mk-textarea" id="rf-strength" data-mk-field="strength" placeholder="…"></textarea></div>
+            </div>
+        </section>
+
+        <!-- 6 · Lernschritte -->
+        <section class="mk-step" data-step="6">
+            <div class="mk-card">
+                <h2><span class="rf-letter">L</span> Learning steps</h2>
+                <p class="mk-sub">One to three concrete things you'll do differently next time. Less is more – one step you actually take beats five good resolutions.</p>
+                <div id="rf-steps"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Next opportunity</h3>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="rf-next">When is the next similar situation?</label><input class="mk-input" id="rf-next" data-mk-field="nextOccasion" placeholder="e.g. Team meeting on Oct 14"></div>
+                    <div class="mk-field"><label for="rf-next-date">Date</label><input class="mk-input" type="date" id="rf-next-date" data-mk-field="nextDate"></div>
+                </div>
+                <div class="mk-field"><label for="rf-review">After the next situation: what has changed?</label><span class="hint">Come back here. Or start a new RAFAEL run.</span><textarea class="mk-textarea" id="rf-review" data-mk-field="review" placeholder="…"></textarea></div>
+            </div>
+            <div class="mk-card">
+                <h3>Earlier runs</h3>
+                <div id="rf-history"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="rf-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="rf-export"><i class="fas fa-download"></i> Export as text file</button>
+                    <button class="mk-btn mk-btn-outline" id="rf-archive"><i class="fas fa-box-archive"></i> Complete & new situation</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset title="Delete all data of this method"><i class="fas fa-trash"></i> Reset everything</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 6</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="rafael-method.js?v=20261003"></script>
+</body>
+</html>

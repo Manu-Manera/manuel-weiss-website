@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stress management | Manuel Weiss</title>
+    <meta name="description" content="Stress management: capture stressors with intensity and frequency, recognize early warning signs, separate what you can influence (love it, change it, leave it), reframe the appraisal after Lazarus and set up an SOS and recovery plan.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="stress-management.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-spa"></i></span><span>Stress compass</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-spa"></i></div>
+            <div class="mk-kicker">Personality development · Wohlbefinden</div>
+            <h1>Understand and manage stress</h1>
+            <p>Stress isn't caused by events but by how we appraise them – and by the ratio of strain to recovery. Here you map your stressors, recognize your early warning signs, separate what you can influence from what you can't and build a plan for emergencies and for the week.</p>
+            <div class="mk-badges"><span class="mk-badge">Stress map</span><span class="mk-badge">Early warning signs</span><span class="mk-badge">Love it · Change it · Leave it</span><span class="mk-badge">Lazarus</span><span class="mk-badge">SOS plan</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>1 · Where are you?</h2>
+                <div class="mk-field"><label>Your stress level over the last two weeks</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" data-mk-field="level" value="5"><span class="mk-range-val" data-mk-rangeval="level">5</span></div><span class="hint">1 = relaxed · 10 = at the limit</span></div>
+                <div class="mk-section-label">Seit wann?</div>
+                <div id="sm-duration"></div>
+                <div class="mk-section-label" style="margin-top:12px">In which areas of life?</div>
+                <div id="sm-domains"></div>
+                <div id="sm-checknote"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>2 · Your stressors</h2>
+                <p class="mk-sub">What exactly stresses you? Rate each stressor by intensity and frequency – that's what builds your stress map.</p>
+                <div class="sm-add"><input class="mk-input" id="sm-in" placeholder="e.g. unclear expectations at work · noise · finances" maxlength="100"><button class="mk-btn mk-btn-primary" id="sm-add" aria-label="Add stressor"><i class="fas fa-plus"></i></button></div>
+                <div id="sm-stressors"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Stress map</h3>
+                <div id="sm-map"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>3 · Your early warning signs</h2>
+                <p class="mk-sub">Stress announces itself – on four channels. If you know your signs, you can counteract before your body pulls the emergency brake.</p>
+                <div id="sm-signals"></div>
+                <div class="mk-field" style="margin-top:12px"><label>At what level do you usually notice it?</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" data-mk-field="noticeAt" value="7"><span class="mk-range-val" data-mk-rangeval="noticeAt">7</span></div></div>
+                <div id="sm-signote"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Love it, change it or leave it</h2>
+                <p class="mk-sub">For every stressor there are exactly three honest options. The fourth – keep being annoyed about it – isn't one.</p>
+                <div id="sm-control"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Flip the appraisal</h2>
+                <p class="mk-sub">According to Lazarus, it's not the situation that decides but two questions: “What's at stake?” and “What do I have to deal with it?” Take your biggest stressor.</p>
+                <div id="sm-appraisal"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="6">
+            <div class="mk-card">
+                <h2>6 · Your SOS plan</h2>
+                <p class="mk-sub">Three things you can do in the next 10 minutes when you notice your early warning signs. Decide now – under stress you no longer decide well.</p>
+                <div id="sm-sos"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Recovery – the other side of the scale</h3>
+                <p class="mk-sub">Stress isn't the problem. Missing recovery is. What recharges you, and how often does it really happen?</p>
+                <div id="sm-recovery"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Dein Plan</h3>
+                <div id="sm-summary"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="sm-first">The one thing you'll change this week</label><input class="mk-input" id="sm-first" data-mk-field="first" placeholder="Small enough that it happens despite the stress."></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="sm-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="sm-export"><i class="fas fa-download"></i> Download plan</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Reset everything</button></div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 6</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="stress-management.js?v=20261003"></script>
+</body>
+</html>

@@ -27,7 +27,7 @@
     <link rel="stylesheet" href="css/coastal-theme.css?v=20261005">
     <link rel="stylesheet" href="css/ikigai-planner.css">
     <link rel="stylesheet" href="css/persoenlichkeitsentwicklung-uebersicht.css?v=20260111003200">
-    <link rel="stylesheet" href="css/pe-uebersicht-2026.css?v=20261003d">
+    <link rel="stylesheet" href="css/pe-uebersicht-2026.css?v=20261005f">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">                                 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">                                                    
     
@@ -119,16 +119,16 @@
                     <button class="search-clear" id="clearSearch" style="display: none;" aria-label="Suche löschen"><i class="fas fa-times"></i></button>
                 </div>
                 <div class="filter-tags" role="tablist" aria-label="Kategorien">
-                    <span class="filter-tag active" data-category="all" role="tab">Alle</span>
-                    <span class="filter-tag" data-category="self-discovery" role="tab">Selbstfindung</span>
-                    <span class="filter-tag" data-category="goals" role="tab">Ziele &amp; Motivation</span>
-                    <span class="filter-tag" data-category="communication" role="tab">Kommunikation</span>
-                    <span class="filter-tag" data-category="mindfulness" role="tab">Achtsamkeit</span>
-                    <span class="filter-tag" data-category="coaching" role="tab">Coaching</span>
-                    <span class="filter-tag" data-category="nlp" role="tab">NLP</span>
-                    <span class="filter-tag" data-category="habits" role="tab">Gewohnheiten</span>
-                    <span class="filter-tag" data-category="analysis" role="tab">Analyse</span>
-                    <span class="filter-tag" data-category="conflict" role="tab">Konflikt</span>
+                    <button type="button" class="filter-tag active" data-category="all" role="tab" aria-selected="true">Alle</button>
+                    <button type="button" class="filter-tag" data-category="self-discovery" role="tab">Selbstfindung</button>
+                    <button type="button" class="filter-tag" data-category="goals" role="tab">Ziele &amp; Motivation</button>
+                    <button type="button" class="filter-tag" data-category="communication" role="tab">Kommunikation</button>
+                    <button type="button" class="filter-tag" data-category="mindfulness" role="tab">Achtsamkeit</button>
+                    <button type="button" class="filter-tag" data-category="coaching" role="tab">Coaching</button>
+                    <button type="button" class="filter-tag" data-category="nlp" role="tab">NLP</button>
+                    <button type="button" class="filter-tag" data-category="habits" role="tab">Gewohnheiten</button>
+                    <button type="button" class="filter-tag" data-category="analysis" role="tab">Analyse</button>
+                    <button type="button" class="filter-tag" data-category="conflict" role="tab">Konflikt</button>
                 </div>
             </div>
         </div>
@@ -169,7 +169,7 @@
                 </div>
 
                 <!-- Ikigai - Hauptmethode -->
-                <div class="method-card" onclick="startMethod('ikigai')" data-category="self-discovery">
+                <div class="method-card" onclick="startMethod('ikigai')" data-category="self-discovery" data-keywords="purpose meaning vocation passion mission leben sinn japan ikigai">
                     <div class="service-icon">
                 <i class="fas fa-compass"></i>
             </div>
@@ -188,7 +188,7 @@
                 </div>
 
                 <!-- RAISEC-Modell -->
-                <div class="method-card" onclick="startMethod('raisec')" data-category="analysis">
+                <div class="method-card" onclick="startMethod('raisec')" data-category="analysis" data-keywords="riasec holland career beruf interesse holland-code berufsorientierung">
                     <div class="service-icon">
                             <i class="fas fa-chart-bar"></i>
                         </div>
@@ -207,7 +207,7 @@
                 </div>
 
                 <!-- Werte-Klärung -->
-                <div class="method-card" onclick="startMethod('values-clarification')" data-category="self-discovery">
+                <div class="method-card" onclick="startMethod('values-clarification')" data-category="self-discovery" data-keywords="werte values compass paarvergleich prioritäten">
                     <div class="service-icon">
                 <i class="fas fa-heart"></i>
             </div>
@@ -227,7 +227,7 @@
                 </div>
 
                 <!-- Ziel-Setting -->
-                <div class="method-card" onclick="startMethod('goal-setting')" data-category="goals">
+                <div class="method-card" onclick="startMethod('goal-setting')" data-category="goals" data-keywords="ziele smart motivation meilenstein wenn-dann goal">
                     <div class="service-icon">
                 <i class="fas fa-bullseye"></i>
             </div>
@@ -247,7 +247,7 @@
                 </div>
 
                 <!-- Achtsamkeit & Meditation -->
-                <div class="method-card" onclick="startMethod('mindfulness')" data-category="mindfulness">
+                <div class="method-card" onclick="startMethod('mindfulness')" data-category="mindfulness" data-keywords="achtsamkeit meditation atem body-scan calm">
                     <div class="service-icon">
                 <i class="fas fa-leaf"></i>
             </div>
@@ -267,7 +267,7 @@
                 </div>
 
                 <!-- The How of Happiness -->
-                <div class="method-card" onclick="startMethod('how-of-happiness')" data-category="mindfulness">
+                <div class="method-card" onclick="startMethod('how-of-happiness')" data-category="mindfulness" data-keywords="glück happiness lyubomirsky positive psychologie">
                     <div class="service-icon">
                         <i class="fas fa-sun"></i>
                     </div>
@@ -286,7 +286,7 @@
                 </div>
 
                 <!-- Die Schule der Sinne -->
-                <div class="method-card" onclick="startMethod('sinnesschule')" data-category="mindfulness">
+                <div class="method-card" onclick="startMethod('sinnesschule')" data-category="mindfulness" data-keywords="sinne wahrnehmung empathy arena sensory school">
                     <div class="service-icon">
                         <i class="fas fa-hand-sparkles"></i>
                     </div>
@@ -305,7 +305,7 @@
                 </div>
 
                 <!-- Die Schule des Gedächtnisses -->
-                <div class="method-card" onclick="startMethod('gedaechtnisschule')" data-category="mindfulness">
+                <div class="method-card" onclick="startMethod('gedaechtnisschule')" data-category="mindfulness" data-keywords="gedächtnis memory n-back loci karteikarten fsrs">
                     <div class="service-icon">
                         <i class="fas fa-brain"></i>
                     </div>
@@ -324,7 +324,7 @@
                 </div>
 
                 <!-- Die Schule des Körpers -->
-                <div class="method-card" onclick="startMethod('koerperschule')" data-category="mindfulness">
+                <div class="method-card" onclick="startMethod('koerperschule')" data-category="mindfulness" data-keywords="körper yoga kraft ernährung atem body school">
                     <div class="service-icon">
                         <i class="fas fa-heart-pulse"></i>
                     </div>
@@ -343,7 +343,7 @@
                 </div>
 
                 <!-- Emotionale Intelligenz -->
-                <div class="method-card" onclick="startMethod('emotional-intelligence')" data-category="communication">
+                <div class="method-card" onclick="startMethod('emotional-intelligence')" data-category="communication" data-keywords="eq emotion gefühl empathie intelligenz">
                     <div class="service-icon">
                 <i class="fas fa-brain"></i>
             </div>
@@ -363,7 +363,7 @@
                 </div>
 
                 <!-- Therapieform-Finder -->
-                <div class="method-card" onclick="startMethod('therapy-form-finder')" data-category="self-discovery">
+                <div class="method-card" onclick="startMethod('therapy-form-finder')" data-category="self-discovery" data-keywords="therapie psychologist beratung erstgespräch">
                     <div class="service-icon">
                             <i class="fas fa-stethoscope"></i>
                         </div>
@@ -383,7 +383,7 @@
                 </div>
 
                 <!-- Gewohnheiten aufbauen -->
-                <div class="method-card" onclick="startMethod('habit-building')" data-category="habits">
+                <div class="method-card" onclick="startMethod('habit-building')" data-category="habits" data-keywords="gewohnheit habit atomische gewohnheiten streak">
                     <div class="service-icon">
                 <i class="fas fa-sync-alt"></i>
             </div>
@@ -403,7 +403,7 @@
                 </div>
 
                 <!-- Kommunikation -->
-                <div class="method-card" onclick="startMethod('communication')" data-category="communication">
+                <div class="method-card" onclick="startMethod('communication')" data-category="communication" data-keywords="kommunikation 4-ohren schulz von thun">
                     <div class="service-icon">
                 <i class="fas fa-comments"></i>
             </div>
@@ -423,7 +423,7 @@
                 </div>
 
                 <!-- Zeitmanagement -->
-                <div class="method-card" onclick="startMethod('time-management')" data-category="goals">
+                <div class="method-card" onclick="startMethod('time-management')" data-category="goals" data-keywords="zeit eisenhower produktivität big rocks woche">
                     <div class="service-icon">
                 <i class="fas fa-clock"></i>
             </div>
@@ -444,7 +444,7 @@
 
                 <!-- Weitere Methoden -->
                 <!-- AEK Kommunikation -->
-                <div class="method-card" onclick="startMethod('aek-communication')" data-category="communication">
+                <div class="method-card" onclick="startMethod('aek-communication')" data-category="communication" data-keywords="assertive empathic kind ich-botschaft feedback">
                     <div class="service-icon">
                             <i class="fas fa-comments"></i>
             </div>
@@ -464,7 +464,7 @@
                 </div>
 
                 <!-- Change Stages -->
-                <div class="method-card" onclick="startMethod('change-stages')" data-category="coaching">
+                <div class="method-card" onclick="startMethod('change-stages')" data-category="coaching" data-keywords="veränderung prochaska stufen rückfall">
                     <div class="service-icon">
                             <i class="fas fa-sync-alt"></i>
             </div>
@@ -484,7 +484,7 @@
                 </div>
 
                 <!-- Circular Interview -->
-                <div class="method-card" onclick="startMethod('circular-interview')" data-category="coaching">
+                <div class="method-card" onclick="startMethod('circular-interview')" data-category="coaching" data-keywords="zirkulär systemisch fragen perspektiven">
                     <div class="service-icon">
                             <i class="fas fa-circle"></i>
             </div>
@@ -504,7 +504,7 @@
                 </div>
 
                 <!-- Competence Map -->
-                <div class="method-card" onclick="startMethod('competence-map')" data-category="analysis">
+                <div class="method-card" onclick="startMethod('competence-map')" data-category="analysis" data-keywords="kompetenz skills lücken lernen radar">
                     <div class="service-icon">
                             <i class="fas fa-map"></i>
             </div>
@@ -524,7 +524,7 @@
                 </div>
 
                 <!-- Conflict Escalation -->
-                <div class="method-card" onclick="startMethod('conflict-escalation')" data-category="conflict">
+                <div class="method-card" onclick="startMethod('conflict-escalation')" data-category="conflict" data-keywords="konflikt glasl eskalation deeskalation">
                     <div class="service-icon">
                             <i class="fas fa-exclamation-triangle"></i>
             </div>
@@ -544,7 +544,7 @@
                 </div>
 
                 <!-- Five Pillars -->
-                <div class="method-card" onclick="startMethod('five-pillars')" data-category="self-discovery">
+                <div class="method-card" onclick="startMethod('five-pillars')" data-category="self-discovery" data-keywords="säulen identität petzold balance">
                     <div class="service-icon">
                             <i class="fas fa-columns"></i>
             </div>
@@ -564,7 +564,7 @@
                 </div>
 
                 <!-- Stärken finden -->
-                <div class="method-card" onclick="startMethod('strengths-finder')" data-category="self-discovery">
+                <div class="method-card" onclick="startMethod('strengths-finder')" data-category="self-discovery" data-keywords="stärken talente strengths finder">
                     <div class="service-icon">
                             <i class="fas fa-star"></i>
             </div>
@@ -584,7 +584,7 @@
                 </div>
 
                 <!-- Gallup Strengths -->
-                <div class="method-card" onclick="startMethod('gallup-strengths')" data-category="self-discovery">
+                <div class="method-card" onclick="startMethod('gallup-strengths')" data-category="self-discovery" data-keywords="gallup cliftonstrengths talente domänen">
                     <div class="service-icon">
                             <i class="fas fa-trophy"></i>
             </div>
@@ -604,7 +604,7 @@
                 </div>
 
                 <!-- Harvard Method -->
-                <div class="method-card" onclick="startMethod('harvard-method')" data-category="communication">
+                <div class="method-card" onclick="startMethod('harvard-method')" data-category="communication" data-keywords="harvard verhandeln fisher ury batna interessen">
                     <div class="service-icon">
                             <i class="fas fa-graduation-cap"></i>
             </div>
@@ -624,7 +624,7 @@
                 </div>
 
                 <!-- Johari Window -->
-                <div class="method-card" onclick="startMethod('johari-window')" data-category="self-discovery">
+                <div class="method-card" onclick="startMethod('johari-window')" data-category="self-discovery" data-keywords="johari fenster selbstbild fremdbild feedback">
                     <div class="service-icon">
                             <i class="fas fa-window-maximize"></i>
             </div>
@@ -644,7 +644,7 @@
                 </div>
 
                 <!-- Journaling -->
-                <div class="method-card" onclick="startMethod('journaling')" data-category="mindfulness">
+                <div class="method-card" onclick="startMethod('journaling')" data-category="mindfulness" data-keywords="tagebuch schreiben journal reflexion stimmung">
                     <div class="service-icon">
                             <i class="fas fa-book"></i>
             </div>
@@ -665,7 +665,7 @@
 
                 <!-- Weitere Methoden - Teil 2 -->
                 <!-- Moment of Excellence -->
-                <div class="method-card" onclick="startMethod('moment-excellence')" data-category="coaching">
+                <div class="method-card" onclick="startMethod('moment-excellence')" data-category="coaching" data-keywords="nlp anker peak moment submodalitäten">
                     <div class="service-icon">
                 <i class="fas fa-star"></i>
             </div>
@@ -685,7 +685,7 @@
                 </div>
 
                 <!-- NLP Dilts -->
-                <div class="method-card" onclick="startMethod('nlp-dilts')" data-category="nlp">
+                <div class="method-card" onclick="startMethod('nlp-dilts')" data-category="nlp" data-keywords="dilts logische ebenen nlp sinn identität">
                     <div class="service-icon">
                             <i class="fas fa-brain"></i>
             </div>
@@ -705,7 +705,7 @@
                 </div>
 
                 <!-- NLP Meta Goal -->
-                <div class="method-card" onclick="startMethod('nlp-meta-goal')" data-category="nlp">
+                <div class="method-card" onclick="startMethod('nlp-meta-goal')" data-category="nlp" data-keywords="nlp wohlgeformt meta-ziel ökologie">
                     <div class="service-icon">
                             <i class="fas fa-bullseye"></i>
             </div>
@@ -725,7 +725,7 @@
                 </div>
 
                 <!-- Nonviolent Communication -->
-                <div class="method-card" onclick="startMethod('nonviolent-communication')" data-category="communication">
+                <div class="method-card" onclick="startMethod('nonviolent-communication')" data-category="communication" data-keywords="gfk nvc rosenberg gewaltfrei bedürfnis bitte">
                     <div class="service-icon">
                             <i class="fas fa-heart"></i>
             </div>
@@ -745,7 +745,7 @@
                 </div>
 
                 <!-- Rafael Method -->
-                <div class="method-card" onclick="startMethod('rafael-method')" data-category="coaching">
+                <div class="method-card" onclick="startMethod('rafael-method')" data-category="coaching" data-keywords="rafael feedback lernschritte situation">
                     <div class="service-icon">
                             <i class="fas fa-puzzle-piece"></i>
             </div>
@@ -765,7 +765,7 @@
                 </div>
 
                 <!-- Resource Analysis -->
-                <div class="method-card" onclick="startMethod('resource-analysis')" data-category="analysis">
+                <div class="method-card" onclick="startMethod('resource-analysis')" data-category="analysis" data-keywords="ressourcen stärken support netzwerk">
                     <div class="service-icon">
                             <i class="fas fa-tools"></i>
             </div>
@@ -785,7 +785,7 @@
                 </div>
 
                 <!-- Rubikon Model -->
-                <div class="method-card" onclick="startMethod('rubikon-model')" data-category="goals">
+                <div class="method-card" onclick="startMethod('rubikon-model')" data-category="goals" data-keywords="rubikon heckhausen motivation entscheidung">
                     <div class="service-icon">
                             <i class="fas fa-bridge"></i>
             </div>
@@ -805,7 +805,7 @@
                 </div>
 
                 <!-- Self Assessment -->
-                <div class="method-card" onclick="startMethod('self-assessment')" data-category="self-discovery">
+                <div class="method-card" onclick="startMethod('self-assessment')" data-category="self-discovery" data-keywords="selbsteinschätzung fremdbild bewertung">
                     <div class="service-icon">
                             <i class="fas fa-clipboard-check"></i>
             </div>
@@ -825,7 +825,7 @@
                 </div>
 
                 <!-- Solution Focused -->
-                <div class="method-card" onclick="startMethod('solution-focused')" data-category="coaching">
+                <div class="method-card" onclick="startMethod('solution-focused')" data-category="coaching" data-keywords="lösungsfokussiert wunderfrage de shazer berg">
                     <div class="service-icon">
                             <i class="fas fa-wand-magic-sparkles"></i>
             </div>
@@ -845,7 +845,7 @@
                 </div>
 
                 <!-- Stress Management -->
-                <div class="method-card" onclick="startMethod('stress-management')" data-category="mindfulness">
+                <div class="method-card" onclick="startMethod('stress-management')" data-category="mindfulness" data-keywords="stress burnout erholung sos stressor">
                     <div class="service-icon">
                             <i class="fas fa-leaf"></i>
             </div>
@@ -866,7 +866,7 @@
 
                 <!-- Weitere Methoden - Teil 3 -->
                 <!-- SWOT Analysis -->
-                <div class="method-card" onclick="startMethod('swot-analysis')" data-category="analysis">
+                <div class="method-card" onclick="startMethod('swot-analysis')" data-category="analysis" data-keywords="swot tows strategie stärken schwächen chancen">
                     <div class="service-icon">
                             <i class="fas fa-chart-line"></i>
             </div>
@@ -886,7 +886,7 @@
                 </div>
 
                 <!-- Systemic Coaching -->
-                <div class="method-card" onclick="startMethod('systemic-coaching')" data-category="coaching">
+                <div class="method-card" onclick="startMethod('systemic-coaching')" data-category="coaching" data-keywords="systemisch muster landkarte experiment">
                     <div class="service-icon">
                             <i class="fas fa-diagram-project"></i>
             </div>
@@ -906,7 +906,7 @@
                 </div>
 
                 <!-- Target Coaching -->
-                <div class="method-card" onclick="startMethod('target-coaching')" data-category="coaching">
+                <div class="method-card" onclick="startMethod('target-coaching')" data-category="coaching" data-keywords="grow coaching ziel optionen whitmore">
                     <div class="service-icon">
                             <i class="fas fa-bullseye"></i>
             </div>
@@ -926,7 +926,7 @@
                 </div>
 
                 <!-- VIA Strengths -->
-                <div class="method-card" onclick="startMethod('via-strengths')" data-category="self-discovery">
+                <div class="method-card" onclick="startMethod('via-strengths')" data-category="self-discovery" data-keywords="via charakterstärken tugend peterson seligman">
                     <div class="service-icon">
                             <i class="fas fa-gem"></i>
             </div>
@@ -946,7 +946,7 @@
                 </div>
 
                 <!-- Vision Board -->
-                <div class="method-card" onclick="startMethod('vision-board')" data-category="goals">
+                <div class="method-card" onclick="startMethod('vision-board')" data-category="goals" data-keywords="vision board zukunft visualisierung leitsatz">
                     <div class="service-icon">
                             <i class="fas fa-images"></i>
             </div>
@@ -966,7 +966,7 @@
                 </div>
 
                 <!-- Walt Disney -->
-                <div class="method-card" onclick="startMethod('walt-disney')" data-category="coaching">
+                <div class="method-card" onclick="startMethod('walt-disney')" data-category="coaching" data-keywords="disney träumer realist kritiker kreativität">
                     <div class="service-icon">
                             <i class="fas fa-magic"></i>
             </div>
@@ -986,7 +986,7 @@
                 </div>
 
                 <!-- Wheel of Life -->
-                <div class="method-card" onclick="startMethod('wheel-of-life')" data-category="self-discovery">
+                <div class="method-card" onclick="startMethod('wheel-of-life')" data-category="self-discovery" data-keywords="lebensrad wheel of life balance lebensbereiche">
                     <div class="service-icon">
                             <i class="fas fa-circle"></i>
             </div>
@@ -1064,9 +1064,8 @@
 </main>
 
 <!-- Scripts -->
-<script src="js/translation-manager.js?v=20260110"></script>
-<script src="js/persoenlichkeitsentwicklung-methods.js?v=20261005e"></script>
-<script src="js/persoenlichkeitsentwicklung-search.js?v=20241206"></script>
+<script src="js/persoenlichkeitsentwicklung-methods.js?v=20261005f"></script>
+<script src="js/persoenlichkeitsentwicklung-search.js?v=20261005f"></script>
     <script>
 
     function openProfile() {
@@ -1793,7 +1792,11 @@
     }
 
     // Methoden-Funktionen
-    function startMethod(methodName) {
+    function startMethodLegacy(methodName) {
+        if (typeof window.startMethod === 'function') {
+            window.startMethod(methodName);
+            return;
+        }
         console.log('Starting method:', methodName);
         
         // Route zu den entsprechenden Methoden-Seiten
@@ -2115,316 +2118,9 @@
         };
     }
     
-    // Filter-Funktionen
-    function filterMethods(category) {
-        console.log('Filtering methods by category:', category);
-        const cards = document.querySelectorAll('.method-card');
-        
-        cards.forEach(card => {
-            if (card.hidden) return; // Auth-Gate (z. B. Song-Generator) nicht anfassen
-            if (category === 'all' || card.dataset.category === category) {
-                card.style.display = '';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-        
-        // Update active filter - unterstütze sowohl filter-tab als auch filter-tag
-        document.querySelectorAll('.filter-tab, .filter-tag').forEach(tab => {
-            tab.classList.remove('active');
-        });
-        
-        // Suche nach data-filter oder data-category
-        const activeTab = document.querySelector(`[data-filter="${category}"], [data-category="${category}"]`);
-        if (activeTab) {
-            activeTab.classList.add('active');
-        }
-    }
+    // Suche/Filter liegen in js/persoenlichkeitsentwicklung-search.js
     
-    // Enhanced Search function with similarity matching
-    function searchMethods() {
-        const searchTerm = document.getElementById('methodSearch').value.toLowerCase().trim();
-        const cards = document.querySelectorAll('.method-card');
-        
-        if (searchTerm === '') {
-            // Show all cards if search is empty
-        cards.forEach(card => {
-                card.style.display = '';
-                card.classList.remove('search-highlight');
-            });
-            return;
-        }
-        
-        // Create search results with similarity scores
-        const searchResults = [];
-        
-        cards.forEach(card => {
-            const title = card.querySelector('h3').textContent.toLowerCase();
-            const description = card.querySelector('p').textContent.toLowerCase();
-            const tags = Array.from(card.querySelectorAll('.method-tag')).map(tag => tag.textContent.toLowerCase());
-            const category = card.getAttribute('data-category') || '';
-            
-            // Calculate similarity score
-            const similarityScore = calculateSimilarity(searchTerm, {
-                title: title,
-                description: description,
-                tags: tags,
-                category: category
-            });
-            
-            searchResults.push({
-                card: card,
-                score: similarityScore
-            });
-        });
-        
-        // Sort by similarity score (highest first)
-        searchResults.sort((a, b) => b.score - a.score);
-        
-        // Show results
-        searchResults.forEach((result, index) => {
-            const card = result.card;
-            const score = result.score;
-            
-            if (score > 0) {
-                card.style.display = '';
-                card.classList.add('search-highlight');
-                
-                // Add similarity indicator
-                if (!card.querySelector('.similarity-indicator')) {
-                    const indicator = document.createElement('div');
-                    indicator.className = 'similarity-indicator';
-                    indicator.innerHTML = `<span class="similarity-score">${Math.round(score * 100)}% Übereinstimmung</span>`;
-                    card.appendChild(indicator);
-                }
-                
-                // Order by similarity (most similar first)
-                card.style.order = index;
-            } else {
-                card.style.display = 'none';
-                card.classList.remove('search-highlight');
-                const indicator = card.querySelector('.similarity-indicator');
-                if (indicator) {
-                    indicator.remove();
-                }
-            }
-        });
-        
-        // Show "No results" message if no matches
-        showNoResultsMessage(searchResults.filter(r => r.score > 0).length === 0);
-    }
-    
-    // Calculate similarity between search term and content
-    function calculateSimilarity(searchTerm, content) {
-        let score = 0;
-        const searchWords = searchTerm.split(' ').filter(word => word.length > 0);
-        
-        // Title matching (highest weight)
-        searchWords.forEach(word => {
-            if (content.title.includes(word)) {
-                score += 0.4;
-            }
-            // Partial word matching
-            if (content.title.includes(word.substring(0, Math.max(3, word.length - 1)))) {
-                score += 0.2;
-            }
-        });
-        
-        // Description matching
-        searchWords.forEach(word => {
-            if (content.description.includes(word)) {
-                score += 0.3;
-            }
-        });
-        
-        // Tags matching
-        content.tags.forEach(tag => {
-            searchWords.forEach(word => {
-                if (tag.includes(word)) {
-                    score += 0.2;
-                }
-            });
-        });
-        
-        // Category matching
-        if (content.category.includes(searchTerm)) {
-            score += 0.1;
-        }
-        
-        // Fuzzy matching for typos
-        searchWords.forEach(word => {
-            if (word.length > 3) {
-                const fuzzyMatches = findFuzzyMatches(word, [
-                    ...content.title.split(' '),
-                    ...content.description.split(' '),
-                    ...content.tags
-                ]);
-                score += fuzzyMatches * 0.1;
-            }
-        });
-        
-        return Math.min(score, 1); // Cap at 1.0
-    }
-    
-    // Simple fuzzy matching
-    function findFuzzyMatches(word, targets) {
-        let matches = 0;
-        targets.forEach(target => {
-            if (target.length > 2 && word.length > 2) {
-                const distance = levenshteinDistance(word, target);
-                const maxLength = Math.max(word.length, target.length);
-                const similarity = 1 - (distance / maxLength);
-                
-                if (similarity > 0.6) { // 60% similarity threshold
-                    matches += similarity;
-                }
-            }
-        });
-        return matches;
-    }
-    
-    // Levenshtein distance for fuzzy matching
-    function levenshteinDistance(str1, str2) {
-        const matrix = [];
-        
-        for (let i = 0; i <= str2.length; i++) {
-            matrix[i] = [i];
-        }
-        
-        for (let j = 0; j <= str1.length; j++) {
-            matrix[0][j] = j;
-        }
-        
-        for (let i = 1; i <= str2.length; i++) {
-            for (let j = 1; j <= str1.length; j++) {
-                if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-                    matrix[i][j] = matrix[i - 1][j - 1];
-                } else {
-                    matrix[i][j] = Math.min(
-                        matrix[i - 1][j - 1] + 1,
-                        matrix[i][j - 1] + 1,
-                        matrix[i - 1][j] + 1
-                    );
-                }
-            }
-        }
-        
-        return matrix[str2.length][str1.length];
-    }
-    
-    // Handle Enter key press
-    function handleSearchKeypress(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            searchMethods();
-        }
-    }
-    
-    // Show no results message
-    function showNoResultsMessage(show) {
-        let noResultsMsg = document.getElementById('noResultsMessage');
-        
-        if (show) {
-            if (!noResultsMsg) {
-                noResultsMsg = document.createElement('div');
-                noResultsMsg.id = 'noResultsMessage';
-                noResultsMsg.className = 'no-results-message';
-                noResultsMsg.innerHTML = `
-                    <div class="no-results-content">
-                        <i class="fas fa-search"></i>
-                        <h3>Keine Ergebnisse gefunden</h3>
-                        <p>Versuchen Sie andere Suchbegriffe oder schauen Sie sich alle verfügbaren Methoden an.</p>
-                        <button onclick="clearSearch()" class="btn btn-primary">Alle Methoden anzeigen</button>
-                    </div>
-                `;
-                document.querySelector('.methods-grid').appendChild(noResultsMsg);
-            }
-            noResultsMsg.style.display = 'block';
-        } else {
-            if (noResultsMsg) {
-                noResultsMsg.style.display = 'none';
-            }
-        }
-    }
-    
-    // Clear search function
-    function clearSearch() {
-        document.getElementById('methodSearch').value = '';
-        searchMethods();
-        document.getElementById('clearSearch').style.display = 'none';
-        filterMethods('all');
-    }
-
-    // ---- Redesign 2026: Fortschritts-Badges, Trefferzähler, Leerzustand ----
-    const PE_KEY_ALIAS = { 'strengths-analysis': 'strengths-finder' };
-    function peMethodKey(card) {
-        const m = (card.getAttribute('onclick') || '').match(/startMethod\('([^']+)'\)/);
-        if (!m) return null;
-        return PE_KEY_ALIAS[m[1]] || m[1];
-    }
-    function peProgressBadges() {
-        document.querySelectorAll('.method-card').forEach(card => {
-            const key = peMethodKey(card);
-            if (!key) return;
-            let st = null;
-            try { st = JSON.parse(localStorage.getItem('mk_' + key) || 'null'); } catch (e) { st = null; }
-            if (!st || typeof st !== 'object') return;
-            const step = Number(st.__step || 0);
-            const hasData = Object.keys(st).some(k => !k.startsWith('__'));
-            if (step <= 1 && !hasData) return;
-            const old = card.querySelector('.pe-progress'); if (old) old.remove();
-            const b = document.createElement('span');
-            b.className = 'pe-progress';
-            b.innerHTML = step > 1 ? '<i class="fas fa-play"></i> Begonnen · Schritt ' + step : '<i class="fas fa-pen"></i> Begonnen';
-            b.title = 'Dein Fortschritt ist gespeichert – weiter dort, wo du aufgehört hast';
-            card.appendChild(b);
-        });
-    }
-    function peUpdateCount() {
-        const grid = document.querySelector('.methods-grid');
-        if (!grid) return;
-        const cards = Array.from(grid.querySelectorAll('.method-card'));
-        const visible = cards.filter(c => c.style.display !== 'none' && !c.hidden).length;
-        let el = document.getElementById('pe-result-count');
-        if (!el) {
-            el = document.createElement('div');
-            el.id = 'pe-result-count';
-            el.className = 'pe-result-count';
-            const header = document.querySelector('.personality-methods-overview .section-header');
-            if (header) header.appendChild(el);
-        }
-        el.innerHTML = '<b>' + visible + '</b> von ' + cards.filter(c => !c.hidden).length + ' Methoden';
-        let empty = document.getElementById('pe-empty');
-        if (visible === 0) {
-            if (!empty) {
-                empty = document.createElement('div');
-                empty.id = 'pe-empty';
-                empty.className = 'pe-empty';
-                empty.innerHTML = '<b>Keine Methode passt zu dieser Suche.</b>Probiere ein anderes Stichwort – oder blättere durch alle Methoden.<br><button type="button" onclick="clearSearch()"><i class="fas fa-undo"></i> Alle anzeigen</button>';
-                grid.appendChild(empty);
-            }
-            empty.style.display = '';
-        } else if (empty) {
-            empty.style.display = 'none';
-        }
-        const nr = document.getElementById('noResultsMessage');
-        if (nr) nr.style.display = 'none';
-    }
-    (function peWrap() {
-        const _f = window.filterMethods, _s = window.searchMethods;
-        if (typeof _f === 'function') window.filterMethods = function (c) { _f(c); peUpdateCount(); };
-        if (typeof _s === 'function') window.searchMethods = function () {
-            _s();
-            const inp = document.getElementById('methodSearch');
-            const clr = document.getElementById('clearSearch');
-            if (inp && clr) clr.style.display = inp.value.trim() ? '' : 'none';
-            peUpdateCount();
-        };
-        const clr = document.getElementById('clearSearch');
-        if (clr) clr.addEventListener('click', clearSearch);
-        peProgressBadges();
-        const pc = document.getElementById('pe-count');
-        if (pc) pc.textContent = String(document.querySelectorAll('.method-card:not([hidden])').length);
+    (function peHeroLogin() {
         function peOpenLogin() {
             if (window.authModals && typeof window.authModals.showLogin === 'function') window.authModals.showLogin();
             else document.getElementById('authButton')?.click();
@@ -2433,7 +2129,7 @@
             const el = document.getElementById('peHeroLogin');
             if (!el) return;
             const label = (document.getElementById('authButtonText')?.textContent || '').trim();
-            const named = label && label !== 'Anmelden' && label !== 'Login';
+            const named = label && label !== 'Anmelden' && label !== 'Login' && label !== 'Sign in';
             el.hidden = named;
         }
         document.getElementById('peHeroLogin')?.addEventListener('click', peOpenLogin);
@@ -2441,14 +2137,11 @@
         setTimeout(peSyncLoginCta, 800);
         setTimeout(peSyncLoginCta, 2000);
         ['userLogin', 'userLoggedIn', 'userLogout', 'authStateChange'].forEach(ev => {
-            window.addEventListener(ev, () => setTimeout(() => { peUpdateCount(); peSyncLoginCta(); }, 50));
-            document.addEventListener(ev, () => setTimeout(() => { peUpdateCount(); peSyncLoginCta(); }, 50));
+            window.addEventListener(ev, () => setTimeout(peSyncLoginCta, 50));
+            document.addEventListener(ev, () => setTimeout(peSyncLoginCta, 50));
         });
-        window.addEventListener('storage', e => { if (e.key && e.key.startsWith('mk_')) peProgressBadges(); });
-        window.addEventListener('pageshow', peProgressBadges);
-        peUpdateCount();
     })();
-    
+
     // Language Switcher Function
     function changeLanguage(langCode) {
         if (window.translationManager) {
@@ -2464,34 +2157,7 @@
         document.addEventListener('DOMContentLoaded', function() {
         console.log('Personality Development Overview loaded');
         
-        // Set default filter to 'all'
-        filterMethods('all');
-        
-        // Event-Listener für Filter-Tags hinzufügen
-        document.querySelectorAll('.filter-tag').forEach(tag => {
-            tag.addEventListener('click', function() {
-                const category = this.getAttribute('data-category');
-                filterMethods(category);
-            });
-        });
-        
-        // Event-Listener für Suchfeld
-        const searchInput = document.getElementById('methodSearch');
-        if (searchInput) {
-            searchInput.addEventListener('input', searchMethods);
-            searchInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    searchMethods();
-                }
-            });
-        }
-        
-        // Initialize language switcher
-        const savedLanguage = localStorage.getItem('selectedLanguage') || 'de';
-        const languageSelect = document.getElementById('languageSelect');
-        if (languageSelect) {
-            languageSelect.value = savedLanguage;
-        }
+        if (typeof window.filterMethods === 'function') window.filterMethods(new URLSearchParams(location.search).get('cat') || 'all');
         });
     </script>
     
@@ -2719,7 +2385,7 @@
     <script src="js/personality-auth-integration.js"></script>
     <script src="js/song-generator-auth-gate.js?v=20260627a"></script>
     <!-- Simple Translation -->
-    <script src="js/simple-translation.js"></script>
+    <script src="js/simple-translation.js?v=20261005f"></script>
     
     <!-- Initialize Language Switcher -->
     <script>
