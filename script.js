@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function applyInAppBrowserFixes() {
     const ua = navigator.userAgent || '';
-    const isInApp = /Instagram|FBAN|FBAV|FB_IAB|FB4A|FBSS|Line\\//i.test(ua);
+    const isInApp = /Instagram|FBAN|FBAV|FB_IAB|FB4A|FBSS|Line\//i.test(ua);
     if (isInApp) {
         document.body.classList.add('inapp-browser');
         document.documentElement.classList.add('inapp-browser');
@@ -143,18 +143,23 @@ function fixMobileScroll() {
 
 // Initialize all website functions
 function initializeWebsite() {
-    hideLoadingScreen();
-    initMobileMenu();
-    initNavigation();
-    initAnimations();
-    initContactForm();
-    initSmoothScroll();
-    initTypingEffect();
-    initParallax();
-    loadProfileImageFromStorage();
-    loadHeroContentFromStorage();
-    setupProfileImageListener();
-    initNutritionPlanner();
+    // Jede Init isoliert ausführen – ein Fehler darf nicht das Menü lahmlegen
+    [
+        hideLoadingScreen,
+        initMobileMenu,
+        initNavigation,
+        initAnimations,
+        initContactForm,
+        initSmoothScroll,
+        initTypingEffect,
+        initParallax,
+        loadProfileImageFromStorage,
+        loadHeroContentFromStorage,
+        setupProfileImageListener,
+        initNutritionPlanner
+    ].forEach(fn => {
+        try { fn(); } catch (err) { console.warn('⚠️ Init fehlgeschlagen:', fn.name, err); }
+    });
 }
 
 // Mobile Menu Toggle
@@ -231,14 +236,14 @@ function hideLoadingScreen() {
 
 // Navigation functionality
 function initNavigation() {
-    const navbar = document.getElementById('navbar');
+    const navbar = document.getElementById('navbar') || document.querySelector('.navbar');
     const menuToggle = document.getElementById('menuToggle');
     const navMenu = document.getElementById('navMenu');
     const navLinks = document.querySelectorAll('.nav-link');
     
     // Scroll effect
     let lastScroll = 0;
-    window.addEventListener('scroll', () => {
+    if (navbar) window.addEventListener('scroll', () => {
         const currentScroll = window.pageYOffset;
         
         // Add scrolled class
@@ -248,13 +253,7 @@ function initNavigation() {
             navbar.classList.remove('scrolled');
         }
         
-        // Hide/show navbar on scroll
-        if (currentScroll > lastScroll && currentScroll > 100) {
-            navbar.style.transform = 'translateY(-100%)';
-        } else {
-            navbar.style.transform = 'translateY(0)';
-        }
-        
+        // Kein Auto-Hide der Navbar: auf Mobile liegt der Hamburger darin und würde verschwinden
         lastScroll = currentScroll;
     });
     
@@ -447,6 +446,9 @@ function initSmoothScroll() {
 function initTypingEffect() {
     const heroTitle = document.querySelector('.hero-title');
     if (!heroTitle) return;
+    // Hero-Title enthält Markup (Gradient-Span mit data-de/data-en) → kein Typing-Effekt,
+    // sonst gehen Gradient und Übersetzung verloren
+    if (heroTitle.children.length > 0) return;
     
     const text = heroTitle.textContent;
     heroTitle.textContent = '';

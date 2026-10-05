@@ -309,8 +309,15 @@
     /* Umschalter-UI                                                       */
     /* ------------------------------------------------------------------ */
     SimpleTranslation.prototype.ensureSwitcher = function () {
-        if (document.querySelector('.lang-link-compact[data-lang]')) return;
         if (document.body.hasAttribute('data-no-lang-switch')) return;
+        if (document.querySelector('.coastal-lang-switch')) return;
+        // Nur dann einblenden, wenn kein Sprachbutton sichtbar ist
+        // (auf Mobile liegen die Flaggen oft im geschlossenen Hamburger-Menü)
+        var existing = document.querySelectorAll('.lang-link-compact[data-lang]');
+        for (var i = 0; i < existing.length; i++) {
+            var el = existing[i];
+            if (el.getClientRects().length && getComputedStyle(el).visibility !== 'hidden') return;
+        }
         var box = document.createElement('div');
         box.className = 'coastal-lang-switch';
         box.setAttribute('data-no-translate', '');

@@ -5,8 +5,8 @@
  */
 
 const CACHE_NAME = 'bewerbungsmanager-v3';
-const STATIC_CACHE = 'static-v3-coastal';
-const DYNAMIC_CACHE = 'dynamic-v3-coastal';
+const STATIC_CACHE = 'static-v4-coastal';
+const DYNAMIC_CACHE = 'dynamic-v4-coastal';
 
 function shouldBypassServiceWorker(url) {
     const path = url.pathname;
