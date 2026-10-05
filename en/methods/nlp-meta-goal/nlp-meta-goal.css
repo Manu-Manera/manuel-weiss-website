@@ -1,0 +1,46 @@
+/* Wohlgeformtes Ziel · Styles */
+.mk-faint { color: var(--mk-faint); font-size: 13px; }
+.mg-score { display: grid; grid-template-columns: 64px 1fr; gap: 6px 16px; align-items: center; background: var(--mk-surface); border: 1px solid var(--mk-line); border-radius: var(--mk-radius); padding: 12px 16px; margin: 0 0 18px; }
+.mg-ring { width: 64px; height: 64px; grid-row: 1 / 3; transform: rotate(-90deg); }
+.mg-ring .bg { fill: none; stroke: var(--mk-line); stroke-width: 6; }
+.mg-ring .fg { fill: none; stroke: var(--mk-accent); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset .4s; }
+.mg-ring .t { transform: rotate(90deg); transform-origin: 32px 32px; font-size: 14px; font-weight: 800; fill: var(--mk-accent); text-anchor: middle; }
+.mg-crit { display: flex; flex-wrap: wrap; gap: 6px; }
+.mg-crit-i { display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 12px; padding: 4px 10px; border-radius: 99px; border: 1.5px solid var(--mk-line); background: var(--mk-surface-2); color: var(--mk-muted); cursor: pointer; }
+.mg-crit-i.ok { border-color: var(--mk-accent); color: var(--mk-accent); background: var(--mk-accent-soft); }
+.mg-crit-i.warn { border-color: #f59e0b; color: #b45309; background: rgba(245,158,11,.12); }
+.mg-score-l { font-size: 12px; color: var(--mk-muted); }
+
+.mg-pairs .mg-pair { background: var(--mk-surface-2); border-radius: var(--mk-radius-sm); padding: 10px 12px; font-size: 13px; }
+.mg-pair .bad { color: #b91c1c; text-decoration: line-through; opacity: .8; }
+.mg-pair .good { color: #047857; margin-top: 4px; font-weight: 600; }
+.mg-pair i { width: 16px; }
+
+.mg-vak label .ic { font-size: 18px; margin-right: 4px; }
+
+.mg-chain { display: grid; gap: 4px; }
+.mg-chain-goal { background: var(--mk-accent-soft); border-radius: var(--mk-radius-sm); padding: 12px 14px; font-weight: 600; }
+.mg-chain-arrow { text-align: center; font-size: 12px; color: var(--mk-faint); padding: 2px; }
+.mg-chain-lvl { background: var(--mk-surface-2); border: 1.5px solid var(--mk-line); border-radius: var(--mk-radius-sm); padding: 10px 12px; }
+.mg-chain-lvl label { display: block; font-size: 12px; color: var(--mk-muted); margin-bottom: 4px; }
+.mg-chain-lvl input:disabled { opacity: .5; }
+
+.mg-res { margin-bottom: 12px; }
+.mg-res-head { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; font-size: 14px; }
+.mg-res-row { margin-bottom: 6px; }
+.mg-have { font: inherit; font-size: 12px; border-radius: 99px; border: 1.5px solid var(--mk-line); background: var(--mk-surface); color: var(--mk-muted); padding: 5px 10px; cursor: pointer; white-space: nowrap; }
+.mg-have.on { border-color: #10b981; color: #047857; background: rgba(16,185,129,.12); }
+
+.mg-eco { background: var(--mk-surface-2); border: 1.5px solid var(--mk-line); border-left-width: 4px; border-radius: var(--mk-radius-sm); padding: 12px 14px; margin-bottom: 10px; }
+.mg-eco.yes { border-left-color: #10b981; } .mg-eco.unsure { border-left-color: #f59e0b; } .mg-eco.no { border-left-color: #ef4444; }
+.mg-eco .q { font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+.mg-eco-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.mg-eco-btns button { font: inherit; font-size: 12px; border-radius: 99px; border: 1.5px solid var(--mk-line); background: var(--mk-surface); padding: 5px 11px; cursor: pointer; color: var(--mk-muted); }
+.mg-eco-btns button.on { border-color: var(--mk-accent); color: var(--mk-accent); background: var(--mk-accent-soft); font-weight: 600; }
+
+.mg-final { background: linear-gradient(135deg, var(--mk-accent-soft), transparent); border: 1px solid var(--mk-line); border-radius: var(--mk-radius); padding: 18px 20px; margin-bottom: 14px; }
+.mg-final-g { font-size: 20px; font-weight: 700; line-height: 1.35; margin: 4px 0 12px; }
+.mg-final-row { display: grid; grid-template-columns: 80px 1fr; gap: 10px; font-size: 14px; padding: 6px 0; border-top: 1px solid var(--mk-line); }
+.mg-final-row b { color: var(--mk-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; padding-top: 2px; }
+.mg-link { text-decoration: none; color: inherit; text-align: left; }
+@media (max-width: 600px) { .mg-final-row { grid-template-columns: 1fr; gap: 2px; } }

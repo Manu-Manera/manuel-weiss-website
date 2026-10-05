@@ -121,7 +121,15 @@ function startMethod(methodId) {
             'methods/five-pillars/five-pillars.html',
             'methods/rafael-method/rafael-method.html',
             'methods/habit-building/habit-building.html',
-            'methods/mindfulness/mindfulness.html'
+            'methods/mindfulness/mindfulness.html',
+            'methods/conflict-escalation/conflict-escalation.html',
+            'methods/therapy-form-finder/therapy-form-finder.html',
+            'methods/self-assessment/self-assessment.html',
+            'methods/walt-disney/walt-disney.html',
+            'methods/solution-focused/solution-focused.html',
+            'methods/moment-excellence/moment-excellence.html',
+            'methods/nlp-meta-goal/nlp-meta-goal.html',
+            'methods/raisec/index-raisec.html'
         ];
         const hasEnVersion = enPagesAvailable.includes(url);
         let fullUrl = (isEnglish && hasEnVersion) ? `/en/${url}` : `/${url}`;

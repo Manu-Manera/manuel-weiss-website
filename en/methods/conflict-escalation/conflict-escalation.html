@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conflict escalation after Glasl | Manuel Weiss</title>
+    <meta name="description" content="The nine escalation stages after Friedrich Glasl: check symptoms, determine your conflict's stage, see your own part and choose the matching de-escalation strategy.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="conflict-escalation.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-fire"></i></span><span>Glasl escalation</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-fire"></i></div>
+            <div class="mk-kicker">Personal development · Conflict</div>
+            <h1>Where does your conflict stand – and what helps now?</h1>
+            <p>Friedrich Glasl describes nine stages on which conflicts escalate – from “hardening” to “together into the abyss”. Each stage has typical symptoms and needs a different response. Here you determine the stage, see your own part and choose a strategy that fits the stage.</p>
+            <div class="mk-badges"><span class="mk-badge">9 stages</span><span class="mk-badge">Symptom check</span><span class="mk-badge">Your own part</span><span class="mk-badge">De-escalation</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>1 · The conflict</h2>
+                <div class="mk-field"><label for="ce-conflict">What's it about – in two or three sentences?</label><textarea class="mk-textarea" id="ce-conflict" data-mk-field="conflict" placeholder="Factual, as an observer would describe it"></textarea></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="ce-who">With whom?</label><input class="mk-input" id="ce-who" data-mk-field="who" placeholder="Name or role"></div>
+                    <div class="mk-field"><label for="ce-since">Since when?</label><select class="mk-select" id="ce-since" data-mk-field="since"><option value="">–</option><option value="days">days</option><option value="weeks">weeks</option><option value="months">months</option><option value="years">years</option></select></div>
+                </div>
+                <div class="mk-field"><label for="ce-trigger">What was the trigger – the first moment it tipped?</label><input class="mk-input" id="ce-trigger" data-mk-field="trigger" placeholder="…"></div>
+                <div class="mk-field"><label>How stressful is the conflict for you right now? <span class="mk-range-val" data-mk-rangeval="load">5</span>/10</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" data-mk-field="load"></div></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>2 · Symptom check</h2>
+                <p class="mk-sub">Check everything that applies to your conflict. This gives you the likely stage.</p>
+                <div id="ce-symptoms"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>3 · The stage</h2>
+                <div id="ce-thermo"></div>
+                <div id="ce-stagecard"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Your own part</h3>
+                <p class="mk-sub">Escalation is never one-sided. What do you do that – even unintentionally – pulls the conflict further down?</p>
+                <div id="ce-own"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="ce-ownnote">My part in my own words</label><textarea class="mk-textarea" id="ce-ownnote" data-mk-field="ownNote" placeholder="…"></textarea></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · De-escalation</h2>
+                <div id="ce-strategy"></div>
+            </div>
+            <div class="mk-card">
+                <h3>What do I really want?</h3>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="ce-want">My interest behind the position</label><textarea class="mk-textarea" id="ce-want" data-mk-field="want" placeholder="Not “being right", sondern: Was brauche ich?"></textarea></div>
+                    <div class="mk-field"><label for="ce-theirs">What might the other side's interest be?</label><textarea class="mk-textarea" id="ce-theirs" data-mk-field="theirs" placeholder="A guess – from their perspective"></textarea></div>
+                </div>
+                <div id="ce-interest-note"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Plan</h2>
+                <div class="mk-field"><label for="ce-next">My next step</label><input class="mk-input" id="ce-next" data-mk-field="next" placeholder="Concrete, in the next 7 days"></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="ce-when">When?</label><input class="mk-input" id="ce-when" data-mk-field="when" placeholder="e.g. Tuesday after the meeting"></div>
+                    <div class="mk-field"><label for="ce-stop">My stop rule: How do I notice that I myself am escalating – and what do I do then?</label><input class="mk-input" id="ce-stop" data-mk-field="stop" placeholder="If I …, then …"></div>
+                </div>
+                <div id="ce-summary"></div>
+            </div>
+            <div class="mk-card">
+                <h3>History</h3>
+                <p class="mk-sub">Record where the conflict stands – so you can see if your steps are working.</p>
+                <div id="ce-log"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="ce-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="ce-export"><i class="fas fa-download"></i> Download</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Reset everything</button></div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 5</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="conflict-escalation.js?v=20261003"></script>
+</body>
+</html>

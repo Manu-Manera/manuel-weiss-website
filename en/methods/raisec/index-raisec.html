@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIASEC interest test | Manuel Weiss</title>
+    <meta name="description" content="The RIASEC test (Holland Code) shows your career interests across six types and gives you matching activity and career directions.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --mk-accent: #6366f1; --mk-accent-2: #8b5cf6; --mk-accent-soft: rgba(99,102,241,.12); }
+        .ri-item { padding:12px 0; border-bottom:1px solid var(--mk-line); }
+        .ri-scale { display:flex; gap:6px; margin-top:8px; }
+        .ri-dot { flex:1; border:1.5px solid var(--mk-line); background:#fff; border-radius:10px; padding:7px 0; text-align:center; cursor:pointer; font-weight:700; color:var(--mk-muted); transition:all .12s; font-size:13px; }
+        .ri-dot:hover { border-color:var(--mk-accent); } .ri-dot.sel { background:var(--mk-accent); border-color:var(--mk-accent); color:#fff; }
+        .ri-bar { height:12px; border-radius:999px; background:var(--mk-line); overflow:hidden; }
+        .ri-bar > span { display:block; height:100%; background:linear-gradient(90deg,var(--mk-accent),var(--mk-accent-2)); }
+    </style>
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-compass-drafting"></i></span><span>RIASEC test</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-compass-drafting"></i></div>
+            <div class="mk-kicker">Personal development · Career orientation</div>
+            <h1>What really interests you?</h1>
+            <p>The RIASEC model (Holland) describes six interest types. Your “Holland Code” from the three strongest shows you activities and fields where you thrive.</p>
+            <div class="mk-badges"><span class="mk-badge">6 types</span><span class="mk-badge">30 statements</span><span class="mk-badge">Holland Code</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>How much does this appeal to you?</h2>
+                <p class="mk-sub">1 = not at all · 5 = a lot. Answer from the gut.</p>
+                <div id="ri-items"></div>
+                <div class="mk-savebadge" style="margin-top:10px;"><span id="ri-prog">0</span>  / 30 answered</div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>Your interest profile</h2>
+                <div id="ri-result"></div>
+                <button class="mk-btn mk-btn-primary" id="ri-export" style="margin-top:14px;"><i class="fas fa-download"></i> Download profile</button>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 2</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script>
+        const TYPES = {
+            R:{label:'Realistic',ic:'🔧',desc:'practical, technical, hands-on',jobs:'Engineering, trades, technology, IT infrastructure, nature jobs'},
+            I:{label:'Investigative',ic:'🔬',desc:'inquiring, analytical, curious',jobs:'Science, medicine, data analysis, research & development'},
+            A:{label:'Artistic',ic:'🎨',desc:'creative, expressive, free',jobs:'Design, media, music, writing, architecture'},
+            S:{label:'Social',ic:'🤝',desc:'helping, teaching, advising',jobs:'Education, health, counseling, social work, HR'},
+            E:{label:'Enterprising',ic:'📈',desc:'leading, persuasive, driving',jobs:'Management, sales, founding, marketing, law'},
+            C:{label:'Conventional',ic:'🗂️',desc:'organizing, careful, structured',jobs:'Administration, finance, controlling, quality, organization'}
+        };
+        const BANK = {
+            R:['Work with tools or machines','Repair or build something','Work outdoors in nature','Work with your hands in a craft','Operate technical devices'],
+            I:['Solve a tricky problem','Analyze data and connections','Run experiments','Explore complex topics','Research and investigate'],
+            A:['Create something creative','Make music, write or paint','Express your own ideas artistically','Find original, unusual solutions','Work in a free, creative environment'],
+            S:['Help other people','Explain or teach something','Work closely with people in a team','Respond to other people’s worries','Advise or accompany people'],
+            E:['Lead a group','Persuade and inspire others','Sell or negotiate something','Initiate and drive projects','Take on responsibility and decisions'],
+            C:['Work carefully with numbers','Structure and organize processes','Follow clear rules','Manage documents precisely','Complete tasks conscientiously']
+        };
+        const ITEMS=[]; for(let i=0;i<5;i++){ ['R','I','A','S','E','C'].forEach(ty=>ITEMS.push({type:ty,t:BANK[ty][i]})); }
+
+        (async function () {
+            await MethodKit.init({
+                method: 'raisec',
+                accent: '#6366f1', accent2: '#8b5cf6',
+                steps: [{icon:'📝',label:'Test'},{icon:'🧭',label:'Profile'}],
+                defaultState: { answers:{} }
+            });
+            const S = MethodKit.state;
+            const host=document.getElementById('ri-items');
+            function render(){
+                host.innerHTML=ITEMS.map((it,i)=>`<div class="ri-item"><div>${i+1}. ${it.t}</div><div class="ri-scale">${[1,2,3,4,5].map(v=>`<div class="ri-dot ${S.answers[i]===v?'sel':''}" data-i="${i}" data-v="${v}">${v}</div>`).join('')}</div></div>`).join('');
+                host.querySelectorAll('[data-v]').forEach(el=>el.addEventListener('click',()=>{ S.answers[el.dataset.i]=parseInt(el.dataset.v,10); MethodKit.save(); render(); document.getElementById('ri-prog').textContent=Object.keys(S.answers).length; }));
+                document.getElementById('ri-prog').textContent=Object.keys(S.answers).length;
+            }
+            render();
+
+            function scores(){
+                const sum={R:0,I:0,A:0,S:0,E:0,C:0}, cnt={R:0,I:0,A:0,S:0,E:0,C:0};
+                ITEMS.forEach((it,i)=>{ if(S.answers[i]){ sum[it.type]+=S.answers[i]; cnt[it.type]++; } });
+                const pct={}; Object.keys(sum).forEach(k=>pct[k]= cnt[k]? Math.round(sum[k]/cnt[k]/5*100):0);
+                return pct;
+            }
+            MethodKit.onStep=function(n){ if(n===2){
+                const pct=scores();
+                const order=Object.keys(pct).sort((a,b)=>pct[b]-pct[a]);
+                const code=order.slice(0,3).join('');
+                document.getElementById('ri-result').innerHTML=
+                    `<div class="mk-result" style="margin-bottom:14px;"><h4>🧭 Your Holland Code</h4><strong style="font-size:26px;letter-spacing:.1em;">${code}</strong> <span style="color:var(--mk-muted)">— ${order.slice(0,3).map(k=>TYPES[k].label).join(', ')}</span></div>`+
+                    order.map(k=>`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;font-size:14px;"><span>${TYPES[k].ic} ${TYPES[k].label} <span style="color:var(--mk-faint)">· ${TYPES[k].desc}</span></span><strong>${pct[k]}%</strong></div><div class="ri-bar"><span style="width:${pct[k]}%"></span></div></div>`).join('')+
+                    `<h3 style="margin-top:16px;">Matching fields</h3>`+order.slice(0,3).map(k=>`<div class="mk-row"><div class="grow"><strong>${TYPES[k].ic} ${TYPES[k].label}:</strong> ${TYPES[k].jobs}</div></div>`).join('');
+            }};
+            document.getElementById('ri-export').addEventListener('click',()=>{
+                const pct=scores(); const order=Object.keys(pct).sort((a,b)=>pct[b]-pct[a]);
+                let t=`RIASEC-PROFIL\n=============\n\nHolland-Code: ${order.slice(0,3).join('')}\n\n`;
+                order.forEach(k=>t+=`${TYPES[k].label}: ${pct[k]}%\n`);
+                t+=`
+Matching fields: ${order.slice(0,3).map(k=>TYPES[k].jobs).join(' | ')}\n`;
+                MethodKit.exportText('mein-riasec-profil.txt', t);
+            });
+        })();
+    </script>
+</body>
+</html>

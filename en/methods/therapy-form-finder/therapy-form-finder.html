@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Therapy finder | Manuel Weiss</title>
+    <meta name="description" content="Which therapy approach fits you? 17 questions on your concern, working style and preferences – with a reasoned ranking of 20 therapy approaches and concrete next steps.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="therapy-form-finder.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-compass"></i></span><span>Therapy finder</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-compass"></i></div>
+            <div class="mk-kicker">Orientation · Psychotherapy</div>
+            <h1>Which therapy approach fits you?</h1>
+            <p>There is no <em>die</em> right therapy – but there are approaches that better fit your concern, your working style and your expectations. The finder asks you 17 questions and explains why each approach ranks where it does.</p>
+            <div class="mk-badges"><span class="mk-badge">20 therapy approaches</span><span class="mk-badge">17 questions</span><span class="mk-badge">Reasoned ranking</span><span class="mk-badge">First-session checklist</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <!-- 1 · Einstieg -->
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Before you start</h2>
+                <p class="mk-sub">Three things that put the finder in context.</p>
+                <div class="mk-grid">
+                    <div class="tff-info"><span class="ic">🧭</span><strong>Orientation, not a diagnosis</strong><span>The finder ranks approaches by fit – it replaces neither diagnostics nor a conversation with professionals.</span></div>
+                    <div class="tff-info"><span class="ic">🤝</span><strong>The relationship counts most</strong><span>Studies show: the quality of the therapeutic relationship predicts success more than the method. The first session decides.</span></div>
+                    <div class="tff-info"><span class="ic">🚨</span><strong>In an emergency, don't wait</strong><span>In acute danger: emergency 144 (CH) / 112 (DE/AT) or Dargebotene Hand 143 / Telefonseelsorge 0800 111 0 111.</span></div>
+                </div>
+            </div>
+            <div class="mk-card">
+                <h2>The map</h2>
+                <p class="mk-sub">All therapy approaches the finder knows – grouped by school. Tap one to read more.</p>
+                <div id="tff-map"></div>
+            </div>
+        </section>
+
+        <!-- 2 · Fragebogen -->
+        <section class="mk-step" data-step="2">
+            <div class="mk-card" id="tff-quiz"></div>
+        </section>
+
+        <!-- 3 · Ergebnis -->
+        <section class="mk-step" data-step="3">
+            <div id="tff-result"></div>
+        </section>
+
+        <!-- 4 · Next steps -->
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>From the result to the first session</h2>
+                <p class="mk-sub">Check off what's done. The list is meant for Switzerland and Germany – details differ by canton/state.</p>
+                <div id="tff-checklist"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Questions for your first session</h3>
+                <p class="mk-sub">Suggested from your result – add your own.</p>
+                <div id="tff-questions"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Notes</h3>
+                <div class="mk-field"><label for="tff-notes">What do you take with you? After 3–5 sessions, how will you know if it fits?</label><textarea class="mk-textarea" id="tff-notes" data-mk-field="notes" placeholder="…"></textarea></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <p class="mk-sub">Answers, ranking with reasons, checklist and questions as a text file.</p>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="tff-export"><i class="fas fa-download"></i> Export results</button>
+                    <button class="mk-btn mk-btn-outline" id="tff-restart"><i class="fas fa-redo"></i> Restart questionnaire</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset title="Delete all data of this method"><i class="fas fa-trash"></i> Reset everything</button>
+                </div>
+            </div>
+            <div class="mk-note info"><i class="fas fa-info-circle"></i><span><strong>Note:</strong> This questionnaire is for orientation and does not replace professional diagnostics or counseling. For mental health concerns, turn to qualified professionals.</span></div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 4</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="/js/therapy-form-finder.js?v=20261003"></script>
+    <script src="therapy-form-finder.js?v=20261003"></script>
+</body>
+</html>

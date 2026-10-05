@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moment of Excellence | Manuel Weiss</title>
+    <meta name="description" content="Moment of Excellence (NLP anchor technique): collect peak moments, intensify the strongest with all senses and submodalities, set and test a body anchor, transfer it to future situations and keep the anchor stable through practice.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="moment-excellence.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-bolt"></i></span><span>Excellence anchor</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-bolt"></i></div>
+            <div class="mk-kicker">Personal development · NLP</div>
+            <h1>Peak performance on demand</h1>
+            <p>You have had moments when everything worked – clear, calm, powerful. That state is stored in you. With the anchor technique you couple it to a body signal and call it up when you need it: before the conversation, the presentation, the decision. An anchor holds when it is intense, precisely timed and unique – and when you maintain it.</p>
+            <div class="mk-badges"><span class="mk-badge">Collect moments</span><span class="mk-badge">Submodalities</span><span class="mk-badge">Set & test the anchor</span><span class="mk-badge">Future Pace</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>1 · Your peak moments</h2>
+                <p class="mk-sub">Collect three to five moments when you were fully yourself and in your power. Work, private life, sports, stage – anything. Then you choose the strongest.</p>
+                <div id="me-moments"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>2 · Immerse</h2>
+                <div id="me-dive-intro"></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="me-see">👁️ What do you see? (colors, light, faces, perspective)</label><textarea class="mk-textarea" id="me-see" data-mk-field="see" placeholder="…"></textarea></div>
+                    <div class="mk-field"><label for="me-hear">👂 What do you hear? (voices, sounds, inner voice)</label><textarea class="mk-textarea" id="me-hear" data-mk-field="hear" placeholder="…"></textarea></div>
+                    <div class="mk-field"><label for="me-feel">✋ What do you feel in your body? (where exactly? temperature, posture, breath)</label><textarea class="mk-textarea" id="me-feel" data-mk-field="feel" placeholder="…"></textarea></div>
+                    <div class="mk-field"><label for="me-think">💭 What do you think or say to yourself?</label><textarea class="mk-textarea" id="me-think" data-mk-field="think" placeholder="…"></textarea></div>
+                </div>
+                <div id="me-vak-note"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Amplify</h3>
+                <p class="mk-sub">Submodalities: change how you represent the moment inwardly – and watch what makes the feeling stronger.</p>
+                <div id="me-submod"></div>
+                <div class="mk-field" style="margin-top:12px"><label>How intense is the feeling now? <span class="mk-range-val" data-mk-rangeval="intensity">7</span>/10</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" data-mk-field="intensity"></div></div>
+                <div id="me-int-note"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>3 · Anchor</h2>
+                <p class="mk-sub">A body signal you otherwise never make – and that you can use discreetly anywhere.</p>
+                <div id="me-anchors"></div>
+                <div class="mk-field" style="margin-top:8px"><label for="me-anchor-custom">Or your own anchor:</label><input class="mk-input" id="me-anchor-custom" data-mk-field="anchorCustom" placeholder="e.g. twist a ring on your finger"></div>
+                <div id="me-anchor-check"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Guided anchoring</h3>
+                <div class="me-orb-wrap"><div class="me-orb" id="me-orb"></div><div class="me-guide" id="me-guide">Ready? Sit comfortably.</div></div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center;"><button class="mk-btn mk-btn-primary" id="me-practice"><i class="fas fa-play"></i> Set the anchor (30 s)</button><span class="mk-faint">Practiced: <strong id="me-count">0</strong>×</span></div>
+                <div id="me-practice-note"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Test the anchor</h3>
+                <p class="mk-sub">Take a break, think of something neutral (e.g. your shopping list). Then fire only the anchor – without thinking of the moment. What happens?</p>
+                <div id="me-test"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Future Pace</h2>
+                <p class="mk-sub">In which situations do you need the state? Imagine each one – first without, then with the anchor.</p>
+                <div id="me-sits"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Maintain the anchor</h2>
+                <div id="me-care"></div>
+                <div id="me-summary"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="me-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="me-export"><i class="fas fa-download"></i> Download</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Reset everything</button></div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 5</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="moment-excellence.js?v=20261003"></script>
+</body>
+</html>

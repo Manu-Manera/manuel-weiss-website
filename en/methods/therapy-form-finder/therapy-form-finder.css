@@ -1,0 +1,68 @@
+/* Therapieform-Finder · Ergänzungen zum Method-Kit */
+.mk-faint { color: var(--mk-faint); }
+.rk { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--c, var(--mk-accent)); color: #fff; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+
+/* Einstieg */
+.tff-info { display: flex; flex-direction: column; gap: 4px; padding: 14px; border: 1px solid var(--mk-line); border-radius: var(--mk-radius-sm); background: var(--mk-surface-2); font-size: 13px; color: var(--mk-muted); }
+.tff-info .ic { font-size: 22px; }
+.tff-info strong { color: var(--mk-text); font-size: 14px; }
+.tff-group { border-left: 4px solid var(--c); padding: 10px 0 10px 14px; margin-bottom: 14px; }
+.tff-group-head { display: flex; flex-direction: column; gap: 2px; margin-bottom: 8px; font-size: 13px; }
+.tff-group-head strong { font-size: 15px; color: var(--c); }
+.tff-group-items { display: flex; flex-wrap: wrap; gap: 8px; }
+.tff-form { border: 1.5px solid var(--mk-line); border-radius: 12px; background: var(--mk-surface); font-size: 14px; }
+.tff-form summary { cursor: pointer; padding: 7px 14px; font-weight: 600; list-style: none; color: var(--mk-text); }
+.tff-form summary::-webkit-details-marker { display: none; }
+.tff-form[open] { flex-basis: 100%; border-color: var(--c); }
+.tff-form[open] summary { color: var(--c); }
+.tff-form-body { padding: 0 14px 12px; font-size: 13px; color: var(--mk-muted); }
+.tff-form-body .nm { font-weight: 700; color: var(--mk-text); margin-bottom: 4px; }
+.tff-form-body p { margin: 0 0 8px; }
+.tff-form-body .mk-chip { padding: 3px 10px; font-size: 12px; cursor: default; }
+
+/* Fragebogen */
+.tff-qhead { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.tff-qhead h2 { margin: 2px 0 0; font-size: 19px; line-height: 1.35; }
+.tff-qprog { height: 6px; border-radius: 999px; background: var(--mk-line); overflow: hidden; }
+.tff-qprog span { display: block; height: 100%; background: linear-gradient(90deg, var(--mk-accent), var(--mk-accent-2)); transition: width .3s; }
+.tff-options { display: grid; gap: 8px; }
+.tff-options .mk-option { display: flex; align-items: center; gap: 12px; padding: 12px 14px; font: inherit; }
+.tff-options .mk-option .t { font-weight: 500; font-size: 14px; }
+.tff-options .mk-option.selected .t { font-weight: 700; }
+.tff-options .chk { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--mk-line); display: inline-flex; align-items: center; justify-content: center; font-size: 11px; color: transparent; flex-shrink: 0; transition: all .15s; }
+.tff-options.multi .chk { border-radius: 6px; }
+.tff-options .mk-option.selected .chk { background: var(--mk-accent); border-color: var(--mk-accent); color: #fff; }
+.tff-qnav { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.tff-qnav .mk-faint { font-size: 12px; flex: 1; text-align: center; }
+
+/* Ergebnis */
+.tff-top { border: 1.5px solid var(--mk-line); border-left: 5px solid var(--c); border-radius: var(--mk-radius-sm); padding: 16px; margin-bottom: 12px; background: var(--mk-surface); }
+.tff-top.first { background: linear-gradient(135deg, color-mix(in srgb, var(--c) 8%, #fff), #fff); border-color: var(--c); }
+.tff-top-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.tff-top-head h3 { margin: 0; font-size: 17px; }
+.tff-top-head .mk-faint { font-size: 12px; }
+.tff-bar { height: 8px; border-radius: 999px; background: var(--mk-line); overflow: hidden; margin-bottom: 10px; }
+.tff-bar i { display: block; height: 100%; background: var(--c); border-radius: 999px; }
+.tff-top p { margin: 0 0 10px; font-size: 14px; color: var(--mk-muted); }
+.tff-reasons { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 4px; font-size: 13px; }
+.tff-reasons li { display: flex; gap: 8px; align-items: flex-start; }
+.tff-reasons i { color: var(--c); margin-top: 3px; font-size: 11px; }
+.tff-top .mk-chip { padding: 4px 10px; font-size: 12px; cursor: default; }
+.tff-all { display: grid; gap: 4px; }
+.tff-all-row { display: grid; grid-template-columns: 24px minmax(0, 1fr) minmax(0, 1.4fr) 44px; gap: 10px; align-items: center; font-size: 13px; padding: 4px 8px; border-radius: 8px; }
+.tff-all-row.top { background: var(--mk-accent-soft); font-weight: 600; }
+.tff-all-row .n { color: var(--mk-faint); font-weight: 700; text-align: right; }
+.tff-all-row .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tff-all-row .bar { height: 8px; border-radius: 999px; background: var(--mk-line); overflow: hidden; }
+.tff-all-row .bar i { display: block; height: 100%; border-radius: 999px; }
+.tff-all-row .pct { text-align: right; font-variant-numeric: tabular-nums; color: var(--mk-muted); }
+@media (max-width: 480px) { .tff-all-row { grid-template-columns: 20px minmax(0, 1fr) 44px; } .tff-all-row .bar { display: none; } }
+
+/* Nächste Schritte */
+.tff-check { display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--mk-line); border-radius: var(--mk-radius-sm); margin-bottom: 8px; background: var(--mk-surface-2); cursor: pointer; font-size: 14px; line-height: 1.45; }
+.tff-check.small { padding: 8px 12px; font-size: 13px; }
+.tff-check input { width: 18px; height: 18px; accent-color: var(--mk-accent); flex-shrink: 0; margin-top: 2px; }
+.tff-check.done { opacity: .65; }
+.tff-check.done span { text-decoration: line-through; }
+.tff-add { display: flex; gap: 8px; margin-top: 8px; }
+.tff-add .mk-input { flex: 1; }

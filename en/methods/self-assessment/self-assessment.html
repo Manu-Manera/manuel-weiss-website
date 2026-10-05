@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self-assessment | Manuel Weiss</title>
+    <meta name="description" content="Self-assessment with depth: rate eight competence areas, weigh relevance, check evidence, compare the assumed view of others, spot over- and underestimation and derive the most important development step.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="self-assessment.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-user-check"></i></span><span>Self-check</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-user-check"></i></div>
+            <div class="mk-kicker">Personal development · Position</div>
+            <h1>How well do you know yourself?</h1>
+            <p>Self-assessments are notoriously inaccurate – we overestimate what comes easily and underestimate what others see in us. Here you rate eight competence areas, weigh what matters for your goals, check your evidence, put how others see you next to it and find the one area where development pays off most.</p>
+            <div class="mk-badges"><span class="mk-badge">8 areas</span><span class="mk-badge">Relevance</span><span class="mk-badge">Evidence</span><span class="mk-badge">Self-image vs. how others see you</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>1 · Your self-image</h2>
+                <p class="mk-sub">How strong are you today – and how important is this area for your current role or your next goal?</p>
+                <div class="mk-field"><label for="sa-goal">Related to what? (role, goal, context)</label><input class="mk-input" id="sa-goal" data-mk-field="goal" placeholder="e.g. My role as team lead · The move into consulting"></div>
+                <div id="sa-dims"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>2 · What do you base that on?</h2>
+                <p class="mk-sub">A rating without evidence is a gut feeling. For your highest and lowest scores: which concrete situation shows that?</p>
+                <div id="sa-evidence"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>3 · How others see you</h2>
+                <p class="mk-sub">How would someone who sees you at work rate you – honestly, not politely?</p>
+                <div class="mk-field"><label for="sa-rater">Who do you have in mind?</label><input class="mk-input" id="sa-rater" data-mk-field="rater" placeholder="Name or role, e.g. my manager"></div>
+                <div id="sa-others"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="sa-otherstxt">What feedback do you hear again and again?</label><textarea class="mk-textarea" id="sa-otherstxt" data-mk-field="others" placeholder="Sentences you have already heard more than once"></textarea></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Your profile</h2>
+                <div id="sa-profile"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Priority matrix</h3>
+                <p class="mk-sub">Relevance × level: where to use, where to develop, where to leave alone?</p>
+                <div id="sa-matrix"></div>
+            </div>
+            <div class="mk-card">
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="sa-strengths">💎 Your strengths – in your own words</label><textarea class="mk-textarea" id="sa-strengths" data-mk-field="strengths" placeholder="What comes easily, what are you proud of?"></textarea></div>
+                    <div class="mk-field"><label for="sa-growth">🌱 Your growth areas</label><textarea class="mk-textarea" id="sa-growth" data-mk-field="growth" placeholder="Where do you feel the biggest lever?"></textarea></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Your next step</h2>
+                <div id="sa-focus"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="sa-next">The one concrete thing you will tackle this week</label><input class="mk-input" id="sa-next" data-mk-field="next" placeholder="…"></div>
+                <div class="mk-field"><label for="sa-measure">How will you notice in 4 weeks that it worked?</label><input class="mk-input" id="sa-measure" data-mk-field="measure" placeholder="…"></div>
+                <div id="sa-summary"></div>
+            </div>
+            <div class="mk-card">
+                <h3>History</h3>
+                <p class="mk-sub">Save your assessment as a snapshot – and repeat it in a few weeks.</p>
+                <div id="sa-history"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="sa-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="sa-export"><i class="fas fa-download"></i> Download</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Reset everything</button></div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 5</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="self-assessment.js?v=20261003"></script>
+</body>
+</html>

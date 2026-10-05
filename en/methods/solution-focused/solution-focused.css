@@ -1,0 +1,80 @@
+/* Lösungsfokussiertes Coaching · Styles */
+.mk-faint { color: var(--mk-faint); font-size: 13px; }
+
+/* Ziel-Check */
+.sf-checks { display: grid; gap: 8px; }
+.sf-check { display: flex; gap: 12px; align-items: flex-start; text-align: left; background: var(--mk-surface-2); border: 1.5px solid var(--mk-line); border-radius: var(--mk-radius-sm); padding: 10px 12px; cursor: pointer; font: inherit; color: inherit; transition: .15s; }
+.sf-check:hover { border-color: var(--mk-accent); }
+.sf-check .box { flex: 0 0 22px; height: 22px; border-radius: 6px; border: 2px solid var(--mk-line); display: grid; place-items: center; color: #fff; font-size: 11px; margin-top: 1px; }
+.sf-check .box i { opacity: 0; }
+.sf-check.on { border-color: var(--mk-accent); background: var(--mk-accent-soft); }
+.sf-check.on .box { background: var(--mk-accent); border-color: var(--mk-accent); }
+.sf-check.on .box i { opacity: 1; }
+.sf-check small { display: block; color: var(--mk-muted); font-size: 12px; margin-top: 2px; }
+
+/* Wunderfrage */
+.sf-persp { margin-bottom: 16px; }
+.sf-persp-head { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 6px; }
+.sf-persp-head .ic { font-size: 22px; line-height: 1.2; }
+.sf-sign { margin-bottom: 8px; }
+.sf-sign-ic { font-size: 16px; }
+.sf-sign-now { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--mk-muted); white-space: nowrap; cursor: pointer; }
+.sf-sign-now input { accent-color: var(--mk-accent); }
+.sf-add { display: flex; gap: 8px; margin-top: 10px; }
+.sf-add .mk-input { flex: 1; }
+
+/* Skala */
+.sf-scale-vis { margin: 6px 0 18px; }
+.sf-track { position: relative; height: 14px; border-radius: 99px; background: var(--mk-surface-2); border: 1px solid var(--mk-line); margin: 26px 0 6px; }
+.sf-track .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 99px; background: linear-gradient(90deg, var(--mk-accent-2), var(--mk-accent)); transition: width .25s; }
+.sf-track .mark { position: absolute; top: -26px; transform: translateX(-50%); font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 99px; color: #fff; background: var(--mk-accent); white-space: nowrap; }
+.sf-track .mark::after { content: ''; position: absolute; left: 50%; top: 100%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: inherit; border-top-color: var(--mk-accent); }
+.sf-track .mark.low { background: #94a3b8; top: 20px; }
+.sf-track .mark.low::after { top: auto; bottom: 100%; border-top-color: transparent; border-bottom-color: #94a3b8; }
+.sf-track .mark.enough { background: #f59e0b; }
+.sf-track .mark.enough::after { border-top-color: #f59e0b; }
+.sf-ticks { display: flex; justify-content: space-between; font-size: 11px; color: var(--mk-faint); padding: 0 2px; margin-top: 22px; }
+.sf-ends { display: flex; justify-content: space-between; font-size: 12px; color: var(--mk-muted); margin-top: 4px; }
+.sf-scale-rows { display: grid; gap: 10px; }
+.sf-scale-rows label { display: grid; grid-template-columns: 170px 1fr 28px; gap: 12px; align-items: center; font-size: 14px; }
+.sf-scale-rows label b { text-align: right; color: var(--mk-accent); }
+.sf-scale-rows .mk-range.low { accent-color: #94a3b8; }
+.sf-scale-rows .mk-range.enough { accent-color: #f59e0b; }
+.sf-side-grid { display: grid; gap: 14px; }
+.sf-side-grid label > span { display: block; font-size: 14px; margin-bottom: 4px; }
+
+/* Ausnahmen */
+.sf-exc { background: var(--mk-surface-2); border: 1px solid var(--mk-line); border-radius: var(--mk-radius-sm); padding: 14px; margin-bottom: 12px; }
+.sf-exc-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.sf-repeat { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
+.sf-repeat input { accent-color: var(--mk-accent); }
+.sf-insight { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+.sf-insight div { background: var(--mk-surface-2); border-radius: var(--mk-radius-sm); padding: 12px; text-align: center; }
+.sf-insight b { display: block; font-size: 26px; color: var(--mk-accent); line-height: 1.1; }
+.sf-insight span { font-size: 12px; color: var(--mk-muted); }
+.sf-list { margin: 6px 0 0; padding-left: 18px; }
+.sf-list li { margin: 3px 0; }
+
+/* Komplimente */
+.sf-compl { display: inline-flex; align-items: center; gap: 6px; }
+.sf-compl button { background: none; border: 0; color: inherit; opacity: .75; cursor: pointer; font-size: 11px; padding: 0 2px; }
+.sf-compl button:hover { opacity: 1; }
+
+/* Schritt */
+.sf-types .mk-option { text-align: left; }
+.sf-sugg { cursor: pointer; }
+.sf-link { text-decoration: none; color: inherit; text-align: left; }
+.sf-log-row { display: flex; gap: 12px; align-items: center; margin-top: 12px; font-size: 14px; flex-wrap: wrap; }
+.sf-log-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.sf-chart { width: 100%; height: auto; display: block; }
+.sf-chart .grid { stroke: var(--mk-line); stroke-width: 1; }
+.sf-chart .ax { font-size: 10px; fill: var(--mk-faint); text-anchor: end; }
+.sf-chart .line { fill: none; stroke: var(--mk-accent); stroke-width: 2.5; stroke-linejoin: round; }
+.sf-chart .pt { fill: #fff; stroke: var(--mk-accent); stroke-width: 2; }
+
+@media (max-width: 640px) {
+    .sf-scale-rows label { grid-template-columns: 1fr 28px; }
+    .sf-scale-rows label span { grid-column: 1 / -1; }
+    .sf-insight { grid-template-columns: 1fr 1fr 1fr; }
+    .sf-insight b { font-size: 20px; }
+}

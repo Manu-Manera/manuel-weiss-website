@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solution-focused coaching | Manuel Weiss</title>
+    <meta name="description" content="Solution-focused self-coaching after de Shazer & Berg: turn a concern into a goal, miracle question from four perspectives, scaling with history, analyze exceptions, next small step.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="solution-focused.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-wand-magic-sparkles"></i></span><span>Solution focus</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
+            <div class="mk-kicker">Personal development · de Shazer & Berg</div>
+            <h1>Build the solution, not the problem</h1>
+            <p>Solution-focused brief coaching turns the gaze: instead of figuring out why something doesn’t work, you look for when it already did – and what you contributed. Miracle question, scaling and exceptions lead you to the next doable step.</p>
+            <div class="mk-badges"><span class="mk-badge">Goal instead of problem</span><span class="mk-badge">Miracle question · 4 perspectives</span><span class="mk-badge">Scale with history</span><span class="mk-badge">Exception analysis</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <!-- 1 · Anliegen -->
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Your concern</h2>
+                <p class="mk-sub">First describe freely what’s on your mind. Then we flip it.</p>
+                <div class="mk-field"><label for="sf-topic">What would you like to change?</label><textarea class="mk-textarea" id="sf-topic" data-mk-field="topic" placeholder="e.g. I constantly put off important tasks and get annoyed about it in the evening."></textarea></div>
+            </div>
+            <div class="mk-card">
+                <h2>From problem to goal</h2>
+                <p class="mk-sub">The method’s most important question: <strong>What do you want instead?</strong> A goal is something you <em>tust</em> and that <em>anwesend</em> is – not the absence of something.</p>
+                <div class="mk-field"><label for="sf-goal">What do you want instead – phrased positively?</label><textarea class="mk-textarea" id="sf-goal" data-mk-field="goal" placeholder="e.g. I start important tasks first thing in the morning and end the day with a good feeling."></textarea></div>
+                <div id="sf-goal-check"></div>
+                <div class="mk-section-label">Three check questions</div>
+                <div class="sf-checks" id="sf-goal-crit"></div>
+            </div>
+        </section>
+
+        <!-- 2 · Wunderfrage -->
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>The miracle question</h2>
+                <p class="mk-sub">Imagine: tonight, while you sleep, a miracle happens – and your concern is resolved. You don’t know it, though, because you were asleep. <strong>What’s the first thing you notice tomorrow morning that tells you the miracle has happened?</strong></p>
+                <div class="mk-note info"><i class="fas fa-lightbulb"></i><span>Stay concrete and observable: not “I am more relaxed”, but “I drink my coffee at the window before I look at my phone”.</span></div>
+                <div id="sf-miracle"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Your miracle signs</h2>
+                <p class="mk-sub">Condense the description into concrete, observable signs. They’ll later become your measuring tool.</p>
+                <div id="sf-signs"></div>
+            </div>
+        </section>
+
+        <!-- 3 · Skalierung -->
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>Scaling</h2>
+                <p class="mk-sub">0 = the day you decided to change something. 10 = the miracle has fully happened.</p>
+                <div id="sf-scale"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Questions about the scale</h3>
+                <div id="sf-scale-q"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Confidence & importance</h3>
+                <p class="mk-sub">Two side scales that often reveal more than the main scale.</p>
+                <div id="sf-side"></div>
+            </div>
+        </section>
+
+        <!-- 4 · Ausnahmen -->
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>Exceptions</h2>
+                <p class="mk-sub">No problem is always equally strong. When was it last smaller, shorter, or completely gone – even for just an hour? Every exception is a piece of solution that already exists.</p>
+                <div id="sf-exceptions"></div>
+            </div>
+            <div class="mk-card">
+                <h3>What you learn from this</h3>
+                <div id="sf-exc-insight"></div>
+            </div>
+        </section>
+
+        <!-- 5 · Resources -->
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>Compliments to yourself</h2>
+                <p class="mk-sub">In solution-focused work there are compliments after every session – honest and concrete. Do it for yourself: What have you already done right, even though the problem is still there?</p>
+                <div id="sf-compliments"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Coping questions</h2>
+                <p class="mk-sub">For phases when the scale is low.</p>
+                <div class="mk-field"><label for="sf-coping">How have you managed so far to keep it from getting even worse?</label><textarea class="mk-textarea" id="sf-coping" data-mk-field="coping" placeholder="…"></textarea></div>
+                <div class="mk-field"><label for="sf-keep">What in your life should stay exactly as it is?</label><span class="hint">The classic observation task after the first session – it directs attention to what works.</span><textarea class="mk-textarea" id="sf-keep" data-mk-field="keep" placeholder="…"></textarea></div>
+            </div>
+        </section>
+
+        <!-- 6 · Nächster Schritt -->
+        <section class="mk-step" data-step="6">
+            <div class="mk-card">
+                <h2>Your next small step</h2>
+                <p class="mk-sub">Not the solution – just the next point on the scale. Small enough that you’ll definitely take it.</p>
+                <div id="sf-step"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Scale history</h3>
+                <p class="mk-sub">Come back in a few days and set the scale again. “What has gotten better?” is the opening question of every follow-up session.</p>
+                <div id="sf-log"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="sf-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="sf-export"><i class="fas fa-download"></i> Export as text file</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset title="Delete all data of this method"><i class="fas fa-trash"></i> Reset everything</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 6</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="solution-focused.js?v=20261003"></script>
+</body>
+</html>

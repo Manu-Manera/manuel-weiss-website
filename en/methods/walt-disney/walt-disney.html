@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Walt Disney method | Manuel Weiss</title>
+    <meta name="description" content="Walt Disney method: Dreamer, Realist, Critic – three separate thinking spaces with role check, plan per idea, constructive critique and a second round for synthesis.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="walt-disney.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-masks-theater"></i></span><span>Walt-Disney-Methode</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-masks-theater"></i></div>
+            <div class="mk-kicker">Personal development · Creativity technique (Dilts after Disney)</div>
+            <h1>Three roles, one strong plan</h1>
+            <p>Walt Disney split three ways of thinking into three rooms: The <strong>Dreamer</strong> may do anything, the <strong>Realist</strong> turns them into plans, the <strong>Critic</strong> finds the gaps. The split is what matters – anyone who dreams and criticizes at the same time gets neither good ideas nor good plans.</p>
+            <div class="mk-badges"><span class="mk-badge">Role check</span><span class="mk-badge">Plan per idea</span><span class="mk-badge">Constructive critique</span><span class="mk-badge">Round 2</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>What are you thinking about?</h2>
+                <div class="mk-field"><label for="wd-idea">The idea, the project or the question</label><textarea class="mk-textarea" id="wd-idea" data-mk-field="idea" placeholder="e.g. Write a book of your own · Rebuild the team structure · Take a sabbatical"></textarea></div>
+                <div class="mk-field"><label for="wd-horizon">Time horizon</label><select class="mk-select" id="wd-horizon" data-mk-field="horizon"><option value="">–</option><option>weeks</option><option>Months</option><option>1 year</option><option>Several years</option></select></div>
+            </div>
+            <div class="mk-card">
+                <h3>The three rooms</h3>
+                <div class="wd-rooms">
+                    <div class="wd-room d"><span class="ic">💭</span><b>Dreamer</b><small>Everything is possible. No objections, no “but”. What would be ideal?</small></div>
+                    <div class="wd-room r"><span class="ic">🛠️</span><b>Realist</b><small>How exactly? What is needed? Who, when, with what? No judgment.</small></div>
+                    <div class="wd-room c"><span class="ic">🔍</span><b>Critic</b><small>What's missing? What risks? Ask questions – don't put it down.</small></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card wd-cd">
+                <h2>💭 The Dreamer:</h2>
+                <p class="mk-sub">You are in the dream room. Money, time and skill are unlimited. Describe the ideal version – in images, not in plans. Every objection is only allowed with the critic.</p>
+                <div class="mk-section-label">Dream starters</div>
+                <div class="mk-chips" id="wd-dprompts"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="wd-dreamtext">The vision in images</label><textarea class="mk-textarea" id="wd-dreamtext" data-mk-field="dreamer" placeholder="It is [point in time]. I see …"></textarea></div>
+                <div id="wd-dcheck"></div>
+            </div>
+            <div class="mk-card">
+                <h3>The dream elements</h3>
+                <p class="mk-sub">Break the vision into individual building blocks. Each one gets a plan later.</p>
+                <div id="wd-dreams"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card wd-cr">
+                <h2>🛠️ The Realist:</h2>
+                <p class="mk-sub">You are in the planning room. The dreams are set – don't question them, implement them. For each element: how, with what, with whom, by when?</p>
+                <div id="wd-plans"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Resources total</h3>
+                <div id="wd-resources"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card wd-cc">
+                <h2>🔍 The Critic:</h2>
+                <p class="mk-sub">You are in the review room. The critic is not a naysayer, but quality assurance. He attacks the plans – never the dreamer. Good critique is a question: “What happens if …?”</p>
+                <div id="wd-critics"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Overall risk</h3>
+                <div id="wd-risk"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>✨ Synthesis – round 2</h2>
+                <p class="mk-sub">Now the realist goes back into his room and answers every critique. What cannot be answered goes back to the dreamer – or is cut.</p>
+                <div id="wd-round2"></div>
+            </div>
+            <div class="mk-card">
+                <h3>The revised plan</h3>
+                <div id="wd-recap"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="wd-synthesis">Summary in your own words</label><textarea class="mk-textarea" id="wd-synthesis" data-mk-field="synthesis" placeholder="What do I do concretely now – and what have I deliberately left out?"></textarea></div>
+                <div class="mk-field"><label for="wd-first">Erster Schritt</label><input class="mk-input" id="wd-first" data-mk-field="first" placeholder="In the next 7 days"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="wd-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="wd-export"><i class="fas fa-download"></i> Download plan</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Reset everything</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 5</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="walt-disney.js?v=20261003"></script>
+</body>
+</html>

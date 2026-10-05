@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Well-formed outcome (NLP) | Manuel Weiss</title>
+    <meta name="description" content="Formulate a goal using the NLP well-formedness criteria: positive, in your own influence, sensory-specific, context-related, with a meta-goal and ecologically congruent – with an automatic check.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="nlp-meta-goal.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-bullseye"></i></span><span>Well-formed outcome</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-bullseye"></i></div>
+            <div class="mk-kicker">Personal development · NLP</div>
+            <h1>A goal that really pulls</h1>
+            <p>Many goals fail because they’re unclear, negated, or set by others. The NLP well-formedness criteria make your goal precise, self-directed, and congruent. The check below walks you through every step.</p>
+            <div class="mk-badges"><span class="mk-badge">Positive</span><span class="mk-badge">Self-initiated</span><span class="mk-badge">Sensory-specific</span><span class="mk-badge">Meta-goal</span><span class="mk-badge">Ecological</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <div class="mg-score" id="mg-score"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>1 · Phrased positively</h2>
+                <p class="mk-sub">Describe what you <em>want</em> – not what you no longer want. The brain cannot think a negation as an image.</p>
+                <div class="mk-field"><label for="mg-positive">Mein Ziel</label><textarea class="mk-textarea" id="mg-positive" data-mk-field="positive" placeholder="e.g. “I am calm and present in meetings" (statt „I don’t want to be nervous anymore")"></textarea></div>
+                <div id="mg-poscheck"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Is it a goal or a problem?</h3>
+                <div class="mk-grid mg-pairs" id="mg-pairs"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>2 · Self-initiative</h2>
+                <p class="mk-sub">A well-formed outcome starts and sustains itself through you. You can’t make what others do into a goal – but you can make how you behave into one.</p>
+                <div class="mk-field"><label for="mg-control">What can <strong>you</strong>  you yourself do to reach the goal?</label><textarea class="mk-textarea" id="mg-control" data-mk-field="control" placeholder="What depends on you – independent of others?"></textarea></div>
+                <div class="mk-field"><label for="mg-others">What depends on others – and how do you handle that?</label><span class="hint">Everything here is not part of your goal, but a framework condition.</span><textarea class="mk-textarea" id="mg-others" data-mk-field="others" placeholder="e.g. Whether my boss agrees is not in my control – but how well I prepare is."></textarea></div>
+                <div id="mg-ctrlcheck"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Context</h2>
+                <p class="mk-sub">Where, when and with whom do you want the goal – and where expressly <em>not</em>?</p>
+                <div id="mg-context"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>3 · Evidence – how do you recognize it?</h2>
+                <p class="mk-sub">Make it tangible for your senses. Imagine it’s achieved – you’re standing in the middle of it.</p>
+                <div id="mg-vakog"></div>
+            </div>
+            <div class="mk-card">
+                <h3>The outsider test</h3>
+                <div class="mk-field"><label for="mg-outside">How would someone else know you’ve reached your goal – without you saying it?</label><textarea class="mk-textarea" id="mg-outside" data-mk-field="outside" placeholder="Observable behavior …"></textarea></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="mg-date">By when?</label><input class="mk-input" type="date" id="mg-date" data-mk-field="date"></div>
+                    <div class="mk-field"><label for="mg-measure">How do you measure it?</label><input class="mk-input" id="mg-measure" data-mk-field="measure" placeholder="Number, frequency, situation"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Meta-goal</h2>
+                <p class="mk-sub">Behind every goal is a larger one. “What do you want that for?” – and then again. The meta-goal is the real engine; there are often several paths there.</p>
+                <div id="mg-meta"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Secondary gain</h3>
+                <p class="mk-sub">The current state has advantages too – otherwise you’d have changed it long ago. What would you lose if you reach the goal?</p>
+                <div class="mk-field"><textarea class="mk-textarea" id="mg-secondary" data-mk-field="secondary" placeholder="e.g. As long as I’m nervous, nobody expects me to take responsibility."></textarea></div>
+                <div class="mk-field"><label for="mg-keep">How do you keep this advantage – or get it another way?</label><textarea class="mk-textarea" id="mg-keep" data-mk-field="keep" placeholder="…"></textarea></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Resources</h2>
+                <p class="mk-sub">What do you need – and what of that do you already have?</p>
+                <div id="mg-resources"></div>
+            </div>
+            <div class="mk-card">
+                <h2>Ecology check</h2>
+                <p class="mk-sub">Does the goal fit your life as a whole? Honest answers prevent later self-sabotage.</p>
+                <div id="mg-eco"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="6">
+            <div class="mk-card">
+                <h2>6 · Your well-formed outcome</h2>
+                <div id="mg-summary"></div>
+            </div>
+            <div class="mk-card">
+                <h3>First step</h3>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="mg-firststep">What’s the very first thing you do?</label><input class="mk-input" id="mg-firststep" data-mk-field="firststep" placeholder="Small, concrete, in the next 48 hours"></div>
+                    <div class="mk-field"><label for="mg-firstdate">When exactly?</label><input class="mk-input" type="date" id="mg-firstdate" data-mk-field="firstdate"></div>
+                </div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="mg-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="mg-export"><i class="fas fa-download"></i> Download goal</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Reset everything</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 6</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="nlp-meta-goal.js?v=20261003"></script>
+</body>
+</html>
