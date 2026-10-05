@@ -5,8 +5,11 @@ function startMethod(methodId) {
     console.log('startMethod called with:', methodId);
     
     // Prüfe aktuelle Sprache aus URL
-    const isEnglish = window.location.pathname.startsWith('/en/') || 
-                      (window.simpleTranslation && window.simpleTranslation.getCurrentLanguage() === 'en');
+    const langApi = window.simpleTranslation;
+    const currentLang = langApi && (typeof langApi.getCurrentLanguage === 'function'
+        ? langApi.getCurrentLanguage()
+        : langApi.currentLanguage);
+    const isEnglish = window.location.pathname.startsWith('/en/') || currentLang === 'en';
     const langPrefix = isEnglish ? '/en/' : '/';
     
     // Direct navigation to specific workflow pages
@@ -45,7 +48,15 @@ function startMethod(methodId) {
         'therapy-form-finder': 'methods/therapy-form-finder/therapy-form-finder.html',
         'therapy-form-finder-test': 'methods/therapy-form-finder/therapy-form-finder.html',  // Fallback für Tests
         'raisec': 'raisec-persoenlichkeitsentwicklung.html',
-        'personality-song': 'persoenlichkeits-song-generator.html'
+        'personality-song': 'persoenlichkeits-song-generator.html',
+        'wheel-of-life': 'methods/wheel-of-life/wheel-of-life.html',
+        'swot-analysis': 'methods/swot-analysis/swot-analysis.html',
+        'time-management': 'methods/time-management/time-management.html',
+        'journaling': 'methods/journaling/journaling.html',
+        'stress-management': 'methods/stress-management/stress-management.html',
+        'vision-board': 'methods/vision-board/vision-board.html',
+        'how-of-happiness': 'methods/how-of-happiness/how-of-happiness.html',
+        'gallup-strengths': 'methods/gallup-strengths/gallup-strengths.html'
     };
     
     if (methodId === 'personality-song') {

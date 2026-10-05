@@ -291,14 +291,15 @@ function loadWebsiteAdditionalData() {
             const profileData = JSON.parse(storedData);
             console.log('📝 Lade Hero-Daten:', profileData);
             
-            // Hero Titel aktualisieren
-            if (profileData.title) {
-                updateHeroTitle(profileData.title);
-            }
-            
-            // Hero Untertitel aktualisieren
-            if (profileData.subtitle) {
-                updateHeroSubtitle(profileData.subtitle);
+            if (document.body && document.body.getAttribute('data-hero-preset') === 'pe-landing') {
+                console.log('ℹ️ Hero-Preset pe-landing: Titel/Untertitel bleiben fest (Backup in index-hr-backup.html)');
+            } else {
+                if (profileData.title) {
+                    updateHeroTitle(profileData.title);
+                }
+                if (profileData.subtitle) {
+                    updateHeroSubtitle(profileData.subtitle);
+                }
             }
             
             // Kontakt-Daten aktualisieren

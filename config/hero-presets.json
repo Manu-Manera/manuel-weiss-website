@@ -1,0 +1,21 @@
+{
+  "active": "pe-landing-2026",
+  "note": "Die aktuelle Startseite nutzt das Preset pe-landing-2026. Das alte HR-Hero liegt unter index-hr-backup.html und hier unter hr-neu-denken.",
+  "presets": {
+    "hr-neu-denken": {
+      "label": "Altes HR-Hero (Oktober 2026)",
+      "restorePage": "index-hr-backup.html",
+      "title": "HR neu denken?",
+      "titleEn": "Rethink HR?",
+      "subtitle": "Digitale Transformation voranzutreiben mit dem Wunsch im Herzen anderen die Arbeit zu erleichtern und echten, qualitativ hochwertigen Mehrwert für den Arbeitsalltag zu stiften. Mit Köpfchen, Herzblut und höchster Motivation.",
+      "subtitleEn": "Driving digital transformation with the desire at heart to make work easier for others and to create real, high-quality added value for everyday work. With brains, heart, and highest motivation."
+    },
+    "pe-landing-2026": {
+      "label": "Persönlichkeits- und Führungskräfteentwicklung",
+      "title": "Persönlichkeits- und Führungskräfteentwicklung",
+      "titleEn": "Personality and Leadership Development",
+      "subtitle": "Über 40 interaktive Methoden – von Werten und Zielen über Kommunikation bis Achtsamkeit. Für dich selbst und für Menschen, die führen.",
+      "subtitleEn": "Over 40 interactive methods – from values and goals to communication and mindfulness. For yourself and for people who lead."
+    }
+  }
+}

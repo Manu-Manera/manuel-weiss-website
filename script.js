@@ -750,6 +750,9 @@ function loadProfileImageFromStorage() {
 
 // Hero-Content aus localStorage laden
 function loadHeroContentFromStorage() {
+    if (document.body && document.body.getAttribute('data-hero-preset') === 'pe-landing') {
+        return;
+    }
     const savedHeroContent = localStorage.getItem('heroContent');
     if (savedHeroContent) {
         try {

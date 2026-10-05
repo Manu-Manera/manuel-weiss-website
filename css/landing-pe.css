@@ -1,0 +1,309 @@
+/* ============================================================================
+   Landing: Persönlichkeits- und Führungskräfteentwicklung
+   Lädt nach coastal-theme.css. Altes HR-Hero: index-hr-backup.html
+   ============================================================================ */
+
+.hero.hero-with-video > .hero-layer-front {
+    z-index: 8 !important;
+    position: relative;
+}
+
+.hero-with-video #hero-title {
+    font-size: clamp(2rem, 4.4vw, 3.35rem) !important;
+    line-height: 1.12 !important;
+    max-width: 16em;
+    white-space: normal !important;
+    text-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+}
+
+.hero-with-video #hero-title .gradient-text {
+    display: inline;
+    white-space: normal;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    background: none;
+    -webkit-text-fill-color: #fff;
+    color: #fff;
+}
+
+.hero-with-video .hero-subtitle {
+    max-width: 38rem;
+}
+
+@media (max-width: 768px) {
+    .hero-with-video #hero-title {
+        font-size: clamp(1.7rem, 8vw, 2.35rem) !important;
+        line-height: 1.12 !important;
+        white-space: normal !important;
+    }
+    .hero-with-video #hero-title .gradient-text {
+        font-size: inherit;
+    }
+    .hero-with-video .hero-subtitle.desktop-only {
+        display: block !important;
+        font-size: 0.98rem;
+        padding: 0 0.5rem;
+    }
+}
+
+/* ---------- Methoden-Grid ---------- */
+.pe-landing-methods {
+    background: var(--sand, #f7f2e9);
+    padding: clamp(3.2rem, 6vw, 5.5rem) 0;
+}
+
+.pe-landing-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.25rem;
+    text-align: left !important;
+    margin-bottom: 2rem !important;
+}
+
+.pe-landing-head .section-title {
+    margin: 0 0 0.4rem !important;
+    text-align: left;
+}
+
+.pe-landing-head .section-subtitle {
+    margin: 0 !important;
+    text-align: left;
+    max-width: 48ch;
+}
+
+.pe-landing-kicker {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--sea, #167d8c);
+    margin-bottom: 0.55rem;
+}
+
+.pe-landing-all {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-weight: 700;
+    color: var(--ocean, #0f4c75);
+    text-decoration: none;
+    padding: 0.7rem 1.1rem;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid rgba(11, 42, 74, 0.1);
+    box-shadow: 0 8px 20px -16px rgba(11, 42, 74, 0.5);
+}
+
+.pe-landing-all:hover { background: var(--sea-foam, #cfe9e6); }
+
+.pe-landing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.15rem;
+}
+
+.pe-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    padding: 1.35rem 1.3rem 1.15rem;
+    background: #fff;
+    border: 1px solid rgba(11, 42, 74, 0.08);
+    border-radius: 22px;
+    box-shadow: 0 12px 28px -22px rgba(11, 42, 74, 0.5);
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    --c1: var(--sea, #167d8c);
+    --c2: var(--sea-glass, #3aa6a6);
+}
+
+.pe-tile::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--c1), var(--c2));
+}
+
+.pe-tile:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 22px 40px -24px rgba(11, 42, 74, 0.45);
+    border-color: color-mix(in srgb, var(--c1) 40%, transparent);
+}
+
+.pe-tile-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.7rem;
+}
+
+.pe-tile-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    background: linear-gradient(135deg, var(--c1), var(--c2));
+    font-size: 1.15rem;
+    box-shadow: 0 8px 16px -10px var(--c1);
+}
+
+.pe-tile-badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.28rem 0.6rem;
+    border-radius: 999px;
+}
+
+.pe-tile-badge-hot { background: rgba(232, 160, 75, 0.18); color: #a9632a; }
+.pe-tile-badge-lead { background: rgba(22, 125, 140, 0.14); color: var(--sea, #167d8c); }
+
+.pe-tile h3 {
+    margin: 0;
+    font-size: 1.08rem;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    color: var(--ocean-deep, #0b2a4a);
+}
+
+.pe-tile p {
+    margin: 0;
+    color: var(--driftwood, #6b5d4f);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.pe-tile ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.28rem;
+    flex: 1;
+}
+
+.pe-tile li {
+    position: relative;
+    padding-left: 1.15rem;
+    font-size: 0.82rem;
+    color: var(--driftwood, #6b5d4f);
+}
+
+.pe-tile li::before {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 1px;
+    font-size: 10px;
+    color: var(--c1);
+}
+
+.pe-tile-cta {
+    margin-top: 0.35rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 0.9rem;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--c1) 9%, white);
+    color: var(--c1);
+    font-weight: 700;
+    font-size: 0.88rem;
+}
+
+.pe-tile:hover .pe-tile-cta {
+    background: linear-gradient(135deg, var(--c1), var(--c2));
+    color: #fff;
+}
+
+.pe-tile:hover .pe-tile-cta i { transform: translateX(3px); }
+.pe-tile-cta i { transition: transform 0.15s; }
+
+.pe-tile[data-category="self-discovery"] { --c1: #167d8c; --c2: #3aa6a6; }
+.pe-tile[data-category="analysis"] { --c1: #0f4c75; --c2: #167d8c; }
+.pe-tile[data-category="leadership"] { --c1: #e8a04b; --c2: #e9775b; }
+.pe-tile[data-category="communication"] { --c1: #4a7fb5; --c2: #167d8c; }
+.pe-tile[data-category="coaching"] { --c1: #c06c84; --c2: #e9775b; }
+
+/* ---------- Unternehmen ---------- */
+.pe-biz {
+    background: #fbf8f2;
+    padding: clamp(2.5rem, 5vw, 4.5rem) 0 3.5rem;
+}
+
+.pe-biz-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.pe-biz-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 1.2rem 1.15rem;
+    background: #fff;
+    border: 1px solid rgba(11, 42, 74, 0.08);
+    border-radius: 18px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.pe-biz-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 32px -22px rgba(11, 42, 74, 0.45);
+}
+
+.pe-biz-card i {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: var(--coastal-gradient, linear-gradient(135deg, #0b2a4a, #167d8c));
+    color: #fff;
+    margin-bottom: 0.3rem;
+}
+
+.pe-biz-card h3 {
+    margin: 0;
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: var(--ocean-deep, #0b2a4a);
+}
+
+.pe-biz-card p {
+    margin: 0;
+    font-size: 0.84rem;
+    color: var(--driftwood, #6b5d4f);
+}
+
+@media (max-width: 1100px) {
+    .desktop-nav .nav-menu a[href="persoenlichkeitsentwicklung-uebersicht.html"] { display: none; }
+}
+
+@media (max-width: 980px) {
+    .pe-landing-head { flex-direction: column; align-items: flex-start; }
+    .pe-biz-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+    .pe-landing-grid,
+    .pe-biz-grid { grid-template-columns: 1fr; }
+}
