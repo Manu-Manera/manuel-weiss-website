@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nonviolent Communication | Manuel Weiss</title>
+    <meta name="description" content="Nonviolent Communication after Rosenberg: observation without judgement, real feelings instead of pseudo-feelings, recognising needs, request instead of demand – with automatic language check and empathy switch.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="nonviolent-communication.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-dove"></i></span><span>NVC</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-dove"></i></div>
+            <div class="mk-kicker">Personal development · Rosenberg</div>
+            <h1>Speak honestly without hurting</h1>
+            <p>Nonviolent Communication leads in four steps from blame to connection: observation, feeling, need, request. Each step has typical traps – this tool spots them in your text before your counterpart does.</p>
+            <div class="mk-badges"><span class="mk-badge">Observation</span><span class="mk-badge">Feeling</span><span class="mk-badge">Need</span><span class="mk-badge">Request</span><span class="mk-badge">Empathy</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>1 · The situation</h2>
+                <div class="mk-field"><label for="nvc-situation">What happened?</label><textarea class="mk-textarea" id="nvc-situation" data-mk-field="situation" placeholder="Describe it first the way it goes through your head right now – blame included. We will sort that out in a moment."></textarea></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="nvc-who">With whom?</label><input class="mk-input" id="nvc-who" data-mk-field="who" placeholder="Name or role"></div>
+                    <div class="mk-field"><label for="nvc-goal">What do you want from the conversation?</label><select class="mk-select" id="nvc-goal" data-mk-field="goal"><option value="">–</option><option value="heard">To be heard</option><option value="understand">To understand the other side</option><option value="change">To change something concrete</option><option value="repair">To repair the relationship</option></select></div>
+                </div>
+                <div id="nvc-sitcheck"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>👁️ Observation</h2>
+                <p class="mk-sub">What would a camera record? No interpretation, no generalisation – only what was seen or heard.</p>
+                <div class="mk-field"><textarea class="mk-textarea" id="nvc-observation" data-mk-field="observation" placeholder="e.g. “Yesterday at 7 pm you said you would be there at 6 pm.""></textarea></div>
+                <div id="nvc-obscheck"></div>
+                <div class="nvc-ex"><div class="nvc-ex-h">Judgement → observation</div><div class="nvc-ex-row"><s>You are always late.</s><span>This week you arrived three times after the agreed time.</span></div><div class="nvc-ex-row"><s>You never listen to me.</s><span>While I was talking, you looked at your phone.</span></div><div class="nvc-ex-row"><s>That was disrespectful.</s><span>You interrupted me before I had finished the sentence.</span></div></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>🫀 Feeling</h2>
+                <p class="mk-sub">What do you feel – in your body, not in your judgement? “I feel ignored” is not a feeling but an interpretation of what the other person does.</p>
+                <div id="nvc-feelings"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="nvc-feeling">In your own words</label><input class="mk-input" id="nvc-feeling" data-mk-field="feeling" placeholder="“I am … / I feel …""></div>
+                <div id="nvc-feelcheck"></div>
+                <div class="mk-field"><label>How strong?</label><div class="mk-range-wrap"><input type="range" class="mk-range" min="1" max="10" data-mk-field="intensity" value="6"><span class="mk-range-val" data-mk-rangeval="intensity">6</span></div></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>💎 Need</h2>
+                <p class="mk-sub">Feelings are messengers: pleasant ones show met needs, unpleasant ones show unmet needs. Which one is behind your feeling?</p>
+                <div id="nvc-needs"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="nvc-need">In your own words</label><input class="mk-input" id="nvc-need" data-mk-field="need" placeholder="”… because … matters to me""></div>
+                <div id="nvc-needcheck"></div>
+            </div>
+            <div class="mk-card">
+                <h3>And the other side?</h3>
+                <p class="mk-sub">Which need did your counterpart presumably meet with their behaviour? That is the core of empathy – and defuses almost every conflict.</p>
+                <div id="nvc-theirneeds"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>🙏 Request</h2>
+                <p class="mk-sub">Concrete, positive, doable now. And: a request where a no is not okay is a demand.</p>
+                <div class="mk-field"><textarea class="mk-textarea" id="nvc-request" data-mk-field="request" placeholder="“Would you be willing to let me know briefly if you’re running late?""></textarea></div>
+                <div id="nvc-reqcheck"></div>
+                <div class="mk-section-label">The demand test</div>
+                <p class="mk-sub">What happens inside you if the answer is “no”?</p>
+                <div id="nvc-notest"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="6">
+            <div class="mk-card">
+                <h2>✉️ Your NVC message</h2>
+                <div id="nvc-message"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="nvc-final">Fine-tuning – how you really say it</label><textarea class="mk-textarea" id="nvc-final" data-mk-field="final" placeholder="The generated text is a scaffold. Make it your own language."></textarea></div>
+                <div style="margin-top:8px"><button class="mk-btn mk-btn-outline mk-btn-sm" id="nvc-copy"><i class="fas fa-copy"></i> Copy</button></div>
+            </div>
+            <div class="mk-card">
+                <h3>Empathy switch</h3>
+                <p class="mk-sub">The same four steps from your counterpart’s perspective. If you can phrase that, you are ready for the conversation.</p>
+                <div id="nvc-flip"></div>
+            </div>
+            <div class="mk-card">
+                <h3>After the conversation</h3>
+                <div class="mk-field"><textarea class="mk-textarea" data-mk-field="after" placeholder="How did it go? What worked, where did you slip into old patterns?"></textarea></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="nvc-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="nvc-export"><i class="fas fa-download"></i> Download</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Reset everything</button></div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 6</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="nonviolent-communication.js?v=20261003"></script>
+</body>
+</html>

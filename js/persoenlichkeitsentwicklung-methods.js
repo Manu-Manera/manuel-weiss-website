@@ -85,7 +85,18 @@ function startMethod(methodId) {
         // Sprach-Präfix nur, wenn die Seite unter /en/ wirklich existiert.
         // Die Methoden-Workflows (methods/...) gibt es nur einmal – ein /en/-Pfad
         // würde über den CloudFront-Fallback auf die Startseite zurückfallen.
-        const enPagesAvailable = ['raisec-persoenlichkeitsentwicklung.html'];
+        const enPagesAvailable = [
+            'raisec-persoenlichkeitsentwicklung.html',
+            'methods/ikigai/ikigai.html',
+            'methods/wheel-of-life/wheel-of-life.html',
+            'methods/harvard-method/harvard-method.html',
+            'methods/emotional-intelligence/emotional-intelligence.html',
+            'methods/nonviolent-communication/nonviolent-communication.html',
+            'methods/target-coaching/target-coaching.html',
+            'methods/via-strengths/via-strengths.html',
+            'methods/johari-window/johari-window.html',
+            'methods/values-clarification/values-clarification.html'
+        ];
         const hasEnVersion = enPagesAvailable.includes(url);
         let fullUrl = (isEnglish && hasEnVersion) ? `/en/${url}` : `/${url}`;
         if (isEnglish && !hasEnVersion) {

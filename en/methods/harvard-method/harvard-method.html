@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harvard Method | Manuel Weiss</title>
+    <meta name="description" content="Negotiating with the Harvard method: separate people from the problem, interests instead of positions, options for mutual gain, objective criteria and BATNA – with interest comparison and option rating.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="harvard-method.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-scale-balanced"></i></span><span>Harvard</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-scale-balanced"></i></div>
+            <div class="mk-kicker">Personal development · Negotiating (Fisher & Ury)</div>
+            <h1>Hard on the issue, soft on the people</h1>
+            <p>The Harvard method replaces haggling over positions with the search for interests. Four principles: separate the people from the problem, interests instead of positions, options for mutual gain, objective criteria – plus your BATNA as a safety net.</p>
+            <div class="mk-badges"><span class="mk-badge">Interessen-Abgleich</span><span class="mk-badge">Options matrix</span><span class="mk-badge">BATNA comparison</span><span class="mk-badge">Conversation plan</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>The negotiation</h2>
+                <div class="mk-field"><label for="hm-situation">What is it about – and with whom?</label><textarea class="mk-textarea" id="hm-situation" data-mk-field="situation" placeholder="e.g. salary talk with my boss · splitting chores with my flatmate · price negotiation with a supplier"></textarea></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="hm-who">Other party</label><input class="mk-input" id="hm-who" data-mk-field="who" placeholder="Name / role"></div>
+                    <div class="mk-field"><label for="hm-deadline">By when does it have to be decided?</label><input class="mk-input" id="hm-deadline" data-mk-field="deadline" placeholder="Date or “open"</div>
+                </div>
+                <div id="hm-stakes"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>1 · Separate the people from the problem</h2>
+                <p class="mk-sub">What is the issue – and what is relationship, emotion, history? Both are real, but they are treated separately.</p>
+                <div class="mk-field"><label for="hm-issue">The substantive issue in one sentence</label><input class="mk-input" id="hm-issue" data-mk-field="issue" placeholder="What exactly is being decided?"></div>
+                <div id="hm-emotions"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="hm-relationship">What stands between you that has nothing to do with the issue?</label><textarea class="mk-textarea" id="hm-relationship" data-mk-field="relationship" placeholder="Old conflicts, misunderstandings, status, trust …"></textarea></div>
+                <div class="mk-field"><label for="hm-relplan">How do you address the interpersonal – separately from the issue?</label><textarea class="mk-textarea" id="hm-relplan" data-mk-field="relplan" placeholder="e.g. “Before we talk about the numbers: it matters to me that we keep working well together afterwards."></textarea></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>2 · Interests instead of positions</h2>
+                <p class="mk-sub">A position is <em>what</em> someone demands. An interest is <em>why</em>. Behind incompatible positions there are often compatible interests.</p>
+                <div class="hm-sides">
+                    <div class="hm-side mine"><h3>Me</h3><div id="hm-mine"></div></div>
+                    <div class="hm-side theirs"><h3 id="hm-theirs-h">Other party</h3><div id="hm-theirs"></div></div>
+                </div>
+            </div>
+            <div class="mk-card">
+                <h3>Interessen-Abgleich</h3>
+                <div id="hm-match"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>3 · Options for mutual gain</h2>
+                <p class="mk-sub">Collect first, evaluate later. The more options, the bigger the pie. Rate each one by how well it serves <em>both</em> sides.</p>
+                <div id="hm-options"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Options matrix</h3>
+                <div id="hm-matrix"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>4 · Objective criteria</h2>
+                <p class="mk-sub">How can a fair solution be measured – independent of either side’s will?</p>
+                <div id="hm-criteria"></div>
+            </div>
+            <div class="mk-card">
+                <h2>BATNA</h2>
+                <p class="mk-sub"><strong>B</strong>est <strong>A</strong>lternative <strong>t</strong>o a <strong>N</strong>egotiated <strong>A</strong>greement: What do you do if you don’t reach an agreement? The better your BATNA, the calmer you negotiate.</p>
+                <div id="hm-batna"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="6">
+            <div class="mk-card">
+                <h2>Your negotiation plan</h2>
+                <div id="hm-plan"></div>
+            </div>
+            <div class="mk-card">
+                <h3>After the negotiation</h3>
+                <div class="mk-field"><label for="hm-result">Outcome – and what worked?</label><textarea class="mk-textarea" id="hm-result" data-mk-field="result" placeholder="…"></textarea></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="hm-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="hm-export"><i class="fas fa-download"></i> Download plan</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Reset everything</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 6</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="harvard-method.js?v=20261003"></script>
+</body>
+</html>

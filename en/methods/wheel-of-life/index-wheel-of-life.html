@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wheel of Life | Manuel Weiss</title>
+    <meta name="description" content="The Wheel of Life shows at a glance how balanced your life is. Rate eight life areas and find out where you should start.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>:root { --mk-accent: #0ea5e9; --mk-accent-2: #6366f1; --mk-accent-soft: rgba(14,165,233,.12); }</style>
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-circle-notch"></i></span><span>Wheel of Life</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-circle-notch"></i></div>
+            <div class="mk-kicker">Personal development</div>
+            <h1>How smoothly is your life running?</h1>
+            <p>The Wheel of Life shows in a single picture where your life is in balance – and where it “wobbles”. Rate eight areas and decide consciously where you invest next.</p>
+            <div class="mk-badges"><span class="mk-badge">8 life areas</span><span class="mk-badge">Visualisation</span><span class="mk-badge">Focus</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>Rate your life areas</h2>
+                <p class="mk-sub">How satisfied are you right now? 1 = not at all, 10 = completely satisfied.</p>
+                <div id="wl-rate"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card" style="text-align:center;">
+                <h2>Your wheel of life</h2>
+                <p class="mk-sub">The rounder, the more balanced.</p>
+                <div id="wl-chart"></div>
+                <div id="wl-legend" style="text-align:left; margin-top:14px;"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>Where do you start?</h2>
+                <p class="mk-sub">The biggest leverage is often in the lowest area – but you decide.</p>
+                <div class="mk-chips" id="wl-focus" style="margin-bottom:14px;"></div>
+                <div class="mk-field"><label>One concrete thing that lifts this area by 1 point</label><input class="mk-input" data-mk-field="action" placeholder="e.g. “Call a friend every Sunday""></div>
+                <button class="mk-btn mk-btn-primary" id="wl-export"><i class="fas fa-download"></i> Download wheel of life</button>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 3</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script>
+        const AREAS = [
+            {id:'health',ic:'💪',label:'Health'},{id:'career',ic:'💼',label:'Career'},
+            {id:'money',ic:'💰',label:'Finances'},{id:'love',ic:'❤️',label:'Partnership'},
+            {id:'family',ic:'👪',label:'Family & friends'},{id:'growth',ic:'📈',label:'Growth'},
+            {id:'fun',ic:'🎉',label:'Leisure & fun'},{id:'meaning',ic:'🧭',label:'Meaning & spirituality'}
+        ];
+        (async function () {
+            await MethodKit.init({
+                method: 'wheel-of-life',
+                accent: '#0ea5e9', accent2: '#6366f1',
+                steps: [{icon:'📊',label:'Rate'},{icon:'🎡',label:'Wheel'},{icon:'🎯',label:'Focus'}],
+                defaultState: { ratings:{}, focus:'', action:'' }
+            });
+            MethodKit.bindFields();
+            const S = MethodKit.state;
+
+            const rate=document.getElementById('wl-rate');
+            rate.innerHTML=AREAS.map(a=>`<div class="mk-field"><label>${a.ic} ${a.label}</label><div class="mk-range-wrap"><input class="mk-range" type="range" min="1" max="10" data-r="${a.id}" value="${S.ratings[a.id]||5}"><span class="mk-range-val" data-rv="${a.id}">${S.ratings[a.id]||5}</span></div></div>`).join('');
+            rate.querySelectorAll('[data-r]').forEach(el=>el.addEventListener('input',()=>{ S.ratings[el.dataset.r]=parseInt(el.value,10); rate.querySelector(`[data-rv="${el.dataset.r}"]`).textContent=el.value; MethodKit.save(); }));
+
+            function drawWheel(){
+                const N=AREAS.length, cx=150, cy=150, R=110;
+                const pt=(i,r)=>{ const ang=-Math.PI/2 + i*2*Math.PI/N; return [cx+r*Math.cos(ang), cy+r*Math.sin(ang)]; };
+                let grid='';
+                [2,4,6,8,10].forEach(g=>{ let pts=AREAS.map((_,i)=>pt(i,g/10*R).join(',')).join(' '); grid+=`<polygon points="${pts}" fill="none" stroke="#e2e8f0" stroke-width="1"/>`; });
+                let axes='', labels='';
+                AREAS.forEach((a,i)=>{ const [x,y]=pt(i,R); axes+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#e2e8f0" stroke-width="1"/>`;
+                    const [lx,ly]=pt(i,R+22); labels+=`<text x="${lx}" y="${ly}" font-size="13" text-anchor="middle" dominant-baseline="middle" fill="#475569">${a.ic}</text>`; });
+                const dataPts=AREAS.map((a,i)=>pt(i,(S.ratings[a.id]||5)/10*R).join(',')).join(' ');
+                const dots=AREAS.map((a,i)=>{ const [x,y]=pt(i,(S.ratings[a.id]||5)/10*R); return `<circle cx="${x}" cy="${y}" r="3.5" fill="#0ea5e9"/>`; }).join('');
+                document.getElementById('wl-chart').innerHTML=`<svg viewBox="0 0 300 300" style="max-width:340px;width:100%;">${grid}${axes}<polygon points="${dataPts}" fill="rgba(14,165,233,.25)" stroke="#0ea5e9" stroke-width="2"/>${dots}${labels}</svg>`;
+                document.getElementById('wl-legend').innerHTML=AREAS.map(a=>`<span class="mk-badge" style="margin:0 6px 6px 0;">${a.ic} ${a.label}: ${S.ratings[a.id]||5}</span>`).join('');
+            }
+
+            function renderFocus(){
+                const fh=document.getElementById('wl-focus');
+                let weak=AREAS[0].id, min=11; AREAS.forEach(a=>{ const v=S.ratings[a.id]||5; if(v<min){min=v;weak=a.id;} });
+                if(!S.focus) S.focus=weak;
+                fh.innerHTML=AREAS.map(a=>`<button class="mk-chip ${S.focus===a.id?'selected':''}" data-f="${a.id}">${a.ic} ${a.label} (${S.ratings[a.id]||5})</button>`).join('');
+                fh.querySelectorAll('[data-f]').forEach(el=>el.addEventListener('click',()=>{ S.focus=el.dataset.f; MethodKit.save(); renderFocus(); }));
+            }
+            MethodKit.onStep=function(n){ if(n===2) drawWheel(); if(n===3) renderFocus(); };
+
+            document.getElementById('wl-export').addEventListener('click',()=>{
+                const f=AREAS.find(a=>a.id===S.focus)||{label:'–'};
+                let t='MY WHEEL OF LIFE\n=================\n\n';
+                AREAS.forEach(a=>t+=`${a.label}: ${S.ratings[a.id]||5}/10\n`);
+                t+=`\nFocus: ${f.label}\nAction: ${S.action}\n`;
+                MethodKit.exportText('mein-lebensrad.txt', t);
+            });
+        })();
+    </script>
+</body>
+</html>

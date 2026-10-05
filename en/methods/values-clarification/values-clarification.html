@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Values Compass | Manuel Weiss</title>
+    <meta name="description" content="Values clarification with real logic: select from 40+ values, condense to a ranking via pairwise comparison, define each top value concretely (behaviour, betrayal, tension pairs), lived-vs-important comparison with time budget and a compass with biggest gap, weekly decision and no-list.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="values-clarification.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-compass"></i></span><span>Values compass</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-compass"></i></div>
+            <div class="mk-kicker">Personal development · Values clarification</div>
+            <h1>What truly matters to you</h1>
+            <p>Most people name ten values off the top of their head – and live by three of them. This compass forces a decision: you select, compare value against value, define concretely what each value means in behaviour, and then measure honestly how much room it has in your week. The biggest gap between “important” and “lived” is where dissatisfaction arises – and where a decision moves the most.</p>
+            <div class="mk-badges"><span class="mk-badge">40+ values</span><span class="mk-badge">Pairwise comparison</span><span class="mk-badge">Tension pairs</span><span class="mk-badge">Lived vs. important</span><span class="mk-badge">Weekly decision</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>1 · Discover</h2>
+                <p class="mk-sub">Choose everything that speaks to you – 10 to 15 is fine. We condense in the next step.</p>
+                <div id="vc-pick"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>2 · Condense</h2>
+                <p class="mk-sub">Value against value: if you could live only one of them – which one?</p>
+                <div id="vc-rank"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>3 · Meaning</h2>
+                <p class="mk-sub">“Freedom” means something different to everyone. What does it mean for you – in behaviour?</p>
+                <div id="vc-define"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · Everyday life</h2>
+                <p class="mk-sub">Now honestly: how much room does each value have in your real week?</p>
+                <div id="vc-live"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Compass</h2>
+                <div id="vc-compass"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="vc-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="vc-export"><i class="fas fa-download"></i> Download compass</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Reset everything</button></div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 5</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="values-clarification.js?v=20261003"></script>
+</body>
+</html>

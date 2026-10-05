@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIA Character Strengths | Manuel Weiss</title>
+    <meta name="description" content="Rate the 24 VIA character strengths, see your virtue profile, confirm signature strengths with the three-criteria test and use one signature strength in a new way for seven days.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="via-strengths.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-medal"></i></span><span>VIA strengths</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-medal"></i></div>
+            <div class="mk-kicker">Personal development · Positive psychology</div>
+            <h1>Your character strengths</h1>
+            <p>Peterson and Seligman described 24 character strengths that are valued in all cultures – organised into six virtues. Your “signature strengths” are the three to five that feel like you, give you energy and that you like to use. Whoever uses a signature strength in a new way for a week is demonstrably more satisfied – even months later.</p>
+            <div class="mk-badges"><span class="mk-badge">24 strengths</span><span class="mk-badge">6 virtues</span><span class="mk-badge">Signature test</span><span class="mk-badge">7-day exercise</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card">
+                <h2>1 · How much is this you?</h2>
+                <p class="mk-sub">Rate each strength: how typical is it for you – not how desirable it would be?</p>
+                <div id="via-rate"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card">
+                <h2>2 · Your virtue profile</h2>
+                <div id="via-profile"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card">
+                <h2>3 · Signature strengths</h2>
+                <p class="mk-sub">Your highest scores are candidates. A signature strength meets three criteria – check them honestly.</p>
+                <div id="via-sig"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card">
+                <h2>4 · One week, one strength, new</h2>
+                <p class="mk-sub">The Seligman exercise: choose a signature strength and use it every day for seven days in a <em>new</em> way.</p>
+                <div id="via-week"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>5 · Reflection</h2>
+                <div id="via-summary"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="via-reflect">What has changed since you started using the strength consciously?</label><textarea class="mk-textarea" id="via-reflect" data-mk-field="reflect" placeholder="Mood, energy, reactions of others …"></textarea></div>
+                <div class="mk-field"><label for="via-next">Which signature strength is next?</label><input class="mk-input" id="via-next" data-mk-field="next" placeholder="…"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="via-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"><button class="mk-btn mk-btn-primary" id="via-export"><i class="fas fa-download"></i> Download</button><button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Reset everything</button></div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 5</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="via-strengths.js?v=20261003"></script>
+</body>
+</html>

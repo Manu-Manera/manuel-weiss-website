@@ -1,0 +1,9 @@
+/* GFK · Styles */
+.nvc-ex { background: var(--mk-surface-2); border-radius: var(--mk-radius-sm); padding: 12px 14px; margin-top: 12px; font-size: 13px; }
+.nvc-ex-h { font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--mk-muted); margin-bottom: 8px; }
+.nvc-ex-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 6px 0; border-top: 1px solid var(--mk-line); } .nvc-ex-row s { color: var(--mk-faint); } .nvc-ex-row span { color: var(--mk-accent); }
+.nvc-sugg { font: inherit; font-size: 12px; font-weight: 600; border-radius: 99px; border: 1.5px solid var(--mk-accent); background: var(--mk-surface); color: var(--mk-accent); padding: 2px 9px; cursor: pointer; margin: 2px 0; } .nvc-sugg.on { background: var(--mk-accent); color: #fff; }
+.nvc-msg { display: flex; gap: 10px; justify-content: center; margin-bottom: 10px; } .nvc-msg-ic { font-size: 22px; opacity: .25; filter: grayscale(1); } .nvc-msg-ic.on { opacity: 1; filter: none; }
+.nvc-flip { display: grid; gap: 4px; }
+.nvc-link { text-decoration: none; color: inherit; text-align: left; }
+@media (max-width: 600px) { .nvc-ex-row { grid-template-columns: 1fr; gap: 4px; } }

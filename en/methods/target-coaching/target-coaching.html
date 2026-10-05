@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goal Coaching with GROW | Manuel Weiss</title>
+    <meta name="description" content="Self-coaching with the GROW model: Goal, Reality, Options, Will – with goal scale, obstacle analysis, impact/effort matrix for options, commitment check and progress check-ins.">
+    <link rel="stylesheet" href="../_kit/method-light.css?v=20261003b">
+    <link rel="stylesheet" href="target-coaching.css?v=20261003">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="mk-body">
+    <header class="mk-topbar">
+        <button class="mk-back" id="mk-back"><i class="fas fa-arrow-left"></i> Overview</button>
+        <div class="mk-brand"><span class="mk-brand-icon"><i class="fas fa-seedling"></i></span><span>GROW</span></div>
+        <span class="mk-topbar-spacer"></span>
+        <span class="mk-savebadge" id="mk-sync"><i class="fas fa-laptop"></i> <span>Saved locally</span></span>
+    </header>
+
+    <main class="mk-shell">
+        <section class="mk-hero">
+            <div class="mk-hero-icon"><i class="fas fa-seedling"></i></div>
+            <div class="mk-kicker">Personal development · Coaching (Whitmore)</div>
+            <h1>Coach yourself with GROW</h1>
+            <p>GROW is the most widely used coaching model: <strong>G</strong>oal – <strong>R</strong>eality – <strong>O</strong>ptions – <strong>W</strong>ill. You clarify where you want to go, where you stand, which paths exist and what you will actually do. With goal scale, options matrix and check-ins to keep going.</p>
+            <div class="mk-badges"><span class="mk-badge">Goal scale</span><span class="mk-badge">Obstacle analysis</span><span class="mk-badge">Options matrix</span><span class="mk-badge">Check-ins</span></div>
+        </section>
+
+        <div class="mk-progress" id="mk-progress"></div>
+
+        <section class="mk-step active" data-step="1">
+            <div class="mk-card tc-g">
+                <h2><span class="tc-letter">G</span> Goal — your goal</h2>
+                <div class="mk-field"><label for="tc-goal">What do you want to achieve?</label><textarea class="mk-textarea" id="tc-goal" data-mk-field="goal" placeholder="As concrete as possible – what is different in the end?"></textarea></div>
+                <div id="tc-goalcheck"></div>
+                <div class="mk-grid-2">
+                    <div class="mk-field"><label for="tc-until">By when?</label><input class="mk-input" type="date" id="tc-until" data-mk-field="until"></div>
+                    <div class="mk-field"><label for="tc-measure">How do you measure success?</label><input class="mk-input" id="tc-measure" data-mk-field="measure" placeholder="Number, event, observation"></div>
+                </div>
+                <div class="mk-field"><label for="tc-why">Why does this matter to you – what changes for you as a result?</label><textarea class="mk-textarea" id="tc-why" data-mk-field="why" placeholder="…"></textarea></div>
+            </div>
+            <div class="mk-card">
+                <h3>The goal scale</h3>
+                <p class="mk-sub">10 = goal fully achieved. Describe what 10 looks like – and what a realistic "good enough" would be.</p>
+                <div id="tc-scale-def"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="2">
+            <div class="mk-card tc-r">
+                <h2><span class="tc-letter">R</span> Reality — the current state</h2>
+                <div id="tc-now"></div>
+                <div class="mk-field" style="margin-top:14px"><label for="tc-reality">Where do you stand right now? What have you already tried – with what result?</label><textarea class="mk-textarea" id="tc-reality" data-mk-field="reality" placeholder="Facts, not judgements."></textarea></div>
+                <div class="mk-field"><label for="tc-nottried">What have you <strong>not</strong> tried yet?</label><textarea class="mk-textarea" id="tc-nottried" data-mk-field="nottried" placeholder="Often the most interesting part."></textarea></div>
+            </div>
+            <div class="mk-card">
+                <h3>What holds you back?</h3>
+                <p class="mk-sub">Every obstacle gets a label: is it in you, in others or in the circumstances?</p>
+                <div id="tc-obstacles"></div>
+            </div>
+            <div class="mk-card">
+                <h3>What do you already have?</h3>
+                <div class="mk-chips" id="tc-res"></div>
+                <div class="mk-field" style="margin-top:12px"><label for="tc-resnote">Concrete</label><textarea class="mk-textarea" id="tc-resnote" data-mk-field="resnote" placeholder="Skills, people, experiences, means …"></textarea></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="3">
+            <div class="mk-card tc-o">
+                <h2><span class="tc-letter">O</span> Options — possibilities</h2>
+                <p class="mk-sub">Quantity first, then quality. Collect at least five – including ones you would never do. Then rate impact and effort.</p>
+                <div class="mk-section-label">Questions that open up new options</div>
+                <div class="mk-chips" id="tc-prompts"></div>
+                <div id="tc-options"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Impact × effort</h3>
+                <div id="tc-matrix"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="4">
+            <div class="mk-card tc-w">
+                <h2><span class="tc-letter">W</span> Will — your will</h2>
+                <p class="mk-sub">Not “could”, not “should” – what <strong>will</strong> you do?</p>
+                <div id="tc-will"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Commitment</h3>
+                <div id="tc-commit"></div>
+            </div>
+            <div class="mk-card">
+                <h3>If-then</h3>
+                <p class="mk-sub">For every obstacle from Reality: if it shows up, then …</p>
+                <div id="tc-ifthen"></div>
+            </div>
+        </section>
+
+        <section class="mk-step" data-step="5">
+            <div class="mk-card">
+                <h2>Check-in</h2>
+                <p class="mk-sub">Come back regularly. Where do you stand on the goal scale – and what has moved?</p>
+                <div id="tc-checkin"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Your GROW at a glance</h3>
+                <div id="tc-summary"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Suitable next methods</h3>
+                <div class="mk-grid" id="tc-links"></div>
+            </div>
+            <div class="mk-card">
+                <h3>Take it with you</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="mk-btn mk-btn-primary" id="tc-export"><i class="fas fa-download"></i> Download plan</button>
+                    <button class="mk-btn mk-btn-danger mk-btn-sm" data-mk-reset><i class="fas fa-trash"></i> Reset everything</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="mk-nav">
+            <button class="mk-btn mk-btn-outline" id="mk-prev"><i class="fas fa-arrow-left"></i> Back</button>
+            <span class="info" id="mk-step-info">Step 1 of 5</span>
+            <button class="mk-btn mk-btn-primary" id="mk-next">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <div class="mk-toast" id="mk-toast"></div>
+
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod' };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-app-config.js"></script>
+    <script src="/js/workflow-api.js?v=20261003b"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="../_kit/method-kit.js?v=20261003b"></script>
+    <script src="target-coaching.js?v=20261003"></script>
+</body>
+</html>
