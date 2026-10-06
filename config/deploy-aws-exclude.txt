@@ -51,6 +51,15 @@ build/*
 voice_samples/*
 sf2_temp/*
 
+# Lakehouse-Inserat aktuell nicht live
+lakehouse.html
+css/lakehouse.css
+js/lakehouse.js
+images/lakehouse/*
+copy/inserat-de.txt
+copy/inserat-en.txt
+copy/reel-skript.txt
+
 # IDE / OS / Temp
 .vscode/*
 .idea/*
