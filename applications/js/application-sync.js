@@ -71,6 +71,11 @@
     originalList(...args);
     document.querySelectorAll('#applicationsList .application-card').forEach((card) => {
       const app = DashboardState.applications.find((a) => a.id === card.dataset.id);
+      const select = card.querySelector('.status-select');
+      if (app?.status === 'draft' && select && !select.querySelector('option[value="draft"]')) {
+        select.insertAdjacentHTML('afterbegin', '<option value="draft" selected>📝 Entwurf</option>');
+        select.value = 'draft';
+      }
       const actions = card.querySelector('.card-actions');
       if (!portfolioOf(app) || !actions || actions.querySelector('.portfolio-btn')) return;
       actions.insertAdjacentHTML('afterbegin', `<button class="portfolio-btn" onclick="openPortfolioFor('${app.id}')" title="Bewerbungsmappe: Anschreiben, Lebenslauf, Zeugnisse"><i class="fas fa-folder-open"></i></button>`);
@@ -111,6 +116,13 @@
     await previewPortfolio();
     document.getElementById('portfolioPreview')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
+
+  document.head.insertAdjacentHTML('beforeend', '<style>.application-card .status-indicator.draft{background:#f59e0b}</style>');
+
+  const editStatus = document.getElementById('editAppStatus');
+  if (editStatus && !editStatus.querySelector('option[value="draft"]')) {
+    editStatus.insertAdjacentHTML('afterbegin', '<option value="draft">📝 Entwurf</option>');
+  }
 
   window.ApplicationSync = { ready, pullFromCloud };
 })();

@@ -21,6 +21,11 @@
 .js-wrap .js-panes button.on { color: var(--primary); border-bottom-color: var(--primary); }
 .js-wrap .js-panes em { font-style: normal; font-size: .75rem; font-weight: 700; background: var(--surface-3); color: var(--ink-2); padding: 2px 8px; border-radius: 999px; }
 .js-wrap .js-panes button.on em { background: var(--primary-soft); color: var(--primary); }
+.js-wrap .js-panes button em.warn { background: #fef3c7; color: #92400e; }
+.js-wrap .js-panes button > b { display: inline-flex; width: 22px; height: 22px; border-radius: 50%; align-items: center; justify-content: center;
+  background: var(--surface-3); color: var(--ink-2); font-size: .75rem; }
+.js-wrap .js-panes button.on > b { background: var(--primary); color: #fff; }
+.js-wrap .js-panes .js-pane-tool { margin-left: auto; }
 
 /* Schritte */
 .js-wrap .js-steps { display: flex; gap: 8px; margin: 0 0 16px; flex-wrap: wrap; }
@@ -31,6 +36,8 @@
 .js-wrap .js-step.on { border-color: var(--primary); color: var(--primary); background: var(--primary-soft); }
 .js-wrap .js-step.on b { background: var(--primary); color: #fff; }
 .js-wrap .js-step.done b { background: var(--green); color: #fff; }
+.js-wrap .js-step-link { border-style: dashed; color: var(--ink-3); cursor: pointer; background: transparent; }
+.js-wrap .js-step-link:hover { color: var(--primary); border-color: var(--primary); }
 
 /* Karten und Buttons */
 .js-wrap .js-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 1px 3px rgba(15, 23, 42, .06); padding: 18px 20px; margin-bottom: 14px; }
@@ -136,8 +143,41 @@
 .js-wrap .js-stats b { display: block; font-size: 1.6rem; font-weight: 800; color: var(--ink); }
 .js-wrap .js-stats span { font-size: .75rem; color: var(--ink-2); text-transform: uppercase; letter-spacing: .4px; font-weight: 600; }
 @media (max-width: 720px) { .js-wrap .js-stats { grid-template-columns: repeat(2, 1fr); } }
-.js-wrap .js-job.js-app { grid-template-columns: 44px 1fr auto; cursor: default; }
-.js-wrap .js-app .js-score b { font-size: 1.1rem; }
+.js-wrap .js-job.js-app { grid-template-columns: 40px 1fr auto; cursor: default; }
+.js-wrap .js-job.js-app.is-draft { border-left: 4px solid #f59e0b; }
+.js-wrap .js-job.js-app.flash { animation: js-flash 1.6s ease; }
+@keyframes js-flash { 0%, 40% { box-shadow: 0 0 0 3px #a5b4fc; } 100% { box-shadow: none; } }
+.js-wrap .js-app-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: var(--surface-3); color: var(--ink-2); }
+.js-wrap .js-app-icon.draft { background: #fef3c7; color: #92400e; }
+.js-wrap .js-app-icon.pending { background: var(--primary-soft); color: var(--primary); }
+.js-wrap .js-app-icon.interview, .js-wrap .js-app-icon.offer { background: #d1fae5; color: var(--green); }
+.js-wrap .js-app-icon.rejected { background: #fee2e2; color: var(--red); }
+.js-wrap .js-app .js-title a i { font-size: .7rem; color: var(--ink-3); margin-left: 2px; }
+.js-wrap .js-row-tools { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.js-wrap .js-parts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.js-wrap .js-parts span { display: inline-flex; align-items: center; gap: 5px; font-size: .75rem; font-weight: 600; padding: 3px 9px; border-radius: 999px; }
+.js-wrap .js-parts .ok { background: #ecfdf5; color: var(--green); }
+.js-wrap .js-parts .miss { background: #fff7ed; color: var(--amber); }
+.js-wrap .js-status-pill { font-style: normal; font-size: .72rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: var(--primary-soft); color: var(--primary); }
+.js-wrap .js-status-pill.draft { background: #fef3c7; color: #92400e; }
+
+/* Hinweise und nächster Schritt */
+.js-wrap .js-hint { display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: var(--primary-soft); border-color: #c7d2fe; }
+.js-wrap .js-hint > i { font-size: 1.3rem; color: var(--primary); }
+.js-wrap .js-hint > div { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.js-wrap .js-hint b { color: var(--ink); }
+.js-wrap .js-hint span { color: var(--ink-2); font-size: .88rem; }
+.js-wrap .js-hint.warn { background: #fffbeb; border-color: #fde68a; }
+.js-wrap .js-hint.warn > i { color: var(--amber); }
+.js-wrap .js-progress-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.js-wrap .js-progress-head h3 { margin: 0; color: var(--ink); }
+.js-wrap .js-progress-head .js-parts { margin: 0; }
+.js-wrap .js-note { margin: 0 0 10px; font-size: .86rem; color: var(--amber); }
+.js-wrap .js-note a { color: var(--primary); font-weight: 600; }
+.js-wrap .js-next { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 14px; padding: 14px 16px; border-radius: 12px; background: #ecfdf5; border: 1px solid #a7f3d0; }
+.js-wrap .js-next > div { flex: 1; min-width: 240px; display: flex; flex-direction: column; gap: 2px; }
+.js-wrap .js-next b { color: #065f46; }
+.js-wrap .js-next span { color: var(--ink-2); font-size: .88rem; }
 
 /* Hinweise */
 .js-toasts { position: fixed; top: 84px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 8px; max-width: min(420px, calc(100vw - 40px)); }
@@ -152,7 +192,9 @@
 /* Eingebetteter Bewerbungsmanager */
 .js-wrap .js-manager { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--surface); }
 .js-wrap .js-manager-bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); flex-wrap: wrap; }
-.js-wrap .js-manager-bar span { color: var(--ink-2); font-size: .85rem; margin-right: auto; }
+.js-wrap .js-manager-ctx { color: var(--ink-2); font-size: .88rem; margin-right: auto; display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.js-wrap .js-manager-ctx b { color: var(--ink); }
+.js-wrap .js-manager-ctx > i { color: var(--primary); }
 .js-wrap .js-manager iframe { display: block; width: 100%; height: calc(100vh - 260px); min-height: 420px; border: 0; background: #fff; }
 .js-wrap.is-manager { padding-bottom: 0; }
 .js-wrap.is-manager .js-head { margin-bottom: 10px; }

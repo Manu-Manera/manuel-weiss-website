@@ -2,21 +2,23 @@
     <div class="js-head">
         <div>
             <h1>Bewerbungen</h1>
-            <p>Stellen finden, Anschreiben erstellen und alles an einem Ort verwalten.</p>
+            <p>Stellen finden, Pakete erstellen, prüfen, versenden und nachfassen.</p>
         </div>
     </div>
 
-    <nav class="js-panes" aria-label="Bereiche">
-        <button type="button" class="on" data-pane="search"><i class="fas fa-search"></i> Stellensuche</button>
-        <button type="button" data-pane="tracking"><i class="fas fa-tasks"></i> Meine Bewerbungen <em id="appsCount">0</em></button>
-        <button type="button" data-pane="manager"><i class="fas fa-briefcase"></i> Bewerbungsmanager</button>
+    <nav class="js-panes" aria-label="Ablauf">
+        <button type="button" class="on" data-pane="search"><b>1</b> Stellen finden <em id="paneCountSearch">0</em></button>
+        <button type="button" data-pane="review"><b>2</b> Prüfen &amp; versenden <em id="paneCountReview">0</em></button>
+        <button type="button" data-pane="follow"><b>3</b> Nachverfolgen <em id="paneCountFollow">0</em></button>
+        <button type="button" class="js-pane-tool" data-pane="manager"><i class="fas fa-briefcase"></i> Bewerbungsmanager</button>
     </nav>
 
     <section data-pane-body="search">
         <div class="js-steps">
-            <span class="js-step on" data-step="1"><b>1</b> Suchen</span>
-            <span class="js-step" data-step="2"><b>2</b> Stellen auswählen</span>
-            <span class="js-step" data-step="3"><b>3</b> Bewerbungen erstellen</span>
+            <span class="js-step on" data-step="1"><b><i class="fas fa-search"></i></b> Suchen</span>
+            <span class="js-step" data-step="2"><b><i class="fas fa-check"></i></b> Stellen anklicken</span>
+            <span class="js-step" data-step="3"><b><i class="fas fa-magic"></i></b> Pakete erstellen</span>
+            <span class="js-step js-step-link" data-pane="review"><b><i class="fas fa-arrow-right"></i></b> weiter bei 2: Prüfen &amp; versenden</span>
         </div>
 
         <div class="js-card">
@@ -101,32 +103,31 @@
 
         <div class="js-packbar" id="jsPackbar">
             <span id="jsPackCount">0 Stellen ausgewählt</span>
-            <button class="js-btn small ghost" id="jsClearSel" style="color:#cbd5e1">Auswahl leeren</button>
-            <button class="js-btn primary" id="jsPackBtn"><i class="fas fa-magic"></i> Bewerbungen erstellen</button>
+            <button class="js-btn small ghost" id="jsClearSel">Auswahl leeren</button>
+            <button class="js-btn primary" id="jsPackBtn"><i class="fas fa-magic"></i> Pakete erstellen</button>
         </div>
     </section>
 
     <section data-pane-body="tracking" hidden>
-        <div class="js-stats">
-            <div><b id="appsTotal">0</b><span>Gesamt</span></div>
-            <div><b id="appsOpen">0</b><span>Offen</span></div>
-            <div><b id="appsInterview">0</b><span>Interview</span></div>
-            <div><b id="appsRejected">0</b><span>Absage</span></div>
-        </div>
+        <div class="js-card js-hint" id="appsHint"></div>
         <div class="js-card">
+            <div class="js-toolbar">
+                <div class="js-seg" id="appsSeg">
+                    <button data-f="draft">Entwürfe <em>0</em></button>
+                    <button data-f="pending">Versendet <em>0</em></button>
+                    <button data-f="interview">Interview <em>0</em></button>
+                    <button data-f="offer">Angebot <em>0</em></button>
+                    <button data-f="rejected">Absage <em>0</em></button>
+                    <button data-f="all">Alle <em>0</em></button>
+                </div>
+            </div>
             <div class="js-list" id="applicationsList"></div>
         </div>
     </section>
 
     <section data-pane-body="manager" hidden>
         <div class="js-manager">
-            <div class="js-manager-bar">
-                <span>Quick Apply, Anschreiben, Lebenslauf, Zeugnisse, Bewerbungsmappe, Interview</span>
-                <button type="button" class="js-btn small" data-manager-tab="quick"><i class="fas fa-bolt"></i> Quick Apply</button>
-                <button type="button" class="js-btn small" data-manager-tab="cover"><i class="fas fa-file-alt"></i> Anschreiben</button>
-                <button type="button" class="js-btn small" data-manager-tab="resume"><i class="fas fa-id-card"></i> Lebenslauf</button>
-                <a class="js-btn small ghost" href="applications/dashboard.html" target="_blank" rel="noopener" title="In neuem Tab öffnen"><i class="fas fa-external-link-alt"></i></a>
-            </div>
+            <div class="js-manager-bar" id="managerBar"></div>
             <iframe id="managerFrame" title="Bewerbungsmanager"></iframe>
         </div>
     </section>

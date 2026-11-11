@@ -254,9 +254,19 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
     return letter;
   }
 
+  const section = () => window.AdminApp?.sections?.applications;
+  const existingApplication = (job) => section()?.applicationForJob?.(job) || null;
+
   async function createApplications() {
-    const jobs = JS.results.filter((j) => JS.selected.has(j.id));
-    if (!jobs.length || JS.busy) return;
+    const picked = JS.results.filter((j) => JS.selected.has(j.id));
+    if (!picked.length || JS.busy) return;
+    const duplicates = picked.filter(existingApplication);
+    const jobs = picked.filter((j) => !existingApplication(j));
+    if (duplicates.length) {
+      duplicates.forEach((j) => JS.selected.delete(j.id));
+      toast(`${duplicates.length} Stelle(n) übersprungen, dafür gibt es schon eine Bewerbung: ${duplicates.map((j) => j.company).join(', ')}`, 'info');
+      if (!jobs.length) { render(); return; }
+    }
     if (!(await openAIKey())) {
       toast('Für Anschreiben wird ein OpenAI-Key benötigt (Admin Panel → API Keys).', 'error');
       return;
@@ -269,13 +279,24 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
     setBusy(true, `<i class="fas fa-spinner fa-spin"></i> Erstelle ${jobs.length} Bewerbung(en) …`);
     setStep(3);
     const box = $('jsProgress');
-    box.innerHTML = `<h3 style="margin:0 0 10px">Bewerbungen werden erstellt</h3><div class="js-progress">${jobs.map((j) => `
-      <div class="js-prow" id="jsp-${j.id}"><span class="st"><i class="fas fa-circle-notch fa-spin"></i></span>
-      <span class="grow"><b>${esc(j.title)}</b> · ${esc(j.company)}</span><span class="info">Anzeige wird gelesen …</span></div>`).join('')}</div>`;
+    box.innerHTML = '<div class="js-empty" style="padding:16px"><i class="fas fa-spinner fa-spin"></i>Unterlagen werden geprüft …</div>';
     box.style.display = 'block';
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     const assets = await loadAssets().catch(() => ({}));
+    const checks = [
+      ['Lebenslauf', !!assets.resumeId, 'resume'],
+      [`Zeugnisse${assets.certificateIds?.length ? ` (${assets.certificateIds.length})` : ''}`, !!assets.certificateIds?.length, 'documents'],
+      ['Foto', !!assets.photoId, 'photos']
+    ];
+    const missing = checks.filter(([, ok]) => !ok);
+    box.innerHTML = `<div class="js-progress-head"><h3>Pakete werden erstellt</h3>
+      <div class="js-parts">${checks.map(([label, ok]) => `<span class="${ok ? 'ok' : 'miss'}"><i class="fas ${ok ? 'fa-check' : 'fa-exclamation'}"></i> ${label}</span>`).join('')}</div></div>
+      ${missing.length ? `<p class="js-note">Fehlt in der Mappe: ${missing.map(([label, , tab]) => `<a href="#" data-manager-tab="${tab}">${label.replace(/ \(.*/, '')} hochladen</a>`).join(', ')}. Die Anschreiben werden trotzdem erstellt.</p>` : ''}
+      <div class="js-progress">${jobs.map((j) => `
+      <div class="js-prow" id="jsp-${j.id}"><span class="st"><i class="fas fa-circle-notch fa-spin"></i></span>
+      <span class="grow"><b>${esc(j.title)}</b> · ${esc(j.company)}</span><span class="info">Anzeige wird gelesen …</span></div>`).join('')}</div>`;
+
     const done = [];
     for (const job of jobs) {
       const row = $(`jsp-${job.id}`);
@@ -300,22 +321,23 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
         await mark([job], 'applied');
         done.push(job);
         row.querySelector('.st').innerHTML = '<i class="fas fa-check"></i>';
-        const parts = ['Anschreiben', assets.resumeId && 'Lebenslauf', assets.certificateIds?.length && 'Zeugnisse', assets.photoId && 'Foto'].filter(Boolean);
-        info(`${parts.join(', ')} · <a href="#" data-portfolio="${esc(appId)}">Bewerbungsmappe öffnen</a> · <a href="applications/cover-letter-editor.html?edit=${encodeURIComponent(coverId)}" target="_blank">Anschreiben bearbeiten</a>`);
+        info(`Entwurf bereit · <a href="#" data-portfolio="${esc(appId)}">Mappe prüfen</a> · <a href="applications/cover-letter-editor.html?edit=${encodeURIComponent(coverId)}" target="_blank">Anschreiben bearbeiten</a>`);
       } catch (e) {
         row.querySelector('.st').innerHTML = '<i class="fas fa-times"></i>';
         info(`Fehler: ${esc(e.message)}`);
       }
     }
-    const section = window.AdminApp?.sections?.applications;
-    section?.markManagerStale?.();
-    section?.loadApplications?.();
-    box.insertAdjacentHTML('beforeend', `<div class="js-actions" style="margin-top:14px">
-      <button class="js-btn primary" type="button" data-show-pane="manager" data-manager-target="tracking"><i class="fas fa-briefcase"></i> Im Bewerbungsmanager ansehen</button>
-      <button class="js-btn" type="button" data-show-pane="manager" data-manager-target="cover"><i class="fas fa-file-alt"></i> Anschreiben</button></div>`);
+    section()?.markManagerStale?.();
+    await section()?.loadApplications?.();
+    if (done.length) {
+      box.insertAdjacentHTML('beforeend', `<div class="js-next">
+        <div><b>Nächster Schritt: prüfen und versenden</b>
+          <span>${done.length} Entwurf${done.length === 1 ? '' : 'e'} liegen unter «Prüfen &amp; versenden». Dort Mappe öffnen, über die Anzeige einreichen und als versendet markieren.</span></div>
+        <button class="js-btn primary" type="button" data-pane="review"><i class="fas fa-arrow-right"></i> Zu Prüfen &amp; versenden</button></div>`);
+    }
     setBusy(false);
     render();
-    toast(`${done.length} von ${jobs.length} Bewerbung(en) erstellt`, done.length ? 'success' : 'error');
+    toast(`${done.length} von ${jobs.length} Paket(en) erstellt`, done.length ? 'success' : 'error');
   }
 
   async function loadAssets() {
@@ -338,11 +360,12 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
   async function saveTracking(job, letter, coverId, assets) {
     const id = `app_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`;
     const portfolio = { coverLetterId: coverId, resumeId: assets.resumeId || '', certificateIds: assets.certificateIds || [], photoId: assets.photoId || '' };
+    const now = new Date().toISOString();
     await userData('/applications', {
       id, position: job.title, company: job.company, location: job.location, url: job.url,
-      date: new Date().toISOString().split('T')[0], status: 'pending', coverLetter: letter, coverLetterId: coverId,
+      date: now.split('T')[0], status: 'draft', coverLetter: letter, coverLetterId: coverId,
       resumeId: portfolio.resumeId, certificateIds: portfolio.certificateIds, photoId: portfolio.photoId, portfolio,
-      source: 'stellensuche', notes: 'Entwurf aus der Stellensuche, noch nicht versendet', createdAt: new Date().toISOString()
+      source: 'stellensuche', aiScore: job.aiScore ?? null, notes: '', createdAt: now, updatedAt: now
     });
     return id;
   }
@@ -467,6 +490,8 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
       b.classList.toggle('on', b.dataset.f === JS.filter);
       b.querySelector('em').textContent = counts[b.dataset.f];
     });
+    const paneCount = $('paneCountSearch');
+    if (paneCount) paneCount.textContent = counts.all;
 
     const jobs = visibleJobs();
     $('jsList').innerHTML = jobs.length ? jobs.map(jobRow).join('') : `<div class="js-empty"><i class="fas fa-search"></i>${
@@ -500,6 +525,8 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
     const focus = j.focusLabel || (j.focus ? 'Fokus' : '');
     const date = j.published ? new Date(j.published).toLocaleDateString('de-CH') : '';
     const meta = [j.company, j.location, date, j.source].filter(Boolean).map(esc).join(' · ');
+    const app = existingApplication(j);
+    const appStatus = app ? (window.ApplicationsSection?.STATUS?.[app.status || 'pending'] || 'Bewerbung') : '';
     return `<div class="js-job${sel ? ' sel' : ''}${open ? '' : ' done'}" data-id="${esc(j.id)}">
       <input type="checkbox" ${sel ? 'checked' : ''} ${open ? '' : 'disabled'} aria-label="auswählen">
       <div class="js-score"><b class="${cls}">${score ?? j.baseScore ?? ''}</b><span>${score == null ? 'Treffer' : 'KI-Score'}</span></div>
@@ -509,13 +536,15 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
           ${j.recommended && open ? '<span class="js-badge rec">empfohlen</span>' : ''}
           ${j.track === 'entwicklung' ? '<span class="js-badge dev">↗ Entwicklung</span>' : ''}
           ${j.wfa ? '<span class="js-badge remote">weltweit remote</span>' : j.remote ? '<span class="js-badge remote">remote</span>' : ''}
-          ${open ? '' : `<span class="js-badge done">${esc(j.status)}</span>`}</div>
+          ${app ? `<span class="js-badge done">Bewerbung: ${esc(appStatus)}</span>` : open ? '' : `<span class="js-badge done">${esc(j.status)}</span>`}</div>
         <div class="js-meta">${meta}</div>
         ${j.why ? `<div class="js-why">${esc(j.why)}</div>` : ''}
       </div>
-      <div class="js-row-actions">${open
-        ? `<button class="js-btn small ghost" data-act="hide" title="Nicht mehr anzeigen"><i class="fas fa-eye-slash"></i> Ausblenden</button>`
-        : `<button class="js-btn small ghost" data-act="reopen"><i class="fas fa-undo"></i> Wieder öffnen</button>`}</div>
+      <div class="js-row-actions">
+        ${app ? `<button class="js-btn small" type="button" data-show-app="${esc(app.id)}"><i class="fas fa-arrow-right"></i> Zur Bewerbung</button>` : ''}
+        ${open
+          ? `<button class="js-btn small ghost" data-act="hide" title="Nicht mehr anzeigen"><i class="fas fa-eye-slash"></i> Ausblenden</button>`
+          : app ? '' : `<button class="js-btn small ghost" data-act="reopen"><i class="fas fa-undo"></i> Wieder öffnen</button>`}</div>
     </div>`;
   }
 
@@ -542,5 +571,5 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
     if (JS.loaded) { renderCriteria(); render(); } else load();
   }
 
-  window.JobSearch = { mount, load, search, rate, state: JS };
+  window.JobSearch = { mount, load, search, rate, toast, refresh: () => { if (JS.loaded && !JS.busy) render(); }, state: JS };
 })();
