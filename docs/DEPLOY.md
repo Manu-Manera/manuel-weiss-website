@@ -68,6 +68,15 @@ npx cdk deploy manuel-weiss-website-api --require-approval never
 
 **Erst danach** Website-Deploy ausführen.
 
+Hinweis: `manuel-weiss-website-api` liegt im Code über dem CloudFormation-Limit von 500 Ressourcen und muss mit `-a "npx ts-node --prefer-ts-exts bin/website-api.ts"` aufgerufen werden (Standard-App in `cdk.json` ist das AI-Investment-System). Neue Funktionen deshalb als eigenen Stack anlegen, z. B. die Stellensuche im Bewerbungsmanager:
+
+```bash
+cd infrastructure
+npx cdk deploy manuel-weiss-job-search -a "npx ts-node --prefer-ts-exts bin/job-search.ts" --require-approval never
+```
+
+Die Function URL aus dem Output steht in `js/aws-app-config.js` als `JOB_SEARCH_URL`.
+
 ## Was NICHT deployed wird
 
 Siehe `config/deploy-aws-exclude.txt`. U. a.:

@@ -91,6 +91,9 @@ window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
   // ========================================
   // MEDIA KONFIGURATION (bestehend)
   // ========================================
+  // Stellensuche im Bewerbungsmanager (Stack manuel-weiss-job-search, Function URL wegen >29 s Laufzeit)
+  JOB_SEARCH_URL: 'https://qoccajfmjiovvq6aggqxvh4o3u0zcexo.lambda-url.eu-central-1.on.aws/',
+
   MEDIA_API_BASE: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
   REGION: 'eu-central-1',
   S3_PROFILE_BUCKET_NAME: 'manuel-weiss-public-media',

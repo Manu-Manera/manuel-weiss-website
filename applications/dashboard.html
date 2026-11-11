@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="../css/coastal-theme.css?v=20261005">
     <link rel="stylesheet" href="css/applications-main.css">
     <link rel="stylesheet" href="css/dashboard.css?v=20260623light">
+    <link rel="stylesheet" href="css/job-search.css?v=20261111a">
     <link rel="stylesheet" href="css/landing.css?v=20260110">
     
     <!-- Critical Mobile Navbar Override - Wie Hauptseite -->
@@ -406,10 +407,14 @@
 
         <!-- Tab Navigation -->
         <div class="dashboard-tabs">
-            <button class="tab-btn active" data-tab="quick" onclick="showTab('quick')">
+            <button class="tab-btn active" data-tab="search" onclick="showTab('search')">
+                <i class="fas fa-search"></i>
+                <span>Stellensuche</span>
+                <span class="tab-badge new">NEU</span>
+            </button>
+            <button class="tab-btn" data-tab="quick" onclick="showTab('quick')">
                 <i class="fas fa-bolt"></i>
                 <span>Quick Apply</span>
-                <span class="tab-badge new">NEU</span>
             </button>
             <button class="tab-btn" data-tab="cover" onclick="showTab('cover')">
                 <i class="fas fa-file-alt"></i>
@@ -450,9 +455,112 @@
         <div class="dashboard-content">
             
             <!-- ═══════════════════════════════════════════════════════════ -->
-            <!-- TAB 1: QUICK APPLY - Der Star des Dashboards -->
+            <!-- TAB 1: STELLENSUCHE (applications/js/job-search.js) -->
             <!-- ═══════════════════════════════════════════════════════════ -->
-            <div id="tab-quick" class="tab-content active">
+            <div id="tab-search" class="tab-content active">
+                <div class="js-wrap">
+                    <div class="js-hero">
+                        <h1>Passende Stellen finden</h1>
+                        <p>Die KI durchsucht LinkedIn, jobs.ch, die Arbeitsagentur, Remote-Börsen und Firmen-Karriereseiten. Du wählst aus, für welche Stellen Bewerbungen entstehen.</p>
+                        <div class="js-steps">
+                            <span class="js-step on" data-step="1"><b>1</b> Suchen</span>
+                            <span class="js-step" data-step="2"><b>2</b> Stellen auswählen</span>
+                            <span class="js-step" data-step="3"><b>3</b> Bewerbungen erstellen</span>
+                        </div>
+                    </div>
+
+                    <div class="js-card">
+                        <div class="js-actions">
+                            <button class="js-btn primary" id="jsSearchBtn"><i class="fas fa-search"></i> Stellen suchen</button>
+                            <button class="js-btn" id="jsRateBtn" disabled><i class="fas fa-robot"></i> KI-Bewertung</button>
+                            <span class="js-status" id="jsStatus"></span>
+                        </div>
+                    </div>
+
+                    <details class="js-card js-criteria" id="jsCriteria">
+                        <summary><i class="fas fa-sliders-h"></i> Suchkriterien <small>Suchbegriffe, Fokus, Regionen, Profil für die KI</small></summary>
+                        <div class="js-grid">
+                            <div class="js-field">
+                                <label>Suchbegriffe</label>
+                                <div class="js-chips" id="jsTerms"></div>
+                                <small>Die ersten 8 Begriffe gehen auch an LinkedIn.</small>
+                            </div>
+                            <div class="js-field">
+                                <label>Fokus-Themen (stärker gewichtet)</label>
+                                <div class="js-chips" id="jsFocus"></div>
+                                <small>Treffer im Titel bekommen einen grossen Bonus und das Abzeichen ★.</small>
+                            </div>
+                            <div class="js-field">
+                                <label>Regionen</label>
+                                <div class="js-checks">
+                                    <label><input type="checkbox" id="jsReg-ch"> Schweiz</label>
+                                    <label><input type="checkbox" id="jsReg-chRemote"> Schweiz remote</label>
+                                    <label><input type="checkbox" id="jsReg-euRemote"> EU remote</label>
+                                    <label><input type="checkbox" id="jsReg-de"> Deutschland</label>
+                                    <label><input type="checkbox" id="jsReg-at"> Österreich</label>
+                                </div>
+                            </div>
+                            <div class="js-field">
+                                <label>Quellen</label>
+                                <div class="js-checks">
+                                    <label><input type="checkbox" id="jsSrc-linkedin"> LinkedIn</label>
+                                    <label><input type="checkbox" id="jsSrc-jobsch"> jobs.ch</label>
+                                    <label><input type="checkbox" id="jsSrc-arbeitsagentur"> Arbeitsagentur</label>
+                                    <label><input type="checkbox" id="jsSrc-remote"> Remote-Börsen</label>
+                                    <label><input type="checkbox" id="jsSrc-ats"> Firmen-Feeds</label>
+                                </div>
+                            </div>
+                            <div class="js-field">
+                                <label>Ausschliessen, wenn im Titel</label>
+                                <div class="js-chips" id="jsExclude"></div>
+                                <small>Zusätzlich zu Sales, Recruiting, Entwickler- und Leitungsrollen.</small>
+                            </div>
+                            <div class="js-field">
+                                <label>Maximales Alter der Anzeige</label>
+                                <select id="jsMaxAge">
+                                    <option value="14">14 Tage</option>
+                                    <option value="30">30 Tage</option>
+                                    <option value="45">45 Tage</option>
+                                </select>
+                            </div>
+                            <div class="js-field js-full">
+                                <label>Profil für KI-Bewertung und Anschreiben</label>
+                                <textarea id="jsProfile" placeholder="Werdegang, Stationen, Tools, belegbare Projekte, Sprachen. Je konkreter, desto besser passen Bewertung und Anschreiben. Leer = Daten aus dem Profil-Tab."></textarea>
+                                <small>Nur belegbare Fakten. Die KI erfindet nichts dazu, was hier nicht steht.</small>
+                            </div>
+                        </div>
+                        <div class="js-actions" style="margin-top:14px">
+                            <button class="js-btn" id="jsSaveCriteria"><i class="fas fa-save"></i> Kriterien speichern</button>
+                        </div>
+                    </details>
+
+                    <div class="js-card">
+                        <div class="js-toolbar">
+                            <div class="js-seg" id="jsSeg">
+                                <button data-f="all" class="on">Offen <em>0</em></button>
+                                <button data-f="focus">★ Fokus <em>0</em></button>
+                                <button data-f="rec">Empfohlen <em>0</em></button>
+                                <button data-f="done">Erledigt <em>0</em></button>
+                            </div>
+                            <button class="js-btn small" id="jsSelectRec"><i class="fas fa-check-double"></i> Empfohlene auswählen</button>
+                        </div>
+                        <div class="js-list" id="jsList"></div>
+                    </div>
+
+                    <div class="js-card" id="jsProgress" style="display:none"></div>
+                </div>
+
+                <div class="js-packbar" id="jsPackbar">
+                    <span id="jsPackCount">0 Stellen ausgewählt</span>
+                    <button class="js-btn small ghost" id="jsClearSel" style="color:#cbd5e1">Auswahl leeren</button>
+                    <button class="js-btn primary" id="jsPackBtn"><i class="fas fa-magic"></i> Bewerbungen erstellen</button>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════ -->
+            <!-- TAB 2: QUICK APPLY -->
+            <!-- ═══════════════════════════════════════════════════════════ -->
+            <div id="tab-quick" class="tab-content">
                 <div class="quick-apply-container">
                     <div class="quick-apply-hero">
                         <div class="hero-icon">
@@ -1451,6 +1559,7 @@ Ihre Aufgaben:
     <script src="js/utils.js?v=20260623api"></script>
     <script src="js/dashboard-core.js?v=20260623api"></script>
     <script src="js/quick-apply.js?v=20260623api"></script>
+    <script src="js/job-search.js?v=20261111a"></script>
     
     <script>
         // Initialize Global API Manager

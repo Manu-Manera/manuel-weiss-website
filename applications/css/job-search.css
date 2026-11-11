@@ -1,0 +1,102 @@
+/* Stellensuche – Tab 1 im Bewerbungsmanager (applications/js/job-search.js) */
+
+.js-wrap { max-width: 1100px; margin: 0 auto; padding: 8px 0 120px; }
+
+.js-hero { text-align: center; margin: 10px 0 22px; }
+.js-hero h1 { font-size: 1.9rem; font-weight: 800; color: var(--text-primary); margin: 0 0 6px; letter-spacing: -0.5px; }
+.js-hero p { color: var(--text-secondary); margin: 0; }
+
+.js-steps { display: flex; justify-content: center; gap: 10px; margin: 18px 0 4px; flex-wrap: wrap; }
+.js-step { display: flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px; background: #fff;
+  border: 1px solid var(--border-medium); color: var(--text-secondary); font-size: .85rem; font-weight: 600; }
+.js-step b { display: inline-flex; width: 22px; height: 22px; border-radius: 50%; align-items: center; justify-content: center;
+  background: var(--bg-tertiary); color: var(--text-secondary); font-size: .75rem; }
+.js-step.on { border-color: var(--primary); color: var(--primary); }
+.js-step.on b { background: var(--primary); color: #fff; }
+.js-step.done b { background: var(--accent-green); color: #fff; }
+
+.js-card { background: #fff; border: 1px solid var(--border-light); border-radius: 16px; box-shadow: var(--shadow-card); padding: 18px 20px; margin-bottom: 16px; }
+
+.js-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.js-btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 12px; border: 1px solid var(--border-medium);
+  background: #fff; color: var(--text-primary); font: inherit; font-weight: 600; cursor: pointer; transition: .15s; }
+.js-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+.js-btn:disabled { opacity: .5; cursor: not-allowed; }
+.js-btn.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+.js-btn.primary:hover:not(:disabled) { background: var(--primary-dark); color: #fff; }
+.js-btn.small { padding: 6px 11px; font-size: .8rem; border-radius: 9px; }
+.js-btn.ghost { border-color: transparent; background: transparent; color: var(--text-secondary); }
+.js-status { color: var(--text-secondary); font-size: .85rem; margin-left: auto; }
+.js-status .fa-spinner { color: var(--primary); }
+
+.js-criteria summary { cursor: pointer; font-weight: 700; color: var(--text-primary); list-style: none; display: flex; align-items: center; gap: 8px; }
+.js-criteria summary::-webkit-details-marker { display: none; }
+.js-criteria summary small { font-weight: 500; color: var(--text-muted); }
+.js-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+@media (max-width: 800px) { .js-grid { grid-template-columns: 1fr; } }
+.js-field label { display: block; font-size: .8rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .4px; }
+.js-field small { display: block; color: var(--text-muted); font-size: .75rem; margin-top: 4px; }
+.js-field textarea { width: 100%; min-height: 120px; border: 1px solid var(--border-medium); border-radius: 10px; padding: 10px; font: inherit; font-size: .88rem; resize: vertical; }
+.js-field select { border: 1px solid var(--border-medium); border-radius: 9px; padding: 7px 10px; font: inherit; }
+.js-full { grid-column: 1 / -1; }
+
+.js-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px; border: 1px solid var(--border-medium); border-radius: 10px; min-height: 44px; }
+.js-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 8px; background: var(--primary-bg); color: var(--primary-dark); font-size: .82rem; }
+.js-chip button { border: 0; background: none; color: inherit; cursor: pointer; padding: 0; font-size: .9rem; line-height: 1; }
+.js-chips input { flex: 1; min-width: 140px; border: 0; outline: 0; font: inherit; font-size: .85rem; padding: 4px; }
+.js-checks { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.js-checks label { display: flex; align-items: center; gap: 6px; font-size: .88rem; color: var(--text-primary); text-transform: none; letter-spacing: 0; font-weight: 500; margin: 0; }
+
+.js-toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+.js-seg { display: inline-flex; background: var(--bg-tertiary); border-radius: 10px; padding: 3px; }
+.js-seg button { border: 0; background: transparent; padding: 6px 12px; border-radius: 8px; font: inherit; font-size: .82rem; font-weight: 600; color: var(--text-secondary); cursor: pointer; }
+.js-seg button.on { background: #fff; color: var(--primary); box-shadow: var(--shadow-sm); }
+.js-toolbar .js-count { margin-left: auto; font-size: .82rem; color: var(--text-muted); }
+
+.js-list { display: flex; flex-direction: column; gap: 8px; }
+.js-job { display: grid; grid-template-columns: 26px 54px 1fr auto; gap: 12px; align-items: start; padding: 14px; border: 1px solid var(--border-light);
+  border-radius: 14px; background: #fff; cursor: pointer; transition: .15s; }
+.js-job:hover { border-color: rgba(99, 102, 241, .35); }
+.js-job.sel { border-color: var(--primary); background: rgba(99, 102, 241, .04); box-shadow: 0 0 0 1px var(--primary) inset; }
+.js-job.done { opacity: .6; cursor: default; }
+.js-job input[type=checkbox] { width: 18px; height: 18px; margin-top: 4px; accent-color: var(--primary); cursor: pointer; }
+.js-score { text-align: center; }
+.js-score b { display: block; font-size: 1.35rem; font-weight: 800; color: var(--accent-green); line-height: 1.1; }
+.js-score b.mid { color: var(--accent-yellow); }
+.js-score b.low { color: var(--text-muted); }
+.js-score span { font-size: .65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .4px; }
+.js-title { font-weight: 700; color: var(--text-primary); }
+.js-title a { color: inherit; text-decoration: none; }
+.js-title a:hover { color: var(--primary); text-decoration: underline; }
+.js-meta { font-size: .82rem; color: var(--text-secondary); margin-top: 3px; }
+.js-why { font-size: .85rem; color: var(--text-primary); margin-top: 6px; background: var(--bg-secondary); border-radius: 8px; padding: 6px 9px; }
+.js-badge { display: inline-block; font-size: .7rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; margin-left: 6px; vertical-align: 2px; }
+.js-badge.focus { background: #ecfdf5; color: #047857; }
+.js-badge.dev { background: #eef2ff; color: #4338ca; }
+.js-badge.rec { background: #fef3c7; color: #92400e; }
+.js-badge.done { background: #e0f2fe; color: #0369a1; }
+.js-badge.remote { background: var(--bg-tertiary); color: var(--text-secondary); }
+.js-row-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+@media (max-width: 700px) {
+  .js-job { grid-template-columns: 24px 44px 1fr; }
+  .js-row-actions { grid-column: 3; flex-direction: row; align-items: center; }
+}
+
+.js-empty { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
+.js-empty i { font-size: 2.2rem; color: var(--primary-light); margin-bottom: 10px; display: block; }
+
+.js-packbar { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%) translateY(140%); z-index: 900; display: flex; align-items: center; gap: 14px;
+  background: var(--bg-dark); color: #fff; padding: 12px 14px 12px 20px; border-radius: 16px; box-shadow: var(--shadow-xl); transition: transform .25s ease; max-width: calc(100% - 24px); flex-wrap: wrap; }
+.js-packbar.show { transform: translateX(-50%) translateY(0); }
+.js-packbar .js-btn { border-color: transparent; }
+
+.js-progress { display: flex; flex-direction: column; gap: 8px; }
+.js-prow { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: var(--bg-secondary); font-size: .9rem; flex-wrap: wrap; }
+.js-prow .st { width: 20px; text-align: center; }
+.js-prow .st .fa-check { color: var(--accent-green); }
+.js-prow .st .fa-times { color: var(--accent-red); }
+.js-prow .grow { flex: 1; min-width: 200px; }
+.js-prow a { color: var(--primary); font-weight: 600; text-decoration: none; }
+
+.js-login { text-align: center; padding: 36px 20px; }
+.js-login i { font-size: 2rem; color: var(--primary); margin-bottom: 10px; display: block; }

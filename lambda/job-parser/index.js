@@ -63,7 +63,10 @@ exports.handler = async (event) => {
     }
 
     try {
-        const { url, text, type } = JSON.parse(event.body || '{}');
+        const body = JSON.parse(event.body || '{}');
+        const type = body.type || body.inputType;
+        const url = body.url || (type === 'url' ? body.input : '');
+        const text = body.text || (type === 'text' ? body.input : '');
 
         let result;
 
@@ -82,7 +85,7 @@ exports.handler = async (event) => {
         return {
             statusCode: 200,
             headers: CORS_HEADERS,
-            body: JSON.stringify({ success: true, data: result })
+            body: JSON.stringify({ success: true, data: result, parsedJob: result })
         };
 
     } catch (error) {
