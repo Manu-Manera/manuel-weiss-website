@@ -26,11 +26,20 @@
 
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const toast = (msg, type = 'info') => {
-    const sm = window.AdminApp?.stateManager;
-    if (sm?.addNotification) sm.addNotification({ type, title: 'Stellensuche', message: msg, duration: type === 'error' ? 8000 : 4000 });
-    else console.log(`[${type}] ${msg}`);
-  };
+  function toast(msg, type = 'info') {
+    let box = document.getElementById('jsToasts');
+    if (!box) {
+      box = document.createElement('div');
+      box.id = 'jsToasts';
+      box.className = 'js-toasts';
+      document.body.appendChild(box);
+    }
+    const el = document.createElement('div');
+    el.className = `js-toast ${type}`;
+    el.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i><span>${esc(msg)}</span>`;
+    box.appendChild(el);
+    setTimeout(() => el.remove(), type === 'error' ? 9000 : 4500);
+  }
 
   function endpoint() {
     return window.AWS_APP_CONFIG?.JOB_SEARCH_URL || '';
@@ -88,7 +97,7 @@
     const key = await openAIKey();
     if (!key) throw new Error('Kein OpenAI-Key. Im Admin Panel unter «API Keys» hinterlegen.');
     const configured = window.GlobalAPIManager?.getServiceConfig?.('openai')?.model;
-    const models = [...new Set([model || configured || 'gpt-4o-mini', 'gpt-4o-mini'])];
+    const models = [...new Set([model, configured, 'gpt-5.2', 'gpt-4o-mini'].filter(Boolean))];
     let lastErr;
     for (const m of models) {
       const res = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -170,7 +179,7 @@
 - recommended: true ab score 70.`
         },
         { role: 'user', content: `PROFIL:\n${profileText() || '(kein Profil hinterlegt)'}\n\nSTELLEN:\n${JSON.stringify(batch)}` }
-      ], { json: true, model: 'gpt-4o-mini' });
+      ], { json: true });
       const rated = new Map((JSON.parse(content).jobs || []).map((x) => [x.id, x]));
       JS.results = JS.results.map((j) => {
         const r = rated.get(j.id);

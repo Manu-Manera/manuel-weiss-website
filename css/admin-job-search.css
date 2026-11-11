@@ -139,6 +139,16 @@
 .js-wrap .js-job.js-app { grid-template-columns: 44px 1fr auto; cursor: default; }
 .js-wrap .js-app .js-score b { font-size: 1.1rem; }
 
+/* Hinweise */
+.js-toasts { position: fixed; top: 84px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 8px; max-width: min(420px, calc(100vw - 40px)); }
+.js-toast { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 12px; background: #fff; color: #0f172a; border: 1px solid #e2e8f0;
+  border-left: 4px solid #4f46e5; box-shadow: 0 10px 30px rgba(15, 23, 42, .15); font: 500 .9rem/1.4 'Inter', system-ui, sans-serif; }
+.js-toast i { margin-top: 2px; color: #4f46e5; }
+.js-toast.success { border-left-color: #047857; }
+.js-toast.success i { color: #047857; }
+.js-toast.error { border-left-color: #b91c1c; }
+.js-toast.error i { color: #b91c1c; }
+
 /* Eingebetteter Bewerbungsmanager */
 .js-wrap .js-manager { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--surface); }
 .js-wrap .js-manager-bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); flex-wrap: wrap; }
