@@ -1,14 +1,16 @@
 <div class="applications-admin-container js-wrap" id="jobSearchRoot">
-    <div class="js-hero">
-        <h1>Bewerbungen</h1>
-        <p>Stellen finden, auswählen und Anschreiben-Entwürfe erstellen. Nur für dein Admin-Konto.</p>
+    <div class="js-head">
+        <div>
+            <h1>Bewerbungen</h1>
+            <p>Stellen finden, Anschreiben erstellen und alles an einem Ort verwalten.</p>
+        </div>
     </div>
 
-    <div class="js-panes">
+    <nav class="js-panes" aria-label="Bereiche">
         <button type="button" class="on" data-pane="search"><i class="fas fa-search"></i> Stellensuche</button>
         <button type="button" data-pane="tracking"><i class="fas fa-tasks"></i> Meine Bewerbungen <em id="appsCount">0</em></button>
-        <a href="applications/dashboard.html" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> Bewerbungsmanager</a>
-    </div>
+        <button type="button" data-pane="manager"><i class="fas fa-briefcase"></i> Bewerbungsmanager</button>
+    </nav>
 
     <section data-pane-body="search">
         <div class="js-steps">
@@ -113,6 +115,19 @@
         </div>
         <div class="js-card">
             <div class="js-list" id="applicationsList"></div>
+        </div>
+    </section>
+
+    <section data-pane-body="manager" hidden>
+        <div class="js-manager">
+            <div class="js-manager-bar">
+                <span>Quick Apply, Anschreiben, Lebenslauf, Zeugnisse, Bewerbungsmappe, Interview</span>
+                <button type="button" class="js-btn small" data-manager-tab="quick"><i class="fas fa-bolt"></i> Quick Apply</button>
+                <button type="button" class="js-btn small" data-manager-tab="cover"><i class="fas fa-file-alt"></i> Anschreiben</button>
+                <button type="button" class="js-btn small" data-manager-tab="resume"><i class="fas fa-id-card"></i> Lebenslauf</button>
+                <a class="js-btn small ghost" href="applications/dashboard.html" target="_blank" rel="noopener" title="In neuem Tab öffnen"><i class="fas fa-external-link-alt"></i></a>
+            </div>
+            <iframe id="managerFrame" title="Bewerbungsmanager"></iframe>
         </div>
     </section>
 </div>

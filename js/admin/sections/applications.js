@@ -18,19 +18,62 @@ class ApplicationsSection {
         if (!root.dataset.panesBound) {
             root.dataset.panesBound = '1';
             root.addEventListener('click', (e) => {
+                const tabBtn = e.target.closest('[data-manager-tab]');
+                if (tabBtn) { this.openManager(tabBtn.dataset.managerTab); return; }
                 const btn = e.target.closest('[data-pane], [data-show-pane]');
-                if (btn) this.showPane(btn.dataset.pane || btn.dataset.showPane);
+                if (btn) this.showPane(btn.dataset.pane || btn.dataset.showPane, btn.dataset.managerTarget);
             });
         }
         window.JobSearch?.mount();
         this.loadApplications();
     }
 
-    showPane(name) {
+    showPane(name, managerTab) {
         document.querySelectorAll('#jobSearchRoot [data-pane]').forEach((b) => b.classList.toggle('on', b.dataset.pane === name));
         document.querySelectorAll('#jobSearchRoot [data-pane-body]').forEach((s) => { s.hidden = s.dataset.paneBody !== name; });
-        const packbar = document.getElementById('jsPackbar');
-        if (packbar) packbar.style.visibility = name === 'search' ? '' : 'hidden';
+        if (name === 'manager') this.openManager(managerTab);
+        if (name === 'tracking') this.loadApplications();
+    }
+
+    // Der Bewerbungsmanager liest die Website-Sitzung (aws_auth_session); Admin- und Website-Login nutzen denselben Cognito-Client.
+    shareSessionWithManager() {
+        const admin = window.adminAuth?.getSession?.();
+        if (!admin?.idToken) return false;
+        let payload = {};
+        try { payload = JSON.parse(atob(admin.idToken.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))); } catch { return false; }
+        let current = null;
+        try { current = JSON.parse(localStorage.getItem('aws_auth_session') || 'null'); } catch { /* ungültig */ }
+        const stillValid = current?.idToken && current.id === payload.sub && new Date(current.expiresAt) > new Date(Date.now() + 5 * 60 * 1000);
+        if (stillValid) return true;
+        const expiresAt = admin.expiresAt || new Date(payload.exp * 1000).toISOString();
+        localStorage.setItem('aws_auth_session', JSON.stringify({
+            id: payload.sub,
+            email: payload.email || admin.email,
+            firstName: payload.given_name || '',
+            lastName: payload.family_name || '',
+            accessToken: admin.accessToken,
+            idToken: admin.idToken,
+            refreshToken: admin.refreshToken,
+            expiresIn: Math.max(60, Math.round((new Date(expiresAt) - Date.now()) / 1000)),
+            tokenType: 'Bearer',
+            loginTime: Date.now(),
+            expiresAt
+        }));
+        return true;
+    }
+
+    openManager(tab = 'quick') {
+        const frame = document.getElementById('managerFrame');
+        if (!frame) return;
+        this.shareSessionWithManager();
+        const url = `applications/dashboard.html?embedded=true#${tab}`;
+        if (!frame.src) {
+            frame.src = url;
+        } else {
+            try { frame.contentWindow.showTab(tab); } catch { frame.src = url; }
+        }
+        document.querySelectorAll('#jobSearchRoot [data-pane]').forEach((b) => b.classList.toggle('on', b.dataset.pane === 'manager'));
+        document.querySelectorAll('#jobSearchRoot [data-pane-body]').forEach((s) => { s.hidden = s.dataset.paneBody !== 'manager'; });
     }
 
     endpoint(query = '') {

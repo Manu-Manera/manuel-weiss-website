@@ -2661,11 +2661,9 @@
     align-items: center;
     gap: var(--spacing-sm);
     padding: var(--spacing-md) var(--spacing-xl);
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    color: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: #ffffff;
+    color: var(--text-primary);
+    border: 1px solid var(--border-medium);
     border-radius: 14px;
     font-weight: 500;
     cursor: pointer;
@@ -2674,8 +2672,8 @@
 }
 
 .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.25);
+    border-color: var(--primary);
+    color: var(--primary);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -2860,7 +2858,8 @@
     }
     
     .dashboard-stats-bar .stat-item.highlight i {
-        background: rgba(255, 255, 255, 0.25) !important;
+        background: rgba(16, 185, 129, 0.12) !important;
+        color: #059669 !important;
     }
     
     .dashboard-stats-bar .stat-content {
@@ -2876,7 +2875,7 @@
     
     .dashboard-stats-bar .stat-item .stat-label {
         font-size: 0.65rem;
-        color: rgba(255, 255, 255, 0.85) !important;
+        color: var(--text-secondary) !important;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }

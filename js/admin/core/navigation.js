@@ -167,6 +167,7 @@ class AdminNavigation {
             if (container) {
                 container.innerHTML = result.template;
                 container.setAttribute('data-section', sectionId);
+                document.querySelector('admin-topbar')?.updateBreadcrumb?.(sectionId);
                 console.log('Content inserted into DOM');
             } else {
                 console.error('Admin content container not found');

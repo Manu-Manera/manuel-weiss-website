@@ -298,7 +298,7 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
     }
     window.AdminApp?.sections?.applications?.loadApplications?.();
     box.insertAdjacentHTML('beforeend', `<div class="js-actions" style="margin-top:14px">
-      <a class="js-btn primary" href="applications/dashboard.html#cover" target="_blank"><i class="fas fa-file-alt"></i> Anschreiben im Bewerbungsmanager</a>
+      <button class="js-btn primary" type="button" data-show-pane="manager" data-manager-target="cover"><i class="fas fa-file-alt"></i> Anschreiben im Bewerbungsmanager</button>
       <button class="js-btn" type="button" data-show-pane="tracking"><i class="fas fa-tasks"></i> Zu meinen Bewerbungen</button></div>`);
     setBusy(false);
     render();
