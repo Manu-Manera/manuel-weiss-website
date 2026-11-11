@@ -1,55 +1,118 @@
-<div class="applications-admin-container">
-    <div class="applications-admin-header">
-        <h2>Bewerbungsverwaltung</h2>
-        <p>Verwalte deine Bewerbungen und verfolge deinen Erfolg</p>
+<div class="applications-admin-container js-wrap" id="jobSearchRoot">
+    <div class="js-hero">
+        <h1>Bewerbungen</h1>
+        <p>Stellen finden, auswählen und Anschreiben-Entwürfe erstellen. Nur für dein Admin-Konto.</p>
     </div>
-    
-    <!-- Dashboard Widget -->
-    <div class="applications-dashboard" style="margin-bottom: 3rem;">
-        <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-            <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-height: 120px; display: flex; flex-direction: column; justify-content: center; text-align: center;">
-                <div class="stat-icon" style="font-size: 1.5rem; margin-bottom: 0.75rem; opacity: 0.9;">📊</div>
-                <div class="stat-value" style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2);" id="total-applications-count">0</div>
-                <div class="stat-label" style="opacity: 1; color: white; font-size: 0.9rem; font-weight: 500; line-height: 1.2; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">Gesendete<br>Bewerbungen</div>
-            </div>
-            
-            <div class="stat-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-height: 120px; display: flex; flex-direction: column; justify-content: center; text-align: center;">
-                <div class="stat-icon" style="font-size: 1.5rem; margin-bottom: 0.75rem; opacity: 0.9;">✅</div>
-                <div class="stat-value" style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2);" id="positive-responses-count">0</div>
-                <div class="stat-label" style="opacity: 1; color: white; font-size: 0.9rem; font-weight: 500; line-height: 1.2; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">In<br>Bearbeitung</div>
-            </div>
-            
-            <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-height: 120px; display: flex; flex-direction: column; justify-content: center; text-align: center;">
-                <div class="stat-icon" style="font-size: 1.5rem; margin-bottom: 0.75rem; opacity: 0.9;">💼</div>
-                <div class="stat-value" style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2);" id="interviews-count">0</div>
-                <div class="stat-label" style="opacity: 1; color: white; font-size: 0.9rem; font-weight: 500; line-height: 1.2; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">Vorstellungs-<br>gespräch</div>
-            </div>
-            
-            <div class="stat-card" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-height: 120px; display: flex; flex-direction: column; justify-content: center; text-align: center;">
-                <div class="stat-icon" style="font-size: 1.5rem; margin-bottom: 0.75rem; opacity: 0.9;">❌</div>
-                <div class="stat-value" style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2);" id="rejections-count">0</div>
-                <div class="stat-label" style="opacity: 1; color: white; font-size: 0.9rem; font-weight: 500; line-height: 1.2; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">Absage</div>
-            </div>
-            
-            <div class="stat-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-height: 120px; display: flex; flex-direction: column; justify-content: center; text-align: center;">
-                <div class="stat-icon" style="font-size: 1.5rem; margin-bottom: 0.75rem; opacity: 0.9;">📈</div>
-                <div class="stat-value" style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2);" id="success-rate-count">0%</div>
-                <div class="stat-label" style="opacity: 1; color: white; font-size: 0.9rem; font-weight: 500; line-height: 1.2; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">Erfolgsrate</div>
+
+    <div class="js-panes">
+        <button type="button" class="on" data-pane="search"><i class="fas fa-search"></i> Stellensuche</button>
+        <button type="button" data-pane="tracking"><i class="fas fa-tasks"></i> Meine Bewerbungen <em id="appsCount">0</em></button>
+        <a href="applications/dashboard.html" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> Bewerbungsmanager</a>
+    </div>
+
+    <section data-pane-body="search">
+        <div class="js-steps">
+            <span class="js-step on" data-step="1"><b>1</b> Suchen</span>
+            <span class="js-step" data-step="2"><b>2</b> Stellen auswählen</span>
+            <span class="js-step" data-step="3"><b>3</b> Bewerbungen erstellen</span>
+        </div>
+
+        <div class="js-card">
+            <div class="js-actions">
+                <button class="js-btn primary" id="jsSearchBtn"><i class="fas fa-search"></i> Stellen suchen</button>
+                <button class="js-btn" id="jsRateBtn" disabled><i class="fas fa-robot"></i> KI-Bewertung</button>
+                <span class="js-status" id="jsStatus"></span>
             </div>
         </div>
-    </div>
-    
-    <!-- Applications List -->
-    <div class="applications-list-container">
-        <div class="applications-header">
-            <h3>Deine Bewerbungen</h3>
-            <button class="btn btn-primary" onclick="addNewApplication()">
-                <i class="fas fa-plus"></i> Neue Bewerbung
-            </button>
+
+        <details class="js-card js-criteria" id="jsCriteria">
+            <summary><i class="fas fa-sliders-h"></i> Suchkriterien <small>Suchbegriffe, Fokus, Regionen, Profil für die KI</small></summary>
+            <div class="js-grid">
+                <div class="js-field">
+                    <label>Suchbegriffe</label>
+                    <div class="js-chips" id="jsTerms"></div>
+                    <small>Die ersten 8 Begriffe gehen auch an LinkedIn.</small>
+                </div>
+                <div class="js-field">
+                    <label>Fokus-Themen (stärker gewichtet)</label>
+                    <div class="js-chips" id="jsFocus"></div>
+                    <small>Treffer im Titel bekommen einen grossen Bonus und das Abzeichen ★.</small>
+                </div>
+                <div class="js-field">
+                    <label>Regionen</label>
+                    <div class="js-checks">
+                        <label><input type="checkbox" id="jsReg-ch"> Schweiz</label>
+                        <label><input type="checkbox" id="jsReg-chRemote"> Schweiz remote</label>
+                        <label><input type="checkbox" id="jsReg-euRemote"> EU remote</label>
+                        <label><input type="checkbox" id="jsReg-de"> Deutschland</label>
+                        <label><input type="checkbox" id="jsReg-at"> Österreich</label>
+                    </div>
+                </div>
+                <div class="js-field">
+                    <label>Quellen</label>
+                    <div class="js-checks">
+                        <label><input type="checkbox" id="jsSrc-linkedin"> LinkedIn</label>
+                        <label><input type="checkbox" id="jsSrc-jobsch"> jobs.ch</label>
+                        <label><input type="checkbox" id="jsSrc-arbeitsagentur"> Arbeitsagentur</label>
+                        <label><input type="checkbox" id="jsSrc-remote"> Remote-Börsen</label>
+                        <label><input type="checkbox" id="jsSrc-ats"> Firmen-Feeds</label>
+                    </div>
+                </div>
+                <div class="js-field">
+                    <label>Ausschliessen, wenn im Titel</label>
+                    <div class="js-chips" id="jsExclude"></div>
+                    <small>Zusätzlich zu Sales, Recruiting, Entwickler- und Leitungsrollen.</small>
+                </div>
+                <div class="js-field">
+                    <label>Maximales Alter der Anzeige</label>
+                    <select id="jsMaxAge">
+                        <option value="14">14 Tage</option>
+                        <option value="30">30 Tage</option>
+                        <option value="45">45 Tage</option>
+                    </select>
+                </div>
+                <div class="js-field js-full">
+                    <label>Profil für KI-Bewertung und Anschreiben</label>
+                    <textarea id="jsProfile" placeholder="Werdegang, Stationen, Tools, belegbare Projekte, Sprachen."></textarea>
+                    <small>Nur belegbare Fakten. Die KI erfindet nichts dazu, was hier nicht steht.</small>
+                </div>
+            </div>
+            <div class="js-actions" style="margin-top:14px">
+                <button class="js-btn" id="jsSaveCriteria"><i class="fas fa-save"></i> Kriterien speichern</button>
+            </div>
+        </details>
+
+        <div class="js-card">
+            <div class="js-toolbar">
+                <div class="js-seg" id="jsSeg">
+                    <button data-f="all" class="on">Offen <em>0</em></button>
+                    <button data-f="focus">★ Fokus <em>0</em></button>
+                    <button data-f="rec">Empfohlen <em>0</em></button>
+                    <button data-f="done">Erledigt <em>0</em></button>
+                </div>
+                <button class="js-btn small" id="jsSelectRec"><i class="fas fa-check-double"></i> Empfohlene auswählen</button>
+            </div>
+            <div class="js-list" id="jsList"></div>
         </div>
-        
-        <div class="applications-list" id="applicationsList">
-            <!-- Applications will be loaded here -->
+
+        <div class="js-card" id="jsProgress" style="display:none"></div>
+
+        <div class="js-packbar" id="jsPackbar">
+            <span id="jsPackCount">0 Stellen ausgewählt</span>
+            <button class="js-btn small ghost" id="jsClearSel" style="color:#cbd5e1">Auswahl leeren</button>
+            <button class="js-btn primary" id="jsPackBtn"><i class="fas fa-magic"></i> Bewerbungen erstellen</button>
         </div>
-    </div>
+    </section>
+
+    <section data-pane-body="tracking" hidden>
+        <div class="js-stats">
+            <div><b id="appsTotal">0</b><span>Gesamt</span></div>
+            <div><b id="appsOpen">0</b><span>Offen</span></div>
+            <div><b id="appsInterview">0</b><span>Interview</span></div>
+            <div><b id="appsRejected">0</b><span>Absage</span></div>
+        </div>
+        <div class="js-card">
+            <div class="js-list" id="applicationsList"></div>
+        </div>
+    </section>
 </div>

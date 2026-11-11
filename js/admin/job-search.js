@@ -1,9 +1,9 @@
 /**
- * Stellensuche – Schritt 1 im Bewerbungsmanager.
+ * Stellensuche im Admin Panel (#applications), nur für Admins.
  *
  * Ablauf: Suchen (Lambda website-job-search) → KI-Bewertung (OpenAI im Browser,
- * gleicher Key wie Quick Apply) → Stellen anklicken → für die Auswahl Anschreiben-
- * Entwürfe erzeugen, die im Tab «Anschreiben» und im Tracking landen.
+ * Key aus «API Keys») → Stellen anklicken → für die Auswahl Anschreiben-Entwürfe
+ * erzeugen, die im Bewerbungsmanager unter «Anschreiben» und im Tracking landen.
  */
 (function () {
   'use strict';
@@ -26,22 +26,23 @@
 
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const toast = (msg, type = 'info') => (window.showToast ? window.showToast(msg, type) : console.log(`[${type}] ${msg}`));
+  const toast = (msg, type = 'info') => {
+    const sm = window.AdminApp?.stateManager;
+    if (sm?.addNotification) sm.addNotification({ type, title: 'Stellensuche', message: msg, duration: type === 'error' ? 8000 : 4000 });
+    else console.log(`[${type}] ${msg}`);
+  };
 
   function endpoint() {
     return window.AWS_APP_CONFIG?.JOB_SEARCH_URL || '';
   }
 
-  async function authToken() {
-    if (window.cloudDataService?.getAuthToken) {
-      try { return await window.cloudDataService.getAuthToken(); } catch { /* nicht angemeldet */ }
-    }
-    try { return JSON.parse(localStorage.getItem('aws_auth_session') || '{}').idToken || null; } catch { return null; }
+  function authToken() {
+    return window.adminAuth?.getSession?.()?.idToken || null;
   }
 
   async function api(action, payload = {}) {
-    const token = await authToken();
-    if (!token) throw new Error('Bitte zuerst anmelden.');
+    const token = authToken();
+    if (!token) throw new Error('Admin-Sitzung abgelaufen, bitte neu anmelden.');
     const res = await fetch(endpoint(), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -49,6 +50,18 @@
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || `Fehler ${res.status}`);
+    return data;
+  }
+
+  async function userData(path, body) {
+    const base = window.getApiUrl ? window.getApiUrl('USER_DATA') : `${window.AWS_APP_CONFIG?.API_BASE || ''}/user-data`;
+    const res = await fetch(`${base}${path}`, {
+      method: body ? 'POST' : 'GET',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken()}` },
+      ...(body ? { body: JSON.stringify(body) } : {})
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || `Speichern fehlgeschlagen (${res.status})`);
     return data;
   }
 
@@ -91,30 +104,15 @@
   }
 
   function profileText() {
-    const own = (JS.criteria?.candidateProfile || '').trim();
-    if (own) return own;
-    const p = window.DashboardState?.profile || {};
-    return [
-      [p.firstName, p.lastName].filter(Boolean).join(' '),
-      p.currentJob && `Aktuelle Rolle: ${p.currentJob}`,
-      p.location && `Wohnort: ${p.location}`,
-      p.summary,
-      Array.isArray(p.skills) && p.skills.length && `Stärken: ${p.skills.join(', ')}`
-    ].filter(Boolean).join('\n');
+    return (JS.criteria?.candidateProfile || '').trim();
   }
 
   function candidateName() {
-    const p = window.DashboardState?.profile || {};
-    return [p.firstName, p.lastName].filter(Boolean).join(' ');
+    return window.adminAuth?.getCurrentUser?.()?.name || 'Manuel Weiss';
   }
 
   function isLoggedIn() {
-    try {
-      if (window.cloudDataService?.isUserLoggedIn) return window.cloudDataService.isUserLoggedIn();
-      return !!JSON.parse(localStorage.getItem('aws_auth_session') || '{}').idToken;
-    } catch {
-      return false;
-    }
+    return !!authToken();
   }
 
   // ─────────────────────────────────────────────────────────── Laden / Suchen
@@ -255,7 +253,7 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
       return;
     }
     if (!profileText()) {
-      toast('Bitte zuerst unter «Suchkriterien» ein Profil für die KI hinterlegen oder das Profil-Tab ausfüllen.', 'error');
+      toast('Bitte zuerst unter «Suchkriterien» ein Profil für die KI hinterlegen.', 'error');
       $('jsCriteria').open = true;
       return;
     }
@@ -280,7 +278,7 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
         const now = new Date().toISOString();
         const coverId = `cl_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`;
         const country = locale === 'de-CH' ? 'CH' : (/österreich|austria|wien/i.test(job.location) ? 'AT' : 'DE');
-        await window.cloudDataService?.saveCoverLetter({
+        await userData('/cover-letters', {
           id: coverId, content: letter, version: '1.0', createdAt: now, updatedAt: now, source: 'stellensuche',
           jobData: {
             title: job.title, jobTitle: job.title, position: job.title, company: job.company, companyName: job.company,
@@ -288,48 +286,32 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
           },
           options: { locale }
         });
-        saveTracking(job, letter, coverId);
+        await saveTracking(job, letter, coverId);
         await mark([job], 'applied');
         done.push(job);
         row.querySelector('.st').innerHTML = '<i class="fas fa-check"></i>';
-        info(`<a href="cover-letter-editor.html?edit=${encodeURIComponent(coverId)}" target="_blank">Im Editor öffnen</a> · <a href="${esc(job.url)}" target="_blank">Anzeige</a>`);
+        info(`<a href="applications/cover-letter-editor.html?edit=${encodeURIComponent(coverId)}" target="_blank">Im Editor öffnen</a> · <a href="${esc(job.url)}" target="_blank">Anzeige</a>`);
       } catch (e) {
         row.querySelector('.st').innerHTML = '<i class="fas fa-times"></i>';
         info(`Fehler: ${esc(e.message)}`);
       }
     }
-    if (window.DashboardState?._cachedData) window.DashboardState._cachedData = null;
-    window.updateStatsBar?.();
+    window.AdminApp?.sections?.applications?.loadApplications?.();
     box.insertAdjacentHTML('beforeend', `<div class="js-actions" style="margin-top:14px">
-      <button class="js-btn primary" onclick="showTab('cover')"><i class="fas fa-file-alt"></i> Zu meinen Anschreiben</button>
-      <button class="js-btn" onclick="showTab('tracking')"><i class="fas fa-tasks"></i> Zum Tracking</button></div>`);
+      <a class="js-btn primary" href="applications/dashboard.html#cover" target="_blank"><i class="fas fa-file-alt"></i> Anschreiben im Bewerbungsmanager</a>
+      <button class="js-btn" type="button" data-show-pane="tracking"><i class="fas fa-tasks"></i> Zu meinen Bewerbungen</button></div>`);
     setBusy(false);
     render();
     toast(`${done.length} von ${jobs.length} Bewerbung(en) erstellt`, done.length ? 'success' : 'error');
   }
 
   function saveTracking(job, letter, coverId) {
-    const app = {
+    return userData('/applications', {
       id: `app_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`,
       position: job.title, company: job.company, location: job.location, url: job.url,
       date: new Date().toISOString().split('T')[0], status: 'pending', coverLetter: letter, coverLetterId: coverId,
       source: 'stellensuche', notes: 'Entwurf aus der Stellensuche, noch nicht versendet', createdAt: new Date().toISOString()
-    };
-    if (window.DashboardState?.applications) {
-      window.DashboardState.applications.unshift(app);
-      if (window.saveState) { window.saveState(); return; }
-    }
-    window.cloudDataService?.saveApplication?.(app);
-  }
-
-  function openInQuickApply(job) {
-    window.showTab('quick');
-    const input = $('jobUrl');
-    if (!input) return;
-    window.toggleInputType?.('url');
-    input.value = job.url;
-    input.dispatchEvent(new Event('input'));
-    setTimeout(() => window.parseJobUrl?.(), 200);
+    });
   }
 
   // ─────────────────────────────────────────────────────────── Kriterien
@@ -415,8 +397,8 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
 
   function renderLogin() {
     $('jsList').innerHTML = `<div class="js-login"><i class="fas fa-lock"></i>
-      <p>Die Stellensuche speichert Kriterien und gesehene Stellen in deinem Konto.<br>Bitte melde dich an.</p>
-      <button class="js-btn primary" onclick="(window.authModals?.showLogin||function(){document.getElementById('authButton')?.click()})()">Anmelden</button></div>`;
+      <p>Die Admin-Sitzung ist abgelaufen.</p>
+      <a class="js-btn primary" href="admin-login.html">Neu anmelden</a></div>`;
     setStatus('');
   }
 
@@ -463,7 +445,6 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
         JS.selected.has(job.id) ? JS.selected.delete(job.id) : JS.selected.add(job.id);
         render();
       });
-      row.querySelector('[data-act=quick]')?.addEventListener('click', () => openInQuickApply(job));
       row.querySelector('[data-act=hide]')?.addEventListener('click', async () => {
         try { await mark([job], 'dismissed'); render(); } catch (e) { toast(e.message, 'error'); }
       });
@@ -500,8 +481,7 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
         ${j.why ? `<div class="js-why">${esc(j.why)}</div>` : ''}
       </div>
       <div class="js-row-actions">${open
-        ? `<button class="js-btn small" data-act="quick" title="Einzeln in Quick Apply bearbeiten"><i class="fas fa-bolt"></i> Quick Apply</button>
-           <button class="js-btn small ghost" data-act="hide" title="Nicht mehr anzeigen"><i class="fas fa-eye-slash"></i> Ausblenden</button>`
+        ? `<button class="js-btn small ghost" data-act="hide" title="Nicht mehr anzeigen"><i class="fas fa-eye-slash"></i> Ausblenden</button>`
         : `<button class="js-btn small ghost" data-act="reopen"><i class="fas fa-undo"></i> Wieder öffnen</button>`}</div>
     </div>`;
   }
@@ -521,17 +501,13 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
     document.querySelectorAll('#jsSeg button').forEach((b) => b.addEventListener('click', () => { JS.filter = b.dataset.f; render(); }));
   }
 
-  function maybeLoad() {
-    if (!JS.loaded && document.getElementById('tab-search')) load();
+  function mount() {
+    const root = $('jobSearchRoot');
+    if (!root || root.dataset.bound) return;
+    root.dataset.bound = '1';
+    bind();
+    if (JS.loaded) { renderCriteria(); render(); } else load();
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    if (!document.getElementById('tab-search')) return;
-    bind();
-    // Auth-Session wird asynchron wiederhergestellt
-    setTimeout(maybeLoad, 600);
-  });
-  ['authStateChanged', 'userLoggedIn'].forEach((ev) => window.addEventListener(ev, () => { JS.loaded = false; maybeLoad(); }));
-
-  window.JobSearch = { load, search, rate, state: JS };
+  window.JobSearch = { mount, load, search, rate, state: JS };
 })();

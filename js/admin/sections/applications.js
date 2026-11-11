@@ -1,255 +1,148 @@
 /**
  * Applications Section Module
- * Bewerbungsverwaltung für das Admin Panel
+ * Stellensuche (js/admin/job-search.js) und die eigenen Bewerbungen aus /user-data/applications
  */
 class ApplicationsSection {
     constructor() {
-        this.stateManager = null;
-        this.initialized = false;
         this.applications = [];
+        this.initialized = false;
     }
-    
-    /**
-     * Section initialisieren
-     */
+
     init() {
-        if (this.initialized) return;
-        
-        // Dependencies prüfen
-        if (window.AdminApp && window.AdminApp.stateManager) {
-            this.stateManager = window.AdminApp.stateManager;
-        }
-        
-        // Applications laden
-        this.loadApplications();
-        
-        // Event Listeners hinzufügen
-        this.attachEventListeners();
-        
         this.initialized = true;
-        console.log('Applications Section initialized');
     }
-    
-    /**
-     * Event Listeners hinzufügen
-     */
-    attachEventListeners() {
-        // Add New Application Button
-        const addBtn = document.querySelector('[onclick="addNewApplication()"]');
-        if (addBtn) {
-            addBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.addNewApplication();
+
+    onNavigate() {
+        const root = document.getElementById('jobSearchRoot');
+        if (!root) return;
+        if (!root.dataset.panesBound) {
+            root.dataset.panesBound = '1';
+            root.addEventListener('click', (e) => {
+                const btn = e.target.closest('[data-pane], [data-show-pane]');
+                if (btn) this.showPane(btn.dataset.pane || btn.dataset.showPane);
             });
         }
+        window.JobSearch?.mount();
+        this.loadApplications();
     }
-    
-    /**
-     * Applications laden
-     */
+
+    showPane(name) {
+        document.querySelectorAll('#jobSearchRoot [data-pane]').forEach((b) => b.classList.toggle('on', b.dataset.pane === name));
+        document.querySelectorAll('#jobSearchRoot [data-pane-body]').forEach((s) => { s.hidden = s.dataset.paneBody !== name; });
+        const packbar = document.getElementById('jsPackbar');
+        if (packbar) packbar.style.visibility = name === 'search' ? '' : 'hidden';
+    }
+
+    endpoint(query = '') {
+        const base = window.getApiUrl ? window.getApiUrl('USER_DATA') : `${window.AWS_APP_CONFIG?.API_BASE || ''}/user-data`;
+        return `${base}/applications${query}`;
+    }
+
+    async request(method, body, query) {
+        const token = window.adminAuth?.getSession?.()?.idToken;
+        if (!token) throw new Error('Admin-Sitzung abgelaufen');
+        const res = await fetch(this.endpoint(query), {
+            method,
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            ...(body ? { body: JSON.stringify(body) } : {})
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || `Fehler ${res.status}`);
+        return data;
+    }
+
     async loadApplications() {
+        const list = document.getElementById('applicationsList');
+        if (!list) return;
         try {
-            // Mock data - in real implementation, load from API
-            this.applications = [
-                {
-                    id: 1,
-                    company: 'TechCorp GmbH',
-                    position: 'Frontend Developer',
-                    date: '2024-01-15',
-                    status: 'sent',
-                    response: null
-                },
-                {
-                    id: 2,
-                    company: 'StartupXYZ',
-                    position: 'Full Stack Developer',
-                    date: '2024-01-14',
-                    status: 'pending',
-                    response: null
-                },
-                {
-                    id: 3,
-                    company: 'BigCorp AG',
-                    position: 'Senior Developer',
-                    date: '2024-01-13',
-                    status: 'interview',
-                    response: 'Interview am 20.01.2024'
-                }
-            ];
-            
-            // Stats aktualisieren
-            this.updateStats();
-            
-            // Applications List rendern
-            this.renderApplicationsList();
-            
+            const data = await this.request('GET');
+            this.applications = (Array.isArray(data) ? data : [])
+                .sort((a, b) => String(b.date || b.createdAt || '').localeCompare(String(a.date || a.createdAt || '')));
+            this.render();
         } catch (error) {
-            console.error('Failed to load applications:', error);
+            list.innerHTML = `<div class="js-empty"><i class="fas fa-exclamation-triangle"></i>${this.esc(error.message)}</div>`;
         }
     }
-    
-    /**
-     * Stats aktualisieren
-     */
-    updateStats() {
-        const total = this.applications.length;
-        const positive = this.applications.filter(app => app.status === 'pending' || app.status === 'interview').length;
-        const interviews = this.applications.filter(app => app.status === 'interview').length;
-        const rejections = this.applications.filter(app => app.status === 'rejected').length;
-        const successRate = total > 0 ? Math.round((positive / total) * 100) : 0;
-        
-        // Stats anzeigen
-        const totalEl = document.getElementById('total-applications-count');
-        const positiveEl = document.getElementById('positive-responses-count');
-        const interviewsEl = document.getElementById('interviews-count');
-        const rejectionsEl = document.getElementById('rejections-count');
-        const successRateEl = document.getElementById('success-rate-count');
-        
-        if (totalEl) totalEl.textContent = total;
-        if (positiveEl) positiveEl.textContent = positive;
-        if (interviewsEl) interviewsEl.textContent = interviews;
-        if (rejectionsEl) rejectionsEl.textContent = rejections;
-        if (successRateEl) successRateEl.textContent = successRate + '%';
-    }
-    
-    /**
-     * Applications List rendern
-     */
-    renderApplicationsList() {
-        const container = document.getElementById('applicationsList');
-        if (!container) return;
-        
-        if (this.applications.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-briefcase" style="font-size: 3rem; color: #94a3b8; margin-bottom: 1rem;"></i>
-                    <h3>Keine Bewerbungen vorhanden</h3>
-                    <p>Erstelle deine erste Bewerbung, um loszulegen.</p>
-                    <button class="btn btn-primary" onclick="addNewApplication()">
-                        <i class="fas fa-plus"></i> Erste Bewerbung erstellen
-                    </button>
-                </div>
-            `;
+
+    render() {
+        const apps = this.applications;
+        const count = (fn) => apps.filter(fn).length;
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+        set('appsCount', apps.length);
+        set('appsTotal', apps.length);
+        set('appsOpen', count((a) => !a.status || a.status === 'pending'));
+        set('appsInterview', count((a) => a.status === 'interview'));
+        set('appsRejected', count((a) => a.status === 'rejected'));
+
+        const list = document.getElementById('applicationsList');
+        if (!list) return;
+        if (!apps.length) {
+            list.innerHTML = '<div class="js-empty"><i class="fas fa-briefcase"></i>Noch keine Bewerbungen. Starte mit der Stellensuche.</div>';
             return;
         }
-        
-        container.innerHTML = this.applications.map(app => `
-            <div class="application-item" data-id="${app.id}">
-                <div class="application-info">
-                    <div class="application-header">
-                        <h4>${app.company}</h4>
-                        <span class="application-status status-${app.status}">
-                            ${this.getStatusText(app.status)}
-                        </span>
+        const statuses = Object.entries(ApplicationsSection.STATUS);
+        list.innerHTML = apps.map((a) => `
+            <div class="js-job js-app" data-id="${this.esc(a.id)}">
+                <div class="js-score"><b class="${a.status === 'rejected' ? 'low' : a.status === 'pending' ? 'mid' : ''}"><i class="fas ${a.status === 'interview' ? 'fa-comments' : a.status === 'rejected' ? 'fa-times' : a.status === 'offer' ? 'fa-trophy' : 'fa-paper-plane'}"></i></b></div>
+                <div>
+                    <div class="js-title">${a.url ? `<a href="${this.esc(a.url)}" target="_blank" rel="noopener">${this.esc(a.position || 'Ohne Titel')}</a>` : this.esc(a.position || 'Ohne Titel')}
+                        ${a.source === 'stellensuche' ? '<span class="js-badge focus">Stellensuche</span>' : ''}</div>
+                    <div class="js-meta">${[a.company, a.location, this.formatDate(a.date || a.createdAt)].filter(Boolean).map((s) => this.esc(s)).join(' · ')}</div>
+                    ${a.notes ? `<div class="js-why">${this.esc(a.notes)}</div>` : ''}
+                </div>
+                <div class="js-row-actions">
+                    <select data-act="status" aria-label="Status">${statuses.map(([k, v]) => `<option value="${k}"${k === a.status ? ' selected' : ''}>${v}</option>`).join('')}</select>
+                    <div style="display:flex;gap:6px">
+                        ${a.coverLetterId ? `<a class="js-btn small" href="applications/cover-letter-editor.html?edit=${encodeURIComponent(a.coverLetterId)}" target="_blank" title="Anschreiben öffnen"><i class="fas fa-file-alt"></i></a>` : ''}
+                        <button class="js-btn small ghost" data-act="delete" title="Löschen"><i class="fas fa-trash"></i></button>
                     </div>
-                    <p class="application-position">${app.position}</p>
-                    <p class="application-date">Beworben am: ${this.formatDate(app.date)}</p>
-                    ${app.response ? `<p class="application-response">${app.response}</p>` : ''}
                 </div>
-                <div class="application-actions">
-                    <button class="btn btn-sm btn-secondary" onclick="editApplication(${app.id})">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteApplication(${app.id})">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-        `).join('');
+            </div>`).join('');
+
+        list.querySelectorAll('.js-app').forEach((row) => {
+            const app = this.applications.find((a) => a.id === row.dataset.id);
+            row.querySelector('[data-act=status]').addEventListener('change', (e) => this.updateStatus(app, e.target.value));
+            row.querySelector('[data-act=delete]').addEventListener('click', () => this.deleteApplication(app));
+        });
     }
-    
-    /**
-     * Status Text
-     */
-    getStatusText(status) {
-        const statusTexts = {
-            'sent': 'Gesendet',
-            'pending': 'Wartend',
-            'interview': 'Interview',
-            'rejected': 'Abgelehnt',
-            'accepted': 'Angenommen'
-        };
-        return statusTexts[status] || status;
-    }
-    
-    /**
-     * Date Format
-     */
-    formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('de-DE');
-    }
-    
-    /**
-     * Neue Bewerbung hinzufügen
-     */
-    addNewApplication() {
-        // Redirect zu Bewerbungsmanager
-        window.location.href = 'bewerbung.html';
-    }
-    
-    /**
-     * Bewerbung bearbeiten
-     */
-    editApplication(id) {
-        const application = this.applications.find(app => app.id === id);
-        if (application) {
-            // Redirect zu Bewerbungsmanager mit ID
-            window.location.href = `bewerbung.html?id=${id}`;
+
+    async updateStatus(app, status) {
+        try {
+            await this.request('POST', { ...app, status });
+            app.status = status;
+            this.render();
+        } catch (error) {
+            alert(`Status konnte nicht gespeichert werden: ${error.message}`);
         }
     }
-    
-    /**
-     * Bewerbung löschen
-     */
-    deleteApplication(id) {
-        if (confirm('Bewerbung wirklich löschen?')) {
-            this.applications = this.applications.filter(app => app.id !== id);
-            this.updateStats();
-            this.renderApplicationsList();
+
+    async deleteApplication(app) {
+        if (!confirm(`Bewerbung «${app.position}» bei ${app.company} löschen?`)) return;
+        try {
+            await this.request('DELETE', null, `?id=${encodeURIComponent(app.id)}`);
+            this.applications = this.applications.filter((a) => a.id !== app.id);
+            this.render();
+        } catch (error) {
+            alert(`Löschen fehlgeschlagen: ${error.message}`);
         }
     }
-    
-    /**
-     * Applications aktualisieren
-     */
-    async refresh() {
-        await this.loadApplications();
+
+    formatDate(value) {
+        if (!value) return '';
+        const d = new Date(value);
+        return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('de-CH');
+    }
+
+    esc(s) {
+        return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     }
 }
 
-// Global Functions für Legacy Support
-window.addNewApplication = function() {
-    if (window.AdminApp && window.AdminApp.sections && window.AdminApp.sections.applications) {
-        window.AdminApp.sections.applications.addNewApplication();
-    }
+ApplicationsSection.STATUS = {
+    pending: 'Gesendet / offen',
+    interview: 'Interview',
+    offer: 'Angebot',
+    rejected: 'Absage'
 };
 
-window.editApplication = function(id) {
-    if (window.AdminApp && window.AdminApp.sections && window.AdminApp.sections.applications) {
-        window.AdminApp.sections.applications.editApplication(id);
-    }
-};
-
-window.deleteApplication = function(id) {
-    if (window.AdminApp && window.AdminApp.sections && window.AdminApp.sections.applications) {
-        window.AdminApp.sections.applications.deleteApplication(id);
-    }
-};
-
-// Section initialisieren wenn DOM bereit
-document.addEventListener('DOMContentLoaded', () => {
-    // Warten bis AdminApp verfügbar ist
-    const initSection = () => {
-        if (window.AdminApp && window.AdminApp.sections) {
-            window.AdminApp.sections.applications = new ApplicationsSection();
-            window.AdminApp.sections.applications.init();
-        } else {
-            setTimeout(initSection, 100);
-        }
-    };
-    initSection();
-});
-
-// Global verfügbar machen
 window.ApplicationsSection = ApplicationsSection;

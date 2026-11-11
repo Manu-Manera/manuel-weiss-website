@@ -274,6 +274,17 @@ class AdminNavigation {
                     }
                 }
 
+                if (sectionId === 'applications' && window.ApplicationsSection) {
+                    let applications = window.AdminApp?.sections?.applications;
+                    if (!applications) {
+                        applications = new window.ApplicationsSection();
+                        if (window.AdminApp) {
+                            window.AdminApp.sections.applications = applications;
+                        }
+                    }
+                    applications.onNavigate();
+                }
+
                 if (sectionId === 'finanzen' && window.FinanzenSection) {
                     let finanzen = window.AdminApp?.sections?.finanzen;
                     if (!finanzen) {

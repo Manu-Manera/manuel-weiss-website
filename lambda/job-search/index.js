@@ -118,18 +118,35 @@ function respond(statusCode, body) {
   return { statusCode, headers: CORS_HEADERS, body: JSON.stringify(body) };
 }
 
-function getUser(event) {
+const ISSUER = `https://cognito-idp.eu-central-1.amazonaws.com/${USER_POOL_ID}`;
+const ADMIN_GROUP = process.env.ADMIN_GROUP || 'admin';
+let jwksCache = null;
+
+async function signingKey(kid) {
+  if (!jwksCache || !jwksCache.has(kid)) {
+    const res = await fetch(`${ISSUER}/.well-known/jwks.json`);
+    const { keys = [] } = await res.json();
+    jwksCache = new Map(keys.map((k) => [k.kid, crypto.createPublicKey({ key: k, format: 'jwk' })]));
+  }
+  return jwksCache.get(kid) || null;
+}
+
+async function getUser(event) {
   const h = event.headers || {};
   const auth = h.authorization || h.Authorization || '';
-  if (!auth.startsWith('Bearer ')) return null;
+  if (!auth.startsWith('Bearer ')) return { error: 401 };
   try {
-    const payload = JSON.parse(Buffer.from(auth.slice(7).split('.')[1], 'base64url').toString());
-    if (payload.exp && payload.exp * 1000 < Date.now()) return null;
-    if (payload.iss && !payload.iss.endsWith(USER_POOL_ID)) return null;
-    const userId = payload.sub || payload['cognito:username'];
-    return userId ? { userId, email: payload.email || '' } : null;
+    const [head, body, sig] = auth.slice(7).split('.');
+    const header = JSON.parse(Buffer.from(head, 'base64url').toString());
+    const payload = JSON.parse(Buffer.from(body, 'base64url').toString());
+    const key = header.alg === 'RS256' ? await signingKey(header.kid) : null;
+    if (!key || !crypto.verify('RSA-SHA256', Buffer.from(`${head}.${body}`), key, Buffer.from(sig, 'base64url'))) return { error: 401 };
+    if (payload.iss !== ISSUER || !payload.exp || payload.exp * 1000 < Date.now()) return { error: 401 };
+    const groups = payload['cognito:groups'] || [];
+    if (!Array.isArray(groups) || !groups.includes(ADMIN_GROUP)) return { error: 403 };
+    return { userId: payload.sub, email: payload.email || '' };
   } catch {
-    return null;
+    return { error: 401 };
   }
 }
 
@@ -579,8 +596,9 @@ exports.handler = async (event) => {
   const method = event.requestContext?.http?.method || event.httpMethod;
   if (method === 'OPTIONS') return { statusCode: 204, headers: CORS_HEADERS, body: '' };
 
-  const user = getUser(event);
-  if (!user) return respond(401, { error: 'Bitte anmelden' });
+  const user = await getUser(event);
+  if (user.error === 403) return respond(403, { error: 'Die Stellensuche ist nur im Admin Panel verfügbar' });
+  if (user.error) return respond(401, { error: 'Bitte anmelden' });
 
   let body = {};
   try {
