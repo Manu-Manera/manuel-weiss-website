@@ -153,4 +153,8 @@
 .js-wrap .js-manager { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--surface); }
 .js-wrap .js-manager-bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); flex-wrap: wrap; }
 .js-wrap .js-manager-bar span { color: var(--ink-2); font-size: .85rem; margin-right: auto; }
-.js-wrap .js-manager iframe { display: block; width: 100%; height: calc(100vh - 230px); min-height: 640px; border: 0; background: #fff; }
+.js-wrap .js-manager iframe { display: block; width: 100%; height: calc(100vh - 260px); min-height: 420px; border: 0; background: #fff; }
+.js-wrap.is-manager { padding-bottom: 0; }
+.js-wrap.is-manager .js-head { margin-bottom: 10px; }
+.js-wrap.is-manager .js-head p { display: none; }
+.js-wrap.is-manager .js-panes { margin-bottom: 12px; }

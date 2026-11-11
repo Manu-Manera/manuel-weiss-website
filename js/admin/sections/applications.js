@@ -18,6 +18,8 @@ class ApplicationsSection {
         if (!root.dataset.panesBound) {
             root.dataset.panesBound = '1';
             root.addEventListener('click', (e) => {
+                const portfolioLink = e.target.closest('[data-portfolio]');
+                if (portfolioLink) { e.preventDefault(); this.openManager('portfolio', portfolioLink.dataset.portfolio); return; }
                 const tabBtn = e.target.closest('[data-manager-tab]');
                 if (tabBtn) { this.openManager(tabBtn.dataset.managerTab); return; }
                 const btn = e.target.closest('[data-pane], [data-show-pane]');
@@ -29,10 +31,58 @@ class ApplicationsSection {
     }
 
     showPane(name, managerTab) {
-        document.querySelectorAll('#jobSearchRoot [data-pane]').forEach((b) => b.classList.toggle('on', b.dataset.pane === name));
-        document.querySelectorAll('#jobSearchRoot [data-pane-body]').forEach((s) => { s.hidden = s.dataset.paneBody !== name; });
-        if (name === 'manager') this.openManager(managerTab);
+        if (name === 'manager') { this.openManager(managerTab); return; }
+        this.activatePane(name);
         if (name === 'tracking') this.loadApplications();
+    }
+
+    activatePane(name) {
+        const root = document.getElementById('jobSearchRoot');
+        if (!root) return;
+        root.classList.toggle('is-manager', name === 'manager');
+        root.querySelectorAll('[data-pane]').forEach((b) => b.classList.toggle('on', b.dataset.pane === name));
+        root.querySelectorAll('[data-pane-body]').forEach((s) => { s.hidden = s.dataset.paneBody !== name; });
+        if (name === 'manager') {
+            window.scrollTo({ top: 0 });
+            this.fitManager();
+        }
+    }
+
+    // Der Bewerbungsmanager ist im eigenen Bereich der einzige Scrollbereich; verschachteltes Scrollen bricht Safari-Trackpad-Gesten.
+    fitManager() {
+        const frame = document.getElementById('managerFrame');
+        if (!frame) return;
+        if (!this.resizeBound) {
+            this.resizeBound = true;
+            window.addEventListener('resize', () => {
+                if (document.getElementById('jobSearchRoot')?.classList.contains('is-manager')) this.fitManager();
+            });
+        }
+        requestAnimationFrame(() => {
+            const top = frame.getBoundingClientRect().top + window.scrollY;
+            let height = Math.max(420, window.innerHeight - top - 16);
+            frame.style.height = `${height}px`;
+            const overflow = document.scrollingElement.scrollHeight - window.innerHeight;
+            if (overflow > 0 && height - overflow >= 420) {
+                height -= overflow;
+                frame.style.height = `${height}px`;
+            }
+        });
+    }
+
+    markManagerStale() {
+        this.managerStale = true;
+    }
+
+    async whenManagerReady(frame) {
+        for (let i = 0; i < 60; i++) {
+            try {
+                const win = frame.contentWindow;
+                if (win?.ApplicationSync?.ready) { await win.ApplicationSync.ready; return win; }
+            } catch { /* lädt noch */ }
+            await new Promise((r) => setTimeout(r, 250));
+        }
+        return frame.contentWindow;
     }
 
     // Der Bewerbungsmanager liest die Website-Sitzung (aws_auth_session); Admin- und Website-Login nutzen denselben Cognito-Client.
@@ -62,18 +112,23 @@ class ApplicationsSection {
         return true;
     }
 
-    openManager(tab = 'quick') {
+    async openManager(tab = 'quick', applicationId = null) {
         const frame = document.getElementById('managerFrame');
         if (!frame) return;
+        this.activatePane('manager');
         this.shareSessionWithManager();
         const url = `applications/dashboard.html?embedded=true#${tab}`;
-        if (!frame.src) {
+        if (!frame.src || this.managerStale) {
+            this.managerStale = false;
             frame.src = url;
-        } else {
-            try { frame.contentWindow.showTab(tab); } catch { frame.src = url; }
         }
-        document.querySelectorAll('#jobSearchRoot [data-pane]').forEach((b) => b.classList.toggle('on', b.dataset.pane === 'manager'));
-        document.querySelectorAll('#jobSearchRoot [data-pane-body]').forEach((s) => { s.hidden = s.dataset.paneBody !== 'manager'; });
+        const win = await this.whenManagerReady(frame);
+        try {
+            if (applicationId && win.openPortfolioFor) win.openPortfolioFor(applicationId);
+            else win.showTab(tab);
+        } catch {
+            frame.src = url;
+        }
     }
 
     endpoint(query = '') {
@@ -136,7 +191,8 @@ class ApplicationsSection {
                 <div class="js-row-actions">
                     <select data-act="status" aria-label="Status">${statuses.map(([k, v]) => `<option value="${k}"${k === a.status ? ' selected' : ''}>${v}</option>`).join('')}</select>
                     <div style="display:flex;gap:6px">
-                        ${a.coverLetterId ? `<a class="js-btn small" href="applications/cover-letter-editor.html?edit=${encodeURIComponent(a.coverLetterId)}" target="_blank" title="Anschreiben öffnen"><i class="fas fa-file-alt"></i></a>` : ''}
+                        ${a.portfolio || a.coverLetterId ? `<button class="js-btn small" type="button" data-portfolio="${this.esc(a.id)}" title="Bewerbungsmappe mit Anschreiben, Lebenslauf und Zeugnissen"><i class="fas fa-folder-open"></i> Mappe</button>` : ''}
+                        ${a.coverLetterId ? `<a class="js-btn small" href="applications/cover-letter-editor.html?edit=${encodeURIComponent(a.coverLetterId)}" target="_blank" title="Anschreiben bearbeiten"><i class="fas fa-file-alt"></i></a>` : ''}
                         <button class="js-btn small ghost" data-act="delete" title="Löschen"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>

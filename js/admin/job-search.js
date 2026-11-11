@@ -275,6 +275,7 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
     box.style.display = 'block';
     box.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
+    const assets = await loadAssets().catch(() => ({}));
     const done = [];
     for (const job of jobs) {
       const row = $(`jsp-${job.id}`);
@@ -295,32 +296,55 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
           },
           options: { locale }
         });
-        await saveTracking(job, letter, coverId);
+        const appId = await saveTracking(job, letter, coverId, assets);
         await mark([job], 'applied');
         done.push(job);
         row.querySelector('.st').innerHTML = '<i class="fas fa-check"></i>';
-        info(`<a href="applications/cover-letter-editor.html?edit=${encodeURIComponent(coverId)}" target="_blank">Im Editor öffnen</a> · <a href="${esc(job.url)}" target="_blank">Anzeige</a>`);
+        const parts = ['Anschreiben', assets.resumeId && 'Lebenslauf', assets.certificateIds?.length && 'Zeugnisse', assets.photoId && 'Foto'].filter(Boolean);
+        info(`${parts.join(', ')} · <a href="#" data-portfolio="${esc(appId)}">Bewerbungsmappe öffnen</a> · <a href="applications/cover-letter-editor.html?edit=${encodeURIComponent(coverId)}" target="_blank">Anschreiben bearbeiten</a>`);
       } catch (e) {
         row.querySelector('.st').innerHTML = '<i class="fas fa-times"></i>';
         info(`Fehler: ${esc(e.message)}`);
       }
     }
-    window.AdminApp?.sections?.applications?.loadApplications?.();
+    const section = window.AdminApp?.sections?.applications;
+    section?.markManagerStale?.();
+    section?.loadApplications?.();
     box.insertAdjacentHTML('beforeend', `<div class="js-actions" style="margin-top:14px">
-      <button class="js-btn primary" type="button" data-show-pane="manager" data-manager-target="cover"><i class="fas fa-file-alt"></i> Anschreiben im Bewerbungsmanager</button>
-      <button class="js-btn" type="button" data-show-pane="tracking"><i class="fas fa-tasks"></i> Zu meinen Bewerbungen</button></div>`);
+      <button class="js-btn primary" type="button" data-show-pane="manager" data-manager-target="tracking"><i class="fas fa-briefcase"></i> Im Bewerbungsmanager ansehen</button>
+      <button class="js-btn" type="button" data-show-pane="manager" data-manager-target="cover"><i class="fas fa-file-alt"></i> Anschreiben</button></div>`);
     setBusy(false);
     render();
     toast(`${done.length} von ${jobs.length} Bewerbung(en) erstellt`, done.length ? 'success' : 'error');
   }
 
-  function saveTracking(job, letter, coverId) {
-    return userData('/applications', {
-      id: `app_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`,
-      position: job.title, company: job.company, location: job.location, url: job.url,
+  async function loadAssets() {
+    const newest = (list) => [...(Array.isArray(list) ? list : [])].sort((a, b) => String(b.updatedAt || b.createdAt || '').localeCompare(String(a.updatedAt || a.createdAt || '')));
+    const [resumes, documents, photos] = await Promise.all(['/resumes', '/documents', '/photos'].map((p) => userData(p).catch(() => [])));
+    const seen = new Set();
+    const certificates = newest(documents).filter((d) => {
+      const key = `${d.name}|${d.size}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    return {
+      resumeId: newest(resumes)[0]?.id || '',
+      certificateIds: certificates.map((d) => d.id),
+      photoId: localStorage.getItem('selected_photo_id') || newest(photos)[0]?.id || ''
+    };
+  }
+
+  async function saveTracking(job, letter, coverId, assets) {
+    const id = `app_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`;
+    const portfolio = { coverLetterId: coverId, resumeId: assets.resumeId || '', certificateIds: assets.certificateIds || [], photoId: assets.photoId || '' };
+    await userData('/applications', {
+      id, position: job.title, company: job.company, location: job.location, url: job.url,
       date: new Date().toISOString().split('T')[0], status: 'pending', coverLetter: letter, coverLetterId: coverId,
+      resumeId: portfolio.resumeId, certificateIds: portfolio.certificateIds, photoId: portfolio.photoId, portfolio,
       source: 'stellensuche', notes: 'Entwurf aus der Stellensuche, noch nicht versendet', createdAt: new Date().toISOString()
     });
+    return id;
   }
 
   // ─────────────────────────────────────────────────────────── Kriterien
