@@ -125,10 +125,17 @@
         </div>
     </section>
 
+    <section data-pane-body="pack" hidden>
+        <div class="js-pack" id="packView">
+            <div class="js-pack-bar" id="packBar"></div>
+            <div class="js-pack-body" id="packBody"><div class="js-empty"><i class="fas fa-spinner fa-spin"></i>Paket wird geladen …</div></div>
+        </div>
+    </section>
+
     <section data-pane-body="manager" hidden>
         <div class="js-manager">
             <div class="js-manager-bar" id="managerBar"></div>
-            <iframe id="managerFrame" title="Bewerbungsmanager"></iframe>
+            <iframe id="managerFrame" title="Bewerbungsmanager" loading="lazy"></iframe>
         </div>
     </section>
 </div>

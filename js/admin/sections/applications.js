@@ -1,8 +1,8 @@
 /**
  * Applications Section Module
- * Ablauf: 1 Stellen finden (js/admin/job-search.js) → 2 Prüfen & versenden → 3 Nachverfolgen,
- * dazu der eingebettete Bewerbungsmanager für Unterlagen und Bewerbungsmappen.
- * Bewerbungen liegen in /user-data/applications und werden mit dem Manager geteilt.
+ * Ablauf: 1 Stellen finden → 2 Prüfen & versenden → 3 Nachverfolgen.
+ * Pakete werden in einer leichten Eigenansicht geöffnet (kein schwerer iframe),
+ * weil der Bewerbungsmanager-Dashboard auf Mobilgeräten Safari abstürzen lässt.
  */
 class ApplicationsSection {
     constructor() {
@@ -11,12 +11,18 @@ class ApplicationsSection {
         this.pane = 'search';
         this.returnPane = 'review';
         this.managerApp = null;
+        this.packApp = null;
+        this.packClipboard = '';
         this.highlightId = null;
         this.initialized = false;
     }
 
     init() {
         this.initialized = true;
+    }
+
+    isMobile() {
+        return window.matchMedia('(max-width: 860px)').matches || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     }
 
     onNavigate() {
@@ -36,14 +42,16 @@ class ApplicationsSection {
     }
 
     handleClick(e) {
-        const el = e.target.closest('[data-portfolio], [data-manager-tab], [data-pane], [data-show-app], [data-act=sent], [data-act=delete], [data-act=back], #appsSeg button');
+        const el = e.target.closest('[data-portfolio], [data-manager-tab], [data-pane], [data-show-app], [data-act=sent], [data-act=delete], [data-act=back], [data-act=copy], [data-pack-tab], #appsSeg button');
         if (!el) return;
-        if (el.dataset.portfolio) { e.preventDefault(); this.openManager('portfolio', el.dataset.portfolio); return; }
+        if (el.dataset.portfolio) { e.preventDefault(); this.openPack(el.dataset.portfolio); return; }
         if (el.dataset.managerTab) { e.preventDefault(); this.openManager(el.dataset.managerTab); return; }
         if (el.dataset.showApp) { e.preventDefault(); this.focusApplication(el.dataset.showApp); return; }
-        if (el.dataset.act === 'sent') { this.markSent(this.find(el.dataset.id || el.closest('[data-id]')?.dataset.id)); return; }
-        if (el.dataset.act === 'delete') { this.deleteApplication(this.find(el.closest('[data-id]').dataset.id)); return; }
+        if (el.dataset.act === 'sent') { this.markSent(this.find(el.dataset.id || el.closest('[data-id]')?.dataset.id || this.packApp?.id)); return; }
+        if (el.dataset.act === 'delete') { this.deleteApplication(this.find(el.closest('[data-id]')?.dataset.id)); return; }
         if (el.dataset.act === 'back') { this.showPane(this.returnPane); return; }
+        if (el.dataset.act === 'copy') { e.preventDefault(); this.copyText(this.packClipboard); return; }
+        if (el.dataset.packTab) { e.preventDefault(); this.showPackTab(el.dataset.packTab); return; }
         if (el.closest('#appsSeg')) { this.filter = el.dataset.f; this.syncPaneWithFilter(); this.render(); return; }
         if (el.dataset.pane) this.showPane(el.dataset.pane, el.dataset.managerTarget);
     }
@@ -56,6 +64,7 @@ class ApplicationsSection {
 
     showPane(name, managerTab) {
         if (name === 'manager') { this.openManager(managerTab); return; }
+        if (name === 'pack') return;
         if (name === 'review') this.filter = 'draft';
         if (name === 'follow' && (this.filter === 'draft' || this.filter === 'all')) this.filter = 'pending';
         this.activatePane(name);
@@ -65,11 +74,17 @@ class ApplicationsSection {
     activatePane(name) {
         const root = document.getElementById('jobSearchRoot');
         if (!root) return;
-        if (this.pane !== 'manager' && name === 'manager') this.returnPane = this.pane;
+        if (this.pane !== 'manager' && this.pane !== 'pack' && (name === 'manager' || name === 'pack')) {
+            this.returnPane = this.pane;
+        }
         this.pane = name;
         const body = name === 'review' || name === 'follow' ? 'tracking' : name;
         root.classList.toggle('is-manager', name === 'manager');
-        root.querySelectorAll('.js-panes [data-pane]').forEach((b) => b.classList.toggle('on', b.dataset.pane === name));
+        root.classList.toggle('is-pack', name === 'pack');
+        const activeTab = name === 'pack'
+            ? (this.returnPane === 'follow' ? 'follow' : 'review')
+            : name;
+        root.querySelectorAll('.js-panes [data-pane]').forEach((b) => b.classList.toggle('on', b.dataset.pane === activeTab));
         root.querySelectorAll('[data-pane-body]').forEach((s) => { s.hidden = s.dataset.paneBody !== body; });
         window.scrollTo({ top: 0 });
         if (name === 'manager') this.fitManager();
@@ -77,7 +92,7 @@ class ApplicationsSection {
 
     syncPaneWithFilter() {
         const pane = this.filter === 'draft' ? 'review' : 'follow';
-        if (this.pane !== pane && this.pane !== 'manager') this.activatePane(pane);
+        if (this.pane !== pane && this.pane !== 'manager' && this.pane !== 'pack') this.activatePane(pane);
     }
 
     focusApplication(id) {
@@ -90,7 +105,6 @@ class ApplicationsSection {
         document.querySelector(`#applicationsList [data-id="${CSS.escape(id)}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
-    // Der Bewerbungsmanager ist im eigenen Bereich der einzige Scrollbereich; verschachteltes Scrollen bricht Safari-Trackpad-Gesten.
     fitManager() {
         const frame = document.getElementById('managerFrame');
         if (!frame) return;
@@ -112,10 +126,178 @@ class ApplicationsSection {
         });
     }
 
-    // ─────────────────────────────────────────────── Bewerbungsmanager
+    // ─────────────────────────────────────────────── Leichte Paketansicht (Handy-sicher)
+
+    async openPack(applicationId) {
+        const app = this.find(applicationId);
+        if (!app) return;
+        this.packApp = app;
+        this.activatePane('pack');
+        const bar = document.getElementById('packBar');
+        const body = document.getElementById('packBody');
+        if (!bar || !body) return;
+        const back = this.returnPane === 'follow' ? 'Nachverfolgen' : 'Prüfen & versenden';
+        const status = this.statusOf(app);
+        bar.innerHTML = `
+            <button type="button" class="js-btn small ghost" data-act="back"><i class="fas fa-arrow-left"></i> ${back}</button>
+            <div class="js-pack-title">
+                <b>${this.esc(app.position || 'Bewerbung')}</b>
+                <span>${this.esc(app.company || '')}${app.location ? ` · ${this.esc(app.location)}` : ''}</span>
+            </div>
+            <em class="js-status-pill ${status}">${ApplicationsSection.STATUS[status]}</em>
+            ${status === 'draft' ? `<button type="button" class="js-btn small primary" data-act="sent" data-id="${this.esc(app.id)}"><i class="fas fa-paper-plane"></i> Als versendet</button>` : ''}
+            ${app.url ? `<a class="js-btn small" href="${this.esc(app.url)}" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> Anzeige</a>` : ''}`;
+        body.innerHTML = '<div class="js-empty"><i class="fas fa-spinner fa-spin"></i>Paket wird geladen …</div>';
+
+        try {
+            const data = await this.loadPackData(app);
+            this.renderPack(app, data);
+        } catch (error) {
+            body.innerHTML = `<div class="js-empty"><i class="fas fa-exclamation-triangle"></i>${this.esc(error.message)}</div>`;
+        }
+    }
+
+    userDataBase() {
+        return window.getApiUrl ? window.getApiUrl('USER_DATA') : `${window.AWS_APP_CONFIG?.API_BASE || ''}/user-data`;
+    }
+
+    async fetchUserData(path) {
+        const token = window.adminAuth?.getSession?.()?.idToken;
+        if (!token) throw new Error('Admin-Sitzung abgelaufen');
+        const res = await fetch(`${this.userDataBase()}${path}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json().catch(() => ([]));
+        if (!res.ok) throw new Error(data.error || `Laden fehlgeschlagen (${res.status})`);
+        return Array.isArray(data) ? data : [];
+    }
+
+    async loadPackData(app) {
+        const p = app.portfolio || {};
+        const coverId = p.coverLetterId || app.coverLetterId;
+        const resumeId = p.resumeId || app.resumeId;
+        const certIds = p.certificateIds || app.certificateIds || [];
+        const photoId = p.photoId || app.photoId;
+        const mobile = this.isMobile();
+        const [covers, resumes, docs, photos] = await Promise.all([
+            coverId ? this.fetchUserData('/cover-letters') : Promise.resolve([]),
+            resumeId ? this.fetchUserData('/resumes') : Promise.resolve([]),
+            certIds.length ? this.fetchUserData('/documents') : Promise.resolve([]),
+            // Fotos kommen oft als grosse Base64-Payloads und killen Safari auf dem Handy.
+            photoId && !mobile ? this.fetchUserData('/photos') : Promise.resolve([])
+        ]);
+        return {
+            cover: covers.find((c) => c.id === coverId) || (app.coverLetter ? { id: coverId, content: app.coverLetter } : null),
+            resume: resumes.find((r) => r.id === resumeId) || null,
+            certificates: docs.filter((d) => certIds.includes(d.id)),
+            photo: photoId
+                ? (photos.find((ph) => ph.id === photoId) || (mobile ? { id: photoId, name: 'Bewerbungsfoto', dataUrl: 'data:,' } : null))
+                : null
+        };
+    }
+
+    renderPack(app, data) {
+        const body = document.getElementById('packBody');
+        if (!body) return;
+        this.packClipboard = data.cover?.content || '';
+        const tabs = [
+            ['letter', 'Anschreiben', !!data.cover],
+            ['resume', 'Lebenslauf', !!data.resume],
+            ['certs', 'Zeugnisse', !!data.certificates.length],
+            ['photo', 'Foto', !!data.photo]
+        ];
+        const first = tabs.find(([, , ok]) => ok)?.[0] || 'letter';
+        body.innerHTML = `
+            <nav class="js-pack-tabs" aria-label="Paketteile">
+                ${tabs.map(([id, label, ok]) => `<button type="button" data-pack-tab="${id}" class="${id === first ? 'on' : ''}${ok ? '' : ' miss'}" ${ok ? '' : 'disabled'}>${label}</button>`).join('')}
+            </nav>
+            <div class="js-pack-panels">
+                <article data-pack-panel="letter" ${first === 'letter' ? '' : 'hidden'}>
+                    ${data.cover ? `
+                        <div class="js-pack-actions">
+                            <button type="button" class="js-btn small" data-act="copy"><i class="fas fa-copy"></i> Text kopieren</button>
+                            ${data.cover.id ? `<a class="js-btn small" href="applications/cover-letter-editor.html?edit=${encodeURIComponent(data.cover.id)}" target="_blank" rel="noopener"><i class="fas fa-pen"></i> Bearbeiten</a>` : ''}
+                        </div>
+                        <pre class="js-letter">${this.esc(data.cover.content || '')}</pre>`
+                        : '<div class="js-empty"><i class="fas fa-file-alt"></i>Kein Anschreiben verknüpft.</div>'}
+                </article>
+                <article data-pack-panel="resume" ${first === 'resume' ? '' : 'hidden'}>
+                    ${data.resume ? this.resumeHtml(data.resume) : '<div class="js-empty"><i class="fas fa-id-card"></i>Kein Lebenslauf verknüpft.</div>'}
+                </article>
+                <article data-pack-panel="certs" ${first === 'certs' ? '' : 'hidden'}>
+                    ${data.certificates.length ? `<ul class="js-cert-list">${data.certificates.map((c) => `
+                        <li>
+                            <div><b>${this.esc(c.name || c.fileName || 'Zeugnis')}</b><span>${this.esc(c.fileType || 'PDF')}</span></div>
+                            ${c.url ? `<a class="js-btn small" href="${this.esc(c.url)}" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> Öffnen</a>
+                            <a class="js-btn small" href="${this.esc(c.url)}" download="${this.esc(c.name || 'zeugnis.pdf')}"><i class="fas fa-download"></i> Laden</a>` : ''}
+                        </li>`).join('')}</ul>`
+                        : '<div class="js-empty"><i class="fas fa-award"></i>Keine Zeugnisse verknüpft.</div>'}
+                </article>
+                <article data-pack-panel="photo" ${first === 'photo' ? '' : 'hidden'}>
+                    ${this.photoHtml(data.photo)}
+                </article>
+            </div>`;
+    }
+
+    photoHtml(photo) {
+        if (!photo) return '<div class="js-empty"><i class="fas fa-camera"></i>Kein Foto verknüpft.</div>';
+        const src = photo.url || photo.dataUrl || '';
+        // Riesige Base64-Fotos / Handy: nicht einbetten, sonst knallt Safari.
+        if (!photo.url && (this.isMobile() || (src.startsWith('data:') && src.length > 700000))) {
+            return `<div class="js-empty"><i class="fas fa-camera"></i>Foto «${this.esc(photo.name || 'Bewerbungsfoto')}» ist hinterlegt.
+                <div class="js-pack-actions" style="justify-content:center;margin-top:12px">
+                    <a class="js-btn small" href="applications/dashboard.html#photos" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> Foto öffnen</a>
+                </div></div>`;
+        }
+        return src && src !== 'data:,'
+            ? `<img class="js-pack-photo" src="${this.esc(src)}" alt="${this.esc(photo.name || 'Bewerbungsfoto')}" loading="lazy">`
+            : '<div class="js-empty"><i class="fas fa-camera"></i>Kein Foto verknüpft.</div>';
+    }
+
+    resumeHtml(r) {
+        const pi = r.personalInfo || r;
+        const name = `${pi.firstName || r.firstName || ''} ${pi.lastName || r.lastName || ''}`.trim() || r.name || 'Lebenslauf';
+        const lines = [
+            pi.title || r.title,
+            pi.email || r.email,
+            pi.phone || r.phone,
+            pi.location || r.location || pi.address || r.address
+        ].filter(Boolean);
+        const summary = pi.summary || r.summary || '';
+        return `
+            <div class="js-resume-card">
+                <h3>${this.esc(name)}</h3>
+                ${lines.map((l) => `<p>${this.esc(l)}</p>`).join('')}
+                ${summary ? `<div class="js-why">${this.esc(summary)}</div>` : ''}
+                <p class="js-meta">Vollständigen Lebenslauf im Bewerbungsmanager bearbeiten oder als PDF exportieren.</p>
+                <div class="js-pack-actions">
+                    <a class="js-btn small" href="applications/dashboard.html#resume" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> Im Manager öffnen</a>
+                </div>
+            </div>`;
+    }
+
+    showPackTab(tab) {
+        const root = document.getElementById('packBody');
+        if (!root) return;
+        root.querySelectorAll('[data-pack-tab]').forEach((b) => b.classList.toggle('on', b.dataset.packTab === tab));
+        root.querySelectorAll('[data-pack-panel]').forEach((p) => { p.hidden = p.dataset.packPanel !== tab; });
+    }
+
+    async copyText(text) {
+        try {
+            await navigator.clipboard.writeText(text);
+            window.JobSearch?.toast?.('Anschreiben kopiert', 'success');
+        } catch {
+            window.JobSearch?.toast?.('Kopieren nicht möglich', 'error');
+        }
+    }
+
+    // ─────────────────────────────────────────────── Bewerbungsmanager (nur Desktop / neuer Tab)
 
     markManagerStale() {
         this.managerStale = true;
+        const frame = document.getElementById('managerFrame');
+        if (frame) frame.removeAttribute('src');
     }
 
     async whenManagerReady(frame) {
@@ -129,7 +311,6 @@ class ApplicationsSection {
         return frame.contentWindow;
     }
 
-    // Der Bewerbungsmanager liest die Website-Sitzung (aws_auth_session); Admin- und Website-Login nutzen denselben Cognito-Client.
     shareSessionWithManager() {
         const admin = window.adminAuth?.getSession?.();
         if (!admin?.idToken) return false;
@@ -157,6 +338,14 @@ class ApplicationsSection {
     }
 
     async openManager(tab = 'quick', applicationId = null) {
+        // Auf dem Handy: schweres Dashboard nie im iframe – neuer Tab, sonst Absturz / Rauswurf zur Hauptwebsite.
+        if (this.isMobile()) {
+            this.shareSessionWithManager();
+            const hash = applicationId ? 'tracking' : (tab || 'quick');
+            window.open(`applications/dashboard.html#${hash}`, '_blank', 'noopener');
+            window.JobSearch?.toast?.('Bewerbungsmanager in neuem Tab geöffnet (sicherer auf dem Handy).', 'info');
+            return;
+        }
         const frame = document.getElementById('managerFrame');
         if (!frame) return;
         this.managerApp = applicationId ? this.find(applicationId) || null : null;
@@ -188,15 +377,14 @@ class ApplicationsSection {
                  <em class="js-status-pill ${this.statusOf(app)}">${ApplicationsSection.STATUS[this.statusOf(app)]}</em></span>
                ${this.statusOf(app) === 'draft' ? `<button type="button" class="js-btn small primary" data-act="sent" data-id="${this.esc(app.id)}"><i class="fas fa-paper-plane"></i> Als versendet markieren</button>` : ''}
                <a class="js-btn small ghost" href="applications/dashboard.html" target="_blank" rel="noopener" title="In neuem Tab öffnen"><i class="fas fa-external-link-alt"></i></a>`
-            : `<span class="js-manager-ctx">Unterlagen pflegen: Lebenslauf, Zeugnisse, Fotos, Anschreiben und Bewerbungsmappen. Änderungen gelten für alle Bewerbungen.</span>
-               <a class="js-btn small ghost" href="applications/dashboard.html" target="_blank" rel="noopener" title="In neuem Tab öffnen"><i class="fas fa-external-link-alt"></i></a>`;
+            : `<span class="js-manager-ctx">Unterlagen pflegen: Lebenslauf, Zeugnisse, Fotos, Anschreiben. Auf dem Handy öffnet sich das immer in einem neuen Tab.</span>
+               <a class="js-btn small" href="applications/dashboard.html" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> Manager öffnen</a>`;
     }
 
     // ─────────────────────────────────────────────── Daten
 
     endpoint(query = '') {
-        const base = window.getApiUrl ? window.getApiUrl('USER_DATA') : `${window.AWS_APP_CONFIG?.API_BASE || ''}/user-data`;
-        return `${base}/applications${query}`;
+        return `${this.userDataBase()}/applications${query}`;
     }
 
     async request(method, body, query) {
@@ -212,7 +400,6 @@ class ApplicationsSection {
         return data;
     }
 
-    // Der Bewerbungsmanager hält eine lokale Kopie (gleiche Origin) und lädt lokal-only Einträge wieder hoch; deshalb mitpflegen.
     syncLocalCopy(app, removeId) {
         try {
             const key = 'bewerbungsmanager_applications';
@@ -295,10 +482,10 @@ class ApplicationsSection {
         if (hint) {
             hint.innerHTML = this.filter === 'draft'
                 ? `<i class="fas fa-clipboard-check"></i><div><b>${drafts ? `${drafts} Paket${drafts === 1 ? '' : 'e'} bereit zum Prüfen` : 'Keine offenen Entwürfe'}</b>
-                   <span>${drafts ? 'Mappe öffnen, Anschreiben bei Bedarf anpassen, über die Stellenanzeige einreichen und dann als versendet markieren.' : 'Neue Pakete entstehen unter «Stellen finden».'}</span></div>
+                   <span>${drafts ? 'Mappe öffnen, Anschreiben prüfen, über die Anzeige einreichen, dann als versendet markieren.' : 'Neue Pakete entstehen unter «Stellen finden».'}</span></div>
                    ${drafts ? '' : '<button type="button" class="js-btn small" data-pane="search"><i class="fas fa-search"></i> Stellen finden</button>'}`
                 : `<i class="fas fa-bell"></i><div><b>${due ? `${due} Bewerbung${due === 1 ? '' : 'en'} zum Nachfassen` : `${active} laufende Bewerbung${active === 1 ? '' : 'en'}`}</b>
-                   <span>Nach ${ApplicationsSection.FOLLOW_UP_DAYS} Tagen ohne Antwort lohnt sich eine kurze Nachfrage. Status hier oder im Bewerbungsmanager pflegen, beides ist verbunden.</span></div>`;
+                   <span>Nach ${ApplicationsSection.FOLLOW_UP_DAYS} Tagen ohne Antwort lohnt sich eine kurze Nachfrage.</span></div>`;
             hint.classList.toggle('warn', this.filter !== 'draft' && due > 0);
         }
 
@@ -308,6 +495,20 @@ class ApplicationsSection {
         list.innerHTML = shown.length ? shown.map((a) => this.row(a)).join('')
             : `<div class="js-empty"><i class="fas fa-briefcase"></i>${apps.length ? 'In diesem Status gibt es keine Bewerbungen.' : 'Noch keine Bewerbungen. Starte unter «Stellen finden».'}</div>`;
         this.highlightId = null;
+        if (this.pane === 'pack' && this.packApp) {
+            const fresh = this.find(this.packApp.id);
+            if (fresh) {
+                this.packApp = fresh;
+                const bar = document.getElementById('packBar');
+                if (bar) {
+                    const status = this.statusOf(fresh);
+                    const sentBtn = bar.querySelector('[data-act=sent]');
+                    const pill = bar.querySelector('.js-status-pill');
+                    if (pill) { pill.className = `js-status-pill ${status}`; pill.textContent = ApplicationsSection.STATUS[status]; }
+                    if (sentBtn && status !== 'draft') sentBtn.remove();
+                }
+            }
+        }
     }
 
     row(a) {
@@ -338,18 +539,16 @@ class ApplicationsSection {
                 </div>
                 <div class="js-row-actions">
                     ${status === 'draft'
-                        ? `<button class="js-btn small primary" type="button" data-act="sent"><i class="fas fa-paper-plane"></i> Als versendet markieren</button>`
+                        ? `<button class="js-btn small primary" type="button" data-act="sent"><i class="fas fa-paper-plane"></i> Als versendet</button>`
                         : `<select data-act="status" aria-label="Status">${statuses.map(([k, v]) => `<option value="${k}"${k === status ? ' selected' : ''}>${v}</option>`).join('')}</select>`}
                     <div class="js-row-tools">
-                        ${hasPortfolio ? `<button class="js-btn small" type="button" data-portfolio="${this.esc(a.id)}" title="Anschreiben, Lebenslauf und Zeugnisse als Mappe prüfen und als PDF laden"><i class="fas fa-folder-open"></i> Mappe</button>` : ''}
-                        ${a.coverLetterId ? `<a class="js-btn small" href="applications/cover-letter-editor.html?edit=${encodeURIComponent(a.coverLetterId)}" target="_blank" title="Anschreiben bearbeiten"><i class="fas fa-pen"></i> Anschreiben</a>` : ''}
+                        ${hasPortfolio ? `<button class="js-btn small" type="button" data-portfolio="${this.esc(a.id)}"><i class="fas fa-folder-open"></i> Mappe</button>` : ''}
+                        ${a.coverLetterId ? `<a class="js-btn small" href="applications/cover-letter-editor.html?edit=${encodeURIComponent(a.coverLetterId)}" target="_blank" rel="noopener"><i class="fas fa-pen"></i> Text</a>` : ''}
                         <button class="js-btn small ghost" type="button" data-act="delete" title="Löschen"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
             </div>`;
     }
-
-    // ─────────────────────────────────────────────── Aktionen
 
     async markSent(app) {
         if (!app) return;
@@ -359,7 +558,11 @@ class ApplicationsSection {
                 status: 'pending', sentAt: now.toISOString(), date: now.toISOString().split('T')[0],
                 notes: /noch nicht versendet/.test(app.notes || '') ? '' : app.notes
             });
-            window.JobSearch?.toast?.(`«${app.position}» als versendet markiert. Erinnerung zum Nachfassen in ${ApplicationsSection.FOLLOW_UP_DAYS} Tagen.`, 'success');
+            window.JobSearch?.toast?.(`«${app.position}» als versendet markiert.`, 'success');
+            if (this.pane === 'pack') {
+                this.filter = 'pending';
+                this.activatePane('follow');
+            }
             this.render();
         } catch (error) {
             window.JobSearch?.toast?.(`Speichern fehlgeschlagen: ${error.message}`, 'error');
@@ -382,6 +585,7 @@ class ApplicationsSection {
             await this.request('DELETE', null, `?id=${encodeURIComponent(app.id)}`);
             this.applications = this.applications.filter((a) => a.id !== app.id);
             this.syncLocalCopy(null, app.id);
+            if (this.packApp?.id === app.id) this.showPane(this.returnPane);
             this.render();
             window.JobSearch?.refresh?.();
         } catch (error) {
@@ -398,6 +602,7 @@ class ApplicationsSection {
     esc(s) {
         return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     }
+
 }
 
 ApplicationsSection.FOLLOW_UP_DAYS = 10;
