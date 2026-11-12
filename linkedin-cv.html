@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex,nofollow">
+    <title>LinkedIn-Lebenslauf – Manuel Weiss</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #1a1f24;
+            --muted: #5c6770;
+            --paper: #f3efe8;
+            --accent: #1f4d3a;
+            --accent-soft: #d8e6df;
+            --line: rgba(26, 31, 36, 0.12);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            min-height: 100vh;
+            font-family: "DM Sans", sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(1200px 600px at 10% -10%, #e7efe9 0%, transparent 55%),
+                radial-gradient(900px 500px at 100% 0%, #efe6d8 0%, transparent 50%),
+                linear-gradient(180deg, #f7f4ee 0%, var(--paper) 100%);
+            display: grid;
+            place-items: center;
+            padding: 1.5rem;
+        }
+        main {
+            width: min(100%, 28rem);
+            text-align: center;
+        }
+        .brand {
+            font-family: "Instrument Serif", Georgia, serif;
+            font-size: clamp(2.4rem, 8vw, 3.2rem);
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+        }
+        .brand span {
+            display: block;
+            font-style: italic;
+            color: var(--accent);
+        }
+        p {
+            color: var(--muted);
+            font-size: 1.05rem;
+            line-height: 1.5;
+            margin-bottom: 1.75rem;
+        }
+        .cta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        a {
+            display: block;
+            text-decoration: none;
+            border-radius: 0.85rem;
+            padding: 1rem 1.25rem;
+            font-weight: 700;
+            font-size: 1.05rem;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        a:active { transform: scale(0.98); }
+        .primary {
+            background: var(--accent);
+            color: #f7faf8;
+        }
+        .secondary {
+            background: transparent;
+            color: var(--ink);
+            border: 1px solid var(--line);
+            font-weight: 500;
+        }
+        .hint {
+            margin-top: 1.25rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1 class="brand">Manuel Weiss<span>LinkedIn-Lebenslauf</span></h1>
+        <p>Allgemeiner CV (Englisch, 3 Seiten) – direkt als PDF speichern.</p>
+        <div class="cta">
+            <a class="primary" href="Manuel_Weiss_LinkedIn_CV.pdf" download="Manuel_Weiss_LinkedIn_CV.pdf">PDF herunterladen</a>
+            <a class="secondary" href="Manuel_Weiss_CV.pdf" download="Manuel_Weiss_CV.pdf">Bisherige Version öffnen</a>
+        </div>
+        <p class="hint">Tipp: Auf dem iPhone lange drücken → „In Dateien sichern“.</p>
+    </main>
+</body>
+</html>
