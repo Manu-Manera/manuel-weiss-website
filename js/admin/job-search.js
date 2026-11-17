@@ -74,20 +74,20 @@
     return data;
   }
 
-  async function openAIKey() {
+  async function apiKey(service) {
     try {
-      if (window.resolveOpenAIApiKey) {
+      if (service === 'openai' && window.resolveOpenAIApiKey) {
         const k = await window.resolveOpenAIApiKey();
         if (k) return k;
       }
       if (window.awsAPISettings?.getFullApiKey) {
-        const k = await window.awsAPISettings.getFullApiKey('openai');
-        if (typeof k === 'string' && k.startsWith('sk-')) return k;
+        const k = await window.awsAPISettings.getFullApiKey(service);
+        if (typeof k === 'string' && k.length > 10) return k;
       }
-      const g = window.GlobalAPIManager?.getAPIKey?.('openai');
+      const g = window.GlobalAPIManager?.getAPIKey?.(service);
       if (g) return g;
       const parsed = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
-      return parsed.openai?.key || parsed.openai?.apiKey || localStorage.getItem('openai_api_key') || null;
+      return parsed[service]?.key || parsed[service]?.apiKey || (service === 'openai' ? localStorage.getItem('openai_api_key') : null);
     } catch {
       return null;
     }
@@ -110,10 +110,21 @@
   }
 
   const NON_CHAT_MODEL = /audio|realtime|image|tts|whisper|embed|moderation|dall-e|transcribe|search|instruct|codex|computer-use|sora/i;
+  const CREDITS_ERR = /no credits remaining|insufficient_quota|exceeded your current quota|billing_hard_limit|rate_limit_exceeded.*quota/i;
 
-  async function chat(messages, { json = false, model } = {}) {
-    const key = await openAIKey();
-    if (!key) throw new Error('Kein OpenAI-Key. Im Admin Panel unter «API Keys» hinterlegen.');
+  function toAnthropicMessages(messages) {
+    let system = '';
+    const out = [];
+    for (const m of messages) {
+      if (m.role === 'system') system += (system ? '\n\n' : '') + m.content;
+      else out.push({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content });
+    }
+    return { system, messages: out.length ? out : [{ role: 'user', content: 'OK' }] };
+  }
+
+  async function chatOpenAI(messages, { json = false, model } = {}) {
+    const key = await apiKey('openai');
+    if (!key) return null;
     // Dieses OpenAI-Projekt darf gpt-5.2; gpt-4o-mini löst 403 aus und darf nicht als Fallback dienen.
     const configured = window.GlobalAPIManager?.getServiceConfig?.('openai')?.model;
     const blocked = /^gpt-4o(-mini)?$|^gpt-3\.5/i;
@@ -128,10 +139,8 @@
           .sort((a, b) => b.localeCompare(a))
           .slice(0, 3);
       }
-      if (!models.length) {
-        throw new Error('Das OpenAI-Projekt dieses Keys hat auf kein Chat-Modell Zugriff. Unter API Keys einen Key mit gpt-5.2-Zugriff hinterlegen.');
-      }
     }
+    if (!models.length) return { error: new Error('Kein nutzbares OpenAI-Chat-Modell für diesen Key.') };
     let lastErr;
     for (const m of models) {
       const res = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -140,12 +149,58 @@
         body: JSON.stringify({ model: m, messages, ...(json ? { response_format: { type: 'json_object' } } : {}) })
       });
       const data = await res.json().catch(() => ({}));
-      if (res.ok) return data.choices?.[0]?.message?.content || '';
-      // Kein Zugriff auf dieses Modell → nächstes versuchen, nicht abbrechen.
+      if (res.ok) return { text: data.choices?.[0]?.message?.content || '' };
       lastErr = new Error(`${data.error?.message || `OpenAI-Fehler ${res.status}`} (${m})`);
+      if (CREDITS_ERR.test(lastErr.message)) return { error: lastErr, credits: true };
       if (!/does not have access to model|model_not_found|invalid_model/i.test(lastErr.message)) break;
     }
-    throw lastErr;
+    return { error: lastErr };
+  }
+
+  async function chatAnthropic(messages, { json = false } = {}) {
+    const key = await apiKey('anthropic');
+    if (!key) return null;
+    const configured = window.GlobalAPIManager?.getServiceConfig?.('anthropic')?.model;
+    const models = [...new Set([configured, 'claude-sonnet-4-5', 'claude-3-5-sonnet-latest', 'claude-3-haiku-20240307'].filter(Boolean))];
+    const { system, messages: msgs } = toAnthropicMessages(messages);
+    const userTail = json ? '\n\nAntworte ausschliesslich mit gültigem JSON, ohne Markdown.' : '';
+    if (userTail && msgs.length) msgs[msgs.length - 1] = { ...msgs[msgs.length - 1], content: msgs[msgs.length - 1].content + userTail };
+    let lastErr;
+    for (const m of models) {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': key,
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({ model: m, max_tokens: 4096, system: system || undefined, messages: msgs })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        const text = (data.content || []).filter((c) => c.type === 'text').map((c) => c.text).join('\n');
+        return { text };
+      }
+      lastErr = new Error(data.error?.message || `Anthropic-Fehler ${res.status} (${m})`);
+      if (!/not_found|invalid.*model|model.*not/i.test(lastErr.message)) break;
+    }
+    return { error: lastErr };
+  }
+
+  async function chat(messages, opts = {}) {
+    const openai = await chatOpenAI(messages, opts);
+    if (openai?.text) return openai.text;
+    if (openai?.credits) toast('OpenAI-Guthaben ist leer – versuche Claude …', 'info');
+    const anthropic = await chatAnthropic(messages, opts);
+    if (anthropic?.text) {
+      if (openai?.credits) toast('KI läuft über Claude (OpenAI ohne Credits)', 'success');
+      return anthropic.text;
+    }
+    if (openai?.credits) {
+      throw new Error('OpenAI-Guthaben ist leer. Credits aufladen unter platform.openai.com → Billing – oder unter API Keys einen Anthropic-Key hinterlegen.');
+    }
+    if (!openai && !anthropic) throw new Error('Kein API-Key. Unter Admin → API Keys OpenAI oder Anthropic hinterlegen.');
+    throw openai?.error || anthropic?.error || new Error('KI-Anfrage fehlgeschlagen');
   }
 
   function profileText() {
@@ -185,7 +240,7 @@
       JS.selected.clear();
       render();
       toast(`${r.results.length} neue passende Stellen gefunden`, 'success');
-      if (r.results.length && await openAIKey()) await rate();
+      if (r.results.length && ((await apiKey('openai')) || (await apiKey('anthropic')))) await rate();
     } catch (e) {
       toast(`Suche fehlgeschlagen: ${e.message}`, 'error');
     } finally {
@@ -303,8 +358,8 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
       toast(`${duplicates.length} Stelle(n) übersprungen, dafür gibt es schon eine Bewerbung: ${duplicates.map((j) => j.company).join(', ')}`, 'info');
       if (!jobs.length) { render(); return; }
     }
-    if (!(await openAIKey())) {
-      toast('Für Anschreiben wird ein OpenAI-Key benötigt (Admin Panel → API Keys).', 'error');
+    if (!((await apiKey('openai')) || (await apiKey('anthropic')))) {
+      toast('Für Anschreiben wird ein OpenAI- oder Anthropic-Key benötigt (Admin Panel → API Keys).', 'error');
       return;
     }
     if (!profileText()) {
