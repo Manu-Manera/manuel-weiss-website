@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
@@ -28,10 +29,19 @@ export class JobSearchStack extends cdk.Stack {
       memorySize: 512,
       environment: {
         JOB_SEARCH_TABLE: table.tableName,
-        USER_POOL_ID: 'eu-central-1_8gP4gLK9r'
+        USER_POOL_ID: 'eu-central-1_8gP4gLK9r',
+        BEDROCK_REGION: 'eu-central-1',
+        BEDROCK_MODEL: 'eu.anthropic.claude-sonnet-4-5-20250929-v1:0'
       }
     });
     table.grantReadWriteData(fn);
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
+      resources: [
+        'arn:aws:bedrock:*::foundation-model/*',
+        'arn:aws:bedrock:*:*:inference-profile/*'
+      ]
+    }));
 
     // Function URL statt API Gateway: eine Suche über alle Quellen dauert länger als 29 s
     const url = fn.addFunctionUrl({

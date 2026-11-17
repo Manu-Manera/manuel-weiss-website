@@ -18,10 +18,15 @@ const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const {
   DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, BatchWriteCommand
 } = require('@aws-sdk/lib-dynamodb');
+const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime');
 
-const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({ region: process.env.AWS_REGION || 'eu-central-1' }));
+const REGION = process.env.AWS_REGION || 'eu-central-1';
+const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({ region: REGION }));
+const bedrock = new BedrockRuntimeClient({ region: process.env.BEDROCK_REGION || REGION });
 const TABLE = process.env.JOB_SEARCH_TABLE || 'mawps-job-search';
 const USER_POOL_ID = process.env.USER_POOL_ID || 'eu-central-1_8gP4gLK9r';
+const BEDROCK_MODEL = process.env.BEDROCK_MODEL || 'eu.anthropic.claude-sonnet-4-5-20250929-v1:0';
+const FOCUS_LABELS = ['UKG/HRSD', 'HR-Prozesse', 'HR-Strategie'];
 
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36';
 const BA_UA = 'Jobsuche/2.9.2 (de.arbeitsagentur.jobboerse; build:1077; iOS 15.1.0)';
@@ -564,6 +569,45 @@ async function actionMark(user, body) {
   return respond(200, { ok: true, marked: items.length });
 }
 
+async function actionRate(user, body) {
+  const jobs = Array.isArray(body.jobs) ? body.jobs.slice(0, 30) : [];
+  if (!jobs.length) return respond(400, { error: 'Keine Stellen zum Bewerten' });
+  const profile = String(body.profile || '').trim() || '(kein Profil hinterlegt)';
+  const focus = Array.isArray(body.focusKeywords) ? body.focusKeywords.slice(0, 12).join(', ') : '';
+  const system = `Du bewertest Stellenanzeigen für eine Person anhand ihres Profils. Antworte nur mit JSON {"jobs":[{"id","score","focus","why","recommended"}]}.
+- score 0–100: inhaltliche Passung zum Profil und realistische Chance (Seniorität, Muss-Anforderungen, Sprache, Standort).
+- focus: genau einer von ${FOCUS_LABELS.map((f) => `"${f}"`).join(', ')} wenn die Rolle klar dieses Fokusthema hat, sonst "".
+- Fokusthemen (${focus}) klar bevorzugen (+10).
+- Abwerten: Führungsrollen ohne passende Führungserfahrung, Sales/Recruiting/Entwicklerrollen, Französisch als Muttersprache, Standort ausserhalb CH/DE/AT ohne Remote.
+- why: ein Satz auf Deutsch, konkret: was passt, was fehlt.
+- recommended: true ab score 70.`;
+  const userMsg = `PROFIL:\n${profile}\n\nSTELLEN:\n${JSON.stringify(jobs)}`;
+  const response = await bedrock.send(new InvokeModelCommand({
+    modelId: BEDROCK_MODEL,
+    contentType: 'application/json',
+    accept: 'application/json',
+    body: JSON.stringify({
+      anthropic_version: 'bedrock-2023-05-31',
+      max_tokens: 4096,
+      temperature: 0.2,
+      system,
+      messages: [{ role: 'user', content: userMsg }]
+    })
+  }));
+  const raw = JSON.parse(new TextDecoder().decode(response.body));
+  const text = (raw.content || []).filter((c) => c.type === 'text').map((c) => c.text).join('\n');
+  const cleaned = text.replace(/```json\n?|\n?```/g, '').trim();
+  let parsed;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch {
+    const match = cleaned.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('KI-Antwort war kein gültiges JSON');
+    parsed = JSON.parse(match[0]);
+  }
+  return respond(200, { jobs: parsed.jobs || [], provider: 'bedrock', model: BEDROCK_MODEL });
+}
+
 async function actionPosting(body) {
   const url = String(body.url || '');
   if (!/^https?:\/\//.test(url)) return respond(400, { error: 'URL fehlt' });
@@ -619,6 +663,7 @@ exports.handler = async (event) => {
       }
       case 'mark': return await actionMark(user, body);
       case 'posting': return await actionPosting(body);
+      case 'rate': return await actionRate(user, body);
       default: return respond(400, { error: `Unbekannte Aktion: ${body.action}` });
     }
   } catch (e) {

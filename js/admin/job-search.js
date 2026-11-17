@@ -249,6 +249,32 @@
     }
   }
 
+  async function rateViaBedrock(batch) {
+    const data = await api('rate', {
+      jobs: batch,
+      profile: profileText(),
+      focusKeywords: JS.criteria?.focusKeywords || []
+    });
+    return data.jobs || [];
+  }
+
+  async function rateViaBrowserKeys(batch) {
+    const content = await chat([
+      {
+        role: 'system',
+        content: `Du bewertest Stellenanzeigen für eine Person anhand ihres Profils. Antworte als JSON {"jobs":[{"id","score","focus","why","recommended"}]}.
+- score 0–100: inhaltliche Passung zum Profil und realistische Chance (Seniorität, Muss-Anforderungen, Sprache, Standort).
+- focus: genau einer von ${FOCUS_LABELS.map((f) => `"${f}"`).join(', ')} wenn die Rolle klar dieses Fokusthema hat, sonst "".
+- Fokusthemen (${(JS.criteria?.focusKeywords || []).slice(0, 12).join(', ')}) klar bevorzugen (+10).
+- Abwerten: Führungsrollen ohne passende Führungserfahrung, Sales/Recruiting/Entwicklerrollen, Französisch als Muttersprache, Standort ausserhalb CH/DE/AT ohne Remote.
+- why: ein Satz auf Deutsch, konkret: was passt, was fehlt.
+- recommended: true ab score 70.`
+      },
+      { role: 'user', content: `PROFIL:\n${profileText() || '(kein Profil hinterlegt)'}\n\nSTELLEN:\n${JSON.stringify(batch)}` }
+    ], { json: true });
+    return JSON.parse(content).jobs || [];
+  }
+
   async function rate() {
     const open = JS.results.filter((j) => j.status === 'offen');
     if (!open.length) return;
@@ -258,27 +284,24 @@
         id: j.id, title: j.title, company: j.company, location: j.location,
         remote: j.remote, source: j.source, text: (j.snippet || '').slice(0, 220)
       }));
-      const content = await chat([
-        {
-          role: 'system',
-          content: `Du bewertest Stellenanzeigen für eine Person anhand ihres Profils. Antworte als JSON {"jobs":[{"id","score","focus","why","recommended"}]}.
-- score 0–100: inhaltliche Passung zum Profil und realistische Chance (Seniorität, Muss-Anforderungen, Sprache, Standort).
-- focus: genau einer von ${FOCUS_LABELS.map((f) => `"${f}"`).join(', ')} wenn die Rolle klar dieses Fokusthema hat, sonst "".
-- Fokusthemen (${(JS.criteria?.focusKeywords || []).slice(0, 12).join(', ')}) klar bevorzugen (+10).
-- Abwerten: Führungsrollen ohne passende Führungserfahrung, Sales/Recruiting/Entwicklerrollen, Französisch als Muttersprache, Standort ausserhalb CH/DE/AT ohne Remote.
-- why: ein Satz auf Deutsch, konkret: was passt, was fehlt.
-- recommended: true ab score 70.`
-        },
-        { role: 'user', content: `PROFIL:\n${profileText() || '(kein Profil hinterlegt)'}\n\nSTELLEN:\n${JSON.stringify(batch)}` }
-      ], { json: true });
-      const rated = new Map((JSON.parse(content).jobs || []).map((x) => [x.id, x]));
+      // Primär AWS Bedrock (unabhängig von OpenAI-Credits), Browser-Keys nur als Fallback.
+      let ratedJobs;
+      let via = 'bedrock';
+      try {
+        ratedJobs = await rateViaBedrock(batch);
+      } catch (bedrockErr) {
+        toast(`Bedrock nicht erreichbar (${bedrockErr.message}) – versuche API Keys …`, 'info');
+        ratedJobs = await rateViaBrowserKeys(batch);
+        via = 'api-key';
+      }
+      const rated = new Map(ratedJobs.map((x) => [x.id, x]));
       JS.results = JS.results.map((j) => {
         const r = rated.get(j.id);
         return r ? { ...j, aiScore: Math.max(0, Math.min(100, Math.round(r.score))), focusLabel: r.focus || '', why: r.why || '', recommended: !!r.recommended } : j;
       });
       sortResults();
       await api('saveResults', { results: JS.results });
-      toast('KI-Bewertung fertig', 'success');
+      toast(via === 'bedrock' ? 'KI-Bewertung fertig (AWS Bedrock)' : 'KI-Bewertung fertig', 'success');
     } catch (e) {
       toast(`KI-Bewertung fehlgeschlagen: ${e.message}`, 'error');
     } finally {
