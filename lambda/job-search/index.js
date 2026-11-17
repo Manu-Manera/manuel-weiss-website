@@ -25,7 +25,7 @@ const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({ region: REGION }));
 const bedrock = new BedrockRuntimeClient({ region: process.env.BEDROCK_REGION || REGION });
 const TABLE = process.env.JOB_SEARCH_TABLE || 'mawps-job-search';
 const USER_POOL_ID = process.env.USER_POOL_ID || 'eu-central-1_8gP4gLK9r';
-const BEDROCK_MODEL = process.env.BEDROCK_MODEL || 'eu.anthropic.claude-sonnet-4-5-20250929-v1:0';
+const BEDROCK_MODEL = process.env.BEDROCK_MODEL || 'eu.anthropic.claude-haiku-4-5-20251001-v1:0';
 const FOCUS_LABELS = ['UKG/HRSD', 'HR-Prozesse', 'HR-Strategie'];
 
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36';

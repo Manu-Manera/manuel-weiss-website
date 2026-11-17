@@ -31,7 +31,7 @@ export class JobSearchStack extends cdk.Stack {
         JOB_SEARCH_TABLE: table.tableName,
         USER_POOL_ID: 'eu-central-1_8gP4gLK9r',
         BEDROCK_REGION: 'eu-central-1',
-        BEDROCK_MODEL: 'eu.anthropic.claude-sonnet-4-5-20250929-v1:0'
+        BEDROCK_MODEL: 'eu.anthropic.claude-haiku-4-5-20251001-v1:0'
       }
     });
     table.grantReadWriteData(fn);
