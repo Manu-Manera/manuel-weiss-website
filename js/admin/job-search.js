@@ -114,21 +114,22 @@
   async function chat(messages, { json = false, model } = {}) {
     const key = await openAIKey();
     if (!key) throw new Error('Kein OpenAI-Key. Im Admin Panel unter «API Keys» hinterlegen.');
+    // Dieses OpenAI-Projekt darf gpt-5.2; gpt-4o-mini löst 403 aus und darf nicht als Fallback dienen.
     const configured = window.GlobalAPIManager?.getServiceConfig?.('openai')?.model;
-    const preferred = [...new Set([model, configured, 'gpt-5.2', 'gpt-4o-mini', 'gpt-4o'].filter(Boolean))];
+    const blocked = /^gpt-4o(-mini)?$|^gpt-3\.5/i;
+    const preferred = [...new Set(['gpt-5.2', model, configured].filter((m) => m && !blocked.test(m)))];
     const available = await allowedModels(key);
     let models = preferred;
     if (available) {
       models = preferred.filter((m) => available.includes(m));
       if (!models.length) {
-        // Projekt erlaubt keines der Wunschmodelle: bestes verfügbares Chat-Modell nehmen.
         models = available
-          .filter((id) => /^(gpt-|o\d|chatgpt-)/.test(id) && !NON_CHAT_MODEL.test(id))
+          .filter((id) => /^(gpt-5|o\d|chatgpt-)/.test(id) && !NON_CHAT_MODEL.test(id) && !blocked.test(id))
           .sort((a, b) => b.localeCompare(a))
           .slice(0, 3);
       }
       if (!models.length) {
-        throw new Error('Das OpenAI-Projekt dieses Keys hat auf kein Chat-Modell Zugriff. Im OpenAI-Dashboard unter Projekt → Limits die Modelle freigeben oder einen Key eines anderen Projekts hinterlegen.');
+        throw new Error('Das OpenAI-Projekt dieses Keys hat auf kein Chat-Modell Zugriff. Unter API Keys einen Key mit gpt-5.2-Zugriff hinterlegen.');
       }
     }
     let lastErr;
@@ -140,10 +141,9 @@
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) return data.choices?.[0]?.message?.content || '';
-      lastErr = new Error(data.error?.message || `OpenAI-Fehler ${res.status}`);
-    }
-    if (/does not have access to model/i.test(lastErr?.message || '')) {
-      lastErr = new Error(`${lastErr.message} – im OpenAI-Dashboard unter Projekt → Limits den Modellzugriff freigeben.`);
+      // Kein Zugriff auf dieses Modell → nächstes versuchen, nicht abbrechen.
+      lastErr = new Error(`${data.error?.message || `OpenAI-Fehler ${res.status}`} (${m})`);
+      if (!/does not have access to model|model_not_found|invalid_model/i.test(lastErr.message)) break;
     }
     throw lastErr;
   }
