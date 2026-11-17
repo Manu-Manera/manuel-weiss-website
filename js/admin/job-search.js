@@ -93,11 +93,44 @@
     }
   }
 
+  // Modelle, auf die der Key (bzw. dessen OpenAI-Projekt) tatsächlich Zugriff hat.
+  let modelsCache = null;
+  async function allowedModels(key) {
+    if (!modelsCache) {
+      modelsCache = fetch('https://api.openai.com/v1/models', { headers: { Authorization: `Bearer ${key}` } })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => (d?.data || []).map((m) => m.id))
+        .catch(() => null)
+        .then((ids) => {
+          if (!ids?.length) modelsCache = null;
+          return ids?.length ? ids : null;
+        });
+    }
+    return modelsCache;
+  }
+
+  const NON_CHAT_MODEL = /audio|realtime|image|tts|whisper|embed|moderation|dall-e|transcribe|search|instruct|codex|computer-use|sora/i;
+
   async function chat(messages, { json = false, model } = {}) {
     const key = await openAIKey();
     if (!key) throw new Error('Kein OpenAI-Key. Im Admin Panel unter «API Keys» hinterlegen.');
     const configured = window.GlobalAPIManager?.getServiceConfig?.('openai')?.model;
-    const models = [...new Set([model, configured, 'gpt-5.2', 'gpt-4o-mini'].filter(Boolean))];
+    const preferred = [...new Set([model, configured, 'gpt-5.2', 'gpt-4o-mini', 'gpt-4o'].filter(Boolean))];
+    const available = await allowedModels(key);
+    let models = preferred;
+    if (available) {
+      models = preferred.filter((m) => available.includes(m));
+      if (!models.length) {
+        // Projekt erlaubt keines der Wunschmodelle: bestes verfügbares Chat-Modell nehmen.
+        models = available
+          .filter((id) => /^(gpt-|o\d|chatgpt-)/.test(id) && !NON_CHAT_MODEL.test(id))
+          .sort((a, b) => b.localeCompare(a))
+          .slice(0, 3);
+      }
+      if (!models.length) {
+        throw new Error('Das OpenAI-Projekt dieses Keys hat auf kein Chat-Modell Zugriff. Im OpenAI-Dashboard unter Projekt → Limits die Modelle freigeben oder einen Key eines anderen Projekts hinterlegen.');
+      }
+    }
     let lastErr;
     for (const m of models) {
       const res = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -108,6 +141,9 @@
       const data = await res.json().catch(() => ({}));
       if (res.ok) return data.choices?.[0]?.message?.content || '';
       lastErr = new Error(data.error?.message || `OpenAI-Fehler ${res.status}`);
+    }
+    if (/does not have access to model/i.test(lastErr?.message || '')) {
+      lastErr = new Error(`${lastErr.message} – im OpenAI-Dashboard unter Projekt → Limits den Modellzugriff freigeben.`);
     }
     throw lastErr;
   }
