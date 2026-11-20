@@ -123,6 +123,7 @@
             try {
                 if (window.lifeOS) {
                     await window.lifeOS.load();
+                    await window.lifeOS.loadSignals();
                     computed.lifeOsReady = true;
                 }
             } catch (e) { /* ignore */ }

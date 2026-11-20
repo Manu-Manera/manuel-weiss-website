@@ -203,6 +203,119 @@
         return n ? Math.round(sum / n) : 0;
     }
 
+    /* ---------------- Live-Signale aus echten Daten ---------------- */
+
+    function udBase() {
+        try {
+            if (typeof window.getApiUrl === 'function') {
+                var u = window.getApiUrl('USER_DATA');
+                if (u) return u;
+            }
+        } catch (e) { /* ignore */ }
+        if (window.AWS_APP_CONFIG && window.AWS_APP_CONFIG.API_BASE) {
+            return window.AWS_APP_CONFIG.API_BASE.replace(/\/$/, '') + '/user-data';
+        }
+        return 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1/user-data';
+    }
+
+    function authToken() {
+        try {
+            var s = JSON.parse(localStorage.getItem('aws_auth_session') || 'null');
+            if (s) return s.idToken || s.IdToken || s.id_token || null;
+        } catch (e) { /* ignore */ }
+        return null;
+    }
+
+    async function getJSON(path) {
+        var t = authToken();
+        if (!t) throw new Error('not logged in');
+        var r = await fetch(udBase() + path, { headers: { Authorization: 'Bearer ' + t } });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+    }
+
+    var SCHOOL_IDS = { sinnesschule: 1, gedaechtnisschule: 1, koerperschule: 1 };
+
+    function schoolState(workflows, id) {
+        var wrap = workflows[id] && workflows[id].results;
+        if (!wrap) return null;
+        return wrap.results || (wrap.startedAt ? wrap : null);
+    }
+
+    function computeSignals(workflows, all) {
+        workflows = workflows || {};
+        all = all || {};
+        var pe = { started: 0, completed: 0 };
+        var lastActive = null;
+        Object.keys(workflows).forEach(function (k) {
+            if (SCHOOL_IDS[k] || k === WF_ID) return;
+            var w = workflows[k] || {};
+            var started = !!w.results || (w.progress && w.progress.currentStep > 0) ||
+                (w.steps && Object.keys(w.steps).length > 0);
+            if (!started) return;
+            pe.started++;
+            if (w.progress && (w.progress.status === 'completed' || w.progress.completionPercentage >= 100)) pe.completed++;
+            var ts = (w.results && w.results.updatedAt) || (w.progress && w.progress.updatedAt) || null;
+            if (ts && (!lastActive || ts > lastActive)) lastActive = ts;
+        });
+
+        var apps = Array.isArray(all.applications) ? all.applications : [];
+        var appOpen = apps.filter(function (a) {
+            var s = String(a.status || a.phase || '').toLowerCase();
+            return s && !/absage|abgesagt|abgelehnt|rejected|closed|geschlossen|zusage|accepted|angenommen|eingestellt|archiv/.test(s);
+        }).length;
+
+        var today = new Date().toISOString().slice(0, 10);
+        function school(id, xpKey) {
+            var st = schoolState(workflows, id);
+            if (!st) return null;
+            var xp = 0;
+            var disc = st[xpKey] || st.senses || st.disc || {};
+            Object.keys(disc).forEach(function (d) { xp += (disc[d] && disc[d].xp) || 0; });
+            return { xp: xp, streak: st.streak || 0, today: st.lastPracticeDate === today };
+        }
+        var koer = school('koerperschule', 'disc');
+        var senses = school('sinnesschule', 'senses');
+        var mem = school('gedaechtnisschule', 'disc');
+
+        var maxStreak = Math.max(
+            (koer && koer.streak) || 0,
+            (senses && senses.streak) || 0,
+            (mem && mem.streak) || 0
+        );
+
+        return {
+            pe: pe,
+            apps: { total: apps.length, open: appOpen },
+            body: koer,
+            senses: senses,
+            mind: mem,
+            maxStreak: maxStreak,
+            lastActive: lastActive
+        };
+    }
+
+    function signalChip(id, sig) {
+        if (!sig) return '';
+        var txt = null;
+        if (id === 'career' && sig.apps) {
+            txt = sig.apps.open + ' aktive Bewerbung' + (sig.apps.open === 1 ? '' : 'en') + ' · ' + sig.apps.total + ' gesamt';
+        } else if (id === 'psyche' && sig.pe) {
+            txt = sig.pe.started + ' Methoden begonnen · ' + sig.pe.completed + ' abgeschlossen';
+        } else if (id === 'body') {
+            var parts = [];
+            if (sig.body) parts.push((sig.body.today ? 'heute aktiv' : 'heute offen') + ' · 🔥 ' + sig.body.streak);
+            if (!sig.body && sig.senses) parts.push('Sinne 🔥 ' + sig.senses.streak);
+            txt = parts.length ? parts.join(' · ') : null;
+        } else if (id === 'learning' && sig.mind) {
+            txt = sig.mind.xp.toLocaleString('de-DE') + ' XP Gedächtnis · 🔥 ' + sig.mind.streak;
+        } else if (id === 'finance') {
+            txt = 'Cockpit im Admin';
+        }
+        if (!txt) return '';
+        return '<p class="los-live"><i class="fas fa-signal"></i> ' + esc(txt) + '</p>';
+    }
+
     function localLoad() {
         try {
             var raw = localStorage.getItem(STORAGE_KEY);
@@ -223,7 +336,36 @@
         this.doc = null;
         this.loading = false;
         this._saveTimer = null;
+        this.signals = null;
     }
+
+    LifeOS.prototype.loadSignals = async function (force) {
+        if (this.signals && !force) return this.signals;
+        try {
+            var results = await Promise.all([
+                getJSON('/workflows').catch(function () { return {}; }),
+                getJSON('').catch(function () { return {}; })
+            ]);
+            this.signals = computeSignals(results[0], results[1]);
+        } catch (e) {
+            this.signals = null;
+        }
+        this.updateProfileHeaderStats();
+        return this.signals;
+    };
+
+    /** Echte Zahlen in die Profil-Kopf-Statistiken (ersetzt Demo-Werte) */
+    LifeOS.prototype.updateProfileHeaderStats = function () {
+        var sig = this.signals;
+        if (!sig) return;
+        var set = function (id, v) {
+            var el = document.getElementById(id);
+            if (el) el.textContent = v;
+        };
+        set('completedMethods', String(sig.pe.completed));
+        set('totalProgress', this.health() + '%');
+        set('streakDays', String(sig.maxStreak));
+    };
 
     LifeOS.prototype.meta = function () {
         return DIVISIONS.slice();
@@ -332,6 +474,7 @@
     LifeOS.prototype.renderBoard = function (opts) {
         opts = opts || {};
         var doc = this.ensureDoc();
+        var sig = this.signals;
         var hs = healthScore(doc);
         var focus = doc.weeklyFocus;
         var cards = DIVISIONS.map(function (meta) {
@@ -349,6 +492,7 @@
                 '<span class="los-score">' + score + '</span>' +
                 '<div class="los-bar"><div class="los-bar-fill" style="width:' + score + '%"></div></div>' +
                 '</div>' +
+                signalChip(meta.id, sig) +
                 '<p class="los-next"><strong>Nächster Schritt:</strong> ' + esc(d.nextStep || '–') + '</p>' +
                 '</a>'
             );
@@ -388,6 +532,7 @@
 
     LifeOS.prototype.renderProgressPanel = function () {
         var doc = this.ensureDoc();
+        var sig = this.signals;
         var hs = healthScore(doc);
         var rows = DIVISIONS.map(function (meta) {
             var d = doc.divisions[meta.id] || {};
@@ -400,6 +545,7 @@
                 '<div class="los-prog-score ' + statusClass(score) + '">' + score + '</div>' +
                 '</div>' +
                 '<div class="los-bar"><div class="los-bar-fill" style="width:' + score + '%"></div></div>' +
+                signalChip(meta.id, sig) +
                 '<p><strong>Ziel:</strong> ' + esc(d.goal || '–') + '</p>' +
                 '<p><strong>Nächster Schritt:</strong> ' + esc(d.nextStep || '–') + '</p>' +
                 (d.notes ? '<p class="los-muted">' + esc(d.notes) + '</p>' : '') +
@@ -438,6 +584,108 @@
         );
     };
 
+    /* ---------------- Coach-Panel (Coach-Tab) ---------------- */
+
+    LifeOS.prototype.renderCoachPanel = function () {
+        var doc = this.ensureDoc();
+        var self = this;
+        var focusMeta = DIVISIONS.find(function (m) { return m.id === doc.weeklyFocus; });
+
+        // Empfehlungen: schwächste Divisionen zuerst, Fokus immer oben
+        var ranked = DIVISIONS.slice().sort(function (a, b) {
+            if (a.id === doc.weeklyFocus) return -1;
+            if (b.id === doc.weeklyFocus) return 1;
+            return clampScore((doc.divisions[a.id] || {}).score) - clampScore((doc.divisions[b.id] || {}).score);
+        }).slice(0, 3);
+
+        var recs = ranked.map(function (m) {
+            var d = doc.divisions[m.id] || {};
+            return (
+                '<a class="los-rec" href="' + esc(m.href) + '" style="--los-accent:' + m.accent + '">' +
+                '<span class="los-rec-icon"><i class="fas ' + m.icon + '"></i></span>' +
+                '<span class="los-rec-body">' +
+                '<span class="los-rec-title">' + esc(m.title) + (m.id === doc.weeklyFocus ? ' · Fokus-Woche' : '') + '</span>' +
+                '<span class="los-rec-task">' + esc(d.nextStep || d.goal || '') + '</span>' +
+                '</span>' +
+                '<i class="fas fa-arrow-right"></i>' +
+                '</a>'
+            );
+        }).join('');
+
+        var notes = (doc.coachingNotes || []).slice(0, 6).map(function (n) {
+            return '<div class="los-note"><span class="los-note-meta">' + esc(n.author || 'Coach') +
+                (n.at ? ' · ' + new Date(n.at).toLocaleDateString('de-CH') : '') +
+                '</span><p>' + esc(n.text) + '</p></div>';
+        }).join('');
+
+        return (
+            '<div class="los-coach">' +
+            '<div class="los-coach-head">' +
+            '<div>' +
+            '<h4><i class="fas fa-user-tie"></i> Dein Coach · Life OS</h4>' +
+            '<p>Wochenfokus: <strong>' + esc(focusMeta ? focusMeta.title : '–') + '</strong> · Company Health ' + this.health() + '</p>' +
+            '</div>' +
+            '<a class="los-btn los-btn-dark" href="admin.html#life-os"><i class="fas fa-sliders"></i> Steuerzentrale</a>' +
+            '</div>' +
+            '<h5>Empfehlungen (schwächste Bereiche zuerst)</h5>' +
+            '<div class="los-recs">' + recs + '</div>' +
+            '<h5>Coaching-Notizen</h5>' +
+            '<div class="los-coach-note-form">' +
+            '<textarea id="losCoachNoteInput" placeholder="Eigene Notiz / Reflexion …"></textarea>' +
+            '<button type="button" class="los-btn" id="losCoachNoteBtn"><i class="fas fa-plus"></i> Speichern</button>' +
+            '</div>' +
+            (notes || '<p class="los-muted">Noch keine Notizen.</p>') +
+            '</div>'
+        );
+    };
+
+    LifeOS.prototype.mountCoach = function (host) {
+        var self = this;
+        if (!host) return;
+        host.innerHTML = this.renderCoachPanel();
+        var btn = host.querySelector('#losCoachNoteBtn');
+        if (btn) {
+            btn.addEventListener('click', async function () {
+                var ta = host.querySelector('#losCoachNoteInput');
+                var text = ta && ta.value.trim();
+                if (!text) return;
+                await self.addNote(text, 'Manuel');
+                self.mountCoach(host);
+            });
+        }
+    };
+
+    /* ---------------- Echte Erfolge (Achievements-Tab) ---------------- */
+
+    LifeOS.prototype.renderAchievements = function () {
+        var sig = this.signals || { pe: { started: 0, completed: 0 }, apps: { total: 0, open: 0 }, maxStreak: 0, mind: null };
+        var doc = this.ensureDoc();
+        var defs = [
+            { icon: 'fa-building', name: 'Life OS gegründet', desc: 'Dein Leben läuft als Manuel AG', earned: true, meta: doc.intake && doc.intake.updatedAt ? new Date(doc.intake.updatedAt).toLocaleDateString('de-CH') : '' },
+            { icon: 'fa-star', name: 'Erste Schritte', desc: 'Erste PE-Methode abgeschlossen', earned: sig.pe.completed >= 1, meta: sig.pe.completed + ' abgeschlossen' },
+            { icon: 'fa-seedling', name: 'Entdecker', desc: '5 Methoden begonnen', earned: sig.pe.started >= 5, meta: sig.pe.started + '/5 begonnen' },
+            { icon: 'fa-graduation-cap', name: 'Entwicklungs-Experte', desc: '10 Methoden abgeschlossen', earned: sig.pe.completed >= 10, meta: sig.pe.completed + '/10' },
+            { icon: 'fa-briefcase', name: 'Bewerber', desc: 'Erste Bewerbung im Manager', earned: sig.apps.total >= 1, meta: sig.apps.total + ' Bewerbungen' },
+            { icon: 'fa-paper-plane', name: 'Pipeline-Profi', desc: '10 Bewerbungen verwaltet', earned: sig.apps.total >= 10, meta: sig.apps.total + '/10' },
+            { icon: 'fa-fire', name: 'Streak-Master', desc: '7 Tage in Folge trainiert', earned: sig.maxStreak >= 7, meta: sig.maxStreak + '/7 Tage' },
+            { icon: 'fa-brain', name: 'Gedächtnis-Athlet', desc: '1000 XP Gedächtniskraft', earned: !!(sig.mind && sig.mind.xp >= 1000), meta: sig.mind ? sig.mind.xp.toLocaleString('de-DE') + ' XP' : '0 XP' }
+        ];
+        return defs.map(function (a) {
+            return (
+                '<div class="achievement-card ' + (a.earned ? 'earned' : 'locked') + '">' +
+                '<div class="achievement-icon"><i class="fas ' + a.icon + '"></i></div>' +
+                '<div class="achievement-info"><h4>' + esc(a.name) + '</h4><p>' + esc(a.desc) + '</p></div>' +
+                '<div class="achievement-progress"><span>' + esc(a.meta) + '</span></div>' +
+                '</div>'
+            );
+        }).join('');
+    };
+
+    LifeOS.prototype.mountAchievements = function (host) {
+        if (!host) return;
+        host.innerHTML = this.renderAchievements();
+    };
+
     LifeOS.prototype.mountOverview = function (host) {
         var self = this;
         if (!host) return;
@@ -465,7 +713,21 @@
             var el = document.getElementById('lifeOsProgressRoot');
             if (!el) return;
             await self.load();
+            await self.loadSignals();
             self.mountProgress(el);
+        }
+        async function refreshCoach() {
+            var el = document.getElementById('lifeOsCoachRoot');
+            if (!el) return;
+            await self.load();
+            self.mountCoach(el);
+        }
+        async function refreshAchievements() {
+            var el = document.getElementById('lifeOsAchievementsRoot');
+            if (!el) return;
+            await self.load();
+            await self.loadSignals();
+            self.mountAchievements(el);
         }
         window.addEventListener('life-os-updated', function () {
             var el = document.getElementById('lifeOsProgressRoot');
@@ -474,7 +736,15 @@
         document.querySelectorAll('.tab-btn[data-tab="progress"]').forEach(function (btn) {
             btn.addEventListener('click', function () { setTimeout(refreshProgress, 50); });
         });
+        document.querySelectorAll('.tab-btn[data-tab="coach"]').forEach(function (btn) {
+            btn.addEventListener('click', function () { setTimeout(refreshCoach, 50); });
+        });
+        document.querySelectorAll('.tab-btn[data-tab="achievements"]').forEach(function (btn) {
+            btn.addEventListener('click', function () { setTimeout(refreshAchievements, 50); });
+        });
         if (location.hash === '#progress') refreshProgress();
+        if (location.hash === '#coach') refreshCoach();
+        if (location.hash === '#achievements') refreshAchievements();
     };
 
     window.LifeOS = LifeOS;
@@ -483,9 +753,14 @@
     function boot() {
         var ready = async function () {
             try { await window.lifeOS.load(); } catch (e) { /* ignore */ }
+            try { await window.lifeOS.loadSignals(); } catch (e) { /* ignore */ }
             window.lifeOS.bindTabs();
             var prog = document.getElementById('lifeOsProgressRoot');
             if (prog) window.lifeOS.mountProgress(prog);
+            var coach = document.getElementById('lifeOsCoachRoot');
+            if (coach) window.lifeOS.mountCoach(coach);
+            var ach = document.getElementById('lifeOsAchievementsRoot');
+            if (ach) window.lifeOS.mountAchievements(ach);
             window.dispatchEvent(new CustomEvent('life-os-ready'));
         };
         if (document.readyState === 'loading') {

@@ -982,26 +982,14 @@ class UserProfile {
     }
 
     loadProgressData() {
+        // Keine Demo-Werte mehr: echte Zahlen kommen aus Life OS (lifeOS.loadSignals →
+        // updateProfileHeaderStats) und den Workflow-APIs.
         const defaultProgress = {
-            completedMethods: 5,
+            completedMethods: 0,
             totalMethods: 29,
-            categories: {
-                'Selbstfindung': { completed: 3, total: 5 },
-                'Entwicklung': { completed: 2, total: 8 },
-                'Beziehungen': { completed: 0, total: 6 },
-                'Karriere': { completed: 3, total: 4 }
-            },
-            recentActivity: [
-                { method: 'Werte-Klärung', status: 'completed', date: 'vor 2 Tagen' },
-                { method: 'Ikigai-Methode', status: 'completed', date: 'vor 1 Woche' },
-                { method: 'Emotionale Intelligenz', status: 'started', date: 'vor 3 Tagen' }
-            ],
-            achievements: [
-                { id: 'first-method', name: 'Erste Schritte', description: 'Erste Methode abgeschlossen', earned: true, date: 'vor 2 Tagen' },
-                { id: 'values-explorer', name: 'Werte-Entdecker', description: 'Werte-Klärung abgeschlossen', earned: true, date: 'vor 2 Tagen' },
-                { id: 'streak-master', name: 'Streak-Master', description: '7 Tage in Folge aktiv', earned: false, progress: '3/7 Tage' },
-                { id: 'development-expert', name: 'Entwicklungs-Experte', description: '10 Methoden abgeschlossen', earned: false, progress: '5/10 Methoden' }
-            ]
+            categories: {},
+            recentActivity: [],
+            achievements: []
         };
 
         const savedProgress = localStorage.getItem('userProgress');
@@ -1013,20 +1001,17 @@ class UserProfile {
     }
 
     updateStats() {
-        const stats = {
-            completedMethods: this.progressData.completedMethods,
-            totalProgress: Math.round((this.progressData.completedMethods / this.progressData.totalMethods) * 100),
-            streakDays: 3 // This would be calculated from actual data
-        };
-
-        // Update stat displays
+        // Life OS liefert die echten Kopf-Statistiken, sobald Signale geladen sind.
+        if (window.lifeOS && window.lifeOS.signals) {
+            window.lifeOS.updateProfileHeaderStats();
+            return;
+        }
         const completedEl = document.getElementById('completedMethods');
         const progressEl = document.getElementById('totalProgress');
         const streakEl = document.getElementById('streakDays');
-
-        if (completedEl) completedEl.textContent = stats.completedMethods;
-        if (progressEl) progressEl.textContent = stats.totalProgress + '%';
-        if (streakEl) streakEl.textContent = stats.streakDays;
+        if (completedEl) completedEl.textContent = this.progressData.completedMethods || 0;
+        if (progressEl) progressEl.textContent = '–';
+        if (streakEl) streakEl.textContent = '–';
     }
 
     updateProgressDisplay() {

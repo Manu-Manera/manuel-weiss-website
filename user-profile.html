@@ -9,7 +9,7 @@
     <title>Mein Profil | Manuel Weiss</title>
     <link rel="stylesheet" href="css/user-profile.css?v=20260527e">
     <link rel="stylesheet" href="css/central-dashboard.css?v=20260627c">
-    <link rel="stylesheet" href="css/life-os.css?v=20261120a">
+    <link rel="stylesheet" href="css/life-os.css?v=20261120b">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -330,60 +330,8 @@
                             <p>Feiere deine Fortschritte und erreiche neue Meilensteine</p>
                         </div>
 
-                        <div class="achievements-grid">
-                            <div class="achievement-card earned">
-                                <div class="achievement-icon">
-                                    <i class="fas fa-star"></i>
-                                </div>
-                                <div class="achievement-info">
-                                    <h4>Erste Schritte</h4>
-                                    <p>Erste Methode abgeschlossen</p>
-                                </div>
-                                <div class="achievement-date">
-                                    <i class="fas fa-calendar"></i>
-                                    <span>vor 2 Tagen</span>
-                                </div>
-                            </div>
-
-                            <div class="achievement-card earned">
-                                <div class="achievement-icon">
-                                    <i class="fas fa-heart"></i>
-                                </div>
-                                <div class="achievement-info">
-                                    <h4>Werte-Entdecker</h4>
-                                    <p>Werte-Klärung abgeschlossen</p>
-                                </div>
-                                <div class="achievement-date">
-                                    <i class="fas fa-calendar"></i>
-                                    <span>vor 2 Tagen</span>
-                                </div>
-                            </div>
-
-                            <div class="achievement-card locked">
-                                <div class="achievement-icon">
-                                    <i class="fas fa-fire"></i>
-                                </div>
-                                <div class="achievement-info">
-                                    <h4>Streak-Master</h4>
-                                    <p>7 Tage in Folge aktiv</p>
-                                </div>
-                                <div class="achievement-progress">
-                                    <span>3/7 Tage</span>
-                                </div>
-                            </div>
-
-                            <div class="achievement-card locked">
-                                <div class="achievement-icon">
-                                    <i class="fas fa-graduation-cap"></i>
-                                </div>
-                                <div class="achievement-info">
-                                    <h4>Entwicklungs-Experte</h4>
-                                    <p>10 Methoden abgeschlossen</p>
-                                </div>
-                                <div class="achievement-progress">
-                                    <span>5/10 Methoden</span>
-                                </div>
-                            </div>
+                        <div class="achievements-grid" id="lifeOsAchievementsRoot">
+                            <div class="cd-loading"><i class="fas fa-circle-notch fa-spin"></i> Erfolge werden berechnet …</div>
                         </div>
                     </div>
                 </div>
@@ -581,7 +529,12 @@
                     <div class="coach-dashboard">
                         <div class="dashboard-header">
                             <h3><i class="fas fa-user-tie"></i> Dein Coach-Bereich</h3>
-                            <p>Deine aggregierten Erfolge und Coaching-Empfehlungen</p>
+                            <p>Life-OS-Coaching: Wochenfokus, Empfehlungen und Notizen – verbunden mit deinen echten Daten</p>
+                        </div>
+
+                        <!-- Life OS Coach -->
+                        <div id="lifeOsCoachRoot">
+                            <div class="cd-loading"><i class="fas fa-circle-notch fa-spin"></i> Coach wird geladen …</div>
                         </div>
 
                         <!-- Level & Points -->
@@ -659,32 +612,6 @@
                             </div>
                         </div>
 
-                        <!-- Coach Recommendations -->
-                        <div class="recommendations-section">
-                            <h4><i class="fas fa-lightbulb"></i> Empfehlungen für dich</h4>
-                            <div id="coachRecommendations" class="recommendations-list">
-                                <div class="recommendation-card">
-                                    <div class="rec-icon">🎯</div>
-                                    <div class="rec-content">
-                                        <h5>Starte mit Ikigai</h5>
-                                        <p>Entdecke deine Leidenschaft und deinen Lebenszweck</p>
-                                    </div>
-                                    <a href="methods/ikigai/index-ikigai.html" class="rec-action">
-                                        <i class="fas fa-arrow-right"></i>
-                                    </a>
-                                </div>
-                                <div class="recommendation-card">
-                                    <div class="rec-icon">💪</div>
-                                    <div class="rec-content">
-                                        <h5>Erstelle einen Trainingsplan</h5>
-                                        <p>Personalisiertes Training für deine Ziele</p>
-                                    </div>
-                                    <a href="personal-training.html" class="rec-action">
-                                        <i class="fas fa-arrow-right"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -1001,9 +928,9 @@
     <script src="js/aws-journal-api.js?v=20260112"></script>
     <script src="js/success-checkmark.js?v=20260112"></script>
     <script src="js/workflow-api.js?v=20260114f"></script>
-    <script src="js/life-os.js?v=20261120a"></script>
-    <script src="js/user-profile.js?v=20260527f"></script>
-    <script src="js/central-dashboard.js?v=20261120a"></script>
+    <script src="js/life-os.js?v=20261120b"></script>
+    <script src="js/user-profile.js?v=20261120b"></script>
+    <script src="js/central-dashboard.js?v=20261120b"></script>
     <script>
         // Tab Data Loading Functions
         async function loadTrainingTabData() {
