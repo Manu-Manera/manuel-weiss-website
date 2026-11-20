@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.0.0",
-    "@aws-sdk/util-dynamodb": "^3.0.0"
+    "@aws-sdk/util-dynamodb": "^3.0.0",
+    "aws-jwt-verify": "^5.2.1"
   }
 }

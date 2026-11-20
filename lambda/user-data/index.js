@@ -6,6 +6,8 @@
 
 const { DynamoDBClient, PutItemCommand, GetItemCommand } = require('@aws-sdk/client-dynamodb');
 const { marshall, unmarshall } = require('@aws-sdk/util-dynamodb');
+const { CognitoJwtVerifier } = require('aws-jwt-verify');
+const JwtErrors = require('aws-jwt-verify/error');
 
 // AWS Lambda verwendet automatisch IAM Role - keine Credentials nötig
 const dynamoDB = new DynamoDBClient({
@@ -96,40 +98,51 @@ async function loadUserDataWithFallback(userId) {
     return { data: {}, source: 'none' };
 }
 
-/**
- * Extract user ID from JWT token
- */
-function getUserIdFromToken(authHeader) {
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return null;
-    }
-    
-    try {
-        const token = authHeader.substring(7);
-        const parts = token.split('.');
-        if (parts.length !== 3) return null;
-        
-        const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
-        return payload.sub || payload.username || payload.email;
-    } catch (error) {
-        console.error('Token parse error:', error);
-        return null;
-    }
-}
+// Cognito-Token-Prüfung: Signatur, Aussteller (User Pool), Client-ID und Ablauf.
+const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID || 'eu-central-1_8gP4gLK9r';
+const COGNITO_CLIENT_IDS = (process.env.COGNITO_CLIENT_IDS || '7kc5tt6a23fgh53d60vkefm812')
+    .split(',').map(s => s.trim()).filter(Boolean);
 
-function getUserEmailFromToken(authHeader) {
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+// Übergangs-Toleranz für abgelaufene Tokens. Das Frontend erneuert das ID-Token bei
+// "Angemeldet bleiben" (30 Tage) noch nicht nach 60 Minuten und schickt es abgelaufen
+// weiter. Ohne Toleranz wären diese Sitzungen nach einer Stunde ausgesperrt.
+// Sobald das Frontend sauber erneuert: TOKEN_EXPIRY_GRACE_SECONDS=300 setzen.
+const parsedGrace = Number(process.env.TOKEN_EXPIRY_GRACE_SECONDS);
+const TOKEN_EXPIRY_GRACE_SECONDS = Number.isFinite(parsedGrace) && parsedGrace >= 0
+    ? parsedGrace
+    : 30 * 24 * 60 * 60;
+
+const tokenVerifier = CognitoJwtVerifier.create({
+    userPoolId: COGNITO_USER_POOL_ID,
+    tokenUse: null, // ID- und Access-Token zulassen (beide tragen dieselbe sub)
+    clientId: COGNITO_CLIENT_IDS,
+    graceSeconds: TOKEN_EXPIRY_GRACE_SECONDS
+});
+
+/**
+ * Prüft das Bearer-Token und liefert { userId, email } oder null.
+ * Ungültige Tokens ergeben null (-> 401). Ist der Cognito-Schlüsselabruf gestört,
+ * wird der Fehler weitergereicht (-> 500), damit das nicht wie ein Login-Problem aussieht.
+ */
+async function authenticate(authHeader) {
+    if (!authHeader || !/^Bearer\s+/i.test(authHeader)) {
         return null;
     }
-    
+    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+
     try {
-        const token = authHeader.substring(7);
-        const parts = token.split('.');
-        if (parts.length !== 3) return null;
-        
-        const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
-        return payload.email;
+        const payload = await tokenVerifier.verify(token);
+        if (!payload.sub) return null;
+        if (payload.exp && payload.exp * 1000 < Date.now()) {
+            const minutes = Math.round((Date.now() - payload.exp * 1000) / 60000);
+            console.log(`⏳ Abgelaufenes Token innerhalb der Toleranz akzeptiert (seit ${minutes} min abgelaufen)`);
+        }
+        return { userId: payload.sub, email: payload.email || null };
     } catch (error) {
+        if (error instanceof JwtErrors.FetchError || error instanceof JwtErrors.JwksNotAvailableInCacheError) {
+            throw error;
+        }
+        console.warn('🔒 Token abgelehnt:', error.name, '-', error.message);
         return null;
     }
 }
@@ -143,11 +156,12 @@ exports.handler = async (event) => {
     }
     
     try {
-        // Get user ID from token or header
+        // Identität ausschließlich aus dem geprüften Cognito-Token.
+        // Der X-User-Id-Header wird bewusst nicht mehr als Ersatz akzeptiert.
         const authHeader = event.headers?.authorization || event.headers?.Authorization;
-        const headerUserId = event.headers?.['x-user-id'] || event.headers?.['X-User-Id'];
-        const userId = getUserIdFromToken(authHeader) || headerUserId;
-        const userEmail = getUserEmailFromToken(authHeader);
+        const identity = await authenticate(authHeader);
+        const userId = identity?.userId;
+        const userEmail = identity?.email || null;
         
         if (!userId) {
             return {
