@@ -284,15 +284,51 @@
             (mem && mem.streak) || 0
         );
 
+        // Apple Health: tägliche Snapshots unter workflows['apple-health'].steps[YYYY-MM-DD]
+        var health = null;
+        var ahSteps = workflows['apple-health'] && workflows['apple-health'].steps;
+        if (ahSteps && typeof ahSteps === 'object') {
+            var days = Object.keys(ahSteps).filter(function (k) { return /^\d{4}-\d{2}-\d{2}$/.test(k); }).sort();
+            if (days.length) {
+                var latestKey = days[days.length - 1];
+                var latest = ahSteps[latestKey] || {};
+                var last7 = days.slice(-7);
+                var avg = function (field) {
+                    var vals = last7.map(function (k) { return Number(ahSteps[k] && ahSteps[k][field]) || 0; })
+                        .filter(function (v) { return v > 0; });
+                    if (!vals.length) return 0;
+                    return Math.round(vals.reduce(function (a, b) { return a + b; }, 0) / vals.length * 10) / 10;
+                };
+                health = {
+                    date: latestKey,
+                    isToday: latestKey === today,
+                    steps: Math.round(Number(latest.steps) || 0),
+                    sleepHours: Math.round((Number(latest.sleepHours) || 0) * 10) / 10,
+                    restingHeartRate: Math.round(Number(latest.restingHeartRate) || 0),
+                    exerciseMinutes: Math.round(Number(latest.exerciseMinutes) || 0),
+                    activeEnergyKcal: Math.round(Number(latest.activeEnergyKcal) || 0),
+                    avgSteps7: Math.round(avg('steps')),
+                    avgSleep7: avg('sleepHours'),
+                    days: days.length
+                };
+            }
+        }
+
         return {
             pe: pe,
             apps: { total: apps.length, open: appOpen },
             body: koer,
             senses: senses,
             mind: mem,
+            health: health,
             maxStreak: maxStreak,
             lastActive: lastActive
         };
+    }
+
+    function fmtSteps(n) {
+        if (n >= 1000) return (Math.round(n / 100) / 10).toLocaleString('de-CH') + 'k';
+        return String(n);
     }
 
     function signalChip(id, sig) {
@@ -304,8 +340,12 @@
             txt = sig.pe.started + ' Methoden begonnen · ' + sig.pe.completed + ' abgeschlossen';
         } else if (id === 'body') {
             var parts = [];
-            if (sig.body) parts.push((sig.body.today ? 'heute aktiv' : 'heute offen') + ' · 🔥 ' + sig.body.streak);
-            if (!sig.body && sig.senses) parts.push('Sinne 🔥 ' + sig.senses.streak);
+            if (sig.health) {
+                parts.push(fmtSteps(sig.health.steps) + ' Schritte' + (sig.health.isToday ? '' : ' (' + sig.health.date.slice(8, 10) + '.' + sig.health.date.slice(5, 7) + '.)'));
+                if (sig.health.sleepHours) parts.push(String(sig.health.sleepHours).replace('.', ',') + ' h Schlaf');
+            }
+            if (sig.body) parts.push('🔥 ' + sig.body.streak);
+            if (!parts.length && sig.senses) parts.push('Sinne 🔥 ' + sig.senses.streak);
             txt = parts.length ? parts.join(' · ') : null;
         } else if (id === 'learning' && sig.mind) {
             txt = sig.mind.xp.toLocaleString('de-DE') + ' XP Gedächtnis · 🔥 ' + sig.mind.streak;
@@ -561,6 +601,32 @@
             return '<li>' + esc(f) + '</li>';
         }).join('');
 
+        var healthCard;
+        if (sig && sig.health) {
+            var h = sig.health;
+            healthCard =
+                '<div class="los-health-strip">' +
+                '<div class="los-health-strip-head">' +
+                '<h4><i class="fab fa-apple"></i> Apple Health · ' + (h.isToday ? 'heute' : h.date) + '</h4>' +
+                '<span class="los-muted">' + h.days + ' Tage synchronisiert</span>' +
+                '</div>' +
+                '<div class="los-health-metrics">' +
+                '<div class="m"><span class="n">' + h.steps.toLocaleString('de-CH') + '</span><span class="l">Schritte (Ø7: ' + h.avgSteps7.toLocaleString('de-CH') + ')</span></div>' +
+                (h.sleepHours ? '<div class="m"><span class="n">' + String(h.sleepHours).replace('.', ',') + ' h</span><span class="l">Schlaf (Ø7: ' + String(h.avgSleep7).replace('.', ',') + ' h)</span></div>' : '') +
+                (h.exerciseMinutes ? '<div class="m"><span class="n">' + h.exerciseMinutes + ' min</span><span class="l">Training</span></div>' : '') +
+                (h.restingHeartRate ? '<div class="m"><span class="n">' + h.restingHeartRate + '</span><span class="l">Ruhepuls</span></div>' : '') +
+                (h.activeEnergyKcal ? '<div class="m"><span class="n">' + h.activeEnergyKcal.toLocaleString('de-CH') + '</span><span class="l">kcal aktiv</span></div>' : '') +
+                '</div>' +
+                '</div>';
+        } else {
+            healthCard =
+                '<div class="los-health-strip empty">' +
+                '<h4><i class="fab fa-apple"></i> Apple Health verbinden</h4>' +
+                '<p>Schritte, Schlaf und Puls fliessen automatisch in die Division Körper / Energie – per iPhone-Kurzbefehl, einmal eingerichtet in ~10 Minuten.</p>' +
+                '<a class="los-btn los-btn-dark" href="apple-health-setup.html"><i class="fas fa-plug"></i> Einrichtung öffnen</a>' +
+                '</div>';
+        }
+
         return (
             '<div class="los-progress-wrap">' +
             '<div class="los-progress-hero">' +
@@ -574,6 +640,7 @@
             '</div>' +
             '</div>' +
             '<div class="los-prog-grid">' + rows + '</div>' +
+            healthCard +
             '<div class="los-intake">' +
             '<h4><i class="fas fa-clipboard-check"></i> Intake · Ist-Bild</h4>' +
             '<p>' + esc((doc.intake && doc.intake.summary) || '') + '</p>' +
@@ -668,7 +735,9 @@
             { icon: 'fa-briefcase', name: 'Bewerber', desc: 'Erste Bewerbung im Manager', earned: sig.apps.total >= 1, meta: sig.apps.total + ' Bewerbungen' },
             { icon: 'fa-paper-plane', name: 'Pipeline-Profi', desc: '10 Bewerbungen verwaltet', earned: sig.apps.total >= 10, meta: sig.apps.total + '/10' },
             { icon: 'fa-fire', name: 'Streak-Master', desc: '7 Tage in Folge trainiert', earned: sig.maxStreak >= 7, meta: sig.maxStreak + '/7 Tage' },
-            { icon: 'fa-brain', name: 'Gedächtnis-Athlet', desc: '1000 XP Gedächtniskraft', earned: !!(sig.mind && sig.mind.xp >= 1000), meta: sig.mind ? sig.mind.xp.toLocaleString('de-DE') + ' XP' : '0 XP' }
+            { icon: 'fa-brain', name: 'Gedächtnis-Athlet', desc: '1000 XP Gedächtniskraft', earned: !!(sig.mind && sig.mind.xp >= 1000), meta: sig.mind ? sig.mind.xp.toLocaleString('de-DE') + ' XP' : '0 XP' },
+            { icon: 'fa-heart-pulse', name: 'Vernetzt', desc: 'Apple Health liefert Daten', earned: !!sig.health, meta: sig.health ? sig.health.days + ' Tage' : 'nicht verbunden' },
+            { icon: 'fa-shoe-prints', name: '10k-Tag', desc: '10 000 Schritte an einem Tag', earned: !!(sig.health && sig.health.steps >= 10000), meta: sig.health ? sig.health.steps.toLocaleString('de-CH') + ' Schritte' : '–' }
         ];
         return defs.map(function (a) {
             return (

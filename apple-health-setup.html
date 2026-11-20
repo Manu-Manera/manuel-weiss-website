@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple Health verbinden – Life OS | Manuel Weiss</title>
+    <meta name="robots" content="noindex">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0; background: #f6f7fb; color: #111827; line-height: 1.6;
+        }
+        .wrap { max-width: 760px; margin: 0 auto; padding: 32px 20px 80px; }
+        .hero {
+            background: #0f172a; color: #e2e8f0; border-radius: 20px;
+            padding: 28px 30px; margin-bottom: 28px;
+        }
+        .hero h1 { margin: 0 0 8px; font-size: 24px; color: #f8fafc; }
+        .hero p { margin: 0; color: #94a3b8; font-size: 15px; }
+        .hero .fa-apple { margin-right: 10px; }
+        .step {
+            background: #fff; border: 1px solid #e5e7eb; border-radius: 16px;
+            padding: 20px 22px; margin-bottom: 18px;
+        }
+        .step h2 {
+            font-size: 17px; margin: 0 0 10px; display: flex; align-items: center; gap: 10px;
+        }
+        .step h2 .num {
+            width: 28px; height: 28px; border-radius: 50%; background: #6366f1; color: #fff;
+            display: grid; place-items: center; font-size: 14px; flex-shrink: 0;
+        }
+        .step p, .step li { font-size: 14.5px; color: #374151; }
+        .step ul, .step ol { padding-left: 20px; margin: 8px 0; }
+        code, pre {
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            background: #f1f5f9; border-radius: 8px; font-size: 13px;
+        }
+        code { padding: 2px 6px; }
+        pre {
+            padding: 14px 16px; overflow-x: auto; border: 1px solid #e2e8f0;
+            white-space: pre-wrap; word-break: break-all;
+        }
+        .hint {
+            background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px;
+            padding: 12px 16px; font-size: 13.5px; color: #92400e; margin: 12px 0;
+        }
+        .ok { background: #ecfdf5; border-color: #a7f3d0; color: #065f46; }
+        .back {
+            display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px;
+            color: #6366f1; text-decoration: none; font-weight: 700; font-size: 14px;
+        }
+        table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+        th, td { border: 1px solid #e5e7eb; padding: 8px 10px; text-align: left; }
+        th { background: #f8fafc; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <a class="back" href="user-profile.html#progress"><i class="fas fa-arrow-left"></i> Zurück zum Life OS</a>
+
+    <div class="hero">
+        <h1><i class="fab fa-apple"></i>Apple Health → Life OS</h1>
+        <p>Ein iPhone-Kurzbefehl schickt täglich Schritte, Schlaf, Training und Puls an dein Profil. Einmal einrichten, läuft automatisch – keine zusätzliche App nötig.</p>
+    </div>
+
+    <div class="step">
+        <h2><span class="num">1</span> Kurzbefehl anlegen</h2>
+        <p>Öffne auf dem iPhone die App <strong>Kurzbefehle</strong> → <strong>+</strong> → Name: <code>Health an Life OS</code>.</p>
+    </div>
+
+    <div class="step">
+        <h2><span class="num">2</span> Health-Daten sammeln</h2>
+        <p>Füge für jede Kennzahl die Aktion <strong>„Gesundheitsmuster suchen“</strong> (Find Health Samples) hinzu:</p>
+        <table>
+            <tr><th>Aktion</th><th>Typ</th><th>Einstellung</th></tr>
+            <tr><td>Schritte</td><td>Schritte</td><td>Heute · Gruppieren: Summe</td></tr>
+            <tr><td>Schlaf</td><td>Schlafanalyse</td><td>Letzte 24 h · „Im Bett“/„Schlafend“ · Summe (in Stunden)</td></tr>
+            <tr><td>Trainingsminuten</td><td>Trainingsminuten</td><td>Heute · Summe</td></tr>
+            <tr><td>Aktive Energie</td><td>Aktive Energie</td><td>Heute · Summe (kcal)</td></tr>
+            <tr><td>Ruhepuls</td><td>Ruheherzfrequenz</td><td>Heute · Durchschnitt</td></tr>
+        </table>
+        <p>Speichere jedes Ergebnis mit <strong>„Variable festlegen“</strong> (z. B. <code>schritte</code>, <code>schlaf</code>, <code>training</code>, <code>energie</code>, <code>puls</code>).</p>
+        <p>Füge ausserdem <strong>„Aktuelles Datum“</strong> hinzu → Format <strong>Benutzerdefiniert</strong>: <code>yyyy-MM-dd</code> → Variable <code>datum</code>.</p>
+    </div>
+
+    <div class="step">
+        <h2><span class="num">3</span> Anmelden (Token holen)</h2>
+        <p>Aktion <strong>„Inhalt von URL abrufen“</strong>:</p>
+        <ul>
+            <li>URL: <code>https://cognito-idp.eu-central-1.amazonaws.com/</code></li>
+            <li>Methode: <strong>POST</strong></li>
+            <li>Header:
+                <ul>
+                    <li><code>Content-Type</code> = <code>application/x-amz-json-1.1</code></li>
+                    <li><code>X-Amz-Target</code> = <code>AWSCognitoIdentityProviderService.InitiateAuth</code></li>
+                </ul>
+            </li>
+            <li>Body (Datei/JSON als Text):</li>
+        </ul>
+        <pre>{
+  "AuthFlow": "USER_PASSWORD_AUTH",
+  "ClientId": "7kc5tt6a23fgh53d60vkefm812",
+  "AuthParameters": {
+    "USERNAME": "DEINE-EMAIL",
+    "PASSWORD": "DEIN-PASSWORT"
+  }
+}</pre>
+        <p>Danach: Aktion <strong>„Wert für Schlüssel abrufen“</strong> (Get Dictionary Value) → Schlüssel <code>AuthenticationResult.IdToken</code> → Variable <code>token</code>.</p>
+        <div class="hint">E-Mail/Passwort sind dein normaler Login von manuel-weiss.ch. Sie bleiben lokal im Kurzbefehl auf deinem iPhone gespeichert.</div>
+    </div>
+
+    <div class="step">
+        <h2><span class="num">4</span> Daten senden</h2>
+        <p>Noch eine Aktion <strong>„Inhalt von URL abrufen“</strong>:</p>
+        <ul>
+            <li>URL: <code>https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1/user-data/workflows/apple-health/steps/</code><strong><code>datum</code></strong> (Variable ans Ende hängen)</li>
+            <li>Methode: <strong>POST</strong></li>
+            <li>Header: <code>Authorization</code> = <code>Bearer </code> + Variable <code>token</code> (Leerzeichen nach „Bearer“!)</li>
+            <li>Body als JSON – Werte sind die Variablen aus Schritt 2:</li>
+        </ul>
+        <pre>{
+  "steps": schritte,
+  "sleepHours": schlaf,
+  "exerciseMinutes": training,
+  "activeEnergyKcal": energie,
+  "restingHeartRate": puls
+}</pre>
+        <div class="hint ok">Teste den Kurzbefehl einmal manuell (▶︎). Antwort sollte <code>{"success":true,…}</code> sein – danach erscheinen die Werte im Life OS unter Fortschritt → Apple Health.</div>
+    </div>
+
+    <div class="step">
+        <h2><span class="num">5</span> Automatisieren</h2>
+        <p>Kurzbefehle-App → Tab <strong>Automation</strong> → <strong>+</strong> → <strong>Tageszeit</strong> → z. B. <strong>21:30 täglich</strong> → „Sofort ausführen“ (ohne Nachfragen) → Kurzbefehl <code>Health an Life OS</code> wählen. Fertig.</p>
+        <p>Optional zweite Automation <strong>morgens 09:00</strong> – dann ist auch der Schlaf der letzten Nacht aktuell.</p>
+    </div>
+
+    <div class="step">
+        <h2><span class="num">6</span> Was passiert mit den Daten?</h2>
+        <ul>
+            <li>Speicherung pro Tag in deiner DynamoDB (Workflow <code>apple-health</code>), geschützt durch deinen Cognito-Login.</li>
+            <li>Life OS zeigt den letzten Tag + 7-Tage-Durchschnitt in der Division <strong>Körper / Energie</strong>.</li>
+            <li>Erfolge wie „10k-Tag“ schalten sich automatisch frei.</li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
