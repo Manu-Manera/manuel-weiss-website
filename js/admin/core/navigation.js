@@ -300,6 +300,21 @@ class AdminNavigation {
                         finanzen.load();
                     }
                 }
+
+                if (sectionId === 'life-os' && window.LifeOsSection) {
+                    let lifeOs = window.AdminApp?.sections?.lifeOs;
+                    if (!lifeOs) {
+                        lifeOs = new window.LifeOsSection();
+                        if (window.AdminApp) {
+                            window.AdminApp.sections.lifeOs = lifeOs;
+                        }
+                    }
+                    if (!lifeOs.initialized) {
+                        lifeOs.init();
+                    } else {
+                        lifeOs.load();
+                    }
+                }
                 
                 // Content Section spezifische Initialisierung
                 if (sectionId === 'content') {

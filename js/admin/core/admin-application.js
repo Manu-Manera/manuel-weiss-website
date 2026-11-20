@@ -146,7 +146,8 @@ class AdminApplication {
             { id: 'target-coaching', template: 'admin/sections/personality-methods/target-coaching.html', script: 'js/admin/sections/personality-methods.js' },
             { id: 'all-methods', template: 'admin/sections/personality-methods/all-methods.html', script: 'js/admin/sections/personality-methods.js' },
             { id: 'ai-investments', template: 'admin/sections/ai-investments.html', script: 'js/admin/sections/ai-investments.js' },
-            { id: 'finanzen', template: 'admin/sections/finanzen.html', script: 'js/admin/sections/finanzen.js' }
+            { id: 'finanzen', template: 'admin/sections/finanzen.html', script: 'js/admin/sections/finanzen.js' },
+            { id: 'life-os', template: 'admin/sections/life-os.html', script: 'js/admin/sections/life-os.js' }
         ];
         
         routes.forEach(route => {
@@ -199,6 +200,7 @@ class AdminApplication {
         createIfAvailable('rentals', 'RentalsSection');
         createIfAvailable('aiInvestment', 'AIInvestmentSection');
         createIfAvailable('finanzen', 'FinanzenSection');
+        createIfAvailable('lifeOs', 'LifeOsSection');
 
         console.log('Sections initialized (guarded)');
     }

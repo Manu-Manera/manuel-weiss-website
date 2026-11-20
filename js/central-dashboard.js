@@ -119,7 +119,14 @@
                     getJSON('').catch(() => ({}))
                 ]);
             } catch (e) { console.warn('Überblick: Laden fehlgeschlagen', e); }
-            this.render(this.compute(workflows, all));
+            const computed = this.compute(workflows, all);
+            try {
+                if (window.lifeOS) {
+                    await window.lifeOS.load();
+                    computed.lifeOsReady = true;
+                }
+            } catch (e) { /* ignore */ }
+            this.render(computed);
         }
 
         compute(workflows, all) {
@@ -420,11 +427,17 @@
                 </div>
             </div>` : '';
 
+            let lifeOsHtml = '';
+            try {
+                if (window.lifeOS) lifeOsHtml = window.lifeOS.renderBoard({ noteLimit: 1 });
+            } catch (e) { /* ignore */ }
+
             this.el.innerHTML = `
             <div class="cd-hero">
                 <h2>Willkommen zurück${name ? ', ' + esc(name) : ''} 👋</h2>
                 <p>Hier fließt alles zusammen – dein ganzer Weg auf einen Blick.${d.lastActive ? ' Zuletzt aktiv ' + relTime(d.lastActive) + '.' : ''}</p>
             </div>
+            ${lifeOsHtml}
             ${this.dailyBrain(d)}
             <div class="cd-grid">${cards.join('')}</div>
             <div class="cd-more">
@@ -436,6 +449,16 @@
             this.el.querySelectorAll('[data-cd-action]').forEach(b => {
                 b.addEventListener('click', () => {
                     const t = b.getAttribute('data-cd-action');
+                    if (window.userProfile && typeof window.userProfile.switchTab === 'function') {
+                        window.userProfile.switchTab(t);
+                    } else {
+                        location.hash = t;
+                    }
+                });
+            });
+            this.el.querySelectorAll('[data-los-goto]').forEach(b => {
+                b.addEventListener('click', () => {
+                    const t = b.getAttribute('data-los-goto');
                     if (window.userProfile && typeof window.userProfile.switchTab === 'function') {
                         window.userProfile.switchTab(t);
                     } else {

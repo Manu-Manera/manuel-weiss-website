@@ -1,0 +1,51 @@
+<div class="life-os-section">
+    <div class="section-header">
+        <div>
+            <h2>🏢 Life OS · Manuel AG</h2>
+            <p class="section-subtitle">Steuerzentrale: Divisionen, Health-Score, Wochenfokus und Coaching-Notizen – synchron mit dem User-Profil.</p>
+        </div>
+        <div class="los-admin-meta">
+            <span id="los-save-status" class="los-save-status" aria-live="polite"></span>
+            <button class="btn btn-outline" id="los-reload-btn" title="Neu laden">
+                <i class="fas fa-sync"></i>
+            </button>
+            <button class="btn btn-primary" id="los-save-btn">
+                <i class="fas fa-save"></i> Speichern
+            </button>
+        </div>
+    </div>
+
+    <div id="los-admin-kpis" class="los-admin-kpis">
+        <div class="los-admin-kpi"><div class="n" id="los-kpi-health">–</div><div class="l">Company Health</div></div>
+        <div class="los-admin-kpi"><div class="n" id="los-kpi-focus">–</div><div class="l">Wochenfokus</div></div>
+        <div class="los-admin-kpi"><div class="n" id="los-kpi-notes">–</div><div class="l">Coach-Notizen</div></div>
+        <div class="los-admin-kpi"><div class="n" id="los-kpi-updated">–</div><div class="l">Zuletzt gespeichert</div></div>
+    </div>
+
+    <div class="los-admin-vision">
+        <h3><i class="fas fa-compass"></i> Vision &amp; Nordstern</h3>
+        <label for="los-company">Firmenname</label>
+        <input type="text" id="los-company" />
+        <label for="los-tagline">Tagline</label>
+        <input type="text" id="los-tagline" />
+        <label for="los-northstar">Nordstern</label>
+        <textarea id="los-northstar" rows="2"></textarea>
+        <label for="los-vision">Vision</label>
+        <textarea id="los-vision" rows="3"></textarea>
+        <label for="los-weekly-focus">Wochenfokus (Division)</label>
+        <select id="los-weekly-focus"></select>
+        <label for="los-board-notes">Board-Review Notiz</label>
+        <textarea id="los-board-notes" rows="2"></textarea>
+    </div>
+
+    <div id="los-admin-grid" class="los-admin-grid"></div>
+
+    <div class="los-admin-notes">
+        <h3><i class="fas fa-user-tie"></i> Coaching-Notizen</h3>
+        <div class="los-admin-notes-form">
+            <textarea id="los-new-note" placeholder="Neue Coach-Notiz …"></textarea>
+            <button class="btn btn-primary" id="los-add-note-btn"><i class="fas fa-plus"></i> Hinzufügen</button>
+        </div>
+        <div id="los-notes-list"></div>
+    </div>
+</div>

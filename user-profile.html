@@ -9,6 +9,7 @@
     <title>Mein Profil | Manuel Weiss</title>
     <link rel="stylesheet" href="css/user-profile.css?v=20260527e">
     <link rel="stylesheet" href="css/central-dashboard.css?v=20260627c">
+    <link rel="stylesheet" href="css/life-os.css?v=20261120a">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -299,104 +300,8 @@
                 <!-- Progress Tab -->
                 <div class="tab-panel" id="progress">
                     <div class="progress-dashboard">
-                        <div class="dashboard-header">
-                            <h3><i class="fas fa-chart-line"></i> Dein Fortschritt</h3>
-                            <p>Verfolge deine Entwicklung in der Persönlichkeitsentwicklung</p>
-                        </div>
-
-                        <!-- Overall Progress -->
-                        <div class="progress-overview">
-                            <div class="overview-card">
-                                <div class="card-header">
-                                    <h4>Gesamtfortschritt</h4>
-                                    <span class="progress-percentage" id="overallProgress">0%</span>
-                                </div>
-                                <div class="progress-ring">
-                                    <svg class="progress-ring-svg" width="120" height="120">
-                                        <circle class="progress-ring-circle" cx="60" cy="60" r="54" fill="transparent" stroke="#e5e7eb" stroke-width="8"/>
-                                        <circle class="progress-ring-circle progress-ring-fill" cx="60" cy="60" r="54" fill="transparent" stroke="#6366f1" stroke-width="8" stroke-linecap="round"/>
-                                    </svg>
-                                    <div class="progress-text">
-                                        <span class="progress-number" id="overallProgressNumber">0</span>
-                                        <span class="progress-label">von 29 Methoden</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Method Categories -->
-                        <div class="categories-grid">
-                            <div class="category-card">
-                                <div class="category-header">
-                                    <div class="category-icon">
-                                        <i class="fas fa-heart"></i>
-                                    </div>
-                                    <div class="category-info">
-                                        <h4>Selbstfindung</h4>
-                                        <p>5 Methoden</p>
-                                    </div>
-                                </div>
-                                <div class="category-progress">
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 60%"></div>
-                                    </div>
-                                    <span class="progress-text">3/5 abgeschlossen</span>
-                                </div>
-                            </div>
-
-                            <div class="category-card">
-                                <div class="category-header">
-                                    <div class="category-icon">
-                                        <i class="fas fa-brain"></i>
-                                    </div>
-                                    <div class="category-info">
-                                        <h4>Entwicklung</h4>
-                                        <p>8 Methoden</p>
-                                    </div>
-                                </div>
-                                <div class="category-progress">
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 25%"></div>
-                                    </div>
-                                    <span class="progress-text">2/8 abgeschlossen</span>
-                                </div>
-                            </div>
-
-                            <div class="category-card">
-                                <div class="category-header">
-                                    <div class="category-icon">
-                                        <i class="fas fa-users"></i>
-                                    </div>
-                                    <div class="category-info">
-                                        <h4>Beziehungen</h4>
-                                        <p>6 Methoden</p>
-                                    </div>
-                                </div>
-                                <div class="category-progress">
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 0%"></div>
-                                    </div>
-                                    <span class="progress-text">0/6 abgeschlossen</span>
-                                </div>
-                            </div>
-
-                            <div class="category-card">
-                                <div class="category-header">
-                                    <div class="category-icon">
-                                        <i class="fas fa-briefcase"></i>
-                                    </div>
-                                    <div class="category-info">
-                                        <h4>Karriere</h4>
-                                        <p>4 Methoden</p>
-                                    </div>
-                                </div>
-                                <div class="category-progress">
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 75%"></div>
-                                    </div>
-                                    <span class="progress-text">3/4 abgeschlossen</span>
-                                </div>
-                            </div>
+                        <div id="lifeOsProgressRoot">
+                            <div class="cd-loading"><i class="fas fa-circle-notch fa-spin"></i> Life OS wird geladen …</div>
                         </div>
 
                         <!-- Persönlichkeits-Songs (Cloud) -->
@@ -414,39 +319,6 @@
                             </div>
                         </div>
 
-                        <!-- Recent Activity -->
-                        <div class="activity-section">
-                            <h4><i class="fas fa-clock"></i> Letzte Aktivitäten</h4>
-                            <div class="activity-list">
-                                <div class="activity-item">
-                                    <div class="activity-icon">
-                                        <i class="fas fa-check-circle"></i>
-                                    </div>
-                                    <div class="activity-content">
-                                        <h5>Werte-Klärung abgeschlossen</h5>
-                                        <p>vor 2 Tagen</p>
-                                    </div>
-                                </div>
-                                <div class="activity-item">
-                                    <div class="activity-icon">
-                                        <i class="fas fa-check-circle"></i>
-                                    </div>
-                                    <div class="activity-content">
-                                        <h5>Ikigai-Methode abgeschlossen</h5>
-                                        <p>vor 1 Woche</p>
-                                    </div>
-                                </div>
-                                <div class="activity-item">
-                                    <div class="activity-icon">
-                                        <i class="fas fa-play-circle"></i>
-                                    </div>
-                                    <div class="activity-content">
-                                        <h5>Emotionale Intelligenz gestartet</h5>
-                                        <p>vor 3 Tagen</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -1129,8 +1001,9 @@
     <script src="js/aws-journal-api.js?v=20260112"></script>
     <script src="js/success-checkmark.js?v=20260112"></script>
     <script src="js/workflow-api.js?v=20260114f"></script>
+    <script src="js/life-os.js?v=20261120a"></script>
     <script src="js/user-profile.js?v=20260527f"></script>
-    <script src="js/central-dashboard.js?v=20260627c"></script>
+    <script src="js/central-dashboard.js?v=20261120a"></script>
     <script>
         // Tab Data Loading Functions
         async function loadTrainingTabData() {

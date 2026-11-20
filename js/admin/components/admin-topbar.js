@@ -438,6 +438,7 @@ class AdminTopbar extends HTMLElement {
             const sectionNames = {
                 'dashboard': 'Dashboard',
                 'finanzen': 'Finanzen',
+                'life-os': 'Life OS',
                 'api-keys': 'API Keys',
                 'applications': 'Bewerbungen',
                 'media': 'Medien',
