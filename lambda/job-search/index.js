@@ -102,7 +102,13 @@ const ALLOW_TITLE = [
 const FOCUS_TITLE_RX = /\bukg\b|\bhrsd\b|hr[\s-]?service[\s-]?(delivery|center|centre)|servicenow\s+hr|employee\s+service|hr[\s-]?prozess\w*|personalprozess\w*|hr[\s-]?process\w*|hr[\s-]?shared[\s-]?service\w*|hr[\s-]?(operations[\s-]?)?excellence|operating[\s-]?model|hr[\s-]?strateg\w*|people[\s-]?strateg\w*|personalstrateg\w*|hr[\s-]?transformation|people[\s-]?advisory|hr[\s-]?organisation\w*/i;
 const HR_TITLE_RX = /\b(hr|hris|hcm|hrsd|hr-it|people|personal\w*|prozess\w*|process\w*|bpm|bpmn|workflow\w*|organisationsentwicklung|digitalisierung)\b/i;
 const CH_LOCATION_RX = /schweiz|switzerland|suisse|zürich|zuerich|zurich|\bbern\b|basel|luzern|lucerne|st\.?\s?gallen|winterthur|\bzug\b|aarau|olten|solothurn|thun|chur|(?:^|[\s,])ch(?:$|[\s,)])/i;
+const DE_LOCATION_RX = /deutschland|germany|berlin|münchen|muenchen|munich|hamburg|frankfurt|köln|koeln|cologne|düsseldorf|duesseldorf|stuttgart|hannover|leipzig|dresden|nürnberg|nuernberg|dortmund|essen|bremen|(?:^|[\s,(])de(?:$|[\s,)])/i;
+const AT_LOCATION_RX = /österreich|oesterreich|austria|\bwien\b|\bvienna\b|\bgraz\b|\blinz\b|\bsalzburg\b/i;
+const OPEN_REMOTE_RX = /worldwide|anywhere|global(?:ly)?|europe|european|\beu\b|dach|emea/i;
+const REMOTE_HINT_RX = /\bremote\b|home\s*office|homeoffice|work from anywhere|weltweit/i;
 const DACH_RX = /german|deutsch|dach|schweiz|switzerland|zürich|zurich|österreich|austria|deutschland|germany/i;
+// Anzeige-Reihenfolge: Remote Schweiz, dann Deutschland. Vor Ort und Hybrid bleiben drin.
+const REGION_TAKES = [16, 12, 8, 4];
 const WFA_RX = /work from anywhere|anywhere in the world|worldwide|global(?:ly)? remote|weltweit/i;
 const REGION_MISMATCH_RX = /\((?:us|usa|uk|ca|canada|au|apac|latam|india)\)|\busa?\b|united states|canada|americas?\b|north america|latam|\bamer\b|apac|australia|india\b|philippines|singapore|brazil|mexico|latin america|\b(?:est|pst|cst)\b|\(uk/i;
 const REMOTE_AGG = new Set(['remotive', 'himalayas', 'jobicy', 'workingnomads', 'arbeitnow', 'ats']);
@@ -221,11 +227,13 @@ const normUrl = (u) => String(u || '').toLowerCase().split('?')[0].replace(/\/$/
 // ─────────────────────────────────────────────────────────────── Quellen
 
 function linkedinTasks(c) {
-  const geos = Object.entries(LI_GEOS).filter(([k]) => c.regions?.[k] !== false).map(([, g]) => g);
+  const geos = ['chRemote', 'de', 'ch', 'at', 'euRemote']
+    .filter((k) => c.regions?.[k] !== false)
+    .map((k) => LI_GEOS[k]);
   const terms = [...c.terms.slice(0, 8), ...c.termsEn.slice(0, 2)];
   const tasks = [];
-  for (const term of terms) {
-    for (const [loc, geo, extra] of geos) {
+  for (const [loc, geo, extra] of geos) {
+    for (const term of terms) {
       tasks.push(async () => {
         await new Promise((r) => setTimeout(r, 350));
         const url = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search'
@@ -395,8 +403,58 @@ function scoreJob(j, c) {
   if (j.wfa) score += 3;
   if (j.watchCompany) score += 2;
   if (DACH_RX.test(text + j.location)) score += 2;
-  if (CH_LOCATION_RX.test(j.location)) score += 3;
-  return { score, focus, track: allowed ? 'entwicklung' : 'kern' };
+  const region = classifyRegion(j);
+  if (region.rank >= 40) score += 8;
+  else if (region.rank >= 30) score += 5;
+  else if (region.rank >= 20) score += 2;
+  return { score, focus, track: allowed ? 'entwicklung' : 'kern', regionRank: region.rank, regionLabel: region.label };
+}
+
+function isRemoteJob(j) {
+  return !!(j.remote || j.wfa || REMOTE_HINT_RX.test(`${j.location || ''} ${j.title || ''}`));
+}
+
+/** Remote Schweiz (40), Deutschland (30), Schweiz vor Ort (20), Österreich (10), sonstiges Remote (8). Nichts davon wird verworfen. */
+function classifyRegion(j) {
+  const loc = j.location || '';
+  const ch = j.source === 'jobs.ch' || CH_LOCATION_RX.test(loc);
+  const de = !ch && (j.source === 'arbeitsagentur' || DE_LOCATION_RX.test(loc));
+  const at = !ch && !de && AT_LOCATION_RX.test(loc);
+  const remote = isRemoteJob(j);
+  if (remote && ch) return { rank: 40, label: 'Remote CH' };
+  if (remote && (j.wfa || OPEN_REMOTE_RX.test(loc)) && !de && !at) return { rank: 40, label: 'Remote CH' };
+  if (de) return { rank: 30, label: 'Deutschland' };
+  if (ch) return { rank: 20, label: 'Schweiz vor Ort' };
+  if (at) return { rank: 10, label: 'Österreich' };
+  if (remote) return { rank: 8, label: 'Remote' };
+  return { rank: 0, label: '' };
+}
+
+function pickRanked(scored, limit = MAX_RESULTS) {
+  const bands = [
+    (j) => j.regionRank >= 40,
+    (j) => j.regionRank >= 30 && j.regionRank < 40,
+    (j) => j.regionRank >= 20 && j.regionRank < 30,
+    (j) => j.regionRank < 20
+  ];
+  const byFit = (a, b) => (b.focus - a.focus) || (b.baseScore - a.baseScore);
+  const picked = [];
+  const used = new Set();
+  bands.forEach((match, i) => {
+    for (const j of scored.filter(match).sort(byFit).slice(0, REGION_TAKES[i])) {
+      picked.push(j);
+      used.add(j.id);
+    }
+  });
+  if (picked.length < limit) {
+    const rest = scored.filter((j) => !used.has(j.id))
+      .sort((a, b) => (b.regionRank - a.regionRank) || byFit(a, b));
+    for (const j of rest) {
+      if (picked.length >= limit) break;
+      picked.push(j);
+    }
+  }
+  return picked.sort((a, b) => (b.regionRank - a.regionRank) || byFit(a, b)).slice(0, limit);
 }
 
 function buildFocusRx(list) {
@@ -510,12 +568,14 @@ async function actionSearch(user, body) {
     if (tooOld(j, c.maxAgeDays || 30)) { staleCount++; continue; }
     const s = scoreJob(j, c);
     if (!s || s.score < 5) continue;
-    const entry = { ...j, baseScore: s.score, focus: s.focus, track: s.track, status: 'offen' };
+    const entry = {
+      ...j, baseScore: s.score, focus: s.focus, track: s.track, status: 'offen',
+      regionRank: s.regionRank, regionLabel: s.regionLabel
+    };
     byPosting.set(k2, entry);
     scored.push(entry);
   }
-  scored.sort((a, b) => (b.focus - a.focus) || (b.baseScore - a.baseScore));
-  const jobs = scored.slice(0, MAX_RESULTS);
+  const jobs = pickRanked(scored);
 
   const stats = {
     loaded: all.length, unique, alreadySeen: seenCount, tooOld: staleCount,
@@ -578,6 +638,7 @@ async function actionRate(user, body) {
 - score 0–100: inhaltliche Passung zum Profil und realistische Chance (Seniorität, Muss-Anforderungen, Sprache, Standort).
 - focus: genau einer von ${FOCUS_LABELS.map((f) => `"${f}"`).join(', ')} wenn die Rolle klar dieses Fokusthema hat, sonst "".
 - Fokusthemen (${focus}) klar bevorzugen (+10).
+- Standort-Reihenfolge, ohne Stellen zu verwerfen: Remote Schweiz (auch weltweit oder EU-remote, von der Schweiz aus) zuerst, danach Deutschland inklusive vor Ort und Hybrid, danach Schweiz vor Ort oder Hybrid, danach Österreich. Vor-Ort-Stellen in CH und DE bleiben gültig.
 - Abwerten: Führungsrollen ohne passende Führungserfahrung, Sales/Recruiting/Entwicklerrollen, Französisch als Muttersprache, Standort ausserhalb CH/DE/AT ohne Remote.
 - why: ein Satz auf Deutsch, konkret: was passt, was fehlt.
 - recommended: true ab score 70.`;
@@ -672,4 +733,4 @@ exports.handler = async (event) => {
   }
 };
 
-exports._test = { scoreJob, mergeCriteria, linkedinTasks, jobschTasks, remoteTasks, atsTasks, arbeitsagenturTasks, runPool };
+exports._test = { scoreJob, classifyRegion, pickRanked, mergeCriteria, linkedinTasks, jobschTasks, remoteTasks, atsTasks, arbeitsagenturTasks, runPool };

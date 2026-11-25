@@ -109,6 +109,7 @@
 .js-wrap .js-badge.rec { background: #fef3c7; color: #92400e; }
 .js-wrap .js-badge.done { background: #e0f2fe; color: #075985; }
 .js-wrap .js-badge.remote { background: var(--surface-3); color: var(--ink-2); }
+.js-wrap .js-badge.region { background: #e8eef6; color: #1e3a5f; }
 .js-wrap .js-row-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
 @media (max-width: 720px) {
   .js-wrap .js-job { grid-template-columns: 22px 44px 1fr; }

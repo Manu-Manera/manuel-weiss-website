@@ -223,6 +223,7 @@
     try {
       const s = await api('state');
       Object.assign(JS, { criteria: s.criteria, results: s.results || [], lastRun: s.lastRun, stats: s.stats, seenCount: s.seenCount, loaded: true });
+      sortResults();
       renderCriteria();
       render();
     } catch (e) {
@@ -266,6 +267,7 @@
 - score 0–100: inhaltliche Passung zum Profil und realistische Chance (Seniorität, Muss-Anforderungen, Sprache, Standort).
 - focus: genau einer von ${FOCUS_LABELS.map((f) => `"${f}"`).join(', ')} wenn die Rolle klar dieses Fokusthema hat, sonst "".
 - Fokusthemen (${(JS.criteria?.focusKeywords || []).slice(0, 12).join(', ')}) klar bevorzugen (+10).
+- Standort-Reihenfolge, ohne Stellen zu verwerfen: Remote Schweiz (auch weltweit oder EU-remote, von der Schweiz aus) zuerst, danach Deutschland inklusive vor Ort und Hybrid, danach Schweiz vor Ort oder Hybrid, danach Österreich. Vor-Ort-Stellen in CH und DE bleiben gültig.
 - Abwerten: Führungsrollen ohne passende Führungserfahrung, Sales/Recruiting/Entwicklerrollen, Französisch als Muttersprache, Standort ausserhalb CH/DE/AT ohne Remote.
 - why: ein Satz auf Deutsch, konkret: was passt, was fehlt.
 - recommended: true ab score 70.`
@@ -310,9 +312,32 @@
     }
   }
 
+  const CH_LOC_RX = /schweiz|switzerland|suisse|zürich|zuerich|zurich|\bbern\b|basel|luzern|lucerne|st\.?\s?gallen|winterthur|\bzug\b|aarau|olten|solothurn|thun|chur|(?:^|[\s,])ch(?:$|[\s,)])/i;
+  const DE_LOC_RX = /deutschland|germany|berlin|münchen|muenchen|munich|hamburg|frankfurt|köln|koeln|cologne|düsseldorf|duesseldorf|stuttgart|hannover|leipzig|dresden|nürnberg|nuernberg|dortmund|essen|bremen|(?:^|[\s,(])de(?:$|[\s,)])/i;
+  const AT_LOC_RX = /österreich|oesterreich|austria|\bwien\b|\bvienna\b|\bgraz\b|\blinz\b|\bsalzburg\b/i;
+  const OPEN_REMOTE_RX = /worldwide|anywhere|global(?:ly)?|europe|european|\beu\b|dach|emea/i;
+  const REMOTE_HINT_RX = /\bremote\b|home\s*office|homeoffice|work from anywhere|weltweit/i;
+
+  function regionMeta(j) {
+    if (Number.isFinite(j.regionRank)) return { rank: j.regionRank, label: j.regionLabel || '' };
+    const loc = j.location || '';
+    const ch = j.source === 'jobs.ch' || CH_LOC_RX.test(loc);
+    const de = !ch && (j.source === 'arbeitsagentur' || DE_LOC_RX.test(loc));
+    const at = !ch && !de && AT_LOC_RX.test(loc);
+    const remote = !!(j.remote || j.wfa || REMOTE_HINT_RX.test(`${loc} ${j.title || ''}`));
+    if (remote && ch) return { rank: 40, label: 'Remote CH' };
+    if (remote && (j.wfa || OPEN_REMOTE_RX.test(loc)) && !de && !at) return { rank: 40, label: 'Remote CH' };
+    if (de) return { rank: 30, label: 'Deutschland' };
+    if (ch) return { rank: 20, label: 'Schweiz vor Ort' };
+    if (at) return { rank: 10, label: 'Österreich' };
+    if (remote) return { rank: 8, label: 'Remote' };
+    return { rank: 0, label: '' };
+  }
+
   function sortResults() {
-    const rank = (j) => (j.status === 'offen' ? 0 : 1);
-    JS.results.sort((a, b) => rank(a) - rank(b)
+    const statusRank = (j) => (j.status === 'offen' ? 0 : 1);
+    JS.results.sort((a, b) => statusRank(a) - statusRank(b)
+      || (regionMeta(b).rank - regionMeta(a).rank)
       || ((b.aiScore ?? -1) - (a.aiScore ?? -1))
       || ((b.focus ? 1 : 0) - (a.focus ? 1 : 0))
       || ((b.baseScore || 0) - (a.baseScore || 0)));
@@ -650,6 +675,7 @@ Format: reiner Text. Zeile 1: Betreff (z. B. «Bewerbung als …»). Leerzeile. 
           ${j.recommended && open ? '<span class="js-badge rec">empfohlen</span>' : ''}
           ${j.track === 'entwicklung' ? '<span class="js-badge dev">↗ Entwicklung</span>' : ''}
           ${j.wfa ? '<span class="js-badge remote">weltweit remote</span>' : j.remote ? '<span class="js-badge remote">remote</span>' : ''}
+          ${regionMeta(j).label ? `<span class="js-badge region">${esc(regionMeta(j).label)}</span>` : ''}
           ${app ? `<span class="js-badge done">Bewerbung: ${esc(appStatus)}</span>` : open ? '' : `<span class="js-badge done">${esc(j.status)}</span>`}</div>
         <div class="js-meta">${meta}</div>
         ${j.why ? `<div class="js-why">${esc(j.why)}</div>` : ''}
